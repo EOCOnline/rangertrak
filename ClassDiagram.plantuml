@@ -1,0 +1,209 @@
+/'
+    https://plantuml.com/class-diagram
+    Paste into http://www.plantuml.com/plantuml
+    or run locally in VSCode via:
+    https://github.com/qjebbs/vscode-plantuml/
+    then  Alt-d to display
+'/
+
+@startuml RangerTrax
+'center header RangerTrax - Class Diagram
+
+skinparam titleBorderRoundCorner 15
+skinparam titleBorderThickness 2
+skinparam titleBorderColor red
+skinparam titleBackgroundColor GreenYellow-LightGoldenRodYellow
+
+title RangerTrax \nClass Diagram
+
+'note "1) Seperate functionality from user interface \n2) Allow default teams & locations  \n3) Points processed as set or lat vs long?" as N1
+
+class RangerTrax {
+    settings[]
+    log[]
+    about: string
+    loadsettings(filePath: string)
+    saveSettings(filePath: string)
+    appendLog(string)
+    loadLog(filePath: string)
+    listLog(filter): string[]
+    saveLog(filePath: string): result
+    resetLog()
+}
+
+class Mission {
+    -id!: number
+    +name: string
+    begDate: string
+    endDate: string
+    opPeriods[]
+}
+
+class OpPeriod {
+    -id: number
+    +name: string
+    begDate: string
+    endDate: string
+}
+Mission "1" *-- "1..*" OpPeriod : composed of >
+
+class Point {
+    latDD
+    longDD
+    fromDMS(latDMS, longDMS): Point
+    toDMS(): latDMS, LongDMS
+    fromWhat3Words(ptW3W: string): Point
+    toWhat3Words(Point): ptW3W: string
+    fromPlusCode(ptPlusCode: string): Point
+    toPlusCode(Point): ptPlusCode: string
+    toString()
+    distanceTo(Point): distance 'miles?
+}
+
+class Locations extends Point {
+    name: string
+    address: string
+    lat
+    long   
+    notes: string
+    addLocation(+name: string, lat, long, note?:string)
+    deleteLocation()
+    listLocations(searchName: string)    
+    save()
+    load()
+}
+
+class FieldReport extends Point {
+    id: number
+    callSign: string
+    licensee: string
+    team: Team
+    lat: string
+    long: string
+    time: string
+    status: string
+    notes: string
+    validate()
+    editReport()
+    hideReport()
+    clear()
+    save()
+    load()
+}
+
+object FieldReportFilter {
+    callSignFilter: string,
+    teamFilter: string, 
+    boundsFilter: string, 
+    timeFilter: string, 
+    statusFilter: string, 
+    noteFilter: string
+}
+class FieldReports {
+    reports[]: FieldReport
+    addReport(report: FieldReport)
+    listReports(filter: FieldReportFilter, sort)
+    filterReports()
+}
+FieldReports "1" *-- "0..*" FieldReport : composed of >
+
+class Participant {
+    -id: number
+    +callSign!: string
+    +name: string
+    +licenseKey!: string
+    +phone: string
+    ~icon: string
+    +notes: string
+    ~create(): void
+    ~display()
+    ~save()
+    ~load()
+}
+
+class Team {
+    name: string
+    participants[]
+    marker: string
+    notes: string
+    add()
+    remove()
+    list()
+    save()
+    load()
+}
+
+Participant "0..*" *-- "1..*" Team: serves in >
+
+'------------------------------------------------------------------
+newpage
+
+namespace MapCollection #GreenYellow/LightGoldenRodYellow {
+    interface iMap << (i,orchid) >> {
+
+    }
+    abstract class Map {
+        name: string
+        mapType: string
+        -clipBounds: [pt1, pt2]
+        -affinityBounds: [p1, pt2]
+        -visible: boolean
+        -layers[]
+        -attribute?
+        --
+        init(): result
+        display()
+        refresh()
+        addLayer()
+        removeLayer()
+        hideLayer()
+        showLayer()
+        .. Simple Getter ..
+        +getName()
+        +getAddress()
+    }
+
+    class esriLeafletMap extends Map {
+        name: string
+    }
+
+    class googleMap extends Map {
+        name: string
+    }
+
+    class Layer {
+        name: string
+        type: string
+        visable: boolean
+        markers[]
+        sublayers[]
+    }
+
+    Map "1..*" *-- "0..*" Layer: has >
+
+    class Marker {
+        name: string
+        color: string
+        fillColor: string
+        size: number
+        shape: string
+        url: string
+    }
+    Layer "1..*" *-- "0..*" Marker: has >
+}
+'end package
+
+'https://useiconic.com/open
+legend
+    |= Color |= Type |= Description |
+    | <size:11><back:#Red>A           </back></size>|    <color:Red><$osa_user_green_developer*.4></color> | Abstract... is a stdlib sprite |
+    | <size:11>C</size>|  <color:blue><&dashboard></color>  | Class |
+    | <size:11>i</size>| <color:#Green><&box></color><< (i,orchid) >> | Interface |
+    | <size:11><back:#Yellow>Box           </back></size>|    <color:Yellow><&box></color> | A Box, an openiconic sprite |
+endlegend
+
+caption <size:16>ToDo:</size> \n1) Seperate functionality from user interface \n2) Allow default teams & locations  \n3) Points processed as set or lat vs long?
+
+footer %dirpath() / %filename() rendered with PlantUML version %version()\nhttps://RangerTrax.eoc.online version:%date()
+
+@enduml

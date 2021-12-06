@@ -1,0 +1,98 @@
+
+
+<div class="container">
+  <form [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit()">
+
+    <h2>Entry Form</h2>
+
+    <h2>Who</h2>
+    <div class="input-group">CallSign:
+      <input
+        [class.border-danger]="entryDetailsForm.get('callsign')?.touched && entryDetailsForm.get('callsign')?.invalid"
+        type="text" formControlName="callsign" placeholder="Callsign">
+      <div
+        *ngIf="entryDetailsForm.get('callsign')?.touched && entryDetailsForm.get('callsign')?.hasError('required')"
+        class="text-sm text-danger">Callsign is required</div>
+    </div>
+
+    <div class="input-group">Team
+      <input
+        [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
+        type="text" formControlName="team" placeholder="Team">
+      <div *ngIf="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.hasError('required')"
+        class="text-sm text-danger">Team is required</div>
+    </div>
+
+    <h2>Where</h2>
+    <div class="input-group">Street Address:
+      <input
+        [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
+        type="email" formControlName="address" placeholder="Address">
+      <div
+        *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
+        class="text-sm text-danger">address is required</div>
+    </div>
+
+    <div>Derived Address: <span id="derivedAddress">WA locale; Full code:    +Code: 8VCWVF22+</span></div>
+
+    <div class="input-group">Latitude:
+      <input
+        [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
+        type="email" formControlName="lat" placeholder="lat">
+      <div
+        *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
+        class="text-sm text-danger">lat is required</div>
+    </div>
+
+    <div class="input-group">Longitude:
+      <input
+        [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
+        type="email" formControlName="long" placeholder="long">
+      <div
+        *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
+        class="text-sm text-danger">long is required</div>
+    </div>
+
+    <h2>When</h2>
+    <div class="input-group">Date:
+      <input
+        [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
+        type="email" formControlName="date" placeholder="date">
+      <div
+        *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
+        class="text-sm text-danger">date is required</div>
+    </div>
+
+    <h2>What</h2>
+
+    <div class="input-group">Status:
+      <select formControlName="status" [class.border-danger]="entryDetailsForm.get('number')?.touched && entryDetailsForm.get('number')?.invalid">
+        <option [value]="''">Select Status</option>
+        <option [value]="stat" *ngFor="let stat of statuses">{{stat}}</option>
+      </select>
+      <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')" class="text-sm text-danger">Status is required</div>
+    </div>
+
+    <div class="input-group">Notes:
+      <textarea formControlName="notes" id="" cols="30" rows="10" placeholder="Enter Any Notes"></textarea>
+    </div>
+
+    <!--h4>Keywords</h4>
+    <div formArrayName="keywords">
+      <div *ngIf="keywordsControls && keywordsControls.length">
+        <div *ngFor="let keywordControl of keywordsControls; let i = index">
+          <div class="input-group">
+            <input [class.border-danger]="keywordControl.touched && keywordControl.invalid" [formControlName]="i"
+              type="text" placeholder="keyword" />
+            <div *ngIf="keywordControl.touched && keywordControl.hasError('required')" class="text-sm text-danger">
+              keyword Name is required</div>
+          </div>
+          <hr>
+        </div>
+      </div>
+    </div-->
+
+    <button [disabled]="entryDetailsForm.invalid" style="margin-top: 40px;" type="submit">Submit</button>
+    <button [disabled]="entryDetailsForm.invalid" style="margin-top: 40px;" type="reset">Reset</button>
+  </form>
+</div>
