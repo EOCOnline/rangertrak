@@ -4,8 +4,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
 import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
-import { Ranger } from './ranger';
-import { FieldReport } from './field-report';
+import { Ranger, FieldReport } from './services/';
 
 //@Injectable({  providedIn: 'root' })
 

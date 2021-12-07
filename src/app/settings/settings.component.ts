@@ -14,7 +14,7 @@ import { DataService } from './data.service';
 //import * as F from '@angular/forms';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AgGridModule } from 'ag-grid-angular';
-//import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 interface Data {
   title: string;
@@ -37,43 +37,10 @@ export class SettingsComponent implements OnInit {
 
   settingsEditorForm!: FormGroup;
 
-  /*
-  columnDefs: this.ColDef[] = [
-    { field: 'make' },
-    { field: 'model' },
-    { field: 'price' }
-  ];
-  */
+  private gridApi: any;
+  private gridColumnApi: any;
 
-  columnDefs1 = [{ field: "make" }, { field: "model" }, { field: "price" }];
-  columnDefs = [{ field: "value" }, { field: "icon" }, { field: "color" }, { field: "fillColor" }, { field: "shape" }, { field: "note" }];
-
-  rowData = [
-    { make: 'Toyotaaaa', model: 'Celica', price: 35000 },
-    { make: 'Fordddd', model: 'Mondeo', price: 32000 },
-    { make: 'Porscheeee', model: 'Boxter', price: 72000 }
-  ];
-
-  /*
-  shapes1 = [
-    { shapeId: 1, shapeName: 'Circle' },
-    { shapeId: 2, shapeName: 'Star' },
-    { shapeId: 3, shapeName: 'Square' },
-    { shapeId: 4, shapeName: 'shape4' },
-    { shapeId: 5, shapeName: 'shape5' }
-  ]
-
-  // Marker uses icons; Circle uses color + fillColor; Note is for user's notes
-  teams1 = [
-    { value: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: this.shapes[1].shapeName, note: "" },
-    { value: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: this.shapes[2].shapeName, note: "" },
-    { value: "T3", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3].shapeName, note: "" },
-    { value: "T4", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4].shapeName, note: "" },
-    { value: "T5", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5].shapeName, note: "" },
-    { value: "T6", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1].shapeName, note: "" },
-    { value: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: this.shapes[2].shapeName, note: "" }
-  ];
-*/
+  // private defaultColDef;
 
   shapes = [
     'Circle',
@@ -83,16 +50,42 @@ export class SettingsComponent implements OnInit {
     'shape5'
   ]
 
- // Marker uses icons; Circle uses color + fillColor; Note is for user's notes
- teams = [
-  { value: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: this.shapes[1], note: "" },
-  { value: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: this.shapes[2], note: "" },
-  { value: "T3", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
-  { value: "T4", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
-  { value: "T5", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
-  { value: "T6", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
-  { value: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: this.shapes[2], note: "" }
-];
+  columns = [
+    { field: "name" },
+    { field: "icon" },
+    { field: "color" },
+    { field: "fillColor" },
+    { field: "shape", cellEditor: 'agSelectCellEditor', cellEditorParams: { values: this.shapes } },
+    { field: "note" }
+  ];
+
+
+
+  // Marker uses icons; Circle uses color + fillColor; Note is for user's notes
+  teams = [
+    { name: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: this.shapes[1], note: "" },
+    { name: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: this.shapes[2], note: "" },
+    { name: "T3", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
+    { name: "T4", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
+    { name: "T5", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
+    { name: "T6", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
+    { name: "T7", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
+    { name: "T8", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
+    { name: "T9", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
+    { name: "T10", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
+    { name: "T11", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
+    { name: "T12", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
+    { name: "T13", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
+    { name: "T14", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
+    { name: "T15", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
+    { name: "T16", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
+    { name: "T17", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
+    { name: "T18", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
+    { name: "T19", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
+    { name: "T20", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
+    { name: "T21", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
+    { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: this.shapes[2], note: "" }
+  ];
 
   constructor(
     private localStorage: LocalStorage,
@@ -101,7 +94,7 @@ export class SettingsComponent implements OnInit {
     private fb: FormBuilder) {
 
 
-    }
+  }
 
   ngOnInit(): void {
     console.log("IndexedDB test started at ", Date())
@@ -125,6 +118,107 @@ export class SettingsComponent implements OnInit {
     //this.displayTeamGrid();
     console.log("IndexedDB test completed at ", Date())
   }
+
+  addTeamRow(): void {
+    this.teams.push({ name: "new Team", icon: "Other.png", color: 'white', fillColor: '#f03', shape: this.shapes[1], note: "" })
+  }
+
+  models = [
+    'Mercedes-AMG C63',
+    'BMW M2',
+    'Audi TT Roadster',
+    'Mazda MX-5',
+    'BMW M3',
+    'Porsche 718 Boxster',
+    'Porsche 718 Cayman',
+  ];
+  colors = ['Red', 'Black', 'Green', 'White', 'Blue'];
+  countries = ['UK', 'Spain', 'France', 'Ireland', 'USA'];
+
+  createRowData() {
+    var rowData = [];
+    for (var i = 0; i < 200; i++) {
+      var item = {
+        model: this.models[Math.floor(Math.random() * this.models.length)],
+        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+        country: this.countries[Math.floor(Math.random() * this.countries.length)],
+        year: 2018 - Math.floor(Math.random() * 20),
+        price: 20000 + Math.floor(Math.random() * 100) * 100,
+      };
+      rowData.push(item);
+    }
+    return rowData;
+  }
+
+
+  // https://www.ag-grid.com/angular-data-grid/printing/
+  onBtPrinterFriendly() {
+    // Printer Friendly Layout
+    var eGridDiv = document.querySelector('#teamGrid');
+    // eGridDiv.style.width = '';
+    // eGridDiv.style.height = '';
+    this.gridApi.setDomLayout('print');
+  }
+
+  onBtNormal() {
+    // Normal Layout
+    var eGridDiv = document.querySelector('#teamGrid');
+    // eGridDiv.style.width = '400px';
+    // eGridDiv.style.height = '200px';
+    this.gridApi.setDomLayout(null);
+  }
+
+  onGridReady(params: any) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+  }
+
+  exportDataAsCsv(
+    //params?: CsvExportParams
+    //https://www.ag-grid.com/angular-data-grid/grid-api/#reference-export-exportDataAsCsv
+  ): void {
+    //TODO: Not implemented!
+  }
+
+  setQuickFilter(): void {
+    //TODO: Not implemented!
+    // Expects parameter: newFilter: any
+  }
+
+  /*
+    gridOptions = {
+      columns: [
+        { field: 'firstName' },
+        { field: 'lastName' },
+        { field: 'gender' },
+        { field: 'age' },
+        { field: 'mood' },
+        { field: 'country' },
+        { field: 'address', minWidth: 550 },
+      ],
+      defaultColDef: {
+        flex: 1,
+        minWidth: 110,
+        editable: true,
+        resizable: true,
+      },
+      rowData: this.teams,
+      pinnedTopRowData: getPinnedTopData(),
+      pinnedBottomRowData: getPinnedBottomData(),
+      onRowEditingStarted: function (event) {
+        console.log('never called - not doing row editing');
+      },
+      onRowEditingStopped: function (event) {
+        console.log('never called - not doing row editing');
+      },
+      onCellEditingStarted: function (event) {
+        console.log('cellEditingStarted');
+      },
+      onCellEditingStopped: function (event) {
+        console.log('cellEditingStopped');
+      },
+    };
+  */
 
   // TODO: simple test - remove me!
   updateDefaults() {
@@ -160,7 +254,7 @@ export class SettingsComponent implements OnInit {
       paging: true,
       data: this.teams,
       fields: [
-        { name: "value", title: "Team", type: "text", width: 13, validate: "required" },
+        { name: "name", title: "Team", type: "text", width: 13, validate: "required" },
         { name: "shape", type: "text", width: 15 },
         { name: "icon", type: "text", width: 20 },
         { name: "color", type: "text", width: 15 },

@@ -4,10 +4,10 @@ import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
 import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
-import { Participant } from './participant';
+import { Ranger } from './Ranger.Service';
 //import { OriginFieldReport } from './field-report';
 
-//@Injectable({  providedIn: 'root' })
+@Injectable({  providedIn: 'root' })
 
 export enum Source {
   Voice,
