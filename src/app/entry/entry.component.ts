@@ -15,7 +15,7 @@ export class EntryComponent implements OnInit {
   static DEF_LONG = -122.4627  // Vashon EOC!
 
   entryDetailsForm!: FormGroup;
-  statuses: string[] = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update']
+  statuses: string[] = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']
 
   constructor(private fb: FormBuilder) { }
 

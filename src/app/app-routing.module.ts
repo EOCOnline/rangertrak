@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EntryComponent } from './entry/entry.component';
-import { ReportsComponent } from './reports/reports.component';
+import { FieldReportsComponent } from './field-reports/field-reports.component';
 import { GmapComponent } from './gmap/gmap.component';
 import { LmapComponent } from './lmap/lmap.component';
 import { RangersComponent } from './rangers/rangers.component';
@@ -11,7 +11,7 @@ import { X404Component } from './x404/x404.component';
 
 const routes: Routes = [
   { path: '', component: EntryComponent },
-  { path: 'reports', component: ReportsComponent },
+  { path: 'reports', component: FieldReportsComponent },
   { path: 'gmap', component: GmapComponent },
   { path: 'lmap', component: LmapComponent },
   { path: 'rangers', component: RangersComponent },

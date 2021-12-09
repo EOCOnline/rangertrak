@@ -6,7 +6,7 @@ import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
 //import { OriginFieldReport } from './field-report';
 
-// @Injectable({ providedIn: 'root' }) //
+@Injectable({  providedIn: 'root' })
 
 export enum Sourse {
   Voice,
@@ -14,8 +14,8 @@ export enum Sourse {
   APRS,
   Email
 }
-export class RangerService{}
-export class Ranger {
+export class ReportService{}
+export class Report {
 
   static nextId = 1;
   id: Number;
@@ -25,7 +25,7 @@ export class Ranger {
 
   constructor (callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string)
     {
-      this.id = Ranger.nextId++; // TODO: OK if user restarts app during SAME mission #?
+      this.id = Report.nextId++; // TODO: OK if user restarts app during SAME mission #?
       this.date = new Date();
       this.callSign = callSign;
       this.licensee = licensee;
@@ -33,10 +33,10 @@ export class Ranger {
       // add validation code here?! or in forms code?
     }
 
-    //edit () {   }    TODO: wise to provide this option?!//
+    //edit () {   }    TODO: wise to provide this option?!
 
     toString():string {
-      return "Ranger ID:" + this.id +
+      return "Report ID:" + this.id +
         "; call: " + this.callSign +
         "; licensee: " + this.licensee +
         ";; "
