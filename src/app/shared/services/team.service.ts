@@ -6,16 +6,24 @@ import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
 //import { OriginFieldReport } from './field-report';
 
-@Injectable({  providedIn: 'root' })
+enum Source {
+    Voice,
+    Packet,
+    APRS,
+    Email
+  }
 
-export enum Source {
-  Voice,
-  Packet,
-  APRS,
-  Email
-}
-export class TeamService{
+@Injectable({ providedIn: 'root' })
+export class TeamService {
 
+
+  shapes = [
+    'Circle',
+    'Star',
+    'Square',
+    'shape4',
+    'shape5'
+  ]
 
   teams = [
     { name: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: this.shapes[1], note: "" },
@@ -47,15 +55,29 @@ export class TeamService{
   }
 }
 
-@Injectable({  providedIn: 'root' })
-export class Team {
 
+
+
+
+
+@Injectable({ providedIn: 'root' })
+export class Team {
+}
+
+/*
   static nextId = 1;
   id: Number;
   date: Date;
   callSign: string;
   licensee: string;
 
+  shapes = [
+    'Circle',
+    'Star',
+    'Square',
+    'shape4',
+    'shape5'
+  ]
 
   columns = [
     { field: "name" },
@@ -94,88 +116,87 @@ export class Team {
     { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: this.shapes[2], note: "" }
   ];
 
-  constructor (callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string)
-    {
-      this.id = Team.nextId++; // TODO: OK if user restarts app during SAME mission #?
-      this.date = new Date();
-      this.callSign = callSign;
-      this.licensee = licensee;
+  constructor(callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string) {
+    this.id = Team.nextId++; // TODO: OK if user restarts app during SAME mission #?
+    this.date = new Date();
+    this.callSign = callSign;
+    this.licensee = licensee;
 
-      // add validation code here?! or in forms code?
-    }
+    // add validation code here?! or in forms code?
+  }
 
-    //edit () {   }    TODO: wise to provide this option?!
+  //edit () {   }    TODO: wise to provide this option?!
 
-    toString():string {
-      return "Team ID:" + this.id +
-        "; call: " + this.callSign +
-        "; licensee: " + this.licensee +
-        ";; "
-    }
+  toString(): string {
+    return "Team ID:" + this.id +
+      "; call: " + this.callSign +
+      "; licensee: " + this.licensee +
+      ";; "
+  }
 
 
-    addTeamRow(): void {
-      this.teams.push({ name: "new Team", icon: "Other.png", color: 'white', fillColor: '#f03', shape: this.shapes[1], note: "" })
-    }
+  addTeamRow(): void {
+    this.teams.push({ name: "new Team", icon: "Other.png", color: 'white', fillColor: '#f03', shape: this.shapes[1], note: "" })
+  }
 
-    models = ['Mercedes-AMG C63', 'BMW M2', 'Audi TT Roadster', 'Mazda MX-5', 'BMW M3', 'Porsche 718 Boxster', 'Porsche 718 Cayman',];
-    colors = ['Red', 'Black', 'Green', 'White', 'Blue'];
-    countries = ['UK', 'Spain', 'France', 'Ireland', 'USA'];
+  models = ['Mercedes-AMG C63', 'BMW M2', 'Audi TT Roadster', 'Mazda MX-5', 'BMW M3', 'Porsche 718 Boxster', 'Porsche 718 Cayman',];
+  colors = ['Red', 'Black', 'Green', 'White', 'Blue'];
+  countries = ['UK', 'Spain', 'France', 'Ireland', 'USA'];
 
-    createRowData() {
-      var rowData = [];
-      for (var i = 0; i < 200; i++) {
-        var item = {
-          model: this.models[Math.floor(Math.random() * this.models.length)],
-          color: this.colors[Math.floor(Math.random() * this.colors.length)],
-          country: this.countries[Math.floor(Math.random() * this.countries.length)],
-          year: 2018 - Math.floor(Math.random() * 20),
-          price: 20000 + Math.floor(Math.random() * 100) * 100,
-        };
-        rowData.push(item);
-      }
-      return rowData;
-    }
-
-    setQuickFilter(): void {
-      //TODO: Not implemented!
-      // Expects parameter: newFilter: any
-    }
-
-    /*
-      gridOptions = {
-        columns: [
-          { field: 'firstName' },
-          { field: 'lastName' },
-          { field: 'gender' },
-          { field: 'age' },
-          { field: 'mood' },
-          { field: 'country' },
-          { field: 'address', minWidth: 550 },
-        ],
-        defaultColDef: {
-          flex: 1,
-          minWidth: 110,
-          editable: true,
-          resizable: true,
-        },
-        rowData: this.teams,
-        pinnedTopRowData: getPinnedTopData(),
-        pinnedBottomRowData: getPinnedBottomData(),
-        onRowEditingStarted: function (event) {
-          console.log('never called - not doing row editing');
-        },
-        onRowEditingStopped: function (event) {
-          console.log('never called - not doing row editing');
-        },
-        onCellEditingStarted: function (event) {
-          console.log('cellEditingStarted');
-        },
-        onCellEditingStopped: function (event) {
-          console.log('cellEditingStopped');
-        },
+  createRowData() {
+    var rowData = [];
+    for (var i = 0; i < 200; i++) {
+      var item = {
+        model: this.models[Math.floor(Math.random() * this.models.length)],
+        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+        country: this.countries[Math.floor(Math.random() * this.countries.length)],
+        year: 2018 - Math.floor(Math.random() * 20),
+        price: 20000 + Math.floor(Math.random() * 100) * 100,
       };
-    */
+      rowData.push(item);
+    }
+    return rowData;
+  }
+
+  setQuickFilter(): void {
+    //TODO: Not implemented!
+    // Expects parameter: newFilter: any
+  }
+
+  /*
+    gridOptions = {
+      columns: [
+        { field: 'firstName' },
+        { field: 'lastName' },
+        { field: 'gender' },
+        { field: 'age' },
+        { field: 'mood' },
+        { field: 'country' },
+        { field: 'address', minWidth: 550 },
+      ],
+      defaultColDef: {
+        flex: 1,
+        minWidth: 110,
+        editable: true,
+        resizable: true,
+      },
+      rowData: this.teams,
+      pinnedTopRowData: getPinnedTopData(),
+      pinnedBottomRowData: getPinnedBottomData(),
+      onRowEditingStarted: function (event) {
+        console.log('never called - not doing row editing');
+      },
+      onRowEditingStopped: function (event) {
+        console.log('never called - not doing row editing');
+      },
+      onCellEditingStarted: function (event) {
+        console.log('cellEditingStarted');
+      },
+      onCellEditingStopped: function (event) {
+        console.log('cellEditingStopped');
+      },
+    };
+  *     /
 
 
 
@@ -187,13 +208,14 @@ export class Team {
 
   // TODO: Inject another sunb-service to handle the following!!!
 
-    // Save to disk or ...
-    serialize(name: string) {
-      ;
-    }
-
-    load(name: string) {
-      ;
-    }
-
+  // Save to disk or ...
+  serialize(name: string) {
+    ;
   }
+
+  load(name: string) {
+    ;
+  }
+
+}
+*/

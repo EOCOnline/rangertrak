@@ -69,13 +69,15 @@ export class SettingsComponent implements OnInit {
     { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: this.shapes[2], note: "" }
   ];
 
+  mySettings // : Settings;
+
 
   constructor(
     teamService: TeamService,
     private fb: FormBuilder) {
-      this.mySettings = teamService.getTeams()
+    this.mySettings = teamService.getTeams()
   }
- mySettings: Settings;
+
 
   ngOnInit(): void {
     console.log("settings loaded at ", Date())
