@@ -1,5 +1,5 @@
 {
-  "$schema": "@angular/cli/lib/config/schema.json",
+  "$-busted-schema": "@angular/cli/lib/config/schema.json",
   "cli": {
     "analytics": false
   },
@@ -30,11 +30,11 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "./src/icons/favicon.png",
+              "./src/assets/icons/favicon.ico",
               "./src/assets"
             ],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -99,11 +99,11 @@
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/icons/favicon.png",
+              "src/assets/icons/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
             "scripts": []

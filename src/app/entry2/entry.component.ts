@@ -21,12 +21,12 @@ export interface State {
 }
 
 @Component({
-  selector: 'rangertrak-entry',
+  selector: 'rangertrak-entry2',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss']
 })
 
-export class EntryComponent implements OnInit {
+export class Entry2Component implements OnInit {
 
   // https://material.angular.io/components/autocomplete/examples
   stateCtrl = new FormControl();
@@ -81,7 +81,7 @@ export class EntryComponent implements OnInit {
 
 
   ngOnInit(): void {
-    console.log("EntryForm test started at ", Date())
+    console.log("EntryForm2 test started at ", Date())
 
     this.entryDetailsForm = this.fb.group({
       callsign: ['NoCallSign!',
@@ -98,11 +98,11 @@ export class EntryComponent implements OnInit {
         //TODO: ERROR Error: Cannot find control with name: 'address' (or 'lat', if address lines get commented out...)
 
         addressxx: ['default location'],
-        lat: [EntryComponent.DEF_LAT
+        lat: [Entry2Component.DEF_LAT
           //,  Validators.required,
           //Validators.minLength(5)
         ],
-        long: [EntryComponent.DEF_LONG
+        long: [Entry2Component.DEF_LONG
           //,Validators.required,
           //Validators.minLength(5)
         ]
@@ -131,7 +131,7 @@ export class EntryComponent implements OnInit {
 
 
 
-    console.log("EntryForm test completed at ", Date())
+    console.log("EntryForm 2test completed at ", Date())
 
   }
   get keywordsControls(): any {

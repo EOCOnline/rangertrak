@@ -25,7 +25,7 @@ function chk3Words() {
     let east_lng = -120.0
     let errMsg = ""
 
-    TWords = document.getElementById("addresses")!.innerHTML
+    TWords = document.getElementById("address")!.innerHTML // was 'addresses'...
     MAIN.dbug(TWords)
     if (TWords.length) {
         // something entered...
