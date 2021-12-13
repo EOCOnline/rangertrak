@@ -3,15 +3,16 @@ import { Observable } from 'rxjs';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
 import { FormControl, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms'
 
-// https://material.angular.io/components/autocomplete/examples#autocomplete-overview
+// // https://material.angular.io/components/autocomplete/examples
 
 //import ( DEF_LAT, DEF_LONG } from './SettingsComponent'
 //import ( * } from './SettingsComponent'
 
-export interface State {
-  flag: string;
-  name: string;
-  population: string;
+export interface Callsigns {
+  image: string
+  callsign: string
+  name: string
+  phone: string
 }
 
 @Component({
@@ -20,37 +21,69 @@ export interface State {
   styleUrls: ['./entry.component.scss']
 })
 
-export class EntryComponent  { //implements OnInit
+export class EntryComponent implements OnInit {
+  callsignsCtrl = new FormControl();
+  filteredCallsigns: Observable<Callsigns[]> | null;
 
-  // https://material.angular.io/components/autocomplete/examples
-  stateCtrl = new FormControl();
-  filteredStates: Observable<State[]> | null;
 
-  states: State[] = [
-    {
-      name: 'Arkansas',
-      population: '2.978M',
-      // https://commons.wikimedia.org/wiki/File:Flag_of_Arkansas.svg
-      flag: 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Flag_of_Arkansas.svg',
-    },
-    {
-      name: 'California',
-      population: '39.14M',
-      // https://commons.wikimedia.org/wiki/File:Flag_of_California.svg
-      flag: 'https://upload.wikimedia.org/wikipedia/commons/0/01/Flag_of_California.svg',
-    },
-    {
-      name: 'Florida',
-      population: '20.27M',
-      // https://commons.wikimedia.org/wiki/File:Flag_of_Florida.svg
-      flag: 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Flag_of_Florida.svg',
-    },
-    {
-      name: 'Washinton',
-      population: '7.7M',
-      // https://commons.wikimedia.org/wiki/File:Flag_of_Washington.svg
-      flag: 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Flag_of_Washington.svg',
-    },
+   /*
+    Following from 98070 AND 98013 zip codes, MUST be sorted by call sign!
+    https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
+    ToDo, remove/empty Team/Icon
+  */
+/*
+    import {default as AAA} from "VashonCallSigns";
+    AAA.targetKey
+    // this requires `"resolveJsonModule": true` in tsconfig.json
+
+    import {default as yyy} from './VashonCallSigns.json'
+    yyy.primaryMain
+
+
+ngOnInit(): void {
+
+        this.myService.getResponseData().then((value) => {
+            //SUCCESS
+            console.log(value);
+            this.detailsdata = value;
+
+        }, (error) => {
+            //FAILURE
+            console.log(error);
+        })
+    }
+
+<p><b>sales amount:</b> {{ detailsdata?.sales_amount }}</p>
+<p><b>collection amount:</b> {{ detailsdata?.collection_amount }}</p>
+<p><b>carts amount:</b> {{ detailsdata?.carts_amount }}</p>
+
+*/
+
+// component:
+//import * as data from './data.json';
+//let greeting = data.greeting;
+
+  callsigns: Callsigns[] = [
+    {callsign: "AC7TB", name: "Sullivan, Timothy X", image: "./assets/imgs/REW/female.png", phone: "206-463-0000"},
+    {callsign: "KE7KDQ", name: "Cornelison, John", image: "./assets/imgs/REW/ke7kdq.jpg", phone: "206-463-0000"},
+    {callsign: "AE7MW", name: "Smueles, Robert E", image: "./assets/imgs/REW/RickWallace.png", phone: "206-463-0000"},
+    {callsign: "AE7RW", name: "York, Randy K", image: "./assets/imgs/REW/VI-0003.jpg", phone: "206-463-0000"},
+    {callsign: "AE7SD", name: "Danielson, Sharon J", image: "./assets/imgs/REW/VI-0034.jpg", phone: "206-463-0000"},
+    {callsign: "AE7TH", name: "Hardy, Timothy R", image: "./assets/imgs/REW/VI-0038.jpg", phone: "206-463-0000"},
+    {callsign: "AG7TJ", name: "Lindgren, Katrina J", image: "./assets/imgs/REW/VI-0041.jpg", phone: "206-463-0000"},
+    {callsign: "AK7C", name: "Mcdonald, Michael E", image: "./assets/imgs/REW/VI-0056.jpg", phone: "206-463-0000"},
+    {callsign: "K1SAB", name: "Brown, Steven A", image: "./assets/imgs/REW/VI-0058.jpg", phone: "206-463-0000"},
+    {callsign: "K3QNQ", name: "Treese, F Mitch A", image: "./assets/imgs/REW/VI-0069.jpg", phone: "206-463-0000"},
+    {callsign: "K6AJV", name: "Valencia, Andrew J", image: "./assets/imgs/REW/VI-007.jpg", phone: "206-463-0000"},
+    {callsign: "K7AJT", name: "Tharp, Adam J", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-463-0000"},
+    {callsign: "K7DGL", name: "Luechtefeld, Daniel", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-463-0000"},
+    {callsign: "K7KMS", name: "Paull, Steven", image: "./assets/imgs/REW/VI-0089.jpg", phone: "206-463-0000"},
+    {callsign: "K7NHV", name: "Francisco, Albert K", image: "./assets/imgs/REW/male.png", phone: "206-463-0000"},
+    {callsign: "K7VMI", name: "De Steiguer, Allen L", image: "./assets/imgs/REW/K7VMI.jpg", phone: "206-463-0000"},
+    {callsign: "KA7THJ", name: "Hanson, Jay R", image: "./assets/imgs/REW/male.png", phone: "206-463-0000"},
+    {callsign: "KB0LJC", name: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000"},
+    {callsign: "KB7LEV", name: "Lysen, Kurt A", image: "./assets/imgs/REW/female.png", phone: "206-463-0000"},
+    {callsign: "KB7MTM", name: "Meyer, Michael T", image: "./assets/imgs/REW/VI-0123.jpg", phone: "206-463-0000"}
   ];
 
   static DEF_LAT = 47.4472
@@ -61,20 +94,18 @@ export class EntryComponent  { //implements OnInit
 
   constructor(private fb: FormBuilder) {   //, private service: PostService) {
 
-    this.filteredStates = this.stateCtrl.valueChanges.pipe(
+    this.filteredCallsigns = this.callsignsCtrl.valueChanges.pipe(
       startWith(''),
-      map(state => (state ? this._filterStates(state) : this.states.slice())),
+      map(callsign => (callsign ? this._filterStates(callsign) : this.callsigns.slice())),
     );
 
   }
 
-
-  private _filterStates(value: string): State[] {
+  private _filterStates(value: string): Callsigns[] {
     const filterValue = value.toLowerCase();
 
-    return this.states.filter(state => state.name.toLowerCase().includes(filterValue));
+    return this.callsigns.filter(callsign => callsign.callsign.toLowerCase().includes(filterValue));
   }
-
 
 
   ngOnInit(): void {
@@ -82,18 +113,9 @@ export class EntryComponent  { //implements OnInit
 
 
     this.entryDetailsForm = this.fb.group({
-      callsign: ['NoCallSign!',
-        //Validators.required,
-        //Validators.minLength(5)
-      ],
-      //stateCtrl: [],
-      //state2: ['BrownCow'],
-
-      //this.callsignauto[''],
+      callsignCtrl: [],
       team: ['T1'],
-      //whereFormModel: this.fb.group({
-
-        //TODO: ERROR Error: Cannot find control with name: 'address' (or 'lat', if address lines get commented out...)
+      //whereFormModel: this.fb.group({    //TODO: ERROR Error: Cannot find control with name: 'address' (or 'lat', if address lines get commented out...)
 
         address: ['default location'],
         lat: [EntryComponent.DEF_LAT

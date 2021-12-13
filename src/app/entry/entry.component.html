@@ -4,40 +4,33 @@
     <h1>Entry Form</h1>
 
     <h2>Who</h2>
-    <div class="input-group">Call  Sign:
-      <input
-        [class.border-danger]="entryDetailsForm.get('callsign')?.touched && entryDetailsForm.get('callsign')?.invalid"
-        type="text" formControlName="callsign" placeholder="Callsign">
-      <div *ngIf="entryDetailsForm.get('callsign')?.touched && entryDetailsForm.get('callsign')?.hasError('required')"
-        class="text-sm text-danger">Callsign is required</div>
-    </div>
 
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->
     <mat-form-field class="example-full-width" appearance="fill">
-      <mat-label>Stateeeeee</mat-label>
+      <mat-label>CallSign</mat-label>
       <input matInput
-        [formControl]="stateCtrl"
+        [formControl]="callsignsCtrl"
         type="text"
         placeholder="Pick one"
-        aria-label="State"
+        aria-label="callsigns"
         [matAutocomplete]="auto"
         >
       <mat-autocomplete #auto="matAutocomplete" >
-        <mat-option *ngFor="let state of filteredStates | async" [value]="state.name">
-          <img class="example-option-img" aria-hidden [src]="state.flag" height="25">
-          <span>{{state.name}}</span> |
-          <small>Population: {{state.population}}</small>
+        <mat-option *ngFor="let callsigns of filteredCallsigns | async" [value]="callsigns.callsign">
+          <img class="example-option-img" aria-hidden [src]="callsigns.image" height="40">
+          <span>{{callsigns.callsign}}</span> |
+          <small> {{callsigns.name}} - {{callsigns.phone}}</small>
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>
 
-    <br>
+    <!--br>
 
     <mat-slide-toggle
-      [checked]="stateCtrl.disabled"
-      (change)="stateCtrl.disabled ? stateCtrl.enable() : stateCtrl.disable()">
+      [checked]="callsignsCtrl.disabled"
+      (change)="callsignsCtrl.disabled ? callsignsCtrl.enable() : callsignsCtrl.disable()">
       Disable Input?
-    </mat-slide-toggle>
+    </mat-slide-toggle-->
 
     <div class="input-group">Team
       <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
@@ -47,7 +40,7 @@
     </div>
 
     <h2>Where</h2>
-    <!-- TODO: Entry Component.ts CAN NOT find these fields - MAYBE address needed to be listed as SUBField of WhereGroup?????????? -->
+    <!-- TODO: entry.component.ts CAN NOT find these fields - MAYBE address needed to be listed as SUBField of WhereGroup?????????? -->
     <div class="input-group">Street Address:
       <input
         [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
