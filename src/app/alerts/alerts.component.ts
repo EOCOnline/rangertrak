@@ -8,6 +8,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
   styleUrls: ['./alerts.component.scss']
 })
 
+
 export class AlertsComponent implements OnInit {
   isAlertHidden: boolean
 

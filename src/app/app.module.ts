@@ -38,6 +38,7 @@ import {Team, TeamService, Ranger, RangerService, FieldReport, FieldReportServic
 import { X404Component } from './x404/x404.component';
 
 import { LazyModule } from './lazy/lazy.module'
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 
 //MatNativeDateModule,
 @NgModule({
@@ -68,7 +69,8 @@ import { LazyModule } from './lazy/lazy.module'
     RangersComponent,
     X404Component,
   ],
-  providers: [TeamService, RangerService, FieldReport, FieldReportService], // Team, Ranger,
+  providers: [TeamService, RangerService, FieldReport, FieldReportService,
+    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}], // Team, Ranger,
   bootstrap: [AppComponent],
 
   exports: [
