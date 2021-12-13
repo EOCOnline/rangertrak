@@ -146,9 +146,11 @@ export class SettingsComponent implements OnInit {
     return SettingsComponent.version
   }
 
+  /*
   get keywordsControls(): any {
     return (<FormArray>this.settingsEditorForm.get('keywords')).controls;
   }
+  */
 
   onFormSubmit(): void {
     const formData = this.settingsEditorForm.value

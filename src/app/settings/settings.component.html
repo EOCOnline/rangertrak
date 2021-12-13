@@ -125,26 +125,15 @@
 
     <!-- https://www.ag-grid.com/angular-data-grid/grid-interface/ -->
     <div id="teamgrid">
-      <ag-grid-angular
-        #teamGrid
-        rowAnimation
-        pagination
-        paginationAutoPageSize
-
-        style="width: 100%; height: 400px;"
-        class="ag-theme-alpine"
-        [rowData]="teams"
-        [columnDefs]="columns"
-        [defaultColDef]="{
-          flex: 1,
-          minWidth: 60,
-          editable: true,
-          resizable: true
-        }"
-        (gridReady)="onGridReady($event)"
-        >
+      <ag-grid-angular #teamGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 400px;"
+        class="ag-theme-alpine" [rowData]="teams" [columnDefs]="columns" [defaultColDef]="{
+            flex: 1,
+            minWidth: 60,
+            editable: true,
+            resizable: true
+          }" (gridReady)="onGridReady($event)">
       </ag-grid-angular>
-      <br/>
+      <br />
       <button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
       <button (click)="onBtNormal()">Normal Layout</button>
       <!-- <div><button (click)="addTeamRow()">Add a new (blank) Team</button></div> -->

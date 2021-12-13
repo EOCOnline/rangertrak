@@ -3,8 +3,6 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { LazyModule } from './lazy/lazy.module';
 
 import { EntryComponent } from './entry/entry.component';
-import { Entry1Component } from './entry1/entry.component';
-import { Entry2Component } from './entry2/entry.component';
 import { FieldReportsComponent } from './field-reports/field-reports.component';
 import { GmapComponent } from './gmap/gmap.component';
 import { LmapComponent } from './lmap/lmap.component';
@@ -17,8 +15,6 @@ import { X404Component } from './x404/x404.component';
 const routes: Routes = [
   // EAGER Routes
   { path: '', component: EntryComponent },
-  { path: '1', component: Entry1Component },
-  { path: '2', component: Entry2Component },
   { path: 'reports', component: FieldReportsComponent },
   { path: 'gmap', component: GmapComponent },
   { path: 'lmap', component: LmapComponent },

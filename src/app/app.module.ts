@@ -26,8 +26,6 @@ import { AlertsComponent } from './alerts/alerts.component';
 import { GmapComponent } from './gmap/gmap.component';
 import { LmapComponent } from './lmap/lmap.component';
 import { EntryComponent } from './entry/entry.component';
-import { Entry1Component } from './entry1/entry.component';
-import { Entry2Component } from './entry2/entry.component';
 import { FieldReportsComponent } from './field-reports/field-reports.component';
 import { SettingsComponent } from './settings/settings.component';
 import { RangersComponent } from './rangers/rangers.component';
@@ -62,12 +60,10 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
     GmapComponent,
     LmapComponent,
     EntryComponent,
-    Entry1Component,
-    Entry2Component,
     FieldReportsComponent,
     SettingsComponent,
     RangersComponent,
-    X404Component,
+    X404Component
   ],
   providers: [TeamService, RangerService, FieldReport, FieldReportService,
     {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}], // Team, Ranger,
