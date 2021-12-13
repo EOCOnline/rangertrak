@@ -1,27 +1,11 @@
-<div class="container">
-  <form class="example-form">
-    <!-- [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit()"  -->
-    <h1>Entry Form</h1>
-
-    <!--h2>Who</h2>
-    <div class="input-group">Call  Sign:
-      <input
-        [class.border-danger]="entryDetailsForm.get('callsign')?.touched && entryDetailsForm.get('callsign')?.invalid"
-        type="text" formControlName="callsign" placeholder="Callsign">
-      <div *ngIf="entryDetailsForm.get('callsign')?.touched && entryDetailsForm.get('callsign')?.hasError('required')"
-        class="text-sm text-danger">Callsign is required</div>
-    </div-->
-
-    <div style="border: 2px dotted blue; background-color: rgb(181, 235, 235);">
-      <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview  -->
+  <form class="example-form outerdiv">
       <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>SState</mat-label>
-        <input matInput enabled aria-label="State" [matAutocomplete]="auto" [formControl]="stateCtrl"
-          style="border: 2px dotted red; background-color: rgb(245, 236, 112);">
+        <mat-label>Entry2</mat-label>
+        <input matInput enabled aria-label="State" [matAutocomplete]="auto" [formControl]="stateCtrl" class="innerd">
         <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let state of filteredStates | async" [value]="state.stateName">
-            <!--img class="example-option-img" aria-hidden [src]="state.flag" height="25"-->
-            <span>{{state.stateName}}</span> |
+          <mat-option *ngFor="let state of filteredStates | async" [value]="state.name">
+            <img class="example-option-img" aria-hidden [src]="state.flag" height="25">
+            <span>{{state.name}}</span> |
             <small>Population: {{state.population}}</small>
           </mat-option>
         </mat-autocomplete>
@@ -33,84 +17,7 @@
         (change)="stateCtrl.disabled ? stateCtrl.enable() : stateCtrl.disable()">
         Disable Input?
       </mat-slide-toggle>
-
-    </div>
-
-
-    <!--div class="input-group">Team
-      <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
-        type="text" formControlName="team" placeholder="Team">
-      <div *ngIf="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.hasError('required')"
-        class="text-sm text-danger">Team is required</div>
-    </div-->
-
-    <h2>Where</h2>
-    <!-- TODO: Entry Component.ts CAN NOT find these fields - MAYBE address needed to be listed as SUBField of WhereGroup?????????? -->
-    <!--div class="input-group">Street Address:
-      <input
-        [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
-        type="text" formControlName="address" placeholder="Address">
-      <!--div
-        *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
-        class="text-sm text-danger">address is required</div  ->
-    </div>
-
-    <div>Derived Address: <span id="derivedAddress">WA locale; Full code: +Code: 8VCWVF22+</span></div>
-
-    <div class="input-group">Latitude:
-      <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
-        type="number" formControlName="lat" placeholder="Latitude">
-      <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
-        class="text-sm text-danger">lat is required</div>
-    </div>
-
-    <div class="input-group">Longitude:
-      <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
-        type="number" formControlName="long" placeholder="Longitude">
-      <div *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
-        class="text-sm text-danger">long is required</div>
-    </div>
-
-    <h2>When</h2>
-    <div class="input-group">Date:
-      <input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
-        type="datetime" formControlName="date" placeholder="date">
-      <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
-        class="text-sm text-danger">date is required</div>
-    </div>
-
-    <h2>What</h2>
-
-    <div class="input-group">Status:
-      <select formControlName="status"
-        [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid">
-        <option [value]="''">Select Status</option>
-        <option [value]="stat" *ngFor="let stat of statuses">{{stat}}</option>
-      </select>
-      <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
-        class="text-sm text-danger">Status is required</div>
-    </div>
-
-    <div class="input-group">Notes:
-      <textarea formControlName="notes" id="" cols="30" rows="10" placeholder="Enter Any Notes"></textarea>
-    </div>
-
-    <!--h4>Keywords</h4>
-    <div formArrayName="keywords">
-      <div *ngIf="keywordsControls && keywordsControls.length">
-        <div *ngFor="let keywordControl of keywordsControls; let i = index">
-          <div class="input-group">
-            <input [class.border-danger]="keywordControl.touched && keywordControl.invalid" [formControlName]="i"
-              type="text" placeholder="keyword" />
-            <div *ngIf="keywordControl.touched && keywordControl.hasError('required')" class="text-sm text-danger">
-              keyword Name is required</div>
-          </div>
-          <hr>
-        </div>
-      </div>
-    </div-->
-
-    <!--button [disabled]="entryDetailsForm.invalid" style="margin-top: 40px;" type="submit">Submit</button>
-    <button [disabled]="entryDetailsForm.invalid" style="margin-top: 40px;" type="reset">Reset</button-->
   </form>
-</div>
+
+
+  <!-- [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit()"  -->

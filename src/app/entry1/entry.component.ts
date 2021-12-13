@@ -2,14 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
-//import { startWith } from 'rxjs/operators/startWith';
-//import {map} from 'rxjs/operators/map';
 import { FormControl, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms'
-//import { PostService } from './post.service.tsxx';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatAutocomplete } from '@angular/material/autocomplete';
-//import { MatSlideToggleModule } from '@angular/material/slide-toggle'
-
 
 export interface State {
   flag: string;
@@ -17,9 +10,6 @@ export interface State {
   population: string;
 }
 
-/**
- * @title Autocomplete overview
- */
 @Component({
   selector: 'rangertrak-entry1',
   templateUrl: 'entry.component.html',

@@ -12,7 +12,6 @@
         class="text-sm text-danger">Callsign is required</div>
     </div>
 
-    <div style="border: 2px dotted blue; background-color: rgb(181, 235, 235);">
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>Stateeeeee</mat-label>
@@ -22,11 +21,11 @@
         placeholder="Pick one"
         aria-label="State"
         [matAutocomplete]="auto"
-        style="border: 2px dotted red; background-color: rgb(245, 236, 112);">
+        >
       <mat-autocomplete #auto="matAutocomplete" >
-        <mat-option *ngFor="let state of filteredStates | async" [value]="state.stateName">
-          <!--img class="example-option-img" aria-hidden [src]="state.flag" height="25"-->
-          <span>{{state.stateName}}</span> |
+        <mat-option *ngFor="let state of filteredStates | async" [value]="state.name">
+          <img class="example-option-img" aria-hidden [src]="state.flag" height="25">
+          <span>{{state.name}}</span> |
           <small>Population: {{state.population}}</small>
         </mat-option>
       </mat-autocomplete>
@@ -40,7 +39,6 @@
       Disable Input?
     </mat-slide-toggle>
 
-  </div>
     <div class="input-group">Team
       <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
         type="text" formControlName="team" placeholder="Team">
@@ -114,7 +112,7 @@
       </div>
     </div-->
 
-    <!--button [disabled]="entryDetailsForm.invalid" style="margin-top: 40px;" type="submit">Submit</button>
-    <button [disabled]="entryDetailsForm.invalid" style="margin-top: 40px;" type="reset">Reset</button-->
+    <button [disabled]="entryDetailsForm.invalid" style="margin-top: 40px;" type="submit">Submit</button>
+    <!--button [disabled]="entryDetailsForm.invalid" style="margin-top: 40px;" type="reset">Reset</button-->
   </form>
 </div>
