@@ -4,24 +4,14 @@ import { DOCUMENT, JsonPipe } from '@angular/common';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
 import { FormControl, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Callsigns, RangerService } from '../shared/services/ranger.service';
-
-//import ( DEF_LAT, DEF_LONG } from './SettingsComponent'
-//import ( * } from './SettingsComponent'
-
-/*export interface Callsigns {
-  image: string
-  callsign: string
-  name: string
-  phone: string
-}
-*/
+import { Callsigns, RangerService, FieldReportService } from '../shared/services/';
+import { SettingsComponent } from '../settings/settings.component';
 
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
-  providers: [RangerService]
+  providers: [RangerService, FieldReportService]
 })
 
 export class EntryComponent implements OnInit, AfterViewInit {
@@ -29,17 +19,20 @@ export class EntryComponent implements OnInit, AfterViewInit {
   filteredCallsigns: Observable<Callsigns[]> | null
 
   rangers: Callsigns[]
+  fieldReportService
 
+  setting = SettingsComponent.AppSettings
   static DEF_LAT = 47.4472
   static DEF_LONG = -122.4627  // Vashon EOC!
-  gCallsign = ''  // TODO: MAT input field not automatically set into entryForm
 
   entryDetailsForm!: FormGroup;
   statuses: string[] = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
 
 
-  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, rangerService: RangerService, @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
-    this.rangers = rangerService.getRangers()
+  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, rangerService: RangerService, fieldReportService: FieldReportService, @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
+
+    this.rangers = rangerService.getRangers() // TODO: or getActiveRangers?!
+    this.fieldReportService = fieldReportService
 
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
     this.filteredCallsigns = this.callsign.valueChanges.pipe(
@@ -51,8 +44,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
   private _filterStates(value: string): Callsigns[] {
     const filterValue = value.toLowerCase();
 
-    this.gCallsign = filterValue // TODO: MAT input field not automatically set into entryForm
-    this.entryDetailsForm.controls['callsign'].setValue(filterValue)
+    this.entryDetailsForm.controls['callsign'].setValue(filterValue) // TODO: MAT input field not automatically set into entryForm
 
     return this.rangers.filter(callsign => callsign.callsign.toLowerCase().includes(filterValue));
   }
@@ -62,11 +54,11 @@ export class EntryComponent implements OnInit, AfterViewInit {
     console.log("EntryForm test started at ", Date())
 
     this.entryDetailsForm = this.fb.group({
-      callsign: [''],
+      callsign: [''],  // TODO: Not tied to the material design input field...
       team: ['T1'],
       whereFormModel: this.fb.group({
         address: ['default location'],
-        lat: [EntryComponent.DEF_LAT,
+        lat: [this.setting.DEF_LAT,
         Validators.required,
         //Validators.minLength(4)
         ],
@@ -82,14 +74,14 @@ export class EntryComponent implements OnInit, AfterViewInit {
         status: [this.statuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
         notes: ['']
       })
-      //,   publish: [''],
-      //reset: ['']
     })
 
     console.log("EntryForm test completed at ", Date())
   }
 
-  /* get keywordsControls(): any {
+  /*
+    FUTURE: Allow entry of keywords
+    get keywordsControls(): any {
     return (<FormArray>this.entryDetailsForm.get('keywords')).controls;
   }   */
 
@@ -99,14 +91,15 @@ export class EntryComponent implements OnInit, AfterViewInit {
 
   // TODO: This also gets called if the Update Location button is clicked!!
   onFormSubmit(): void {
-    //this.entryDetailsForm.controls['callsign'].setValue(this.gCallsign)
-    // BUGBUG: Why wasn't this automatically done?  Only Material field in the entry form?!
-    const formData = this.entryDetailsForm.value
-    console.log(formData)
 
+    const formData = this.entryDetailsForm.value
+
+    console.log(formData)
     this.openSnackBar('Entry Saved: ' + JSON.stringify(formData), 'Nice!', 5000)
 
-    // Call api post service here
+
+    this.fieldReportService.pushFieldReport(formData)
+    // TODO: Add to FieldReports.. Call api post service here
   }
 
   updateLocation() {

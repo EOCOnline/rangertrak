@@ -16,7 +16,7 @@ export enum Source {
   Email
 }
 
-@Injectable({  providedIn: 'root' })
+//@Injectable //({  providedIn: 'root' })
 export class FieldReportService {
 
   static nextId = 1;
@@ -35,6 +35,11 @@ export class FieldReportService {
       // this.licensee = licensee;
 
       // add validation code here?! or in forms code?
+    }
+
+    pushFieldReport(formData: string) {
+      console.log('FieldReportService: Got new field report: ')
+      console.log(formData)
     }
 
 /*     addRanger(ranger: Ranger) {

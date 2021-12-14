@@ -51,6 +51,12 @@ export class RangerService {
     return this.callsigns
   }
 
+  // TODO: or getActiveRangers?!
+  getActiveRangers() {
+    //Would need to filter for those who've 'checked in' on this incident?
+    return this.callsigns
+  }
+
   LoadFromJSON() {
     //See pg. 279...
 

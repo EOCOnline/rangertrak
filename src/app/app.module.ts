@@ -70,7 +70,7 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
   bootstrap: [AppComponent],
 
   exports: [
-
+    // SettingsComponent
   ]
 })
 export class AppModule { }

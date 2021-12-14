@@ -1,9 +1,8 @@
-"greeting" : "xin chao Vietnam"
-
 {
   "response": {
     "sales_amount": 6000.77,
     "collection_amount": 399.57,
     "carts_amount": 736.63
-  }
+  },
+  "greeting" : "xin chao Vietnam"
 }

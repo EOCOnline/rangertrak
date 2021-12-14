@@ -14,9 +14,11 @@ export class PostService {
   opts = [];
 
   getData() {
+    // Free fake API for testing and prototyping: https://jsonplaceholder.typicode.com/
     return this.opts.length ?
       of(this.opts) :
       this.http.get('https://jsonplaceholder.typicode.com/users').pipe(tap(data => this.opts = data))
   }
 
+  fwefwe
 }

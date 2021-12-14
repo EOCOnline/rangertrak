@@ -1,5 +1,5 @@
 
-import { Ranger, RangerService } from "./ranger.service";
+import { Ranger, RangerService, Callsigns } from "./ranger.service";
 import { Team, TeamService } from "./team.service";
 import { FieldReportService } from "./field-report.service";
 import { FieldReport } from "./field-report";
@@ -8,7 +8,7 @@ import { DataService } from "./data.service";
 // import { DataService } from "./data.service";
 
 
-export { Ranger, RangerService } from "./ranger.service";
+export { Ranger, RangerService, Callsigns } from "./ranger.service";
 export { Team, TeamService } from "./team.service";
 export { FieldReportService } from "./field-report.service";
 export { FieldReport } from "./field-report";

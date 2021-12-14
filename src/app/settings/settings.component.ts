@@ -30,6 +30,17 @@ interface Data {
 
 export class SettingsComponent implements OnInit {
 
+  static AppSettings = {
+    DEF_LAT: 45.1,
+    DEF_LONG: -123.1,  // Vashon EOC!
+    DEF_PCODE: 'BoGuS+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
+    locale_Name: "Maury, WA",
+    version: '12.0.0'
+  }
+
+  //static Settings: any;
+  mySettings // : Settings;
+
   static DEF_LAT = 47.4472
   static DEF_LONG = -122.4627  // Vashon EOC!
   static DEF_PCODE = '84VVCGWP+VW' // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
@@ -69,7 +80,7 @@ export class SettingsComponent implements OnInit {
     { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: this.shapes[2], note: "" }
   ];
 
-  mySettings // : Settings;
+
 
 
   constructor(
@@ -132,6 +143,9 @@ export class SettingsComponent implements OnInit {
     //TODO: Not implemented!
   }
 
+  serializeToLocalStorage(){}
+  deserializeToLocalStorage(){}
+  xxxerializeToLocalStorage(){}
 
 
   // TODO: simple test - remove me!
