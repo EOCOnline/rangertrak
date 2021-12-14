@@ -4,18 +4,18 @@ import { DOCUMENT, JsonPipe } from '@angular/common';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
 import { FormControl, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RangerService } from '../shared/services/ranger.service';
-// https://material.angular.io/components/autocomplete/examples#autocomplete-overview
+import { Callsigns, RangerService } from '../shared/services/ranger.service';
 
 //import ( DEF_LAT, DEF_LONG } from './SettingsComponent'
 //import ( * } from './SettingsComponent'
 
-export interface Callsigns {
+/*export interface Callsigns {
   image: string
   callsign: string
   name: string
   phone: string
 }
+*/
 
 @Component({
   selector: 'rangertrak-entry',
@@ -30,53 +30,31 @@ export class EntryComponent implements OnInit, AfterViewInit {
 
   rangers: Callsigns[]
 
-
-
-  callsigns: Callsigns[] = [
-    { callsign: "AC7TB", name: "Sullivan, Timothy X", image: "./assets/imgs/REW/female.png", phone: "206-463-0000" },
-    { callsign: "KE7KDQ", name: "Cornelison, John", image: "./assets/imgs/REW/ke7kdq.jpg", phone: "206-463-0000" },
-    { callsign: "AE7MW", name: "Smueles, Robert E", image: "./assets/imgs/REW/RickWallace.png", phone: "206-463-0000" },
-    { callsign: "AE7RW", name: "York, Randy K", image: "./assets/imgs/REW/VI-0003.jpg", phone: "206-463-0000" },
-    { callsign: "AE7SD", name: "Danielson, Sharon J", image: "./assets/imgs/REW/VI-0034.jpg", phone: "206-463-0000" },
-    { callsign: "AE7TH", name: "Hardy, Timothy R", image: "./assets/imgs/REW/VI-0038.jpg", phone: "206-463-0000" },
-    { callsign: "AG7TJ", name: "Lindgren, Katrina J", image: "./assets/imgs/REW/VI-0041.jpg", phone: "206-463-0000" },
-    { callsign: "AK7C", name: "Mcdonald, Michael E", image: "./assets/imgs/REW/VI-0056.jpg", phone: "206-463-0000" },
-    { callsign: "K1SAB", name: "Brown, Steven A", image: "./assets/imgs/REW/VI-0058.jpg", phone: "206-463-0000" },
-    { callsign: "K3QNQ", name: "Treese, F Mitch A", image: "./assets/imgs/REW/VI-0069.jpg", phone: "206-463-0000" },
-    { callsign: "K6AJV", name: "Valencia, Andrew J", image: "./assets/imgs/REW/VI-007.jpg", phone: "206-463-0000" },
-    { callsign: "K7AJT", name: "Tharp, Adam J", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-463-0000" },
-    { callsign: "K7DGL", name: "Luechtefeld, Daniel", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-463-0000" },
-    { callsign: "K7KMS", name: "Paull, Steven", image: "./assets/imgs/REW/VI-0089.jpg", phone: "206-463-0000" },
-    { callsign: "K7NHV", name: "Francisco, Albert K", image: "./assets/imgs/REW/male.png", phone: "206-463-0000" },
-    { callsign: "K7VMI", name: "De Steiguer, Allen L", image: "./assets/imgs/REW/K7VMI.jpg", phone: "206-463-0000" },
-    { callsign: "KA7THJ", name: "Hanson, Jay R", image: "./assets/imgs/REW/male.png", phone: "206-463-0000" },
-    { callsign: "KB0LJC", name: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000" },
-    { callsign: "KB7LEV", name: "Lysen, Kurt A", image: "./assets/imgs/REW/female.png", phone: "206-463-0000" },
-    { callsign: "KB7MTM", name: "Meyer, Michael T", image: "./assets/imgs/REW/VI-0123.jpg", phone: "206-463-0000" }
-  ];
-
   static DEF_LAT = 47.4472
   static DEF_LONG = -122.4627  // Vashon EOC!
-  gCallsign = ''
+  gCallsign = ''  // TODO: MAT input field not automatically set into entryForm
 
   entryDetailsForm!: FormGroup;
-  statuses: string[] = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']
+  statuses: string[] = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
 
 
   constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, rangerService: RangerService, @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
+    this.rangers = rangerService.getRangers()
+
+    // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
     this.filteredCallsigns = this.callsign.valueChanges.pipe(
       startWith(''),
-      map(callsign => (callsign ? this._filterStates(callsign) : this.callsigns.slice())),
+      map(callsign => (callsign ? this._filterStates(callsign) : this.rangers.slice())),
     );
-
-    this.rangers = rangerService.getRangers()
   }
-
 
   private _filterStates(value: string): Callsigns[] {
     const filterValue = value.toLowerCase();
-    this.gCallsign = filterValue
-    return this.callsigns.filter(callsign => callsign.callsign.toLowerCase().includes(filterValue));
+
+    this.gCallsign = filterValue // TODO: MAT input field not automatically set into entryForm
+    this.entryDetailsForm.controls['callsign'].setValue(filterValue)
+
+    return this.rangers.filter(callsign => callsign.callsign.toLowerCase().includes(filterValue));
   }
 
 
@@ -101,7 +79,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
         date: [new Date()]
       }),
       whatFormModel: this.fb.group({
-        status: [''],
+        status: [this.statuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
         notes: ['']
       })
       //,   publish: [''],
@@ -121,8 +99,8 @@ export class EntryComponent implements OnInit, AfterViewInit {
 
   // TODO: This also gets called if the Update Location button is clicked!!
   onFormSubmit(): void {
-    this.entryDetailsForm.controls['callsign'].setValue(this.gCallsign)
-    // BUGBUG: Why wasn't this automatically done?
+    //this.entryDetailsForm.controls['callsign'].setValue(this.gCallsign)
+    // BUGBUG: Why wasn't this automatically done?  Only Material field in the entry form?!
     const formData = this.entryDetailsForm.value
     console.log(formData)
 

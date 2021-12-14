@@ -83,7 +83,7 @@
     <div class="input-group">Status:
       <select formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid">
-        <option [value]="''">Select Status</option>
+        <!--option [value]="'NewStatus'">Adds Additional Value</option-->
         <option [value]="stat" *ngFor="let stat of statuses">{{stat}}</option>
       </select>
       <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
