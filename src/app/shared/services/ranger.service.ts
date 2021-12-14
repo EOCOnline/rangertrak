@@ -4,58 +4,24 @@ import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
 import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
-//import { OriginFieldReport } from './field-report';
-
-// @Injectable({ providedIn: 'root' }) //
-
-export enum Sourse {
-  Voice,
-  Packet,
-  APRS,
-  Email
-}
-
-export interface Callsigns1 {
+export interface Callsigns {
   image: string
   callsign: string
   name: string
   phone: string
 }
 
-export class RangerService{
+// Future: export enum Source {Voice, Packet, APRS, Email}  // If other ways to generate reports are enabled
 
-/*
-   Following from 98070 AND 98013 zip codes, MUST be sorted by call sign!
-   https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
+export class RangerService {
 
-      import {default as AAA} from "VashonCallSigns";
-      AAA.targetKey
-      // this requires `"resolveJsonModule": true` in tsconfig.json
+  /*
+     Following from 98070 AND 98013 zip codes, MUST be sorted by call sign!
+     https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
+   */
 
-      import {default as yyy} from './VashonCallSigns.json'
-      yyy.primaryMain
-
-
-  ngOnInit(): void {
-
-          this.myService.getResponseData().then((value) => {
-              //SUCCESS
-              console.log(value);
-              this.detailsdata = value;
-
-          }, (error) => {
-              //FAILURE
-              console.log(error);
-          })
-      }
-
-  <p><b>sales amount:</b> {{ detailsdata?.sales_amount }}</p>
-  <p><b>collection amount:</b> {{ detailsdata?.collection_amount }}</p>
-  <p><b>carts amount:</b> {{ detailsdata?.carts_amount }}</p>
-
-  */
-
-  callsigns: Callsigns1[] = [
+  callsigns: Callsigns[] = [
+    { callsign: "KB0LJC", name: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000" },
     { callsign: "AC7TB", name: "Sullivan, Timothy X", image: "./assets/imgs/REW/female.png", phone: "206-463-0000" },
     { callsign: "KE7KDQ", name: "Cornelison, John", image: "./assets/imgs/REW/ke7kdq.jpg", phone: "206-463-0000" },
     { callsign: "AE7MW", name: "Smueles, Robert E", image: "./assets/imgs/REW/RickWallace.png", phone: "206-463-0000" },
@@ -73,27 +39,52 @@ export class RangerService{
     { callsign: "K7NHV", name: "Francisco, Albert K", image: "./assets/imgs/REW/male.png", phone: "206-463-0000" },
     { callsign: "K7VMI", name: "De Steiguer, Allen L", image: "./assets/imgs/REW/K7VMI.jpg", phone: "206-463-0000" },
     { callsign: "KA7THJ", name: "Hanson, Jay R", image: "./assets/imgs/REW/male.png", phone: "206-463-0000" },
-    { callsign: "KB0LJC", name: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000" },
     { callsign: "KB7LEV", name: "Lysen, Kurt A", image: "./assets/imgs/REW/female.png", phone: "206-463-0000" },
     { callsign: "KB7MTM", name: "Meyer, Michael T", image: "./assets/imgs/REW/VI-0123.jpg", phone: "206-463-0000" }
   ];
-  //rangerService: Callsigns[];
 
+  constructor() {
+    ;
+  }
 
-constructor() {
-  ;
-}
+  getRangers() {
+    return this.callsigns
+  }
 
-getRangers() {
-  return this.callsigns
-}
-
-LoadFromJSON() {
-  //See pg. 279...
+  LoadFromJSON() {
+    //See pg. 279...
 
     //import * as data from './data.json';
-     //let greeting = data.greeting;
-}
+    //let greeting = data.greeting;
+
+    /*   import {default as AAA} from "VashonCallSigns";
+          AAA.targetKey
+          // this requires `"resolveJsonModule": true` in tsconfig.json
+
+          import {default as yyy} from './VashonCallSigns.json'
+          yyy.primaryMain
+
+
+      ngOnInit(): void {
+
+              this.myService.getResponseData().then((value) => {
+                  //SUCCESS
+                  console.log(value);
+                  this.detailsdata = value;
+
+              }, (error) => {
+                  //FAILURE
+                  console.log(error);
+              })
+          }
+
+      <p><b>sales amount:</b> {{ detailsdata?.sales_amount }}</p>
+      <p><b>collection amount:</b> {{ detailsdata?.collection_amount }}</p>
+      <p><b>carts amount:</b> {{ detailsdata?.carts_amount }}</p>
+
+      */
+
+  }
 
 }
 export class Ranger {
@@ -104,35 +95,31 @@ export class Ranger {
   callSign: string;
   licensee: string;
 
-  constructor (callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string)
-    {
-      this.id = Ranger.nextId++; // TODO: OK if user restarts app during SAME mission #?
-      this.date = new Date();
-      this.callSign = callSign;
-      this.licensee = licensee;
+  constructor(callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string) {
+    this.id = Ranger.nextId++; // TODO: OK if user restarts app during SAME mission #?
+    this.date = new Date();
+    this.callSign = callSign;
+    this.licensee = licensee;
 
-      // add validation code here?! or in forms code?
-    }
-
-
-
-
-    //edit () {   }    TODO: wise to provide this option?!//
-
-    toString():string {
-      return "Ranger ID:" + this.id +
-        "; call: " + this.callSign +
-        "; licensee: " + this.licensee +
-        ";; "
-    }
-
-    // Save to disk or ...
-    serialize(name: string) {
-      ;
-    }
-
-    load(name: string) {
-      ;
-    }
-
+    // add validation code here?! or in forms code?
   }
+
+  //edit () {   }    TODO: wise to provide this option?!//
+
+  toString(): string {
+    return "Ranger ID:" + this.id +
+      "; call: " + this.callSign +
+      "; licensee: " + this.licensee +
+      ";; "
+  }
+
+  // Save to disk or ...
+  serialize(name: string) {
+    ;
+  }
+
+  load(name: string) {
+    ;
+  }
+
+}
