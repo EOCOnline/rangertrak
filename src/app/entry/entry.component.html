@@ -32,7 +32,7 @@
       Disable Input?
     </mat-slide-toggle-->
 
-    <div class="input-group">Team
+    <div #div1 class="input-group">Team
       <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
         type="text" formControlName="team" placeholder="Team">
       <div *ngIf="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.hasError('required')"
@@ -40,7 +40,7 @@
     </div>
 
     <h2 class="elegant">Where</h2>
-    <div formGroupName="whereFormModel">
+    <div #div2 formGroupName="whereFormModel">
     <div class="input-group">Street Address:
       <input
         [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
@@ -50,7 +50,7 @@
         class="text-sm text-danger">address is required</div  -->
     </div>
 
-    <div>Derived Address: <span id="derivedAddress">WA locale; Full code: +Code: 8VCWVF22+</span></div>
+    <div>Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code: 8VCWVF22+</span></div>
 
     <div class="input-group">Latitude:
       <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
@@ -90,8 +90,8 @@
         class="text-sm text-danger">Status is required</div>
     </div>
 
-    <div class="input-group">Notes:
-      <textarea formControlName="notes" id="" cols="30" rows="10" placeholder="Enter Any Notes"></textarea>
+    <div class="input-group" class="enter__What--notes">Notes:
+      <textarea formControlName="notes" class="enter__What--area" id="" cols="30" rows="10" placeholder="Enter Any Notes"></textarea>
     </div>
     </div>
 
@@ -111,7 +111,7 @@
     </div-->
 
     <button [disabled]="entryDetailsForm.invalid" style="margin-top: 20px; background-color: rgb(214, 219, 137);" type="submit">Submit</button>
-    <!--button [disabled]="entryDetailsForm.invalid" style="margin-top: 40px;" type="reset">Reset</button-->
+    <button (click)="updateLocation()">Update location</button>
 
   </form>
 </div>

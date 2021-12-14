@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Injectable, Inject, OnInit, Input, ElementRef, QueryList, ViewChild, ViewChildren, AfterViewInit, Renderer2 } from '@angular/core';
 import { Observable } from 'rxjs';
+import { DOCUMENT } from '@angular/common';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
 import { FormControl, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -22,7 +23,7 @@ export interface Callsigns {
   styleUrls: ['./entry.component.scss']
 })
 
-export class EntryComponent implements OnInit {
+export class EntryComponent implements OnInit, AfterViewInit {
   callsign = new FormControl();
   filteredCallsigns: Observable<Callsigns[]> | null;
 
@@ -93,13 +94,18 @@ export class EntryComponent implements OnInit {
   entryDetailsForm!: FormGroup;
   statuses: string[] = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']
 
+  //@ViewChild('derivedAddress') input: ElementRef;
 
-  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar) {   //, private service: PostService) {
+
+
+  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {private renderer: Renderer2
     this.filteredCallsigns = this.callsign.valueChanges.pipe(
       startWith(''),
       map(callsign => (callsign ? this._filterStates(callsign) : this.callsigns.slice())),
     );
   }
+
+
 
 
   private _filterStates(value: string): Callsigns[] {
@@ -151,8 +157,10 @@ export class EntryComponent implements OnInit {
     this._snackBar.open(message, action, { duration: duration })
   }
 
+  // TODO: This also gets called if the Update Location button is clicked!!
   onFormSubmit(): void {
-    this.entryDetailsForm.controls["callsign"].setValue(this.gCallsign)  // BUGBUG: Why wasn't this automatically done?
+    this.entryDetailsForm.controls['callsign'].setValue(this.gCallsign)
+    // BUGBUG: Why wasn't this automatically done?
     const formData = this.entryDetailsForm.value
     console.log(formData)
 
@@ -160,4 +168,48 @@ export class EntryComponent implements OnInit {
 
     // Call api post service here
   }
+
+  updateLocation() {
+    //this.entryDetailsForm.get(['', 'name'])
+    this.entryDetailsForm.controls['team'].setValue('New Derived Address')
+    //this.entryDetailsForm.controls['team'].setValue('Updated Derived Address')
+    //this.ModifyDOMElement()
+
+// We create a new div in the DOM, child of the body tag, <div id="LoadingSpinner"></div>
+var NewDomElement = this.document.createElement("div");
+NewDomElement.setAttribute("style", "background-color:red;");
+NewDomElement.innerHTML = "test"
+NewDomElement.innerHTML.toUpperCase
+document.body.appendChild(NewDomElement);
+
+
+var addr = this.document.getElementById("derivedAddress")
+addr!.innerHTML = "How Now Brown Cow"
+
+
+  }
+
+  // https://stackoverflow.com/questions/32693061/how-can-i-select-an-element-in-a-component-template
+  // https://stackblitz.com/edit/angular-ftvwwq
+  //@ViewChild('derivedAddress') input:ElementRef;
+  //@ViewChildren('div1,div2') divs:QueryList<ElementRef>;
+
+  ngAfterViewInit() {
+    //console.log(this.input.nativeElement.value);
+    //console.debug(this.divs);
+
+    //using selectRootElement instead of depreaced invokeElementMethod
+    // https://stackoverflow.com/questions/38944725/how-to-get-dom-element-in-angular-2
+    //this.renderer.selectRootElement(this.input["nativeElement"]).focus();
+  }
+
+  ModifyDOMElement() {
+    ;
+    // https://reactgo.com/angular-viewchild-acessing-dom-elements/
+    //Do whatever you wish with the DOM element.
+    //let domElement = this._elementRef.nativeElement.querySelector(`#derivedAdress`);
+    // domElement.innerH
+    // document.getElementById("derivedAddress").innerHTML = "Paragraph changed!"
+  }
+
 }
