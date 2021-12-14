@@ -1,3 +1,9 @@
+ONLY GOOD FOR Test() & TEST2() showing localStorage...
+
+
+
+
+
 // We store app settings/preferences per user & per browser into IndexedDB,
 // using a wrapper modeled on the much simpler LocalStorage API
 

@@ -4,55 +4,67 @@ import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
 import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
-//import { OriginFieldReport } from './field-report';
 
-enum Source {
-    Voice,
-    Packet,
-    APRS,
-    Email
-  }
 
-@Injectable({ providedIn: 'root' })
+export interface Teams {
+  name: string
+  icon: string
+  color: string
+  fillColor: string
+  shape: string,  // TODO: this right?!
+  note: string
+}
+
+//@Injectable({ providedIn: 'root' })  See pg
 export class TeamService {
 
-
-  shapes = [
+static shapes = [
     'Circle',
     'Star',
     'Square',
     'shape4',
     'shape5'
-  ]
+]
 
-  teams = [
-    { name: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: this.shapes[1], note: "" },
-    { name: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: this.shapes[2], note: "" },
-    { name: "T3", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
-    { name: "T4", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
-    { name: "T5", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
-    { name: "T6", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
-    { name: "T7", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
-    { name: "T8", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
-    { name: "T9", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
-    { name: "T10", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
-    { name: "T11", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
-    { name: "T12", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
-    { name: "T13", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
-    { name: "T14", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
-    { name: "T15", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
-    { name: "T16", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
-    { name: "T17", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
-    { name: "T18", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
-    { name: "T19", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
-    { name: "T20", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
-    { name: "T21", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
-    { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: this.shapes[2], note: "" }
+  teams: Teams[] = [
+    { name: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: TeamService.shapes[1], note: "" },
+    { name: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: TeamService.shapes[2], note: "" },
+    { name: "T3", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: TeamService.shapes[3], note: "" },
+    { name: "T4", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: TeamService.shapes[4], note: "" },
+    { name: "T5", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: TeamService.shapes[5], note: "" },
+    { name: "T6", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: TeamService.shapes[1], note: "" },
+    { name: "T7", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: TeamService.shapes[3], note: "" },
+    { name: "T8", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: TeamService.shapes[4], note: "" },
+    { name: "T9", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: TeamService.shapes[5], note: "" },
+    { name: "T10", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: TeamService.shapes[1], note: "" },
+    { name: "T11", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: TeamService.shapes[3], note: "" },
+    { name: "T12", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: TeamService.shapes[4], note: "" },
+    { name: "T13", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: TeamService.shapes[1], note: "" },
+    { name: "T14", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: TeamService.shapes[3], note: "" },
+    { name: "T15", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: TeamService.shapes[4], note: "" },
+    { name: "T16", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: TeamService.shapes[5], note: "" },
+    { name: "T17", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: TeamService.shapes[1], note: "" },
+    { name: "T18", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: TeamService.shapes[3], note: "" },
+    { name: "T19", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: TeamService.shapes[4], note: "" },
+    { name: "T20", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: TeamService.shapes[5], note: "" },
+    { name: "T21", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: TeamService.shapes[1], note: "" },
+    { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: TeamService.shapes[2], note: "" }
   ];
+
+  constructor() {
+    ;
+  }
 
   getTeams() {
     return this.teams;
   }
+
+  LoadFromJSON() {}
+
+
+
+
+
 }
 
 
@@ -92,28 +104,28 @@ export class Team {
 
   // Marker uses icons; Circle uses color + fillColor; Note is for user's notes
   teams = [
-    { name: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: this.shapes[1], note: "" },
-    { name: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: this.shapes[2], note: "" },
-    { name: "T3", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
-    { name: "T4", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
-    { name: "T5", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
-    { name: "T6", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
-    { name: "T7", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
-    { name: "T8", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
-    { name: "T9", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
-    { name: "T10", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
-    { name: "T11", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
-    { name: "T12", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
-    { name: "T13", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
-    { name: "T14", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
-    { name: "T15", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
-    { name: "T16", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
-    { name: "T17", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
-    { name: "T18", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: this.shapes[3], note: "" },
-    { name: "T19", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: this.shapes[4], note: "" },
-    { name: "T20", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: this.shapes[5], note: "" },
-    { name: "T21", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: this.shapes[1], note: "" },
-    { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: this.shapes[2], note: "" }
+    { name: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: TeamService.shapes[1], note: "" },
+    { name: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: TeamService.shapes[2], note: "" },
+    { name: "T3", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: TeamService.shapes[3], note: "" },
+    { name: "T4", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: TeamService.shapes[4], note: "" },
+    { name: "T5", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: TeamService.shapes[5], note: "" },
+    { name: "T6", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: TeamService.shapes[1], note: "" },
+    { name: "T7", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: TeamService.shapes[3], note: "" },
+    { name: "T8", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: TeamService.shapes[4], note: "" },
+    { name: "T9", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: TeamService.shapes[5], note: "" },
+    { name: "T10", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: TeamService.shapes[1], note: "" },
+    { name: "T11", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: TeamService.shapes[3], note: "" },
+    { name: "T12", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: TeamService.shapes[4], note: "" },
+    { name: "T13", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: TeamService.shapes[1], note: "" },
+    { name: "T14", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: TeamService.shapes[3], note: "" },
+    { name: "T15", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: TeamService.shapes[4], note: "" },
+    { name: "T16", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: TeamService.shapes[5], note: "" },
+    { name: "T17", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: TeamService.shapes[1], note: "" },
+    { name: "T18", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: TeamService.shapes[3], note: "" },
+    { name: "T19", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: TeamService.shapes[4], note: "" },
+    { name: "T20", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: TeamService.shapes[5], note: "" },
+    { name: "T21", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: TeamService.shapes[1], note: "" },
+    { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: TeamService.shapes[2], note: "" }
   ];
 
   constructor(callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string) {
@@ -136,7 +148,7 @@ export class Team {
 
 
   addTeamRow(): void {
-    this.teams.push({ name: "new Team", icon: "Other.png", color: 'white', fillColor: '#f03', shape: this.shapes[1], note: "" })
+    this.teams.push({ name: "new Team", icon: "Other.png", color: 'white', fillColor: '#f03', shape: TeamService.shapes[1], note: "" })
   }
 
   models = ['Mercedes-AMG C63', 'BMW M2', 'Audi TT Roadster', 'Mazda MX-5', 'BMW M3', 'Porsche 718 Boxster', 'Porsche 718 Cayman',];

@@ -29,7 +29,7 @@ import { EntryComponent } from './entry/entry.component';
 import { FieldReportsComponent } from './field-reports/field-reports.component';
 import { SettingsComponent } from './settings/settings.component';
 import { RangersComponent } from './rangers/rangers.component';
-import {Team, TeamService, Ranger, RangerService, FieldReport, FieldReportService } from './shared/services/';
+import { TeamService, Teams, RangerService, FieldReport, FieldReportService } from './shared/services/';
 //import { DataService } from './shared/services/data.service';
 //import { LocalStorageService } from './shared/services/local-storage.service';
 

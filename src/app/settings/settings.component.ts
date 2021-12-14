@@ -10,7 +10,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
 // import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
-import { Team, TeamService } from '../shared/services/';
+//import { Team, TeamService } from '../shared/services/';
 //import * as F from '@angular/forms';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AgGridModule } from 'ag-grid-angular';
@@ -24,7 +24,7 @@ interface Data {
   selector: 'rangertrak-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
-  providers: [TeamService]  // TODO: Team,
+  //providers: [TeamService]  // TODO: Team,
 })
 
 
@@ -39,7 +39,7 @@ export class SettingsComponent implements OnInit {
   }
 
   //static Settings: any;
-  mySettings // : Settings;
+  //mySettings // : Settings;
 
   static DEF_LAT = 47.4472
   static DEF_LONG = -122.4627  // Vashon EOC!
@@ -53,7 +53,7 @@ export class SettingsComponent implements OnInit {
   private gridColumnApi: any;
 
   // private defaultColDef;
-
+// Should be TeamService.Shapes!!!
   shapes = [
     'Circle',
     'Star',
@@ -62,6 +62,7 @@ export class SettingsComponent implements OnInit {
     'shape5'
   ]
 
+  // TODO: This should get replaced by Teams[] interface...
   columns = [
     { field: "name" },
     { field: "icon" },
@@ -74,19 +75,19 @@ export class SettingsComponent implements OnInit {
   //icons: <fa-icon [icon]="faMapMarkedAlt"></fa-icon>
 
   // Marker uses icons; Circle uses color + fillColor; Note is for user's notes
-  teams = [
+ /* teams = [
     { name: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: this.shapes[1], note: "" },
     { name: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: this.shapes[2], note: "" },
     { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: this.shapes[2], note: "" }
   ];
-
+*/
 
 
 
   constructor(
-    teamService: TeamService,
+ //   teamService: TeamService,
     private fb: FormBuilder) {
-    this.mySettings = teamService.getTeams()
+ //   this.mySettings = teamService.getTeams()
   }
 
 

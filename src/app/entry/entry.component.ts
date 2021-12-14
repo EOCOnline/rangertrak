@@ -4,14 +4,14 @@ import { DOCUMENT, JsonPipe } from '@angular/common';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
 import { FormControl, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Callsigns, RangerService, FieldReportService } from '../shared/services/';
+import { RangerService, Callsigns, FieldReportService, TeamService, Teams } from '../shared/services/';
 import { SettingsComponent } from '../settings/settings.component';
 
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
-  providers: [RangerService, FieldReportService]
+  providers: [RangerService, FieldReportService, TeamService]
 })
 
 export class EntryComponent implements OnInit, AfterViewInit {
@@ -19,6 +19,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
   filteredCallsigns: Observable<Callsigns[]> | null
 
   rangers: Callsigns[]
+  teams: Teams[]   // TODO: Now what to do with the list of Teams?!!!
   fieldReportService
 
   setting = SettingsComponent.AppSettings
@@ -29,10 +30,17 @@ export class EntryComponent implements OnInit, AfterViewInit {
   statuses: string[] = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
 
 
-  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, rangerService: RangerService, fieldReportService: FieldReportService, @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
+  constructor(
+    private fb: FormBuilder,
+    private _snackBar: MatSnackBar,
+    rangerService: RangerService,
+    fieldReportService: FieldReportService,
+    teamService: TeamService,
+    @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
 
     this.rangers = rangerService.getRangers() // TODO: or getActiveRangers?!
     this.fieldReportService = fieldReportService
+    this.teams = teamService.getTeams()
 
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
     this.filteredCallsigns = this.callsign.valueChanges.pipe(
@@ -76,6 +84,8 @@ export class EntryComponent implements OnInit, AfterViewInit {
       })
     })
 
+
+    //console.log(JSON.stringify(this.teams))
     console.log("EntryForm test completed at ", Date())
   }
 
