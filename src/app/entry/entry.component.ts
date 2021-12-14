@@ -1,10 +1,10 @@
 import { Component, Inject, OnInit, AfterViewInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, JsonPipe } from '@angular/common';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
 import { FormControl, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
-
+import { RangerService } from '../shared/services/ranger.service';
 // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
 
 //import ( DEF_LAT, DEF_LONG } from './SettingsComponent'
@@ -20,49 +20,17 @@ export interface Callsigns {
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
-  styleUrls: ['./entry.component.scss']
+  styleUrls: ['./entry.component.scss'],
+  providers: [RangerService]
 })
 
 export class EntryComponent implements OnInit, AfterViewInit {
-  callsign = new FormControl();
-  filteredCallsigns: Observable<Callsigns[]> | null;
+  callsign = new FormControl()
+  filteredCallsigns: Observable<Callsigns[]> | null
+
+  rangers: Callsigns[]
 
 
-  /*
-   Following from 98070 AND 98013 zip codes, MUST be sorted by call sign!
-   https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
- */
-  /*
-      import {default as AAA} from "VashonCallSigns";
-      AAA.targetKey
-      // this requires `"resolveJsonModule": true` in tsconfig.json
-
-      import {default as yyy} from './VashonCallSigns.json'
-      yyy.primaryMain
-
-
-  ngOnInit(): void {
-
-          this.myService.getResponseData().then((value) => {
-              //SUCCESS
-              console.log(value);
-              this.detailsdata = value;
-
-          }, (error) => {
-              //FAILURE
-              console.log(error);
-          })
-      }
-
-  <p><b>sales amount:</b> {{ detailsdata?.sales_amount }}</p>
-  <p><b>collection amount:</b> {{ detailsdata?.collection_amount }}</p>
-  <p><b>carts amount:</b> {{ detailsdata?.carts_amount }}</p>
-
-  */
-
-  // component:
-  //import * as data from './data.json';
-  //let greeting = data.greeting;
 
   callsigns: Callsigns[] = [
     { callsign: "AC7TB", name: "Sullivan, Timothy X", image: "./assets/imgs/REW/female.png", phone: "206-463-0000" },
@@ -95,11 +63,13 @@ export class EntryComponent implements OnInit, AfterViewInit {
   statuses: string[] = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']
 
 
-  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
+  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, rangerService: RangerService, @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
     this.filteredCallsigns = this.callsign.valueChanges.pipe(
       startWith(''),
       map(callsign => (callsign ? this._filterStates(callsign) : this.callsigns.slice())),
     );
+
+    this.rangers = rangerService.getRangers()
   }
 
 
@@ -156,7 +126,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
     const formData = this.entryDetailsForm.value
     console.log(formData)
 
-    this.openSnackBar('Entry Saved', 'Nice!', 2000)
+    this.openSnackBar('Entry Saved: ' + JSON.stringify(formData), 'Nice!', 5000)
 
     // Call api post service here
   }
