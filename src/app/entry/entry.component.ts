@@ -1,8 +1,8 @@
-import { Component, Injectable, Inject, OnInit, Input, ElementRef, QueryList, ViewChild, ViewChildren, AfterViewInit, Renderer2 } from '@angular/core';
+import { Component, Inject, OnInit, AfterViewInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
-import { FormControl, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms'
+import { FormControl, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
@@ -94,18 +94,13 @@ export class EntryComponent implements OnInit, AfterViewInit {
   entryDetailsForm!: FormGroup;
   statuses: string[] = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']
 
-  //@ViewChild('derivedAddress') input: ElementRef;
 
-
-
-  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {private renderer: Renderer2
+  constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
     this.filteredCallsigns = this.callsign.valueChanges.pipe(
       startWith(''),
       map(callsign => (callsign ? this._filterStates(callsign) : this.callsigns.slice())),
     );
   }
-
-
 
 
   private _filterStates(value: string): Callsigns[] {
@@ -123,27 +118,23 @@ export class EntryComponent implements OnInit, AfterViewInit {
       team: ['T1'],
       whereFormModel: this.fb.group({
         address: ['default location'],
-        lat: [EntryComponent.DEF_LAT
-          //,  Validators.required,
-          //Validators.minLength(5)
+        lat: [EntryComponent.DEF_LAT,
+        Validators.required,
+        Validators.minLength(4)
         ],
-        long: [EntryComponent.DEF_LONG
-          //,Validators.required,
-          //Validators.minLength(5)
+        long: [EntryComponent.DEF_LONG,
+        Validators.required,
+        Validators.minLength(4)
         ]
-      })
-      ,
+      }),
       whenFormModel: this.fb.group({
         date: [new Date()]
-      })
-      ,
+      }),
       whatFormModel: this.fb.group({
         status: [''],
         notes: ['']
       })
-      ,
-      publish: [''],
-      reset: ['']
+      //publish: [''],
     })
 
     console.log("EntryForm test completed at ", Date())
@@ -171,45 +162,14 @@ export class EntryComponent implements OnInit, AfterViewInit {
 
   updateLocation() {
     //this.entryDetailsForm.get(['', 'name'])
-    this.entryDetailsForm.controls['team'].setValue('New Derived Address')
-    //this.entryDetailsForm.controls['team'].setValue('Updated Derived Address')
-    //this.ModifyDOMElement()
+    //this.entryDetailsForm.controls['team'].setValue('New Derived Address')
 
-// We create a new div in the DOM, child of the body tag, <div id="LoadingSpinner"></div>
-var NewDomElement = this.document.createElement("div");
-NewDomElement.setAttribute("style", "background-color:red;");
-NewDomElement.innerHTML = "test"
-NewDomElement.innerHTML.toUpperCase
-document.body.appendChild(NewDomElement);
-
-
-var addr = this.document.getElementById("derivedAddress")
-addr!.innerHTML = "How Now Brown Cow"
-
-
+    var addr = this.document.getElementById("derivedAddress")
+    addr!.innerHTML = "New What3Words goes here!"
   }
-
-  // https://stackoverflow.com/questions/32693061/how-can-i-select-an-element-in-a-component-template
-  // https://stackblitz.com/edit/angular-ftvwwq
-  //@ViewChild('derivedAddress') input:ElementRef;
-  //@ViewChildren('div1,div2') divs:QueryList<ElementRef>;
 
   ngAfterViewInit() {
-    //console.log(this.input.nativeElement.value);
+    //console.log("ngAfterViewInit");
     //console.debug(this.divs);
-
-    //using selectRootElement instead of depreaced invokeElementMethod
-    // https://stackoverflow.com/questions/38944725/how-to-get-dom-element-in-angular-2
-    //this.renderer.selectRootElement(this.input["nativeElement"]).focus();
   }
-
-  ModifyDOMElement() {
-    ;
-    // https://reactgo.com/angular-viewchild-acessing-dom-elements/
-    //Do whatever you wish with the DOM element.
-    //let domElement = this._elementRef.nativeElement.querySelector(`#derivedAdress`);
-    // domElement.innerH
-    // document.getElementById("derivedAddress").innerHTML = "Paragraph changed!"
-  }
-
 }
