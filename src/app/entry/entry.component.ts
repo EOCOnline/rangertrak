@@ -1,8 +1,8 @@
-import { Component, Injectable, Inject, OnInit, Input, ElementRef, QueryList, ViewChild, ViewChildren, AfterViewInit, Renderer2 } from '@angular/core';
+import { Component, Inject, OnInit, AfterViewInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
-import { FormControl, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms'
+import { FormControl, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
