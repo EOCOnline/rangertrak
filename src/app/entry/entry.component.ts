@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { RangerService, Callsigns, FieldReportService, TeamService, Teams } from '../shared/services/';
 import { SettingsComponent } from '../settings/settings.component';
 
+//export status = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
@@ -15,6 +16,10 @@ import { SettingsComponent } from '../settings/settings.component';
 })
 
 export class EntryComponent implements OnInit, AfterViewInit {
+
+  // BUG: Following is a dupl of that in ranger.service.ts
+  public Statuses = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
+
   callsign = new FormControl()
   filteredCallsigns: Observable<Callsigns[]> | null
 
@@ -25,7 +30,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
   setting = SettingsComponent.AppSettings
 
   entryDetailsForm!: FormGroup;
-  statuses: string[] = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
+
 
 
   constructor(
@@ -61,10 +66,10 @@ export class EntryComponent implements OnInit, AfterViewInit {
     console.log("EntryForm test started at ", Date())
 
     this.entryDetailsForm = this.fb.group({
-      callsign: [''],  // TODO: Not tied to the material design input field...
-      team: ['T1'],
+      callsign: ['KE7KQ'],  // TODO: Not tied to the material design input field...
+      team: ['T2'],
       whereFormModel: this.fb.group({
-        address: ['default location'],
+        address: ['default location (original)'],
         lat: [this.setting.DEF_LAT,
         Validators.required,
         //Validators.minLength(4)
@@ -78,7 +83,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
         date: [new Date()]
       }),
       whatFormModel: this.fb.group({
-        status: [this.statuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
+        status: [this.Statuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
         notes: ['']
       })
     })
@@ -121,9 +126,9 @@ export class EntryComponent implements OnInit, AfterViewInit {
 
     this.entryDetailsForm = this.fb.group({
       callsign: [''],  // TODO: Not tied to the material design input field...
-      team: ['T1'],
+      team: ['T3'],
       whereFormModel: this.fb.group({
-        address: ['default location'],
+        address: ['default location (reset)'],
         lat: [this.setting.DEF_LAT,
         Validators.required,
         //Validators.minLength(4)
@@ -137,7 +142,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
         date: [new Date()]
       }),
       whatFormModel: this.fb.group({
-        status: [this.statuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
+        status: [this.Statuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
         notes: ['']
       })
     })

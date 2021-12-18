@@ -8,7 +8,6 @@
 <br>
 <h2>Future functionality</h2>
 <ul>
-  <li>Display grid of all rfield reports for current mission</li>
   <li>Save/load data grid to/from Excel</li>
   <li>Allow sorting/filtering: by time, callsign, team, etc.</li>
 </ul>
@@ -27,16 +26,10 @@
       </ag-grid-angular>
       <br />
       <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
-      <button (click)="onBtNormal()">Normal Layout</button>
-      <!-- <div><button (click)="/">Add a new Field Report</button></div> -->
-      <!--div>TODO: <button (click)="exportDataAsCsv()">Export Field Reports</button></div-->
-      <!-- <div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div> -->
+      <button (click)="onBtNormal()">Normal Layout</button-->
+      <!--div><button (click)="/">Add a new Field Report</button></div-->
+      <div>TODO: <button (click)="exportDataAsCsv()">Export Field Reports</button></div>
+      <div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div>
     </div>
 <hr>
-<hr>
-    <ag-grid-angular
-    style="width: 500px; height: 200px;"
-    class="ag-theme-alpine"
-    [rowData]="fieldReports"
-    [columnDefs]="columnDefs">
-</ag-grid-angular>
+

@@ -84,14 +84,14 @@
       <select formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid">
         <!--option [value]="'NewStatus'">Adds Additional Value</option-->
-        <option [value]="stat" *ngFor="let stat of statuses">{{stat}}</option>
+        <option [value]="stat" *ngFor="let stat of Statuses">{{stat}}</option>
       </select>
       <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
         class="text-sm text-danger">Status is required</div>
     </div>
 
-    <div class="input-group" class="enter__What--notes">Notes:
-      <textarea formControlName="notes" class="enter__What--area" id="" cols="30" rows="10" placeholder="Enter Any Notes"></textarea>
+    <div class="input-group" class="enter__What--note">Notes:
+      <textarea formControlName="note" class="enter__What--area" id="" cols="30" rows="10" placeholder="Enter Any Notes"></textarea>
     </div>
     </div>
 

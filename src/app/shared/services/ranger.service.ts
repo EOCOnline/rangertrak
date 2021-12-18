@@ -10,6 +10,8 @@ export interface Callsigns {
   name: string
   phone: string
 }
+// BUG: Following is a dupl of that in entry.component.ts
+export enum Statuses {'None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out'}  // TODO: Allow changing list & default of statuses in settings?!
 
 // Future: export enum Source {Voice, Packet, APRS, Email}  // If other ways to generate reports are enabled
 
