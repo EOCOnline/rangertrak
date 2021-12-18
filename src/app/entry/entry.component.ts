@@ -23,8 +23,6 @@ export class EntryComponent implements OnInit, AfterViewInit {
   fieldReportService
 
   setting = SettingsComponent.AppSettings
-  static DEF_LAT = 47.4472
-  static DEF_LONG = -122.4627  // Vashon EOC!
 
   entryDetailsForm!: FormGroup;
   statuses: string[] = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
@@ -49,6 +47,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
     );
   }
 
+
   private _filterStates(value: string): Callsigns[] {
     const filterValue = value.toLowerCase();
 
@@ -70,7 +69,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
         Validators.required,
         //Validators.minLength(4)
         ],
-        long: [EntryComponent.DEF_LONG,
+        long: [this.setting.DEF_LONG,
         Validators.required,
         //Validators.minLength(4)
         ]
@@ -102,19 +101,59 @@ export class EntryComponent implements OnInit, AfterViewInit {
   // TODO: This also gets called if the Update Location button is clicked!!
   onFormSubmit(): void {
 
-    const formData = this.entryDetailsForm.value
+    let formData = JSON.stringify(this.entryDetailsForm.value)
 
     console.log(formData)
-    this.openSnackBar('Entry Saved: ' + JSON.stringify(formData), 'Nice!', 5000)
+    this.openSnackBar('Entry Saved: ' + formData, 'Nice!', 5000)
 
 
     this.fieldReportService.pushFieldReport(formData)
     // TODO: Add to FieldReports.. Call api post service here
+
+    this.resetForm()
+
+  }
+
+  // TODO: Reset form: Callsign to blank, current date, status/notes
+  resetForm() {
+    console.log("Resetting form...")
+
+
+    this.entryDetailsForm = this.fb.group({
+      callsign: [''],  // TODO: Not tied to the material design input field...
+      team: ['T1'],
+      whereFormModel: this.fb.group({
+        address: ['default location'],
+        lat: [this.setting.DEF_LAT,
+        Validators.required,
+        //Validators.minLength(4)
+        ],
+        long: [this.setting.DEF_LONG,
+        Validators.required,
+        //Validators.minLength(4)
+        ]
+      }),
+      whenFormModel: this.fb.group({
+        date: [new Date()]
+      }),
+      whatFormModel: this.fb.group({
+        status: [this.statuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
+        notes: ['']
+      })
+    })
+
+
+    // BUG: none of the following work...
+    //this.document.getElementById("callsign")!.innerText! = ''
+    //this.entryDetailsForm.controls['#callsign'].reset
+    //this.entryDetailsForm.controls['#callsign'].reset
+    //this.entryDetailsForm.controls['#callsign'].setValue('')
+    //this.entryDetailsForm.controls['derivedAddress'].setValue('New ddddddddDerived Address')
   }
 
   updateLocation() {
     //this.entryDetailsForm.get(['', 'name'])
-    //this.entryDetailsForm.controls['team'].setValue('New Derived Address')
+    //this.entryDetailsForm.controls['derivedAddress'].setValue('New Derived Address')
 
     var addr = this.document.getElementById("derivedAddress")
     addr!.innerHTML = "New What3Words goes here!"

@@ -10,8 +10,6 @@ import { DataService } from "./data.service";
 
 export { Ranger, RangerService, Callsigns } from "./ranger.service";
 export { TeamService, Teams } from "./team.service";
-export { FieldReportService } from "./field-report.service";
-export { FieldReport } from "./field-report";
+export { FieldReportService, FieldReportType, FieldReport, FieldReportSource } from "./field-report.service";
 export { LocalStorageService } from "./local-storage.service";
 export { DataService } from "./data.service";
-// export { DataService } from "./data.service";

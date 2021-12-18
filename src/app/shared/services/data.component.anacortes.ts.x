@@ -11,13 +11,12 @@ ONLY GOOD FOR Test() & TEST2() showing localStorage...
 // Doc & package: https://github.com/cyrilletuzi/angular-async-local-storage
 // @see doc on IndexedDB {@link https://developer.chrome.com/docs/devtools/storage/indexeddb/}
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
 import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
 import { DataService } from './data.service';
-import * as F from '@angular/forms';
 
 /*
 @NgModule({
@@ -31,58 +30,7 @@ import * as F from '@angular/forms';
 interface Data {
   title: string;
 }
-
-@Component({
-  selector: 'rangertrak-settings',
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss'],
-})
-//
-
-export class NameEditorComponent {
-  name = new F.FormControl('');
-  city = new F.FormControl('New York',
-    [F.Validators.required,
-    F.Validators.minLength(2)]);
-
-  whoFormModel: F.FormGroup;
-  whereFormModel: F.FormGroup;
-  whenFormModel: F.FormGroup;
-  whatFormModel: F.FormGroup;
-
-  constructor() {
-    this.whoFormModel = new F.FormGroup({
-      callsign: new F.FormControl('NoCallSign!',
-        [F.Validators.required,
-        F.Validators.minLength(5)]),
-      team: new F.FormControl('T1')
-    });
-    this.whereFormModel = new F.FormGroup({
-      address: new F.FormControl(''),
-      lat: new F.FormControl(SettingsComponent.DEF_LAT,
-        [F.Validators.required,
-        F.Validators.minLength(5)]),
-      long: new F.FormControl(SettingsComponent.DEF_LONG,
-        [F.Validators.required,
-        F.Validators.minLength(5)])
-    });
-    this.whenFormModel = new F.FormGroup({
-      date: new F.FormControl(new Date())
-    });
-    this.whatFormModel = new F.FormGroup({
-      status: new F.FormControl(''),
-      notes: new F.FormControl('')
-    });
-    publish: new F.FormControl('')
-    reset: new F.FormControl('')
-  }
-
-  updateName() {
-    this.name.setValue('Nancy');
-  }
-
-}
-export class SettingsComponent implements OnInit {
+class TestSettings implements OnInit {
   static DEF_LAT = 47.4472;
   static DEF_LONG = -122.4627; // Vashon EOC!
   static DEF_PCODE = '84VVCGWP+VW'; // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688

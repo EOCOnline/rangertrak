@@ -1,11 +1,16 @@
-// FROM: D:\Projects\angular-async-local-storage-main\projects\demo\src\app\app.components.ts
+// FROM: GitHub.com\angular-async-local-storage-main\projects\demo\src\app\app.components.ts
 //       in @ngx-pwa/local-storage
 
-
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
 import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
+
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 import { DataService } from './data.service';
 
@@ -24,7 +29,7 @@ interface Data {
     <p id="keys">{{keys$ | async | json}}</p>
     <p id="has" [hidden]="has$ | async">Should not be seen</p>
     <p id="service">{{service$ | async}}</p>
-    <iframe src="http://localhost:8080"></iframe>
+    <!--iframe src="http://localhost:8080"></iframe-->
   `
 })
 export class AppComponent implements OnInit {
