@@ -7,7 +7,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 
 
-export interface Teams {
+export interface TeamType {
   name: string
   icon: string
   color: string
@@ -28,30 +28,8 @@ export class TeamService implements OnInit {
   ]
 
   // Marker uses icons; Circle uses color + fillColor; Note is for user's notes
-  teams: Teams[] = [
-    { name: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: 1, note: "" },
-    { name: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: 2, note: "" },
-    { name: "T3", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: 3, note: "" },
-    { name: "T4", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: 4, note: "" },
-    { name: "T5", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: 5, note: "" },
-    { name: "T6", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: 1, note: "" },
-    { name: "T7", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: 3, note: "" },
-    { name: "T8", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: 4, note: "" },
-    { name: "T9", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: 5, note: "" },
-    { name: "T10", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: 1, note: "" },
-    { name: "T11", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: 3, note: "" },
-    { name: "T12", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: 4, note: "" },
-    { name: "T13", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: 1, note: "" },
-    { name: "T14", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: 3, note: "" },
-    { name: "T15", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: 4, note: "" },
-    { name: "T16", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: 5, note: "" },
-    { name: "T17", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: 1, note: "" },
-    { name: "T18", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: 3, note: "" },
-    { name: "T19", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: 4, note: "" },
-    { name: "T20", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: 5, note: "" },
-    { name: "T21", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: 1, note: "" },
-    { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: 2, note: "" }
-  ];
+  teams: TeamType[] = []
+
 
   constructor(private httpClient: HttpClient) {
     ;
@@ -59,27 +37,55 @@ export class TeamService implements OnInit {
 
   ngOnInit() {
 
-    this.LoadFromJSON('teams.json')
+    this.getFakeTeams(this.teams)  // BUG: doesn't seem to happen before getTeams is called!
+    //this.LoadFromJSON('teams.json')  //BUG: Not tested!!!
   }
 
   getTeams() {
+
+    this.getFakeTeams(this.teams)
     return this.teams;
   }
 
-  LoadFromJSON(file: string) {
-
-    // https://rxjs.dev/deprecations/subscribe-arguments   --- this from pg 278
-    /*
-    this.httpClient.get<Team>('/team/123')
-      .subscribe(data => console.log('id: $(data.id} title: ${data.title}'),
-        (err: HttpErrorResponse) => console.log('Got error: $(err)')
-        */
+  getFakeTeams(array: TeamType[]) {  // TODO: Should push, not replace...
+    array.push(
+      { name: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: 1, note: "" },
+      { name: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: 2, note: "" },
+      { name: "T3", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: 3, note: "" },
+      { name: "T4", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: 4, note: "" },
+      { name: "T5", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: 5, note: "" },
+      { name: "T6", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: 1, note: "" },
+      { name: "T7", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: 3, note: "" },
+      { name: "T8", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: 4, note: "" },
+      { name: "T9", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: 5, note: "" },
+      { name: "T10", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: 1, note: "" },
+      { name: "T11", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: 3, note: "" },
+      { name: "T12", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: 4, note: "" },
+      { name: "T13", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: 1, note: "" },
+      { name: "T14", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: 3, note: "" },
+      { name: "T15", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: 4, note: "" },
+      { name: "T16", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: 5, note: "" },
+      { name: "T17", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: 1, note: "" },
+      { name: "T18", icon: "T3.png", color: 'Red', fillColor: 'yellow', shape: 3, note: "" },
+      { name: "T19", icon: "T4.png", color: 'Blue', fillColor: 'aqua', shape: 4, note: "" },
+      { name: "T20", icon: "T5.png", color: 'Violet', fillColor: '#f03', shape: 5, note: "" },
+      { name: "T21", icon: "T6.png", color: 'DodgerBlue', fillColor: '#f03', shape: 1, note: "" },
+      { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: 2, note: "" }
+    )
   }
+  //LoadFromJSON(file: string) {
 
+  // https://rxjs.dev/deprecations/subscribe-arguments   --- this from pg 278
+  /*
+  this.httpClient.get<Team>('/team/123')
+    .subscribe(data => console.log('id: $(data.id} title: ${data.title}'),
+      (err: HttpErrorResponse) => console.log('Got error: $(err)')
+      */
 }
 
 
 
+/*
 @Injectable({ providedIn: 'root' })
 export class Team {
 
@@ -117,7 +123,7 @@ export class Team {
   addTeamRow(): void {
     this.ts.getTeams().push({ name: "new Team", icon: "Other.png", color: 'white', fillColor: '#f03', shape: 1, note: "" })
   }
-
+*/
 /*   models = ['Mercedes-AMG C63', 'BMW M2', 'Audi TT Roadster', 'Mazda MX-5', 'BMW M3', 'Porsche 718 Boxster', 'Porsche 718 Cayman',];
   colors = ['Red', 'Black', 'Green', 'White', 'Blue'];
   countries = ['UK', 'Spain', 'France', 'Ireland', 'USA'];
@@ -137,45 +143,47 @@ export class Team {
     return rowData;
   } */
 
-  setQuickFilter(): void {
-    //TODO: Not implemented!
-    // Expects parameter: newFilter: any
-  }
+
+/*
+setQuickFilter(): void {
+  //TODO: Not implemented!
+  // Expects parameter: newFilter: any
 }
-  /*
-    gridOptions = {
-      columns: [
-        { field: 'firstName' },
-        { field: 'lastName' },
-        { field: 'gender' },
-        { field: 'age' },
-        { field: 'mood' },
-        { field: 'country' },
-        { field: 'address', minWidth: 550 },
-      ],
-      defaultColDef: {
-        flex: 1,
-        minWidth: 110,
-        editable: true,
-        resizable: true,
-      },
-      rowData: this.teams,
-      pinnedTopRowData: getPinnedTopData(),
-      pinnedBottomRowData: getPinnedBottomData(),
-      onRowEditingStarted: function (event) {
-        console.log('never called - not doing row editing');
-      },
-      onRowEditingStopped: function (event) {
-        console.log('never called - not doing row editing');
-      },
-      onCellEditingStarted: function (event) {
-        console.log('cellEditingStarted');
-      },
-      onCellEditingStopped: function (event) {
-        console.log('cellEditingStopped');
-      },
-    };
-  *     /
+}
+
+  gridOptions = {
+    columns: [
+      { field: 'firstName' },
+      { field: 'lastName' },
+      { field: 'gender' },
+      { field: 'age' },
+      { field: 'mood' },
+      { field: 'country' },
+      { field: 'address', minWidth: 550 },
+    ],
+    defaultColDef: {
+      flex: 1,
+      minWidth: 110,
+      editable: true,
+      resizable: true,
+    },
+    rowData: this.teams,
+    pinnedTopRowData: getPinnedTopData(),
+    pinnedBottomRowData: getPinnedBottomData(),
+    onRowEditingStarted: function (event) {
+      console.log('never called - not doing row editing');
+    },
+    onRowEditingStopped: function (event) {
+      console.log('never called - not doing row editing');
+    },
+    onCellEditingStarted: function (event) {
+      console.log('cellEditingStarted');
+    },
+    onCellEditingStopped: function (event) {
+      console.log('cellEditingStopped');
+    },
+  };
+*     /
 
 
 
@@ -185,16 +193,16 @@ export class Team {
 
 
 
-  // TODO: Inject another sunb-service to handle the following!!!
+// TODO: Inject another sunb-service to handle the following!!!
 
-  // Save to disk or ...
-  serialize(name: string) {
-    ;
-  }
+// Save to disk or ...
+serialize(name: string) {
+  ;
+}
 
-  load(name: string) {
-    ;
-  }
+load(name: string) {
+  ;
+}
 
 }
 */

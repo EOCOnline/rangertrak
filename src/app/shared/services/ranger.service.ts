@@ -4,16 +4,20 @@ import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
 import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
-export interface Callsigns {
-  image: string
+export interface RangerType {
   callsign: string
-  name: string
+  licensee: string
+  licenseKey: number
   phone: string
+  address: string
+  image: string
+  team: string
+  icon: string
+  status: string
+  note: string
 }
-// BUG: Following is a dupl of that in entry.component.ts
-export enum Statuses {'None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out'}  // TODO: Allow changing list & default of statuses in settings?!
 
-// Future: export enum Source {Voice, Packet, APRS, Email}  // If other ways to generate reports are enabled
+export enum RangerStatus {'', 'Normal', 'Need Rest', 'REW', 'OnSite', 'Checked-in', 'Checked-out'}  // TODO: Allow changing list & default of statuses in settings?!
 
 export class RangerService {
 
@@ -22,44 +26,59 @@ export class RangerService {
      https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
    */
 
-  callsigns: Callsigns[] = [
-    { callsign: "KB0LJC", name: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000" },
-    { callsign: "AC7TB", name: "Sullivan, Timothy X", image: "./assets/imgs/REW/female.png", phone: "206-463-0000" },
-    { callsign: "KE7KDQ", name: "Cornelison, John", image: "./assets/imgs/REW/ke7kdq.jpg", phone: "206-463-0000" },
-    { callsign: "AE7MW", name: "Smueles, Robert E", image: "./assets/imgs/REW/RickWallace.png", phone: "206-463-0000" },
-    { callsign: "AE7RW", name: "York, Randy K", image: "./assets/imgs/REW/VI-0003.jpg", phone: "206-463-0000" },
-    { callsign: "AE7SD", name: "Danielson, Sharon J", image: "./assets/imgs/REW/VI-0034.jpg", phone: "206-463-0000" },
-    { callsign: "AE7TH", name: "Hardy, Timothy R", image: "./assets/imgs/REW/VI-0038.jpg", phone: "206-463-0000" },
-    { callsign: "AG7TJ", name: "Lindgren, Katrina J", image: "./assets/imgs/REW/VI-0041.jpg", phone: "206-463-0000" },
-    { callsign: "AK7C", name: "Mcdonald, Michael E", image: "./assets/imgs/REW/VI-0056.jpg", phone: "206-463-0000" },
-    { callsign: "K1SAB", name: "Brown, Steven A", image: "./assets/imgs/REW/VI-0058.jpg", phone: "206-463-0000" },
-    { callsign: "K3QNQ", name: "Treese, F Mitch A", image: "./assets/imgs/REW/VI-0069.jpg", phone: "206-463-0000" },
-    { callsign: "K6AJV", name: "Valencia, Andrew J", image: "./assets/imgs/REW/VI-007.jpg", phone: "206-463-0000" },
-    { callsign: "K7AJT", name: "Tharp, Adam J", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-463-0000" },
-    { callsign: "K7DGL", name: "Luechtefeld, Daniel", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-463-0000" },
-    { callsign: "K7KMS", name: "Paull, Steven", image: "./assets/imgs/REW/VI-0089.jpg", phone: "206-463-0000" },
-    { callsign: "K7NHV", name: "Francisco, Albert K", image: "./assets/imgs/REW/male.png", phone: "206-463-0000" },
-    { callsign: "K7VMI", name: "De Steiguer, Allen L", image: "./assets/imgs/REW/K7VMI.jpg", phone: "206-463-0000" },
-    { callsign: "KA7THJ", name: "Hanson, Jay R", image: "./assets/imgs/REW/male.png", phone: "206-463-0000" },
-    { callsign: "KB7LEV", name: "Lysen, Kurt A", image: "./assets/imgs/REW/female.png", phone: "206-463-0000" },
-    { callsign: "KB7MTM", name: "Meyer, Michael T", image: "./assets/imgs/REW/VI-0123.jpg", phone: "206-463-0000" }
-  ];
+  rangers: RangerType[] =[]
 
   constructor() {
     ;
   }
 
+  loadRangers() {
+    //this.rangers =
+    this.LoadFromJSON('rangers.json')  //BUG: Not tested!!!
+  }
+
   getRangers() {
-    return this.callsigns
+    this.generateFakeData(this.rangers)
+    return this.rangers
+  }
+
+  generateFakeData(array: RangerType[]) {
+      /*
+     Following from 98070 AND 98013 zip codes, MUST be sorted by call sign!
+     https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
+   */
+
+    array.push (
+      { callsign: "KB0LJC", licensee: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "AC7TB", licensee: "Sullivan, Timothy X", image: "./assets/imgs/REW/female.png", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "KE7KDQ", licensee: "Cornelison, John", image: "./assets/imgs/REW/ke7kdq.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "AE7MW", licensee: "Smueles, Robert E", image: "./assets/imgs/REW/RickWallace.png", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "AE7RW", licensee: "York, Randy K", image: "./assets/imgs/REW/VI-0003.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "AE7SD", licensee: "Danielson, Sharon J", image: "./assets/imgs/REW/VI-0034.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "AE7TH", licensee: "Hardy, Timothy R", image: "./assets/imgs/REW/VI-0038.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "AG7TJ", licensee: "Lindgren, Katrina J", image: "./assets/imgs/REW/VI-0041.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "AK7C", licensee: "Mcdonald, Michael E", image: "./assets/imgs/REW/VI-0056.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "K1SAB", licensee: "Brown, Steven A", image: "./assets/imgs/REW/VI-0058.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "K3QNQ", licensee: "Treese, F Mitch A", image: "./assets/imgs/REW/VI-0069.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "K6AJV", licensee: "Valencia, Andrew J", image: "./assets/imgs/REW/VI-007.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "K7AJT", licensee: "Tharp, Adam J", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "K7DGL", licensee: "Luechtefeld, Daniel", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "K7KMS", licensee: "Paull, Steven", image: "./assets/imgs/REW/VI-0089.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "K7NHV", licensee: "Francisco, Albert K", image: "./assets/imgs/REW/male.png", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "K7VMI", licensee: "De Steiguer, Allen L", image: "./assets/imgs/REW/K7VMI.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "KA7THJ", licensee: "Hanson, Jay R", image: "./assets/imgs/REW/male.png", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "KB7LEV", licensee: "Lysen, Kurt A", image: "./assets/imgs/REW/female.png", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
+      { callsign: "KB7MTM", licensee: "Meyer, Michael T", image: "./assets/imgs/REW/VI-0123.jpg", phone: "206-4630000", address: "", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" }
+    )
   }
 
   // TODO: or getActiveRangers?!
   getActiveRangers() {
     //Would need to filter for those who've 'checked in' on this incident?
-    return this.callsigns
+    return this.rangers
   }
 
-  LoadFromJSON() {
+  LoadFromJSON(fileName:string) {
     //See pg. 279...
 
     //import * as data from './data.json';
@@ -95,7 +114,7 @@ export class RangerService {
   }
 
 }
-export class Ranger {
+export class Ranger1 {
 
   static nextId = 1;
   id: Number;
@@ -104,7 +123,7 @@ export class Ranger {
   licensee: string;
 
   constructor(callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string) {
-    this.id = Ranger.nextId++; // TODO: OK if user restarts app during SAME mission #?
+    this.id = Ranger1.nextId++; // TODO: OK if user restarts app during SAME mission #?
     this.date = new Date();
     this.callSign = callSign;
     this.licensee = licensee;

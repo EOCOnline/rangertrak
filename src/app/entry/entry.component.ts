@@ -4,10 +4,23 @@ import { DOCUMENT, JsonPipe } from '@angular/common';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
 import { FormControl, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RangerService, Callsigns, FieldReportService, TeamService, Teams } from '../shared/services/';
+import { RangerService, RangerType, FieldReportService, FieldReportStatuses, TeamService, TeamType } from '../shared/services/';
 import { SettingsComponent } from '../settings/settings.component';
 
-//export status = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']
+
+ export interface RangerTypeJunk {
+  callsign: string
+  licensee: string
+  //licenseKey: number
+  phone: string
+  //address: string
+  image: string
+  team: string
+  //icon: string
+  //status: string
+  //note: string
+}
+
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
@@ -17,20 +30,19 @@ import { SettingsComponent } from '../settings/settings.component';
 
 export class EntryComponent implements OnInit, AfterViewInit {
 
-  // BUG: Following is a dupl of that in ranger.service.ts
-  public Statuses = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
+  // BUG: Following is a dupl of FieldReportStatuses
+  public fieldReportStatus = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
 
-  callsign = new FormControl()
-  filteredCallsigns: Observable<Callsigns[]> | null
+  callsignCtrl = new FormControl()
+  filteredRangers:Observable<RangerType[]> //| null
 
-  rangers: Callsigns[]
-  teams: Teams[]   // TODO: Now what to do with the list of Teams?!!!
+  rangers: RangerType[] = []
+  teams: TeamType[]   // TODO: Now what to do with the list of Teams?!!!
   fieldReportService
 
   setting = SettingsComponent.AppSettings
 
   entryDetailsForm!: FormGroup;
-
 
 
   constructor(
@@ -41,24 +53,26 @@ export class EntryComponent implements OnInit, AfterViewInit {
     teamService: TeamService,
     @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
 
+    // REVIEW: Or should this be done in ngOnInit()?
     this.rangers = rangerService.getRangers() // TODO: or getActiveRangers?!
     this.fieldReportService = fieldReportService
     this.teams = teamService.getTeams()
 
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
-    this.filteredCallsigns = this.callsign.valueChanges.pipe(
+
+    this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
       startWith(''),
-      map(callsign => (callsign ? this._filterStates(callsign) : this.rangers.slice())),
+      map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
     );
   }
 
 
-  private _filterStates(value: string): Callsigns[] {
+  private _filterRangers(value: string): RangerType[] {
     const filterValue = value.toLowerCase();
 
-    this.entryDetailsForm.controls['callsign'].setValue(filterValue) // TODO: MAT input field not automatically set into entryForm
+    this.entryDetailsForm.controls['ranger'].setValue(filterValue) // TODO: MAT input field not automatically set into entryForm
 
-    return this.rangers.filter(callsign => callsign.callsign.toLowerCase().includes(filterValue));
+    return this.rangers.filter(ranger => ranger.callsign.toLowerCase().includes(filterValue));
   }
 
 
@@ -83,7 +97,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
         date: [new Date()]
       }),
       whatFormModel: this.fb.group({
-        status: [this.Statuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
+        status: [this.fieldReportStatus[0]],   // TODO: Allow changing list & default of statuses in settings?!
         notes: ['']
       })
     })
@@ -142,7 +156,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
         date: [new Date()]
       }),
       whatFormModel: this.fb.group({
-        status: [this.Statuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
+        status: [this.fieldReportStatus[0]],   // TODO: Allow changing list & default of statuses in settings?!
         notes: ['']
       })
     })

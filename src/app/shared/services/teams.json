@@ -1,4 +1,4 @@
-{
+{ "Teams":
   { "name": "T1", "icon": "T1.png", "color": "Magenta", "fillColor": "grey", "shape": 1, "note": "" },
   { "name": "T2", "icon": "T2.png", "color": "Green", "fillColor": "blue", "shape": 2, "note": "" },
   { "name": "T3", "icon": "T3.png", "color": "Red", "fillColor": "yellow", "shape": 3, "note": "" },

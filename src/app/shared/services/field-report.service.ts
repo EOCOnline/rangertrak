@@ -1,12 +1,16 @@
 import { Injectable, OnInit } from '@angular/core';
 import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
-import { RangerService, Statuses, TeamService } from './index';
+import { RangerService, RangerStatus, TeamService } from './index';
 
 export enum FieldReportSource {
   Voice,
   Packet,
   APRS,
   Email
+}
+
+export enum FieldReportStatuses {
+  'None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out'
 }
 
 export type FieldReportType = {
@@ -108,7 +112,7 @@ export class FieldReportService {
           date: new Date
         },
         what: {
-          status: Statuses[Math.floor(Math.random() * Object.keys(Statuses).length)],
+          status: FieldReportStatuses[Math.floor(Math.random() * Object.keys(FieldReportStatuses).length)],
           note: notes[Math.floor(Math.random() * notes.length)]
         }
       })

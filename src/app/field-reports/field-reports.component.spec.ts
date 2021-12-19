@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FieldReportsComponent } from './field-reports.component';
+import { FieldReportsComponent } from './field-reports.component.ts';
 
 describe('FieldReportsComponent', () => {
   let component: FieldReportsComponent;

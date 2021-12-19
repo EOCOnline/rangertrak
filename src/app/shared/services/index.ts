@@ -8,8 +8,8 @@ import { DataService } from "./data.service";
 // import { DataService } from "./data.service";
 */
 
-export { Ranger, RangerService, Callsigns, Statuses } from "./ranger.service";
-export { TeamService, Teams } from "./team.service";
-export { FieldReportService, FieldReportType, FieldReportSource } from "./field-report.service";
+export { RangerService, RangerType, RangerStatus } from "./ranger.service";
+export { TeamService, TeamType } from "./team.service";
+export { FieldReportService, FieldReportType, FieldReportSource, FieldReportStatuses } from "./field-report.service";
 export { LocalStorageService } from "./local-storage.service";
 export { DataService } from "./data.service";

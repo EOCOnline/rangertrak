@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AgGridModule } from 'ag-grid-angular';
-import { EntryComponent } from '../entry/entry.component';
-import { FieldReportService, FieldReportType, RangerService, Statuses, TeamService } from '../shared/services/';
+import { FieldReportService, FieldReportType, RangerService, FieldReportStatuses, TeamService } from '../shared/services';
 
 
 type FieldReportType1 = {
@@ -22,15 +20,57 @@ export class FieldReportsComponent implements OnInit {
   rangerService
   fieldReports: FieldReportType[] = []
   //columns = { "Callsign": String, "Team": String, "Address": String, "Lat": String, "Long": String, "Date": Date.toString, "Status": String, "Notes": String }
+  api
+  columnApi
+
+/* TODO: Put following into tooltip, instead of just TEAM:
+      <mat-option *ngFor="let callsigns of filteredCallsigns | async" [value]="callsigns.callsign">
+          <img class="example-option-img" aria-hidden [src]="callsigns.image" height="40">
+          <span>{{callsigns.callsign}}</span> |
+          <small> {{callsigns.name}} | {{callsigns.phone}}</small>
+        </mat-option>
+        */
+
+// https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
+   gridOptions = {
+    rowSelection:"multiple",
+    //onGridReady: event => console.log('The grid is now ready')
+  }
+/* const gridOptions = {
+  // PROPERTIES
+  // Objects like myRowData and myColDefs would be created in your application
+  rowData: fieldReports,
+  columnDefs: myColDefs,
+  pagination: true,
+
+  // EVENTS
+  // Add event handlers
+  onRowClicked: event => console.log('A row was clicked'),
+  onColumnResized: event => console.log('A column was resized'),
+  onGridReady: event => console.log('The grid is now ready'),
+
+  // CALLBACKS
+  getRowHeight: (params) => 25
+} */
+
+
+  defaultColDef={
+    flex: 1,
+    maxWidth: 125,
+    editable: true,
+    resizable: true,
+    sortable: true,
+    filter: true}
+
   columnDefs = [
-    { field: "who.callsign" },
-    { field: "who.team" },
-    { field: "where.address" },
-    { field: "where.lat" },
-    { field: "where.long" },
-    { field: "when" },  // TODO: Change to string representation - within Ag-grid???
-    { field: "what.status" },
-    { field: "what.note" },
+    { headerName: "CallSign", field: "who.callsign", tooltipField:"who.team" },
+    { headerName: "Team", field: "who.team" },
+    { headerName: "Address", field: "where.address", singleClickEdit: true, maxWidth: 200},
+    { headerName: "Lat", field: "where.lat", singleClickEdit: true },
+    { headerName: "Long", field: "where.long" },
+    { headerName: "Time", field: "when" },  // TODO: Change to string representation - within Ag-grid???
+    { headerName: "Status", field: "what.status", maxWidth: 150 },
+    { headerName: "Note", field: "what.note", maxWidth: 300 },
   ];
   now: Date
 
@@ -42,10 +82,9 @@ export class FieldReportsComponent implements OnInit {
     this.fieldReportService = fieldReportService
     this.teamService = teamService
     this.rangerService = rangerService
-
     this.now = new Date()
-
-
+    this.api = ""
+    this.columnApi = ""
   }
 
   ngOnInit(): void {
@@ -85,6 +124,11 @@ export class FieldReportsComponent implements OnInit {
   setQuickFilter() {
   }
 
+  onGridReady = (params: any) => {
+    this.api = params.api;
+    this.columnApi = params.columnApi;
+}
+// once the above is done, you can: <button (click)="myGrid.api.deselectAll()">Clear Selection</button>
 
   //onGridReady(_$event) {}
 }

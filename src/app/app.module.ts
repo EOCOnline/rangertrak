@@ -30,7 +30,9 @@ import { EntryComponent } from './entry/entry.component';
 import { FieldReportsComponent } from './field-reports/field-reports.component';
 import { SettingsComponent } from './settings/settings.component';
 import { RangersComponent } from './rangers/rangers.component';
-import { TeamService, Teams, RangerService, FieldReportService } from './shared/services/';
+import { TeamService, TeamType, RangerService, RangerType, RangerStatus, FieldReportService, FieldReportType, FieldReportSource, FieldReportStatuses } from './shared/services/';
+
+
 //import { DataService } from './shared/services/data.service';
 //import { LocalStorageService } from './shared/services/local-storage.service';
 

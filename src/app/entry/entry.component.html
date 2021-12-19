@@ -9,17 +9,17 @@
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>CallSign</mat-label>
       <input matInput
-        [formControl]="callsign"
+        [formControl]="callsignCtrl"
         type="text"
         placeholder="Pick one"
-        aria-label="Callsigns"
+        aria-label="rangers"
         [matAutocomplete]="auto"
         >
       <mat-autocomplete #auto="matAutocomplete" >
-        <mat-option *ngFor="let callsigns of filteredCallsigns | async" [value]="callsigns.callsign">
-          <img class="example-option-img" aria-hidden [src]="callsigns.image" height="40">
-          <span>{{callsigns.callsign}}</span> |
-          <small> {{callsigns.name}} | {{callsigns.phone}}</small>
+        <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
+          <img class="example-option-img" aria-hidden [src]="ranger.image" height="40">
+          <span>{{ranger.callsign}}</span> |
+          <small> {{ranger.licensee}} | {{ranger.phone}}</small>
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>
@@ -84,7 +84,7 @@
       <select formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid">
         <!--option [value]="'NewStatus'">Adds Additional Value</option-->
-        <option [value]="stat" *ngFor="let stat of Statuses">{{stat}}</option>
+        <option [value]="stat" *ngFor="let stat of fieldReportStatus">{{stat}}</option>
       </select>
       <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
         class="text-sm text-danger">Status is required</div>
