@@ -5,11 +5,79 @@
 
 </details>
 <br>
-<h2>Future functionality</h2>
-<ul>
-  <li>Display map of all rangers for current mission</li>
-  <li>Save/load data grid to/from Excel</li>
-</ul>
+<details>
+  <summary>Future functionality</summary>
+  <ul>
+    <li>Save/load data grid to/from Excel</li>
+  </ul>
+</details>
+
+<agm-map [latitude]="lat" [longitude]="lng">
+  <agm-marker [latitude]="lat" [longitude]="lng">
+    <agm-snazzy-info-window [maxWidth]="200" [closeWhenOthersOpen]="true">
+      <ng-template>
+        Advanced Snazzy Info Window!
+      </ng-template>
+    </agm-snazzy-info-window>
+  </agm-marker>
+</agm-map>
+
+<br>
+
+ <div #mapdiv></div>
+
+ <br>
+
+<!-- [zoomControl]="false"
+[label]="m.label"
+-->
+
+<agm-map
+  [latitude]="lat"
+  [longitude]="lng"
+  [zoom]="zoom"
+  [disableDefaultUI]="false"
+
+  (mapClick)="mapClicked($event)">
+
+  <agm-marker
+      *ngFor="let m of markers; let i = index"
+      (markerClick)="clickedMarker(m.label, i)"
+      [latitude]="m.lat"
+      [longitude]="m.lng"
+
+      [markerDraggable]="m.draggable"
+      (dragEnd)="markerDragEnd(m, $event)">
+
+    <agm-info-window>
+      <strong>InfoWindow content</strong>
+    </agm-info-window>
+
+  </agm-marker>
+
+  <agm-circle [latitude]="lat" [longitude]="lng"
+      [radius]="7000"
+      [fillColor]="'red'"
+      [circleDraggable]="true"
+      [editable]="true">
+  </agm-circle>
+
+</agm-map>
+
+
+
+<!--
+<br>
+
+<agm-map [latitude]="lat" [longitude]="lng">
+  <agm-snazzy-info-window [isOpen]="true" [latitude]="lat" [longitude]="lng" [closeWhenOthersOpen]="true">
+    <ng-template>
+      Another Snazzy Info Window!
+    </ng-template>
+  </agm-snazzy-info-window>
+</agm-map>
+
+<br>
 
 <agm-map [latitude]="lat" [longitude]="lng">
   <agm-marker [latitude]="lat" [longitude]="lng">
@@ -17,4 +85,4 @@
   </agm-marker>
 
 </agm-map>
-
+-->

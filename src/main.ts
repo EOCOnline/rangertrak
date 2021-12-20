@@ -1,3 +1,5 @@
+//import './polyfills';
+
 import {VERSION as CDK_VERSION} from '@angular/cdk';
 import {VERSION as MAT_VERSION} from '@angular/material/core';
 
