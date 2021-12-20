@@ -83,7 +83,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
       }),
       whatFormModel: this.fb.group({
         status: [this.fieldReportStatus[0]],   // TODO: Allow changing list & default of statuses in settings?!
-        notes: ['']
+        note: ['']
       })
     })
 

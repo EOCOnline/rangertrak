@@ -8,8 +8,9 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AgmCoreModule } from '@agm/core';
+import { AgmSnazzyInfoWindowModule } from '@agm/snazzy-info-window';
 
-import { MaterialExampleModule } from './material.module';
+import { MaterialModule } from './material.module';
 
 //import { MatInputModule } from '@angular/material/input';
 // import { MatFormFieldModule } from '@angular/material/form-field';
@@ -50,12 +51,13 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
     CommonModule,
     FormsModule,
     HttpClientModule,
-    MaterialExampleModule,
+    MaterialModule,
     ReactiveFormsModule,
     AppRoutingModule,
     FontAwesomeModule,
     AgGridModule.withComponents([]),
     AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
+    AgmSnazzyInfoWindowModule,
     LazyModule
   ],
   declarations: [

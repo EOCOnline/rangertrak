@@ -1,55 +1,34 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-//import { maps } from 'google.maps'
+//import { maps } from 'googlemaps'
 import { snazzyMapsStyle } from './snazzy-maps';
 import { DOCUMENT, JsonPipe } from '@angular/common';
+import { SettingsComponent } from '../settings/settings.component';
 
 /*
-  https://github.com/devpato/angular-google-maps-tutorial
+  https://angular-maps.com/guides/getting-started/
   https://github.com/angular-material-extensions/google-maps-autocomplete
 */
 
 @Component({
   selector: 'rangertrak-gmap',
   templateUrl: './gmap.component.html',
-  styleUrls: ['./gmap.component.scss']
+  styleUrls: ['./gmap.component.scss',
+  '../../../node_modules/snazzy-info-window/dist/snazzy-info-window.css']
 })
 export class GmapComponent implements OnInit {
 
+  title = 'RangerTrak Google Map'
+  lat = SettingsComponent.DEF_LAT
+  lng = SettingsComponent.DEF_LONG
   //let map: maps.Map;
-  //const center: google.maps.LatLngLiteral = {lat: 30, lng: -110};
+  //center: google.maps.LatLngLiteral = {lat: this.lat, lng: this.lng};
   static style: any = snazzyMapsStyle;
 
   constructor(@Inject(DOCUMENT) private document: Document) {
   }
 
   ngOnInit(): void {
-
-//    let map: google.maps.Map;
- //   const center: google.maps.LatLngLiteral = { lat: 30, lng: -110 };
-
-    //{ center: {lat: 30, lng: -110}, zoom: 8, mapId: '1234' } as google.maps.MapOptions
-    // init Google Maps itself
-    /*             this.map = new google.maps.Map(this.$(MapController.canvas)[0], {
-                  center: google.maps.LatLngLiteral = {lat: 30, lng: -110},
-                  scrollwheel: false,
-                      styles: MapController.style,
-                  zoom: 5
-                  });
-                  */
   }
 
-  initMap(): void {
-    let map = new google.maps.Map(this.document.getElementById("map") as HTMLElement, {
-      center: new google.maps.LatLng(51.508742, -0.120850), //  {lat: SettingsComponent.DEF_LAT, lng: DEF_LONG},
-      zoom: 8
-    })
-  }
 
-  initGoogMap() {
-    var mapProp = {
-      center: new google.maps.LatLng(51.508742, -0.120850),
-      zoom: 5,
-    };
-    var map = new google.maps.Map(this.document.getElementById("googleMap") as HTMLElement, mapProp);
-  }
 }

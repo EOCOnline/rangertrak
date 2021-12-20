@@ -97,4 +97,4 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 
   ]
 })
-export class MaterialExampleModule { }
+export class MaterialModule { }
