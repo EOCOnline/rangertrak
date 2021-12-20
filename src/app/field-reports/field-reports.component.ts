@@ -1,13 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { FieldReportService, FieldReportType, RangerService, FieldReportStatuses, TeamService } from '../shared/services';
+import { formatDate } from '@angular/common'
 
-
-type FieldReportType1 = {
-  who: { callsign: String, team: String },
-  where: { address: String, lat: Number, long: Number },
-  when: Date,
-  what: { status: String, notes: String }
-}
 @Component({
   selector: 'rangertrak-field-reports',
   templateUrl: './field-reports.component.html',
@@ -19,60 +14,74 @@ export class FieldReportsComponent implements OnInit {
   teamService
   rangerService
   fieldReports: FieldReportType[] = []
-  //columns = { "Callsign": String, "Team": String, "Address": String, "Lat": String, "Long": String, "Date": Date.toString, "Status": String, "Notes": String }
-  api
-  columnApi
+  private gridApi
+  private gridColumnApi
 
-/* TODO: Put following into tooltip, instead of just TEAM:
-      <mat-option *ngFor="let callsigns of filteredCallsigns | async" [value]="callsigns.callsign">
-          <img class="example-option-img" aria-hidden [src]="callsigns.image" height="40">
-          <span>{{callsigns.callsign}}</span> |
-          <small> {{callsigns.name}} | {{callsigns.phone}}</small>
-        </mat-option>
-        */
+  /* TODO: Put following into tooltip, instead of just TEAM:
+        <mat-option *ngFor="let callsigns of filteredCallsigns | async" [value]="callsigns.callsign">
+            <img class="example-option-img" aria-hidden [src]="callsigns.image" height="40">
+            <span>{{callsigns.callsign}}</span> |
+            <small> {{callsigns.name}} | {{callsigns.phone}}</small>
+          </mat-option>
+          */
 
-// https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
-   gridOptions = {
-    rowSelection:"multiple",
+  // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
+  gridOptions = {
+    rowSelection: "multiple",
     //onGridReady: event => console.log('The grid is now ready')
   }
-/* const gridOptions = {
-  // PROPERTIES
-  // Objects like myRowData and myColDefs would be created in your application
-  rowData: fieldReports,
-  columnDefs: myColDefs,
-  pagination: true,
+  /* const gridOptions = {
+    // PROPERTIES
+    // Objects like myRowData and myColDefs would be created in your application
+    rowData: fieldReports,
+    columnDefs: myColDefs,
+    pagination: true,
 
-  // EVENTS
-  // Add event handlers
-  onRowClicked: event => console.log('A row was clicked'),
-  onColumnResized: event => console.log('A column was resized'),
-  onGridReady: event => console.log('The grid is now ready'),
+    // EVENTS
+    // Add event handlers
+    onRowClicked: event => console.log('A row was clicked'),
+    onColumnResized: event => console.log('A column was resized'),
+    onGridReady: event => console.log('The grid is now ready'),
 
-  // CALLBACKS
-  getRowHeight: (params) => 25
-} */
+    // CALLBACKS
+    getRowHeight: (params) => 25
+  } */
 
+  myDateGetter = (params: { data: any }) => {
+    const weekday = ["Sun ","Mon ","Tue ","Wed ","Thu ","Fri ","Sat "];
 
-  defaultColDef={
-    flex: 1,
-    maxWidth: 125,
+    //https://www.w3schools.com/jsref/jsref_obj_date.asp
+    let dt = weekday[params.data.when.date.getDay()] + formatDate(params.data.when.date, 'yyyy-MM-dd HH:MM:ss', 'en-US')
+    return dt
+  }
+
+  defaultColDef = {
+    flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
+    minWidth: 100,
     editable: true,
     resizable: true,
     sortable: true,
-    filter: true}
+    filter: true,
+    floatingFilter: true
+  }
 
   columnDefs = [
-    { headerName: "CallSign", field: "who.callsign", tooltipField:"who.team" },
+    { headerName: "CallSign", field: "who.callsign", tooltipField: "who.team" },
     { headerName: "Team", field: "who.team" },
-    { headerName: "Address", field: "where.address", singleClickEdit: true, maxWidth: 200},
+    { headerName: "Address", field: "where.address", singleClickEdit: true, flex: 50 }, //, maxWidth: 200
     { headerName: "Lat", field: "where.lat", singleClickEdit: true },
-    { headerName: "Long", field: "where.long" },
-    { headerName: "Time", field: "when" },  // TODO: Change to string representation - within Ag-grid???
-    { headerName: "Status", field: "what.status", maxWidth: 150 },
-    { headerName: "Note", field: "what.note", maxWidth: 300 },
+    { headerName: "Long", field: "where.long", cellClass: 'number-cell' },
+    {
+      headerName: "Time", //field: "when",
+      valueGetter: this.myDateGetter,
+      // cellRendererFormattedDate function (params) { return `<div style="text-align:right;">${$filter("date")(params.value, 'yyyy-MM-dd h:mm:ss a')}</div>`
+      //valueFormatter: function (params) { return moment(params.value).format('yyyy-MM-dd');  }
+    },
+    { headerName: "Status", field: "what.status", flex: 50 }, //, maxWidth: 150
+    { headerName: "Note", field: "what.note", flex: 50 }, //, maxWidth: 300
   ];
   now: Date
+  http: any;
 
   constructor(
     fieldReportService: FieldReportService,
@@ -83,8 +92,8 @@ export class FieldReportsComponent implements OnInit {
     this.teamService = teamService
     this.rangerService = rangerService
     this.now = new Date()
-    this.api = ""
-    this.columnApi = ""
+    this.gridApi = ""
+    this.gridColumnApi = ""
   }
 
   ngOnInit(): void {
@@ -125,10 +134,37 @@ export class FieldReportsComponent implements OnInit {
   }
 
   onGridReady = (params: any) => {
-    this.api = params.api;
-    this.columnApi = params.columnApi;
-}
-// once the above is done, you can: <button (click)="myGrid.api.deselectAll()">Clear Selection</button>
+    this.gridApi = params.api
+    this.gridColumnApi = params.columnApi
 
-  //onGridReady(_$event) {}
+    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
+  }
+
+  onFirstDataRendered(params: any) {
+    //params.api.sizeColumnsToFit();
+  }
+
 }
+
+/*
+const filterParams = {
+  comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
+    const dateAsString = cellValue;
+    const dateParts = dateAsString.split('/');
+    const cellDate = new Date(
+      Number(dateParts[2]),
+      Number(dateParts[1]) - 1,
+      Number(dateParts[0])
+    );
+    if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+      return 0;
+    }
+    if (cellDate < filterLocalDateAtMidnight) {
+      return -1;
+    }
+    //if (cellDate > filterLocalDateAtMidnight) {
+    return 1;
+    //}
+  },
+}
+*/

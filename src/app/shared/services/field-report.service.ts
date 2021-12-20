@@ -1,6 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 import { RangerService, RangerStatus, TeamService } from './index';
+//import { HttpClient } from '@angular/common/http';
 
 export enum FieldReportSource {
   Voice,
@@ -126,3 +127,16 @@ export class FieldReportService {
 export class FieldReport {
 }
 */
+
+// from https://ag-grid.com/angular-data-grid/column-definitions/#example-column-definition
+//import { HttpClient } from '@angular/common/http';
+/*
+onGridReady(params) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+
+    this.http
+      .get('https://www.ag-grid.com/example-assets/olympic-winners.json')
+      .subscribe((data) => params.api.setRowData(data));
+  }
+  */

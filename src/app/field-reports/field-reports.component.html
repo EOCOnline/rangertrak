@@ -3,10 +3,10 @@
 <details>
   <summary>Tips</summary>
   <ul>
-    <li>Address, latitude & Longitude are all editable. The 1st two on a single click, the latter on a double click.
-      (What do you like?!)</li>
+    <li>All fields are editable. (Address & Lat are 'single click', others are 'double click. What do you like?!)</li>
     <li>Click on a column heading to sort by that field.</li>
     <li>Click & Drag on a column heading to move columns</li>
+    <li>Move column seperators to resize columns</li>
     <li>Hovering over a cell (e.g., any callsign) may show additional information. </li>
     <li>Icons at the top right of each column allows filtering on the value</li>
   </ul>
@@ -27,7 +27,8 @@
     (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="fieldReports"
     [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [tooltipShowDelay]=500>
     <!--
-          (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1
+      (firstDataRendered)="onFirstDataRendered($event)"
+      (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1
 
           [columns]="columns"
           [showToolPanel]="showToolPanel"
@@ -38,5 +39,6 @@
       <button (click)="onBtNormal()">Normal Layout</button-->
   <!--div><button (click)="/">Add a new Field Report</button></div-->
   <div>TODO: <button (click)="exportDataAsCsv()">Export Field Reports</button></div>
+  <!--button (click)="myGrid.api.deselectAll()">Clear Selection</button-->
   <!--div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div-->
 </div>

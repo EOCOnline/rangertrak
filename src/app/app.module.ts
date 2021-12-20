@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 
 import { FormBuilder, FormGroup, FormArray, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { AgmCoreModule } from '@agm/core';
 
 import { MaterialExampleModule } from './material.module';
 
@@ -54,6 +55,7 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
     AppRoutingModule,
     FontAwesomeModule,
     AgGridModule.withComponents([]),
+    AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
     LazyModule
   ],
   declarations: [

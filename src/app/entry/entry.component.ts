@@ -7,27 +7,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { RangerService, RangerType, FieldReportService, FieldReportStatuses, TeamService, TeamType } from '../shared/services/';
 import { SettingsComponent } from '../settings/settings.component';
 
-
- export interface RangerTypeJunk {
-  callsign: string
-  licensee: string
-  //licenseKey: number
-  phone: string
-  //address: string
-  image: string
-  team: string
-  //icon: string
-  //status: string
-  //note: string
-}
-
-@Component({
+ @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
   providers: [RangerService, FieldReportService, TeamService]
 })
-
 export class EntryComponent implements OnInit, AfterViewInit {
 
   // BUG: Following is a dupl of FieldReportStatuses
@@ -107,6 +92,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
     console.log("EntryForm test completed at ", Date())
   }
 
+  // FUTURE: provider nicer time picker: https://www.freakyjolly.com/angular-material-109-datepicker-timepicker-tutorial/#Only_Show_Timepicker
   /*
     FUTURE: Allow entry of keywords
     get keywordsControls(): any {
