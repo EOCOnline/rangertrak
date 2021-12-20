@@ -12,8 +12,8 @@
   </ul>
 </details>
 
-<agm-map [latitude]="lat" [longitude]="lng">
-  <agm-marker [latitude]="lat" [longitude]="lng">
+<agm-map [latitude]="latitude" [longitude]="longitude">
+  <agm-marker [latitude]="latitude" [longitude]="longitude">
     <agm-snazzy-info-window [maxWidth]="200" [closeWhenOthersOpen]="true">
       <ng-template>
         Advanced Snazzy Info Window!
@@ -24,7 +24,7 @@
 
 <br>
 
- <div #mapdiv></div>
+ <div #mapdiv id="mapdiv" class="mapdiv" style="border: 2px red dotted;height: 150px"></div>
 
  <br>
 
@@ -33,15 +33,15 @@
 -->
 
 <agm-map
-  [latitude]="lat"
-  [longitude]="lng"
+  [latitude]="latitude"
+  [longitude]="longitude"
   [zoom]="zoom"
   [disableDefaultUI]="false"
 
   (mapClick)="mapClicked($event)">
 
   <agm-marker
-      *ngFor="let m of markers; let i = index"
+      *ngFor="let m of markerLocations; let i = index"
       (markerClick)="clickedMarker(m.label, i)"
       [latitude]="m.lat"
       [longitude]="m.lng"
@@ -55,7 +55,7 @@
 
   </agm-marker>
 
-  <agm-circle [latitude]="lat" [longitude]="lng"
+  <agm-circle [latitude]="latitude" [longitude]="longitude"
       [radius]="7000"
       [fillColor]="'red'"
       [circleDraggable]="true"
