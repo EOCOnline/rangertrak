@@ -75,6 +75,28 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     // no effect seemingly...
   //}
 
+  initGoogMap() {
+    // https://developers.google.com/maps/documentation/
+    let googMap = new google.maps.Map(document.getElementById('bigGoogMapId') as HTMLElement, {
+      center: {lat: SettingsComponent.DEF_LAT, lng: SettingsComponent.DEF_LONG},
+      zoom: 11,
+      mapTypeId: 'terrain' // line is optional
+    });
+    /*
+      MapTypes:
+      roadmap - displays the default road map view. This is the default map type.
+      satellite - displays Google Earth satellite images.
+      hybrid - displays a mixture of normal and satellite views.
+      terrain - displays a physical map based on terrain information.
+    */
+
+    var trafficLayer = new google.maps.TrafficLayer();
+    trafficLayer.setMap(googMap);
+
+    // https://developers.google.com/maps/documentation/javascript/maptypes
+    // map.setTilt(45);
+  }
+
   clickedMarker(label: string = 'nolabel', index: number) {
     console.log(`clicked the marker: ${label || index}`)
   }

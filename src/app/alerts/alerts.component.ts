@@ -23,6 +23,27 @@ export class AlertsComponent implements OnInit {
   onClickEvent() {
     this.isAlertHidden = true;
   }
+
+  dbug(msg: string, alerts: boolean) {
+    var dt = new Date();
+    var time = this.zeroFill(dt.getHours(),2) + ":" + this.zeroFill(dt.getMinutes(),2) + ":" + this.zeroFill(dt.getSeconds(),2) + ":" + this.zeroFill(dt.getMilliseconds(),4);
+    var dbugLog = time + "-  &nbsp;&nbsp;" + msg + "<br>" + document.getElementById("dbugLog")!.innerHTML;
+    document.getElementById("dbugLog")!.innerHTML = dbugLog;
+    // TODO: Only if settings say to do this!
+    // console.log("Ranger Track: " + dbugLog); // Convert dbugLog from HTML to plain text...
+    if (alerts==true) {
+      //document.getElementById('#alerts').html("<strong>Alert!</strong> "+time + "-  &nbsp;&nbsp;" + msg);
+      //document.getElementById('#alerts').fadeIn().delay(2500).fadeOut();
+    }
+  }
+
+  zeroFill(integ: number, lngth: number) {
+    var strg = integ.toString();
+    while (strg.length < lngth)
+      strg = "0" + strg;
+    return strg;
+  }
+
 }
 
 
