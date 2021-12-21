@@ -24,7 +24,7 @@
 
 <br>
 
- <div #mapdiv id="mapdiv" class="mapdiv" style="border: 2px red dotted;height: 150px"></div>
+ <div #mapdiv id="map" class="mapdiv" style="border: 2px red dotted;height: 150px"><h2>How Now Brown Cow</h2></div>
 
  <br>
 
@@ -86,3 +86,10 @@
 
 </agm-map>
 -->
+
+
+    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&callback=initMap&v=weekly"
+      async
+    ></script>

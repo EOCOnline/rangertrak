@@ -4,7 +4,7 @@ import { snazzyMapsStyle } from './snazzy-maps';
 import { MapsAPILoader } from '@agm/core';
 import { DOCUMENT, JsonPipe } from '@angular/common';
 //import { MarkerClusterer } from "@googlemaps/markerclusterer";
-
+// import "./style.css";
 import { SettingsComponent } from '../settings/settings.component';
 
 /*
@@ -45,6 +45,13 @@ export class GmapComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    //this.initMap()
+   /* causes:
+core.mjs:6484 ERROR ReferenceError: google is not defined
+    at GmapComponent.initMap (gmap.component.ts:114)
+    at GmapComponent.ngOnInit (gmap.component.ts:48)
+    */
+
   }
   /* BUG:
   core.mjs:6484 ERROR TypeError: Cannot read properties of undefined (reading 'then')
@@ -63,10 +70,10 @@ export class GmapComponent implements OnInit {
     */
 
   // MapOptions:any = ''
-  Map(mapDiv: Node, opts?: google.maps.MapOptions) {
+  //Map(mapDiv: Node, opts?: google.maps.MapOptions) {
     // Supposedly Creates a new map inside of the given HTML container — which is typically a DIV element — using any (optional) parameters that are passed.
     // no effect seemingly...
-  }
+  //}
 
   clickedMarker(label: string = 'nolabel', index: number) {
     console.log(`clicked the marker: ${label || index}`)
@@ -110,8 +117,17 @@ export class GmapComponent implements OnInit {
   labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   initMap(): void {
+    console.log('initMap is running!!!!!!!!!!!!!!!!!!!!!')
+    let myMap = document.getElementById("mapdiv") as HTMLElement
+
+    console.log('myMap = ' + myMap)
+    console.log('myMap = ' + myMap.innerHTML)
+    console.log('myMap = ' + myMap.style)
+
+    myMap.innerText = "<h1 style='background-color: aqua;'>Watch the lazy fox...</h1>"
+
     const map = new google.maps.Map(
-      document.getElementById("mapdiv") as HTMLElement,
+      myMap,
       {
         zoom: 12,
         center: { lat: this.latitude, lng: this.longitude },
