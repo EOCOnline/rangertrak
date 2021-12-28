@@ -14,4 +14,5 @@ export { FieldReportService, FieldReportType, FieldReportSource, FieldReportStat
 export { LocalStorageService } from "./local-storage.service";
 export { MarkerService } from "./marker.service";
 export { PopupService } from "./popup.service";
+export { ShapeService } from "./shape.service";
 export { DataService } from "./data.service";
