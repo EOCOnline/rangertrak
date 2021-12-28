@@ -6,15 +6,19 @@
 // @see doc on IndexedDB {@link https://developer.chrome.com/docs/devtools/storage/indexeddb/}
 
 import { Component, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
-// import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
-//import { Team, TeamService } from '../shared/services/';
-//import * as F from '@angular/forms';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AgGridModule } from 'ag-grid-angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+//import * as F from '@angular/forms';
+
+
+
+// import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
+// import { Team, TeamService } from '../shared/services/';
 
 interface Data {
   title: string;
@@ -48,6 +52,7 @@ export class SettingsComponent implements OnInit {
   static version = '11.0.0'
 
   settingsEditorForm!: FormGroup;
+  // settingsEditorForm: FormGroup | undefined = undefined
 
   private gridApi: any;
   private gridColumnApi: any;
