@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FieldReportService, FieldReportStatuses, FieldReportType, RangerService, TeamService } from '../shared/services';
+
 import { HttpClient } from '@angular/common/http';
-import { FieldReportService, FieldReportType, RangerService, FieldReportStatuses, TeamService } from '../shared/services';
 import { formatDate } from '@angular/common'
 
 @Component({
@@ -47,7 +48,7 @@ export class FieldReportsComponent implements OnInit {
     getRowHeight: (params) => 25
   } */
 
-  myDateGetter = (params: { data: any }) => {
+  myDateGetter = (params: { data: FieldReportType }) => {
     const weekday = ["Sun ","Mon ","Tue ","Wed ","Thu ","Fri ","Sat "];
 
     //https://www.w3schools.com/jsref/jsref_obj_date.asp
@@ -106,18 +107,6 @@ export class FieldReportsComponent implements OnInit {
         where: { address: "10506 sw 132nd pl", lat: 45.1, long: -123.1 },
         when: { date: this.now },
         what: { status: "Normal", note: "Reports beautiful sunrise" }
-      },
-      {
-        who: { callsign: "KE7ABC", team: "T2" },
-        where: { address: "10506 sw 132nd pl", lat: 45.1, long: -123.1 },
-        when: { date: this.now },
-        what: { status: "Needs Rest", note: "Reports beautiful sunrise" }
-      },
-      {
-        who: { callsign: "KE7999", team: "T3" },
-        where: { address: "6 sw 1st St", lat: 45.1, long: -123.1 },
-        when: { date: this.now },
-        what: { status: "Urgent", note: "Reports beautiful sunrise" }
       }
     ]
     this.fieldReportService.generateFakeData(this.fieldReports)
@@ -141,7 +130,7 @@ export class FieldReportsComponent implements OnInit {
   }
 
   onFirstDataRendered(params: any) {
-    //params.api.sizeColumnsToFit();
+    params.api.sizeColumnsToFit();
   }
 
 }
