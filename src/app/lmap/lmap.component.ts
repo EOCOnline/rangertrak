@@ -1,9 +1,11 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone, AfterViewInit } from '@angular/core';
 //import { Console } from 'console';
 import { DOCUMENT, JsonPipe } from '@angular/common';
-import { SettingsComponent } from '../settings/settings.component';
-import { MarkerService, ShapeService} from '../shared/services';
+import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
 import * as L from 'leaflet';
+
+import { SettingsComponent } from '../settings/settings.component';
+import { MarkerService, ShapeService } from '../shared/services';
+
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
 
@@ -41,7 +43,7 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     private markerService: MarkerService,
     private shapeService: ShapeService
     //@Inject(DOCUMENT) private document: Document
-    ) {
+  ) {
   }
 
   ngOnInit() {
@@ -50,8 +52,11 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
   ngAfterViewInit() {
     //console.log("ngAfterViewInit..........")
     this.initMap()
-    //this.markerService.makeStationMarkers(this.lmap!)
-    this.markerService.makeCapitalCircleMarkers(this.lmap!)
+
+    if (this.lmap) {
+      //this.markerService.makeStationMarkers(this.lmap)
+      this.markerService.makeCapitalCircleMarkers(this.lmap)
+    }
     // NOTE: An even better approach would be to pre-load the data in a resolver.
     this.shapeService.getShapeShapes(this.shapeFile).subscribe((shapes: any) => {
       this.shapes = shapes
@@ -62,8 +67,8 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
   private initMap() {
     //console.log("InitMap..........")
     this.lmap = L.map('lmap', {
-      center: [ SettingsComponent.DEF_LAT, SettingsComponent.DEF_LONG ],
-      zoom:12
+      center: [SettingsComponent.DEF_LAT, SettingsComponent.DEF_LONG],
+      zoom: 12
     })
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -95,7 +100,9 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
       )
     });
 
-    this.lmap!.addLayer(shapeLayer);
+    if (this.lmap) {
+      this.lmap.addLayer(shapeLayer);
+    }
     shapeLayer.bringToBack();
   }
 

@@ -1,13 +1,14 @@
-import { Component, Inject, OnInit, AfterViewInit } from '@angular/core';
-import { Observable } from 'rxjs';
 import { DOCUMENT, JsonPipe } from '@angular/common';
-import { startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
-import { FormControl, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'
+import { AfterViewInit, Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RangerService, RangerType, FieldReportService, FieldReportStatuses, TeamService, TeamType } from '../shared/services/';
-import { SettingsComponent } from '../settings/settings.component';
+import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 
- @Component({
+import { SettingsComponent } from '../settings/settings.component';
+import { FieldReportService, FieldReportStatuses, RangerService, RangerType, TeamService, TeamType } from '../shared/services/';
+
+@Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
@@ -19,7 +20,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
   public fieldReportStatus = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
 
   callsignCtrl = new FormControl()
-  filteredRangers:Observable<RangerType[]> //| null
+  filteredRangers: Observable<RangerType[]> //| null
 
   rangers: RangerType[] = []
   teams: TeamType[]   // TODO: Now what to do with the list of Teams?!!!
@@ -71,11 +72,11 @@ export class EntryComponent implements OnInit, AfterViewInit {
         address: ['default location (original)'],
         lat: [this.setting.DEF_LAT,
         Validators.required,
-        //Validators.minLength(4)
+          //Validators.minLength(4)
         ],
         long: [this.setting.DEF_LONG,
         Validators.required,
-        //Validators.minLength(4)
+          //Validators.minLength(4)
         ]
       }),
       whenFormModel: this.fb.group({
@@ -131,11 +132,11 @@ export class EntryComponent implements OnInit, AfterViewInit {
         address: ['default location (reset)'],
         lat: [this.setting.DEF_LAT,
         Validators.required,
-        //Validators.minLength(4)
+          //Validators.minLength(4)
         ],
         long: [this.setting.DEF_LONG,
         Validators.required,
-        //Validators.minLength(4)
+          //Validators.minLength(4)
         ]
       }),
       whenFormModel: this.fb.group({
@@ -149,7 +150,8 @@ export class EntryComponent implements OnInit, AfterViewInit {
 
 
     // BUG: none of the following work...
-    //this.document.getElementById("callsign")!.innerText! = ''
+    // calls = this.document.getElementById("callsign")
+    //if (calls) calls.innerText = ''
     //this.entryDetailsForm.controls['#callsign'].reset
     //this.entryDetailsForm.controls['#callsign'].reset
     //this.entryDetailsForm.controls['#callsign'].setValue('')
@@ -161,7 +163,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
     //this.entryDetailsForm.controls['derivedAddress'].setValue('New Derived Address')
 
     var addr = this.document.getElementById("derivedAddress")
-    addr!.innerHTML = "New What3Words goes here!"
+    if (addr) { addr.innerHTML = "New What3Words goes here!" }
   }
 
   ngAfterViewInit() {
