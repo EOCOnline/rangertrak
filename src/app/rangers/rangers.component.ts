@@ -68,6 +68,22 @@ export class RangersComponent implements OnInit {
     filter: true
   }
 
+  imageCellRenderer = (params: { data: RangerType }) => {
+    // ${params.rangers.licensee}"
+    //console.log params.data.callsign
+    // style="border:1px #a5a5a5 solid; height:65px; width:65px;"
+    //params.data.when.date
+    let image:string = params.data.image
+    let licensee:string = params.data.licensee
+    let callsign:string = params.data.callsign
+
+    let html:string = `<img class="licenseImg" alt= "${licensee}" title="${callsign} : ${licensee}" src= "${image}"  style="border:1px #a5a5a5 solid; height:50px; width:50px;" >`;
+
+    return html
+  }
+
+
+
   columnDefs = [
     { headerName: "CallSign", field: "callsign", tooltipField: "team" },
     { headerName: "Name", field: "licensee" },
@@ -131,14 +147,6 @@ export class RangersComponent implements OnInit {
 
   //onGridReady(_$event) {}
 
-  imageCellRenderer(params: any) {
-    // ${params.rangers.licensee}"
-    // console.log params
-    // style="border:1px #a5a5a5 solid; height:65px; width:65px;"
-
-    return `<img class="licenseImg" alt="ke7kdq" title="Mr. ke7kdq" src="./assets/imgs/REW/ke7kdq.jpg" style="border:1px #a5a5a5 solid; height:50px; width:50px;" >`;
-    //src="${ params.rangers.image }">`;
-  }
 }
 
 /*
