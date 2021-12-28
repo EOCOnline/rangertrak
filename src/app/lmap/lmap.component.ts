@@ -2,10 +2,11 @@ import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone, AfterViewInit
 //import { Console } from 'console';
 import { DOCUMENT, JsonPipe } from '@angular/common';
 import { SettingsComponent } from '../settings/settings.component';
-import { MarkerService } from '../shared/services';
+import { MarkerService, ShapeService} from '../shared/services';
 import * as L from 'leaflet';
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
+
 
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
 const iconUrl = 'assets/marker-icon.png';
@@ -33,9 +34,12 @@ L.Marker.prototype.options.icon = iconDefault;
 export class LmapComponent implements AfterViewInit {  //OnInit,
 
   lmap: L.Map | undefined
+  shapeFile = '/assets/data/gz_2010_us_040_00_5m.json'
+  private shapes = undefined
 
   constructor(
-    private markerService: MarkerService
+    private markerService: MarkerService,
+    private shapeService: ShapeService
     //@Inject(DOCUMENT) private document: Document
     ) {
   }
@@ -48,6 +52,11 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     this.initMap()
     //this.markerService.makeStationMarkers(this.lmap!)
     this.markerService.makeCapitalCircleMarkers(this.lmap!)
+    // NOTE: An even better approach would be to pre-load the data in a resolver.
+    this.shapeService.getShapeShapes(this.shapeFile).subscribe((shapes: any) => {
+      this.shapes = shapes
+      this.initShapesLayer()
+    });
   }
 
   private initMap() {
@@ -64,5 +73,54 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     })
 
     tiles.addTo(this.lmap)
+  }
+
+  // Create GeoJSON layer & add to map
+  // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
+  private initShapesLayer() {
+
+    const shapeLayer = L.geoJSON(this.shapes, {
+      style: (feature) => ({
+        weight: 3,
+        opacity: 0.5,
+        color: '#008f68',
+        fillOpacity: 0.8,
+        fillColor: '#6DB65B'
+      }),
+      onEachFeature: (feature, layer) => (
+        layer.on({
+          mouseover: (e) => (this.highlightFeature(e)),
+          mouseout: (e) => (this.resetFeature(e)),
+        })
+      )
+    });
+
+    this.lmap!.addLayer(shapeLayer);
+    shapeLayer.bringToBack();
+  }
+
+  //  attach mouseover & mouseout events to interact with each of the (state) shapes
+  private highlightFeature(e: L.LeafletMouseEvent) {
+    const layer = e.target;
+
+    layer.setStyle({
+      weight: 10,
+      opacity: 1.0,
+      color: '#DFA612',
+      fillOpacity: 1.0,
+      fillColor: '#FAE042'
+    });
+  }
+
+  private resetFeature(e: L.LeafletMouseEvent) {
+    const layer = e.target;
+
+    layer.setStyle({
+      weight: 3,
+      opacity: 0.5,
+      color: '#008f68',
+      fillOpacity: 0.8,
+      fillColor: '#6DB65B'
+    });
   }
 }

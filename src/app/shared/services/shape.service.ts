@@ -2,17 +2,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
+// https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
 
 @Injectable({providedIn: 'root'})
 export class ShapeService {
 
-    constructor() { }
+    constructor(private http: HttpClient) { }
 
-    makeStationShape(data: any): string {
-      return `` +
-        `<div>Station: ${ data.name }</div>` +
-        `<div>Address: ${ data.address }</div>` +
-        `<div>Population: ${ data.population }</div>`
+    getShapeShapes(file:string) {
+      return this.http.get(file);
     }
   }
 
