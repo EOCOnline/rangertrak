@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-//import { Settings } from './settings';
-
+import { SettingsComponent } from '../../settings/settings.component';
 @Component({
   selector: 'rangertrak-about',
   templateUrl: './about.component.html',
@@ -8,7 +7,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AboutComponent implements OnInit {
 
-  constructor() { }
+  version: string
+  constructor(settingsComponent: SettingsComponent) {
+    console.log("AboutComponent getting constructed")
+    this.version = SettingsComponent.version
+  }
 
   ngOnInit(): void {
   }

@@ -32,7 +32,7 @@ import { EntryComponent } from './entry/entry.component';
 import { FieldReportsComponent } from './field-reports/field-reports.component';
 import { SettingsComponent } from './settings/settings.component';
 import { RangersComponent } from './rangers/rangers.component';
-import { TeamService, TeamType, RangerService, RangerType, RangerStatus, FieldReportService, FieldReportType, FieldReportSource, FieldReportStatuses } from './shared/services/';
+import { TeamService, TeamType, RangerService, RangerType, RangerStatus, FieldReportService, FieldReportType, FieldReportSource, FieldReportStatuses, MarkerService, PopupService } from './shared/services/';
 
 
 //import { DataService } from './shared/services/data.service';
@@ -73,7 +73,7 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
     RangersComponent,
     X404Component
   ],
-  providers: [TeamService, RangerService, FieldReportService,
+  providers: [TeamService, RangerService, FieldReportService, MarkerService, PopupService,
     {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}], // Team, Ranger,
   bootstrap: [AppComponent],
 
