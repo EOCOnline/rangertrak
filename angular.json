@@ -99,7 +99,10 @@
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": [
+<<<<<<< ours
               "src/assets/icons/favicon.ico",
+=======
+>>>>>>> theirs
               "src/assets"
             ],
             "styles": [
