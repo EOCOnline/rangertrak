@@ -6,6 +6,7 @@
     <fa-icon [icon]="faMapMarkedAlt"></fa-icon>
   </a>
   </span>
+  <!-- TODO: How to highlight current page link?-->
   <ul>
   <li><a [routerLink]="['/']"> Home Entry</a></li>
   <li><a [routerLink]="['/gmap']">GoogleMap</a></li>
@@ -16,8 +17,9 @@
   <li><a [routerLink]="['/about']">About</a></li>
   </ul>
   <form>
-    <input type="search" placeholder="Search">
+    <input type="search" placeholder="(Future) Search">
     <button>Go</button>
+    <!--button (click)="Search()" type="search" placeholder="(Future) Search"> (Future) Search</button-->
   </form>
 </nav>
 <!--script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script-->

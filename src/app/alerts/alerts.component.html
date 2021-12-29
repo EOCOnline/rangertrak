@@ -5,12 +5,16 @@
     <div style="font-size: x-small; text-align: right;">
       <a href="https://jasonwatmore.com/post/2020/07/16/angular-10-alert-notifications-example"
         target="_blank">https://jasonwatmore.com/post/2020/07/16/angular-10-alert-notifications-example</a> &
-      <a href="https://v5.material.angular.io/components/snack-bar/overview"
-        target="_blank">https://v5.material.angular.io/components/snack-bar/overview</a><br>
+      <a href="https://material.angular.io/components/snack-bar/overview"
+        target="_blank">https://material.angular.io/components/snack-bar/overview</a><br>
+      <a href="https://https://www.tutsmake.com/angular-11-toaster-notification-example/"
+        target="_blank">https://www.tutsmake.com/angular-11-toaster-notification-example/</a><br>
+      <a href="https://www.w3schools.com/bootstrap4/bootstrap_alerts.asp"
+        target="_blank">https://www.w3schools.com/bootstrap4/bootstrap_alerts.asp</a><br>
     </div>
     <mat-card-actions>
 
-      <button (click)="onClickEvent()">Close</button>
+      <button (click)="onClickEvent()" class="Alerts__Close">Close</button>
       <!--button mat-raised-button color="accent">X</button-->
       <!--    https://material.angular.io/components/icon/overview
           https://material.angular.io/components/button-toggle/overview
@@ -19,6 +23,10 @@
 
     </mat-card-actions>
   </mat-card>
+
+  <div class="alert alert-success">
+    <strong>Requires Bootstrap4!</strong> You should <a href="#" class="alert-link">read this message</a>.
+  </div>
 
   <hr>
 </div>

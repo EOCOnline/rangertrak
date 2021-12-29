@@ -1,54 +1,83 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { FieldReportService, FieldReportSource, FieldReportStatuses, FieldReportType, MarkerService, PopupService, RangerService, RangerStatus, RangerType, ShapeService, TeamService, TeamType } from './shared/services/';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { FormBuilder, FormGroup, FormArray, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { NavbarComponent } from './navbar/navbar.component';
-import { FooterComponent } from './footer/footer.component';
+import { AgGridModule } from 'ag-grid-angular';
+import { AgmCoreModule } from '@agm/core';
+import { AgmSnazzyInfoWindowModule } from '@agm/snazzy-info-window';
 import { AlertsComponent } from './alerts/alerts.component';
-import { AboutComponent } from './about/about.component';
-import { GmapComponent } from './gmap/gmap.component';
-import { LmapComponent } from './lmap/lmap.component';
-import { EntryComponent } from './entry/entry.component';
-import { ReportsComponent } from './reports/reports.component';
-import { SettingsComponent } from './settings/settings.component';
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatCardModule } from '@angular/material/card';
+import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { EntryComponent } from './entry/entry.component';
+import { FieldReportsComponent } from './field-reports/field-reports.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { FooterComponent } from './footer/footer.component';
+import { GmapComponent } from './gmap/gmap.component';
+import { HttpClientModule } from '@angular/common/http';
+import { LazyModule } from './lazy/lazy.module'
+import { LmapComponent } from './lmap/lmap.component';
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
+import { MaterialModule } from './material.module';
+import { NavbarComponent } from './navbar/navbar.component';
+import { NgModule } from '@angular/core';
+import { RangersComponent } from './rangers/rangers.component';
+import { SettingsComponent } from './settings/settings.component';
 import { X404Component } from './x404/x404.component';
 
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { RangersComponent } from './rangers/rangers.component';
-import { AgGridModule } from 'ag-grid-angular';
+// REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
+// https://angular.io/guide/build#configuring-commonjs-dependencies
+
+// import { MatInputModule } from '@angular/material/input';
+// import { MatFormFieldModule } from '@angular/material/form-field';
+// import { MatAutocompleteModule } from '@angular/material/autocomplete';
+
+//import {AutocompleteOverviewExample} from './autocomplete-overview-example';
+//import {MatNativeDateModule} from '@angular/material/core';
+//import { MatCardModule } from '@angular/material/card';
+
+//import { DataService } from './shared/services/data.service';
+//import { LocalStorageService } from './shared/services/local-storage.service';
+
+//MatNativeDateModule,
 
 @NgModule({
+  imports: [
+    BrowserAnimationsModule,
+    BrowserModule,
+    CommonModule,
+    FormsModule,
+    HttpClientModule,
+    MaterialModule,
+    ReactiveFormsModule,
+    AppRoutingModule,
+    FontAwesomeModule,
+    AgGridModule.withComponents([]),
+    AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
+    AgmSnazzyInfoWindowModule,
+    LazyModule
+  ],
   declarations: [
     AppComponent,
     NavbarComponent,
     FooterComponent,
     AlertsComponent,
-    AboutComponent,
     GmapComponent,
     LmapComponent,
     EntryComponent,
-    ReportsComponent,
+    FieldReportsComponent,
     SettingsComponent,
-    X404Component,
-    RangersComponent
+    RangersComponent,
+    X404Component
   ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatCardModule,
-    FontAwesomeModule,
-    ReactiveFormsModule,
-    AgGridModule.withComponents([])
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [TeamService, RangerService, FieldReportService, MarkerService, PopupService, ShapeService,
+    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}], // Team, Ranger,
+  bootstrap: [AppComponent],
+
+  exports: [
+    // SettingsComponent
+  ]
 })
 export class AppModule { }
 

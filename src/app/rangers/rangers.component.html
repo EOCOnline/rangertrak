@@ -1,1 +1,47 @@
-<p>rangers works!</p>
+<h1>Rangers</h1>
+
+<details>
+  <summary>Instructions</summary>
+  This list of participants was taken from the FCC Database in May 2019. <br />
+  It has been significantly reformatted and your edits may alter it further.<br />
+  To maintain these changes between browser sessions, we can write the following table to the Browser Local Storage
+  where it will remain until deleted.<br />
+  <ul>
+    <li>Address, latitude & Longitude are all editable. The 1st two on a single click, the latter on a double click.
+      (What do you like?!)</li>
+    <li>Click on a column heading to sort by that field.</li>
+    <li>Click & Drag on a column heading to move columns</li>
+    <li>Hovering over a cell (e.g., any callsign) may show additional information. </li>
+    <li>Icons at the top right of each column allows filtering on the value</li>
+  </ul>
+
+</details>
+<br>
+<h2>Future functionality</h2>
+<ul>
+  <li>Save/load data grid to/from Excel</li>
+</ul>
+
+<br>
+
+<div id="rangersgrid">
+  <ag-grid-angular #rangerGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 600px;"
+    (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="rangers"
+    [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [tooltipShowDelay]=500>
+    <!--
+          (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1
+
+          [columns]="columns"
+          [showToolPanel]="showToolPanel"
+        -->
+  </ag-grid-angular>
+  <br />
+  <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
+      <button (click)="onBtNormal()">Normal Layout</button-->
+  <!--div><button (click)="/">Add a new Field Report</button></div-->
+  <!--div>TODO: <button (click)="exportDataAsCsv()">Export Field Reports</button></div-->
+  <!--div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div-->
+</div>
+
+<!--script src="imageUtils.js">
+</script -->

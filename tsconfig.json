@@ -3,7 +3,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
-    "outDir": "./dist/out-tsc",
+    "outDir": "./dist/rangertrak",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
@@ -21,7 +21,9 @@
     "lib": [
       "es2020",
       "dom"
-    ]
+    ],
+
+    "resolveJsonModule": true,
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
