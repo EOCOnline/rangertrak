@@ -43,7 +43,8 @@ export class RangersComponent implements OnInit {
     editable: true,
     resizable: true,
     sortable: true,
-    filter: true
+    filter: true,
+    floatingFilter: true
   }
 
   imageCellRenderer = (params: { data: RangerType }) => {
@@ -52,7 +53,9 @@ export class RangersComponent implements OnInit {
   }
 
   callsignCellRenderer = (params: { data: RangerType }) => {
-    //let title = `<img src="${params.data.image}" height="40"> | <small> ${params.data.licensee} | ${params.data.phone}</small>`
+
+    // TODO: Possible to get HTML into a tooltip?
+    // let title = `<img src="${params.data.image}" height="40"> | <small> ${params.data.licensee} | ${params.data.phone}</small>`
     let title = `${params.data.licensee} | ${params.data.phone}`
 
     return `<span aria-hidden title="${title}"> ${params.data.callsign}</span>`
@@ -61,13 +64,13 @@ export class RangersComponent implements OnInit {
   columnDefs = [
     { headerName: "CallSign", field: "callsign", cellRenderer: this.callsignCellRenderer },
     { headerName: "Name", field: "licensee", tooltipField: "team" },
-    { headerName: "Phone", field: "phone", singleClickEdit: true, maxWidth: 200 },
-    { headerName: "Address", field: "address", singleClickEdit: true },
+    { headerName: "Phone", field: "phone", singleClickEdit: true, flex: 40 },
+    { headerName: "Address", field: "address", singleClickEdit: true, flex: 40 },
     { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer },
     { headerName: "Team", field: "team" },  // TODO: Change to string representation - within Ag-grid???
     { headerName: "Icon", field: "icon" },  // TODO: Change to string representation - within Ag-grid???
-    { headerName: "Status", field: "status", maxWidth: 150 },
-    { headerName: "Note", field: "note", maxWidth: 300 },
+    { headerName: "Status", field: "status", flex: 40 },
+    { headerName: "Note", field: "note", flex: 60 },
   ];
   now: Date
 
@@ -84,7 +87,7 @@ export class RangersComponent implements OnInit {
 
   ngOnInit(): void {
     console.log("Rangers Form started at ", Date())
-    //this.rangers = this.rangerService.getrangers()  // BUG: zeros out the array!!!!
+    //this.rangers = this.rangerService.getrangers()  // NOTE: zeros out the array!!!!
 
     this.rangers = [
       // { callsign: "KB0LJC", licensee: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "132nd pl", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },

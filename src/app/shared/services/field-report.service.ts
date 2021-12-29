@@ -1,6 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
-import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
+import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 import { RangerService, RangerStatus, TeamService } from './index';
+
 //import { HttpClient } from '@angular/common/http';
 
 export enum FieldReportSource {

@@ -25,7 +25,7 @@ export class RangerService {
      https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
    */
 
-  rangers: RangerType[] =[]
+  rangers:RangerType[] = []
 
   constructor() {
     ;
@@ -46,6 +46,27 @@ export class RangerService {
      Following from 98070 AND 98013 zip codes, MUST be sorted by call sign!
      https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
    */
+
+     /*
+     let teams = this.teamService.getTeams()
+     let rangers = this.rangerService.getRangers()
+     let streets = ["Ave", "St.", "Pl.", "Court", "Circle"]
+     let notes = ["Reports beautiful sunrise", "Roudy Kids", "Approaching Neighborhood CERT", "Confused & dazed in the sun",
+                   "Wow", "na", "Can't hear you", "Bounced via tail of a comet!", "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
+     //let numberPushed = 0
+
+     console.log("Generating " + num + " more rows of FAKE field reports!")
+
+     for (let i = 0; i < num; i++) {
+       array.push({
+
+          callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
+          team: teams[Math.floor(Math.random() * teams.length)].name
+          address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
+
+         */
+
+
 
     array.push (
       { callsign: "KB0LJC", licensee: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
