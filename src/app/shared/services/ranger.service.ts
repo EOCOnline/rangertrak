@@ -3,6 +3,8 @@ import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
 
+//import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
+
 export interface RangerType {
   callsign: string
   licensee: string
@@ -26,7 +28,6 @@ export class RangerService {
    */
 
   rangers:RangerType[] = []
-
   constructor() {
     ;
   }
@@ -89,6 +90,7 @@ export class RangerService {
       { callsign: "KA7THJ", licensee: "Hanson, Jay R", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
       { callsign: "KB7LEV", licensee: "Lysen, Kurt A", image: "./assets/imgs/REW/female.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
       { callsign: "KB7MTM", licensee: "Meyer, Michael T", image: "./assets/imgs/REW/VI-0123.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" }
+
     )
   }
 

@@ -1,10 +1,12 @@
 //import { Console } from 'console';
-import { DOCUMENT, JsonPipe } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
+
 import * as L from 'leaflet';
 
-import { SettingsComponent } from '../settings/settings.component';
+import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
+import { DOCUMENT, JsonPipe } from '@angular/common';
 import { MarkerService, ShapeService } from '../shared/services';
+
+import { SettingsComponent } from '../settings/settings.component';
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
