@@ -26,38 +26,22 @@ import { RangersComponent } from './rangers/rangers.component';
 import { SettingsComponent } from './settings/settings.component';
 import { X404Component } from './x404/x404.component';
 
-//import { MatInputModule } from '@angular/material/input';
+// REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
+// https://angular.io/guide/build#configuring-commonjs-dependencies
+
+// import { MatInputModule } from '@angular/material/input';
 // import { MatFormFieldModule } from '@angular/material/form-field';
-//import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
-
+// import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 //import {AutocompleteOverviewExample} from './autocomplete-overview-example';
 //import {MatNativeDateModule} from '@angular/material/core';
 //import { MatCardModule } from '@angular/material/card';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //import { DataService } from './shared/services/data.service';
 //import { LocalStorageService } from './shared/services/local-storage.service';
 
-
-
-
-
-
 //MatNativeDateModule,
+
 @NgModule({
   imports: [
     BrowserAnimationsModule,

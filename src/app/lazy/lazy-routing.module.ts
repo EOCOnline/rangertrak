@@ -6,7 +6,7 @@ import { NgModule } from '@angular/core';
 //import { BlogDetailsComponent } from '../blog-details/blog-details.component';
 
 const routes: Routes = [
-  { path: 'about', component: AboutComponent },
+  { path: '', component: AboutComponent },
   //{ path: 'blog-details', component: BlogDetailsComponent }
 ];
 
