@@ -1,3 +1,78 @@
+
+
+/*
+
+From 4.2:
+
+<!-- is defaultPlusCode or suggested 3 words even needed??? -->
+                Plus Code<input id="defPlusCode" value="" hidden>
+
+// Set focus for 3 words, PlusCodes and center of displayed big map
+  var DEF_LAT = 47.4472;
+  var DEF_LONG = -122.4627;  // Vashon EOC!
+  var DEF_PCODE = 'CGWP+VV'; // '84VVCGWP+VW'is in the middle of the Pacific Ocean!!!; // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
+  var defPCodeLabel = " for Vashon, WA locale; Full code: ";
+  // Set form default
+
+document.getElementById("defPlusCode").value = DEF_PCODE;
+//$("#defPlusCode").value = DEF_PCODE;
+
+DEF_PCODE = document.getElementById("defPlusCode").value;
+
+
+
+function  updateCoords(latDD, lngDD) {
+    dbug("New Coordinates: lat:" + latDD + "; lng:" + lngDD);
+
+    document.getElementById("latitudeDD").value = latDD;
+    document.getElementById("longitudeDD").value = lngDD;
+
+    latDMS = DDToDMS(latDD, false);
+    document.getElementById("latitudeQ").value = latDMS.dir;
+    document.getElementById("latitudeD").value = latDMS.deg;
+    document.getElementById("latitudeM").value = latDMS.min;
+    document.getElementById("latitudeS").value = latDMS.sec;
+
+    lngDMS = DDToDMS(lngDD, true);
+    document.getElementById("longitudeQ").value = lngDMS.dir;
+    document.getElementById("longitudeD").value = lngDMS.deg;
+    document.getElementById("longitudeM").value = lngDMS.min;
+    document.getElementById("longitudeS").value = lngDMS.sec;
+
+    var pCode = encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
+    dbug("updateCoords: Encode returned PlusCode: " + pCode);
+    var fullCode;
+    if (pCode.length!=0) {
+
+      if (isValid(pCode)) {
+        if (pCode.isShort) {
+          // Recover the full code from a short code:
+          fullCode = recoverNearest(pCode, DEF_LAT, DEF_LONG); //OpenLocationCode.recoverNearest
+        } else {
+          fullCode = pCode;
+          dbug("Shorten +Codes, Global:" + fullCode + ", Lat:" + DEF_LAT + "; Long:"+ DEF_LONG);
+          // Attempt to trim the first characters from a code; may return same value...
+          pCode = shorten(fullCode, DEF_LAT, DEF_LONG); //OpenLocationCode.shorten
+        }
+        dbug("New PlusCodes: " + pCode + "; Global: " + fullCode);
+        //document.getElementById("addresses").value = pCode;
+        //document.getElementById("addressLabel").innerHTML = defPCodeLabel;
+        document.getElementById("pCodeGlobal").innerHTML = " &nbsp;&nbsp; +Code: " + fullCode;
+      } else {
+        dbug("Invalid +PlusCode: " + pCode);
+        document.getElementById("pCodeGlobal").innerHTML = " &nbsp;&nbsp; Unable to get +Code"
+        //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: ";
+      }
+    }
+
+    //ToDO: Update 3 words too!
+   if (initialized) displaySmallMap(latDD, lngDD);
+ }
+
+*/
+
+
+
 function PlusCode() {
   // #region +Code doc
   // https://plus.codes/developers
@@ -33,7 +108,7 @@ function PlusCode() {
 
   //
   let pCode = document.getElementById("addresses")!.innerHTML
-  MAIN.dbug("chkPCodes got '" + pCode + "'")
+  //MAIN.dbug("chkPCodes got '" + pCode + "'")
   if (pCode.length != 0) {
       if (isValid(pCode)) {
           if (pCode.isShort) {

@@ -1,8 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
-
+import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
-import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
 export enum DirEnum {
   E = 'East',
@@ -47,10 +46,6 @@ class Point {
 
 
 
-
-
-
-
 export class Coordinate {
   constructor(private _lat: number, private _long: number) {
     if (_lat < -180 || _lat > 180)
@@ -70,9 +65,7 @@ export class Coordinate {
     return (this._lat, this._long);
   }
 
-  toDMS(ptDD: PointDD) {
-
-  }
+  //toDMS(ptDD: PointDD) {  }
 
   // Save to disk or ...
   serialize(name: string) {
@@ -97,10 +90,10 @@ class Coord {
       if (isNaN(coord)) throw "Coordinate is not a number"
       if (coord < -180) throw "Coordinate under -180 degrees."
       if (coord > 180) throw "Coordinate over 180 degrees."
-      MAIN.dbug("Coordinate passed range check...")
+      // MAIN.dbug("Coordinate passed range check...")
     }
     catch (err) {
-      MAIN.dbug("Bad Coordinate at Coord(): " + err)
+      // MAIN.dbug("Bad Coordinate at Coord(): " + err)
     }
   }
   // Get object {deg:, min:, sec:, dir:}
@@ -109,6 +102,7 @@ class Coord {
   // dir returns E or W if lng (longitude) = true
   // N.B.: may not work for angles between -1° and 0°
   // from www.stackoverflow.com/questions/5786025
+  /*
   ToDMS(lng: boolean): CoordDMS {
     return new CoordDMS(
       this.coord < 0 ? lng ? Direction.W : Direction.S : lng ? Direction.E : Direction.N,
@@ -120,8 +114,10 @@ class Coord {
   //ToNumber(): number {
   //    return this.coord
   //}
+
+  */
 }
-* /
+
 
 
 
@@ -134,17 +130,17 @@ class Coord {
 export function DDToDMS(D: number, lng: boolean = false) {
   /*
   if (!D) {
-      MAIN.dbug("Invalid number received for Decimal Degrees!")
+      // MAIN.dbug("Invalid number received for Decimal Degrees!")
       return Number.NaN
   }
   */
   /*
-    MAIN.dbug("DDtoDMS: D=" + D + " lng=" + lng)
+    // MAIN.dbug("DDtoDMS: D=" + D + " lng=" + lng)
     let dirr = D<0?lng?'W':'S':lng?'E':'N'
     let degg = 0|(D<0?D=-D:D)
     let minn = 0|D%1*60
     let secc = (0|D*60%1*6000)/100
-    MAIN.dbug("DDtoDMS: dir=" + dirr + " deg=" + degg + " min" + minn + " sec=" + secc)
+    // MAIN.dbug("DDtoDMS: dir=" + dirr + " deg=" + degg + " min" + minn + " sec=" + secc)
   */
   return {
     deg: 0 | (D < 0 ? D = -D : D),

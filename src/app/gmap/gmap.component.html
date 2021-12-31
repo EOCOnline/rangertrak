@@ -27,7 +27,7 @@
   [zoom]="zoom"
   [disableDefaultUI]="false"
 
-  (mapClick)="mapClicked($event)">
+  (mapClick)="onMapClicked($event)">
 
   <agm-marker
       *ngFor="let m of markerLocations; let i = index"

@@ -8,8 +8,10 @@ import { SettingsComponent } from '../../settings/settings.component';
   styleUrls: ['./about.component.scss']
 })
 export class AboutComponent implements OnInit {
+
+  version: string = "0.11"
 /*
-  version: string
+  // TODO: Enable getting settings (e.g. version) from non-lazy loaded component...
   constructor(settingsComponent: SettingsComponent) {
     console.log("AboutComponent getting constructed")
     this.version = SettingsComponent.version

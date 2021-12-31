@@ -133,3 +133,116 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     });
   }
 }
+
+
+/*
+OLD CODE from Ranger 4.2 ===============================================
+
+TODO: Abstract common code to here, unique to calling routine..
+
+function initLeafletMap() {
+    // https://leaflet.github.io/Leaflet.markercluster/example/marker-clustering-zoomtobounds.html
+    // https://leafletjs.com/examples/layers-control/
+    // TODO: This needs to get moved to actual point/marker display...
+    var //p1 = L.marker([DEF_LAT, DEF_LONG]).bindPopup('Person 1 - John'),
+        //p2 = L.marker([DEF_LAT-.1, DEF_LONG-.02]).bindPopup('Person 2 - Fred'),
+        //p3 = L.marker([DEF_LAT+.02, DEF_LONG+.01]).bindPopup('Person 3 - Sally'),
+        //p4 = L.marker([DEF_LAT+.01, DEF_LONG+.02]).bindPopup('Person 4 - Bucky'),
+        //p5 = L.marker([DEF_LAT, DEF_LONG]).bindPopup('Person 5 - maryAnne'),
+        //p6 = L.marker([DEF_LAT-.13, DEF_LONG-.025]).bindPopup('Person 6 - Cathy'),
+        //p7 = L.marker([DEF_LAT+.022, DEF_LONG+.014]).bindPopup('Person 7 - Michael'),
+        p8 = L.marker([DEF_LAT+.011, DEF_LONG+.022]).bindPopup('Person 8 - Olivia');
+
+    //Instead of adding them directly to the map, you can do the following, using the LayerGroup class:
+    var Team1 = L.layerGroup([p8]); //, p2, p3, p4]);
+    var Team2 = L.layerGroup([p8]); //, p6, p7, p8]);
+
+    var grayscale = L.tileLayer(mapboxUrl, {id: 'mapId1', attribution: mapboxAttribution});
+    var streets   = L.tileLayer(mapboxUrl, {id: 'mapId2', attribution: mapboxAttribution});
+    var mstreets  = L.tileLayer(mapboxUrl, {maxZoom: 16, attribution: mapboxAttribution, id: 'mapbox.streets'})
+    var estreets = L.esri.basemapLayer('Streets');
+
+    //https://leafletjs.com/reference-1.4.0.html#control-layers
+    var baseMaps = {
+      //"<span style='color: gray'>Grayscale</span>": grayscale,    // grayscale may no longer exist??
+      //"Streets": streets
+    };
+    var overlayMaps = {
+      "Team1": Team1,
+      "Team2": Team2
+    };
+
+    bigMap   = L.map('bigLeafletMapId', {maxZoom: 20,
+      layers: [estreets] // actual layers on map   //, Team1, Team2
+    });
+    bigMap.setView([DEF_LAT, DEF_LONG], 8);
+
+
+    // Add the layer widget to the map, requires maxzoom?
+    L.control.layers(baseMaps, overlayMaps).addTo(bigMap);
+
+    //L.tileLayer(mapboxUrl, {maxZoom: 18, attribution: mapboxAttribution,id: 'mapbox.streets'}).addTo(bigMap);
+  }
+
+  function initSmallMap() {
+    smallMap = L.map('smallMapId' ).setView([DEF_LAT, DEF_LONG], 12);
+    L.esri.basemapLayer('Streets').addTo(smallMap);
+
+    /*
+    L.tileLayer(mapboxUrl, {
+      maxZoom: 18,
+      attribution: mapboxAttribution,
+      id: 'mapbox.streets'
+    }).addTo(smallMap);
+    *  /
+    smallMap.setView([DEF_LAT,DEF_LONG], 12);
+
+    smallMap.on('click', onSmallMapClick);
+    // TODO: There are now 2 leaflet containers. OK?
+    $('.leaflet-container').css('cursor','crosshair'); // reset cursor with ''!
+
+    // Display coordinates if map is clicked
+    var popup2 = L.popup();
+
+    function onSmallMapClick(e) {
+      popup2
+        .setLatLng(e.latlng)
+        .setContent(e.latlng.toString())
+        .openOn(smallMap);
+    }
+  }
+
+
+
+
+
+  function filterLeafletMap() {
+    dbug("filterLeafletMap...");
+    /* Sorting:
+      var points = [40, 100, 1, 5, 25, 10];
+      points.sort(function(a, b){return a - b});
+    * /
+      var team = document.getElementById("teamFilterId").value;
+      var call = document.getElementById("callFilterId").value;
+      var filters = {
+        Team: document.getElementById("teamFilterId").value,
+        CallSign: document.getElementById("callFilterId").value,
+        Minutes: document.getElementById("minuteFilterId").value,
+        BaseTime: document.getElementById("baseTimeFilterId").value
+      };
+
+      dbug("Filtering on: "
+        + filters.Team + " AND "
+        + filters.CallSign + " AND "
+        + filters.Minutes + " AND "
+        + filters.BaseTime);
+
+      filterLocations(filters);
+    }
+
+
+
+
+
+
+  */

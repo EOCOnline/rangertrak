@@ -1,10 +1,9 @@
 import { Injectable, OnInit } from '@angular/core';
-
+import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
-import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
-import { Ranger, FieldReport } from './services/';
+//import { Ranger, FieldReport } from './services/';
 
 //@Injectable({  providedIn: 'root' })
 
@@ -14,8 +13,8 @@ export class OpPeriod {
   id: Number;
   begDate: Date;
   // endDate: Date;  // Who or when does this get set: maybe just have a get last recorded date?
-  ranger: Ranger[];
-  fieldReports: FieldReport[];
+  //ranger: Ranger[];
+  //fieldReports: FieldReport[];
 
 
   constructor (
@@ -26,17 +25,13 @@ export class OpPeriod {
       this.begDate = new Date();
     }
 
-    addParticipant(participant: Ranger) {
-      ;
-    }
+    //addParticipant(participant: Ranger) { }
 
     listRangers() {
       ;
     }
 
-    addFieldReport(fieldReport: FieldReport) {
-      ;
-    }
+    // addFieldReport(fieldReport: FieldReport) { }
 
     listFieldReport() {  // iterator here?
       ;

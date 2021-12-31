@@ -1,8 +1,15 @@
-
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
+
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { PopupService } from './popup.service';
+
+export type MarkerType = {
+  lat: number,
+  lng: number,
+  label: string,
+  draggable: boolean
+}
 
 @Injectable({providedIn: 'root'})
 export class MarkerService {
@@ -48,4 +55,20 @@ export class MarkerService {
     });
   }
 
+  labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  generateFakeMarkerData(markers:MarkerType[], num: number = 15) {
+    console.log("Generating " + num + " more rows of FAKE field reports!")
+    for (let i = 0; i < num; i++) {
+      markers.push(
+        {
+          lat: 45 + Math.floor(Math.random() * 2000) / 1000,
+          lng: -121 + Math.floor(Math.random() * 1000) / 1000,
+          label: this.labels[Math.floor(Math.random() * this.labels.length)],
+          draggable: true
+        }
+      )
+    }
+    //console.log("Pushed # " + numberPushed++)
+  }
 }

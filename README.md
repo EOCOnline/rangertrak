@@ -15,6 +15,7 @@ This application aids tracking & mapping CERT, ACS, other teams, rangers & indiv
 - To work with out flaws!
 - Save and reload data to local files
 - improved docs: screenshots and architectural diagrams
+- - consider https://github.com/EventEmitter2/EventEmitter2 for multi-threaded msgs with service workers
 
 ## Items (still) requiring online access
 - GeoCoding an address

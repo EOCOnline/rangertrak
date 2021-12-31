@@ -14,7 +14,7 @@ export class AlertsComponent implements OnInit {
 
 
   constructor() {
-    this.isAlertHidden = false;
+    this.isAlertHidden = true;
   }
 
   ngOnInit(): void {
