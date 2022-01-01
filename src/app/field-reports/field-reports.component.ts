@@ -11,9 +11,9 @@ import { formatDate } from '@angular/common'
 })
 export class FieldReportsComponent implements OnInit {
 
-  fieldReportService
-  teamService
-  rangerService
+  //private fieldReportService
+  //private teamService
+  //private rangerService
   fieldReports: FieldReportType[] = []
   private gridApi
   private gridColumnApi
@@ -52,7 +52,7 @@ export class FieldReportsComponent implements OnInit {
     const weekday = ["Sun ","Mon ","Tue ","Wed ","Thu ","Fri ","Sat "];
 
     //https://www.w3schools.com/jsref/jsref_obj_date.asp
-    let dt = weekday[params.data.when.date.getDay()] + formatDate(params.data.when.date, 'yyyy-MM-dd HH:MM:ss', 'en-US')
+    let dt = weekday[params.data.date.getDay()] + formatDate(params.data.date, 'yyyy-MM-dd HH:MM:ss', 'en-US')
     return dt
   }
 
@@ -83,13 +83,13 @@ export class FieldReportsComponent implements OnInit {
   http: any;
 
   constructor(
-    fieldReportService: FieldReportService,
-    teamService: TeamService,
-    rangerService: RangerService,
+    private fieldReportService: FieldReportService,
+    private teamService: TeamService,
+    private rangerService: RangerService,
   ) {
-    this.fieldReportService = fieldReportService
-    this.teamService = teamService
-    this.rangerService = rangerService
+    //this.fieldReportService = fieldReportService
+    //this.teamService = teamService
+    //this.rangerService = rangerService
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
@@ -99,16 +99,13 @@ export class FieldReportsComponent implements OnInit {
     console.log("Field Report Form started at ", Date())
     //this.fieldReports = this.fieldReportService.getFieldReports()  // NOTE: zeros out the array!!!!
 
-    this.fieldReports = [
-    /*  {
-        who: { callsign: "KE7KDQ", team: "T1" },
-        where: { address: "10506 sw 132nd pl", lat: 45.1, long: -123.1 },
-        when: { date: this.now },
-        what: { status: "Normal", note: "Reports beautiful sunrise" }
-      }
+    this.fieldReports = this.fieldReportService.getFieldReports()
+    /*  { who: { callsign: "KE7KDQ", team: "T1" },
+          where: { address: "10506 sw 132nd pl", lat: 45.1, long: -123.1 },
+          when: { date: this.now },
+          what: { status: "Normal", note: "Reports beautiful sunrise" } }
       */
-    ]
-    this.fieldReportService.generateFakeData(this.fieldReports)
+    this.fieldReportService.generateFakeData(30)
     console.log("got " + this.fieldReports.length + " Field Reports")
     console.log("Field Report Form completed at ", Date())
   }
@@ -118,8 +115,7 @@ export class FieldReportsComponent implements OnInit {
   }
 
   // FUTURE:
-  setQuickFilter() {
-  }
+  // filteredReports:FieldReportType[] = this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000))
 
   onGridReady = (params: any) => {
     this.gridApi = params.api
@@ -134,25 +130,4 @@ export class FieldReportsComponent implements OnInit {
 
 }
 
-/*
-const filterParams = {
-  comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
-    const dateAsString = cellValue;
-    const dateParts = dateAsString.split('/');
-    const cellDate = new Date(
-      Number(dateParts[2]),
-      Number(dateParts[1]) - 1,
-      Number(dateParts[0])
-    );
-    if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
-      return 0;
-    }
-    if (cellDate < filterLocalDateAtMidnight) {
-      return -1;
-    }
-    //if (cellDate > filterLocalDateAtMidnight) {
-    return 1;
-    //}
-  },
-}
-*/
+

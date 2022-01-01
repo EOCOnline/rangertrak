@@ -88,7 +88,6 @@ export class EntryComponent implements OnInit, AfterViewInit {
       })
     })
 
-
     //console.log(JSON.stringify(this.teams))
     console.log("EntryForm test completed at ", Date())
   }
@@ -106,15 +105,13 @@ export class EntryComponent implements OnInit, AfterViewInit {
 
   // TODO: This also gets called if the Update Location button is clicked!!
   onFormSubmit(): void {
-
+    console.log("Form submit at ", Date())
     let formData = JSON.stringify(this.entryDetailsForm.value)
 
     console.log(formData)
     this.openSnackBar('Entry Saved: ' + formData, 'Nice!', 5000)
 
-
-    this.fieldReportService.pushFieldReport(formData)
-    // TODO: Add to FieldReports.. Call api post service here
+    this.fieldReportService.addfieldReport(formData)
 
     this.resetForm()
 
