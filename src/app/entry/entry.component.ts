@@ -18,18 +18,13 @@ export class EntryComponent implements OnInit, AfterViewInit {
 
   // BUG: Following is a dupl of FieldReportStatuses
   public fieldReportStatus = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
-
   callsignCtrl = new FormControl()
   filteredRangers: Observable<RangerType[]> //| null
-
   rangers: RangerType[] = []
   teams: TeamType[]   // TODO: Now what to do with the list of Teams?!!!
   fieldReportService
-
   setting = SettingsComponent.AppSettings
-
   entryDetailsForm!: FormGroup;
-
 
   constructor(
     private fb: FormBuilder,
@@ -40,27 +35,22 @@ export class EntryComponent implements OnInit, AfterViewInit {
     @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
 
     // REVIEW: Or should this be done in ngOnInit()?
-    this.rangers = rangerService.getRangers() // TODO: or getActiveRangers?!
+    this.rangers = rangerService.getRangers() // TO DO: or getActiveRangers?!
     this.fieldReportService = fieldReportService
     this.teams = teamService.getTeams()
 
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
-
     this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
       startWith(''),
-      map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
+      map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
     );
   }
 
-
   private _filterRangers(value: string): RangerType[] {
     const filterValue = value.toLowerCase();
-
-    this.entryDetailsForm.controls['ranger'].setValue(filterValue) // TODO: MAT input field not automatically set into entryForm
-
-    return this.rangers.filter(ranger => ranger.callsign.toLowerCase().includes(filterValue));
+    //this.entryDetailsForm.controls['callsignCtrl'].setValue(filterValue)   // TODO: MAT input field not automatically set into entryForm above
+    return this.rangers.filter((ranger) => ranger.callsign.toLowerCase().includes(filterValue));
   }
-
 
   ngOnInit(): void {
     console.log("EntryForm test started at ", Date())

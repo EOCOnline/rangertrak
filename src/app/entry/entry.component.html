@@ -8,13 +8,15 @@
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>CallSign</mat-label>
+
       <input matInput
         [formControl]="callsignCtrl"
         type="text"
         placeholder="Pick one"
-        aria-label="rangers"
+        aria-label="Callsigns"
         [matAutocomplete]="auto"
         >
+
       <mat-autocomplete #auto="matAutocomplete" >
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
           <img class="example-option-img" aria-hidden [src]="ranger.image" height="40">
@@ -22,6 +24,7 @@
           <small> {{ranger.licensee}} | {{ranger.phone}}</small>
         </mat-option>
       </mat-autocomplete>
+
     </mat-form-field>
 
     <!--br>
@@ -113,7 +116,6 @@
     <button (click)="updateLocation()">Update location</button>
     <br>
     <button [disabled]="entryDetailsForm.invalid" style="margin-top: 20px; background-color: rgb(214, 219, 137);" type="submit">Submit</button>
-
 
   </form>
 </div>
