@@ -66,15 +66,26 @@ export class FieldReportsComponent implements OnInit {
   myDateGetter = (params: { data: FieldReportType }) => {
     const weekday = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
     let dt = 'unknown date'
-
     let d:Date = params.data.date
-    //console.log(`Day is: ${params.data.date.toISOString()}`)
+      //console.log(`Day is: ${d.toISOString()}`)
+      //console.log(`WeekDay is: ${d.getDay}`)
 
+    try {
+      //weekday[d.getDay()] +
+      dt =  formatDate(d, 'yyyy-MM-dd HH:MM:ss', 'en-US')
+      //console.log(`Day is: ${params.data.date.toISOString()}`)
+    } catch (error) {
+      dt = `Bad date format: ${error}`
+    }
+
+    // https://www.w3schools.com/jsref/jsref_obj_date.asp
+    //console.log(`Day is: ${params.data.date.toISOString()}`)
+/*
     if (this.isValidDate(d)) {
       dt = weekday[d.getDay()] + formatDate(d, 'yyyy-MM-dd HH:MM:ss', 'en-US')
       console.log(`Day is: ${params.data.date.toISOString()}`)
     }
-
+*/
     return dt
   }
 
@@ -110,9 +121,6 @@ export class FieldReportsComponent implements OnInit {
     private teamService: TeamService,
     private rangerService: RangerService,
   ) {
-    //this.fieldReportService = fieldReportService
-    //this.teamService = teamService
-    //this.rangerService = rangerService
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
