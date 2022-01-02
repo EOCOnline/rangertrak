@@ -3,6 +3,8 @@
 
     <h1>Entry Form</h1>
 
+    <!--h2 class="elegant">ID: {{testId}}</h2-->
+<input type="text" placeholder="smartest man on earth" [formControl]="smartInput">
     <h2 class="elegant">Who</h2>
 
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->
@@ -15,6 +17,7 @@
         placeholder="Pick one"
         aria-label="Callsigns"
         [matAutocomplete]="auto"
+        (change)= this.callsignCtrlChanged()
         >
 
       <mat-autocomplete #auto="matAutocomplete" >
@@ -43,7 +46,7 @@
     </div>
 
     <h2 class="elegant">Where</h2>
-    <div #div2 formGroupName="whereFormModel">
+    <!--div #div2 formGroupName="whereFormModel"-->
     <div class="input-group">Street Address:
       <input
         [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
@@ -51,7 +54,7 @@
       <!--div
         *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
         class="text-sm text-danger">address is required</div  -->
-    </div>
+    <!--/div-->
 
     <div>Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code: 8VCWVF22+</span></div>
 
@@ -71,32 +74,32 @@
   </div>
 
     <h2 class="elegant">When</h2>
-    <div formGroupName="whenFormModel">
+    <!--div formGroupName="whenFormModel"-->
       <div class="input-group">Date:
       <input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
         type="datetime" formControlName="date" placeholder="date">
       <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
         class="text-sm text-danger">date is required</div>
     </div>
-    </div>
+    <!-- /div-->
 
     <h2 class="elegant">What</h2>
-    <div formGroupName="whatFormModel">
+    <!--div formGroupName="whatFormModel"-->
 
     <div class="input-group">Status:
       <select formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid">
         <!--option [value]="'NewStatus'">Adds Additional Value</option-->
-        <option [value]="stat" *ngFor="let stat of fieldReportStatus">{{stat}}</option>
+        <option [value]="stat" *ngFor="let stat of fieldReportStatuses">{{stat}}</option>
       </select>
       <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
         class="text-sm text-danger">Status is required</div>
-    </div>
+    <!--/div-->
 
-    <div class="input-group" class="enter__What--note">Notes:
+    <!--div class="input-group" class="enter__What--note"-->Notes:
       <textarea formControlName="note" class="enter__What--area" id="" cols="30" rows="10" placeholder="Enter Any Notes"></textarea>
     </div>
-    </div>
+    <!--/div-->
 
     <!--h4>Keywords</h4>
     <div formArrayName="keywords">

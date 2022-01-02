@@ -7,9 +7,11 @@ import { RangerService, RangerStatus, TeamService } from './index';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
-export enum FieldReportStatuses {
+export const FieldReportStatuses = [
   'None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out'
-}
+]
+
+//public fieldReportStatus = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  /
 
 /* TODO: Use for quick display of fieldReports - useful?!
 export class FieldReportInfo {
@@ -197,7 +199,8 @@ const filterParams = {
         lat: 45 + Math.floor(Math.random() * 2000) / 1000,
         long: -121 + Math.floor(Math.random() * 1000) / 1000,
         date: new Date,
-        status: FieldReportStatuses[Math.floor(Math.random() * Object.keys(FieldReportStatuses).length)],
+        //status: FieldReportStatuses[Math.floor(Math.random() * Object.keys(FieldReportStatuses).length)],
+        status: FieldReportStatuses[Math.floor(Math.random() * FieldReportStatuses.length)],
         note: notes[Math.floor(Math.random() * notes.length)]
       })
     }

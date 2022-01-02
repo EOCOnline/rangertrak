@@ -2,7 +2,7 @@ import { DOCUMENT, JsonPipe } from '@angular/common';
 import { AfterViewInit, Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable } from 'rxjs';
+import { Observable, pipe } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 
 import { SettingsComponent } from '../settings/settings.component';
@@ -17,17 +17,19 @@ import { FieldReportService, FieldReportStatuses, RangerService, RangerType, Tea
 export class EntryComponent implements OnInit, AfterViewInit {
 
   // BUG: Following is a dupl of FieldReportStatuses
-  public fieldReportStatus = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
+  //public fieldReportStatus = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  // TODO: Allow changing list & default of statuses in settings?!
   callsignCtrl = new FormControl()
   filteredRangers: Observable<RangerType[]> //| null
   rangers: RangerType[] = []
   teams: TeamType[]   // TODO: Now what to do with the list of Teams?!!!
   fieldReportService
+  fieldReportStatuses
   setting = SettingsComponent.AppSettings
   entryDetailsForm!: FormGroup;
+  smartInput = new FormControl('')
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
     rangerService: RangerService,
     fieldReportService: FieldReportService,
@@ -38,44 +40,52 @@ export class EntryComponent implements OnInit, AfterViewInit {
     this.rangers = rangerService.getRangers() // TO DO: or getActiveRangers?!
     this.fieldReportService = fieldReportService
     this.teams = teamService.getTeams()
-
+    this.fieldReportStatuses = FieldReportStatuses
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
     this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
       startWith(''),
       map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
     );
+
+    this.smartInput.valueChanges.pipe(debounceTime(500)).subscribe(smartest => this.getABCFromServer(smartest))
   }
 
-  private _filterRangers(value: string): RangerType[] {
+    private _filterRangers(value: string): RangerType[] {
     const filterValue = value.toLowerCase();
     //this.entryDetailsForm.controls['callsignCtrl'].setValue(filterValue)   // TODO: MAT input field not automatically set into entryForm above
     return this.rangers.filter((ranger) => ranger.callsign.toLowerCase().includes(filterValue));
   }
 
+  getABCFromServer(myVal: string) {
+    let candidates = ["Einstein", "Picasso", "Aunt Mabel", "Ponzi"]
+    console.log(`The mysterious person is ${myVal} or aka ${candidates[Math.floor(Math.random() * candidates.length)]}`)
+  }
+
   ngOnInit(): void {
     console.log("EntryForm test started at ", Date())
 
-    this.entryDetailsForm = this.fb.group({
-      callsign: ['KE7KQ'],  // TODO: Not tied to the material design input field...
+    this.entryDetailsForm = this.formBuilder.group({
+      id: -1,
+      callsign: ['EvilCallSign'],  // TODO: Not tied to the material design input field...
       team: ['T2'],
-      whereFormModel: this.fb.group({
-        address: ['default location (original)'],
-        lat: [this.setting.DEF_LAT,
-        Validators.required,
-          //Validators.minLength(4)
-        ],
-        long: [this.setting.DEF_LONG,
-        Validators.required,
-          //Validators.minLength(4)
-        ]
-      }),
-      whenFormModel: this.fb.group({
-        date: [new Date()]
-      }),
-      whatFormModel: this.fb.group({
-        status: [this.fieldReportStatus[0]],   // TODO: Allow changing list & default of statuses in settings?!
-        note: ['']
-      })
+      //whereFormModel: this.fb.group({
+      address: ['default location (original)'],
+      lat: [this.setting.DEF_LAT,
+      Validators.required,
+        //Validators.minLength(4)
+      ],
+      long: [this.setting.DEF_LONG,
+      Validators.required,
+        //Validators.minLength(4)
+      ],
+      //}),
+      //whenFormModel: this.fb.group({
+      date: [new Date()],
+      //}),
+      //whatFormModel: this.fb.group({
+      status: [FieldReportStatuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
+      note: ['']
+      //})
     })
 
     //console.log(JSON.stringify(this.teams))
@@ -97,14 +107,17 @@ export class EntryComponent implements OnInit, AfterViewInit {
   onFormSubmit(): void {
     console.log("Form submit at ", Date())
     let formData = JSON.stringify(this.entryDetailsForm.value)
-
     console.log(formData)
     this.openSnackBar('Entry Saved: ' + formData, 'Nice!', 5000)
 
-    this.fieldReportService.addfieldReport(formData)
+    let newReport = this.fieldReportService.addfieldReport(formData)
+    console.log(`Report id # ${newReport.id} has been added.`)
 
     this.resetForm()
+  }
 
+  callsignCtrlChanged() {
+    console.log("callsign Ctrl Changed at ", Date(), ". call=" + "myCall")
   }
 
   // TODO: Reset form: Callsign to blank, current date, status/notes
@@ -112,27 +125,28 @@ export class EntryComponent implements OnInit, AfterViewInit {
     console.log("Resetting form...")
 
 
-    this.entryDetailsForm = this.fb.group({
-      callsign: [''],  // TODO: Not tied to the material design input field...
-      team: ['T3'],
-      whereFormModel: this.fb.group({
-        address: ['default location (reset)'],
-        lat: [this.setting.DEF_LAT,
-        Validators.required,
-          //Validators.minLength(4)
-        ],
-        long: [this.setting.DEF_LONG,
-        Validators.required,
-          //Validators.minLength(4)
-        ]
-      }),
-      whenFormModel: this.fb.group({
-        date: [new Date()]
-      }),
-      whatFormModel: this.fb.group({
-        status: [this.fieldReportStatus[0]],   // TODO: Allow changing list & default of statuses in settings?!
-        notes: ['']
-      })
+    this.entryDetailsForm = this.formBuilder.group({
+      id: -2,
+      callsign: ['resetCallSign'],  // TODO: Not tied to the material design input field...
+      team: ['T0'],
+      //whereFormModel: this.formBuilder.group({
+      address: ['default location (reset)'],
+      lat: [this.setting.DEF_LAT,
+      Validators.required,
+        //Validators.minLength(4)
+      ],
+      long: [this.setting.DEF_LONG,
+      Validators.required,
+        //Validators.minLength(4)
+      ],
+      //      }),
+      //    whenFormModel: this.formBuilder.group({
+      date: [new Date()],
+      //  }),
+      //whatFormModel: this.formBuilder.group({
+      status: [FieldReportStatuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
+      notes: ['']
+      //})
     })
 
 
