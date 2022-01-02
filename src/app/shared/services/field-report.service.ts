@@ -183,12 +183,12 @@ const filterParams = {
 
     let teams = this.teamService.getTeams()
     let rangers = this.rangerService.getRangers()
-    let streets = ["Ave", "St.", "Pl.", "Court", "Circle"]
-    let notes = ["Reports beautiful sunrise", "Roudy Kids", "Approaching Neighborhood CERT", "Confused & dazed in the sun",
+    const streets = ["Ave", "St.", "Pl.", "Court", "Circle"]
+    const notes = ["Reports beautiful sunrise", "Roudy Kids", "Approaching Neighborhood CERT", "Confused & dazed in the sun",
       "Wow", "na", "Can't hear you", "Bounced via tail of a comet!", "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
-    //let numberPushed = 0
 
-    console.log("Generating " + num + " more rows of FAKE field reports!")
+    const msSince1970 = new Date().getTime()
+    console.log(`Generating ${num} FAKE field reports... with base of ${msSince1970}`)
 
     for (let i = 0; i < num; i++) {
       this.fieldReports.push({
@@ -198,13 +198,11 @@ const filterParams = {
         address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
         lat: 45 + Math.floor(Math.random() * 2000) / 1000,
         long: -121 + Math.floor(Math.random() * 1000) / 1000,
-        date: new Date,
-        //status: FieldReportStatuses[Math.floor(Math.random() * Object.keys(FieldReportStatuses).length)],
+        date: new Date (Math.floor(msSince1970 - (Math.random() * 25 * 60 * 60 * 1000))), // 0-25 hrs earlier
         status: FieldReportStatuses[Math.floor(Math.random() * FieldReportStatuses.length)],
         note: notes[Math.floor(Math.random() * notes.length)]
       })
     }
-    //console.log("Pushed # " + numberPushed++)
   }
 
 

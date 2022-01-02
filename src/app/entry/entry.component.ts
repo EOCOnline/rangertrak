@@ -50,7 +50,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
     this.smartInput.valueChanges.pipe(debounceTime(500)).subscribe(smartest => this.getABCFromServer(smartest))
   }
 
-    private _filterRangers(value: string): RangerType[] {
+  private _filterRangers(value: string): RangerType[] {
     const filterValue = value.toLowerCase();
     //this.entryDetailsForm.controls['callsignCtrl'].setValue(filterValue)   // TODO: MAT input field not automatically set into entryForm above
     return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue));
@@ -157,6 +157,11 @@ export class EntryComponent implements OnInit, AfterViewInit {
     //this.entryDetailsForm.controls['#callsign'].reset
     //this.entryDetailsForm.controls['#callsign'].setValue('')
     //this.entryDetailsForm.controls['derivedAddress'].setValue('New ddddddddDerived Address')
+  }
+
+  generateFakeFieldReports(num = 30) {
+    this.fieldReportService.generateFakeData(num)
+    console.log(`Generated ${num} FAKE Field Reports`)
   }
 
   updateLocation() {

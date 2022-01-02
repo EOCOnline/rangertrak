@@ -4,6 +4,8 @@ import { FieldReportService, FieldReportStatuses, FieldReportType, RangerService
 import { HttpClient } from '@angular/common/http';
 import { formatDate } from '@angular/common'
 
+//import { validate } from 'class-validator';
+
 @Component({
   selector: 'rangertrak-field-reports',
   templateUrl: './field-reports.component.html',
@@ -48,11 +50,31 @@ export class FieldReportsComponent implements OnInit {
           </mat-option>
           */
 
-  myDateGetter = (params: { data: FieldReportType }) => {
-    const weekday = ["Sun ","Mon ","Tue ","Wed ","Thu ","Fri ","Sat "];
+  isValidDate(d: any) {
 
-    //https://www.w3schools.com/jsref/jsref_obj_date.asp
-    let dt = weekday[params.data.date.getDay()] + formatDate(params.data.date, 'yyyy-MM-dd HH:MM:ss', 'en-US')
+    return d instanceof Date //&& !isNaN(d);
+
+    if (Object.prototype.toString.call(d) !== "[object Date]") {
+      console.log (`bad date type:${Object.prototype.toString.call(d)}`)
+      return false } // invalid date
+    if (isNaN(d.getTime())) {
+      console.log (`bad time`)
+      return false } // d.valueOf() could also work  // invalid time
+    return true  // valid date
+  }
+
+  myDateGetter = (params: { data: FieldReportType }) => {
+    const weekday = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
+    let dt = 'unknown date'
+
+    let d:Date = params.data.date
+    //console.log(`Day is: ${params.data.date.toISOString()}`)
+
+    if (this.isValidDate(d)) {
+      dt = weekday[d.getDay()] + formatDate(d, 'yyyy-MM-dd HH:MM:ss', 'en-US')
+      console.log(`Day is: ${params.data.date.toISOString()}`)
+    }
+
     return dt
   }
 
@@ -67,17 +89,18 @@ export class FieldReportsComponent implements OnInit {
   }
 
   columnDefs = [
-    { headerName: "CallSign", field: "who.callsign", tooltipField: "who.team" },
-    { headerName: "Team", field: "who.team" },
-    { headerName: "Address", field: "where.address", singleClickEdit: true, flex: 50 }, //, maxWidth: 200
-    { headerName: "Lat", field: "where.lat", singleClickEdit: true },
-    { headerName: "Long", field: "where.long", cellClass: 'number-cell' },
+    { headerName: "ID", field: "id" },
+    { headerName: "CallSign", field: "callsign", tooltipField: "team" },
+    { headerName: "Team", field: "team" },
+    { headerName: "Address", field: "address", singleClickEdit: true, flex: 50 }, //, maxWidth: 200
+    { headerName: "Lat", field: "lat", singleClickEdit: true },
+    { headerName: "Long", field: "long", cellClass: 'number-cell' },
     {
-      headerName: "Time", //field: "when",
+      headerName: "Time", //field: "date",
       valueGetter: this.myDateGetter,
     },
-    { headerName: "Status", field: "what.status", flex: 50 }, //, maxWidth: 150
-    { headerName: "Note", field: "what.note", flex: 50 }, //, maxWidth: 300
+    { headerName: "Status", field: "status", flex: 50 }, //, maxWidth: 150
+    { headerName: "Note", field: "note", flex: 50 }, //, maxWidth: 300
   ];
   now: Date
   http: any;
@@ -105,7 +128,7 @@ export class FieldReportsComponent implements OnInit {
           when: { date: this.now },
           what: { status: "Normal", note: "Reports beautiful sunrise" } }
       */
-    this.fieldReportService.generateFakeData(30)
+    //this.fieldReportService.generateFakeData(30) do in entry form instead
     console.log("got " + this.fieldReports.length + " Field Reports")
     console.log("Field Report Form completed at ", Date())
   }
@@ -127,7 +150,6 @@ export class FieldReportsComponent implements OnInit {
   onFirstDataRendered(params: any) {
     params.api.sizeColumnsToFit();
   }
-
 }
 
 

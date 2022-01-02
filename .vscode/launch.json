@@ -23,7 +23,11 @@
       "request": "launch",
       "name": "Launch Chrome against localhost",
       "url": "http://localhost:4200",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "outFiles": [
+        "${workspaceFolder}/**/*.js",
+        "!**/node_modules/**"
+      ]
     }
   ]
 }
