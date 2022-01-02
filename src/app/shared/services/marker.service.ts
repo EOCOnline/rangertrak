@@ -71,4 +71,31 @@ export class MarkerService {
     }
     //console.log("Pushed # " + numberPushed++)
   }
+
+
+/*   FROM OLD gmap component code...
+   // Create an array of alphabetical characters used to label the markers.
+   this.generateFakeData()
+
+   // Add some markers to the map.
+   const markers = this.markerLocations.map((position, i) => {
+     const label = this.labels[i % this.labels.length];
+     const marker = new google.maps.Marker({
+       position,
+       label,
+     });
+
+     // markers can only be keyboard focusable when they have click listeners
+     // open info window when marker is clicked
+     marker.addListener("click", () => {
+       infoWindow.setContent(label);
+       infoWindow.open(map, marker);
+     });
+
+     return marker;
+   });
+*/
+
+
+
 }

@@ -1,6 +1,6 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone } from '@angular/core';
 import { Map } from '../shared/'
-import { snazzyMapsStyle } from './snazzy-maps';
+//import { snazzyMapsStyle } from './snazzy-maps';
 import { MapsAPILoader } from '@agm/core';
 import { DOCUMENT, JsonPipe } from '@angular/common';
 //import { MarkerClusterer } from "@googlemaps/markerclusterer";
@@ -26,9 +26,32 @@ interface marker {
 @Component({
   selector: 'rangertrak-gmap',
   templateUrl: './gmap.component.html',
-  styleUrls: ['./gmap.component.scss',
-    '../../../node_modules/snazzy-info-window/dist/snazzy-info-window.css']
+  styleUrls: ['./gmap.component.scss'
+  //  ,'../../../node_modules/snazzy-info-window/dist/snazzy-info-window.css'
+  ]
 })
+
+/*
+Initial Chunk Files   | Names         |      Size
+vendor.js             | vendor        |   9.36 MB
+styles.css, styles.js | styles        | 575.38 kB
+polyfills.js          | polyfills     | 339.13 kB
+main.js               | main          | 282.01 kB
+runtime.js            | runtime       |   6.86 kB
+
+                      | Initial Total |  10.54 MB
+
+to
+
+Initial Chunk Files | Names   |      Size
+main.js             | main    | 263.40 kB
+runtime.js          | runtime |   6.86 kB
+
+... so no big deal?!
+
+*/
+
+
 export class GmapComponent extends Map implements OnInit {
 
   zoom = 10;
@@ -39,7 +62,7 @@ export class GmapComponent extends Map implements OnInit {
   markerLocations: marker[] = []
   //let map: maps.Map;
   //center: google.maps.LatLngLiteral = {lat: this.lat, lng: this.lng};
-  static style: any = snazzyMapsStyle;
+  //static style: any = snazzyMapsStyle;
 
   constructor(@Inject(DOCUMENT) private document: Document) {
     super('MyName')
@@ -82,7 +105,7 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     let googMap = new google.maps.Map(document.getElementById('bigGoogMapId') as HTMLElement, {
       center: {lat: SettingsComponent.DEF_LAT, lng: SettingsComponent.DEF_LONG},
       zoom: 11,
-      mapTypeId: 'terrain' // line is optional
+      mapTypeId: 'terrain'
     });
     /*
       MapTypes:
@@ -113,7 +136,7 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
   }
 
   display() {
-
+    console.log('display() not implemented...');
   }
 
   markerDragEnd(m: marker, $event: google.maps.MouseEvent) {
@@ -141,8 +164,6 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
   getAddress(latitude: any, longitude: any) {
     throw new Error('Method not implemented.');
   }
-
-
 
   initMap2(): void {
     console.log('initMap is running')

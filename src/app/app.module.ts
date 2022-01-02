@@ -3,7 +3,6 @@ import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Va
 
 import { AgGridModule } from 'ag-grid-angular';
 import { AgmCoreModule } from '@agm/core';
-import { AgmSnazzyInfoWindowModule } from '@agm/snazzy-info-window';
 import { AlertsComponent } from './alerts/alerts.component';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -25,6 +24,30 @@ import { NgModule } from '@angular/core';
 import { RangersComponent } from './rangers/rangers.component';
 import { SettingsComponent } from './settings/settings.component';
 import { X404Component } from './x404/x404.component';
+
+//import { AgmSnazzyInfoWindowModule } from '@agm/snazzy-info-window';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
 // https://angular.io/guide/build#configuring-commonjs-dependencies
@@ -55,7 +78,7 @@ import { X404Component } from './x404/x404.component';
     FontAwesomeModule,
     AgGridModule.withComponents([]),
     AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
-    AgmSnazzyInfoWindowModule,
+   // AgmSnazzyInfoWindowModule,
     LazyModule
   ],
   declarations: [

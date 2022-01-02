@@ -53,7 +53,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
     private _filterRangers(value: string): RangerType[] {
     const filterValue = value.toLowerCase();
     //this.entryDetailsForm.controls['callsignCtrl'].setValue(filterValue)   // TODO: MAT input field not automatically set into entryForm above
-    return this.rangers.filter((ranger) => ranger.callsign.toLowerCase().includes(filterValue));
+    return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue));
   }
 
   getABCFromServer(myVal: string) {
