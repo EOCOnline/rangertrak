@@ -1,12 +1,12 @@
-import { DOCUMENT, JsonPipe } from '@angular/common';
-import { AfterViewInit, Component, Inject, OnInit } from '@angular/core';
+import { DOCUMENT, JsonPipe } from '@angular/common'
+import { AfterViewInit, Component, Inject, OnInit, isDevMode } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable, pipe } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { Observable, pipe } from 'rxjs'
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators'
 
-import { SettingsComponent } from '../settings/settings.component';
-import { FieldReportService, FieldReportStatuses, RangerService, RangerType, TeamService, TeamType } from '../shared/services/';
+import { SettingsComponent } from '../settings/settings.component'
+import { FieldReportService, FieldReportStatuses, RangerService, RangerType, TeamService, TeamType } from '../shared/services/'
 
 @Component({
   selector: 'rangertrak-entry',
@@ -25,8 +25,9 @@ export class EntryComponent implements OnInit, AfterViewInit {
   fieldReportService
   fieldReportStatuses
   setting = SettingsComponent.AppSettings
-  entryDetailsForm!: FormGroup;
-  smartInput = new FormControl('')
+  entryDetailsForm!: FormGroup
+  smartInput = new FormControl({value:'', disabled:true})
+  smartDisabled = true
 
   constructor(
     private formBuilder: FormBuilder,
@@ -45,15 +46,15 @@ export class EntryComponent implements OnInit, AfterViewInit {
     this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
       startWith(''),
       map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
-    );
+    )
 
     this.smartInput.valueChanges.pipe(debounceTime(500)).subscribe(smartest => this.getABCFromServer(smartest))
   }
 
   private _filterRangers(value: string): RangerType[] {
-    const filterValue = value.toLowerCase();
+    const filterValue = value.toLowerCase()
     //this.entryDetailsForm.controls['callsignCtrl'].setValue(filterValue)   // TODO: MAT input field not automatically set into entryForm above
-    return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue));
+    return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
   }
 
   getABCFromServer(myVal: string) {
@@ -62,13 +63,12 @@ export class EntryComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    console.log("EntryForm test started at ", Date())
+    // console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode()?"":"NOT"} enabled`)
 
     this.entryDetailsForm = this.formBuilder.group({
       id: -1,
       callsign: ['EvilCallSign'],  // TODO: Not tied to the material design input field...
       team: ['T2'],
-      //whereFormModel: this.fb.group({
       address: ['default location (original)'],
       lat: [this.setting.DEF_LAT,
       Validators.required,
@@ -78,25 +78,20 @@ export class EntryComponent implements OnInit, AfterViewInit {
       Validators.required,
         //Validators.minLength(4)
       ],
-      //}),
-      //whenFormModel: this.fb.group({
       date: [new Date()],
-      //}),
-      //whatFormModel: this.fb.group({
       status: [FieldReportStatuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
       note: ['']
-      //})
     })
 
-    //console.log(JSON.stringify(this.teams))
-    console.log("EntryForm test completed at ", Date())
+    this.smartDisabled = !isDevMode()
+    console.log("EntryForm ngOnInit completed at ", Date())
   }
 
   // FUTURE: provider nicer time picker: https://www.freakyjolly.com/angular-material-109-datepicker-timepicker-tutorial/#Only_Show_Timepicker
   /*
     FUTURE: Allow entry of keywords
     get keywordsControls(): any {
-    return (<FormArray>this.entryDetailsForm.get('keywords')).controls;
+    return (<FormArray>this.entryDetailsForm.get('keywords')).controls
   }   */
 
   openSnackBar(message: string, action: string, duration = 0) {
@@ -173,7 +168,8 @@ export class EntryComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    //console.log("ngAfterViewInit");
-    //console.debug(this.divs);
+    console.log("ngAfterViewInit")
+
+    //console.debug(this.divs)
   }
 }

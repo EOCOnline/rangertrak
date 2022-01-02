@@ -51,8 +51,8 @@ runtime.js          | runtime |   6.86 kB
 
 */
 
-
-export class GmapComponent extends Map implements OnInit {
+//extends Map
+export class GmapComponent  implements OnInit {
 
   zoom = 10;
   title = 'RangerTrak Google Map'
@@ -65,7 +65,7 @@ export class GmapComponent extends Map implements OnInit {
   //static style: any = snazzyMapsStyle;
 
   constructor(@Inject(DOCUMENT) private document: Document) {
-    super('MyName')
+    //super('MyName')
   }
 
 
