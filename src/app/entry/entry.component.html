@@ -30,15 +30,7 @@
 
     </mat-form-field>
 
-    <!--br>
-
-    <mat-slide-toggle
-      [checked]="callsign.disabled"
-      (change)="callsign.disabled ? callsign.enable() : callsign.disable()">
-      Disable Input?
-    </mat-slide-toggle-->
-
-    <div #div1 class="input-group">Team
+    <div #div1 class="input-group">(or all of) this Team:
       <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
         type="text" formControlName="team" placeholder="Team">
       <div *ngIf="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.hasError('required')"
@@ -74,17 +66,15 @@
   </div>
 
     <h2 class="elegant">When</h2>
-    <!--div formGroupName="whenFormModel"-->
+    <!-- TODO: Use Time Picker: https://material.io/components/time-pickers#usage -->
       <div class="input-group">Date:
       <input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
         type="datetime" formControlName="date" placeholder="date">
       <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
         class="text-sm text-danger">date is required</div>
     </div>
-    <!-- /div-->
 
     <h2 class="elegant">What</h2>
-    <!--div formGroupName="whatFormModel"-->
 
     <div class="input-group">Status:
       <select formControlName="status"
@@ -94,14 +84,11 @@
       </select>
       <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
         class="text-sm text-danger">Status is required</div>
-    <!--/div-->
 
-    <!--div class="input-group" class="enter__What--note"-->Notes:
       <textarea formControlName="note" class="enter__What--area" id="" cols="30" rows="10" placeholder="Enter Any Notes"></textarea>
     </div>
-    <!--/div-->
 
-    <!--h4>Keywords</h4>
+    <!-- TODO: Add h4> Keywords</h4>
     <div formArrayName="keywords">
       <div *ngIf="keywordsControls && keywordsControls.length">
         <div *ngFor="let keywordControl of keywordsControls; let i = index">
@@ -116,10 +103,77 @@
       </div>
     </div-->
 
+
+
+    <!--  https://material.io/components/sliders/web#sliders -->-->
+    <div class="mdc-slider mdc-slider--discrete mdc-slider--tick-marks">
+      <input class="mdc-slider__input" type="range" min="0" max="100" value="{{numFakes}}" name="numFakes" step="5" aria-label="Select number of fake Field Reports to create">
+      <div class="mdc-slider__track">
+        <div class="mdc-slider__track--inactive"></div>
+        <div class="mdc-slider__track--active">
+          <div class="mdc-slider__track--active_fill"></div>
+        </div>
+        <div class="mdc-slider__tick-marks">
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--inactive"></div>
+          <div class="mdc-slider__tick-mark--inactive"></div>
+          <div class="mdc-slider__tick-mark--inactive"></div>
+          <div class="mdc-slider__tick-mark--inactive"></div>
+          <div class="mdc-slider__tick-mark--inactive"></div>
+
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--active"></div>
+          <div class="mdc-slider__tick-mark--inactive"></div>
+          <div class="mdc-slider__tick-mark--inactive"></div>
+          <div class="mdc-slider__tick-mark--inactive"></div>
+          <div class="mdc-slider__tick-mark--inactive"></div>
+          <div class="mdc-slider__tick-mark--inactive"></div>
+
+        </div>
+      </div>
+      <div class="mdc-slider__thumb">
+        <div class="mdc-slider__value-indicator-container" aria-hidden="true">
+          <div class="mdc-slider__value-indicator">
+            <span class="mdc-slider__value-indicator-text">
+              {{numFakes}}
+            </span>
+          </div>
+        </div>
+        <div class="mdc-slider__thumb-knob"></div>
+      </div>
+    </div>
+
+
+
+
     <button (click)="updateLocation()">Update location</button>
-    <button (click)="generateFakeFieldReports(15)">Generate 15 FAKE Field Reports</button>
+    <button (click)="this.entryDetailsForm.reset()">Reset (native)</button>
+    <button (click)="resetForm()">Reset (John's Special)</button>
+
+<!--
+    <div class="input-group">FAKE Field Reports:
+      <input type="number" formControlName="numF" placeholder={{numFakes}}>
+      <! --div *ngIf="entryDetailsForm.get('numF')?.touched && entryDetailsForm.get('long')?.hasError('required')"
+        class="text-sm text-danger">long is required</div-  ->
+    </div
+
+
+  {{entryDetailsForm.get('numF')!.value}}
+
+-->
+
+    <button (click)="generateFakeFieldReports(entryDetailsForm.get('numF')!.value)">Generate  FAKE Field Reports</button>
     <br>
-    <button [disabled]="entryDetailsForm.invalid" style="margin-top: 20px; background-color: rgb(214, 219, 137);" type="submit">Submit</button>
+    <button [disabled]="entryDetailsForm.invalid" class="enter__Submit" type="submit">Submit</button>
 
   </form>
 </div>

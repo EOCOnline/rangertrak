@@ -27,6 +27,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@googlemaps/markerclusterer": "^1.0.18",
+    "@material/slider": "^13.0.0",
     "@ngx-pwa/local-storage": "^13.0.0",
     "ag-grid-angular": "^26.2.0",
     "ag-grid-community": "^26.2.0",
