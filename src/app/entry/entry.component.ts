@@ -62,7 +62,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
     return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
   }
 
-  getABCFromServer(myVal: string) {
+  getABCFromServer(myVal: string) { // Just serves timer for input field - post interaction
     let candidates = ["Einstein", "Picasso", "Aunt Mabel", "Ponzi"]
     console.log(`The mysterious person is ${myVal} or aka ${candidates[Math.floor(Math.random() * candidates.length)]}`)
   }
@@ -84,10 +84,9 @@ export class EntryComponent implements OnInit, AfterViewInit {
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
     this.submitButton = this.document.getElementById("enter__Submit-button")
-
     if (this.submitButton) {
       // button click event
-      this.submitButton.addEventListener("click", this.ToggleAnimation, false);
+      //this.submitButton.addEventListener("click", this.ToggleAnimation, false);
     }
     else {
       console.log("NO submitButton found")
@@ -199,22 +198,22 @@ export class EntryComponent implements OnInit, AfterViewInit {
   When the button is clicked, a class of "enable" is applied to the element which starts a CSS3 animation. Animation start, iteration and end events are captured and logged. When animationend is encountered, the "enable" class is removed.*/
 
   // start/stop animation
-  ToggleAnimation(e: Event) {
+  ToggleAnimation(e?: Event) {
     console.log(`================ ToggleAnimation at ${Date()}`)
     this.submitInfo = this.document.getElementById("enter__Submit-info")
     //BUG: TypeError: Cannot read properties of undefined (reading 'getElementById')
-    this.submitButton = this.document.getElementById("enter__Submit-button")
+    //this.submitButton = this.document.getElementById("enter__Submit-button")
 
     if (this.submitInfo) {
       var on = (this.submitInfo.className != "");
       this.LogEvent("==== Animation is " + (on ? "disabled.\n" : "enabled."));
-      if (this.submitButton) {
+      /*if (this.submitButton) {
         this.submitButton.textContent = "Click to " + (on ? "start" : "stop") + " animation";
       }else {
         console.log("NO submitButton found!!!")
-      }
+      }*/
       this.submitInfo.className = (on ? "" : "enable");
-      if (e) e.preventDefault();
+      //if (e) e.preventDefault(); // Signals to op causing event for cancelation
     }else {
       console.log("NO submitInfo found!!!")
     }
@@ -239,7 +238,7 @@ export class EntryComponent implements OnInit, AfterViewInit {
     console.log(`Resetting Animation at ${Date()}`)
     element.style.animation = 'none';
     element.offsetHeight; // trigger reflow https://gist.github.com/paulirish/5d52fb081b3570c81e3a
-    //element.style.animation = "";
+    element.style.animation = "";
   }
 
   // TODO: This also gets called if the Update Location button is clicked!!
@@ -254,13 +253,14 @@ export class EntryComponent implements OnInit, AfterViewInit {
 
     if (this.submitInfo) {
       this.submitInfo.innerText = `Entry id # ${newReport.id} Saved. ${formData}`
-      this.fade(this.submitInfo, 3)
-
+      //this.fade(this.submitInfo, 3)
+      //this.ToggleAnimation()
+      this.reset_animation(this.submitInfo)
     }
     else {
       console.log("NO this.submitInfo ID FOUND!!!")
     }
-    this.openSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
+    //this.openSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
 
     ////////// BUG: this.resetForm()
   }
