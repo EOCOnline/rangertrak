@@ -1,34 +1,89 @@
+<mat-card>
+  <mat-card-content>
+    <h2 class="example-h2">Slider configuration</h2>
+
+    <section class="example-section">
+      <mat-form-field class="example-margin" appearance="fill">
+        <mat-label>Value</mat-label>
+        <input matInput type="number" [(ngModel)]="value" />
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="thumbLabel"
+        >Show thumb label</mat-checkbox
+      >
+    </section>
+
+    <section class="example-section">
+      <mat-checkbox class="example-margin" [(ngModel)]="disabled"
+        >Disabled</mat-checkbox
+      >
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="example-result-card">
+  <mat-card-content>
+    <h2>Result</h2>
+    <br />
+    <br />
+
+    <div
+      class="example-label-container"
+      [class]="vertical ? 'example-label-vertical' : 'example-label-horizontal'"
+    >
+      <label id="example-name-label" class="example-name-label"
+        >Max Value</label
+      >
+      <label class="example-value-label">{{value}}</label>
+    </div>
+    <mat-slider
+      class="example-margin"
+      [disabled]="disabled"
+      [invert]="invert"
+      [max]="max"
+      [min]="min"
+      [step]="step"
+      [thumbLabel]="thumbLabel"
+      [(ngModel)]="value"
+      [vertical]="vertical"
+      aria-labelledby="example-name-label"
+    >
+    </mat-slider>
+  </mat-card-content>
+</mat-card>
+
+<hr>
+<hr>
+<hr>
+
+
+
+
 <div class="container">
-  <form [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit()"  class="example-form">
+  <form [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit()" class="enter__form">
 
     <h1>Entry Form</h1>
-
-    <!--h2 class="elegant">ID: {{testId}}</h2-->
-<input type="text" placeholder="smartest man on earth" [disabled]="smartDisabled" [formControl]="smartInput">
     <h2 class="elegant">Who</h2>
 
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->
-    <mat-form-field class="example-full-width" appearance="fill">
+    <mat-form-field class="enter__Callsign" appearance="fill">
       <mat-label>CallSign</mat-label>
 
-      <input matInput
-        [formControl]="callsignCtrl"
-        type="text"
-        placeholder="Pick one"
-        aria-label="Callsigns"
-        [matAutocomplete]="auto"
-        (change)= this.callsignCtrlChanged()
-        >
+      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
+        [matAutocomplete]="auto" (change)=this.CallsignCtrlChanged()>
 
-      <mat-autocomplete #auto="matAutocomplete" >
+      <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
-          <img class="example-option-img" aria-hidden [src]="ranger.image" height="40">
+          <img class="enter__Callsign-img" aria-hidden [src]="ranger.image" height="40">
           <span>{{ranger.callsign}}</span> |
           <small> {{ranger.licensee}} | {{ranger.phone}}</small>
         </mat-option>
       </mat-autocomplete>
 
     </mat-form-field>
+    <span id="enter__Callsign-upshot"></span>
 
     <div #div1 class="input-group">(or all of) this Team:
       <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
@@ -37,8 +92,11 @@
         class="text-sm text-danger">Team is required</div>
     </div>
 
+
+    <div id="enter__SmallMap"></div>
+
+
     <h2 class="elegant">Where</h2>
-    <!--div #div2 formGroupName="whereFormModel"-->
     <div class="input-group">Street Address:
       <input
         [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
@@ -46,28 +104,29 @@
       <!--div
         *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
         class="text-sm text-danger">address is required</div  -->
-    <!--/div-->
+      <!--/div-->
 
-    <div>Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code: 8VCWVF22+</span></div>
+      <div>Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code: 8VCWVF22+</span>
+      </div>
 
-    <div class="input-group">Latitude:
-      <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
-        type="number" formControlName="lat" placeholder="Latitude">
-      <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
-        class="text-sm text-danger">lat is required</div>
+      <div class="input-group">Latitude:
+        <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
+          type="number" formControlName="lat" placeholder="Latitude">
+        <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
+          class="text-sm text-danger">lat is required</div>
+      </div>
+
+      <div class="input-group">Longitude:
+        <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
+          type="number" formControlName="long" placeholder="Longitude">
+        <div *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
+          class="text-sm text-danger">long is required</div>
+      </div>
     </div>
-
-    <div class="input-group">Longitude:
-      <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
-        type="number" formControlName="long" placeholder="Longitude">
-      <div *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
-        class="text-sm text-danger">long is required</div>
-    </div>
-  </div>
 
     <h2 class="elegant">When</h2>
     <!-- TODO: Use Time Picker: https://material.io/components/time-pickers#usage -->
-      <div class="input-group">Date:
+    <div class="input-group">Date:
       <input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
         type="datetime" formControlName="date" placeholder="date">
       <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
@@ -85,7 +144,8 @@
       <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
         class="text-sm text-danger">Status is required</div>
 
-      <textarea formControlName="note" class="enter__What--area" id="" cols="30" rows="10" placeholder="Enter Any Notes"></textarea>
+      <textarea formControlName="note" class="enter__What--area" id="" cols="40" rows="5"
+        placeholder="Enter Any Notes"></textarea>
     </div>
 
     <!-- TODO: Add h4> Keywords</h4>
@@ -104,76 +164,38 @@
     </div-->
 
 
+    <!--div class="input-group"># Fakes</div-->
+    <input matInput type="number" [(ngModel)]="nFakes">
 
-    <!--  https://material.io/components/sliders/web#sliders -->-->
-    <div class="mdc-slider mdc-slider--discrete mdc-slider--tick-marks">
-      <input class="mdc-slider__input" type="range" min="0" max="100" value="{{numFakes}}" name="numFakes" step="5" aria-label="Select number of fake Field Reports to create">
-      <div class="mdc-slider__track">
-        <div class="mdc-slider__track--inactive"></div>
-        <div class="mdc-slider__track--active">
-          <div class="mdc-slider__track--active_fill"></div>
-        </div>
-        <div class="mdc-slider__tick-marks">
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--inactive"></div>
-          <div class="mdc-slider__tick-mark--inactive"></div>
-          <div class="mdc-slider__tick-mark--inactive"></div>
-          <div class="mdc-slider__tick-mark--inactive"></div>
-          <div class="mdc-slider__tick-mark--inactive"></div>
-
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--active"></div>
-          <div class="mdc-slider__tick-mark--inactive"></div>
-          <div class="mdc-slider__tick-mark--inactive"></div>
-          <div class="mdc-slider__tick-mark--inactive"></div>
-          <div class="mdc-slider__tick-mark--inactive"></div>
-          <div class="mdc-slider__tick-mark--inactive"></div>
-
-        </div>
-      </div>
-      <div class="mdc-slider__thumb">
-        <div class="mdc-slider__value-indicator-container" aria-hidden="true">
-          <div class="mdc-slider__value-indicator">
-            <span class="mdc-slider__value-indicator-text">
-              {{numFakes}}
-            </span>
-          </div>
-        </div>
-        <div class="mdc-slider__thumb-knob"></div>
-      </div>
-    </div>
-
-
-    <button (click)="updateLocation()">Update location</button>
-    <button (click)="this.entryDetailsForm.reset()">Reset (native)</button>
-    <button (click)="resetForm()">Reset (John's Special)</button>
+    <!--  https://material.angular.io/components/slider/overview -->
+    <mat-slider id="enter__Fake--slider" thumbLabel [displayWith]="formatLabel" tickInterval="10" step="5" min="0" max="100" aria-label="# Fake Field Reports"
+    [(ngModel)]="nFakes"></mat-slider>
 
 <!--
-    <div class="input-group">FAKE Field Reports:
-      <input type="number" formControlName="numF" placeholder={{numFakes}}>
-      <! --div *ngIf="entryDetailsForm.get('numF')?.touched && entryDetailsForm.get('long')?.hasError('required')"
-        class="text-sm text-danger">long is required</div-  ->
-    </div
+      <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
+        type="text" formControlName="team" placeholder="Team">
+      <div *ngIf="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.hasError('required')"
+        class="text-sm text-danger">Team is required</div>
+    </div-->
 
 
-  {{entryDetailsForm.get('numF')!.value}}
-
--->
 
 
-    <button (click)="generateFakeFieldReports(entryDetailsForm.get('numF')!.value)">Generate  FAKE Field Reports</button>
+
     <br>
-    <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button" id="enter__Submit-button" type="submit">Submit</button>
+    <button (click)="generateFakeFieldReports(entryDetailsForm.get('numF')!.value)">Generate
+      {{nFakes}} FAKE Field Reports</button><br>
+
+    <br>
+    <!--button (click)="updateLocation()">Update location</button> <br-->
+    <button (click)="this.entryDetailsForm.reset()">Reset (native)</button> <br>
+    <button (click)="resetForm()">Reset (John's Special)</button> <br>
+
+    <br>
+    <button [disabled]="entryDetailsForm.invalid"
+      class="enter__Submit-button" type="submit">Submit</button>
 
     <span id="enter__Submit-info"></span>
+
   </form>
 </div>
