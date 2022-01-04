@@ -17,6 +17,7 @@ import { GmapComponent } from './gmap/gmap.component';
 import { HttpClientModule } from '@angular/common/http';
 import { LazyModule } from './lazy/lazy.module'
 import { LmapComponent } from './lmap/lmap.component';
+import { LogComponent } from './log/log.component';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { MaterialModule } from './material.module';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -92,7 +93,8 @@ import { X404Component } from './x404/x404.component';
     FieldReportsComponent,
     SettingsComponent,
     RangersComponent,
-    X404Component
+    X404Component,
+    LogComponent
   ],
   providers: [TeamService, RangerService, FieldReportService, MarkerService, PopupService, ShapeService,
     {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}], // Team, Ranger,

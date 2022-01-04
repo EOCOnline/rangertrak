@@ -153,8 +153,6 @@
     </div>
 
 
-
-
     <button (click)="updateLocation()">Update location</button>
     <button (click)="this.entryDetailsForm.reset()">Reset (native)</button>
     <button (click)="resetForm()">Reset (John's Special)</button>
@@ -171,9 +169,10 @@
 
 -->
 
+
     <button (click)="generateFakeFieldReports(entryDetailsForm.get('numF')!.value)">Generate  FAKE Field Reports</button>
     <br>
-    <button [disabled]="entryDetailsForm.invalid" class="enter__Submit" type="submit">Submit</button>
-
+    <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button" id="enter__Submit-button" type="submit">Submit</button>
+    <span class="enter__Submit-info" id="enter__Submit-info"></span>
   </form>
 </div>

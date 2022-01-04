@@ -5,6 +5,7 @@ import { FieldReportsComponent } from './field-reports/field-reports.component';
 import { GmapComponent } from './gmap/gmap.component';
 import { LazyModule } from './lazy/lazy.module';
 import { LmapComponent } from './lmap/lmap.component';
+import { LogComponent } from './log/log.component';
 import { NgModule } from '@angular/core';
 import { RangersComponent } from './rangers/rangers.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -23,6 +24,7 @@ const routes: Routes = [
   { path: 'lmap', component: LmapComponent },
   { path: 'rangers', component: RangersComponent },
   { path: 'settings', component: SettingsComponent },
+  { path: 'log', component: LogComponent },
 
   // LAZY Routes: preloaded right after root app module (via dynamic import module)
   {

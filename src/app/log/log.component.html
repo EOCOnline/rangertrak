@@ -1,0 +1,18 @@
+<h1>CSS3 Animation Events in JavaScript</h1>
+
+<p>When the button is clicked, a class of "enable" is applied to the element which starts a CSS3 animation. Animation start, iteration and end events are captured and logged. When animationend is encountered, the "enable" class is removed.</p>
+
+<p>For more information, refer to <a href="http://www.sitepoint.com/css3-animation-javascript-event-handlers/">How to Capture CSS3 Animation Events in JavaScript</a>.</p>
+
+<p><button id="anim" onclick="this.ToggleAnimation2()">Click to start animation</button></p>
+
+<button (click)="ToggleAnimation2()">ToggleAnimation2()</button>
+
+<!--
+<button (click)="updateLocation()">Update location</button>
+    <button (click)="this.entryDetailsForm.reset()">Reset (native)</button>
+    <button (click)="resetForm()">Reset (John's Special)</button>
+-->
+
+
+<pre id="log">Event information log</pre>
