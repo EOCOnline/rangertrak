@@ -19,35 +19,14 @@ import { SELECT_PANEL_INDENT_PADDING_X } from '@angular/material/select/select'
   providers: [RangerService, FieldReportService, TeamService]
 })
 export class EntryComponent implements OnInit{ //}, AfterViewInit {
-
-
-  autoTicks = false;
-  disabled = false;
-  invert = false;
-  max = 100;
-  min = 0;
-  showTicks = false;
-  step = 1;
-  thumbLabel = true;
-  fakeValue = 0;
-  vertical = false;
-  tickInterval = 1;
-
-
-
-
-
   callsignCtrl = new FormControl()
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
-  //fieldReportService
   fieldReportStatuses
   setting = SettingsComponent.AppSettings
   entryDetailsForm!: FormGroup
   sliderDetailsForm!: FormGroup
-  numFakes = 30
   nFakes = 10
-  //const fakeSlider = new MDCSlider(document.querySelector('.mdc-slider'));
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
 
@@ -116,16 +95,11 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
       note: ['']
     })
 
+    this.sliderDetailsForm = this.formBuilder.group({})
+
     this.submitInfo = this.document.getElementById("enter__Submit-info")
 
     console.log(`EntryForm ngOnInit completed at ${Date()}`)
-  }
-
-  formatLabel(value: number) {
-    if (value >= 1000) {
-      return Math.round(value / 1000) + 'k';
-    }
-    return value;
   }
 
   // FUTURE: provider nicer time picker: https://www.freakyjolly.com/angular-material-109-datepicker-timepicker-tutorial/#Only_Show_Timepicker
@@ -140,9 +114,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
     this._snackBar.open(message, action, { duration: duration, verticalPosition: 'top'})
   }
 
-  sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
+  // sleep(ms: number) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
   /*
     https://www.sitepoint.com/css3-animation-javascript-event-handlers/
@@ -207,7 +179,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
     })
   }
 
-  generateFakeFieldReports(num = this.numFakes) {
+  generateFakeFieldReports(num = this.nFakes) {
     this.fieldReportService.generateFakeData(num)
     console.log(`Generated ${num} FAKE Field Reports`)
   }
@@ -225,19 +197,4 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
     console.log("ngAfterViewInit")
   }
   */
-}
-
-
-export class SliderParams {
-  autoTicks = false;
-  disabled = false;
-  invert = false;
-  max = 100;
-  min = 0;
-  showTicks = false;
-  step = 1;
-  thumbLabel = false;
-  fakeValue = 0;
-  vertical = false;
-  tickInterval = 1;
 }

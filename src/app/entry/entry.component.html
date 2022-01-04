@@ -100,44 +100,31 @@
       </div>
     </div-->
     <br><br><br><br>
-    <!--
-  gModel cannot be used to register form controls with a parent formGroup directive.  Try using
-    formGroup's partner directive "formControlName" instead.
--->
+
+    <!--  https://material.angular.io/components/slider/overview -->
+    <!-- ngModel cannot be used to register form controls with a parent formGroup directive -->
     <div [formGroup]="sliderDetailsForm">
+      <section class="enter__Slider">
 
-      <div class="example-label-container" [class]="vertical ? 'example-label-vertical' : 'example-label-horizontal'">
-        <label id="example-name-label" class="example-name-label"># Fakes = </label>
-        <label class="example-value-label">{{nFakes}}</label>
-      </div>
 
-      <section class="example-section">
-        <mat-form-field class="example-margin" appearance="fill">
-          <mat-label>Value</mat-label>
+          <mat-form-field class="enter__Fake--numfield" appearance="fill">
+          <mat-label># Fakes</mat-label>
           <input matInput type="number" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}" />
         </mat-form-field>
+
+        <button (click)="generateFakeFieldReports()" type="button">Generate
+          {{nFakes}} FAKE Field Reports</button>
+
+          <mat-slider id="enter__Fake--slider" thumbLabel tickInterval="10" step="5" min="0"
+          max="100" aria-label="# Fake Field Reports" [(ngModel)]="nFakes"
+          [ngModelOptions]="{standalone: true}"></mat-slider>
       </section>
-      <br>
-      <input matInput type="number" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}">
-
-
-      <!--input formControlName="firstName"-->
-      <br>
-      <input [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}">
-      <br>
-      <!--  https://material.angular.io/components/slider/overview -->
-      <mat-slider id="enter__Fake--slider" thumbLabel [displayWith]="formatLabel" tickInterval="10" step="5" min="0"
-        max="100" aria-label="# Fake Field Reports" [disabled]="disabled" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"></mat-slider>
-
-      <br>
-      <button (click)="generateFakeFieldReports(entryDetailsForm.get('numF')!.value)">Generate
-        {{nFakes}} FAKE Field Reports</button><br>
     </div>
 
     <br>
     <!--button (click)="updateLocation()">Update location</button> <br-->
-    <button (click)="this.entryDetailsForm.reset()">Reset (native)</button> <br>
-    <button (click)="resetForm()">Reset (John's Special)</button> <br>
+    <button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br>
+    <button (click)="resetForm()" type="button">Reset (John's Special)</button> <br>
 
     <br>
     <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button" type="submit">Submit</button>
