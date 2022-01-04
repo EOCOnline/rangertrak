@@ -19,6 +19,8 @@ import { SELECT_PANEL_INDENT_PADDING_X } from '@angular/material/select/select'
   providers: [RangerService, FieldReportService, TeamService]
 })
 export class EntryComponent implements OnInit{ //}, AfterViewInit {
+
+
   autoTicks = false;
   disabled = false;
   invert = false;
@@ -26,8 +28,8 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
   min = 0;
   showTicks = false;
   step = 1;
-  thumbLabel = false;
-  value = 0;
+  thumbLabel = true;
+  fakeValue = 0;
   vertical = false;
   tickInterval = 1;
 
@@ -42,6 +44,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
   fieldReportStatuses
   setting = SettingsComponent.AppSettings
   entryDetailsForm!: FormGroup
+  sliderDetailsForm!: FormGroup
   numFakes = 30
   nFakes = 10
   //const fakeSlider = new MDCSlider(document.querySelector('.mdc-slider'));
@@ -225,7 +228,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
 }
 
 
-export class SliderConfigurableExample {
+export class SliderParams {
   autoTicks = false;
   disabled = false;
   invert = false;
@@ -234,7 +237,7 @@ export class SliderConfigurableExample {
   showTicks = false;
   step = 1;
   thumbLabel = false;
-  value = 0;
+  fakeValue = 0;
   vertical = false;
   tickInterval = 1;
 }
