@@ -49,16 +49,7 @@ export class SettingsComponent implements OnInit {
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
     let secretWorkaround:string = JSON.stringify(secrets)
     SettingsComponent.secrets = JSON.parse(secretWorkaround)
-     //this.secretsauce = sss
-    let sname = SettingsComponent.secrets[3].name
-    //let snote = SettingsComponent.secrets[2].note
-    //console.log ('Got secrets secretString ' + secretString )
-    console.log('Got secrets ' + JSON.stringify(SettingsComponent.secrets[3]) )//SettingsComponent.secrets[0]))
-
-    //fails...
-    let note = this.document.getElementById("noteID")
-    if (note) {note.innerText="test!!!"} else {console.log("noteID NOT   found.")}
-
+    //console.log('Got secrets ' + JSON.stringify(SettingsComponent.secrets[3])
   }
 
   ngOnInit(): void {
