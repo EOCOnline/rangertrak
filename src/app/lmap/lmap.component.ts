@@ -69,7 +69,7 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
   private initMap() {
     //console.log("InitMap..........")
     this.lmap = L.map('lmap', {
-      center: [SettingsComponent.DEF_LAT, SettingsComponent.DEF_LONG],
+      center: [SettingsComponent.AppSettings.DEF_LAT, SettingsComponent.AppSettings.DEF_LONG],
       zoom: 12
     })
 

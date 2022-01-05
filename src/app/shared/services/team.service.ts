@@ -1,11 +1,8 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
-
+import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
-import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-
-
 
 export interface TeamType {
   name: string
@@ -19,6 +16,9 @@ export interface TeamType {
 @Injectable({ providedIn: 'root' })
 export class TeamService implements OnInit {
 
+  private gridApi: any;
+  private gridColumnApi: any;
+
   static shapes = [
     'Circle',
     'Star',
@@ -29,6 +29,58 @@ export class TeamService implements OnInit {
 
   // Marker uses icons; Circle uses color + fillColor; Note is for user's notes
   teams: TeamType[] = []
+
+
+  // TODO: This should get replaced by Teams[] interface...
+  columns = [
+    { field: "name" },
+    { field: "icon" },
+    { field: "color" },
+    { field: "fillColor" },
+    { field: "shape", cellEditor: 'agSelectCellEditor', cellEditorParams: { values: TeamService.shapes } },
+    { field: "note" }
+  ];
+
+  //icons: <fa-icon [icon]="faMapMarkedAlt"></fa-icon>
+
+  // Marker uses icons; Circle uses color + fillColor; Note is for user's notes
+ /* teams = [
+    { name: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: this.shapes[1], note: "" },
+    { name: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: this.shapes[2], note: "" },
+    { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: this.shapes[2], note: "" }
+  ];
+*/
+
+
+
+
+// https://www.ag-grid.com/angular-data-grid/printing/
+onBtPrinterFriendly() {
+  // Printer Friendly Layout
+  var eGridDiv = document.querySelector('#teamGrid');
+  // eGridDiv.style.width = '';
+  // eGridDiv.style.height = '';
+  this.gridApi.setDomLayout('print');
+}
+
+onBtNormal() {
+  // Normal Layout
+  var eGridDiv = document.querySelector('#teamGrid');
+  // eGridDiv.style.width = '400px';
+  // eGridDiv.style.height = '200px';
+  this.gridApi.setDomLayout(null);
+}
+
+onGridReady(params: any) {
+  this.gridApi = params.api;
+  this.gridColumnApi = params.columnApi;
+}
+
+
+
+
+
+
 
 
   constructor(private httpClient: HttpClient) {

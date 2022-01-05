@@ -61,13 +61,13 @@
     </div>
 
 
-    <h2>Markers</h2>
+    <!--h2>Markers</h2>
 
     <div class="input-group">Marker Shape:
       <select formControlName="markerShape" class="wideField">
-        <!-- [class.border-danger]="settingsEditorForm.get('markerShape')?.touched && settingsEditorForm.get('markerShape')?.invalid" -->
-        <!--option [va xx lue]="''">Select markerShape</option>
-        <option [va xx lue]="shape.shapeId" id="shapeOptions" *ngFor="let shape of shapes">{{sha  pe.sha  s eName}}</option-->
+        <! -- [class.border-danger]="settingsEditorForm.get('markerShape')?.touched && settingsEditorForm.get('markerShape')?.invalid" -- >
+        <! --option [va xx lue]="''">Select markerShape</option>
+        <option [va xx lue]="shape.shapeId" id="shapeOptions" *ngFor="let shape of shapes">{{sha  pe.sha  s eName}}</option-- >
         <option [value]="shape" id="shapeOptions" *ngFor="let shape of shapes">{{shape}}</option>
       </select>
       <div
@@ -82,7 +82,7 @@
       <div
         *ngIf="settingsEditorForm.get('markerSize')?.touched && settingsEditorForm.get('markerSize')?.hasError('required')"
         class="text-sm text-danger">markerSize is required</div>
-    </div>
+    </div-->
 
 
 
@@ -110,7 +110,7 @@
 
 
 
-    <h2>Teams</h2>
+    <!--h2>Teams</h2>
     <details>
       <summary>Team Details</summary>
       <ul>
@@ -118,7 +118,7 @@
         <li>If Shape = 'Circle', then display circles using color & fillColor</li>
         <li>Notes are ignored. They are displayed below for your optional use, if desired</li>
       </ul>
-    </details>
+    </details-->
 
     <!-- https://www.ag-grid.com/angular-data-grid/grid-interface/
     <div id="teamgrid">
@@ -133,9 +133,9 @@
       <br />
       <button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
       <button (click)="onBtNormal()">Normal Layout</button>
-      <!-- <div><button (click)="addTeamRow()">Add a new (blank) Team</button></div> ->
+      <! -- <div><button (click)="addTeamRow()">Add a new (blank) Team</button></div> ->
       <div>TODO: <button (click)="exportDataAsCsv()">Export Team Grid</button></div>
-      <!-- <div>TODO: <button (click)="setQuickFilter()">Filter Teams</button></div> ->
+      <! -- <div>TODO: <button (click)="setQuickFilter()">Filter Teams</button></div> ->
     </div-->
 
     <br />
@@ -144,29 +144,9 @@
       <textarea formControlName="notes" id="" cols="30" rows="1" placeholder="Enter Any Notes"></textarea>
     </div>
 
-    <!--h4>Keywords</h4>
-    <div formArrayName="keywords">
-      <div *ngIf="keywordsControls && keywordsControls.length">
-        <div *ngFor="let keywordControl of keywordsControls; let i = index">
-          <div class="input-group">
-
-            <input [class.border-danger]="keywordControl.touched && keywordControl.invalid" [formControlName]="i"
-              type="text" placeholder="keyword" />
-            <div *ngIf="keywordControl.touched && keywordControl.hasError('required')" class="text-sm text-danger">
-              keyword Name is required</div>
-          </div>
-          <hr>
-        </div>
-      </div>
-    </div-->
-
     <button [disabled]="settingsEditorForm.invalid" style="margin-top: 40px;" type="submit">Submit</button>
 
-    <button (click)="cancel()">Cancel</button>
-
+    <!--button (click)="cancel()">Cancel</button -->
 
   </form>
 </div>
-<br>
-
-<div>test only: <button (click)="updateDefaults()">Update lat/long</button></div>

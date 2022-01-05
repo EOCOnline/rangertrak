@@ -1,6 +1,10 @@
 <div class="container">
-  <form [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit()" class="enter__form">
+  <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
 
+    <div id="enter__frm-reguritation">
+    <pre>{{ frm.value |json}}</pre>
+  </div>
+    <br><br>
     <h1>Entry Form</h1>
     <h2 class="elegant">Who</h2>
 

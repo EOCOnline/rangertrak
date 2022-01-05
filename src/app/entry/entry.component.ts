@@ -133,14 +133,15 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
 
 
   // TODO: This also gets called if the Update Location button is clicked!!
-  onFormSubmit(): void {
+  onFormSubmit(formData1:string): void {
     console.log(`Form submit at ${Date()}`)
     let formData = JSON.stringify(this.entryDetailsForm.value)
 
 
     let newReport = this.fieldReportService.addfieldReport(formData)
     console.log(`Report id # ${newReport.id} has been added.`)
-    console.log(formData)
+    console.log("formData:  " + formData)
+    console.log("formData1: " + JSON.stringify(formData1))
 
     if (this.submitInfo) {
       this.submitInfo.innerText = `Entry id # ${newReport.id} Saved. ${formData}`
@@ -151,7 +152,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
     }
     this.openSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
 
-    //this.entryDetailsForm.reset()
+    //this.entryDetailsForm.reset() // std reser just blanks values, doesn't initialize them...
     this.resetForm()
   }
 
@@ -174,7 +175,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
         //Validators.minLength(4)
       ],
       date: [new Date()],
-      status: [FieldReportStatuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
+      status: [FieldReportStatuses[this.setting.DEF_STATUS]],   // TODO: Allow changing list & default of statuses in settings?!
       notes: ['']
     })
   }

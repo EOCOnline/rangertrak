@@ -7,18 +7,6 @@
 
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Observable, of } from 'rxjs';
-import { catchError, mergeMap, toArray } from 'rxjs/operators';
-
-import { AgGridModule } from 'ag-grid-angular';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-//import * as F from '@angular/forms';
-
-
-
-// import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
-// import { Team, TeamService } from '../shared/services/';
 
 interface Data {
   title: string;
@@ -28,73 +16,24 @@ interface Data {
   selector: 'rangertrak-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
-  //providers: [TeamService]  // TODO: Team,
 })
-
 
 export class SettingsComponent implements OnInit {
 
   static AppSettings = {
-    DEF_LAT: 45.1,
-    DEF_LONG: -123.1,  // Vashon EOC!
-    DEF_PCODE: 'BoGuS+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
-    locale_Name: "Maury, WA",
-    version: '12.0.0'
+    DEF_LAT: 47.4472,
+    DEF_LONG: -122.4627,  // Vashon EOC!
+    DEF_PCODE: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
+    locale_Name: "Vashon, WA",
+    version: '0.11.0',
+    DEF_STATUS: 0  // FieldReportStatuses
   }
-
-  //static Settings: any;
-  //mySettings // : Settings;
-
-  static DEF_LAT = 47.4472
-  static DEF_LONG = -122.4627  // Vashon EOC!
-  static DEF_PCODE = '84VVCGWP+VW' // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
-  static locale_Name = "Vashon, WA"
-  static version = '11.0.0'
 
   settingsEditorForm!: FormGroup;
-  // settingsEditorForm: FormGroup | undefined = undefined
-
-  private gridApi: any;
-  private gridColumnApi: any;
-
-  // private defaultColDef;
-// Should be TeamService.Shapes!!!
-  shapes = [
-    'Circle',
-    'Star',
-    'Square',
-    'shape4',
-    'shape5'
-  ]
-
-  // TODO: This should get replaced by Teams[] interface...
-  columns = [
-    { field: "name" },
-    { field: "icon" },
-    { field: "color" },
-    { field: "fillColor" },
-    { field: "shape", cellEditor: 'agSelectCellEditor', cellEditorParams: { values: this.shapes } },
-    { field: "note" }
-  ];
-
-  //icons: <fa-icon [icon]="faMapMarkedAlt"></fa-icon>
-
-  // Marker uses icons; Circle uses color + fillColor; Note is for user's notes
- /* teams = [
-    { name: "T1", icon: "T1.png", color: 'Magenta', fillColor: 'grey', shape: this.shapes[1], note: "" },
-    { name: "T2", icon: "T2.png", color: 'Green', fillColor: 'blue', shape: this.shapes[2], note: "" },
-    { name: "Other", icon: "Other.png", color: 'Yellow', fillColor: '#f03', shape: this.shapes[2], note: "" }
-  ];
-*/
-
-
 
   constructor(
- //   teamService: TeamService,
     private fb: FormBuilder) {
- //   this.mySettings = teamService.getTeams()
   }
-
 
   ngOnInit(): void {
     console.log("settings loaded at ", Date())
@@ -102,9 +41,9 @@ export class SettingsComponent implements OnInit {
 
     // TODO: Optionally deserialize values from LocalStorage
     this.settingsEditorForm = this.fb.group({
-      latitude: [SettingsComponent.DEF_LAT, Validators.required],
-      longitude: [SettingsComponent.DEF_LONG, Validators.required],
-      plusCode: [SettingsComponent.DEF_PCODE],
+      latitude: [SettingsComponent.AppSettings.DEF_LONG, Validators.required],
+      longitude: [SettingsComponent.AppSettings.DEF_LONG, Validators.required],
+      plusCode: [SettingsComponent.AppSettings.DEF_PCODE],
       logToPanel: ['yes'], // null or blank for unchecked
       logToConsole: ['check'], // null or blank for unchecked
       markerSize: ['5'],
@@ -112,86 +51,20 @@ export class SettingsComponent implements OnInit {
       notes: []
     })
 
-    //this.displayTeamGrid();
     console.log("settings completed at ", Date())
   }
 
-  //this.teams = GetTeams ()=>{
-
-
-
-  // https://www.ag-grid.com/angular-data-grid/printing/
-  onBtPrinterFriendly() {
-    // Printer Friendly Layout
-    var eGridDiv = document.querySelector('#teamGrid');
-    // eGridDiv.style.width = '';
-    // eGridDiv.style.height = '';
-    this.gridApi.setDomLayout('print');
-  }
-
-  onBtNormal() {
-    // Normal Layout
-    var eGridDiv = document.querySelector('#teamGrid');
-    // eGridDiv.style.width = '400px';
-    // eGridDiv.style.height = '200px';
-    this.gridApi.setDomLayout(null);
-  }
-
-  onGridReady(params: any) {
-    this.gridApi = params.api;
-    this.gridColumnApi = params.columnApi;
-  }
-
-  exportDataAsCsv(
-    //params?: CsvExportParams
-    //https://www.ag-grid.com/angular-data-grid/grid-api/#reference-export-exportDataAsCsv
-  ): void {
-    //TODO: Not implemented!
-  }
-
-  serializeToLocalStorage(){}
-  deserializeToLocalStorage(){}
-  xxxerializeToLocalStorage(){}
-
-
-  // TODO: simple test - remove me!
-  updateDefaults() {
-    SettingsComponent.DEF_LAT = 47.46
-    SettingsComponent.DEF_LONG = -122.6
-  }
-
-  cancel() { };  //TODO:
+  serializeToLocalStorage() { }
+  deserializeToLocalStorage() { }
+  xxxerializeToLocalStorage() { }
 
   Version() {
-    return SettingsComponent.version
+    return SettingsComponent.AppSettings.version
   }
-
-  /*
-  get keywordsControls(): any {
-    return (<FormArray>this.settingsEditorForm.get('keywords')).controls;
-  }
-  */
 
   onFormSubmit(): void {
     const formData = this.settingsEditorForm.value
     console.log(formData)
     // TODO: Serialize values to LocalStorage
   }
-
-
-
-
-  /* https://www.pluralsight.com/guides/using-formbuilder-in-angular
-    You can define the control with just the initial value, but if your controls need sync or async validation, add sync and async validators as the second and third items in the array.
-  */
-  //private fb = new FormBuilder();  // FormControl = atomic 'input'-like widget
-
-  /*
-  : FormGroup; //
-  whereFormModel: FormGroup;
-  whenFormModel: FormGroup;
-  whatFormModel: F.FormGroup;
-  */
-
-
 }
