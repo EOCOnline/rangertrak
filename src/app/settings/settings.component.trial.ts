@@ -29,7 +29,7 @@ type Secret = {
 })
 export class SettingsComponent implements OnInit {
 
-  static secretsauce: Secret[]
+  static secrets: Secret[]
 
   static AppSettings = {
     DEF_LAT: 47.4472,
@@ -47,13 +47,12 @@ export class SettingsComponent implements OnInit {
 
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
     let secretWorkaround:string = JSON.stringify(secrets)
-     let sss = secretWorkaround
-     let sx = JSON.parse(secretWorkaround)
-     //this.secretsauce = sss
-    //let sname = secrets[3].name
-    //let snote = SettingsComponent.secrets[2].note
+    SettingsComponent.secrets = JSON.parse(secretWorkaround)
+
+    let sname = secrets[3].name
+    let snote = SettingsComponent.secrets[2].note
     //console.log ('Got secrets secretString ' + secretString )
-    console.log('Got secrets ')// + JSON.stringify(SettingsComponent.secrets[0]))
+    console.log('Got secrets ' + JSON.stringify(SettingsComponent.secrets))
   }
 
   ngOnInit(): void {
