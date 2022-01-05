@@ -6,8 +6,8 @@
 // @see doc on IndexedDB {@link https://developer.chrome.com/docs/devtools/storage/indexeddb/}
 
 import * as secrets from './secrets.json' // national secrets... & API-Keys
-
-import { Component, OnInit } from '@angular/core';
+import { DOCUMENT } from '@angular/common'
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 interface Data {
@@ -29,7 +29,7 @@ type Secret = {
 })
 export class SettingsComponent implements OnInit {
 
-  static secretsauce: Secret[]
+  static secrets: Secret[]
 
   static AppSettings = {
     DEF_LAT: 47.4472,
@@ -43,17 +43,22 @@ export class SettingsComponent implements OnInit {
   settingsEditorForm!: FormGroup;
 
   constructor(
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    @Inject(DOCUMENT) private document: Document) {
 
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
     let secretWorkaround:string = JSON.stringify(secrets)
-     let sss = secretWorkaround
-     let sx = JSON.parse(secretWorkaround)
+    SettingsComponent.secrets = JSON.parse(secretWorkaround)
      //this.secretsauce = sss
-    //let sname = secrets[3].name
+    let sname = SettingsComponent.secrets[3].name
     //let snote = SettingsComponent.secrets[2].note
     //console.log ('Got secrets secretString ' + secretString )
-    console.log('Got secrets ')// + JSON.stringify(SettingsComponent.secrets[0]))
+    console.log('Got secrets ' + JSON.stringify(SettingsComponent.secrets[3]) )//SettingsComponent.secrets[0]))
+
+    //fails...
+    let note = this.document.getElementById("noteID")
+    if (note) {note.innerText="test!!!"} else {console.log("noteID NOT   found.")}
+
   }
 
   ngOnInit(): void {
