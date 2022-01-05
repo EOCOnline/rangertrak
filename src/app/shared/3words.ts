@@ -1,14 +1,13 @@
 //import * as I from "./"
 // <script src="https://assets.what3words.com/sdk/v3/what3words.js?key=YOUR_API_KEY"></script>
 // mainly from https://developer.what3words.com/tutorial/javascript
-
 import { UrlHandlingStrategy } from "@angular/router";
 
 export class chk3Words {
 
   private static API_KEY = "YBIMPRHH" // For RangerTrak  // TODO: Hide as a private key
 
-  constructor() {
+  constructor(  ) {
   }
 
   static settings = {
