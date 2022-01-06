@@ -26,13 +26,15 @@ export type SecretType = {
 export type AppSettingType = {
   id: number,
   name: string,
+  application: string,
+  version: string,
+  w3wLocale: string,
   DEF_LAT: number,
   DEF_LONG: number,
   DEF_PCODE: string,
-  locale_Name: string,
-  version: string,
+
   DEF_STATUS: number
-  }
+}
 
 @Component({
   selector: 'rangertrak-settings',
@@ -41,20 +43,11 @@ export type AppSettingType = {
 })
 export class SettingsComponent implements OnInit {
 
+  static storageLocalName = 'appSettings'
   static secrets: SecretType[]
-  private settingSubject =
-    new BehaviorSubject<AppSettingType[]>([]);  // REVIEW: Necessary?
+  //private settingSubject = new BehaviorSubject<AppSettingType>;  // REVIEW: Necessary?
 
-  static AppSettings = {
-    id: 0,  // FUTURE: allow different setts of settings (e.g., per location)
-    name: "standard",
-    DEF_LAT: 47.4472,
-    DEF_LONG: -122.4627,  // Vashon EOC!
-    DEF_PCODE: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
-    locale_Name: "Vashon, WA",
-    version: '0.11.0',
-    DEF_STATUS: 0  // FieldReportStatuses
-  }
+  static AppSettings: AppSettingType
 
   settingsEditorForm!: FormGroup
 
@@ -66,13 +59,37 @@ export class SettingsComponent implements OnInit {
     let secretWorkaround = JSON.stringify(secrets)
     SettingsComponent.secrets = JSON.parse(secretWorkaround)
     //console.log('Got secrets ' + JSON.stringify(SettingsComponent.secrets[3])
+    debugger
+    // SettingsComponent.AppSettings
+    let localStorageSettings = localStorage.getItem(SettingsComponent.storageLocalName)
+    if (localStorageSettings != null) {
+      console.log ("Initialize App Settings from localstorage")
+      SettingsComponent.AppSettings = JSON.parse(localStorageSettings)
+    }
+    else { //original defaults... not saved until form is submitted...
+      console.log ("Initialize App Settings from hardcoded values")
+      SettingsComponent.AppSettings = {
+        id: 0,  // FUTURE: allow different setts of settings (e.g., per location)???
+        name: "standard",
+        application: "RangerTrak",
+        version: '0.11.0',
+        DEF_LAT: 47.4472,
+        DEF_LONG: -122.4627,  // Vashon EOC!
+        DEF_PCODE: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
+        w3wLocale: "Vashon, WA",
+        DEF_STATUS: 0  // FieldReportStatuses[DEF_STAT]
+      }
+    }
   }
 
+  //subscribe(observer: Observer<AppSettingType[]>) { this.settingSubject.subscribe(observer) }
+
   ngOnInit(): void {
-    console.log("settings loaded at ", Date())
-    console.log("Version: " + this.Version())
+    //console.log("settings loaded at ", Date())
+    console.log(`Application: ${SettingsComponent.AppSettings.application} -- Version: ${SettingsComponent.AppSettings.version}`)
 
     // TODO: Optionally deserialize values from LocalStorage
+    debugger;
     this.settingsEditorForm = this.fb.group({
       latitude: [SettingsComponent.AppSettings.DEF_LONG, Validators.required],
       longitude: [SettingsComponent.AppSettings.DEF_LONG, Validators.required],
@@ -87,17 +104,33 @@ export class SettingsComponent implements OnInit {
     console.log("settings completed at ", Date())
   }
 
-  serializeToLocalStorage() { }
-  deserializeToLocalStorage() { }
-  xxxerializeToLocalStorage() { }
+  private update() {
+    localStorage.setItem(SettingsComponent.storageLocalName, JSON.stringify(SettingsComponent.AppSettings));
 
-  Version() {
-    return SettingsComponent.AppSettings.version
+    /*
+      TODO: if subcriptions desired...
+        this.settingSubject.next(SettingsComponent.AppSettings).map(
+          fieldReport => ({
+
+            id: SettingsComponent.AppSettings.id,
+            name: SettingsComponent.AppSettings.name,
+            application: SettingsComponent.AppSettings.application,
+            DEF_LAT: SettingsComponent.AppSettings.DEF_LAT,
+            DEF_LONG: SettingsComponent.AppSettings.DEF_LONG,
+            DEF_PCODE: SettingsComponent.AppSettings.DEF_PCODE,
+            locale_Name: SettingsComponent.AppSettings.locale_Name,
+            version: SettingsComponent.AppSettings.version,
+            DEF_STATUS: SettingsComponent.AppSettings.DEF_STATUS
+          })
+        ))*/
   }
 
+  // Version() { return SettingsComponent.AppSettings.version  }
+
   onFormSubmit(): void {
-    const formData = this.settingsEditorForm.value
-    console.log(formData)
-    // TODO: Serialize values to LocalStorage
+    SettingsComponent.AppSettings = this.settingsEditorForm.value
+    //const formData = this.settingsEditorForm.value
+    console.log("Received new form data:" + SettingsComponent.AppSettings)
+    this.update()
   }
 }

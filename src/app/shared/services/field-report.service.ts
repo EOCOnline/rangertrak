@@ -26,12 +26,12 @@ export class FieldReportService {
     new BehaviorSubject<FieldReportType[]>([]);  // REVIEW: Necessary?
 
   constructor(private rangerService: RangerService, private teamService: TeamService) {
-    let temp = localStorage.getItem('fieldReports')
+    let localStorageFieldReports = localStorage.getItem('fieldReports')
     /* this.fieldReports = []
     if (temp != null) {
       this.fieldReports = JSON.parse(temp) || []
     }   */
-    this.fieldReports = (temp != null) ? JSON.parse(temp) : []  //TODO: clean up
+    this.fieldReports = (localStorageFieldReports != null) ? JSON.parse(localStorageFieldReports) : []  //TODO: clean up
     for (const fieldReport of this.fieldReports) {
       if (fieldReport.id >= this.nextId) this.nextId = fieldReport.id + 1
     }
@@ -186,24 +186,6 @@ const filterParams = {
       })
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 /*

@@ -82,7 +82,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
 
   ngOnInit(): void {
     // console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode()?"":"NOT"} enabled`)
-
+    debugger
     this.entryDetailsForm = this.formBuilder.group({
       id: -1,
       callsign: ['ngOnInitCallSign'],  // TODO: Not tied to the material design input field...
