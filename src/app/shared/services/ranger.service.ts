@@ -100,7 +100,7 @@ export class RangerService {
     return this.rangers
   }
 
-  LoadFromJSON(fileName:string) {
+  LoadFromJSON(fileName:string) {  // also see secretss import as an example: Settings.ts
     //See pg. 279...
 
     //import * as data from './data.json';

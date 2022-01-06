@@ -3,21 +3,11 @@ import { Injectable, OnInit } from '@angular/core';
 import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 import { RangerService, RangerStatus, TeamService } from './index';
 
-//import { HttpClient } from '@angular/common/http';
-
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
 export const FieldReportStatuses = [
   'None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out'
 ]
-
-//public fieldReportStatus = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out']  /
-
-/* TODO: Use for quick display of fieldReports - useful?!
-export class FieldReportInfo {
-  id: number = 0
-  title: string = ''
-}  */
 
 export type FieldReportType = {
   id: number,
@@ -25,14 +15,6 @@ export type FieldReportType = {
   address: String, lat: Number, long: Number,
   date: Date,
   status: String, note: String
-}
-
-export type FieldReportTypeOLD = {
-  id: number,
-  who: { callsign: String, team: String },
-  where: { address: String, lat: Number, long: Number },
-  when: { date: Date },
-  what: { status: String, note: String }
 }
 
 @Injectable({ providedIn: 'root' })
