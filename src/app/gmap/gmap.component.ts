@@ -57,8 +57,8 @@ export class GmapComponent  implements OnInit {
   zoom = 10;
   title = 'RangerTrak Google Map'
   label = 'RangerTrak Label'
-  latitude = SettingsComponent.AppSettings.DEF_LAT
-  longitude = SettingsComponent.AppSettings.DEF_LONG
+  latitude = SettingsComponent.AppSettings.defLat
+  longitude = SettingsComponent.AppSettings.defLong
   markerLocations: marker[] = []
   //let map: maps.Map;
   //center: google.maps.LatLngLiteral = {lat: this.lat, lng: this.lng};
@@ -103,7 +103,7 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
   initMap() {
     // https://developers.google.com/maps/documentation/
     let googMap = new google.maps.Map(document.getElementById('bigGoogMapId') as HTMLElement, {
-      center: {lat: SettingsComponent.AppSettings.DEF_LAT, lng: SettingsComponent.AppSettings.DEF_LONG},
+      center: {lat: SettingsComponent.AppSettings.defLat, lng: SettingsComponent.AppSettings.defLong},
       zoom: 11,
       mapTypeId: 'terrain'
     });

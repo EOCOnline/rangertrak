@@ -10,6 +10,7 @@ import { DOCUMENT } from '@angular/common'
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BehaviorSubject, Observer } from 'rxjs';
+import { TryCatchStmt } from '@angular/compiler';
 
 interface Data {
   title: string;
@@ -28,12 +29,17 @@ export type AppSettingType = {
   name: string,
   application: string,
   version: string,
+  note: string,
+  defLat: number,
+  defLong: number,
+  defPlusCode: string,
   w3wLocale: string,
-  DEF_LAT: number,
-  DEF_LONG: number,
-  DEF_PCODE: string,
-
-  DEF_STATUS: number
+  markerSize: 5,
+  markerShape: 1,
+  defRangerStatus: number
+  debugMode: boolean,
+  logToPanel: boolean,
+  logToConsole: boolean
 }
 
 @Component({
@@ -59,25 +65,66 @@ export class SettingsComponent implements OnInit {
     let secretWorkaround = JSON.stringify(secrets)
     SettingsComponent.secrets = JSON.parse(secretWorkaround)
     //console.log('Got secrets ' + JSON.stringify(SettingsComponent.secrets[3])
-    debugger
-    // SettingsComponent.AppSettings
+
+    // populate SettingsComponent.AppSettings
     let localStorageSettings = localStorage.getItem(SettingsComponent.storageLocalName)
-    if (localStorageSettings != null) {
-      console.log ("Initialize App Settings from localstorage")
+
+    let needSettings = true
+    try {
+      if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") < 0) {
+        SettingsComponent.AppSettings = JSON.parse(localStorageSettings)
+        console.log("Initialized App Settings from localstorage")
+        needSettings = true
+      }
+    } catch (error:any) {
+      console.log(`localstorage App Settings should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
+    }
+
+    if (needSettings) {
+      //original hardcoded defaults... not saved until form is submitted... This form doesn't allow editing of all values
+      console.log("Initialize App Settings from hardcoded values")
+      SettingsComponent.AppSettings = {
+        id: 0,  // FUTURE: allow different setts of settings (e.g., per location)???
+        name: "standard hardcoded settings",
+        application: "RangerTrak",
+        version: '0.11.0',
+        note: "values set by code, please edit them to serve you!",
+        defLat: 47.4472,
+        defLong: -122.4627,  // Vashon EOC!
+        defPlusCode: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
+        w3wLocale: "Vashon, WA",
+        markerSize: 5,
+        markerShape: 1,
+        defRangerStatus: 0,
+        debugMode: true,
+        logToPanel: true,
+        logToConsole: true
+      }
+    }
+
+
+    if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") < 0) {
+      console.log("Initialize App Settings from localstorage")
       SettingsComponent.AppSettings = JSON.parse(localStorageSettings)
     }
     else { //original defaults... not saved until form is submitted...
-      console.log ("Initialize App Settings from hardcoded values")
+      console.log("Initialize App Settings from hardcoded values")
       SettingsComponent.AppSettings = {
         id: 0,  // FUTURE: allow different setts of settings (e.g., per location)???
-        name: "standard",
+        name: "standard hardcoded settings",
         application: "RangerTrak",
         version: '0.11.0',
-        DEF_LAT: 47.4472,
-        DEF_LONG: -122.4627,  // Vashon EOC!
-        DEF_PCODE: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
+        note: "values set by code, please edit them to serve you!",
+        defLat: 47.4472,
+        defLong: -122.4627,  // Vashon EOC!
+        defPlusCode: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
         w3wLocale: "Vashon, WA",
-        DEF_STATUS: 0  // FieldReportStatuses[DEF_STAT]
+        markerSize: 5,
+        markerShape: 1,
+        defRangerStatus: 0,
+        debugMode: true,
+        logToPanel: true,
+        logToConsole: true
       }
     }
   }
@@ -88,17 +135,18 @@ export class SettingsComponent implements OnInit {
     //console.log("settings loaded at ", Date())
     console.log(`Application: ${SettingsComponent.AppSettings.application} -- Version: ${SettingsComponent.AppSettings.version}`)
 
-    // TODO: Optionally deserialize values from LocalStorage
-    debugger;
     this.settingsEditorForm = this.fb.group({
-      latitude: [SettingsComponent.AppSettings.DEF_LONG, Validators.required],
-      longitude: [SettingsComponent.AppSettings.DEF_LONG, Validators.required],
-      plusCode: [SettingsComponent.AppSettings.DEF_PCODE],
-      logToPanel: ['yes'], // null or blank for unchecked
-      logToConsole: ['check'], // null or blank for unchecked
-      markerSize: ['5'],
-      markerShape: [1, Validators.required],
-      notes: []
+      id: [SettingsComponent.AppSettings.id],
+      name: [SettingsComponent.AppSettings.name],
+      note: [SettingsComponent.AppSettings.note],
+      latitude: [SettingsComponent.AppSettings.defLong, Validators.required],
+      longitude: [SettingsComponent.AppSettings.defLong, Validators.required],
+      plusCode: [SettingsComponent.AppSettings.defPlusCode],
+      w3wLocale: [SettingsComponent.AppSettings.w3wLocale],
+      markerSize: [SettingsComponent.AppSettings.markerSize],
+      markerShape: [SettingsComponent.AppSettings.markerShape, Validators.required],
+      logToPanel: [SettingsComponent.AppSettings.logToPanel], // null or blank for unchecked 'yes'
+      logToConsole: [SettingsComponent.AppSettings.logToConsole], // null or blank for unchecked 'check'
     })
 
     console.log("settings completed at ", Date())
@@ -110,7 +158,7 @@ export class SettingsComponent implements OnInit {
     /*
       TODO: if subcriptions desired...
         this.settingSubject.next(SettingsComponent.AppSettings).map(
-          fieldReport => ({
+          appSettings => ({
 
             id: SettingsComponent.AppSettings.id,
             name: SettingsComponent.AppSettings.name,
@@ -128,8 +176,8 @@ export class SettingsComponent implements OnInit {
   // Version() { return SettingsComponent.AppSettings.version  }
 
   onFormSubmit(): void {
-    SettingsComponent.AppSettings = this.settingsEditorForm.value
-    //const formData = this.settingsEditorForm.value
+    // BUG: SettingsComponent.AppSettings = this.settingsEditorForm.value NOT THE SAME type!!!
+    const formData = this.settingsEditorForm.value
     console.log("Received new form data:" + SettingsComponent.AppSettings)
     this.update()
   }

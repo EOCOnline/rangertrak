@@ -23,7 +23,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
   fieldReportStatuses
-  setting = SettingsComponent.AppSettings
+  setting
   entryDetailsForm!: FormGroup
   sliderDetailsForm!: FormGroup
   nFakes = 10
@@ -35,12 +35,16 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
     private _snackBar: MatSnackBar,
     private rangerService: RangerService,
     private fieldReportService: FieldReportService,
+    //private settingService: SettingsComponent,
     private teamService: TeamService,
     @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
 
     this.rangers = rangerService.getRangers() // TODO: or getActiveRangers?!
     this.fieldReportService = fieldReportService
     this.fieldReportStatuses = FieldReportStatuses
+    this.setting = SettingsComponent.AppSettings
+
+
 
     // NOTE: workaround for onChange not working...
     this.callsignCtrl.valueChanges.pipe(debounceTime(1000)).subscribe(newCall => this.CallsignChanged(newCall))
@@ -82,14 +86,20 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
 
   ngOnInit(): void {
     // console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode()?"":"NOT"} enabled`)
-    debugger
+    console.log("EntryComponent has got settings")
+
+    // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
+    // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
+
+    console.log(`========running ${this.setting.application} version ${this.setting.version}`)
+
     this.entryDetailsForm = this.formBuilder.group({
       id: -1,
       callsign: ['ngOnInitCallSign'],  // TODO: Not tied to the material design input field...
       team: ['T1'],
       address: ['default location (ngOnInit)'],
-      lat: [this.setting.DEF_LAT, Validators.required], //Validators.minLength(4)
-      long: [this.setting.DEF_LONG, Validators.required], //Validators.minLength(4)
+      lat: [this.setting.defLat, Validators.required], //Validators.minLength(4)
+      long: [this.setting.defLong, Validators.required], //Validators.minLength(4)
       date: [new Date()],
       status: [FieldReportStatuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
       note: ['']
@@ -166,16 +176,16 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
       callsign: ['resetFormCallSign'],  // TODO: Not tied to the material design input field...
       team: ['T0'],
       address: ['default location (reset)'],
-      lat: [this.setting.DEF_LAT,
+      lat: [this.setting.defLat,
       Validators.required,
         //Validators.minLength(4)
       ],
-      long: [this.setting.DEF_LONG,
+      long: [this.setting.defLong,
       Validators.required,
         //Validators.minLength(4)
       ],
       date: [new Date()],
-      status: [FieldReportStatuses[this.setting.DEF_STATUS]],   // TODO: Allow changing list & default of statuses in settings?!
+      status: [FieldReportStatuses[this.setting.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
       notes: ['']
     })
   }
