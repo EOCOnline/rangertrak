@@ -86,7 +86,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
 
   ngOnInit(): void {
     // console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode()?"":"NOT"} enabled`)
-    console.log("EntryComponent has got settings")
+    console.log("EntryComponent - ngOnInit - Use settings to fill form")
 
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component

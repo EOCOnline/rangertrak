@@ -22,7 +22,9 @@ const routes: Routes = [
   // EAGER Routes
 
   { path: '',   redirectTo: '/entry', pathMatch: 'full' }, // redirects
-  { path: 'entry', component: EntryComponent, resolve: {SettingsComponent}}, //, canActivate: [UnsavedChangesGuard] },
+  { path: 'entry', component: EntryComponent}, //, canActivate: [UnsavedChangesGuard] },
+  // , resolve: {SettingsComponent} // causes: Error: Uncaught (in promise): NullInjectorError: R3InjectorError(AppModule)[SettingsComponent -> SettingsComponent -> SettingsComponent]:
+  //NullInjectorError: No provider for SettingsComponent!
  // { path: 'entry', component: EntryComponent, resolve: {SettingsComponent: myResolver }}, //, canActivate: [UnsavedChangesGuard] },
   { path: 'reports', component: FieldReportsComponent },
   { path: 'gmap', component: GmapComponent },

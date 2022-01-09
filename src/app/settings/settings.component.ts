@@ -68,7 +68,7 @@ export class SettingsComponent implements OnInit {
 
     // populate SettingsComponent.AppSettings
     let localStorageSettings = localStorage.getItem(SettingsComponent.storageLocalName)
-
+/*
     let needSettings = true
     try {
       if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") < 0) {
@@ -81,6 +81,7 @@ export class SettingsComponent implements OnInit {
     }
 
     if (needSettings) {
+      */
       //original hardcoded defaults... not saved until form is submitted... This form doesn't allow editing of all values
       console.log("Initialize App Settings from hardcoded values")
       SettingsComponent.AppSettings = {
@@ -100,9 +101,9 @@ export class SettingsComponent implements OnInit {
         logToPanel: true,
         logToConsole: true
       }
-    }
+    //}
 
-
+/*
     if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") < 0) {
       console.log("Initialize App Settings from localstorage")
       SettingsComponent.AppSettings = JSON.parse(localStorageSettings)
@@ -127,6 +128,7 @@ export class SettingsComponent implements OnInit {
         logToConsole: true
       }
     }
+    */
   }
 
   //subscribe(observer: Observer<AppSettingType[]>) { this.settingSubject.subscribe(observer) }

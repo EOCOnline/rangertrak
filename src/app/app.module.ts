@@ -29,27 +29,6 @@ import { X404Component } from './x404/x404.component';
 //import { AgmSnazzyInfoWindowModule } from '@agm/snazzy-info-window';
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
 // https://angular.io/guide/build#configuring-commonjs-dependencies
 
@@ -98,11 +77,11 @@ import { X404Component } from './x404/x404.component';
   ],
   providers: [TeamService, RangerService, FieldReportService, MarkerService, PopupService, ShapeService,
     {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}], // Team, Ranger,
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]//,
 
-  exports: [
+  //exports: [
     // SettingsComponent
-  ]
+  //]
 })
 export class AppModule { }
 
