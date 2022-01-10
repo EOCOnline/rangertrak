@@ -85,7 +85,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode()?"":"NOT"} enabled`)
+    console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode()?"":"NOT "}enabled`)
     console.log("EntryComponent - ngOnInit - Use settings to fill form")
 
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...

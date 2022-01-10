@@ -31,7 +31,7 @@ export class FieldReportService {
     if (temp != null) {
       this.fieldReports = JSON.parse(temp) || []
     }   */
-    this.fieldReports = (localStorageFieldReports != null) ? JSON.parse(localStorageFieldReports) : []  //TODO: clean up
+    this.fieldReports = (localStorageFieldReports != null) ? JSON.parse(localStorageFieldReports) : []   //TODO: clean up
     for (const fieldReport of this.fieldReports) {
       if (fieldReport.id >= this.nextId) this.nextId = fieldReport.id + 1
     }

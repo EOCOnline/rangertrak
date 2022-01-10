@@ -34,8 +34,8 @@ export type AppSettingType = {
   defLong: number,
   defPlusCode: string,
   w3wLocale: string,
-  markerSize: 5,
-  markerShape: 1,
+  markerSize: number,
+  markerShape: number,
   defRangerStatus: number
   debugMode: boolean,
   logToPanel: boolean,
@@ -67,17 +67,20 @@ export class SettingsComponent implements OnInit {
     //console.log('Got secrets ' + JSON.stringify(SettingsComponent.secrets[3])
 
     // populate SettingsComponent.AppSettings
-    let localStorageSettings = localStorage.getItem(SettingsComponent.storageLocalName)
-/*
+/*    let localStorageSettings = localStorage.getItem(SettingsComponent.storageLocalName)
+
     let needSettings = true
     try {
       if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") < 0) {
         SettingsComponent.AppSettings = JSON.parse(localStorageSettings)
+
+// TODO: (localStorageSettings != null) ? JSON.parse(localStorageSettings) : []
+
         console.log("Initialized App Settings from localstorage")
         needSettings = true
       }
     } catch (error:any) {
-      console.log(`localstorage App Settings should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
+      console.log(`localstorage App Settings i.e., ${localStorageSettings} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
     }
 
     if (needSettings) {
@@ -101,10 +104,12 @@ export class SettingsComponent implements OnInit {
         logToPanel: true,
         logToConsole: true
       }
+
+
     //}
 
 /*
-    if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") < 0) {
+    if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") > 0) {
       console.log("Initialize App Settings from localstorage")
       SettingsComponent.AppSettings = JSON.parse(localStorageSettings)
     }
@@ -138,15 +143,19 @@ export class SettingsComponent implements OnInit {
     console.log(`Application: ${SettingsComponent.AppSettings.application} -- Version: ${SettingsComponent.AppSettings.version}`)
 
     this.settingsEditorForm = this.fb.group({
+      application: [SettingsComponent.AppSettings.application], // not shown for editing
+      version: [SettingsComponent.AppSettings.version], // not shown for editing
       id: [SettingsComponent.AppSettings.id],
       name: [SettingsComponent.AppSettings.name],
       note: [SettingsComponent.AppSettings.note],
-      latitude: [SettingsComponent.AppSettings.defLong, Validators.required],
-      longitude: [SettingsComponent.AppSettings.defLong, Validators.required],
+      defLat: [SettingsComponent.AppSettings.defLat, Validators.required],
+      defLong: [SettingsComponent.AppSettings.defLong, Validators.required],
       plusCode: [SettingsComponent.AppSettings.defPlusCode],
       w3wLocale: [SettingsComponent.AppSettings.w3wLocale],
       markerSize: [SettingsComponent.AppSettings.markerSize],
       markerShape: [SettingsComponent.AppSettings.markerShape, Validators.required],
+      defRangerStatus: [SettingsComponent.AppSettings.defRangerStatus], // not shown for editing
+      debugMode: [SettingsComponent.AppSettings.debugMode], // not shown for editing
       logToPanel: [SettingsComponent.AppSettings.logToPanel], // null or blank for unchecked 'yes'
       logToConsole: [SettingsComponent.AppSettings.logToConsole], // null or blank for unchecked 'check'
     })
@@ -155,7 +164,30 @@ export class SettingsComponent implements OnInit {
   }
 
   private update() {
-    localStorage.setItem(SettingsComponent.storageLocalName, JSON.stringify(SettingsComponent.AppSettings));
+    const formData = this.settingsEditorForm.value
+    // localStorage.setItem(SettingsComponent.storageLocalName, JSON.stringify(SettingsComponent.AppSettings))  // BUG: Don't store settingsEditorForm, but individual values
+
+
+
+    let newSettingsComponent: AppSettingType = {
+      application: this.settingsEditorForm.value.application as string,
+      version: this.settingsEditorForm.value.version as string,
+      id: this.settingsEditorForm.value.id as number,
+      name: this.settingsEditorForm.value.name as string,
+      note: this.settingsEditorForm.value.note as string,
+      defLat: this.settingsEditorForm.value.Long as number,
+      defLong: this.settingsEditorForm.value.Long as number,
+      defPlusCode: this.settingsEditorForm.value.PlusCode as string,
+      w3wLocale: this.settingsEditorForm.value.w3wLocale as string,
+      markerSize: this.settingsEditorForm.value.markerSize as number,
+      markerShape: this.settingsEditorForm.value.markerShape as number,
+      defRangerStatus: this.settingsEditorForm.value.defRangerStatus as number,
+      debugMode: this.settingsEditorForm.value.debugMode as boolean,
+      logToPanel: this.settingsEditorForm.value.logToPanel as boolean,
+      logToConsole: this.settingsEditorForm.value.logToConsole as boolean,
+    }
+
+    //localStorage.setItem(SettingsComponent.storageLocalName, JSON.stringify(newSettingsComponent))
 
     /*
       TODO: if subcriptions desired...
@@ -181,6 +213,6 @@ export class SettingsComponent implements OnInit {
     // BUG: SettingsComponent.AppSettings = this.settingsEditorForm.value NOT THE SAME type!!!
     const formData = this.settingsEditorForm.value
     console.log("Received new form data:" + SettingsComponent.AppSettings)
-    this.update()
+    // this.update()
   }
 }
