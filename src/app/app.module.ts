@@ -1,4 +1,4 @@
-import { FieldReportService, FieldReportSource, FieldReportStatuses, FieldReportType, MarkerService, PopupService, RangerService, RangerStatus, RangerType, ShapeService, TeamService, TeamType } from './shared/services/';
+import { FieldReportService, FieldReportSource, FieldReportStatuses, FieldReportType, MarkerService, PopupService, RangerService, RangerStatus, RangerType, SettingsService, SettingsType, ShapeService, TeamService, TeamType } from './shared/services/';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AgGridModule } from 'ag-grid-angular';
@@ -75,7 +75,7 @@ import { X404Component } from './x404/x404.component';
     X404Component,
     LogComponent
   ],
-  providers: [TeamService, RangerService, FieldReportService, MarkerService, PopupService, ShapeService,
+  providers: [TeamService, RangerService, FieldReportService, MarkerService, PopupService, SettingsService, ShapeService,
     {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}], // Team, Ranger,
   bootstrap: [AppComponent]//,
 

@@ -21,8 +21,9 @@ import { X404Component } from './x404/x404.component';
 const routes: Routes = [
   // EAGER Routes
 
-  { path: '',   redirectTo: '/entry', pathMatch: 'full' }, // redirects
-  { path: 'entry', component: EntryComponent}, //, canActivate: [UnsavedChangesGuard] },
+  //{ path: '',   redirectTo: '/entry', pathMatch: 'full' }, // redirects
+  { path: '',   component: EntryComponent},//, pathMatch: 'full' }, // redirects
+  //{ path: 'entry', component: EntryComponent}, //, canActivate: [UnsavedChangesGuard] },
   // , resolve: {SettingsComponent} // causes: Error: Uncaught (in promise): NullInjectorError: R3InjectorError(AppModule)[SettingsComponent -> SettingsComponent -> SettingsComponent]:
   //NullInjectorError: No provider for SettingsComponent!
  // { path: 'entry', component: EntryComponent, resolve: {SettingsComponent: myResolver }}, //, canActivate: [UnsavedChangesGuard] },

@@ -5,7 +5,7 @@ import { MapsAPILoader } from '@agm/core';
 import { DOCUMENT, JsonPipe } from '@angular/common';
 //import { MarkerClusterer } from "@googlemaps/markerclusterer";
 // import "./style.css";
-import { SettingsComponent } from '../settings/settings.component';
+import { SettingsService } from '../shared/services';
 
 /*
   https://developers.google.com/maps/support/
@@ -28,7 +28,8 @@ interface marker {
   templateUrl: './gmap.component.html',
   styleUrls: ['./gmap.component.scss'
   //  ,'../../../node_modules/snazzy-info-window/dist/snazzy-info-window.css'
-  ]
+  ],
+  providers: [SettingsService]
 })
 
 /*
@@ -57,14 +58,18 @@ export class GmapComponent  implements OnInit {
   zoom = 10;
   title = 'RangerTrak Google Map'
   label = 'RangerTrak Label'
-  latitude = SettingsComponent.AppSettings.defLat
-  longitude = SettingsComponent.AppSettings.defLong
+  latitude
+  longitude
   markerLocations: marker[] = []
   //let map: maps.Map;
   //center: google.maps.LatLngLiteral = {lat: this.lat, lng: this.lng};
   //static style: any = snazzyMapsStyle;
 
-  constructor(@Inject(DOCUMENT) private document: Document) {
+  constructor(
+    private settingsService: SettingsService,
+    @Inject(DOCUMENT) private document: Document) {
+      this.latitude = SettingsService.Settings.defLat
+      this.longitude = SettingsService.Settings.defLong
     //super('MyName')
   }
 
@@ -103,7 +108,7 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
   initMap() {
     // https://developers.google.com/maps/documentation/
     let googMap = new google.maps.Map(document.getElementById('bigGoogMapId') as HTMLElement, {
-      center: {lat: SettingsComponent.AppSettings.defLat, lng: SettingsComponent.AppSettings.defLong},
+      center: {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong},
       zoom: 11,
       mapTypeId: 'terrain'
     });

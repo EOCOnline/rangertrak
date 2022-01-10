@@ -7,7 +7,7 @@ import { Observable, pipe } from 'rxjs'
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators'
 
 import { SettingsComponent } from '../settings/settings.component'
-import { FieldReportService, FieldReportStatuses, RangerService, RangerType, TeamService, TeamType } from '../shared/services/'
+import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, SettingsType, TeamService, TeamType } from '../shared/services/'
 import { SELECT_PANEL_INDENT_PADDING_X } from '@angular/material/select/select'
 
 //@use "@material/slider/styles"
@@ -16,14 +16,14 @@ import { SELECT_PANEL_INDENT_PADDING_X } from '@angular/material/select/select'
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
-  providers: [RangerService, FieldReportService, TeamService]
+  providers: [RangerService, FieldReportService, SettingsService, TeamService]
 })
 export class EntryComponent implements OnInit{ //}, AfterViewInit {
   callsignCtrl = new FormControl()
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
   fieldReportStatuses
-  setting
+  settings
   entryDetailsForm!: FormGroup
   sliderDetailsForm!: FormGroup
   nFakes = 10
@@ -35,14 +35,14 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
     private _snackBar: MatSnackBar,
     private rangerService: RangerService,
     private fieldReportService: FieldReportService,
-    //private settingService: SettingsComponent,
+    private settingsService: SettingsService,
     private teamService: TeamService,
     @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
 
     this.rangers = rangerService.getRangers() // TODO: or getActiveRangers?!
     this.fieldReportService = fieldReportService
     this.fieldReportStatuses = FieldReportStatuses
-    this.setting = SettingsComponent.AppSettings
+    this.settings = SettingsService.Settings
 
 
 
@@ -91,15 +91,15 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
 
-    console.log(`========running ${this.setting.application} version ${this.setting.version}`)
+    console.log(`========running ${this.settings.application} version ${this.settings.version}`)
 
     this.entryDetailsForm = this.formBuilder.group({
       id: -1,
       callsign: ['ngOnInitCallSign'],  // TODO: Not tied to the material design input field...
       team: ['T1'],
       address: ['default location (ngOnInit)'],
-      lat: [this.setting.defLat, Validators.required], //Validators.minLength(4)
-      long: [this.setting.defLong, Validators.required], //Validators.minLength(4)
+      lat: [this.settings.defLat, Validators.required], //Validators.minLength(4)
+      long: [this.settings.defLong, Validators.required], //Validators.minLength(4)
       date: [new Date()],
       status: [FieldReportStatuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
       note: ['']
@@ -176,16 +176,16 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
       callsign: ['resetFormCallSign'],  // TODO: Not tied to the material design input field...
       team: ['T0'],
       address: ['default location (reset)'],
-      lat: [this.setting.defLat,
+      lat: [this.settings.defLat,
       Validators.required,
         //Validators.minLength(4)
       ],
-      long: [this.setting.defLong,
+      long: [this.settings.defLong,
       Validators.required,
         //Validators.minLength(4)
       ],
       date: [new Date()],
-      status: [FieldReportStatuses[this.setting.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
+      status: [FieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
       notes: ['']
     })
   }

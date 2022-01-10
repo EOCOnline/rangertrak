@@ -4,9 +4,7 @@ import * as L from 'leaflet';
 
 import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
 import { DOCUMENT, JsonPipe } from '@angular/common';
-import { MarkerService, ShapeService } from '../shared/services';
-
-import { SettingsComponent } from '../settings/settings.component';
+import { MarkerService, SettingsService, ShapeService } from '../shared/services';
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
@@ -33,7 +31,8 @@ L.Marker.prototype.options.icon = iconDefault;
   styleUrls: [
     './lmap.component.scss',
     '../../../node_modules/leaflet/dist/leaflet.css'
-  ]
+  ],
+  providers: [SettingsService]
 })
 export class LmapComponent implements AfterViewInit {  //OnInit,
 
@@ -43,6 +42,7 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
 
   constructor(
     private markerService: MarkerService,
+    private settingsService: SettingsService,
     private shapeService: ShapeService
     //@Inject(DOCUMENT) private document: Document
   ) {
@@ -69,7 +69,7 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
   private initMap() {
     //console.log("InitMap..........")
     this.lmap = L.map('lmap', {
-      center: [SettingsComponent.AppSettings.defLat, SettingsComponent.AppSettings.defLong],
+      center: [SettingsService.Settings.defLat, SettingsService.Settings.defLong],
       zoom: 12
     })
 
