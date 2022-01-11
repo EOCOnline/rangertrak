@@ -82,7 +82,7 @@ export class RangersComponent implements OnInit {
     //console.log("Rangers Form started at ", Date())
     //this.rangers = this.rangerService.getrangers()  // NOTE: zeros out the array!!!!
 
-    this.rangerService.generateFakeData(this.rangers)
+    this.rangerService.generateFakeData(10) // NOTE: number is ignored currently
     console.log(`Now have ${this.rangers.length} Rangers retrieved from Local Storage and/or fakes generated`)
     //console.log("Rangers Form initialized at ", Date())
   }

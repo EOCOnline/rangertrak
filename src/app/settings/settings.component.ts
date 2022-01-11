@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common'
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { SettingsService, SettingsType } from '../shared/services/'
+import { FieldReportService, RangerService, SettingsService, SettingsType } from '../shared/services/'
 
 @Component({
   selector: 'rangertrak-settings',
@@ -15,11 +15,11 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private settingsService: SettingsService,
+    private fieldReportService: FieldReportService,
+    private rangerService: RangerService,
     @Inject(DOCUMENT) private document: Document) {
 
-    this.settings = SettingsService.Settings
-    //this.settingsService = settingsService
+    this.settings = SettingsService.Settings // only using static functions/values from the service...
   }
 
   ngOnInit(): void {
@@ -28,6 +28,37 @@ export class SettingsComponent implements OnInit {
     this.settingsEditorForm = this.getFormArrayFromSettingsArray()
 
     console.log("settings component ngInit done at ", Date())
+  }
+
+  onBtnResetDefaults() {
+    SettingsService.ResetDefaults()
+  }
+
+  onBtnClearFieldReports() {
+    this.fieldReportService.deleteAllFieldReports
+  }
+
+  getConfirmation(msg: string) {
+    if (confirm(msg) == true) {
+      return true; //proceed
+    } else {
+      return false; //cancel
+    }
+  }
+
+  onBtnClearRangers() {
+    if (this.getConfirmation('Do you REALLY want to delete all the stored Rangers, vs. just editing the Rangers via the grid?')) {
+      console.log("Removing all rangers...")
+      this.rangerService.deleteAllRangers()
+    }
+  }
+
+  onBtnImportFieldReports() {
+
+  }
+
+  onBtnImportRangers() {
+
   }
 
   getFormArrayFromSettingsArray() {
@@ -73,7 +104,7 @@ export class SettingsComponent implements OnInit {
 
   onFormSubmit(): void {
     console.log("Update Application Settings...")
-    let newSettings:SettingsType = this.getSettingsArrayFromFormArray()
+    let newSettings: SettingsType = this.getSettingsArrayFromFormArray()
     SettingsService.Update(newSettings)
   }
 }

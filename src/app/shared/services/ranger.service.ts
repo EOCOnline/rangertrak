@@ -1,9 +1,9 @@
-import { Injectable, OnInit } from '@angular/core';
+/*import { Injectable, OnInit } from '@angular/core';
 import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 import { Observable, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
-
-//import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
+import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
+*/
 
 export interface RangerType {
   callsign: string
@@ -29,32 +29,42 @@ export class RangerService {
 
   rangers:RangerType[] = []
   constructor() {
-    ;
+
   }
 
-  loadRangers() {
-    //this.rangers =
-    this.LoadFromJSON('rangers.json')  //BUG: Not tested!!!
+  loadRangers(path:string) {
+    this.LoadFromJSON(path)  //BUG: Not tested!!!
   }
 
   getRangers() {
-    this.generateFakeData(this.rangers)
     return this.rangers
   }
 
-  generateFakeData(array: RangerType[]) {
+  deleteAllRangers(){
+    this.rangers=[]
+    localStorage.removeItem('Rangers')
+  }
+
+
+  /*toString(id: number): string {
+    return "Ranger ID:" + this.id +
+      "; call: " + this.callSign +
+      "; licensee: " + this.licensee +
+      ";; "
+  }*/
+
+  generateFakeData(num:number) {
       /*
      Following from 98070 AND 98013 zip codes, MUST be sorted by call sign!
      https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
    */
 
-     /*
+     /* TODO: Implement better fake data and pay attention to the number to create...
      let teams = this.teamService.getTeams()
      let rangers = this.rangerService.getRangers()
      let streets = ["Ave", "St.", "Pl.", "Court", "Circle"]
      let notes = ["Reports beautiful sunrise", "Roudy Kids", "Approaching Neighborhood CERT", "Confused & dazed in the sun",
                    "Wow", "na", "Can't hear you", "Bounced via tail of a comet!", "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
-     //let numberPushed = 0
 
      console.log("Generating " + num + " more rows of FAKE field reports!")
 
@@ -67,9 +77,7 @@ export class RangerService {
 
          */
 
-
-
-    array.push (
+          this.rangers.push (
       { callsign: "KB0LJC", licensee: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
       { callsign: "AC7TB", licensee: "Sullivan, Timothy X", image: "./assets/imgs/REW/female.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
       { callsign: "KE7KDQ", licensee: "Cornelison, John", image: "./assets/imgs/REW/ke7kdq.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status:"Normal", note:"" },
@@ -94,7 +102,7 @@ export class RangerService {
     )
   }
 
-  // TODO: or getActiveRangers?!
+  // TODO:
   getActiveRangers() {
     //Would need to filter for those who've 'checked in' on this incident?
     return this.rangers
@@ -136,7 +144,7 @@ export class RangerService {
   }
 
 }
-export class Ranger1 {
+export class Ranger {
 
   static nextId = 1;
   id: Number;
@@ -145,7 +153,7 @@ export class Ranger1 {
   licensee: string;
 
   constructor(callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string) {
-    this.id = Ranger1.nextId++; // TODO: OK if user restarts app during SAME mission #?
+    this.id = Ranger.nextId++; // TODO: OK if user restarts app during SAME mission #?
     this.date = new Date();
     this.callSign = callSign;
     this.licensee = licensee;
@@ -155,12 +163,6 @@ export class Ranger1 {
 
   //edit () {   }    TODO: wise to provide this option?!//
 
-  toString(): string {
-    return "Ranger ID:" + this.id +
-      "; call: " + this.callSign +
-      "; licensee: " + this.licensee +
-      ";; "
-  }
 
   // Save to disk or ...
   serialize(name: string) {

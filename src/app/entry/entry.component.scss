@@ -8,6 +8,8 @@ h3 {
 button {
   display: inline-block;
   font-weight: bold;
+  background-color: red;
+  padding: 6 px;
 }
 
 .elegant {
@@ -76,10 +78,9 @@ button {
   //bottom:40px;
 }
 
-
-
 .enter__Submit-button {
-  margin-top      : 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   background-color: rgb(204, 212, 90);
 }
 

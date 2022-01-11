@@ -1,6 +1,6 @@
 import { BehaviorSubject, Observer } from 'rxjs';
 import { Injectable, OnInit } from '@angular/core';
-import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
+//import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 import { RangerService, RangerStatus, TeamService } from './index';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
@@ -70,6 +70,11 @@ export class FieldReportService {
     const index = this.findIndex(id);
     this.fieldReports.splice(index, 1);
     this.update();
+  }
+
+  deleteAllFieldReports() {
+    this.fieldReports=[]
+    localStorage.removeItem('fieldReports')
   }
 
   private update() {

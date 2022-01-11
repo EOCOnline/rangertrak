@@ -13,7 +13,7 @@ import { FieldReportService, FieldReportStatuses, RangerService, RangerType, Set
   styleUrls: ['./entry.component.scss'],
   providers: [RangerService, FieldReportService, SettingsService, TeamService]
 })
-export class EntryComponent implements OnInit{ //}, AfterViewInit {
+export class EntryComponent implements OnInit { //}, AfterViewInit {
   callsignCtrl = new FormControl()
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
@@ -55,8 +55,22 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
     return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
   }
 
+  displayHide(htmlElementID: string) {
+    let e = this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility = "hidden";
+    }
+  }
+
+  displayShow(htmlElementID: string) {
+    let e = this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility = "visible";
+    }
+  }
+
   ngOnInit(): void {
-    console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode()?"":"NOT "}enabled`)
+    console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode() ? "" : "NOT "}enabled`)
     console.log("EntryComponent - ngOnInit - Use settings to fill form")
 
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
@@ -79,6 +93,11 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
     this.numFakesForm = this.formBuilder.group({})
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
+
+    if (!this.settings.debugMode) {
+      this.displayHide("enter__frm-reguritation")
+      this.displayHide("enter__Fake--id")
+    }
 
     console.log(`EntryForm ngOnInit completed at ${Date()}`)
   }
@@ -114,7 +133,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
 
   openSnackBar(message: string, action: string, duration = 0) {
     // https://material.angular.io/components/snack-bar/overview
-    this._snackBar.open(message, action, { duration: duration, verticalPosition: 'top'})
+    this._snackBar.open(message, action, { duration: duration, verticalPosition: 'top' })
   }
 
   // sleep(ms: number) { return new Promise(resolve => setTimeout(resolve, ms)); }
@@ -136,7 +155,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
 
 
   // TODO: This also gets called if the Update Location button is clicked!!
-  onFormSubmit(formData1:string): void {
+  onFormSubmit(formData1: string): void {
     console.log(`Form submit at ${Date()}`)
     let formData = JSON.stringify(this.entryDetailsForm.value)
 

@@ -11,19 +11,16 @@
     <li>Icons at the top right of each column allows filtering on the value</li>
     <li>Save/load data grid to/from CSV file</li>
   </ul>
-
 </details>
+<br>
 
-<!--br>
-<details>
+<!--details>
   <summary>Future functionality</summary>
   <ul>
     <li></li>
   </ul>
-
-</details-->
-
-<br>
+</details>
+<br-->
 
 <div id="reportsgrid">
   <ag-grid-angular #reportsGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 600px;"
@@ -43,7 +40,7 @@
   <!--div><button (click)="/">Add a new Field Report</button></div-->
 
   <div>
-    <button (click)="onBtnExport()">Export Field Reports</button> with >column separator of
+    <button (click)="onBtnExport()">Export Field Reports</button> with column separator of
     <select id="columnSeparator">
       <option value="none">comma (,)</option>
       <option value="tab">tab</option>
