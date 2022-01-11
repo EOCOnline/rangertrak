@@ -43,11 +43,11 @@
   <!--div><button (click)="/">Add a new Field Report</button></div-->
 
   <div>
-    <button (click)="onBtnExport()">Export Field Reports</button> using <label>column separator of </label>
+    <button (click)="onBtnExport()">Export Field Reports</button> with >column separator of
     <select id="columnSeparator">
+      <option value="none">comma (,)</option>
       <option value="tab">tab</option>
       <option value="|">bar (|)</option>
-      <option value="none">comma (,)</option>
     </select>
   </div>
   <!--button (click)="myGrid.api.deselectAll()">Clear Selection</button-->

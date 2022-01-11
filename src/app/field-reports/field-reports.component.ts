@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FieldReportService, FieldReportType, RangerService, TeamService } from '../shared/services';
-import { DOCUMENT } from '@angular/common'
-import { formatDate } from '@angular/common'
+
+import { DOCUMENT, formatDate } from '@angular/common'
 
 @Component({
   selector: 'rangertrak-field-reports',
@@ -28,26 +28,6 @@ export class FieldReportsComponent implements OnInit {
     // CALLBACKS
     // getRowHeight: (params) => 25
   }
-
-  gridOptions2 = {
-    defaultColDef: {
-      editable: true,
-      resizable: true,
-      minWidth: 100,
-      flex: 1,
-    },
-
-    suppressExcelExport: true,
-    popupParent: this.document.body,
-
-    columnDefs: [{ field: 'make' }, { field: 'model' }, { field: 'price' }],
-
-    rowData: [
-      { make: 'Toyota', model: 'Celica', price: 35000 },
-      { make: 'Ford', model: 'Mondeo', price: 32000 },
-      { make: 'Porsche', model: 'Boxter', price: 72000 },
-    ],
-  };
 
   defaultColDef = {
     flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
@@ -113,11 +93,11 @@ export class FieldReportsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log("Field Report Form started at ", Date())
+    //console.log("Field Report Form started at ", Date())
     //this.fieldReports = this.fieldReportService.getFieldReports()  // NOTE: zeros out the array!!!!
 
     this.fieldReports = this.fieldReportService.getFieldReports()
-    console.log(`Retrieved ${this.fieldReports.length} Field Reports (from Local Storage)`)
+    console.log(`Now have ${this.fieldReports.length} Field Reports retrieved from Local Storage and/or fakes generated`)
   }
 
   isValidDate(d: any) {
@@ -148,40 +128,41 @@ export class FieldReportsComponent implements OnInit {
     params.api.sizeColumnsToFit();
   }
 
-  // following from https://ag-grid.com/javascript-data-grid/csv-export/
-  //exportDataAsCsv() {  }
+    // following from https://ag-grid.com/javascript-data-grid/csv-export/
+    getValue(inputSelector: string) {
+      //let selector = this.document.querySelector(inputSelector) as HTMLSelectElement
+      let selector = this.document.getElementById('columnSeparator') as HTMLSelectElement
+      var sel = selector.selectedIndex;
+      var opt = selector.options[sel];
+      var selVal = (<HTMLOptionElement>opt).value;
+      var selText = (<HTMLOptionElement>opt).text
+      // console.log(`Got column seperator text:"${selText}", val:"${selVal}"`)
 
-  getValue(inputSelector: string) {
-    //let selector = this.document.querySelector(inputSelector)
-    let selector = this.document.getElementById(inputSelector)
-    if ( selector == null) //inputSelector == null ||
-      {return}
-    var text = selector.innerHTML
-    console.log(`Got column seperator value "${text}"`)
-    switch (text) {
-      case 'none':
-        return;
-      case 'tab':
-        return '\t';
-      default:
-        return text;
+      switch (selVal) {
+        case 'none':
+          return;
+        case 'tab':
+          return '\t';
+        default:
+          return selVal;
+      }
     }
-  }
 
-  getParams() {
-    return {
-      columnSeparator: this.getValue('#columnSeparator'),
-    };
-  }
-
-  onBtnExport() {
-    var params = this.getParams();
-    if (params.columnSeparator) {
-      alert(
-        'NOTE: you are downloading a file with non-standard separators - it may not render correctly in Excel.'
-      );
+    getParams() {
+      let dt = new Date()
+       return {
+        columnSeparator: this.getValue('columnSeparator'),
+        fileName: `FieldReportsExport.${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,
+      }
     }
-    // this.gridOptions.gridApi.exportDataAsCsv(params)
-    this.gridApi.exportDataAsCsv(params);
-  }
+
+    onBtnExport() {
+      var params = this.getParams();
+      //console.log(`Got column seperator value "${params.columnSeparator}"`)
+      //console.log(`Got filename of "${params.fileName}"`)
+      if (params.columnSeparator) {
+        alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
+      }
+      this.gridApi.exportDataAsCsv(params);
+    }
 }

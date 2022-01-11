@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FieldReportService, FieldReportType, RangerService, RangerStatus, RangerType, TeamService } from '../shared/services/';
+import { DOCUMENT } from '@angular/common'
 
 @Component({
   selector: 'rangertrak-rangers',
@@ -8,34 +9,25 @@ import { FieldReportService, FieldReportType, RangerService, RangerStatus, Range
 })
 export class RangersComponent implements OnInit {
 
-  teamService
-  rangerService
+  //teamService
+  //rangerService //: { generateFakeData: (arg0: RangerType[]) => void; }
   rangers: RangerType[] = []
   //columns = { "Callsign": String, "Team": String, "Address": String, "Status": String, "Note": String }
-  api
-  columnApi
+  private gridApi: any
+  private gridColumnApi: any
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {
-    rowSelection: "multiple",
-    //onGridReady: event => console.log('The grid is now ready')
-  }
-  /* const gridOptions = {
     // PROPERTIES
-    // Objects like myRowData and myColDefs would be created in your application
-    rowData: rangers,
-    columnDefs: myColDefs,
-    pagination: true,
+    rowSelection: "multiple",
+    // pagination: true,
 
-    // EVENTS
-    // Add event handlers
-    onRowClicked: event => console.log('A row was clicked'),
-    onColumnResized: event => console.log('A column was resized'),
-    onGridReady: event => console.log('The grid is now ready'),
+    // EVENT handlers
+    // onRowClicked: event => console.log('A row was clicked'),
 
     // CALLBACKS
-    getRowHeight: (params) => 25
-  } */
+    // getRowHeight: (params) => 25
+  }
 
   defaultColDef = {
     flex: 1,
@@ -75,32 +67,31 @@ export class RangersComponent implements OnInit {
   now: Date
 
   constructor(
-    teamService: TeamService,
-    rangerService: RangerService,
+    //private teamService: TeamService,
+    private rangerService: RangerService,
+    @Inject(DOCUMENT) private document: Document
   ) {
-    this.teamService = teamService
-    this.rangerService = rangerService
+    //this.teamService = teamService
+    //this.rangerService = rangerService
     this.now = new Date()
-    this.api = ""
-    this.columnApi = ""
+    this.gridApi = ""
+    this.gridColumnApi = ""
   }
 
   ngOnInit(): void {
-    console.log("Rangers Form started at ", Date())
+    //console.log("Rangers Form started at ", Date())
     //this.rangers = this.rangerService.getrangers()  // NOTE: zeros out the array!!!!
 
-    this.rangers = [
-      // { callsign: "KB0LJC", licensee: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "132nd pl", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-    ]
     this.rangerService.generateFakeData(this.rangers)
-    console.log("got " + this.rangers.length + " Field Reports")
-    console.log("Ranger Form completed at ", Date())
+    console.log(`Now have ${this.rangers.length} Rangers retrieved from Local Storage and/or fakes generated`)
+    //console.log("Rangers Form initialized at ", Date())
   }
 
   onGridReady = (params: any) => {
-    this.api = params.api;
-    this.columnApi = params.columnApi;
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
     params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
+    // TODO: use this line, or next routine?!
   }
 
   onFirstDataRendered(params: any) {
@@ -108,6 +99,42 @@ export class RangersComponent implements OnInit {
   }
   // once the above is done, you can: <button (click)="myGrid.api.deselectAll()">Clear Selection</button>
 
-  //onGridReady(_$event) {}
+  // following from https://ag-grid.com/javascript-data-grid/csv-export/
+  getValue(inputSelector: string) {
+    //let selector = this.document.querySelector(inputSelector) as HTMLSelectElement
+    let selector = this.document.getElementById('columnSeparator') as HTMLSelectElement
+    var sel = selector.selectedIndex;
+    var opt = selector.options[sel];
+    var selVal = (<HTMLOptionElement>opt).value;
+    var selText = (<HTMLOptionElement>opt).text
+    // console.log(`Got column seperator text:"${selText}", val:"${selVal}"`)
+
+    switch (selVal) {
+      case 'none':
+        return;
+      case 'tab':
+        return '\t';
+      default:
+        return selVal;
+    }
+  }
+
+  getParams() {
+    let dt = new Date()
+     return {
+      columnSeparator: this.getValue('columnSeparator'),
+      fileName: `RangersExport.${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,
+    }
+  }
+
+  onBtnExport() {
+    var params = this.getParams();
+    //console.log(`Got column seperator value "${params.columnSeparator}"`)
+    //console.log(`Got filename of "${params.fileName}"`)
+    if (params.columnSeparator) {
+      alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
+    }
+    this.gridApi.exportDataAsCsv(params);
+  }
 
 }
