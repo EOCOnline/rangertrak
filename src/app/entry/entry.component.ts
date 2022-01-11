@@ -1,16 +1,11 @@
-import { DOCUMENT, JsonPipe } from '@angular/common'
-import { AfterViewInit, Component, Inject, OnInit, isDevMode, ComponentFactoryResolver } from '@angular/core'
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MDCSlider } from '@material/slider'
+import { DOCUMENT } from '@angular/common'
+import { AfterViewInit, Component, Inject, OnInit, isDevMode } from '@angular/core'
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar'
-import { Observable, pipe } from 'rxjs'
-import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators'
+import { Observable } from 'rxjs'
+import { debounceTime, map, startWith } from 'rxjs/operators'
 
-import { SettingsComponent } from '../settings/settings.component'
-import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, SettingsType, TeamService, TeamType } from '../shared/services/'
-import { SELECT_PANEL_INDENT_PADDING_X } from '@angular/material/select/select'
-
-//@use "@material/slider/styles"
+import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
 
 @Component({
   selector: 'rangertrak-entry',
@@ -25,7 +20,7 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
   fieldReportStatuses
   settings
   entryDetailsForm!: FormGroup
-  sliderDetailsForm!: FormGroup
+  numFakesForm!: FormGroup
   nFakes = 10
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
@@ -44,8 +39,6 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
     this.fieldReportStatuses = FieldReportStatuses
     this.settings = SettingsService.Settings
 
-
-
     // NOTE: workaround for onChange not working...
     this.callsignCtrl.valueChanges.pipe(debounceTime(1000)).subscribe(newCall => this.CallsignChanged(newCall))
 
@@ -60,6 +53,34 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
     const filterValue = value.toLowerCase()
     this.entryDetailsForm.value.callsign = filterValue // TODO: Have MAT input field auto sync w/ callsign
     return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
+  }
+
+  ngOnInit(): void {
+    console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode()?"":"NOT "}enabled`)
+    console.log("EntryComponent - ngOnInit - Use settings to fill form")
+
+    // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
+    // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
+
+    console.log(`Running ${this.settings.application} version ${this.settings.version}`)
+
+    this.entryDetailsForm = this.formBuilder.group({
+      id: -1,
+      callsign: ['ngOnInitCallSign'],  // TODO: Not tied to the material design input field...
+      team: ['T1'],
+      address: ['default location (ngOnInit)'],
+      lat: [this.settings.defLat, Validators.required], //Validators.minLength(4)
+      long: [this.settings.defLong, Validators.required], //Validators.minLength(4)
+      date: [new Date()],
+      status: [FieldReportStatuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
+      note: ['']
+    })
+
+    this.numFakesForm = this.formBuilder.group({})
+
+    this.submitInfo = this.document.getElementById("enter__Submit-info")
+
+    console.log(`EntryForm ngOnInit completed at ${Date()}`)
   }
 
   private findIndex(call: string): number {
@@ -82,34 +103,6 @@ export class EntryComponent implements OnInit{ //}, AfterViewInit {
   CallsignCtrlChanged() { // NOTE: NEVER CALLED!!!, so use workaround above...
     console.log("callsign Ctrl Changed at ", Date(), ". call=" + "myCall")
     // TODO: update #enter__Callsign-upshot
-  }
-
-  ngOnInit(): void {
-    console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode()?"":"NOT "}enabled`)
-    console.log("EntryComponent - ngOnInit - Use settings to fill form")
-
-    // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
-    // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
-
-    console.log(`========running ${this.settings.application} version ${this.settings.version}`)
-
-    this.entryDetailsForm = this.formBuilder.group({
-      id: -1,
-      callsign: ['ngOnInitCallSign'],  // TODO: Not tied to the material design input field...
-      team: ['T1'],
-      address: ['default location (ngOnInit)'],
-      lat: [this.settings.defLat, Validators.required], //Validators.minLength(4)
-      long: [this.settings.defLong, Validators.required], //Validators.minLength(4)
-      date: [new Date()],
-      status: [FieldReportStatuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
-      note: ['']
-    })
-
-    this.sliderDetailsForm = this.formBuilder.group({})
-
-    this.submitInfo = this.document.getElementById("enter__Submit-info")
-
-    console.log(`EntryForm ngOnInit completed at ${Date()}`)
   }
 
   // FUTURE: provider nicer time picker: https://www.freakyjolly.com/angular-material-109-datepicker-timepicker-tutorial/#Only_Show_Timepicker

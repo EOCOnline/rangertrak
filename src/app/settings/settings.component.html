@@ -90,6 +90,16 @@
 
     <div class="input-group">
       <input
+        [class.border-danger]="settingsEditorForm.get('debugMode')?.touched && settingsEditorForm.get('debugMode')?.invalid"
+        type="checkbox" formControlName="debugMode" placeholder="debugMode">
+      <div
+        *ngIf="settingsEditorForm.get('debugMode')?.touched && settingsEditorForm.get('debugMode')?.hasError('required')"
+        class="text-sm text-danger">debug mode is required</div>
+      Debug Mode
+    </div>
+
+    <div class="input-group">
+      <input
         [class.border-danger]="settingsEditorForm.get('logToPanel')?.touched && settingsEditorForm.get('logToPanel')?.invalid"
         type="checkbox" formControlName="logToPanel" placeholder="logToPanel">
       <div
@@ -141,7 +151,7 @@
     <br />
 
     <div class="input-group">Notes:
-      <textarea formControlName="notes" id="" cols="30" rows="1" placeholder="Enter Any Notes"></textarea>
+      <textarea formControlName="note" id="" cols="30" rows="1" placeholder="Enter Any Notes"></textarea>
     </div>
 
     <button [disabled]="settingsEditorForm.invalid" style="margin-top: 40px;" type="submit">Submit</button>

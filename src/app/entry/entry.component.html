@@ -2,9 +2,9 @@
   <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
 
     <div id="enter__frm-reguritation">
-    <pre>{{ frm.value |json}}</pre>
-  </div>
-    <br><br>
+      <pre>{{ frm.value |json}}</pre>
+    </div>
+
     <h1>Entry Form</h1>
     <h2 class="elegant">Who</h2>
 
@@ -105,23 +105,21 @@
     </div-->
     <br><br><br><br>
 
-    <!--  https://material.angular.io/components/slider/overview -->
+    <!-- https://material.angular.io/components/slider/overview -->
     <!-- ngModel cannot be used to register form controls with a parent formGroup directive -->
-    <div [formGroup]="sliderDetailsForm">
-      <section class="enter__Slider">
+    <div [formGroup]="numFakesForm">
+      <section class="enter__Fake">
 
-
-          <mat-form-field class="enter__Fake--numfield" appearance="fill">
+        <mat-form-field class="enter__Fake--numfield" appearance="fill">
           <mat-label># Fakes</mat-label>
           <input matInput type="number" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}" />
         </mat-form-field>
 
-        <button (click)="generateFakeFieldReports()" type="button">Generate
-          {{nFakes}} FAKE Field Reports</button>
+        <mat-slider id="enter__Fake--slider" thumbLabel tickInterval="10" step="5" min="0" max="100"
+          aria-label="# Fake Field Reports" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"></mat-slider>
 
-          <mat-slider id="enter__Fake--slider" thumbLabel tickInterval="10" step="5" min="0"
-          max="100" aria-label="# Fake Field Reports" [(ngModel)]="nFakes"
-          [ngModelOptions]="{standalone: true}"></mat-slider>
+        <button (click)="generateFakeFieldReports()" type="button" id="enter__Fake--button">Generate
+          {{nFakes}} FAKE Field Reports</button>
       </section>
     </div>
 
