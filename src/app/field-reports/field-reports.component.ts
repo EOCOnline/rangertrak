@@ -1,10 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { FieldReportService, FieldReportStatuses, FieldReportType, RangerService, TeamService } from '../shared/services';
-
-import { HttpClient } from '@angular/common/http';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FieldReportService, FieldReportType, RangerService, TeamService } from '../shared/services';
+import { DOCUMENT } from '@angular/common'
 import { formatDate } from '@angular/common'
-
-//import { validate } from 'class-validator';
 
 @Component({
   selector: 'rangertrak-field-reports',
@@ -13,81 +10,44 @@ import { formatDate } from '@angular/common'
 })
 export class FieldReportsComponent implements OnInit {
 
-  //private fieldReportService
-  //private teamService
-  //private rangerService
   fieldReports: FieldReportType[] = []
-  private gridApi
+  private gridApi: any
   private gridColumnApi
+  now: Date
+  http: any
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {
-    rowSelection: "multiple",
-    //onGridReady: event => console.log('The grid is now ready')
-  }
-  /* const gridOptions = {
     // PROPERTIES
-    // Objects like myRowData and myColDefs would be created in your application
-    rowData: fieldReports,
-    columnDefs: myColDefs,
-    pagination: true,
+    rowSelection: "multiple",
+    // pagination: true,
 
-    // EVENTS
-    // Add event handlers
-    onRowClicked: event => console.log('A row was clicked'),
-    onColumnResized: event => console.log('A column was resized'),
-    onGridReady: event => console.log('The grid is now ready'),
+    // EVENT handlers
+    // onRowClicked: event => console.log('A row was clicked'),
 
     // CALLBACKS
-    getRowHeight: (params) => 25
-  } */
-
-  /* TODO: Put following into tooltip, instead of just TEAM:
-        <mat-option *ngFor="let callsigns of filteredCallsigns | async" [value]="callsigns.callsign">
-            <img class="example-option-img" aria-hidden [src]="callsigns.image" height="40">
-            <span>{{callsigns.callsign}}</span> |
-            <small> {{callsigns.name}} | {{callsigns.phone}}</small>
-          </mat-option>
-          */
-
-  isValidDate(d: any) {
-
-    return d instanceof Date //&& !isNaN(d);
-
-    if (Object.prototype.toString.call(d) !== "[object Date]") {
-      console.log (`bad date type:${Object.prototype.toString.call(d)}`)
-      return false } // invalid date
-    if (isNaN(d.getTime())) {
-      console.log (`bad time`)
-      return false } // d.valueOf() could also work  // invalid time
-    return true  // valid date
+    // getRowHeight: (params) => 25
   }
 
-  myDateGetter = (params: { data: FieldReportType }) => {
-    const weekday = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
-    let dt = 'unknown date'
-    let d:Date = params.data.date
-      //console.log(`Day is: ${d.toISOString()}`)
-      //console.log(`WeekDay is: ${d.getDay}`)
+  gridOptions2 = {
+    defaultColDef: {
+      editable: true,
+      resizable: true,
+      minWidth: 100,
+      flex: 1,
+    },
 
-    try {
-      //weekday[d.getDay()] +
-      dt =  formatDate(d, 'yyyy-MM-dd HH:MM:ss', 'en-US')
-      //console.log(`Day is: ${params.data.date.toISOString()}`)
-    } catch (error) {
-      dt = `Bad date format: ${error}`
-    }
+    suppressExcelExport: true,
+    popupParent: this.document.body,
 
-    // https://www.w3schools.com/jsref/jsref_obj_date.asp
-    //console.log(`Day is: ${params.data.date.toISOString()}`)
-/*
-    if (this.isValidDate(d)) {
-      dt = weekday[d.getDay()] + formatDate(d, 'yyyy-MM-dd HH:MM:ss', 'en-US')
-      console.log(`Day is: ${params.data.date.toISOString()}`)
-    }
-*/
-    return dt
-  }
+    columnDefs: [{ field: 'make' }, { field: 'model' }, { field: 'price' }],
+
+    rowData: [
+      { make: 'Toyota', model: 'Celica', price: 35000 },
+      { make: 'Ford', model: 'Mondeo', price: 32000 },
+      { make: 'Porsche', model: 'Boxter', price: 72000 },
+    ],
+  };
 
   defaultColDef = {
     flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
@@ -97,6 +57,32 @@ export class FieldReportsComponent implements OnInit {
     sortable: true,
     filter: true,
     floatingFilter: true
+  }
+
+  myDateGetter = (params: { data: FieldReportType }) => {
+    const weekday = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
+    let dt = 'unknown date'
+    let d: Date = params.data.date
+    //console.log(`Day is: ${d.toISOString()}`)
+    //console.log(`WeekDay is: ${d.getDay}`)
+
+    try {
+      //weekday[d.getDay()] +
+      dt = formatDate(d, 'yyyy-MM-dd HH:MM:ss', 'en-US')
+      //console.log(`Day is: ${params.data.date.toISOString()}`)
+    } catch (error) {
+      dt = `Bad date format: ${error}`
+    }
+
+    // https://www.w3schools.com/jsref/jsref_obj_date.asp
+    //console.log(`Day is: ${params.data.date.toISOString()}`)
+    /*
+        if (this.isValidDate(d)) {
+          dt = weekday[d.getDay()] + formatDate(d, 'yyyy-MM-dd HH:MM:ss', 'en-US')
+          console.log(`Day is: ${params.data.date.toISOString()}`)
+        }
+    */
+    return dt
   }
 
   columnDefs = [
@@ -113,13 +99,13 @@ export class FieldReportsComponent implements OnInit {
     { headerName: "Status", field: "status", flex: 50 }, //, maxWidth: 150
     { headerName: "Note", field: "note", flex: 50 }, //, maxWidth: 300
   ];
-  now: Date
-  http: any;
+
 
   constructor(
     private fieldReportService: FieldReportService,
     private teamService: TeamService,
     private rangerService: RangerService,
+    @Inject(DOCUMENT) private document: Document
   ) {
     this.now = new Date()
     this.gridApi = ""
@@ -131,33 +117,71 @@ export class FieldReportsComponent implements OnInit {
     //this.fieldReports = this.fieldReportService.getFieldReports()  // NOTE: zeros out the array!!!!
 
     this.fieldReports = this.fieldReportService.getFieldReports()
-    /*  { who: { callsign: "KE7KDQ", team: "T1" },
-          where: { address: "10506 sw 132nd pl", lat: 45.1, long: -123.1 },
-          when: { date: this.now },
-          what: { status: "Normal", note: "Reports beautiful sunrise" } }
-      */
-    //this.fieldReportService.generateFakeData(30) do in entry form instead
-    console.log("got " + this.fieldReports.length + " Field Reports")
-    console.log("Field Report Form completed at ", Date())
+    console.log(`Retrieved ${this.fieldReports.length} Field Reports (from Local Storage)`)
   }
 
-  // FUTURE:
-  exportDataAsCsv() {
+  isValidDate(d: any) {
+    return d instanceof Date //&& !isNaN(d);
+    /*
+        if (Object.prototype.toString.call(d) !== "[object Date]") {
+          console.log(`bad date type:${Object.prototype.toString.call(d)}`)
+          return false
+        } // invalid date
+        if (isNaN(d.getTime())) {
+          console.log(`bad time`)
+          return false
+        } // d.valueOf() could also work  // invalid time
+        return true  // valid date
+        */
   }
 
-  // FUTURE:
-  // filteredReports:FieldReportType[] = this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000))
+  // filteredReports:FieldReportType[] = this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000)) //FUTURE:
 
   onGridReady = (params: any) => {
     this.gridApi = params.api
     this.gridColumnApi = params.columnApi
 
-    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
+    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
   }
 
   onFirstDataRendered(params: any) {
     params.api.sizeColumnsToFit();
   }
+
+  // following from https://ag-grid.com/javascript-data-grid/csv-export/
+  //exportDataAsCsv() {  }
+
+  getValue(inputSelector: string) {
+    //let selector = this.document.querySelector(inputSelector)
+    let selector = this.document.getElementById(inputSelector)
+    if ( selector == null) //inputSelector == null ||
+      {return}
+    var text = selector.innerHTML
+    console.log(`Got column seperator value "${text}"`)
+    switch (text) {
+      case 'none':
+        return;
+      case 'tab':
+        return '\t';
+      default:
+        return text;
+    }
+  }
+
+  getParams() {
+    return {
+      columnSeparator: this.getValue('#columnSeparator'),
+    };
+  }
+
+  onBtnExport() {
+    var params = this.getParams();
+    if (params.columnSeparator) {
+      alert(
+        'NOTE: you are downloading a file with non-standard separators - it may not render correctly in Excel.'
+      );
+    }
+    // this.gridOptions.gridApi.exportDataAsCsv(params)
+    this.gridApi.exportDataAsCsv(params);
+  }
 }
-
-

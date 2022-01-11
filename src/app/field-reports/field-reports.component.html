@@ -9,17 +9,20 @@
     <li>Move column seperators to resize columns</li>
     <li>Hovering over a cell (e.g., any callsign) may show additional information. </li>
     <li>Icons at the top right of each column allows filtering on the value</li>
+    <li>Save/load data grid to/from CSV file</li>
   </ul>
 
 </details>
-<br>
+
+<!--br>
 <details>
   <summary>Future functionality</summary>
   <ul>
-    <li>Save/load data grid to/from CSV file. See https://ag-grid.com/javascript-data-grid/csv-export for details</li>
+    <li></li>
   </ul>
 
-</details>
+</details-->
+
 <br>
 
 <div id="reportsgrid">
@@ -39,11 +42,12 @@
       <button (click)="onBtNormal()">Normal Layout</button-->
   <!--div><button (click)="/">Add a new Field Report</button></div-->
 
-  <div>TODO: <button (click)="exportDataAsCsv()">Export Field Reports</button> using <label>column separator of </label>
+  <div>
+    <button (click)="onBtnExport()">Export Field Reports</button> using <label>column separator of </label>
     <select id="columnSeparator">
-      <option value="none">(comma, the default)</option>
       <option value="tab">tab</option>
       <option value="|">bar (|)</option>
+      <option value="none">comma (,)</option>
     </select>
   </div>
   <!--button (click)="myGrid.api.deselectAll()">Clear Selection</button-->
