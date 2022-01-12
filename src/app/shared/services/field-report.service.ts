@@ -33,10 +33,12 @@ export class FieldReportService {
       this.fieldReports = JSON.parse(temp) || []
     }   */
     this.fieldReports = (localStorageFieldReports != null) ? JSON.parse(localStorageFieldReports) : []   //TODO: clean up
-    for (const fieldReport of this.fieldReports) {
-      if (fieldReport.id >= this.nextId) this.nextId = fieldReport.id + 1
+    if (this.fieldReports.length > 0) {
+      for (const fieldReport of this.fieldReports) {
+        if (fieldReport.id >= this.nextId) this.nextId = fieldReport.id + 1
+      }
+      this.update()
     }
-    this.update()
   }
 
   subscribe(observer: Observer<FieldReportType[]>) {
@@ -73,7 +75,7 @@ export class FieldReportService {
   }
 
   deleteAllFieldReports() {
-    this.fieldReports=[]
+    this.fieldReports = []
     localStorage.removeItem(this.storageLocalName)
   }
 
@@ -153,11 +155,11 @@ const filterParams = {
     })
   }
 
-  filterFieldReportsByDate( beg:Date, end:Date ) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
+  filterFieldReportsByDate(beg: Date, end: Date) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
     const minDate = new Date(0)
-    const maxDate = new Date(2999,0)
-    beg = beg < minDate? beg: minDate
-    end = (end < maxDate)? end: maxDate
+    const maxDate = new Date(2999, 0)
+    beg = beg < minDate ? beg : minDate
+    end = (end < maxDate) ? end : maxDate
 
     return this.fieldReports.filter((report) => (report.date >= beg && report.date <= end))
   }
@@ -182,7 +184,7 @@ const filterParams = {
         address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
         lat: 45 + Math.floor(Math.random() * 2000) / 1000,
         long: -121 + Math.floor(Math.random() * 1000) / 1000,
-        date: new Date (Math.floor(msSince1970 - (Math.random() * 25 * 60 * 60 * 1000))), // 0-25 hrs earlier
+        date: new Date(Math.floor(msSince1970 - (Math.random() * 25 * 60 * 60 * 1000))), // 0-25 hrs earlier
         status: FieldReportStatuses[Math.floor(Math.random() * FieldReportStatuses.length)],
         note: notes[Math.floor(Math.random() * notes.length)]
       })

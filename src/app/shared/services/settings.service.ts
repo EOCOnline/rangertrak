@@ -32,6 +32,7 @@ export class SettingsService {
   static storageLocalName = 'appSettings'
   static secrets: SecretType[]
   static Settings: SettingsType
+  static debugMode: any;
 
   constructor() {
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"

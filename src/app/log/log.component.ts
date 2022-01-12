@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core'
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnInit } from '@angular/core'
 //import { Event } from '@angular/animations'
 //import { File } from '@ionic-native/file/ngx';
 import * as XLSX from 'xlsx';
+import { SettingsService } from "../shared/services"
 
 /* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
 // https://github.com/SheetJS/SheetJS.github.io
@@ -17,15 +19,37 @@ type AOA = any[][]  // array of arrays
 })
 export class LogComponent implements OnInit {
 
-  log = document.getElementById("log")
+  log = this.document.getElementById("log")
   data: any[][] = [[1,2,3],[4,5,6]];
 
   //constructor(public file: File) { }
+  constructor(
+    @Inject(DOCUMENT) private document: Document) {
+
+     }
   // src/app/log/log.component.ts:23:22 - error NG2003: No suitable injection token for parameter 'file' of class 'LogComponent'.
   // Consider using the @Inject decorator to specify an injection token.
 
   ngOnInit(): void {
+    if (!SettingsService.debugMode) {
+      this.displayHide("Log__Excel")
+    }
 
+  }
+
+  // TODO: Move these into a utility class?
+  displayHide(htmlElementID: string) {
+    let e = this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility = "hidden";
+    }
+  }
+
+  displayShow(htmlElementID: string) {
+    let e = this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility = "visible";
+    }
   }
 
   // log event in the console
