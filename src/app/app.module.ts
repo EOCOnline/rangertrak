@@ -26,24 +26,13 @@ import { RangersComponent } from './rangers/rangers.component';
 import { SettingsComponent } from './settings/settings.component';
 import { X404Component } from './x404/x404.component';
 
+// from ionic-app.module.ts
+//import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+//import { File } from '@ionic-native/file/ngx';
+
 //import { AgmSnazzyInfoWindowModule } from '@agm/snazzy-info-window';
-
-
 // REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
 // https://angular.io/guide/build#configuring-commonjs-dependencies
-
-// import { MatInputModule } from '@angular/material/input';
-// import { MatFormFieldModule } from '@angular/material/form-field';
-// import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
-//import {AutocompleteOverviewExample} from './autocomplete-overview-example';
-//import {MatNativeDateModule} from '@angular/material/core';
-//import { MatCardModule } from '@angular/material/card';
-
-//import { DataService } from './shared/services/data.service';
-//import { LocalStorageService } from './shared/services/local-storage.service';
-
-//MatNativeDateModule,
 
 @NgModule({
   imports: [
@@ -60,6 +49,7 @@ import { X404Component } from './x404/x404.component';
     AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
    // AgmSnazzyInfoWindowModule,
     LazyModule
+    //, IonicModule.forRoot()
   ],
   declarations: [
     AppComponent,
@@ -77,6 +67,7 @@ import { X404Component } from './x404/x404.component';
   ],
   providers: [TeamService, RangerService, FieldReportService, MarkerService, PopupService, SettingsService, ShapeService,
     {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}], // Team, Ranger,
+    // providers: [File, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent]//,
 
   //exports: [

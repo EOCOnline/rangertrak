@@ -15,7 +15,7 @@ h1
 
 pre
 {
-	height: 20em;
+	height: 10em;
 	font-family: monospace;
 	font-size: 1em;
 	padding: 2px 5px;
@@ -26,52 +26,6 @@ pre
 	overflow: auto;
 }
 
-#anim
-{
-	display: block;
-	width: 14em;
-	font-size: 1.3em;
-	font-weight: bold;
-	text-align: center;
-	text-decoration: none;
-	padding: 0.5em 3em;
-	margin: 2em auto;
-	color: #fff;
-	background-color: #060;
-	border: 2px solid #393;
-	border-radius: 5px;
-	outline: 0 none;
-}
-
-#anim.enable
-{
-	color: #333;
-	background-color: #0c0;
-	box-shadow: 0 0 5px #0f0;
-	-webkit-animation: flash 1s ease 3;
-	-moz-animation: flash 1s ease 3;
-	-ms-animation: flash 1s ease 3;
-	-o-animation: flash 1s ease 3;
-	animation: flash 1s ease 3;
-}
-
-/* animation */
-@-webkit-keyframes flash {
-	50% { opacity: 0; }
-}
-
-@-moz-keyframes flash {
-	50% { opacity: 0; }
-}
-
-@-ms-keyframes flash {
-	50% { opacity: 0; }
-}
-
-@-o-keyframes flash {
-	50% { opacity: 0; }
-}
-
-@keyframes flash {
-	50% { opacity: 0; }
+button {
+  margin-right: 8px;
 }

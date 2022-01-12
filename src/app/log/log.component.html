@@ -1,18 +1,39 @@
-<h1>CSS3 Animation Events in JavaScript</h1>
-
-<p>When the button is clicked, a class of "enable" is applied to the element which starts a CSS3 animation. Animation start, iteration and end events are captured and logged. When animationend is encountered, the "enable" class is removed.</p>
-
-<p>For more information, refer to <a href="http://www.sitepoint.com/css3-animation-javascript-event-handlers/">How to Capture CSS3 Animation Events in JavaScript</a>.</p>
-
-<p><button id="anim" onclick="this.ToggleAnimation2()">Click to start animation</button></p>
-
-<button (click)="ToggleAnimation2()">ToggleAnimation2()</button>
-
-<!--
-<button (click)="updateLocation()">Update location</button>
-    <button (click)="this.entryDetailsForm.reset()">Reset (native)</button>
-    <button (click)="resetForm()">Reset (John's Special)</button>
--->
-
+<h1>Log</h1>
 
 <pre id="log">Event information log</pre>
+
+<input type="file" (change)="onFileChange($event)" multiple="false" />
+<button ion-button color="secondary" (click)="import()">Import Data</button>
+<button ion-button color="secondary" (click)="export()">Export Data</button>
+Code from <a href="http://sheetjs.com" target="_blank">http://sheetjs.com</a>, specifically
+<a href="https://oss.sheetjs.com/" target="_blank">https://oss.sheetjs.com/</a> &
+<a href="https://github.com/SheetJS/SheetJS.github.io/" target="_blank">https://github.com/SheetJS/SheetJS.github.io/</a>
+<!--
+<ion-header>
+  <ion-toolbar>
+    <ion-title>SheetJS Ionic Demo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title>SheetJS Demo</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid>
+    <ion-row *ngFor="let row of data">
+      <ion-col *ngFor="let val of row">
+        {{val}}
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer padding>
+  <input type="file" (change)="onFileChange($event)" multiple="false" />
+  <button ion-button color="secondary" (click)="import()">Import Data</button>
+  <button ion-button color="secondary" (click)="export()">Export Data</button>
+</ion-footer>
+-->
