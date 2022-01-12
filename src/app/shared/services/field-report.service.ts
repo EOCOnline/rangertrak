@@ -21,12 +21,13 @@ export type FieldReportType = {
 export class FieldReportService {
 
   private fieldReports: FieldReportType[] = []
+  private storageLocalName = 'appSettings'
   private nextId = 0
   private fieldReportsSubject =
     new BehaviorSubject<FieldReportType[]>([]);  // REVIEW: Necessary?
 
   constructor(private rangerService: RangerService, private teamService: TeamService) {
-    let localStorageFieldReports = localStorage.getItem('fieldReports')
+    let localStorageFieldReports = localStorage.getItem(this.storageLocalName)
     /* this.fieldReports = []
     if (temp != null) {
       this.fieldReports = JSON.parse(temp) || []
@@ -44,8 +45,7 @@ export class FieldReportService {
 
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
   addfieldReport(formData: string): FieldReportType {
-    console.log('FieldReportService: Got new field report: ')
-    console.log(formData)
+    console.log(`FieldReportService: Got new field report: ${formData}`)
 
     let newReport: FieldReportType = JSON.parse(formData)
     newReport.id = this.nextId++
@@ -74,11 +74,11 @@ export class FieldReportService {
 
   deleteAllFieldReports() {
     this.fieldReports=[]
-    localStorage.removeItem('fieldReports')
+    localStorage.removeItem(this.storageLocalName)
   }
 
   private update() {
-    localStorage.setItem('fieldReports', JSON.stringify(this.fieldReports));
+    localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports));
 
     this.fieldReportsSubject.next(this.fieldReports.map(
       fieldReport => ({
@@ -161,9 +161,6 @@ const filterParams = {
 
     return this.fieldReports.filter((report) => (report.date >= beg && report.date <= end))
   }
-
-
-
 
 
   generateFakeData(num: number = 15) {

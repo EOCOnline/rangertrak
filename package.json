@@ -34,6 +34,8 @@
     "leaflet": "^1.7.1",
     "rxjs": "^7.4.0",
     "tslib": "^2.3.0",
+    "xlsx": "^0.17.5",
+    "xlsx-style": "^0.8.13",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

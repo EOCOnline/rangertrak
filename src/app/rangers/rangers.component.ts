@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FieldReportService, FieldReportType, RangerService, RangerStatus, RangerType, TeamService } from '../shared/services/';
 import { DOCUMENT } from '@angular/common'
+import { csvImport } from './csvImport'
 
 @Component({
   selector: 'rangertrak-rangers',
@@ -85,6 +86,12 @@ export class RangersComponent implements OnInit {
     this.rangerService.generateFakeData(10) // NOTE: number is ignored currently
     console.log(`Now have ${this.rangers.length} Rangers retrieved from Local Storage and/or fakes generated`)
     //console.log("Rangers Form initialized at ", Date())
+  }
+
+  onBtnImportExcel() {
+    let fnc = new csvImport(document)
+    fnc.importExcel2()
+    //csvImport.importExcel2()
   }
 
   onGridReady = (params: any) => {

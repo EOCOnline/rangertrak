@@ -14,6 +14,7 @@
     <li>Hovering over a cell (e.g., any callsign) may show additional information. </li>
     <li>Icons at the top right of each column allows filtering on the value</li>
     <li>Save/load data grid to/from Excel. See https://ag-grid.com/javascript-data-grid/csv-export for details</li>
+    <li>FUTURE: Import Excel button currently 'works', but imports wrong spreadsheet and does nothing with it!</li>
   </ul>
 </details>
 <br>
@@ -49,5 +50,8 @@
       <option value="|">bar (|)</option>
     </select>
   </div>
+
+  <br>
+  <button (click)="onBtnImportExcel()" style="margin-bottom: 5px">Import Excel</button>
 
 </div>
