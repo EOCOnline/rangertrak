@@ -35,6 +35,8 @@ export class SettingsService {
   static debugMode: any;
 
   constructor() {
+    console.log("Contructing SettingsService: once or repeatedly?!--------------") // XXX
+
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
     let secretWorkaround = JSON.stringify(secrets)
     SettingsService.secrets = JSON.parse(secretWorkaround)
@@ -43,40 +45,42 @@ export class SettingsService {
     // populate SettingsService.Settings
     let localStorageSettings = localStorage.getItem(SettingsService.storageLocalName)
 
-    let needSettings = true
-    try {
-      if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") > 0) {
-        SettingsService.Settings = JSON.parse(localStorageSettings)
-        console.log("Initialized App Settings from localstorage")
-        needSettings = false
+    let needSettings = SettingsService.Settings == undefined
+    if (needSettings) {
+      console.log("Get Settings...")
+      try {
+        if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") > 0) {
+          SettingsService.Settings = JSON.parse(localStorageSettings)
+          console.log("Initialized App Settings from localstorage")
+          needSettings = false
+        }
+      } catch (error: any) {
+        console.log(`localstorage App Settings i.e., ${localStorageSettings} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
       }
-    } catch (error: any) {
-      console.log(`localstorage App Settings i.e., ${localStorageSettings} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
     }
-
     if (needSettings) { SettingsService.ResetDefaults() }
   }
 
   static ResetDefaults() {
-          //original hardcoded defaults... not saved until form is submitted... This form doesn't allow editing of all values
-          console.log("Initialize App Settings from hardcoded values")
-          SettingsService.Settings = {
-            id: 0,  // FUTURE: allow different setts of settings (e.g., per location)???
-            name: "standard hardcoded settings",
-            application: "RangerTrak",
-            version: '0.11.0',
-            note: "values set by code, please edit them to serve you!",
-            defLat: 47.4472,
-            defLong: -122.4627,  // Vashon EOC!
-            defPlusCode: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
-            w3wLocale: "Vashon, WA",
-            markerSize: 5,
-            markerShape: 1,
-            defRangerStatus: 0,
-            debugMode: true,
-            logToPanel: true,
-            logToConsole: true
-          }
+    //original hardcoded defaults... not saved until form is submitted... This form doesn't allow editing of all values
+    console.log("Initialize App Settings from hardcoded values")
+    SettingsService.Settings = {
+      id: 0,  // FUTURE: allow different setts of settings (e.g., per location)???
+      name: "standard hardcoded settings",
+      application: "RangerTrak",
+      version: '0.11.0',
+      note: "values set by code, please edit them to serve you!",
+      defLat: 47.4472,
+      defLong: -122.4627,  // Vashon EOC!
+      defPlusCode: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
+      w3wLocale: "Vashon, WA",
+      markerSize: 5,
+      markerShape: 1,
+      defRangerStatus: 0,
+      debugMode: true,
+      logToPanel: true,
+      logToConsole: true
+    }
   }
 
   static Update(newSettings: SettingsType) {

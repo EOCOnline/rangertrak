@@ -93,8 +93,7 @@ export class FieldReportsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //console.log("Field Report Form started at ", Date())
-    //this.fieldReports = this.fieldReportService.getFieldReports()  // NOTE: zeros out the array!!!!
+    //console.log("Field Report Form ngInit at ", Date())
 
     this.fieldReports = this.fieldReportService.getFieldReports()
     console.log(`Now have ${this.fieldReports.length} Field Reports retrieved from Local Storage and/or fakes generated`)

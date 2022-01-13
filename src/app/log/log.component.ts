@@ -2,7 +2,13 @@ import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core'
 //import { Event } from '@angular/animations'
 //import { File } from '@ionic-native/file/ngx';
+
+/* Following gets:
+index.js:553 [webpack-dev-server] WARNING
+D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies */
 import * as XLSX from 'xlsx';
+
 import { SettingsService } from "../shared/services"
 
 /* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */

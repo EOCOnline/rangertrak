@@ -2,6 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FieldReportService, FieldReportType, RangerService, RangerStatus, RangerType, TeamService } from '../shared/services/';
 import { DOCUMENT } from '@angular/common'
 import { csvImport } from './csvImport'
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MDCBanner } from '@material/banner';
 
 @Component({
   selector: 'rangertrak-rangers',
@@ -70,8 +72,11 @@ export class RangersComponent implements OnInit {
   constructor(
     //private teamService: TeamService,
     private rangerService: RangerService,
+    private _snackBar: MatSnackBar,
     @Inject(DOCUMENT) private document: Document
   ) {
+    console.log("Rangers Component Constructed started at ", Date())
+
     //this.teamService = teamService
     //this.rangerService = rangerService
     this.now = new Date()
@@ -80,15 +85,43 @@ export class RangersComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //console.log("Rangers Form started at ", Date())
+
     //this.rangers = this.rangerService.getrangers()  // NOTE: zeros out the array!!!!
 
     this.rangerService.generateFakeData(10) // NOTE: number is ignored currently
     console.log(`Now have ${this.rangers.length} Rangers retrieved from Local Storage and/or fakes generated`)
+    if (this.rangers.length == 0) {
+      // https://material.io/components/banners#usage  //@use "@material/banner/styles";
+      let bannerDiv = this.document.querySelector('.mdc-banner')
+      if (bannerDiv != null) {
+        const banner = new MDCBanner(bannerDiv)
+        banner.open()
+        banner.setText("No Rangers! Either 1) enter them into the grid and then use the Update button; 2) Create src/app/shared/services/rangers.json file for auto import, or 3) in future, import an excel file.")
+        //banner.layout()
+      } else {
+        console.log("null bannerDiv")
+      }
+
+
+      //this.openSnackBar(`No Rangers found. Please enter them into the grid and then use the Update button,  or provide a Rangers.JSON file to import from or FUTUREE: Import them from an Excel file.`, `Nota Bene`, 1000)
+    } else {
+      this.openSnackBar(`Imported "${this.rangers.length}" rangers.`, `Nota Bene`, 2000)
+    }
+
+
     //console.log("Rangers Form initialized at ", Date())
   }
 
-  onBtnImportExcel() {
+  // FUTURE:
+  onBtnUpdate() {
+    this.rangerService.Update
+  }
+
+  onBtnJsonImport() {
+    this.rangerService.LoadFromJSON
+  }
+
+    onBtnImportExcel() {
     let fnc = new csvImport(document)
     fnc.importExcel2()
     //csvImport.importExcel2()
@@ -107,9 +140,9 @@ export class RangersComponent implements OnInit {
   // once the above is done, you can: <button (click)="myGrid.api.deselectAll()">Clear Selection</button>
 
   // following from https://ag-grid.com/javascript-data-grid/csv-export/
-  getValue(inputSelector: string) {
+  getSeperatorValue(inputSelector: string) {
     //let selector = this.document.querySelector(inputSelector) as HTMLSelectElement
-    let selector = this.document.getElementById('columnSeparator') as HTMLSelectElement
+    let selector = this.document.getElementById(inputSelector) as HTMLSelectElement
     var sel = selector.selectedIndex;
     var opt = selector.options[sel];
     var selVal = (<HTMLOptionElement>opt).value;
@@ -129,7 +162,7 @@ export class RangersComponent implements OnInit {
   getParams() {
     let dt = new Date()
      return {
-      columnSeparator: this.getValue('columnSeparator'),
+      columnSeparator: this.getSeperatorValue('columnSeparator'),
       fileName: `RangersExport.${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,
     }
   }
@@ -139,9 +172,15 @@ export class RangersComponent implements OnInit {
     //console.log(`Got column seperator value "${params.columnSeparator}"`)
     //console.log(`Got filename of "${params.fileName}"`)
     if (params.columnSeparator) {
-      alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
+      this.openSnackBar(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`, `Nota Bene`, 4000)
+      //alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
     }
     this.gridApi.exportDataAsCsv(params);
   }
 
+  // TODO: Move to utilities
+  openSnackBar(message: string, action: string, duration = 0) {
+    // https://material.angular.io/components/snack-bar/overview
+    this._snackBar.open(message, action, { duration: duration, verticalPosition: 'top' })
+  }
 }

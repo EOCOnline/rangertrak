@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common'
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, enableProdMode, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FieldReportService, RangerService, SettingsService, SettingsType } from '../shared/services/'
 
@@ -7,23 +7,29 @@ import { FieldReportService, RangerService, SettingsService, SettingsType } from
   selector: 'rangertrak-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
-  providers: [SettingsService]
+  //providers: [SettingsService]
 })
 export class SettingsComponent implements OnInit {
-  settings
+  settings: SettingsType
   settingsEditorForm!: FormGroup
 
   constructor(
     private fb: FormBuilder,
     private fieldReportService: FieldReportService,
     private rangerService: RangerService,
+    private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
-
+    //this.settings = settingService()
     this.settings = SettingsService.Settings // only using static functions/values from the service...
+    //console.log('Application Settings set to static values. But not initialized???')
   }
 
   ngOnInit(): void {
-    console.log(`Application: ${this.settings.application} -- Version: ${this.settings.version}`)
+    if (this.settings == undefined) {
+      console.log('WARN: Application Settings need to be initialized.')
+    } else {
+      console.log(`SettingsComponent: Application: ${this.settings.application} -- Version: ${this.settings.version}`)
+    }
 
     this.settingsEditorForm = this.getFormArrayFromSettingsArray()
 
@@ -106,5 +112,9 @@ export class SettingsComponent implements OnInit {
     console.log("Update Application Settings...")
     let newSettings: SettingsType = this.getSettingsArrayFromFormArray()
     SettingsService.Update(newSettings)
+
+    // TODO: If Debug disabled then call:
+    //enableProdMode()
+
   }
 }

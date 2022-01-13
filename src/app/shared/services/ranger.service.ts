@@ -66,6 +66,11 @@ export class RangerService {
     ))
   }
 
+  // FUTURE: allow updating of localStorage (or JSON?) values to reflect changes to Rangers from any editor? See FieldReport Update for inspiration
+  Update () {
+    console.log("Unimplemented!!!!!!!!!!!!!!!!!!!!")
+  }
+
   //importRangers(path: string) {   this.LoadFromJSON(path) } //BUG: Not tested!!!
 
 

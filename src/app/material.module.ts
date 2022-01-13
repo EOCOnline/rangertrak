@@ -8,6 +8,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
+//import {MDCBanner} from '@material/banner';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -57,6 +58,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     DragDropModule,
     MatAutocompleteModule,
     MatBadgeModule,
+    // MDCBanner,
     MatBottomSheetModule,
     MatButtonModule,
     MatButtonToggleModule,

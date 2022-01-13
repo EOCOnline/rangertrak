@@ -1,6 +1,34 @@
+@use "@material/banner";
+@use "@material/banner/styles";
+/*
+with (
+$primary: #fcb8ab,
+  //$fill-color: yellow,
+);*/
+
+////@mixin fill-color {
+//fill-color:green;
+// }
+
+
 .licenseImg {
   border: 10px red dotted;
-  height:60px;
-  width: 60px;
+  height: 60px;
+  width : 60px;
 }
+
 // https://github.com/ag-grid/ag-grid-customise-theme
+
+.mdc-banner {
+  //  @include fill-color(yellow);
+  @include banner.fill-color(rgb(226, 226, 136));
+  //@include banner.divider-color(aqua);
+  @include banner.max-width(50%)
+  //@include banner.level(0);
+  //border       : 1px red solid;
+  //margin: 30px;
+  //width: 70em;
+  //height: 15%;
+  //margin-left: -150px;
+  //padding      : -30px;
+}

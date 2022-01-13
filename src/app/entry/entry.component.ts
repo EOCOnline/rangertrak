@@ -131,6 +131,7 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
     return (<FormArray>this.entryDetailsForm.get('keywords')).controls
   }   */
 
+  // TODO: Move to utilities
   openSnackBar(message: string, action: string, duration = 0) {
     // https://material.angular.io/components/snack-bar/overview
     this._snackBar.open(message, action, { duration: duration, verticalPosition: 'top' })

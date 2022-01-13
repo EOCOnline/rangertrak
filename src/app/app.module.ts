@@ -18,6 +18,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { LazyModule } from './lazy/lazy.module'
 import { LmapComponent } from './lmap/lmap.component';
 import { LogComponent } from './log/log.component';
+import {MDCBanner} from '@material/banner'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { MaterialModule } from './material.module';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -66,7 +67,9 @@ import { X404Component } from './x404/x404.component';
     LogComponent
   ],
   providers: [TeamService, RangerService, FieldReportService, MarkerService, PopupService, SettingsService, ShapeService,
-    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}], // Team, Ranger,
+    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}],
+    //{provide: MAT_BANNER_DEFAULT_OPTIONS}],
+    // Team, Ranger,
     // providers: [File, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent]//,
 

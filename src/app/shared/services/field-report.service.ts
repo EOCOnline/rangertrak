@@ -21,18 +21,36 @@ export type FieldReportType = {
 export class FieldReportService {
 
   private fieldReports: FieldReportType[] = []
-  private storageLocalName = 'appSettings'
+  private storageLocalName = 'fieldReports'
   private nextId = 0
   private fieldReportsSubject =
     new BehaviorSubject<FieldReportType[]>([]);  // REVIEW: Necessary?
 
   constructor(private rangerService: RangerService, private teamService: TeamService) {
+
+    console.log("Contructing FieldReportService: once or repeatedly?!--------------") // XXX
+    console.log(`FieldReport length= ${this.fieldReports.length}`) // XXX
+
     let localStorageFieldReports = localStorage.getItem(this.storageLocalName)
     /* this.fieldReports = []
     if (temp != null) {
       this.fieldReports = JSON.parse(temp) || []
     }   */
-    this.fieldReports = (localStorageFieldReports != null) ? JSON.parse(localStorageFieldReports) : []   //TODO: clean up
+
+    // XXX (localStorageFieldReports != null)= true
+    this.fieldReports = ((localStorageFieldReports != null) && (localStorageFieldReports.indexOf("licensee")<=0))
+      ? JSON.parse(localStorageFieldReports) : []   //TODO: clean up
+    //this.fieldReports = []
+    //debugger
+    //console.log(`this.fieldReports.length=${this.fieldReports.length}; (localStorageFieldReports != null)= ${localStorageFieldReports != null}`)
+
+    console.log(`FieldReport from localstorage length= ${this.fieldReports.length}`) // XXX
+
+
+    if ((localStorageFieldReports != null)) {
+      let ugg = JSON.parse(localStorageFieldReports)
+      //console.log(`JSON.parse(localStorageFieldReports) ${ugg}`)
+    }
     if (this.fieldReports.length > 0) {
       for (const fieldReport of this.fieldReports) {
         if (fieldReport.id >= this.nextId) this.nextId = fieldReport.id + 1

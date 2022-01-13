@@ -1,5 +1,32 @@
 <h1>Rangers</h1>
 
+<!-- https://material.io/components/banners/web#banners -->
+<div class="mdc-banner mdc-banner--centered mdc-banner--mobile-stacked" role="banner">
+  <div class="mdc-banner__fixed">
+  <div class="mdc-banner__content"
+       role="alertdialog"
+       aria-live="assertive">
+    <div class="mdc-banner__graphic-text-wrapper">
+
+      <!-- https://fonts.google.com/icons?selected=Material+Icons -->
+      <div class="mdc-banner__graphic" role="img" alt=""><i class="material-icons mdc-banner__icon">emoji_people</i></div>
+      <div class="mdc-banner__text">
+      </div>
+    </div>
+    <div class="mdc-banner__actions">
+      <!--button type="button" class="mdc-button mdc-banner__secondary-action">
+        <div class="mdc-button__ripple"></div>
+        <div class="mdc-button__label">Learn more</div>
+      </button-->
+      <button type="button" class="mdc-button mdc-banner__primary-action">
+        <div class="mdc-button__ripple"></div>
+        <div class="mdc-button__label">Close</div>
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+
 <details>
   <summary>Instructions</summary>
   This list of participants was taken from the FCC Database in May 2019. <br />
@@ -51,7 +78,9 @@
     </select>
   </div>
 
-  <br>
-  <button (click)="onBtnImportExcel()" style="margin-bottom: 5px">Import Excel</button>
+  <br>FUTURE:
+  <button (click)="onBtnUpdate()" style="margin-bottom: 5px" title="Preserve the edits above to the Rangers stored on this broowser">Save Rangers</button><br>
+  <button (click)="onBtnImportExcel()" style="margin-bottom: 5px">Import Rangers from Excel</button><br>
+  <button (click)="onBtnJsonImport()" style="margin-bottom: 5px" title="Import Rangers from JSON file (OVERWRITES any existing Rangers above!)">Import Rangers from JSON</button>
 
 </div>
