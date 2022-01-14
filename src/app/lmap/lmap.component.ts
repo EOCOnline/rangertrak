@@ -4,7 +4,6 @@
 
 import 'leaflet';
 import "leaflet.markercluster";
-
 import * as L from 'leaflet';
 
 import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
@@ -48,9 +47,9 @@ export const POLSKA_ZOOM = 5;
   selector: 'rangertrak-lmap',
   templateUrl: './lmap.component.html',
   styleUrls: [
-    './lmap.component.scss',
     '../../../node_modules/leaflet/dist/leaflet.css',
-    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
+    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css",
+    './lmap.component.scss'
   ],
   providers: [SettingsService]
 })
@@ -69,6 +68,10 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
   }
 
   ngOnInit() {
+
+
+
+
 
     //https://www.npmjs.com/package/leaflet.markercluster
     //
@@ -100,6 +103,35 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     var marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1), { title: 'my', icon: markerIcon });
     markerCluster.addLayer(marker);
     map2.addLayer(markerCluster);
+
+
+
+
+    const addressPoints = [
+      [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR, '1'],
+      [POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1, '1'],
+    ]
+
+    const markers = L.markerClusterGroup();
+
+    for (var i = 0; i < addressPoints.length; i++) {
+      //if (addressPoints[i]) {      }
+      let a[] = addressPoints[i];
+      var title = a[2];
+      var marker = L.marker(new L.LatLng(a[0], a[1]), {
+        title: title,
+        icon: markerIcon
+      });
+      marker.bindPopup(title);
+      markers.addLayer(marker);
+    }
+
+    map2.addLayer(markers);
+
+
+
+
+
 
   }
 
