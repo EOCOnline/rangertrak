@@ -1,4 +1,9 @@
+// see https://stackblitz.com/edit/ts-leaflet-markercluster?file=index.ts
+
 //import { Console } from 'console';
+
+import 'leaflet';
+import "leaflet.markercluster";
 
 import * as L from 'leaflet';
 
@@ -9,6 +14,7 @@ import { MarkerService, SettingsService, ShapeService } from '../shared/services
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
 
+//const L = window['L'];
 
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
 const iconUrl = 'assets/marker-icon.png';
@@ -22,15 +28,29 @@ const iconDefault = L.icon({
   popupAnchor: [1, -34],
   tooltipAnchor: [16, -28],
   shadowSize: [41, 41]
-});
+})
+
 L.Marker.prototype.options.icon = iconDefault;
+
+var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18,
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
+})
+
+export const POLSKA_SZER_GEOGR = 51.9874;
+export const POLSKA_DL_GEOGR = 19.0162;
+export const POLSKA_ZOOM = 5;
+
+
+
 
 @Component({
   selector: 'rangertrak-lmap',
   templateUrl: './lmap.component.html',
   styleUrls: [
     './lmap.component.scss',
-    '../../../node_modules/leaflet/dist/leaflet.css'
+    '../../../node_modules/leaflet/dist/leaflet.css',
+    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
   ],
   providers: [SettingsService]
 })
@@ -49,6 +69,38 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
   }
 
   ngOnInit() {
+
+    //https://www.npmjs.com/package/leaflet.markercluster
+    //
+    const map2 = L.map('googleMapsPlaner', {
+      center: [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR],
+      zoom: POLSKA_ZOOM,
+      zoomControl: true, layers: [tiles]
+    })
+
+    const markerIcon =
+      L.icon({
+        iconSize: [25, 41],
+        iconAnchor: [10, 41],
+        popupAnchor: [2, -40],
+        // specify the path here
+        iconUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-shadow.png"
+      })
+
+    const markerCluster = new L.MarkerClusterGroup();
+    var marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR), { title: 'my', icon: markerIcon });
+    markerCluster.addLayer(marker);
+    var marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1), { title: 'my', icon: markerIcon });
+    markerCluster.addLayer(marker);
+    map2.addLayer(markerCluster);
+
+    var marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR), { title: 'my', icon: markerIcon });
+    markerCluster.addLayer(marker);
+    var marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1), { title: 'my', icon: markerIcon });
+    markerCluster.addLayer(marker);
+    map2.addLayer(markerCluster);
+
   }
 
   ngAfterViewInit() {
