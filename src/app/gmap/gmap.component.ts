@@ -27,7 +27,7 @@ interface marker {
   selector: 'rangertrak-gmap',
   templateUrl: './gmap.component.html',
   styleUrls: ['./gmap.component.scss'
-  //  ,'../../../node_modules/snazzy-info-window/dist/snazzy-info-window.css'
+  //  ,'~snazzy-info-window/dist/snazzy-info-window.css'
   ],
   providers: [SettingsService]
 })
