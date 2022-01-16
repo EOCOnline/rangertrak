@@ -1,31 +1,30 @@
-<h1>Rangers</h1>
-
 <!-- https://material.io/components/banners/web#banners -->
 <div class="mdc-banner mdc-banner--centered mdc-banner--mobile-stacked" role="banner">
   <div class="mdc-banner__fixed">
-  <div class="mdc-banner__content"
-       role="alertdialog"
-       aria-live="assertive">
-    <div class="mdc-banner__graphic-text-wrapper">
+    <div class="mdc-banner__content" role="alertdialog" aria-live="assertive">
+      <div class="mdc-banner__graphic-text-wrapper">
 
-      <!-- https://fonts.google.com/icons?selected=Material+Icons -->
-      <div class="mdc-banner__graphic" role="img" alt=""><i class="material-icons mdc-banner__icon">emoji_people</i></div>
-      <div class="mdc-banner__text">
+        <!-- https://fonts.google.com/icons?selected=Material+Icons -->
+        <div class="mdc-banner__graphic" role="img" alt=""><i class="material-icons mdc-banner__icon">emoji_people</i>
+        </div>
+        <div class="mdc-banner__text">
+        </div>
       </div>
-    </div>
-    <div class="mdc-banner__actions">
-      <!--button type="button" class="mdc-button mdc-banner__secondary-action">
+      <div class="mdc-banner__actions">
+        <!--button type="button" class="mdc-button mdc-banner__secondary-action">
         <div class="mdc-button__ripple"></div>
         <div class="mdc-button__label">Learn more</div>
       </button-->
-      <button type="button" class="mdc-button mdc-banner__primary-action">
-        <div class="mdc-button__ripple"></div>
-        <div class="mdc-button__label">Close</div>
-      </button>
+        <button type="button" class="mdc-button mdc-banner__primary-action">
+          <div class="mdc-button__ripple"></div>
+          <div class="mdc-button__label">Close</div>
+        </button>
+      </div>
     </div>
   </div>
 </div>
-</div>
+
+<h1>Rangers</h1>
 
 <details>
   <summary>Instructions</summary>
@@ -77,10 +76,39 @@
       <option value="|">bar (|)</option>
     </select>
   </div>
+  <br>
 
-  <br>FUTURE:
-  <button (click)="onBtnUpdate()" style="margin-bottom: 5px" title="Preserve the edits above to the Rangers stored on this broowser">Save Rangers</button><br>
-  <button (click)="onBtnImportExcel()" style="margin-bottom: 5px">Import Rangers from Excel</button><br>
-  <button (click)="onBtnJsonImport()" style="margin-bottom: 5px" title="Import Rangers from JSON file (OVERWRITES any existing Rangers above!)">Import Rangers from JSON</button>
+  <details>
+    <summary><span class="big">Advanced</span></summary>
+
+    If no rangers exist, or you would like to replace those shown above, either:
+    <ol>
+      <li>
+    Enter rangers into the grid and then use the Update button;</li>
+
+    <li>Create src/app/shared/services/rangers.json file for auto import, or</li>
+    <li>In future, import an excel file.</li>
+  </ol>
+    This list of potential Rangers was taken from the FCC Database in January 2022. <br />
+    It has been significantly reformatted and your edits may alter it further.<br />
+    To maintain these changes between browser sessions, we write the table
+    above to the Browser Local Storage where it will remain until deleted.<br />
+
+    FUTURE: Import Excel button currently 'works', but imports wrong spreadsheet and does nothing with it!<br>
+
+    <button (click)="onBtnUpdate()" style="margin-bottom: 5px"
+      title="Preserve the edits above to the Rangers stored on this broowser">Save Rangers</button><br>
+
+      Load data grid to/from Excel. See https://ag-grid.com/javascript-data-grid/csv-export for details:<br>
+
+      <button (click)="onBtnImportExcel()" style="margin-bottom: 5px">Import Rangers from Excel</button><br>
+
+      Load data grid to/from JSON. See https://ag-grid.com/javascript-data-grid/csv-export for details:<br>
+    <button (click)="onBtnJsonImport($event)" style="margin-bottom: 5px"
+      title="Import Rangers from JSON file (OVERWRITES any existing Rangers above!)">Import Rangers from
+      JSON</button><br>
+
+  </details>
+
 
 </div>

@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject, Observer, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
-import * as rangers from './rangers.json'
+import * as rangers from '../../../assets/data/Rangers.json'
 
 export interface RangerType {
   callsign: string
@@ -29,11 +29,6 @@ export class RangerService {
   private localStorageRangerName = 'rangers'
 
   constructor() {
-
-    // REVIEW: Workaround for "Error: Should not import the named export (imported as 'rangers') from default-exporting module (only default export is available soon)"
-    let rangerWorkaround = JSON.stringify(rangers)
-    this.rangers2 = JSON.parse(rangerWorkaround)
-    //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
 
     let localStorageRangers = localStorage.getItem(this.localStorageRangerName)
     /* this.rangers = []
@@ -67,7 +62,7 @@ export class RangerService {
   }
 
   // FUTURE: allow updating of localStorage (or JSON?) values to reflect changes to Rangers from any editor? See FieldReport Update for inspiration
-  Update () {
+  Update() {
     console.log("Unimplemented!!!!!!!!!!!!!!!!!!!!")
   }
 
@@ -113,7 +108,7 @@ export class RangerService {
   }
 */
   deleteAllRangers() {
-    this.rangers=[]
+    this.rangers = []
     localStorage.removeItem('rangers')
   }
 
@@ -167,13 +162,19 @@ export class RangerService {
   }
 
   // TODO:  getActiveRangers() {
-    //Would need to filter for those who've 'checked in' on this incident?
-    //return this.rangers }
+  //Would need to filter for those who've 'checked in' on this incident?
+  //return this.rangers }
 
-  LoadFromJSON(fileName: string) {  // also see secretss import as an example: Settings.ts
-    //See pg. 279...
+  LoadFromJSON(fileName: string = '../../../assets/data/Rangers.json') {  // also see secretss import as an example: Settings.ts
 
-    //import * as data from './data.json';
+    // REVIEW: Workaround for "Error: Should not import the named export (imported as 'rangers') from default-exporting module (only default export is available soon)"
+    let rangerWorkaround = JSON.stringify(rangers)
+    this.rangers2 = JSON.parse(rangerWorkaround)
+    //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
+
+
+     //See pg. 279...
+    //import * as data from filename;
     //let greeting = data.greeting;
 
     /*   import {default as AAA} from "VashonCallSigns";

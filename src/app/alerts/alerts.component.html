@@ -1,4 +1,35 @@
-<div [hidden]="isAlertHidden">
+
+
+  <!-- Only 1 banner at a time... -->
+  <!-- https://material.io/components/banners/web#banners -->
+  <div class="mdc-banner mdc-banner--centered mdc-banner--mobile-stacked" role="banner">
+    <div class="mdc-banner__fixed">
+      <div class="mdc-banner__content" role="alertdialog" aria-live="assertive">
+        <div class="mdc-banner__graphic-text-wrapper">
+
+          <!-- https://fonts.google.com/icons?selected=Material+Icons -->
+          <div class="mdc-banner__graphic" role="img" alt=""><i class="material-icons mdc-banner__icon">{{emoji}}</i>
+          </div>
+          <div class="mdc-banner__text">
+          </div>
+        </div>
+        <div class="mdc-banner__actions">
+          <!--button type="button" class="mdc-button mdc-banner__secondary-action">
+        <div class="mdc-button__ripple"></div>
+        <div class="mdc-button__label">Learn more</div>
+      </button-->
+          <button type="button" class="mdc-button mdc-banner__primary-action">
+            <div class="mdc-button__ripple"></div>
+            <div class="mdc-button__label">Close</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div [hidden]="isAlertHidden">
   <mat-card style="background-color: rgb(241, 201, 125);">
     <mat-card-subtitle>Welcome to RangerTrak! Updates and alerts will appear here.</mat-card-subtitle>
 
@@ -14,7 +45,7 @@
     </div>
     <mat-card-actions>
 
-      <button (click)="onClickEvent()" class="Alerts__Close">Close</button>
+      <button (click)="onBtnCloseAlert()" class="Alerts__Close">Close</button>
       <!--button mat-raised-button color="accent">X</button-->
       <!--    https://material.angular.io/components/icon/overview
           https://material.angular.io/components/button-toggle/overview

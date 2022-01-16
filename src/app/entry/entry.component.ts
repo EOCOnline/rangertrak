@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable } from 'rxjs'
 import { debounceTime, map, startWith } from 'rxjs/operators'
-
+import { AlertsComponent } from '../alerts/alerts.component'
 import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
 
 @Component({
@@ -24,17 +24,26 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
   nFakes = 10
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
+  alert: any
 
   constructor(
     private formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar,
     private rangerService: RangerService,
     private fieldReportService: FieldReportService,
     private settingsService: SettingsService,
     private teamService: TeamService,
+    private _snackBar: MatSnackBar,
     @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
 
     this.rangers = rangerService.getRangers() // TODO: or getActiveRangers?!
+
+    this.alert = new AlertsComponent(this._snackBar, this.document)// TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
+    if (this.rangers.length < 1) {
+      this.alert.Banner('Welcome! Start by entering or loading some rangers in the "advanced" section at the bottom of the Rangers page.')
+      //this.alert.OpenSnackBar(`No Rangers exist. Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
+      //TODO: Force navigation to /Rangers?
+    }
+
     this.fieldReportService = fieldReportService
     this.fieldReportStatuses = FieldReportStatuses
     this.settings = SettingsService.Settings
@@ -131,11 +140,7 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
     return (<FormArray>this.entryDetailsForm.get('keywords')).controls
   }   */
 
-  // TODO: Move to utilities
-  openSnackBar(message: string, action: string, duration = 0) {
-    // https://material.angular.io/components/snack-bar/overview
-    this._snackBar.open(message, action, { duration: duration, verticalPosition: 'top' })
-  }
+
 
   // sleep(ms: number) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
@@ -173,7 +178,8 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
     else {
       console.log("NO this.submitInfo ID FOUND!!!")
     }
-    this.openSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
+
+    this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
 
     //this.entryDetailsForm.reset() // std reser just blanks values, doesn't initialize them...
     this.resetForm()

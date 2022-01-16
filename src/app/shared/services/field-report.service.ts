@@ -187,6 +187,10 @@ const filterParams = {
 
     let teams = this.teamService.getTeams()
     let rangers = this.rangerService.getRangers()
+    if (rangers == null || rangers.length < 1) {
+      alert("No Rangers! Please add some 1st.")
+      return
+    }
     const streets = ["Ave", "St.", "Pl.", "Court", "Circle"]
     const notes = ["Reports beautiful sunrise", "Roudy Kids", "Approaching Neighborhood CERT", "Confused & dazed in the sun",
       "Wow", "na", "Can't hear you", "Bounced via tail of a comet!", "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
