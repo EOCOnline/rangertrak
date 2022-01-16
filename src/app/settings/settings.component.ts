@@ -40,32 +40,9 @@ export class SettingsComponent implements OnInit {
     SettingsService.ResetDefaults()
   }
 
-  onBtnClearFieldReports() {
-    this.fieldReportService.deleteAllFieldReports
-  }
 
-  getConfirmation(msg: string) {
-    if (confirm(msg) == true) {
-      return true; //proceed
-    } else {
-      return false; //cancel
-    }
-  }
 
-  onBtnClearRangers() {
-    if (this.getConfirmation('Do you REALLY want to delete all the stored Rangers, vs. just editing the Rangers via the grid?')) {
-      console.log("Removing all rangers...")
-      this.rangerService.deleteAllRangers()
-    }
-  }
 
-  onBtnImportFieldReports() {
-
-  }
-
-  onBtnImportRangers() {
-
-  }
 
   getFormArrayFromSettingsArray() {
     // NOTE: Form array differs some from SettingsType so need to translate back & forth

@@ -70,7 +70,7 @@
 
   <div>
     <button (click)="onBtnExport()">Export Rangers</button> with column separator of
-    <select id="columnSeparator">
+    <select (change) ="onSeperatorChange()" id="columnSeparator">
       <option value="none">comma (,)</option>
       <option value="tab">tab</option>
       <option value="|">bar (|)</option>
@@ -79,7 +79,7 @@
   <br>
 
   <details>
-    <summary><span class="big">Advanced</span></summary>
+    <summary><span class="big" id="Advanced">Advanced</span></summary>
 
     If no rangers exist, or you would like to replace those shown above, either:
     <ol>
@@ -107,8 +107,8 @@
     <button (click)="onBtnJsonImport($event)" style="margin-bottom: 5px"
       title="Import Rangers from JSON file (OVERWRITES any existing Rangers above!)">Import Rangers from
       JSON</button><br>
-
+      <button (click)="onBtnImportRangers()">FUTURE: Import Rangers from CSV file</button><br>
+      <button (click)="onBtnClearRangers()">Delete ALL stored Rangers</button><br>
   </details>
-
 
 </div>

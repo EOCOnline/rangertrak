@@ -1,5 +1,13 @@
+@use "@material/theme"
+with (
+  $primary: #962f10,
+  $on-primary: #442C2E
+);
+@use "@material/button";
+//@use "@material/button/styles";
 @use "@material/banner";
 @use "@material/banner/styles";
+// https://material.io/components/buttons/web#api
 
 .Alerts__Close {
   margin-bottom: 10px;  // as requested by Lighthouse...

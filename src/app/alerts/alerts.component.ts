@@ -1,8 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar'
+import { NavigationEnd } from '@angular/router';
 
-import { MatFormFieldModule } from '@angular/material/form-field';
+//import { MatFormFieldModule } from '@angular/material/form-field';
 import { MDCBanner } from '@material/banner';
 
 @Component({
@@ -27,7 +28,7 @@ export class AlertsComponent implements OnInit {
 
     this.alertBanner = this.document.querySelector('.mdc-banner')
     if (this.alertBanner == null) {
-      console.log("Alerts alertBanner not found!!!!!!!!!!!!!!!!!!!!!")
+      console.log("Alerts:ngInit() couldn't find alert Banner!")
     }
   }
 
@@ -65,6 +66,11 @@ export class AlertsComponent implements OnInit {
   }
 
   onBtnCloseAlert() {
+    console.log(`onBtnCloseAlert() called`)
+  }
+
+  onBtnCloseBottomAlert() {
+    console.log(`onBtnCloseBottomAlert() called`)
     this.isAlertHidden = true;
   }
 

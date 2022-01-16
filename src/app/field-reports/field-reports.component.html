@@ -41,7 +41,7 @@
 
   <div>
     <button (click)="onBtnExport()">Export Field Reports</button> with column separator of
-    <select id="columnSeparator">
+      <select (change) ="onSeperatorChange()" id="columnSeparator">
       <option value="none">comma (,)</option>
       <option value="tab">tab</option>
       <option value="|">bar (|)</option>
@@ -49,4 +49,16 @@
   </div>
   <!--button (click)="myGrid.api.deselectAll()">Clear Selection</button-->
   <!--div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div-->
+
+  <br>
+  <details>
+    <summary>
+      <span class="big" id="Advanced">Advanced</span>
+    </summary>
+
+
+    <button (click)="onBtnClearFieldReports()">Delete ALL stored Field Reportgs</button><br>
+    <button (click)="onBtnImportFieldReports()">FUTURE: Import Field Reportgs from CSV file</button><br>
+  </details>
+
 </div>

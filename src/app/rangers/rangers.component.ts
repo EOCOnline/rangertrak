@@ -21,6 +21,8 @@ export class RangersComponent implements OnInit {
   private gridApi: any
   private gridColumnApi: any
   alert: any
+  numSeperatorWarnings = 0
+  maxSeperatorWarnings = 3
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {
@@ -111,6 +113,25 @@ export class RangersComponent implements OnInit {
     this.rangerService.Update
   }
 
+  onBtnImportRangers() {
+
+  }
+
+  getConfirmation(msg: string) {
+    if (confirm(msg) == true) {
+      return true; //proceed
+    } else {
+      return false; //cancel
+    }
+  }
+
+
+  onBtnClearRangers() {
+    if (this.getConfirmation('Do you REALLY want to delete all the stored Rangers, vs. just editing the Rangers via the grid?')) {
+      console.log("Removing all rangers...")
+      this.rangerService.deleteAllRangers()
+    }
+  }
 
   // REMOVE: works - but Unused....
   // http://www.angulartutorial.net/2018/01/show-preview-image-while-uploading.html
@@ -198,20 +219,24 @@ export class RangersComponent implements OnInit {
     }
   }
 
+  onSeperatorChange() {
+    var params = this.getParams();
+    if (params.columnSeparator && this.numSeperatorWarnings++ < this.maxSeperatorWarnings) {
+      //this.alerts.OpenSnackBar(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`, `Nota Bene`, 4000)
+      alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
+    }
+  }
+
   onBtnExport() {
     var params = this.getParams();
     //console.log(`Got column seperator value "${params.columnSeparator}"`)
     //console.log(`Got filename of "${params.fileName}"`)
+    /*
     if (params.columnSeparator) {
       this.openSnackBar(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`, `Nota Bene`, 4000)
       //alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
     }
+    */
     this.gridApi.exportDataAsCsv(params);
-  }
-
-  // TODO: Move to utilities
-  openSnackBar(message: string, action: string, duration = 0) {
-    // https://material.angular.io/components/snack-bar/overview
-    this._snackBar.open(message, action, { duration: duration, verticalPosition: 'top' })
   }
 }

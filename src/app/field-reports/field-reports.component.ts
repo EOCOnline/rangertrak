@@ -15,6 +15,8 @@ export class FieldReportsComponent implements OnInit {
   private gridColumnApi
   now: Date
   http: any
+  numSeperatorWarnings = 0
+  maxSeperatorWarnings = 3
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {
@@ -155,13 +157,28 @@ export class FieldReportsComponent implements OnInit {
       }
     }
 
+    onSeperatorChange() {
+      var params = this.getParams();
+      if (params.columnSeparator && this.numSeperatorWarnings++ < this.maxSeperatorWarnings) {
+        alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`)
+      }
+    }
+
     onBtnExport() {
       var params = this.getParams();
       //console.log(`Got column seperator value "${params.columnSeparator}"`)
       //console.log(`Got filename of "${params.fileName}"`)
-      if (params.columnSeparator) {
-        alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
-      }
+      //if (params.columnSeparator) {
+      //  alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
+      //}
       this.gridApi.exportDataAsCsv(params);
+    }
+
+    onBtnClearFieldReports() {
+      this.fieldReportService.deleteAllFieldReports
+    }
+
+    onBtnImportFieldReports() {
+
     }
 }
