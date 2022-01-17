@@ -37,7 +37,7 @@ export class GmapComponent  implements OnInit {    //extends Map
   zoom = 10;
   latitude
   longitude
-  markerLocations: marker[] = []
+  markerLocations: marker[] = [{lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong, label: "Special Label Here", draggable:false}]
 
   title = 'RangerTrak Google Map'
   label = 'RangerTrak Label'
@@ -51,6 +51,8 @@ export class GmapComponent  implements OnInit {    //extends Map
     @Inject(DOCUMENT) private document: Document) {
       this.latitude = SettingsService.Settings.defLat
       this.longitude = SettingsService.Settings.defLong
+      // this.zoom = SettingsService.Settings.zoom // FUTURE:
+
     //super('MyName')
   }
 
@@ -62,8 +64,9 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     at GmapComponent.initMap (gmap.component.ts:114)
     at GmapComponent.ngOnInit (gmap.component.ts:48)
     */
-
   }
+
+
   /* BUG:
   core.mjs:6484 ERROR TypeError: Cannot read properties of undefined (reading 'then')
     at Observable._subscribe (agm-core.js:299)
@@ -86,7 +89,7 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     // no effect seemingly...
   //}
 
-  initMap() {
+  initMap_Unused() {
     // https://developers.google.com/maps/documentation/
     let googMap = new google.maps.Map(document.getElementById('bigGoogMapId') as HTMLElement, {
       center: {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong},
@@ -170,7 +173,7 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     );
 
     const infoWindow = new google.maps.InfoWindow({
-      content: "",
+      content: "Yes mamma!!!",
       disableAutoPan: true,
     });
 
