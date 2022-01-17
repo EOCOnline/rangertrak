@@ -92,8 +92,8 @@ class Coord {
       if (coord > 180) throw "Coordinate over 180 degrees."
       // MAIN.dbug("Coordinate passed range check...")
     }
-    catch (err) {
-      // MAIN.dbug("Bad Coordinate at Coord(): " + err)
+    catch (err:unknown) {
+      // MAIN.dbug("Bad Coordinate at Coord(): " + err.message)
     }
   }
   // Get object {deg:, min:, sec:, dir:}

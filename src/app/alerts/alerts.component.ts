@@ -32,14 +32,14 @@ export class AlertsComponent implements OnInit {
     }
   }
 
-  Banner(msg: string, emoj: string | null = null) {
+  Banner(msg: string, action1: string|undefined = 'Close', action2: string|undefined = "Close") {
     // https://material.io/components/banners#usage  //@use "@material/banner/styles";
 
     //console.log(`BANNER Called with ${msg}`)
 
-    if (emoj != null) {
+    /*if (emoj != null) {
       this.emoji = emoj // REVIEW: Change to emoji is permanent, not temporary: OK?
-    }
+    }*/
 
     if (this.alertBanner == null) {
       console.log('REVIEW: AlertComponent.Banner() called BEFORE AlertComponent.ngInit!')
@@ -50,6 +50,8 @@ export class AlertsComponent implements OnInit {
       const banner = new MDCBanner(this.alertBanner)
       banner.open()
       banner.setText(msg)
+      banner.setPrimaryActionText(action1)
+      banner.setSecondaryActionText(action2)
       //banner.layout()
       console.log(`BANNER displayed with ${msg}`)
     } else {

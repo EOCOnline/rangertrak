@@ -87,13 +87,13 @@ export class RangersComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //this.rangers = this.rangerService.getrangers()  // NOTE: zeros out the array!!!!
+    this.rangers = this.rangerService.getrangers()  // NOTE: zeros out the array!!!!
     //this.rangerService.generateFakeData(10) // NOTE: number is ignored currently
     console.log(`Now have ${this.rangers.length} Rangers retrieved from Local Storage and/or fakes generated`)
 
     if (this.rangers.length < 1) {
-    this.alert.Banner("Welcome. No Rangers have been entered yet. Please go to the 'Advanced' section at the page bottom to resolve.")
-    //this.alert.OpenSnackBar(`No Rangers found. Please enter them into the grid and then use the Update button,  or provide a Rangers.JSON file to import from or FUTUREE: Import them from an Excel file.`, `Nota Bene`, 1000)
+      this.alert.Banner("No Rangers have been entered yet. Go to the bottom & click on 'Advanced' to resolve.")
+      //this.alert.OpenSnackBar(`No Rangers found. Please enter them into the grid and then use the Update button,  or provide a Rangers.JSON file to import from or FUTUREE: Import them from an Excel file.`, `Nota Bene`, 1000)
     } else {
       this.alert.OpenSnackBar(`Imported "${this.rangers.length}" rangers.`, `Nota Bene`, 2000)
     }
@@ -102,47 +102,31 @@ export class RangersComponent implements OnInit {
     //console.log("Rangers Form initialized at ", Date())
   }
 
-  // FUTURE:
-  onBtnUpdate() {
-    this.rangerService.Update
+  onGridReady = (params: any) => {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
+    // TODO: use this line, or next routine?!
   }
 
+  onFirstDataRendered(params: any) {
+    params.api.sizeColumnsToFit();
+  }
+  // once the above is done, you can: <button (click)="myGrid.api.deselectAll()">Clear Selection</button>
+
+  //--------------------------------------------------------------------------
+  // FUTURE:
+  onBtnUpdate() {
+    this.rangerService.UpdateLocalStorage
+  }
+
+  //--------------------------------------------------------------------------
   onBtnImportRangers() {
 
   }
 
-  getConfirmation(msg: string) {
-    if (confirm(msg) == true) {
-      return true; //proceed
-    } else {
-      return false; //cancel
-    }
-  }
 
 
-  onBtnClearRangers() {
-    if (this.getConfirmation('Do you REALLY want to delete all the stored Rangers, vs. just editing the Rangers via the grid?')) {
-      console.log("Removing all rangers...")
-      this.rangerService.deleteAllRangers()
-    }
-  }
-
-  // REMOVE: works - but Unused....
-  // http://www.angulartutorial.net/2018/01/show-preview-image-while-uploading.html
-  /*
-    showPreviewImage(event: any) {
-      if (event.target.files && event.target.files[0]) {
-        var reader = new FileReader();
-        reader.onload = (event: any) => {
-          this.localUrl = event.target.result;
-        }
-        reader.readAsDataURL(event.target.files[0]);
-      }
-    }
-    with following HTML:
-    <input type="file" (change)="showPreviewImage($event)">
-    <img [src]="localUrl" *ngIf="localUrl" class="imgPlaceholder">
-  */
 
   onBtnJsonImport(e: any): void { // PointerEvent ?!
     let Logo: string
@@ -158,41 +142,40 @@ export class RangersComponent implements OnInit {
         }
         reader.readAsDataURL(e.target.files[0]);
       }
-
     }
-
     //this.localUrl //: any[]
-
-
     //this.rangerService.LoadFromJSON
   }
 
+  //--------------------------------------------------------------------------
   onBtnImportExcel() {
     let fnc = new csvImport(document)
     fnc.importExcel2()
     //csvImport.importExcel2()
   }
 
-  onGridReady = (params: any) => {
-    this.gridApi = params.api;
-    this.gridColumnApi = params.columnApi;
-    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
-    // TODO: use this line, or next routine?!
-  }
-
-  onFirstDataRendered(params: any) {
-    params.api.sizeColumnsToFit();
-  }
-  // once the above is done, you can: <button (click)="myGrid.api.deselectAll()">Clear Selection</button>
-
+  //--------------------------------------------------------------------------
   // following from https://ag-grid.com/javascript-data-grid/csv-export/
+  onBtnExportToExcel() {
+    var params = this.getParams();
+    //console.log(`Got column seperator value "${params.columnSeparator}"`)
+    //console.log(`Got filename of "${params.fileName}"`)
+    /*
+    if (params.columnSeparator) {
+      this.openSnackBar(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`, `Nota Bene`, 4000)
+      //alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
+    }
+    */
+    this.gridApi.exportDataAsCsv(params);
+  }
+
   getSeperatorValue(inputSelector: string) {
     //let selector = this.document.querySelector(inputSelector) as HTMLSelectElement
     let selector = this.document.getElementById(inputSelector) as HTMLSelectElement
     var sel = selector.selectedIndex;
     var opt = selector.options[sel];
     var selVal = (<HTMLOptionElement>opt).value;
-    var selText = (<HTMLOptionElement>opt).text
+    //var selText = (<HTMLOptionElement>opt).text
     // console.log(`Got column seperator text:"${selText}", val:"${selVal}"`)
 
     switch (selVal) {
@@ -221,16 +204,37 @@ export class RangersComponent implements OnInit {
     }
   }
 
-  onBtnExport() {
-    var params = this.getParams();
-    //console.log(`Got column seperator value "${params.columnSeparator}"`)
-    //console.log(`Got filename of "${params.fileName}"`)
-    /*
-    if (params.columnSeparator) {
-      this.openSnackBar(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`, `Nota Bene`, 4000)
-      //alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
+  //--------------------------------------------------------------------------
+  onBtnClearRangers() {
+    if (this.getConfirmation('REALLY delete all Rangers in LocalStorage, vs. edit the Ranger grid & Update the values in Local Storage?')) {
+      console.log("Removing all rangers from local storage...")
+      this.rangerService.deleteAllRangers()
     }
-    */
-    this.gridApi.exportDataAsCsv(params);
   }
+
+  getConfirmation(msg: string) {
+    if (confirm(msg) == true) {
+      return true; //proceed
+    } else {
+      return false; //cancel
+    }
+  }
+
 }
+
+  // works - but Unused....
+  // http://www.angulartutorial.net/2018/01/show-preview-image-while-uploading.html
+/*
+  showPreviewImage(event: any) {
+    if (event.target.files && event.target.files[0]) {
+      var reader = new FileReader();
+      reader.onload = (event: any) => {
+        this.localUrl = event.target.result;
+      }
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  }
+  with following HTML:
+  <input type="file" (change)="showPreviewImage($event)">
+  <img [src]="localUrl" *ngIf="localUrl" class="imgPlaceholder">
+*/

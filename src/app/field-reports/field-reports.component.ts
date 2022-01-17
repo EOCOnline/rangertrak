@@ -52,8 +52,8 @@ export class FieldReportsComponent implements OnInit {
       //weekday[d.getDay()] +
       dt = formatDate(d, 'yyyy-MM-dd HH:MM:ss', 'en-US')
       //console.log(`Day is: ${params.data.date.toISOString()}`)
-    } catch (error) {
-      dt = `Bad date format: ${error}`
+    } catch (error:any) {
+      dt = `Bad date format: Error name: ${error.name}; msg: ${error.message}`
     }
 
     // https://www.w3schools.com/jsref/jsref_obj_date.asp

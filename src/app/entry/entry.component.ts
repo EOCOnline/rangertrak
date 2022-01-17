@@ -39,7 +39,7 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
 
     this.alert = new AlertsComponent(this._snackBar, this.document)// TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
     if (this.rangers.length < 1) {
-      this.alert.Banner('Welcome! Start by entering or loading some rangers in the "advanced" section at the bottom of the Rangers page.')
+      this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page.', 'Go to Rangers page', 'Ignore')
       //this.alert.OpenSnackBar(`No Rangers exist. Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
       //TODO: Force navigation to /Rangers?
     }

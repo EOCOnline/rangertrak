@@ -142,7 +142,7 @@ export class LogComponent implements OnInit {
         /* in the browser, use writeFile */
         XLSX.writeFile(wb, filename);
       } else {
-        alert(`Error: ${e.message}`);
+        alert(`Error name: ${e.name}; msg: ${e.message}`);
       }
     }
   };

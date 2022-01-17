@@ -37,17 +37,23 @@ export class RangerService {
     // NOTE: IDs needed?! for (const ranger of this.rangers) {
     //  if (ranger.id >= this.nextId) this.nextId = ranger.id + 1
     //}
-    this.update()
+    this.UpdateLocalStorage()
   }
 
   LoadRangersFromLocalStorage() { // WARN: Replaces any existing Rangers
     let localStorageRangers = localStorage.getItem(this.localStorageRangerName)
+    try {
+      this.rangers = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : []   //TODO: clean up
+      console.log(`RangersService: Loaded ${this.rangers.length} rangers from local storage`)
+    } catch (error: any) {
+      console.log(`Unable to parse Rangers from Local Storage. Error: ${error.message}`)
+    }
 
-    this.rangers = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : []   //TODO: clean up
-    console.log(`RangersService: Loaded ${this.rangers.length} rangers from local storage`)
+
   }
 
-  private update() {
+  // Update localStorage with current Rangers data & Publish update for any Observers
+    UpdateLocalStorage() {
     localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
 
     this.rangersSubject.next(this.rangers.map(
@@ -65,12 +71,6 @@ export class RangerService {
       })
     ))
   }
-
-  // FUTURE: allow updating of localStorage (or JSON?) values to reflect changes to Rangers from any editor? See FieldReport Update for inspiration
-  Update() {
-    console.log("Unimplemented!!!!!!!!!!!!!!!!!!!!")
-  }
-
   //importRangers(path: string) {   this.LoadFromJSON(path) } //BUG: Not tested!!!
 
 
@@ -180,15 +180,15 @@ export class RangerService {
       // Use JSON file imported at the top
       //this.rangers = JSON.parse(rangers) || []
       // this.rangers = rangers
-/* TODO: Add missing fields:
-Type '{ callsign: string; label: string; licensee: string; licenseKey: string; phone: string; team: string; icon: string; }[]' is not assignable to type 'RangerType[]'.
+      /* TODO: Add missing fields:
+      Type '{ callsign: string; label: string; licensee: string; licenseKey: string; phone: string; team: string; icon: string; }[]' is not assignable to type 'RangerType[]'.
 
-Type '{ callsign: string; label: string; licensee: string; licenseKey: string; phone: string; team: string; icon: string; }is missing the following properties from type
+      Type '{ callsign: string; label: string; licensee: string; licenseKey: string; phone: string; team: string; icon: string; }is missing the following properties from type
 
 
-'RangerType': address, image, status, notets(2322)
+      'RangerType': address, image, status, notets(2322)
 
-*/
+      */
     }
 
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'rangers') from default-exporting module (only default export is available soon)"
