@@ -35,7 +35,7 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
     private _snackBar: MatSnackBar,
     @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
 
-    this.rangers = rangerService.getRangers() // TODO: or getActiveRangers?!
+    this.rangers = rangerService.GetRangers() // TODO: or getActiveRangers?!
 
     this.alert = new AlertsComponent(this._snackBar, this.document)// TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
     if (this.rangers.length < 1) {

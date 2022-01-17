@@ -76,7 +76,7 @@ export class RangersComponent implements OnInit {
     private _snackBar: MatSnackBar,
     @Inject(DOCUMENT) private document: Document
   ) {
-    console.log("Rangers Component Constructed started at ", Date())
+    console.log(`Rangers Component Construction at ${Date()}`)
 
     this.alert = new AlertsComponent(this._snackBar, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
     //this.teamService = teamService
@@ -87,7 +87,7 @@ export class RangersComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.rangers = this.rangerService.getrangers()  // NOTE: zeros out the array!!!!
+    this.rangers = this.rangerService.GetRangers()  // NOTE: zeros out the array!!!!
     //this.rangerService.generateFakeData(10) // NOTE: number is ignored currently
     console.log(`Now have ${this.rangers.length} Rangers retrieved from Local Storage and/or fakes generated`)
 
@@ -125,12 +125,12 @@ export class RangersComponent implements OnInit {
 
   }
 
-
-
-
   onBtnJsonImport(e: any): void { // PointerEvent ?!
+    // TODO: Move to RangerService...
     let Logo: string
     debugger
+
+
     if (e != null && e.target != null) {
       let Logo2 = e.target
 
@@ -144,14 +144,16 @@ export class RangersComponent implements OnInit {
       }
     }
     //this.localUrl //: any[]
-    //this.rangerService.LoadFromJSON
+    this.rangerService.LoadRangersFromJSON(e.target.files[0])
   }
 
   //--------------------------------------------------------------------------
   onBtnImportExcel() {
+    debugger
     let fnc = new csvImport(document)
     fnc.importExcel2()
     //csvImport.importExcel2()
+    console.log (`Got excel file`)
   }
 
   //--------------------------------------------------------------------------

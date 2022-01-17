@@ -186,7 +186,7 @@ const filterParams = {
   generateFakeData(num: number = 15) {
 
     let teams = this.teamService.getTeams()
-    let rangers = this.rangerService.getRangers()
+    let rangers = this.rangerService.GetRangers()
     if (rangers == null || rangers.length < 1) {
       alert("No Rangers! Please add some 1st.")
       return
