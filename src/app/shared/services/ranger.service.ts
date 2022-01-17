@@ -1,5 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
-import { BehaviorSubject, Observer, of } from 'rxjs';
+import { BehaviorSubject, Observable, Observer, of } from 'rxjs';
 import { catchError, mergeMap, toArray } from 'rxjs/operators';
 import * as rangers from '../../../assets/data/Rangers.json'
 
@@ -20,6 +21,7 @@ export enum RangerStatus { '', 'Normal', 'Need Rest', 'REW', 'OnSite', 'Checked-
 
 @Injectable({ providedIn: 'root' })
 export class RangerService {
+  orangers$: Observable<RangerType[]> | null = null
 
   rangers: RangerType[] = []
   rangers2: RangerType[] = []  // BUG: Rangers loaded from JSON are NEVER USED!
@@ -28,18 +30,21 @@ export class RangerService {
     new BehaviorSubject<RangerType[]>([]);  // REVIEW: Necessary?
   private localStorageRangerName = 'rangers'
 
-  constructor() {
+  constructor(private httpClient: HttpClient) {
+    this.LoadRangersFromLocalStorage()
+    this.LoadRangersFromJSON()
 
-    let localStorageRangers = localStorage.getItem(this.localStorageRangerName)
-    /* this.rangers = []
-    if (temp != null) {
-      this.rangers = JSON.parse(temp) || []
-    }   */
-    this.rangers = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : []   //TODO: clean up
     // NOTE: IDs needed?! for (const ranger of this.rangers) {
     //  if (ranger.id >= this.nextId) this.nextId = ranger.id + 1
     //}
     this.update()
+  }
+
+  LoadRangersFromLocalStorage() { // WARN: Replaces any existing Rangers
+    let localStorageRangers = localStorage.getItem(this.localStorageRangerName)
+
+    this.rangers = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : []   //TODO: clean up
+    console.log(`RangersService: Loaded ${this.rangers.length} rangers from local storage`)
   }
 
   private update() {
@@ -165,7 +170,26 @@ export class RangerService {
   //Would need to filter for those who've 'checked in' on this incident?
   //return this.rangers }
 
-  LoadFromJSON(fileName: string = '../../../assets/data/Rangers.json') {  // also see secretss import as an example: Settings.ts
+  LoadRangersFromJSON(fileName: string = '../../../assets/data/Rangers.json') {  // WARN: Replaces any existing Rangers
+    // also see secretss import as an example: Settings.ts
+
+    this.orangers$ = this.httpClient.get<RangerType[]>('../../../assets/data/Rangers.json') // from pg 281
+
+    //this.rangers = []
+    if (rangers != null) {
+      // Use JSON file imported at the top
+      //this.rangers = JSON.parse(rangers) || []
+      // this.rangers = rangers
+/* TODO: Add missing fields:
+Type '{ callsign: string; label: string; licensee: string; licenseKey: string; phone: string; team: string; icon: string; }[]' is not assignable to type 'RangerType[]'.
+
+Type '{ callsign: string; label: string; licensee: string; licenseKey: string; phone: string; team: string; icon: string; }is missing the following properties from type
+
+
+'RangerType': address, image, status, notets(2322)
+
+*/
+    }
 
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'rangers') from default-exporting module (only default export is available soon)"
     let rangerWorkaround = JSON.stringify(rangers)
@@ -173,7 +197,7 @@ export class RangerService {
     //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
 
 
-     //See pg. 279...
+    //See pg. 279...
     //import * as data from filename;
     //let greeting = data.greeting;
 
@@ -182,6 +206,7 @@ export class RangerService {
           // this requires `"resolveJsonModule": true` in tsconfig.json
 
           import {default as yyy} from './VashonCallSigns.json'
+import { HttpClient } from '@angular/common/http';
           yyy.primaryMain
 
 
@@ -206,6 +231,7 @@ export class RangerService {
 
   }
 
+  /* Needed?!
   sortRangersByTeam() {
     return this.rangers.sort((n1, n2) => {
       if (n1.team > n2.team) { return 1 }
@@ -222,22 +248,25 @@ export class RangerService {
     })
   }
 }
+*/
 
-/*export class Ranger {
+  /*
+  export class Ranger {
 
-  static nextId = 1;
-  id: Number;
-  date: Date;
-  callSign: string;
-  licensee: string;
+    static nextId = 1;
+    id: Number;
+    date: Date;
+    callSign: string;
+    licensee: string;
 
-  constructor(callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string) {
-    this.id = Ranger.nextId++; // TODO: OK if user restarts app during SAME mission #?
-    this.date = new Date();
-    this.callSign = callSign;
-    this.licensee = licensee;
+    constructor(callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string) {
+      this.id = Ranger.nextId++; // TODO: OK if user restarts app during SAME mission #?
+      this.date = new Date();
+      this.callSign = callSign;
+      this.licensee = licensee;
 
-    // add validation code here?! or in forms code?
-  }
+      // add validation code here?! or in forms code?
+    }
 
-}*/
+  }*/
+}

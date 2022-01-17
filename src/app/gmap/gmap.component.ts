@@ -31,36 +31,17 @@ interface marker {
   ],
   providers: [SettingsService]
 })
+export class GmapComponent  implements OnInit {    //extends Map
 
-/*
-Initial Chunk Files   | Names         |      Size
-vendor.js             | vendor        |   9.36 MB
-styles.css, styles.js | styles        | 575.38 kB
-polyfills.js          | polyfills     | 339.13 kB
-main.js               | main          | 282.01 kB
-runtime.js            | runtime       |   6.86 kB
-
-                      | Initial Total |  10.54 MB
-
-to
-
-Initial Chunk Files | Names   |      Size
-main.js             | main    | 263.40 kB
-runtime.js          | runtime |   6.86 kB
-
-... so no big deal?!
-
-*/
-
-//extends Map
-export class GmapComponent  implements OnInit {
-
+  //Next set are tied to HTML
   zoom = 10;
-  title = 'RangerTrak Google Map'
-  label = 'RangerTrak Label'
   latitude
   longitude
   markerLocations: marker[] = []
+
+  title = 'RangerTrak Google Map'
+  label = 'RangerTrak Label'
+
   //let map: maps.Map;
   //center: google.maps.LatLngLiteral = {lat: this.lat, lng: this.lng};
   //static style: any = snazzyMapsStyle;

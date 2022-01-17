@@ -10,11 +10,25 @@ $primary: #fcb8ab,
 //fill-color:green;
 // }
 
+label {
+  display: block;
+  //font: 1rem 'Fira Sans', sans-serif;
+}
+
+input,
+label {
+    margin: .4rem 0;
+}
 
 .licenseImg {
   border: 10px red dotted;
   height: 60px;
   width : 60px;
+
+  //border:1px #a5a5a5 solid;
+  //height:50px;
+  //width:50px;
+
 }
 
 // https://github.com/ag-grid/ag-grid-customise-theme

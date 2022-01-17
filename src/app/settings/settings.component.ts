@@ -27,6 +27,7 @@ export class SettingsComponent implements OnInit {
   ngOnInit(): void {
     if (this.settings == undefined) {
       console.log('WARN: Application Settings need to be initialized.')
+      // TODO: SettingsService.ResetDefaults()
     } else {
       console.log(`SettingsComponent: Application: ${this.settings.application} -- Version: ${this.settings.version}`)
     }
@@ -39,10 +40,6 @@ export class SettingsComponent implements OnInit {
   onBtnResetDefaults() {
     SettingsService.ResetDefaults()
   }
-
-
-
-
 
   getFormArrayFromSettingsArray() {
     // NOTE: Form array differs some from SettingsType so need to translate back & forth
@@ -89,6 +86,8 @@ export class SettingsComponent implements OnInit {
     console.log("Update Application Settings...")
     let newSettings: SettingsType = this.getSettingsArrayFromFormArray()
     SettingsService.Update(newSettings)
+
+    // TODO: Set this up as an observable, or Componts that have ALREADY pulled down the values won't refresh them!!!!
 
     // TODO: If Debug disabled then call:
     //enableProdMode()

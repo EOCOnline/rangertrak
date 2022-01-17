@@ -1,3 +1,15 @@
+@use "@material/theme"
+with (
+  $primary: #962f10,
+  $on-primary: #442C2E
+);
+@use "@material/button";
+@use "@material/button/styles";
+@use "@material/banner";
+//@use "@material/banner/styles";
+// https://material.io/components/buttons/web#api
+
+
 h1,
 h2,
 h3 {
@@ -5,11 +17,13 @@ h3 {
   margin-bottom: 0px;
 }
 
-button {
-  display: inline-block;
+.eButton {
+  //display: inline-block;
+  width: 80px;
   font-weight: bold;
   //background-color: red;
-  margin: 6 px;
+  margin: 30 px;
+  //padding: 10px;
 }
 
 .elegant {

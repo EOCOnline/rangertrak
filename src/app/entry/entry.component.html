@@ -26,7 +26,7 @@
     </mat-form-field>
     <span id="enter__Callsign-upshot"></span>
 
-    <div #div1 class="input-group">(or all of) this Team:
+    <div #div1 class="input-group">Team: [Future: Maybe only enter Team OR Callsign. If team, then ALL TeamMembers get checked in all at once???]
       <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
         type="text" formControlName="team" placeholder="Team">
       <div *ngIf="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.hasError('required')"
@@ -124,12 +124,16 @@
     </div>
 
     <br>
-    <!--button (click)="updateLocation()">Update location</button> <br-->
-    <button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br>
-    <button (click)="resetForm()" type="button">Reset (John's Special)</button> <br>
-
     <br>
-    <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button" type="submit">Submit</button>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <!--button (click)="updateLocation()">Update location</button> <br-->
+    <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
+    <button (click)="resetForm()" title="Reset all form fields to their defaults" class ="eButton" type="button">Reset</button>
+    <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button eButton" type="submit">Submit</button>
 
     <span id="enter__Submit-info"></span>
 

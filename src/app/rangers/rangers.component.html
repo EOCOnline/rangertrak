@@ -28,7 +28,7 @@
 
 <details>
   <summary>Instructions</summary>
-  This list of participants was taken from the FCC Database in May 2019. <br />
+  This list of participants was taken from the FCC Database in January 2022. <br />
   It has been significantly reformatted and your edits may alter it further.<br />
   To maintain these changes between browser sessions, we can write the following table to the Browser Local Storage
   where it will remain until deleted.<br />
@@ -89,6 +89,9 @@
     <li>Create src/app/shared/services/rangers.json file for auto import, or</li>
     <li>In future, import an excel file.</li>
   </ol>
+
+  <p>To import a pipe-delimited text file to Excel, open the file from within Excel. The Excel Text Import Wizard will guide you through the process of converting the text file to a spreadsheet format. Choose "Delimited" as the format. In the next screen, choose Other as the delimiter, and type in the pipe symbol (|) as the delimiter. The last screen will allow you to format the individual columns.</p>
+
     This list of potential Rangers was taken from the FCC Database in January 2022. <br />
     It has been significantly reformatted and your edits may alter it further.<br />
     To maintain these changes between browser sessions, we write the table
@@ -96,6 +99,36 @@
 
     FUTURE: Import Excel button currently 'works', but imports wrong spreadsheet and does nothing with it!<br>
 
+
+    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
+    <label for="myfile">Select a file:</label>
+    <input type="file" id="myfile" name="myfile">
+
+    <label for="avatar">Choose a profile picture:</label>
+
+    <input type="file"
+       id="avatar" name="avatar"
+       accept="image/png, image/jpeg">
+
+       <!-- Events
+      https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event
+    https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event
+    https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement#properties_file
+
+<input placeholder="Enter some text" name="name"/>
+<p id="values"></p>
+
+
+const input = document.querySelector('input');
+const log = document.getElementById('values');
+
+input.addEventListener('input', updateValue);
+
+function updateValue(e) {
+  log.textContent = e.target.value;
+}
+
+    -->
     <button (click)="onBtnUpdate()" style="margin-bottom: 5px"
       title="Preserve the edits above to the Rangers stored on this broowser">Save Rangers</button><br>
 

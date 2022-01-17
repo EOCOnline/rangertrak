@@ -3,7 +3,6 @@ import { FieldReportService, FieldReportType, RangerService, RangerStatus, Range
 import { DOCUMENT } from '@angular/common'
 import { csvImport } from './csvImport'
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MDCBanner } from '@material/banner';
 import { AlertsComponent } from '../alerts/alerts.component';
 
 @Component({
@@ -23,6 +22,7 @@ export class RangersComponent implements OnInit {
   alert: any
   numSeperatorWarnings = 0
   maxSeperatorWarnings = 3
+  now: Date
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {
@@ -49,15 +49,12 @@ export class RangersComponent implements OnInit {
 
   imageCellRenderer = (params: { data: RangerType }) => {
     return `<img class="licenseImg" alt= "${params.data.licensee}" title="${params.data.callsign} : ${params.data.licensee}"
-    src= "${params.data.image}"  style="border:1px #a5a5a5 solid; height:50px; width:50px;" >`
+    src= "${params.data.image}">`
   }
 
   callsignCellRenderer = (params: { data: RangerType }) => {
-
-    // TODO: Possible to get HTML into a tooltip?
-    // let title = `<img src="${params.data.image}" height="40"> | <small> ${params.data.licensee} | ${params.data.phone}</small>`
+    // let title = `<img src="${params.data.image}" height="40"> | <small> ${params.data.licensee} | ${params.data.phone}</small>` // TODO: Possible to get HTML into a tooltip?
     let title = `${params.data.licensee} | ${params.data.phone}`
-
     return `<span aria-hidden title="${title}"> ${params.data.callsign}</span>`
   }
 
@@ -72,7 +69,6 @@ export class RangersComponent implements OnInit {
     { headerName: "Status", field: "status", flex: 40 },
     { headerName: "Note", field: "note", flex: 60 },
   ];
-  now: Date
 
   constructor(
     //private teamService: TeamService,
@@ -82,7 +78,7 @@ export class RangersComponent implements OnInit {
   ) {
     console.log("Rangers Component Constructed started at ", Date())
 
-    this.alert = new AlertsComponent(_snackBar, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
+    this.alert = new AlertsComponent(this._snackBar, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
     //this.teamService = teamService
     //this.rangerService = rangerService
     this.now = new Date()
@@ -91,10 +87,8 @@ export class RangersComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     //this.rangers = this.rangerService.getrangers()  // NOTE: zeros out the array!!!!
-
-    this.rangerService.generateFakeData(10) // NOTE: number is ignored currently
+    //this.rangerService.generateFakeData(10) // NOTE: number is ignored currently
     console.log(`Now have ${this.rangers.length} Rangers retrieved from Local Storage and/or fakes generated`)
 
     if (this.rangers.length < 1) {
