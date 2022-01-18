@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FieldReportService, FieldReportType, RangerService, RangerStatus, RangerType, TeamService } from '../shared/services/';
+import { FieldReportService, FieldReportType, RangerService, RangerStatus, RangerType, SettingsService, TeamService } from '../shared/services/';
 import { DOCUMENT } from '@angular/common'
 import { csvImport } from './csvImport'
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -23,6 +23,7 @@ export class RangersComponent implements OnInit {
   numSeperatorWarnings = 0
   maxSeperatorWarnings = 3
   now: Date
+  settings
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {
@@ -48,7 +49,7 @@ export class RangersComponent implements OnInit {
   }
 
   imageCellRenderer = (params: { data: RangerType }) => {
-    return `<img class="licenseImg" alt= "${params.data.licensee}" title="${params.data.callsign} : ${params.data.licensee}"
+    return `<img class="licenseImg" style="height:40px; width=40px;" alt= "${params.data.licensee}" title="${params.data.callsign} : ${params.data.licensee}"
     src= "${params.data.image}">`
   }
 
@@ -73,6 +74,7 @@ export class RangersComponent implements OnInit {
   constructor(
     //private teamService: TeamService,
     private rangerService: RangerService,
+    private settingsService: SettingsService,
     private _snackBar: MatSnackBar,
     @Inject(DOCUMENT) private document: Document
   ) {
@@ -84,12 +86,15 @@ export class RangersComponent implements OnInit {
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
+
+    this.settings = SettingsService.Settings
+
   }
 
   ngOnInit(): void {
     this.rangers = this.rangerService.GetRangers()  // NOTE: zeros out the array!!!!
     //this.rangerService.generateFakeData(10) // NOTE: number is ignored currently
-    console.log(`Now have ${this.rangers.length} Rangers retrieved from Local Storage and/or fakes generated`)
+    console.log(`ngInit: ${this.rangers.length} Rangers retrieved from Local Storage and/or fakes generated`)
 
     if (this.rangers.length < 1) {
       this.alert.Banner("No Rangers have been entered yet. Go to the bottom & click on 'Advanced' to resolve.")
@@ -98,6 +103,9 @@ export class RangersComponent implements OnInit {
       this.alert.OpenSnackBar(`Imported "${this.rangers.length}" rangers.`, `Nota Bene`, 2000)
     }
 
+    if (!this.settings.debugMode) {
+      this.displayHide("rangers__Fake")
+    }
 
     //console.log("Rangers Form initialized at ", Date())
   }
@@ -115,14 +123,14 @@ export class RangersComponent implements OnInit {
   // once the above is done, you can: <button (click)="myGrid.api.deselectAll()">Clear Selection</button>
 
   //--------------------------------------------------------------------------
-  // FUTURE:
-  onBtnUpdate() {
-    this.rangerService.UpdateLocalStorage
+  onBtnUpdateLocalStorage() {
+    this.rangerService.UpdateLocalStorage()
   }
 
   //--------------------------------------------------------------------------
   onBtnImportRangers() {
-
+    //console.log
+    alert(`onBtnImportRangers: Ranger Import from Excel file is unimoplemented currently`)
   }
 
   onBtnJsonImport(e: any): void { // PointerEvent ?!
@@ -206,8 +214,10 @@ export class RangersComponent implements OnInit {
     }
   }
 
+
+
   //--------------------------------------------------------------------------
-  onBtnClearRangers() {
+  onBtnDeleteRangers() {
     if (this.getConfirmation('REALLY delete all Rangers in LocalStorage, vs. edit the Ranger grid & Update the values in Local Storage?')) {
       console.log("Removing all rangers from local storage...")
       this.rangerService.deleteAllRangers()
@@ -222,6 +232,28 @@ export class RangersComponent implements OnInit {
     }
   }
 
+  //--------------------------------------------------------------------------
+
+  generateFakeData() {
+    // Number is ignored currently
+    this.rangerService.generateFakeData(10)
+    // TODO: Refresh the page, or why not showing???? - until page goes thoiugh another init cycle?!
+    this.ngOnInit()
+  }
+
+  displayHide(htmlElementID: string) {
+    let e = this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility = "hidden";
+    }
+  }
+
+  displayShow(htmlElementID: string) {
+    let e = this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility = "visible";
+    }
+  }
 }
 
   // works - but Unused....

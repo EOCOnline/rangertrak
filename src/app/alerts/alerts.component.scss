@@ -19,11 +19,12 @@ with (
   @include banner.fill-color(rgb(226, 226, 136));
   //@include banner.divider-color(aqua);
   @include banner.max-width(90%);
+
   //@include banner.level(0);
   //border       : 1px red solid;
   //margin-left: -1em;
   //width: 70em;
-  height: 15%;
+  //height: 15%;
   //margin-left: -150px;
   //padding      : -30px;
 }

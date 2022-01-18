@@ -88,4 +88,14 @@ export class SettingsService {
     localStorage.setItem(SettingsService.storageLocalName, JSON.stringify(newSettings));
     console.log("Updated Application Settings to " + JSON.stringify(newSettings))
   }
+
+  LocalStorageVoyeur() {
+    let key
+    for (var i = 0; i < localStorage.length; i++) {
+      key = localStorage.key(i)
+      if (key != null) {
+        console.log(`item ${i} = ${JSON.parse(key)}`)
+      }
+    }
+  }
 }

@@ -56,7 +56,9 @@ export class RangerService {
 
   // Update localStorage with current Rangers data & Publish update for any Observers
   UpdateLocalStorage() {
+    console.log(`RangersService: Saving ${this.rangers.length} rangers to local storage`)
     localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
+    //console.log("Updated Rangers to " + JSON.stringify(this.rangers))
 
     this.rangersSubject.next(this.rangers.map(
       ranger => ({
@@ -73,12 +75,10 @@ export class RangerService {
       })
     ))
   }
-  //importRangers(path: string) {   this.LoadFromJSON(path) } //BUG: Not tested!!!
-
 
   GetRangers() {
     // TODO: Sort by callsign
-    console.log(`returning ${this.rangers.length} Rangers`)
+    console.log(`GetRangers() returning ${this.rangers.length} Rangers`)
     return this.rangers
   }
 
@@ -87,7 +87,7 @@ export class RangerService {
   }
 
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
-  AddRanger(formData: string): RangerType {
+  AddRanger_Unused(formData: string): RangerType {
     console.log(`RangerService: Got new ranger: ${formData}`)
 
     let newRanger: RangerType = JSON.parse(formData)
@@ -101,6 +101,8 @@ export class RangerService {
   LoadRangersFromJSON(fileName: string = '../../../assets/data/Rangers.json') {  // WARN: Replaces any existing Rangers
     console.log(`RangerService: loading new Rangers from ${fileName}`)
     // TODO: Sort by callsign
+
+    debugger
 
     // also see secretss import as an example: Settings.ts
 
@@ -125,12 +127,13 @@ export class RangerService {
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'rangers') from default-exporting module (only default export is available soon)"
     let rangerWorkaround = JSON.stringify(rangers)
     this.rangers2 = JSON.parse(rangerWorkaround)
-    //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
-
+    console.log(`Got ${this.rangers2.length} rangers (into ARRAY #2!!!) from JSON file.`)
+  }
 
     //See pg. 279...
     //import * as data from filename;
     //let greeting = data.greeting;
+
 
     /*   import {default as AAA} from "VashonCallSigns";
           AAA.targetKey
@@ -160,8 +163,6 @@ import { HttpClient } from '@angular/common/http';
 
       */
 
-  }
-
   /*
   getFieldReport(id: number) {
     const index = this.findIndex(id);
@@ -181,18 +182,14 @@ import { HttpClient } from '@angular/common/http';
   }
 */
 
-
   deleteAllRangers() {
     this.rangers = []
     localStorage.removeItem('rangers')
+    // localStorage.clear() // remove all localStorage keys & values from the specific domain you are on. Javascript is unable to get localStorage values from any other domains due to CORS
   }
 
-
-
-
   generateFakeData(num: number) {
-
-    console.log("Generating " + num + " more FAKE Rangers!")
+    console.log("Adding 20 more FAKE Rangers")
 
     /* Following from 98070 AND 98013 zip codes, MUST be sorted by call sign!
         https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
@@ -234,6 +231,9 @@ import { HttpClient } from '@angular/common/http';
       { callsign: "KB7LEV", licensee: "Lysen, Kurt A", image: "./assets/imgs/REW/female.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
       { callsign: "KB7MTM", licensee: "Meyer, Michael T", image: "./assets/imgs/REW/VI-0123.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" }
     )
+    //console.log(`Next: update LocalStorage: ${this.localStorageRangerName}`)
+    this.UpdateLocalStorage();
+    //console.log(`returned from: updating LocalStorage: ${this.localStorageRangerName}`)
   }
 
   // TODO:  getActiveRangers() {
