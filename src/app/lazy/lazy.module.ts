@@ -13,7 +13,7 @@ import { AboutComponent } from './about/about.component';
   declarations: [
     AboutComponent,
     LazyComponent
-    //ThreeWordsService
+    //, ThreeWordsService
   ],
   imports: [
     CommonModule,
@@ -22,7 +22,6 @@ import { AboutComponent } from './about/about.component';
       RouterModule.forChild([
         //{path: '', component: ThreeWordsService},
         { path: 'about', component: AboutComponent }
-        //{ path: 'about', component: AboutComponent },
       ])
     */
   ],

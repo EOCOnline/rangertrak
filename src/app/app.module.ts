@@ -36,6 +36,8 @@ import { X404Component } from './x404/x404.component';
 // https://angular.io/guide/build#configuring-commonjs-dependencies
 
 @NgModule({
+
+  // Import sub-modules
   imports: [
     BrowserAnimationsModule,
     BrowserModule,
@@ -52,6 +54,9 @@ import { X404Component } from './x404/x404.component';
     LazyModule
     //, IonicModule.forRoot()
   ],
+
+  // Define all the components, directives and pipes, that are declared and used inside this module.
+  // If you want to use any of these in multiple modules, bundle it into a separate module & import that in the module
   declarations: [
     AppComponent,
     NavbarComponent,
@@ -66,16 +71,21 @@ import { X404Component } from './x404/x404.component';
     X404Component,
     LogComponent
   ],
+
+  // Define any required @Injectables. Any sub-components or modules can get the same @Injectable instance via dependency injection.
+  // In the case of the AppModule, these @Injectables are application-scoped
   providers: [TeamService, RangerService, FieldReportService, MarkerService, PopupService, SettingsService, ShapeService,
     {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}],
     //{provide: MAT_BANNER_DEFAULT_OPTIONS}],
     // Team, Ranger,
     // providers: [File, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+
   bootstrap: [AppComponent]//,
 
-  //exports: [
-    // SettingsComponent
-  //]
+  // Make components, directives or pipes available to other modules...
+  // , exports: [
+  //   SettingsComponent
+  // ]
 })
 export class AppModule { }
 
