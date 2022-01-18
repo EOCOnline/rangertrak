@@ -3,8 +3,8 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, of } from 'rxjs';
-import { catchError, mergeMap, toArray } from 'rxjs/operators';
+import { Observable,debounceTime, map, startWith } from 'rxjs'
+//import { debounceTime, map, startWith } from 'rxjs/operators'
 import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
 import { BrowserModule } from '@angular/platform-browser';

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable, Observer, of } from 'rxjs';
-import { catchError, mergeMap, toArray } from 'rxjs/operators';
+//import { debounceTime, map, startWith } from 'rxjs/operators'
 import * as rangers from '../../../assets/data/Rangers.json'
 
 export interface RangerType {

@@ -1,7 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
-import { Observable, of } from 'rxjs';
-import { catchError, mergeMap, toArray } from 'rxjs/operators';
+
 
 import { FaStackItemSizeDirective } from '@fortawesome/angular-fontawesome';
 import { OpPeriod } from './op-period';

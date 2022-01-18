@@ -1,7 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
-import { Observable, of } from 'rxjs';
-import { catchError, mergeMap, toArray } from 'rxjs/operators';
+
 
 export enum DirEnum {
   E = 'East',
