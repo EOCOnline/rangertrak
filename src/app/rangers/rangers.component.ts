@@ -162,6 +162,7 @@ export class RangersComponent implements OnInit {
     }
     //this.localUrl //: any[]
     this.rangerService.LoadRangersFromJSON(e.target.files[0])
+    window.location.reload
   }
 
 
@@ -176,6 +177,7 @@ export class RangersComponent implements OnInit {
   onBtnImportExcel() {
     this.rangerService.LoadRangersFromExcel()
     console.log(`Got excel file`)
+    window.location.reload
   }
 
   /* File Input element for browser */
@@ -310,6 +312,7 @@ export class RangersComponent implements OnInit {
     if (this.getConfirmation('REALLY delete all Rangers in LocalStorage, vs. edit the Ranger grid & Update the values in Local Storage?')) {
       console.log("Removing all rangers from local storage...")
       this.rangerService.deleteAllRangers()
+      window.location.reload
     }
   }
 
@@ -328,6 +331,7 @@ export class RangersComponent implements OnInit {
     this.rangerService.generateFakeData(10)
     // TODO: Refresh the page, or why not showing???? - until page goes thoiugh another init cycle?!
     this.ngOnInit()
+    window.location.reload
   }
 
   displayHide(htmlElementID: string) {

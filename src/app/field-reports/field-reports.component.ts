@@ -201,6 +201,7 @@ export class FieldReportsComponent implements OnInit {
     generateFakeFieldReports(num = this.nFakes) {
       this.fieldReportService.generateFakeData(num)
       console.log(`Generated ${num} FAKE Field Reports`)
+      window.location.reload() //TODO: OK?!
     }
 
     displayHide(htmlElementID: string) {

@@ -48,7 +48,7 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
     this.settings = SettingsService.Settings
 
     // NOTE: workaround for onChange not working...
-    this.callsignCtrl.valueChanges.pipe(debounceTime(1000)).subscribe(newCall => this.CallsignChanged(newCall))
+    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))
 
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
     this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
@@ -150,7 +150,7 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
     https://gist.github.com/paulirish/5d52fb081b3570c81e3a
   */
   reset_animation(element: HTMLElement) {
-    console.log(`Reset Animation at ${Date()}`)
+    console.log(`Fade Animation reset`)
     element.style.animation = 'none';
     element.offsetHeight; // trigger reflow
     element.style.animation = "";
