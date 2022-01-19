@@ -100,6 +100,8 @@
     To maintain these changes between browser sessions, we write the table
     above to the Browser Local Storage where it will remain until deleted.<br />
 
+    <hr>
+    <br>
     FUTURE: Import Excel button currently 'works', but imports wrong spreadsheet and does nothing with it!<br>
 
 
@@ -130,6 +132,8 @@ function updateValue(e) {
 }
 
     -->
+    <br>
+    <hr>
 
     <br>
     Save Rangers to Local Storage:
@@ -143,27 +147,29 @@ function updateValue(e) {
     <button (click)="onBtnImportExcel()" style="margin-bottom: 5px">Import Rangers (CSV)</button><br>
 
     2) Import Rangers from a JSON file:
-    <button (click)="onBtnJsonImport($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">Import
+    <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">Import
       Rangers (JSON)</button><br>
 
     <br>
-    Delete ALL Rangers from Local Storage
+    Delete ALL Rangers from Local Storage (then refresh page):
     <button (click)="onBtnDeleteRangers()">Delete Rangers</button><br>
 
 
     <div id="rangers__Fake">
-      Add some FAKE/Hardcoded rangers to any existing rangers:
-        <button (click)="generateFakeData()" type="button" id="enter__Fake--button">Add FAKE Rangers</button>
+      Add some FAKE/Hardcoded rangers to any existing rangers (then refresh page):
+      <button (click)="generateFakeData()" type="button" id="enter__Fake--button">Add FAKE Rangers</button>
+    </div>
+
+    <hr>
+    <div id="ranger__ImportExcel--zzzzzz">
+      FUTURE - attempt import of an Excel file:
+      <input type="file" (change)="onFileChange($event)" multiple="false" />
+      <button ion-button color="secondary" (click)="import()">Import Data</button>
+      <button ion-button color="secondary" (click)="export()">Export Data</button>
+      Code from <a href="http://sheetjs.com" target="_blank">http://sheetjs.com</a>, specifically
+      <a href="https://oss.sheetjs.com/" target="_blank">https://oss.sheetjs.com/</a> &
+      <a href="https://github.com/SheetJS/SheetJS.github.io/"
+        target="_blank">https://github.com/SheetJS/SheetJS.github.io/</a>
     </div>
   </details>
 </div>
-
-<div id="Log__Excelzzzzzz">
-  FUTURE - attempt import of an Excel file:
-  <input type="file" (change)="onFileChange($event)" multiple="false" />
-  <button ion-button color="secondary" (click)="import()">Import Data</button>
-  <button ion-button color="secondary" (click)="export()">Export Data</button>
-  Code from <a href="http://sheetjs.com" target="_blank">http://sheetjs.com</a>, specifically
-  <a href="https://oss.sheetjs.com/" target="_blank">https://oss.sheetjs.com/</a> &
-  <a href="https://github.com/SheetJS/SheetJS.github.io/" target="_blank">https://github.com/SheetJS/SheetJS.github.io/</a>
-  </div>

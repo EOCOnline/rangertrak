@@ -1,3 +1,4 @@
+// https://malcoded.com/posts/angular-fundamentals-modules/ is good
 
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'  // vs. BrowserModule that App imports

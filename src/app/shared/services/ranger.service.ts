@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable, Observer, of } from 'rxjs';
+import { csvImport } from 'src/app/rangers/csvImport';
 //import { debounceTime, map, startWith } from 'rxjs/operators'
 import * as rangers from '../../../assets/data/Rangers.json'
 
@@ -19,6 +20,8 @@ export interface RangerType {
 
 export enum RangerStatus { '', 'Normal', 'Need Rest', 'REW', 'OnSite', 'Checked-in', 'Checked-out' }  // TODO: Allow changing list & default of statuses in settings?!
 
+
+
 @Injectable({ providedIn: 'root' })
 export class RangerService {
   orangers$: Observable<RangerType[]> | null = null
@@ -35,30 +38,28 @@ export class RangerService {
     this.LoadRangersFromLocalStorage()
     //this.LoadRangersFromJSON() // Have user use button to initiate this
 
-    // NOTE: IDs needed?! for (const ranger of this.rangers) {
-    //  if (ranger.id >= this.nextId) this.nextId = ranger.id + 1
-    //}
-
     // Needed? Maybe to expose observable?
     this.UpdateLocalStorage()
   }
 
-  LoadRangersFromLocalStorage() { // WARN: Replaces any existing Rangers
-    let localStorageRangers = localStorage.getItem(this.localStorageRangerName)
-    try {
-      this.rangers = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : []   //TODO: clean up
-      console.log(`RangersService: Loaded ${this.rangers.length} rangers from local storage`)
-    } catch (error: any) {
-      console.log(`Unable to parse Rangers from Local Storage. Error: ${error.message}`)
-    }
-    // TODO: Sort by callsign
+  GetRangers() {
+    console.log(`GetRangers() returning ${this.rangers.length} Rangers`)
+    this.SortRangersByCallsign()
+    return this.rangers
   }
 
+  subscribe(observer: Observer<RangerType[]>) {
+    this.rangersSubject.subscribe(observer);
+  }
+
+  //--------------------------------------------------------------------------
   // Update localStorage with current Rangers data & Publish update for any Observers
   UpdateLocalStorage() {
     console.log(`RangersService: Saving ${this.rangers.length} rangers to local storage`)
     localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
     //console.log("Updated Rangers to " + JSON.stringify(this.rangers))
+
+    this.SortRangersByCallsign()
 
     this.rangersSubject.next(this.rangers.map(
       ranger => ({
@@ -76,37 +77,27 @@ export class RangerService {
     ))
   }
 
-  GetRangers() {
-    // TODO: Sort by callsign
-    console.log(`GetRangers() returning ${this.rangers.length} Rangers`)
-    return this.rangers
+  //--------------------------------------------------------------------------
+  LoadRangersFromLocalStorage() { // WARN: Replaces any existing Rangers
+    let localStorageRangers = localStorage.getItem(this.localStorageRangerName)
+    try {
+      this.rangers = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : []   //TODO: clean up
+      console.log(`RangersService: Loaded ${this.rangers.length} rangers from local storage`)
+    } catch (error: any) {
+      console.log(`Unable to parse Rangers from Local Storage. Error: ${error.message}`)
+    }
+    this.SortRangersByCallsign()
   }
 
-  subscribe(observer: Observer<RangerType[]>) {
-    this.rangersSubject.subscribe(observer);
-  }
-
-  // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
-  AddRanger_Unused(formData: string): RangerType {
-    console.log(`RangerService: Got new ranger: ${formData}`)
-
-    let newRanger: RangerType = JSON.parse(formData)
-    //newRanger.id = this.nextId++
-    this.rangers.push(newRanger)
-
-    this.UpdateLocalStorage();
-    return newRanger;
-  }
-
+  //--------------------------------------------------------------------------
   LoadRangersFromJSON(fileName: string = '../../../assets/data/Rangers.json') {  // WARN: Replaces any existing Rangers
     console.log(`RangerService: loading new Rangers from ${fileName}`)
-    // TODO: Sort by callsign
 
     debugger
 
     // also see secretss import as an example: Settings.ts
 
-    this.orangers$ = this.httpClient.get<RangerType[]>('../../../assets/data/Rangers.json') // from pg 281
+    this.orangers$ = this.httpClient.get<RangerType[]>(fileName) // from pg 281
 
     //this.rangers = []
     if (rangers != null) {
@@ -126,68 +117,109 @@ export class RangerService {
 
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'rangers') from default-exporting module (only default export is available soon)"
     let rangerWorkaround = JSON.stringify(rangers)
-    this.rangers2 = JSON.parse(rangerWorkaround)
-    console.log(`Got ${this.rangers2.length} rangers (into ARRAY #2!!!) from JSON file.`)
+    this.rangers = JSON.parse(rangerWorkaround)
+    this.SortRangersByCallsign()
+    console.log(`Got ${this.rangers.length} rangers from JSON file.`)
   }
 
-    //See pg. 279...
-    //import * as data from filename;
-    //let greeting = data.greeting;
+  //See pg. 279...
+  //import * as data from filename;
+  //let greeting = data.greeting;
 
 
-    /*   import {default as AAA} from "VashonCallSigns";
-          AAA.targetKey
-          // this requires `"resolveJsonModule": true` in tsconfig.json
+  /*   import {default as AAA} from "VashonCallSigns";
+        AAA.targetKey
+        // this requires `"resolveJsonModule": true` in tsconfig.json
 
-          import {default as yyy} from './VashonCallSigns.json'
+        import {default as yyy} from './VashonCallSigns.json'
 import { HttpClient } from '@angular/common/http';
-          yyy.primaryMain
+        yyy.primaryMain
 
 
-      ngOnInit(): void {
+    ngOnInit(): void {
 
-              this.myService.getResponseData().then((value) => {
-                  //SUCCESS
-                  console.log(value);
-                  this.detailsdata = value;
+            this.myService.getResponseData().then((value) => {
+                //SUCCESS
+                console.log(value);
+                this.detailsdata = value;
 
-              }, (error) => {
-                  //FAILURE
-                  console.log(error);
-              })
-          }
+            }, (error) => {
+                //FAILURE
+                console.log(error);
+            })
+        }
 
-      <p><b>sales amount:</b> {{ detailsdata?.sales_amount }}</p>
-      <p><b>collection amount:</b> {{ detailsdata?.collection_amount }}</p>
-      <p><b>carts amount:</b> {{ detailsdata?.carts_amount }}</p>
+    <p><b>sales amount:</b> {{ detailsdata?.sales_amount }}</p>
+    <p><b>collection amount:</b> {{ detailsdata?.collection_amount }}</p>
+    <p><b>carts amount:</b> {{ detailsdata?.carts_amount }}</p>
 
-      */
+    */
 
-  /*
-  getFieldReport(id: number) {
-    const index = this.findIndex(id);
+
+
+  //--------------------------------------------------------------------------
+  LoadRangersFromExcel() {
+    debugger
+    let fnc = new csvImport(document)
+    fnc.importExcel2()
+    //csvImport.importExcel2()
+    console.log(`Got excel file`)
+  }
+
+
+  //--------------------------------------------------------------------------
+  getRanger(callsign: string) {
+    const index = this.findIndex(callsign);
     return this.rangers[index];
   }
 
-  updateFieldReport(report: RangerType) {
-    const index = this.findIndex(report.id);
-    this.rangers[index] = report;
-    this.update();
+  updateRanger(ranger: RangerType) {
+    const index = this.findIndex(ranger.callsign);
+    this.rangers[index] = ranger;
+    this.UpdateLocalStorage();
   }
 
-  deleteFieldReport(id: number) {
-    const index = this.findIndex(id);
+  deleteRanger(callsign: string) {
+    const index = this.findIndex(callsign);
     this.rangers.splice(index, 1);
-    this.update();
+    this.UpdateLocalStorage();
   }
-*/
 
+  // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
+  AddRanger_Unused(formData: string): RangerType {
+    console.log(`RangerService: Got new ranger: ${formData}`)
+
+    let newRanger: RangerType = JSON.parse(formData)
+    this.rangers.push(newRanger)
+
+    this.UpdateLocalStorage();
+    return newRanger;
+  }
+
+  private findIndex(callsign: string): number {
+    for (let i = 0; i < this.rangers.length; i++) {
+      if (this.rangers[i].callsign === callsign) return i;
+    }
+    throw new Error(`Ranger with callsign ${callsign} was not found!`);
+  }
+
+  //--------------------------------------------------------------------------
   deleteAllRangers() {
     this.rangers = []
     localStorage.removeItem('rangers')
     // localStorage.clear() // remove all localStorage keys & values from the specific domain you are on. Javascript is unable to get localStorage values from any other domains due to CORS
   }
 
+  // this needs be done for the autocomplete control in the enter comonent to work correctly
+  SortRangersByCallsign() {
+    return this.rangers.sort((n1, n2) => {
+      if (n1.callsign > n2.callsign) { return 1 }
+      if (n1.callsign < n2.callsign) { return -1 }
+      return 0;
+    })
+  }
+
+  //--------------------------------------------------------------------------
   generateFakeData(num: number) {
     console.log("Adding 20 more FAKE Rangers")
 
@@ -232,15 +264,14 @@ import { HttpClient } from '@angular/common/http';
       { callsign: "KB7MTM", licensee: "Meyer, Michael T", image: "./assets/imgs/REW/VI-0123.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" }
     )
     //console.log(`Next: update LocalStorage: ${this.localStorageRangerName}`)
+    this.SortRangersByCallsign()
     this.UpdateLocalStorage();
     //console.log(`returned from: updating LocalStorage: ${this.localStorageRangerName}`)
   }
 
   // TODO:  getActiveRangers() {
-  //Would need to filter for those who've 'checked in' on this incident?
-  //return this.rangers }
-
-
+  // filter for Ranger.status == 'checked in' ?
+  // return this.rangers }
 
   /* Needed?!
   sortRangersByTeam() {
@@ -250,16 +281,9 @@ import { HttpClient } from '@angular/common/http';
       return 0;
     })
   }
-
-  sortRangersByCallsign() {
-    return this.rangers.sort((n1, n2) => {
-      if (n1.callsign > n2.callsign) { return 1 }
-      if (n1.callsign < n2.callsign) { return -1 }
-      return 0;
-    })
-  }
-}
 */
+}
+
 
   /*
   export class Ranger {
@@ -280,4 +304,4 @@ import { HttpClient } from '@angular/common/http';
     }
 
   }*/
-}
+
