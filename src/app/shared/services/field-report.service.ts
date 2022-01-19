@@ -55,7 +55,7 @@ export class FieldReportService {
       for (const fieldReport of this.fieldReports) {
         if (fieldReport.id >= this.nextId) this.nextId = fieldReport.id + 1
       }
-      this.update()
+      this.UpdateFieldReports()
     }
   }
 
@@ -71,7 +71,7 @@ export class FieldReportService {
     newReport.id = this.nextId++
     this.fieldReports.push(newReport)
 
-    this.update();
+    this.UpdateFieldReports();
     return newReport;
   }
 
@@ -83,13 +83,13 @@ export class FieldReportService {
   updateFieldReport(report: FieldReportType) {
     const index = this.findIndex(report.id);
     this.fieldReports[index] = report;
-    this.update();
+    this.UpdateFieldReports();
   }
 
   deleteFieldReport(id: number) {
     const index = this.findIndex(id);
     this.fieldReports.splice(index, 1);
-    this.update();
+    this.UpdateFieldReports();
   }
 
   deleteAllFieldReports() {
@@ -97,7 +97,7 @@ export class FieldReportService {
     localStorage.removeItem(this.storageLocalName)
   }
 
-  private update() {
+  UpdateFieldReports() {
     localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports));
 
     this.fieldReportsSubject.next(this.fieldReports.map(

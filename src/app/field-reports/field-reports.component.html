@@ -56,8 +56,8 @@
       <span class="big" id="Advanced">Advanced</span>
     </summary>
 
-
-    <button (click)="onBtnClearFieldReports()">Delete ALL stored Field Reportgs</button><br>
+    <button (click)="onBtnUpdateFieldReports()">Save above Field Reports to local storage</button><br>
+    <button (click)="onBtnClearFieldReports()">Delete ALL Field Reportgs from local storage</button><br>
     <button (click)="onBtnImportFieldReports()">FUTURE: Import Field Reportgs from CSV file</button><br>
 
     <br><br>
@@ -77,6 +77,7 @@
 
         <button (click)="generateFakeFieldReports()" type="button" id="enter__Fake--button">Generate
           {{nFakes}} FAKE Field Reports</button>
+        For Now: Click on rangers page, then back to this page to refresh view...
       </section>
     </div>
 
