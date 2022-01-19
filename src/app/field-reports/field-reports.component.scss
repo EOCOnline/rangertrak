@@ -2,3 +2,42 @@
   font-size: larger;
   font-weight: bold;
 }
+
+.enter__Fake {
+  // background-color: rgb(246, 247, 239);
+  // border: 2px solid gray;
+   //display: flex;
+   //align-content: center;
+   //align-items: center;
+   height: 125px;
+   width: 300px;
+
+   margin-right: 35vw;
+   display: block;
+   float: right;
+   height: 120px;
+   width: 15vw;
+   border: 1px solid  brown;
+   background-color: rgb(240, 255, 250);
+   font: 0.8em sans-serif;
+ }
+
+ .enter__Fake--slider {
+   margin-top: -20px;
+ }
+
+ .enter__Fake--numfield {
+   width: 75px;
+   height:30px;
+   margin-right: 10px;
+ }
+
+ #enter__Fake--slider {
+   width: 200px;
+   margin-top: 40px;
+ }
+
+ #enter__Fake--button {
+   float: right;
+   margin-right: 20px;
+ }

@@ -26,7 +26,7 @@
     </mat-form-field>
     <span id="enter__Callsign-upshot"></span>
 
-    // ToDo: [Future: Maybe only enter Team OR Callsign. If team, then ALL TeamMembers get checked in all at once???]
+    <!-- br>ToDo: [Future: Maybe only enter Team OR Callsign. If team, then ALL TeamMembers get checked in all at once???]  -->
     <div #div1 class="input-group">Team:
       <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
         type="text" formControlName="team" placeholder="Team">
@@ -104,31 +104,8 @@
         </div>
       </div>
     </div-->
-    <br><br><br><br>
+    <br><br>
 
-    <!-- https://material.angular.io/components/slider/overview -->
-    <!-- ngModel cannot be used to register form controls with a parent formGroup directive -->
-    <div [formGroup]="numFakesForm" id="enter__Fake--id">
-      <section class="enter__Fake">
-
-        <mat-form-field class="enter__Fake--numfield" appearance="fill">
-          <mat-label># Fakes</mat-label>
-          <input matInput type="number" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}" />
-        </mat-form-field>
-
-        <mat-slider id="enter__Fake--slider" thumbLabel tickInterval="10" step="5" min="0" max="100"
-          aria-label="# Fake Field Reports" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"></mat-slider>
-
-        <button (click)="generateFakeFieldReports()" type="button" id="enter__Fake--button">Generate
-          {{nFakes}} FAKE Field Reports</button>
-      </section>
-    </div>
-
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
     <br>
     <br>
     <!--button (click)="updateLocation()">Update location</button> <br-->

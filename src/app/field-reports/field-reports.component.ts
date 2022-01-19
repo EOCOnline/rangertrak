@@ -1,7 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FieldReportService, FieldReportType, RangerService, TeamService } from '../shared/services';
+import { FieldReportService, FieldReportType, RangerService, SettingsService, TeamService } from '../shared/services';
 
 import { DOCUMENT, formatDate } from '@angular/common'
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'rangertrak-field-reports',
@@ -13,10 +14,13 @@ export class FieldReportsComponent implements OnInit {
   fieldReports: FieldReportType[] = []
   private gridApi: any
   private gridColumnApi
+  private settings
   now: Date
   http: any
   numSeperatorWarnings = 0
   maxSeperatorWarnings = 3
+  numFakesForm!: FormGroup
+  nFakes = 10
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {
@@ -84,14 +88,20 @@ export class FieldReportsComponent implements OnInit {
 
 
   constructor(
+    private formBuilder: FormBuilder,
     private fieldReportService: FieldReportService,
     private teamService: TeamService,
     private rangerService: RangerService,
+    private settingsService: SettingsService,
+
     @Inject(DOCUMENT) private document: Document
   ) {
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
+
+    this.settings = SettingsService.Settings
+
   }
 
   ngOnInit(): void {
@@ -99,6 +109,12 @@ export class FieldReportsComponent implements OnInit {
 
     this.fieldReports = this.fieldReportService.getFieldReports()
     console.log(`Now have ${this.fieldReports.length} Field Reports retrieved from Local Storage and/or fakes generated`)
+
+    this.numFakesForm = this.formBuilder.group({})
+
+    if (!this.settings.debugMode) {
+      this.displayHide("enter__Fake--id")
+    }
   }
 
   isValidDate(d: any) {
@@ -180,5 +196,24 @@ export class FieldReportsComponent implements OnInit {
 
     onBtnImportFieldReports() {
 
+    }
+
+    generateFakeFieldReports(num = this.nFakes) {
+      this.fieldReportService.generateFakeData(num)
+      console.log(`Generated ${num} FAKE Field Reports`)
+    }
+
+    displayHide(htmlElementID: string) {
+      let e = this.document.getElementById(htmlElementID)
+      if (e) {
+        e.style.visibility = "hidden";
+      }
+    }
+
+    displayShow(htmlElementID: string) {
+      let e = this.document.getElementById(htmlElementID)
+      if (e) {
+        e.style.visibility = "visible";
+      }
     }
 }

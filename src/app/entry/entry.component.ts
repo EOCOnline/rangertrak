@@ -20,8 +20,7 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
   fieldReportStatuses
   settings
   entryDetailsForm!: FormGroup
-  numFakesForm!: FormGroup
-  nFakes = 10
+
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
   alert: any
@@ -99,13 +98,10 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
       note: ['']
     })
 
-    this.numFakesForm = this.formBuilder.group({})
-
     this.submitInfo = this.document.getElementById("enter__Submit-info")
 
     if (!this.settings.debugMode) {
       this.displayHide("enter__frm-reguritation")
-      this.displayHide("enter__Fake--id")
     }
 
     console.log(`EntryForm ngOnInit completed at ${Date()}`)
@@ -113,14 +109,15 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
 
   private findIndex(call: string): number {
     for (let i = 0; i < this.rangers.length; i++) {
-      if (this.rangers[i].callsign === call) return i;
+      if (this.rangers[i].callsign == call) return i;
     }
-    throw new Error(`Ranger with id ${call} was not found!`);
+    throw new Error(`Entry-findIndex(): Ranger with id ${call} was not found!`);
   }
 
   CallsignChanged(callsign: string) { // Just serves timer for input field - post interaction
     this.callInfo = this.document.getElementById("enter__Callsign-upshot")
     if (this.callInfo) {
+      console.log(`EntryForm CallsignChanged looking for ${callsign}`)
       let ranger = this.rangers[this.findIndex(callsign)];
       this.callInfo.innerHTML = `<img class="enter__Callsign-img" aria-hidden
       src="${ranger.image}" height="50">
@@ -207,12 +204,6 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
       status: [FieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
       notes: ['']
     })
-  }
-
-  // TODO: Move this to Advanced sectino at bottom of Field Reports page...
-  generateFakeFieldReports(num = this.nFakes) {
-    this.fieldReportService.generateFakeData(num)
-    console.log(`Generated ${num} FAKE Field Reports`)
   }
 
   /* What was the purpose?!
