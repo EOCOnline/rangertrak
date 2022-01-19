@@ -18,9 +18,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { LazyModule } from './lazy/lazy.module'
 import { LmapComponent } from './lmap/lmap.component';
 import { LogComponent } from './log/log.component';
-import {MDCBanner} from '@material/banner'
+
+import { MDCBanner } from '@material/banner'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { MaterialModule } from './material.module';
+
 import { NavbarComponent } from './navbar/navbar.component';
 import { NgModule } from '@angular/core';
 import { RangersComponent } from './rangers/rangers.component';
