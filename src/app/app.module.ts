@@ -26,6 +26,8 @@ import { NgModule } from '@angular/core';
 import { RangersComponent } from './rangers/rangers.component';
 import { SettingsComponent } from './settings/settings.component';
 import { X404Component } from './x404/x404.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 // from ionic-app.module.ts
 //import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
@@ -51,7 +53,13 @@ import { X404Component } from './x404/x404.component';
     AgGridModule.withComponents([]),
     AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
    // AgmSnazzyInfoWindowModule,
-    LazyModule
+    LazyModule,
+   ServiceWorkerModule.register('ngsw-worker.js', {
+     enabled: environment.production,
+     // Register the ServiceWorker as soon as the app is stable
+     // or after 30 seconds (whichever comes first).
+     registrationStrategy: 'registerWhenStable:30000'
+   })
     //, IonicModule.forRoot()
   ],
 

@@ -10,15 +10,15 @@
         <li>If nothing has been saved, or the user selects "Reset all values", then hardcoded values are used.</li>
         <li>Settings are NOT shared with other browsers, whether on this device or others.</li>
         <li>Browser local storage contents are viewable using a browser's developer tools: F12</li>
+        <li>Change font size using CTRL+mouse wheel or your browser's view size settings.</li>
       </ul>
     </details>
     <br>
 
-
-    <div class="text-warning">N.B. These values are not (yet) saved from session to session. <br />
-      They must be reset every time you refresh the browser.</div>
-
-    <div>Change font size using CTRL+mouse wheel or your browser's view size settings.</div>
+    <div class="input-group">Notes for this group of settings:
+      <textarea formControlName="note" id="" cols="30" rows="1" placeholder="Enter Any Notes"></textarea>
+    </div>
+    <br>
 
     <h2>Entry Form Defaults</h2>
     <!--legend>Default </legend-->
@@ -86,8 +86,8 @@
     </div-->
 
 
-
-    <h2>Logging</h2>
+    <br>
+    <h2>Debug</h2>
 
     <div class="input-group">
       <input
@@ -149,19 +149,16 @@
       <! -- <div>TODO: <button (click)="setQuickFilter()">Filter Teams</button></div> ->
     </div-->
 
-    <br />
 
-    <div class="input-group">Notes:
-      <textarea formControlName="note" id="" cols="30" rows="1" placeholder="Enter Any Notes"></textarea>
-    </div>
-
-    <button [disabled]="settingsEditorForm.invalid" style="margin-top: 40px;" type="submit">Submit</button>
+    Save above settings (to local storage):
+    <button [disabled]="settingsEditorForm.invalid" style="margin-top: 40px;" type="submit">Save</button>
+    // REVIEW: Other pages only reflect these changes if refreshed!!!
 
     <br>
-    <h2>Advanced</h2>
+    <br>
 
     <details>
-      <summary>Advanced Options</summary>
+      <summary><span class="big">Advanced Options</span></summary>
       <button (click)="onBtnResetDefaults()">Reset All these Settings to Default values</button><br>
     </details>
 
