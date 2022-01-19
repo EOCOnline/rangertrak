@@ -20,23 +20,26 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
 
-    const updatesAvailable = this.swUpdate.versionUpdates.pipe(
-      filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
-      map(evt => ({
-        type: 'UPDATE_AVAILABLE',
-        current: evt.currentVersion,
-        available: evt.latestVersion,
-      })
-      )
-    ).subscribe()
-
     /*
-    this.updates.available.pipe(
+        const updatesAvailable = this.swUpdate.versionUpdates.pipe(
+          filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+          map(evt => ({
+            type: 'UPDATE_AVAILABLE',
+            current: evt.currentVersion,
+            available: evt.latestVersion,
+          })
+          ) => this.snackbar.open('A new version is available!', 'Update now').afterDismissed()
+        ).subscribe()
+    */
+
+        let result:any
+    // from pg 115 ng projects
+    this.swUpdate.available.pipe(
       switchMap(() => this.snackbar.open('A new version is available!', 'Update now').afterDismissed()),
       filter(result => result.dismissedByAction),
-      map(() => this.updates.activateUpdate().then()) => location.reload())
+      map(() => this.swUpdate.activateUpdate().then(() => location.reload()))
     ).subscribe();
-    */
+
   }
 
 }

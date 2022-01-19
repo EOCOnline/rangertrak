@@ -209,6 +209,7 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
     })
   }
 
+  // TODO: Move this to Advanced sectino at bottom of Field Reports page...
   generateFakeFieldReports(num = this.nFakes) {
     this.fieldReportService.generateFakeData(num)
     console.log(`Generated ${num} FAKE Field Reports`)

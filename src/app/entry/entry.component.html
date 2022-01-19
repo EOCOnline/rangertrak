@@ -26,7 +26,8 @@
     </mat-form-field>
     <span id="enter__Callsign-upshot"></span>
 
-    <div #div1 class="input-group">Team: [Future: Maybe only enter Team OR Callsign. If team, then ALL TeamMembers get checked in all at once???]
+    // ToDo: [Future: Maybe only enter Team OR Callsign. If team, then ALL TeamMembers get checked in all at once???]
+    <div #div1 class="input-group">Team:
       <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
         type="text" formControlName="team" placeholder="Team">
       <div *ngIf="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.hasError('required')"

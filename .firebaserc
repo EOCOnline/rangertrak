@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "rangertrak-a6dc5": {
+      "hosting": {
+        "rangertrak": [
+          "rangertrak-a6dc5"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "rangertrak-a6dc5"
+  }
+}

@@ -2,6 +2,7 @@
 
 # API Keys
 secrets.json
+RangerTrak-secrets.json
 
 # compiled output
 /dist
@@ -47,3 +48,8 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Firebase
+.firebase
+*-debug.log
+.runtimeconfig.json

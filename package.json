@@ -1,6 +1,6 @@
 {
   "name": "rangertrak",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -19,6 +19,7 @@
     "@angular/common": "~13.1.2",
     "@angular/compiler": "~13.1.2",
     "@angular/core": "^13.1.2",
+    "@angular/fire": "^7.2.0",
     "@angular/forms": "^13.1.2",
     "@angular/material": "^13.1.2",
     "@angular/platform-browser": "~13.1.2",
@@ -40,7 +41,9 @@
     "tslib": "^2.3.1",
     "xlsx": "^0.17.5",
     "xlsx-style": "^0.8.13",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.4",
+    "firebase": "^9.4.0",
+    "rxfire": "^6.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.1.3",
