@@ -31,13 +31,16 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "./src/assets/icons/favicon.ico",
-              "./src/assets"
+              "./src/assets",
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "serviceWorker": true,
+            "ngswConfigPath": "ngsw-config.json"
           },
           "configurations": {
             "production": {
@@ -99,13 +102,24 @@
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/assets/icons/favicon.ico"
+              "src/assets/icons/favicon.ico",
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
             "scripts": []
+          }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "prerender": false,
+            "ssr": false,
+            "browserTarget": "rangertrak:build:production",
+            "firebaseProject": "rangertrak-a6dc5",
+            "firebaseHostingSite": "rangertrak-a6dc5"
           }
         }
       }

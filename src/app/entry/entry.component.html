@@ -1,46 +1,44 @@
 <div class="container">
-  <form [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit()"  class="example-form">
+  <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
+
+    <div id="enter__frm-reguritation">
+      <pre>{{ frm.value |json}}</pre>
+    </div>
 
     <h1>Entry Form</h1>
-
     <h2 class="elegant">Who</h2>
 
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->
-    <mat-form-field class="example-full-width" appearance="fill">
+    <mat-form-field class="enter__Callsign" appearance="fill">
       <mat-label>CallSign</mat-label>
-      <input matInput
-        [formControl]="callsignCtrl"
-        type="text"
-        placeholder="Pick one"
-        aria-label="rangers"
-        [matAutocomplete]="auto"
-        >
-      <mat-autocomplete #auto="matAutocomplete" >
+
+      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
+        [matAutocomplete]="auto" (change)=this.CallsignCtrlChanged()>
+
+      <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
-          <img class="example-option-img" aria-hidden [src]="ranger.image" height="40">
+          <img class="enter__Callsign-img" aria-hidden [src]="ranger.image" height="40">
           <span>{{ranger.callsign}}</span> |
           <small> {{ranger.licensee}} | {{ranger.phone}}</small>
         </mat-option>
       </mat-autocomplete>
+
     </mat-form-field>
+    <span id="enter__Callsign-upshot"></span>
 
-    <!--br>
-
-    <mat-slide-toggle
-      [checked]="callsign.disabled"
-      (change)="callsign.disabled ? callsign.enable() : callsign.disable()">
-      Disable Input?
-    </mat-slide-toggle-->
-
-    <div #div1 class="input-group">Team
+    <!-- br>ToDo: [Future: Maybe only enter Team OR Callsign. If team, then ALL TeamMembers get checked in all at once???]  -->
+    <div #div1 class="input-group">Team:
       <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
         type="text" formControlName="team" placeholder="Team">
       <div *ngIf="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.hasError('required')"
         class="text-sm text-danger">Team is required</div>
     </div>
 
+
+    <div id="enter__SmallMap"></div>
+
+
     <h2 class="elegant">Where</h2>
-    <div #div2 formGroupName="whereFormModel">
     <div class="input-group">Street Address:
       <input
         [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
@@ -48,54 +46,51 @@
       <!--div
         *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
         class="text-sm text-danger">address is required</div  -->
-    </div>
+      <!--/div-->
 
-    <div>Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code: 8VCWVF22+</span></div>
+      <div>Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code: 8VCWVF22+</span>
+      </div>
 
-    <div class="input-group">Latitude:
-      <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
-        type="number" formControlName="lat" placeholder="Latitude">
-      <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
-        class="text-sm text-danger">lat is required</div>
-    </div>
+      <div class="input-group">Latitude:
+        <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
+          type="number" formControlName="lat" placeholder="Latitude">
+        <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
+          class="text-sm text-danger">lat is required</div>
+      </div>
 
-    <div class="input-group">Longitude:
-      <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
-        type="number" formControlName="long" placeholder="Longitude">
-      <div *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
-        class="text-sm text-danger">long is required</div>
+      <div class="input-group">Longitude:
+        <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
+          type="number" formControlName="long" placeholder="Longitude">
+        <div *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
+          class="text-sm text-danger">long is required</div>
+      </div>
     </div>
-  </div>
 
     <h2 class="elegant">When</h2>
-    <div formGroupName="whenFormModel">
-      <div class="input-group">Date:
+    <!-- TODO: Use Time Picker: https://material.io/components/time-pickers#usage -->
+    <div class="input-group">Date:
       <input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
         type="datetime" formControlName="date" placeholder="date">
       <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
         class="text-sm text-danger">date is required</div>
     </div>
-    </div>
 
     <h2 class="elegant">What</h2>
-    <div formGroupName="whatFormModel">
 
     <div class="input-group">Status:
       <select formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid">
         <!--option [value]="'NewStatus'">Adds Additional Value</option-->
-        <option [value]="stat" *ngFor="let stat of fieldReportStatus">{{stat}}</option>
+        <option [value]="stat" *ngFor="let stat of fieldReportStatuses">{{stat}}</option>
       </select>
       <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
         class="text-sm text-danger">Status is required</div>
+
+      <textarea formControlName="note" class="enter__What--area" id="" cols="40" rows="5"
+        placeholder="Enter Any Notes"></textarea>
     </div>
 
-    <div class="input-group" class="enter__What--note">Notes:
-      <textarea formControlName="note" class="enter__What--area" id="" cols="30" rows="10" placeholder="Enter Any Notes"></textarea>
-    </div>
-    </div>
-
-    <!--h4>Keywords</h4>
+    <!-- TODO: Add h4> Keywords</h4>
     <div formArrayName="keywords">
       <div *ngIf="keywordsControls && keywordsControls.length">
         <div *ngFor="let keywordControl of keywordsControls; let i = index">
@@ -109,11 +104,16 @@
         </div>
       </div>
     </div-->
+    <br><br>
 
-    <button (click)="updateLocation()">Update location</button>
     <br>
-    <button [disabled]="entryDetailsForm.invalid" style="margin-top: 20px; background-color: rgb(214, 219, 137);" type="submit">Submit</button>
+    <br>
+    <!--button (click)="updateLocation()">Update location</button> <br-->
+    <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
+    <button (click)="resetForm()" title="Reset all form fields to their defaults" class ="eButton" type="button">Reset</button>
+    <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button eButton" type="submit">Submit</button>
 
+    <span id="enter__Submit-info"></span>
 
   </form>
 </div>

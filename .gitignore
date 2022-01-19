@@ -1,5 +1,9 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
+# API Keys
+secrets.json
+RangerTrak-secrets.json
+
 # compiled output
 /dist
 /tmp
@@ -44,3 +48,8 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Firebase
+.firebase
+*-debug.log
+.runtimeconfig.json

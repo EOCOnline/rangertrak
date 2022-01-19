@@ -1,21 +1,21 @@
 <h1>{{title}}</h1>
 
 
-<agm-map [latitude]="latitude" [longitude]="longitude">
+<!--agm-map [latitude]="latitude" [longitude]="longitude">
   <agm-marker [latitude]="latitude" [longitude]="longitude">
     <agm-snazzy-info-window [maxWidth]="200" [closeWhenOthersOpen]="true">
-      <ng-template>
-        Advanced Snazzy Info Window!
-      </ng-template>
+      <ng-template
+        (unrecommended) Snazzy Info map could go here-->
+      <!--/ng-template>
     </agm-snazzy-info-window>
   </agm-marker>
-</agm-map>
+</agm-map-->
 
-<br>
+<!--br>
 
  <div #mapdiv id="bigGoogMapId" class="mapdiv" style="border: 2px aquamarine dotted;height: 25px"><h2>How Now Brown Cow</h2></div>
 
- <br>
+ <br -->
 
 <!-- [zoomControl]="false"
 [label]="m.label"
@@ -27,7 +27,7 @@
   [zoom]="zoom"
   [disableDefaultUI]="false"
 
-  (mapClick)="mapClicked($event)">
+  (mapClick)="onMapClicked($event)">
 
   <agm-marker
       *ngFor="let m of markerLocations; let i = index"
@@ -80,17 +80,10 @@
 <details>
   <summary>Instructions</summary>
   <ul>
-    <li>coming...</li>
+    <li>This MIGHT only display ...</li>
   </ul>
 </details>
 <br>
-<details>
-  <summary>Future functionality</summary>
-  <ul>
-    <li>Save/load data grid to/from Excel</li>
-  </ul>
-</details>
-
 
     <!-- Async script executes immediately and must be after any DOM elements used in callback. ->
     <script
@@ -98,6 +91,6 @@
       async
     ></script-->
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&callback=initGoogMap" async defer>
+    <!--script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&callback=initGoogMap" async defer>
       // https://developers.google.com/maps/documentation/javascript/libraries
-      </script>
+      </script-->

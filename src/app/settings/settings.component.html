@@ -2,22 +2,23 @@
   <form [formGroup]="settingsEditorForm" (ngSubmit)="onFormSubmit()">
 
     <h1>Application Defaults</h1>
-
+    <!-- p>Version {    ccc   {SettingsComponent.AppSettings.ver sion }  xxxx }</p-->
     <details>
       <summary>Instructions</summary>
-      Nothing yet.
+      <ul>
+        <li>Any saved settings are restored from the browser's local storage.</li>
+        <li>If nothing has been saved, or the user selects "Reset all values", then hardcoded values are used.</li>
+        <li>Settings are NOT shared with other browsers, whether on this device or others.</li>
+        <li>Browser local storage contents are viewable using a browser's developer tools: F12</li>
+        <li>Change font size using CTRL+mouse wheel or your browser's view size settings.</li>
+      </ul>
     </details>
     <br>
-    <h2>Future functionality</h2>
-    <ul>
-      <li>Save/load data grid to/from Excel & Local Storage</li>
-      <li></li>
-    </ul>
 
-    <div class="text-warning">N.B. These values are not (yet) saved from session to session. <br />
-      They must be reset every time you refresh the browser.</div>
-
-    <div>Change font size using CTRL+mouse wheel or your browser's view size settings.</div>
+    <div class="input-group">Notes for this group of settings:
+      <textarea formControlName="note" id="" cols="30" rows="1" placeholder="Enter Any Notes"></textarea>
+    </div>
+    <br>
 
     <h2>Entry Form Defaults</h2>
     <!--legend>Default </legend-->
@@ -61,13 +62,13 @@
     </div>
 
 
-    <h2>Markers</h2>
+    <!--h2>Markers</h2>
 
     <div class="input-group">Marker Shape:
       <select formControlName="markerShape" class="wideField">
-        <!-- [class.border-danger]="settingsEditorForm.get('markerShape')?.touched && settingsEditorForm.get('markerShape')?.invalid" -->
-        <!--option [va xx lue]="''">Select markerShape</option>
-        <option [va xx lue]="shape.shapeId" id="shapeOptions" *ngFor="let shape of shapes">{{sha  pe.sha  s eName}}</option-->
+        <! -- [class.border-danger]="settingsEditorForm.get('markerShape')?.touched && settingsEditorForm.get('markerShape')?.invalid" -- >
+        <! --option [va xx lue]="''">Select markerShape</option>
+        <option [va xx lue]="shape.shapeId" id="shapeOptions" *ngFor="let shape of shapes">{{sha  pe.sha  s eName}}</option-- >
         <option [value]="shape" id="shapeOptions" *ngFor="let shape of shapes">{{shape}}</option>
       </select>
       <div
@@ -82,13 +83,23 @@
       <div
         *ngIf="settingsEditorForm.get('markerSize')?.touched && settingsEditorForm.get('markerSize')?.hasError('required')"
         class="text-sm text-danger">markerSize is required</div>
-    </div>
+    </div-->
 
 
-
-    <h2>Logging</h2>
+    <br>
+    <h2>Debug</h2>
 
     <div class="input-group">
+      <input
+        [class.border-danger]="settingsEditorForm.get('debugMode')?.touched && settingsEditorForm.get('debugMode')?.invalid"
+        type="checkbox" formControlName="debugMode" placeholder="debugMode">
+      <div
+        *ngIf="settingsEditorForm.get('debugMode')?.touched && settingsEditorForm.get('debugMode')?.hasError('required')"
+        class="text-sm text-danger">debug mode is required</div>
+      Debug Mode
+    </div>
+
+    <!--div class="input-group">
       <input
         [class.border-danger]="settingsEditorForm.get('logToPanel')?.touched && settingsEditorForm.get('logToPanel')?.invalid"
         type="checkbox" formControlName="logToPanel" placeholder="logToPanel">
@@ -106,11 +117,11 @@
         *ngIf="settingsEditorForm.get('logToConsole')?.touched && settingsEditorForm.get('logToConsole')?.hasError('required')"
         class="text-sm text-danger">logToConsole is required</div>
       Log to Browser Console
-    </div>
+    </div -->
 
 
 
-    <h2>Teams</h2>
+    <!--h2>Teams</h2>
     <details>
       <summary>Team Details</summary>
       <ul>
@@ -118,7 +129,7 @@
         <li>If Shape = 'Circle', then display circles using color & fillColor</li>
         <li>Notes are ignored. They are displayed below for your optional use, if desired</li>
       </ul>
-    </details>
+    </details-->
 
     <!-- https://www.ag-grid.com/angular-data-grid/grid-interface/
     <div id="teamgrid">
@@ -133,40 +144,23 @@
       <br />
       <button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
       <button (click)="onBtNormal()">Normal Layout</button>
-      <!-- <div><button (click)="addTeamRow()">Add a new (blank) Team</button></div> ->
+      <! -- <div><button (click)="addTeamRow()">Add a new (blank) Team</button></div> ->
       <div>TODO: <button (click)="exportDataAsCsv()">Export Team Grid</button></div>
-      <!-- <div>TODO: <button (click)="setQuickFilter()">Filter Teams</button></div> ->
+      <! -- <div>TODO: <button (click)="setQuickFilter()">Filter Teams</button></div> ->
     </div-->
 
-    <br />
 
-    <div class="input-group">Notes:
-      <textarea formControlName="notes" id="" cols="30" rows="1" placeholder="Enter Any Notes"></textarea>
-    </div>
+    Save above settings (to local storage):
+    <button [disabled]="settingsEditorForm.invalid" style="margin-top: 40px;" type="submit">Save</button>
+    // REVIEW: Other pages only reflect these changes if refreshed!!!
 
-    <!--h4>Keywords</h4>
-    <div formArrayName="keywords">
-      <div *ngIf="keywordsControls && keywordsControls.length">
-        <div *ngFor="let keywordControl of keywordsControls; let i = index">
-          <div class="input-group">
+    <br>
+    <br>
 
-            <input [class.border-danger]="keywordControl.touched && keywordControl.invalid" [formControlName]="i"
-              type="text" placeholder="keyword" />
-            <div *ngIf="keywordControl.touched && keywordControl.hasError('required')" class="text-sm text-danger">
-              keyword Name is required</div>
-          </div>
-          <hr>
-        </div>
-      </div>
-    </div-->
-
-    <button [disabled]="settingsEditorForm.invalid" style="margin-top: 40px;" type="submit">Submit</button>
-
-    <button (click)="cancel()">Cancel</button>
-
+    <details>
+      <summary><span class="big">Advanced Options</span></summary>
+      <button (click)="onBtnResetDefaults()">Reset All these Settings to Default values</button><br>
+    </details>
 
   </form>
 </div>
-<br>
-
-<div>test only: <button (click)="updateDefaults()">Update lat/long</button></div>

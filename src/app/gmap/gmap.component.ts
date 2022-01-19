@@ -1,11 +1,11 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone } from '@angular/core';
-//import { maps } from 'google.maps'
-import { snazzyMapsStyle } from './snazzy-maps';
+import { Map } from '../shared/'
+//import { snazzyMapsStyle } from './snazzy-maps';
 import { MapsAPILoader } from '@agm/core';
 import { DOCUMENT, JsonPipe } from '@angular/common';
 //import { MarkerClusterer } from "@googlemaps/markerclusterer";
 // import "./style.css";
-import { SettingsComponent } from '../settings/settings.component';
+import { SettingsService } from '../shared/services';
 
 /*
   https://developers.google.com/maps/support/
@@ -26,23 +26,36 @@ interface marker {
 @Component({
   selector: 'rangertrak-gmap',
   templateUrl: './gmap.component.html',
-  styleUrls: ['./gmap.component.scss',
-    '../../../node_modules/snazzy-info-window/dist/snazzy-info-window.css']
+  styleUrls: ['./gmap.component.scss'
+  //  ,'~snazzy-info-window/dist/snazzy-info-window.css'
+  ],
+  providers: [SettingsService]
 })
-export class GmapComponent implements OnInit {
+export class GmapComponent  implements OnInit {    //extends Map
 
+  //Next set are tied to HTML
   zoom = 10;
+  latitude
+  longitude
+  markerLocations: marker[] = [{lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong, label: "Special Label Here", draggable:false}]
+
   title = 'RangerTrak Google Map'
   label = 'RangerTrak Label'
-  latitude = SettingsComponent.DEF_LAT
-  longitude = SettingsComponent.DEF_LONG
-  markerLocations: marker[] = []
+
   //let map: maps.Map;
   //center: google.maps.LatLngLiteral = {lat: this.lat, lng: this.lng};
-  static style: any = snazzyMapsStyle;
+  //static style: any = snazzyMapsStyle;
 
-  constructor(@Inject(DOCUMENT) private document: Document) {
+  constructor(
+    private settingsService: SettingsService,
+    @Inject(DOCUMENT) private document: Document) {
+      this.latitude = SettingsService.Settings.defLat
+      this.longitude = SettingsService.Settings.defLong
+      // this.zoom = SettingsService.Settings.zoom // FUTURE:
+
+    //super('MyName')
   }
+
 
   ngOnInit(): void {
     //this.initMap()
@@ -51,8 +64,9 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     at GmapComponent.initMap (gmap.component.ts:114)
     at GmapComponent.ngOnInit (gmap.component.ts:48)
     */
-
   }
+
+
   /* BUG:
   core.mjs:6484 ERROR TypeError: Cannot read properties of undefined (reading 'then')
     at Observable._subscribe (agm-core.js:299)
@@ -75,12 +89,12 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     // no effect seemingly...
   //}
 
-  initGoogMap() {
+  initMap_Unused() {
     // https://developers.google.com/maps/documentation/
     let googMap = new google.maps.Map(document.getElementById('bigGoogMapId') as HTMLElement, {
-      center: {lat: SettingsComponent.DEF_LAT, lng: SettingsComponent.DEF_LONG},
+      center: {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong},
       zoom: 11,
-      mapTypeId: 'terrain' // line is optional
+      mapTypeId: 'terrain'
     });
     /*
       MapTypes:
@@ -101,13 +115,17 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     console.log(`clicked the marker: ${label || index}`)
   }
 
-  mapClicked($event: google.maps.MouseEvent) {
+  onMapClicked($event: google.maps.MouseEvent) {
     this.markerLocations.push({
       lat: $event.latLng.lat(),
       lng: $event.latLng.lng(),
       label: new Date().getTime().toString(),
       draggable: true
     });
+  }
+
+  display() {
+    console.log('display() not implemented...');
   }
 
   markerDragEnd(m: marker, $event: google.maps.MouseEvent) {
@@ -136,10 +154,8 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     throw new Error('Method not implemented.');
   }
 
-  labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-  initMap(): void {
-    console.log('initMap is running!!!!!!!!!!!!!!!!!!!!!')
+  initMap2(): void {
+    console.log('initMap is running')
     let myMap = document.getElementById("mapdiv") as HTMLElement
 
     console.log('myMap = ' + myMap)
@@ -157,7 +173,7 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     );
 
     const infoWindow = new google.maps.InfoWindow({
-      content: "",
+      content: "Yes mamma!!!",
       disableAutoPan: true,
     });
 
@@ -186,6 +202,8 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     //new MarkerClusterer({ markers, map });
   }
 
+  // TODO: Following has been moved to marker.service.ts: use that version!
+  labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   generateFakeData(num: number = 15) {
 
     console.log("Generating " + num + " more rows of FAKE field reports!")
@@ -203,3 +221,32 @@ core.mjs:6484 ERROR ReferenceError: google is not defined
     //console.log("Pushed # " + numberPushed++)
   }
 }
+
+
+/*
+
+OLD CODE ===============================
+
+function initGoogMap() {
+    // https://developers.google.com/maps/documentation/
+    googMap = new google.maps.Map(document.getElementById('bigGoogMapId'), {
+      center: {lat: DEF_LAT, lng: DEF_LONG},
+      zoom: 11,
+      mapTypeId: 'terrain' // line is optional
+    });
+    /*
+      MapTypes:
+      roadmap - displays the default road map view. This is the default map type.
+      satellite - displays Google Earth satellite images.
+      hybrid - displays a mixture of normal and satellite views.
+      terrain - displays a physical map based on terrain information.
+    *  /
+
+      var trafficLayer = new google.maps.TrafficLayer();
+      trafficLayer.setMap(googMap);
+
+      // https://developers.google.com/maps/documentation/javascript/maptypes
+      // map.setTilt(45);
+    }
+
+    */

@@ -1,5 +1,54 @@
+// https://www.ag-grid.com/angular-data-grid/themes-v23-migration/
+@use "@material/banner";
+@use "@material/banner/styles";
+/*
+with (
+$primary: #fcb8ab,
+  //$fill-color: yellow,
+);*/
+
+////@mixin fill-color {
+//fill-color:green;
+// }
+
+label {
+  display: block;
+  //font: 1rem 'Fira Sans', sans-serif;
+}
+
+input,
+label {
+    margin: .4rem 0;
+}
+
 .licenseImg {
-  border: 10px red dotted;
-  height:60px;
-  width: 60px;
+  //border: 10px red dotted;
+  //height: 60px;
+  //width : 60px;
+
+  border:1px #a5a5a5 solid;
+  height:20px;
+  width:20px;
+
+}
+
+// https://github.com/ag-grid/ag-grid-customise-theme
+
+.mdc-banner {
+  //  @include fill-color(yellow);
+  @include banner.fill-color(rgb(226, 226, 136));
+  //@include banner.divider-color(aqua);
+  @include banner.max-width(40%);
+  //@include banner.level(0);
+  //border       : 1px red solid;
+  margin-left: -1em;
+  //width: 70em;
+  //height: 15%;
+  //margin-left: -150px;
+  //padding      : -30px;
+}
+
+.big {
+  font-size: larger;
+  font-weight: bold;
 }

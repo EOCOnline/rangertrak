@@ -1,3 +1,4 @@
+// https://malcoded.com/posts/angular-fundamentals-modules/ is good
 
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'  // vs. BrowserModule that App imports
@@ -13,7 +14,7 @@ import { AboutComponent } from './about/about.component';
   declarations: [
     AboutComponent,
     LazyComponent
-    //ThreeWordsService
+    //, ThreeWordsService
   ],
   imports: [
     CommonModule,
@@ -22,7 +23,6 @@ import { AboutComponent } from './about/about.component';
       RouterModule.forChild([
         //{path: '', component: ThreeWordsService},
         { path: 'about', component: AboutComponent }
-        //{ path: 'about', component: AboutComponent },
       ])
     */
   ],

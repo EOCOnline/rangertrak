@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap, map } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { Observable,debounceTime, map, of, tap, startWith } from 'rxjs'
+
 
 @Injectable({
   providedIn: 'root'
@@ -20,5 +20,5 @@ export class PostService {
       this.http.get('https://jsonplaceholder.typicode.com/users').pipe(tap(data => this.opts = data))
   }
 
-  fwefwe
+
 }

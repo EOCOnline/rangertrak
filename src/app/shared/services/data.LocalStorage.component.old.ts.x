@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Injectable } from '@angular/core';
 import { StorageMap } from '@ngx-pwa/local-storage';
-// import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'rangertrak-settings',
@@ -114,8 +114,8 @@ this.storage.get('test', { type: 'string' }).subscribe({
 
 // To supply default value on read error:
 //https://github.com/cyrilletuzi/angular-async-local-storage#errors
-import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable,debounceTime, map, startWith } from 'rxjs'
+//import { debounceTime, map, startWith } from 'rxjs/operators'
 
 this.storage.get('color').pipe(
   catchError(() => of('red')),

@@ -1,11 +1,9 @@
 import { Injectable, OnInit } from '@angular/core';
+import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 
-import { Observable, of } from 'rxjs';
-import { catchError, mergeMap, toArray } from 'rxjs/operators';
-import { LocalStorage, StorageMap, JSONSchema } from '@ngx-pwa/local-storage';
 
-import { OpPeriod } from './op-period';
 import { FaStackItemSizeDirective } from '@fortawesome/angular-fontawesome';
+import { OpPeriod } from './op-period';
 
 //@Injectable({  providedIn: 'root' })
 
@@ -15,8 +13,8 @@ export class Mission {
   id: Number;
   begDate: Date;
   // endDate: Date;  // Who or when does this get set: maybe just have a get last recorded date?
-  opPeriods:  Array<OpPeriod>;
-  opPeriods2: OpPeriod[] = null;
+  //opPeriods:  Array<OpPeriod>;
+  //opPeriods2: OpPeriod[] = null;
 
 
   constructor (
@@ -28,7 +26,7 @@ export class Mission {
     }
 
     addOpPeriod(opPeriod: OpPeriod) {
-      this.opPeriods.push(...items, opPeriod);
+      //this.opPeriods.push(...items, opPeriod);
     }
 
     listOpPeriods() {

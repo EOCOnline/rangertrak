@@ -317,7 +317,7 @@ test() {
 
   // Supply default value on read error:
   import { of } from 'rxjs';
-  import { catchError } from 'rxjs/operators';
+  //import { catchError } from 'rxjs/operators';
   this.storage.get('color').pipe(
     catchError(() => of('red')),
   ).subscribe((result) => {});

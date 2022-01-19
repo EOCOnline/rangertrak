@@ -34,7 +34,7 @@ this.storage.size.subscribe((size) => {
 });
 
 // Delete ONLY data prefixed with "app_"
-import { filter, mergeMap } from 'rxjs/operators';
+import { filter, mergeMap} from 'rxjs'
 
 this.storage.keys().pipe(
 
