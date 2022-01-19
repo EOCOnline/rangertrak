@@ -1,8 +1,16 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, Pipe, PipeTransform, OnInit } from '@angular/core';
 import { FieldReportService, FieldReportType, RangerService, SettingsService, TeamService } from '../shared/services';
 
 import { DOCUMENT, formatDate } from '@angular/common'
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { FieldReportStatuses } from '../shared/services/field-report.service';
+
+@Pipe({ name: 'myUnusedPipe'})
+export class myUnusedPipe implements PipeTransform{
+  transform(val: string) {
+    return val.toUpperCase()
+  }
+}
 
 @Component({
   selector: 'rangertrak-field-reports',
@@ -54,7 +62,7 @@ export class FieldReportsComponent implements OnInit {
 
     try {
       //weekday[d.getDay()] +
-      dt = formatDate(d, 'yyyy-MM-dd HH:MM:ss', 'en-US')
+      dt = formatDate(d, 'M-dd HH:MM:ss', 'en-US')
       //console.log(`Day is: ${params.data.date.toISOString()}`)
     } catch (error:any) {
       dt = `Bad date format: Error name: ${error.name}; msg: ${error.message}`
@@ -71,21 +79,62 @@ export class FieldReportsComponent implements OnInit {
     return dt
   }
 
+  myMinuteGetter = (params: { data: FieldReportType }) => {
+  // performance.now() is better - for elapsed time...
+  let pi: number = 3.14159265359
+    let dt = new Date(params.data.date).getTime()
+    let milliseconds = Date.now() - dt
+    let seconds:string = (Math.round(milliseconds / 1000) % 60).toString().padStart(2 , '0')
+    let minutes:string = Math.round((milliseconds / (1000*60)) % 60).toString().padStart(2 , '0')
+    let hours = Math.round((milliseconds / (1000*60*60)) % 24);
+    return (`${hours}:${minutes}:${seconds}`)
+  }
+
   columnDefs = [
-    { headerName: "ID", field: "id" },
+    { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!'},
     { headerName: "CallSign", field: "callsign", tooltipField: "team" },
     { headerName: "Team", field: "team" },
     { headerName: "Address", field: "address", singleClickEdit: true, flex: 50 }, //, maxWidth: 200
     { headerName: "Lat", field: "lat", singleClickEdit: true },
     { headerName: "Long", field: "long", cellClass: 'number-cell' },
     {
-      headerName: "Time", //field: "date",
+      headerName: "Time", headerTooltip: 'Report date',
       valueGetter: this.myDateGetter,
     },
-    { headerName: "Status", field: "status", flex: 50 }, //, maxWidth: 150
+    {
+      headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report',
+      valueGetter: this.myMinuteGetter,
+    },
+    { headerName: "Status", field: "status", flex: 50,
+    cellStyle: (params: { value: string; }) => {
+      if (params.value === FieldReportStatuses[3]) {
+          return {backgroundColor: 'lightcoral'};
+      }
+      if (params.value === FieldReportStatuses[6]) {
+        return {backgroundColor: 'lavender'};
+      }
+      if (params.value === FieldReportStatuses[5]) {
+        return {backgroundColor: 'lightgrey'};
+      }
+      return null;
+  }
+
+    //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
+  },
     { headerName: "Note", field: "note", flex: 50 }, //, maxWidth: 300
   ];
 
+  //https://blog.ag-grid.com/conditional-formatting-for-cells-in-ag-grid/
+  /* cellClassRules = (params: { data: FieldReportType }) => {
+    if (params.data.status == 'Urgent') {
+      return "cell-pass" // see stylesheet for this
+    }
+    if (params.data.status == 'Check-in') {
+      return "cell-pass" // see stylesheet for this
+    }
+    return(``)
+  }
+*/
 
   constructor(
     private formBuilder: FormBuilder,
@@ -101,7 +150,6 @@ export class FieldReportsComponent implements OnInit {
     this.gridColumnApi = ""
 
     this.settings = SettingsService.Settings
-
   }
 
   ngOnInit(): void {
@@ -191,17 +239,20 @@ export class FieldReportsComponent implements OnInit {
     }
 
     onBtnClearFieldReports() {
-      this.fieldReportService.deleteAllFieldReports
+      this.fieldReportService.deleteAllFieldReports()
+    }
+    onBtnUpdateFieldReports() {
+      this.fieldReportService.UpdateFieldReports()
     }
 
     onBtnImportFieldReports() {
-
+      alert(`onBtnImportFieldReports is unimplemented`)
     }
 
     generateFakeFieldReports(num = this.nFakes) {
       this.fieldReportService.generateFakeData(num)
       console.log(`Generated ${num} FAKE Field Reports`)
-      window.location.reload() //TODO: OK?!
+      //window.location.reload() //TODO: OK?!
     }
 
     displayHide(htmlElementID: string) {
@@ -218,3 +269,7 @@ export class FieldReportsComponent implements OnInit {
       }
     }
 }
+function floor(arg0: number) {
+  throw new Error('Function not implemented.');
+}
+

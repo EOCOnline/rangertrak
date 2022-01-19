@@ -24,6 +24,7 @@
 
  .enter__Fake--slider {
    margin-top: -20px;
+
  }
 
  .enter__Fake--numfield {
@@ -41,3 +42,15 @@
    float: right;
    margin-right: 20px;
  }
+
+ .cell-fail {
+  text-align: center;
+  font-weight: bold;
+  background-color: #f44336;
+}
+
+.cell-pass {
+  text-align: center;
+  font-weight: bold;
+  background-color: #4caf50;
+}
