@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as secrets from '../../../assets/data/RangerTrak-secrets.json' // national secrets... & API-Keys. gitignore's
+import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
 
 export type SecretType = {
   "id": number,

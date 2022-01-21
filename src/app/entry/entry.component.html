@@ -86,7 +86,7 @@
       <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
         class="text-sm text-danger">Status is required</div>
 
-      <textarea formControlName="note" class="enter__What--area" id="" cols="40" rows="5"
+      <textarea class="input-group enter__What--area" formControlName="note" id="" cols="40" rows="5"
         placeholder="Enter Any Notes"></textarea>
     </div>
 
