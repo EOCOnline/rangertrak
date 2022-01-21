@@ -79,12 +79,7 @@
 
     <div class="input-group">Status:
       <select formControlName="status"
-        [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid">
-        <!--option [value]="'NewStatus'">Adds Additional Value</option-->
-        <option [value]="stat" *ngFor="let stat of fieldReportStatuses">{{stat}}</option>
-      </select>
-      <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
-        class="text-sm text-danger">Status is required</div>
+        [class.border-danger]="entryDetailsForm.get(npm audit fix
 
       <textarea class="input-group enter__What--area" formControlName="note" id="" cols="40" rows="5"
         placeholder="Enter Any Notes"></textarea>
