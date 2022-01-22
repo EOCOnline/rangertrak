@@ -77,13 +77,20 @@
 
     <h2 class="elegant">What</h2>
 
+
     <div class="input-group">Status:
       <select formControlName="status"
-        [class.border-danger]="entryDetailsForm.get(npm audit fix
+        [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid">
+        <option [value]="'NewStatus'">Add a new status</option>
+        <option [value]="stat" *ngFor="let stat of fieldReportStatuses">{{stat}}</option>
+      </select>
+      <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
+        class="text-sm text-danger">Status is required</div>
 
-      <textarea class="input-group enter__What--area" formControlName="note" id="" cols="40" rows="5"
+      <textarea class="input-group enter__What--area" formControlName="note" id="enter__What--area" cols="40" rows="5"
         placeholder="Enter Any Notes"></textarea>
     </div>
+
 
     <!-- TODO: Add h4> Keywords</h4>
     <div formArrayName="keywords">

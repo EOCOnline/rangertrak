@@ -1,3 +1,6 @@
+
+/// <reference types="@types/googlemaps" />
+
 import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone } from '@angular/core';
 import { Map } from '../shared/'
 //import { snazzyMapsStyle } from './snazzy-maps';
@@ -6,6 +9,7 @@ import { DOCUMENT, JsonPipe } from '@angular/common';
 //import { MarkerClusterer } from "@googlemaps/markerclusterer";
 // import "./style.css";
 import { SettingsService } from '../shared/services';
+
 
 /*
   https://developers.google.com/maps/support/
@@ -23,6 +27,9 @@ interface marker {
   label?: string;
   draggable: boolean;
 }
+
+declare const google: any
+
 @Component({
   selector: 'rangertrak-gmap',
   templateUrl: './gmap.component.html',
