@@ -17,6 +17,7 @@ export type SettingsType = {
   note: string,
   defLat: number,
   defLong: number,
+  defZoom: number,
   defPlusCode: string,
   w3wLocale: string,
   markerSize: number,

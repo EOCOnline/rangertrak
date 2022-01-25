@@ -1,96 +1,51 @@
 <h1>{{title}}</h1>
 
-
-<!--agm-map [latitude]="latitude" [longitude]="longitude">
-  <agm-marker [latitude]="latitude" [longitude]="longitude">
-    <agm-snazzy-info-window [maxWidth]="200" [closeWhenOthersOpen]="true">
-      <ng-template
-        (unrecommended) Snazzy Info map could go here-->
-      <!--/ng-template>
-    </agm-snazzy-info-window>
-  </agm-marker>
-</agm-map-->
-
-<!--br>
-
- <div #mapdiv id="bigGoogMapId" class="mapdiv" style="border: 2px aquamarine dotted;height: 25px"><h2>How Now Brown Cow</h2></div>
-
- <br -->
-
-<!-- [zoomControl]="false"
-[label]="m.label"
--->
-
-<agm-map
-  [latitude]="latitude"
-  [longitude]="longitude"
-  [zoom]="zoom"
-  [disableDefaultUI]="false"
-
-  (mapClick)="onMapClicked($event)">
-
-  <agm-marker
-      *ngFor="let m of markerLocations; let i = index"
-      (markerClick)="clickedMarker(m.label, i)"
-      [latitude]="m.lat"
-      [longitude]="m.lng"
-
-      [markerDraggable]="m.draggable"
-      (dragEnd)="markerDragEnd(m, $event)">
-
-    <agm-info-window>
-      <strong>InfoWindow content</strong>
-    </agm-info-window>
-
-  </agm-marker>
-
-  <!--agm-circle [latitude]="latitude" [longitude]="longitude"
-      [radius]="7000"
-      [fillColor]="'red'"
-      [circleDraggable]="true"
-      [editable]="true">
-  </agm-circle-->
-
-</agm-map>
-
-
-
-<!--
-<br>
-
-<agm-map [latitude]="lat" [longitude]="lng">
-  <agm-snazzy-info-window [isOpen]="true" [latitude]="lat" [longitude]="lng" [closeWhenOthersOpen]="true">
-    <ng-template>
-      Another Snazzy Info Window!
-    </ng-template>
-  </agm-snazzy-info-window>
-</agm-map>
-
-<br>
-
-<agm-map [latitude]="lat" [longitude]="lng">
-  <agm-marker [latitude]="lat" [longitude]="lng">
-    <agm-info-window>Vashon</agm-info-window>
-  </agm-marker>
-
-</agm-map>
--->
-
-
 <details>
   <summary>Instructions</summary>
+  This currently displays all rangers/teams without filtering. In the future more options should be available, including different icons/text boxes, etc.<br />
   <ul>
-    <li>This MIGHT only display ...</li>
+    <li>NOTE: per <a href="https://issuetracker.google.com/issues/35827808" target="_blank">#35827808</a> this map is NOT available when offline!</li>
+    <li>Click to add marker,</li>
+    <li>drag to move it</li>
+    <li>right-click to remove last marker</li>
+    <li>FUTURE: Click or hover to display coordinates and callsign</li>
   </ul>
 </details>
 <br>
+<mat-icon aria-hidden="false" aria-label="Example icon">{{myIcon}}</mat-icon>
 
-    <!-- Async script executes immediately and must be after any DOM elements used in callback. ->
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&callback=initMap&v=weekly"
-      async
-    ></script-->
+<google-map id="map" width="100%"
+  [center]="center" [zoom]="zoom" [options]="options"
+  (mapClick)="addMarker($event)"
+  (mapMousemove)="move($event)"
+  (mapRightclick)="removeLastMarker()">
 
-    <!--script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&callback=initGoogMap" async defer>
-      // https://developers.google.com/maps/documentation/javascript/libraries
-      </script-->
+  <div id="markerDiv" #markerDiv
+    *ngFor="let marker of markers"
+    [position]="marker.position"
+    [options]="marker.options"
+    (mapClick)="openInfoWindow(marker.position)">
+  </div>
+
+  <map-info-window>{{ infoContent }}</map-info-window>
+
+</google-map>
+
+<div>Latitude: {{display?.lat}}</div>
+<div>Longitude: {{display?.lng}}</div>
+
+<br>
+<button (click)="zoomIn()">Zoom in</button>
+<button (click)="zoomOut()">Zoom out</button>
+
+<details>
+  <summary>Advanced</summary>
+  <ul>
+    <li>This might be used to set filtering options - or maybe we rely on selections made in the Field Report
+      pane/window...</li>
+  </ul>
+  <button (click)="logCenter()">Log center</button>
+  <!--button (click)="onInfoClick()">Info Window</button-->
+  <!--button (click)="addMarker()">Add marker</button-->
+</details>
+<br>

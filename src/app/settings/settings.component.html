@@ -46,10 +46,19 @@
     <div class="input-group">Longitude:
       <input
         [class.border-danger]="settingsEditorForm.get('longitude')?.touched && settingsEditorForm.get('longitude')?.invalid"
-        type="number" formControlName="longitude" placeholder="-122.5">
+        type="number" formControlName="longitude" placeholder=-122.5>
       <div
         *ngIf="settingsEditorForm.get('longitude')?.touched && settingsEditorForm.get('longitude')?.hasError('required')"
         class="text-sm text-danger">longitude is required</div>
+    </div>
+
+    <div class="input-group">Zoom (1-16):
+      <input
+        [class.border-danger]="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.invalid"
+        type="number" formControlName="zoom" placeholder=15>
+      <div
+        *ngIf="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.hasError('required')"
+        class="text-sm text-danger">zoom is required</div>
     </div>
 
     <div class="input-group">Plus Code:

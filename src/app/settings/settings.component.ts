@@ -41,6 +41,7 @@ export class SettingsComponent implements OnInit {
     SettingsService.ResetDefaults()
   }
 
+  // TODO: Need different settings stored for gMap, lMap and miniMap
   getFormArrayFromSettingsArray() {
     // NOTE: Form array differs some from SettingsType so need to translate back & forth
     return this.fb.group({
@@ -51,6 +52,7 @@ export class SettingsComponent implements OnInit {
       note: [this.settings.note],
       latitude: [this.settings.defLat, Validators.required],
       longitude: [this.settings.defLong, Validators.required],
+      zoom: [this.settings.defZoom],
       plusCode: [this.settings.defPlusCode],
       w3wLocale: [this.settings.w3wLocale],
       markerSize: [this.settings.markerSize],
@@ -71,6 +73,7 @@ export class SettingsComponent implements OnInit {
       note: this.settingsEditorForm.value.note as string,
       defLat: this.settingsEditorForm.value.latitude as number,
       defLong: this.settingsEditorForm.value.longitude as number,
+      defZoom: this.settingsEditorForm.value.zoom as number,
       defPlusCode: this.settingsEditorForm.value.plusCode as string,
       w3wLocale: this.settingsEditorForm.value.w3wLocale as string,
       markerSize: this.settingsEditorForm.value.markerSize as number,

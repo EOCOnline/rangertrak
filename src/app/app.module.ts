@@ -2,7 +2,7 @@ import { FieldReportService, FieldReportSource, FieldReportStatuses, FieldReport
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AgGridModule } from 'ag-grid-angular';
-import { AgmCoreModule } from '@agm/core';
+//import { AgmCoreModule } from '@agm/core';
 import { AlertsComponent } from './alerts/alerts.component';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -14,6 +14,7 @@ import { FieldReportsComponent } from './field-reports/field-reports.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FooterComponent } from './footer/footer.component';
 import { GmapComponent } from './gmap/gmap.component';
+import { GoogleMapsModule } from '@angular/google-maps'
 import { HttpClientModule } from '@angular/common/http';
 import { LazyModule } from './lazy/lazy.module'
 import { LmapComponent } from './lmap/lmap.component';
@@ -47,13 +48,14 @@ import { environment } from '../environments/environment';
     BrowserModule,
     CommonModule,
     FormsModule,
+    GoogleMapsModule,
     HttpClientModule,
     MaterialModule,
     ReactiveFormsModule,
     AppRoutingModule,
     FontAwesomeModule,
     AgGridModule.withComponents([]),
-    AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
+    //AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
    // AgmSnazzyInfoWindowModule,
     LazyModule,
    ServiceWorkerModule.register('ngsw-worker.js', {
