@@ -107,40 +107,21 @@ export class GmapComponent implements OnInit {    //extends Map
   labelIndex = 0;
   infoContent = ''
 
-
-  infowindow99
-
   infowindow5 = new google.maps.InfoWindow({
     content: 'How now Brown cow.',
-  });
-
-  marker5 = new google.maps.Marker({
-    position: Kaanapali,
-    //map,
-    title: "Uluru (Ayers Rock)",
   });
 
   constructor(
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
 
-    //this.latitude = SettingsService.Settings.defLat
+    // this.latitude = SettingsService.Settings.defLat
     // this.longitude = SettingsService.Settings.defLong
     this.zoom = SettingsService.Settings.defZoom
-    this.center = google.maps.LatLngLiteral(SettingsService.Settings.defLat, SettingsService.Settings.defLong)
+    // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
+    // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
-    this.marker5.addListener("click", () => {
-      this.infowindow5.open({
-        anchor: this.marker5,
-        //map,
-        shouldFocus: false,
-      })
-    })
-
-    this.infowindow99 = new google.maps.InfoWindow({
-      content: 'How now Brown-ish cow.',
-      maxWidth: 200,
-    });
+    this.center = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong}
 
     //google.maps.event.addDomListener(window, 'load', this.initMap);
     // this.LoadMap()
@@ -154,28 +135,52 @@ export class GmapComponent implements OnInit {    //extends Map
   ngOnInit(): void {
     console.log('into ngOnInit()')
 
+    // position: new google.maps.LatLng(-34.397, 150.644)
+    // position: { lat: -34.397, lng: 150.644 },
+
     navigator.geolocation.getCurrentPosition((position) => {
       this.center = {
         lat: position.coords.latitude,
-        lng: position.coords.longitude,
+        lng: position.coords.longitude
       }
     })
 
-    //this.initMap()
-    /* causes:
- core.mjs:6484 ERROR ReferenceError: google is not defined
-     at GmapComponent.initMap (gmap.component.ts:114)
-     at GmapComponent.ngOnInit (gmap.component.ts:48)
-     */
+    if (this.map == null) {
+      console.log("This.map is null")
+    } else {
+      console.log(`this.map zoom =${this.map.getZoom()}`)
+      /* displays: this.map zoom =getZoom() {
+        this._assertInitialized();
+        return this.googleMap.getZoom(); }*/
+    }
 
-     // todo: this.addTrafficLayer()
-     console.log('out of ngOnInit()')
 
+    console.log('out of ngOnInit()')
   }
+
+ // -----------------------------------------------------------
+  // Buttons
+  zoomIn() {
+    if (this.options.maxZoom != null) {
+      if (this.zoom < this.options.maxZoom) this.zoom++
+    }
+  }
+
+  zoomOut() {
+    if (this.options.minZoom != null) {
+      if (this.zoom > this.options.minZoom) this.zoom--
+    }
+  }
+
+  // or on centerChanged
+  logCenter() {
+    console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
+  }
+
 
   infowindow = new google.maps.InfoWindow({
     content: 'How now Brown cow.',
-
+    maxwidth: "200px",
   });
 
   addMarker(event: google.maps.MapMouseEvent) {
@@ -198,7 +203,19 @@ export class GmapComponent implements OnInit {    //extends Map
           fontSize: "18px",
         },
       })
-      this.markers.push(m)
+/* next line gets:
+RROR TypeError: Cannot read properties of undefined (reading 'addListener')
+    at GmapComponent.addMarker (gmap.component.ts:207:14)
+    at GmapComponent_Template_google_map_mapClick_24_listener (gmap.component.html:19:15)
+    at executeListenerWithErrorHandling (core.mjs:14952:1)
+    at wrapListenerIn_markDirtyAndPreventDefault (core.mjs:14990:1)
+    at Object.next (Subscriber.js:110:1)
+    at SafeSubscriber._next (Subscriber.js:60:1)
+    at SafeSubscriber.next (Subscriber.js:31:1)
+    at subscribe._OperatorSubscriber__WEBPACK_IMPORTED_MODULE_1__.OperatorSubscriber.innerSubscriber (switchMap.js:14:102)
+    at OperatorSubscriber._next (OperatorSubscriber.js:9:1)
+    at OperatorSubscriber.next (Subscriber.js:31:1) */
+    // google.maps.MapsEventListener
       marker.addListener("click",
         //this.toggleBounce)
         () => {
@@ -210,8 +227,38 @@ export class GmapComponent implements OnInit {    //extends Map
           })
         }
       )
+
+      this.markers.push(m)
     }
   }
+
+  openInfoWindow(event: any ) {
+    this.infowindow.open({
+      //anchor: m,
+      setPosition: event.latLng,
+      map: this.map,
+      shouldFocus: false,
+    })
+  }
+/*
+ // Add some markers to the map.
+      const markers = this.markerLocations.map((position, i) => {
+      const label = this.labels[i % this.labels.length];
+      const marker = new google.maps.Marker({
+        position,
+        label,
+      });
+
+      // markers can only be keyboard focusable when they have click listeners
+      // open info window when marker is clicked
+      marker.addListener("click", () => {
+        infoWindow.setContent(label);
+        infoWindow.open(map, marker);
+      });
+
+      return marker;
+      */
+
 
   toggleBounce() {
     if (marker.getAnimation() !== null) {
@@ -224,169 +271,103 @@ export class GmapComponent implements OnInit {    //extends Map
 
 
 
-move(event: google.maps.MapMouseEvent) {
-  if (event.latLng) {
-    this.display = event.latLng.toJSON()
-  }
-}
-
-// MapOptions:any = ''
-//Map(mapDiv: Node, opts?: google.maps.MapOptions) {
-// Supposedly Creates a new map inside of the given HTML container — which is typically a DIV element — using any (optional) parameters that are passed.
-// no effect seemingly...
-//}
-
-addTrafficLayer() {
-  /*
-    MapTypes:
-    roadmap - displays the default road map view. This is the default map type.
-    satellite - displays Google Earth satellite images.
-    hybrid - displays a mixture of normal and satellite views.
-    terrain - displays a physical map based on terrain information.
-  */
-    var trafficLayer = new google.maps.TrafficLayer();
-    trafficLayer.setMap(this.map);
-
-    // https://developers.google.com/maps/documentation/javascript/maptypes
-    // map.setTilt(45);
-}
-
-clickedMarker(label: string = 'nolabel', index: number) {
-  console.log(`clicked the marker: ${label || index}`)
-}
-
-onMapClicked($event: google.maps.MouseEvent) {
-  this.markerLocations.push({
-    lat: $event.latLng.lat(),
-    lng: $event.latLng.lng(),
-    label: new Date().getTime().toString(),
-    draggable: true
-  });
-}
-
-display3() {
-  console.log('display() not implemented...');
-}
-
-markerDragEnd(m: marker, $event: google.maps.MouseEvent) {
-  console.log('dragEnd', m, $event);
-  this.latitude = $event.latLng.lat();
-  this.longitude = $event.latLng.lng();
-  this.getAddress(this.latitude, this.longitude);
-}
-/*
-  markerDragEnd2($event: google.maps.MouseEvent) {
-    console.log($event);
-    this.lat = $event.coords.lat;
-    this.lng = $event.coords.lng;
-    this.getAddress(this.latitude, this.longitude);
-  }
-
-  markerDragEnd3($event: google.maps.MouseEvent) {
-    console.log($event);
-    this.lat = $event.latLng.lat();
-    this.lng = $event.latLng.lng();
-    this.getAddress(this.lat, this.lng);
-  }
-*/
-
-getAddress(latitude: any, longitude: any) {
-  throw new Error('Method not implemented.');
-}
-
-initMap2(): void {
-  console.log('initMap is running')
-    let myMap = document.getElementById("mapdiv") as HTMLElement
-
-    console.log('myMap = ' + myMap)
-    console.log('myMap = ' + myMap.innerHTML)
-    console.log('myMap = ' + myMap.style)
-
-    myMap.innerText = "<h1 style='background-color: aqua;'>Watch the lazy fox...</h1>"
-
-    const map = new google.maps.Map(
-    myMap,
-    {
-      zoom: 12,
-      center: { lat: this.latitude, lng: this.longitude },
+  move(event: google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      this.display = event.latLng.toJSON()
     }
-  );
-
-  const infoWindow = new google.maps.InfoWindow({
-    content: "Yes mamma!!!",
-    disableAutoPan: true,
-  });
-
-  // Create an array of alphabetical characters used to label the markers.
-  this.generateFakeData()
-
-    // Add some markers to the map.
-    const markers = this.markerLocations.map((position, i) => {
-    const label = this.labels[i % this.labels.length];
-    const marker = new google.maps.Marker({
-      position,
-      label,
-    });
-
-    // markers can only be keyboard focusable when they have click listeners
-    // open info window when marker is clicked
-    marker.addListener("click", () => {
-      infoWindow.setContent(label);
-      infoWindow.open(map, marker);
-    });
-
-    return marker;
-  });
-
-  // Add a marker clusterer to manage the markers.
-  //new MarkerClusterer({ markers, map });
-}
-
-// TODO: Following has been moved to marker.service.ts: use that version!
-labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-generateFakeData(num: number = 15) {
-
-  console.log("Generating " + num + " more rows of FAKE field reports!")
-
-  for (let i = 0; i < num; i++) {
-    this.markerLocations.push(
-      {
-        lat: 45 + Math.floor(Math.random() * 2000) / 1000,
-        lng: -121 + Math.floor(Math.random() * 1000) / 1000,
-        label: this.labels[Math.floor(Math.random() * this.labels.length)],
-        draggable: true
-      }
-    )
   }
-  //console.log("Pushed # " + numberPushed++)
-}
-}
 
+  // MapOptions:any = ''
+  //Map(mapDiv: Node, opts?: google.maps.MapOptions) {
+  // Supposedly Creates a new map inside of the given HTML container — which is typically a DIV element — using any (optional) parameters that are passed.
+  // no effect seemingly...
+  //}
 
-/*
-
-OLD CODE ===============================
-
-function initGoogMap() {
-    // https://developers.google.com/maps/documentation/
-    googMap = new google.maps.Map(document.getElementById('bigGoogMapId'), {
-      center: {lat: DEF_LAT, lng: DEF_LONG},
-      zoom: 11,
-      mapTypeId: 'terrain' // line is optional
-    });
+  addTrafficLayer() {
     /*
       MapTypes:
       roadmap - displays the default road map view. This is the default map type.
       satellite - displays Google Earth satellite images.
       hybrid - displays a mixture of normal and satellite views.
       terrain - displays a physical map based on terrain information.
-    *  /
+    */
+    var trafficLayer = new google.maps.TrafficLayer();
+    trafficLayer.setMap(this.map);
 
-      var trafficLayer = new google.maps.TrafficLayer();
-      trafficLayer.setMap(googMap);
+    // https://developers.google.com/maps/documentation/javascript/maptypes
+    // map.setTilt(45);
+  }
 
-      // https://developers.google.com/maps/documentation/javascript/maptypes
-      // map.setTilt(45);
+  clickedMarkerxxx(label: string = 'nolabel', index: number) {
+    console.log(`clicked the marker: ${label || index}`)
+  }
+
+  /*
+  onMapClicked($event: google.maps.MapMouseEvent) {
+    this.markerLocations.push({
+      lat: $event.latLng.lat(),
+      lng: $event.latLng.lng(),
+      label: new Date().getTime().toString(),
+      draggable: true
+    });
+  }
+
+  display3() {
+    console.log('display() not implemented...');
+  }
+
+  markerDragEnd(m: marker, $event: google.maps.MouseEvent) {
+    console.log('dragEnd', m, $event);
+    this.latitude = $event.latLng.lat();
+    this.longitude = $event.latLng.lng();
+    this.getAddress(this.latitude, this.longitude);
+  }*/
+  /*
+    markerDragEnd2($event: google.maps.MouseEvent) {
+      console.log($event);
+      this.lat = $event.coords.lat;
+      this.lng = $event.coords.lng;
+      this.getAddress(this.latitude, this.longitude);
     }
 
+    markerDragEnd3($event: google.maps.MouseEvent) {
+      console.log($event);
+      this.lat = $event.latLng.lat();
+      this.lng = $event.latLng.lng();
+      this.getAddress(this.lat, this.lng);
+    }
+
+
+  getAddress(latitude: any, longitude: any) {
+    throw new Error('Method not implemented.');
+  }
+
+  initMap2(): void {
+    console.log('initMap is running')
+      let myMap = document.getElementById("mapdiv") as HTMLElement
+
+      console.log('myMap = ' + myMap)
+      console.log('myMap = ' + myMap.innerHTML)
+      console.log('myMap = ' + myMap.style)
+
+      myMap.innerText = "<h1 style='background-color: aqua;'>Watch the lazy fox...</h1>"
+
+      const map = new google.maps.Map(
+      myMap,
+      {
+        zoom: 12,
+        center: { lat: this.latitude, lng: this.longitude },
+      }
+    );
+
+    const infoWindow = new google.maps.InfoWindow({
+      content: "Yes mamma!!!",
+      disableAutoPan: true,
+    });
+
     */
+    // Add a marker clusterer to manage the markers.
+    // new MarkerClusterer({ markers, map });
+
+
+}
