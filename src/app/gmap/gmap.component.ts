@@ -52,6 +52,7 @@ GoogleMapsModule exports three components that we can use:
 
 declare const google: any
 const Kaanapali = new google.maps.LatLng(-34.397, 150.644)
+const kaanapali = new google.maps.LatLngLiteral({lat:-34.397, lng: 150.644})
 let marker: google.maps.Marker
 
 @Component({
@@ -107,9 +108,7 @@ export class GmapComponent implements OnInit {    //extends Map
   labelIndex = 0;
   infoContent = ''
 
-  infowindow5 = new google.maps.InfoWindow({
-    content: 'How now Brown cow.',
-  });
+  // infowindow5 = new google.maps.InfoWindow({ content: 'How now Brown cow.', });
 
   constructor(
     private settingsService: SettingsService,
@@ -121,7 +120,7 @@ export class GmapComponent implements OnInit {    //extends Map
     // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
-    this.center = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong}
+    this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }
 
     //google.maps.event.addDomListener(window, 'load', this.initMap);
     // this.LoadMap()
@@ -152,13 +151,17 @@ export class GmapComponent implements OnInit {    //extends Map
       /* displays: this.map zoom =getZoom() {
         this._assertInitialized();
         return this.googleMap.getZoom(); }*/
+
+      // Add a marker at the center of the map.
+      //addMarker(kaanapali, this.map);
     }
+
 
 
     console.log('out of ngOnInit()')
   }
 
- // -----------------------------------------------------------
+  // -----------------------------------------------------------
   // Buttons
   zoomIn() {
     if (this.options.maxZoom != null) {
@@ -191,6 +194,7 @@ export class GmapComponent implements OnInit {    //extends Map
     //https://developers.google.com/fonts/docs/material_icons
     //https://fonts.google.com/icons
     if (event.latLng) {
+      console.log("Actually adding marker now...")
       let m = new google.maps.Marker({
         draggable: true,
         animation: google.maps.Animation.DROP,
@@ -202,24 +206,76 @@ export class GmapComponent implements OnInit {    //extends Map
           color: "#ffffff",
           fontSize: "18px",
         },
+        // label: labels[labelIndex++ % labels.length],
       })
+
+      /*
+      if (0) {
+        // Add some markers to the map.
+        const markers = this.markers.map((position, i) => {
+          const label = this.labels[i % this.labels.length];
+          const marker = new google.maps.Marker({
+            position,
+            label,
+          });
+
+          // markers can only be keyboard focusable when they have click listeners
+          // open info window when marker is clicked
+          marker.addListener("click", () => {
+            //this.infoWindow.setContent(label);
+            //this.infoWindow.open(this.map, marker);
+          });
+        })
+        return marker;
+      }
+      */
 
       m.addListener("click",   // this.toggleBounce)
         () => {
           this.infowindow.open({
             anchor: m,
             setPosition: event.latLng,
-            map: this.map,
-            shouldFocus: false,
+           // map: this.map,
+           // shouldFocus: false,
           })
         }
       )
 
+      // This event listener calls addMarker() when the map is clicked.
+      /*  vs
+          google.maps.event.addListener(map, "click", (event) => {
+            addMarker(event.latLng, map);
+        });  */
+
       this.markers.push(m)
+    } else {
+      console.log("event.latLng is BAD; can not add marker..")
+    }
+    //this.refreshMarkerDisplay()
+  }
+
+
+  // Adds a marker to the map.
+  addMarker55(location: google.maps.LatLngLiteral, map: google.maps.Map) {
+    // Add the marker at the clicked location, and add the next-available label
+    // from the array of alphabetical characters.
+    new google.maps.Marker({
+      position: location,
+      label: this.labels[this.labelIndex++ % this.labels.length],
+      map: map,
+    });
+  }
+
+  // not needed: The new adds them to the map I guess. How to remove them?!
+  refreshMarkerDisplay() {
+    for (let i = 0; i < this.markers.length; i++) {
+      // markerDiv
+      // Add a marker at the center of the map.
+      //addMarker(bangalore, map);
     }
   }
 
-  openInfoWindow(event: any ) {
+  openInfoWindow(event: any) {
     this.infowindow.open({
       //anchor: m,
       setPosition: event.latLng,
@@ -227,25 +283,6 @@ export class GmapComponent implements OnInit {    //extends Map
       shouldFocus: false,
     })
   }
-/*
- // Add some markers to the map.
-      const markers = this.markerLocations.map((position, i) => {
-      const label = this.labels[i % this.labels.length];
-      const marker = new google.maps.Marker({
-        position,
-        label,
-      });
-
-      // markers can only be keyboard focusable when they have click listeners
-      // open info window when marker is clicked
-      marker.addListener("click", () => {
-        infoWindow.setContent(label);
-        infoWindow.open(map, marker);
-      });
-
-      return marker;
-      */
-
 
   toggleBounce() {
     if (marker.getAnimation() !== null) {
@@ -254,9 +291,6 @@ export class GmapComponent implements OnInit {    //extends Map
       marker.setAnimation(google.maps.Animation.BOUNCE);
     }
   }
-
-
-
 
   move(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
@@ -288,73 +322,77 @@ export class GmapComponent implements OnInit {    //extends Map
   clickedMarkerxxx(label: string = 'nolabel', index: number) {
     console.log(`clicked the marker: ${label || index}`)
   }
+}
 
-  /*
-  onMapClicked($event: google.maps.MapMouseEvent) {
-    this.markerLocations.push({
-      lat: $event.latLng.lat(),
-      lng: $event.latLng.lng(),
-      label: new Date().getTime().toString(),
-      draggable: true
-    });
-  }
 
-  display3() {
-    console.log('display() not implemented...');
-  }
 
-  markerDragEnd(m: marker, $event: google.maps.MouseEvent) {
-    console.log('dragEnd', m, $event);
-    this.latitude = $event.latLng.lat();
-    this.longitude = $event.latLng.lng();
+
+
+/*
+onMapClicked($event: google.maps.MapMouseEvent) {
+  this.markerLocations.push({
+    lat: $event.latLng.lat(),
+    lng: $event.latLng.lng(),
+    label: new Date().getTime().toString(),
+    draggable: true
+  });
+}
+
+display3() {
+  console.log('display() not implemented...');
+}
+
+markerDragEnd(m: marker, $event: google.maps.MouseEvent) {
+  console.log('dragEnd', m, $event);
+  this.latitude = $event.latLng.lat();
+  this.longitude = $event.latLng.lng();
+  this.getAddress(this.latitude, this.longitude);
+}*/
+/*
+  markerDragEnd2($event: google.maps.MouseEvent) {
+    console.log($event);
+    this.lat = $event.coords.lat;
+    this.lng = $event.coords.lng;
     this.getAddress(this.latitude, this.longitude);
-  }*/
-  /*
-    markerDragEnd2($event: google.maps.MouseEvent) {
-      console.log($event);
-      this.lat = $event.coords.lat;
-      this.lng = $event.coords.lng;
-      this.getAddress(this.latitude, this.longitude);
-    }
-
-    markerDragEnd3($event: google.maps.MouseEvent) {
-      console.log($event);
-      this.lat = $event.latLng.lat();
-      this.lng = $event.latLng.lng();
-      this.getAddress(this.lat, this.lng);
-    }
-
-
-  getAddress(latitude: any, longitude: any) {
-    throw new Error('Method not implemented.');
   }
 
-  initMap2(): void {
-    console.log('initMap is running')
-      let myMap = document.getElementById("mapdiv") as HTMLElement
+  markerDragEnd3($event: google.maps.MouseEvent) {
+    console.log($event);
+    this.lat = $event.latLng.lat();
+    this.lng = $event.latLng.lng();
+    this.getAddress(this.lat, this.lng);
+  }
 
-      console.log('myMap = ' + myMap)
-      console.log('myMap = ' + myMap.innerHTML)
-      console.log('myMap = ' + myMap.style)
 
-      myMap.innerText = "<h1 style='background-color: aqua;'>Watch the lazy fox...</h1>"
+getAddress(latitude: any, longitude: any) {
+  throw new Error('Method not implemented.');
+}
 
-      const map = new google.maps.Map(
-      myMap,
-      {
-        zoom: 12,
-        center: { lat: this.latitude, lng: this.longitude },
-      }
-    );
+initMap2(): void {
+  console.log('initMap is running')
+    let myMap = document.getElementById("mapdiv") as HTMLElement
 
-    const infoWindow = new google.maps.InfoWindow({
-      content: "Yes mamma!!!",
-      disableAutoPan: true,
-    });
+    console.log('myMap = ' + myMap)
+    console.log('myMap = ' + myMap.innerHTML)
+    console.log('myMap = ' + myMap.style)
 
-    */
+    myMap.innerText = "<h1 style='background-color: aqua;'>Watch the lazy fox...</h1>"
+
+    const map = new google.maps.Map(
+    myMap,
+    {
+      zoom: 12,
+      center: { lat: this.latitude, lng: this.longitude },
+    }
+  );
+
+  const infoWindow = new google.maps.InfoWindow({
+    content: "Yes mamma!!!",
+    disableAutoPan: true,
+  });
+
+  */
     // Add a marker clusterer to manage the markers.
     // new MarkerClusterer({ markers, map });
 
 
-}
