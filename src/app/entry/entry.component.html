@@ -12,7 +12,7 @@
     <mat-form-field class="enter__Callsign" appearance="fill">
       <mat-label>CallSign</mat-label>
 
-      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
+      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns" formControlName="callsign"
         [matAutocomplete]="auto" (change)=this.CallsignCtrlChanged()>
 
       <mat-autocomplete #auto="matAutocomplete">
@@ -81,7 +81,7 @@
     <div class="input-group">Status:
       <select formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid">
-        <option [value]="'NewStatus'">Add a new status</option>
+        <!--option [value]="'NewStatus'">Add a new status</option-->
         <option [value]="stat" *ngFor="let stat of fieldReportStatuses">{{stat}}</option>
       </select>
       <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"

@@ -33,8 +33,9 @@
   To maintain these changes between browser sessions, we can write the following table to the Browser Local Storage
   where it will remain until deleted.<br />
   <ul>
-    <li>Address, latitude & Longitude are all editable. The 1st two on a single click, the latter on a double click.
-      (What do you like?!)</li>
+    <li>The photos are not associated with the correct person currently. </li>
+    <li>Some fields may be editable (single or double-click), and "Should" be savable to a CSV file.. Edits can be
+      MANUALLY saved by selecting the "Save Data" button in the Advanced section below. </li>
     <li>Click on a column heading to sort by that field.</li>
     <li>Click & Drag on a column heading to move columns</li>
     <li>Hovering over a cell (e.g., any callsign) may show additional information. </li>
@@ -84,27 +85,44 @@
     If no rangers exist, or you would like to replace those shown above, either:
     <ol>
       <li>
-        Enter rangers into the grid and then use the Update button;</li>
-
-      <li>Create src/app/shared/services/rangers.json file for auto import (MUST be sorted by callsign), or</li>
-      <li>In future, import an excel file.</li>
+        FUTURE: Enter rangers into the grid</li>
+      <li>Create src/app/shared/services/rangers.json file for auto import, or</li>
+      <li>Future: import an excel file.</li>
+      <li>Use the "Add FAKE Rangers" button to import some usable rangers. Contact John with a better list to have these
+        updated...</li>
     </ol>
 
-    <p>To import a pipe-delimited text file to Excel, open the file from within Excel. The Excel Text Import Wizard will
-      guide you through the process of converting the text file to a spreadsheet format. Choose "Delimited" as the
-      format. In the next screen, choose Other as the delimiter, and type in the pipe symbol (|) as the delimiter. The
-      last screen will allow you to format the individual columns.</p>
-
-    This list of potential Rangers was taken from the FCC Database in January 2022. <br />
-    It has been significantly reformatted and your edits may alter it further.<br />
-    To maintain these changes between browser sessions, we write the table
-    above to the Browser Local Storage where it will remain until deleted.<br />
+    <p>This list of potential Rangers was taken from the FCC Database in January 2022. <br>
+      It has been significantly reformatted and your edits may alter it further.
+    </p>
 
     <hr>
+
     <br>
+    <p>To maintain these changes between browser sessions, we write the table
+      above to the Browser Local Storage where it will remain until deleted. Use this "Save Data" button
+      to save the current state of the grid above, so it will be restored the next time this web page
+      is opened on this browser & device</p>
+    Save Rangers to Local Storage:
+    <button (click)="onBtnUpdateLocalStorage()" style="margin-bottom: 5px"
+      title="Preserve the edits above to the Rangers stored on this browser">Save Rangers</button><br>
+
+    <br>
+    Delete ALL Rangers from Local Storage (then refresh page):
+    <button (click)="onBtnDeleteRangers()">Delete Rangers</button><br>
+
+    <div id="rangers__Fake">
+      Add some FAKE/Hardcoded rangers to any existing rangers (then refresh page):
+      <button (click)="generateFakeData()" type="button" id="enter__Fake--button">Add FAKE Rangers</button>
+    </div>
+  </details>
+
+
+  <br>
+  <details>
+    <summary><span class="big">Untested or likely to work!!!</span></summary>
+
     FUTURE: Import Excel button currently 'works', but imports wrong spreadsheet and does nothing with it!<br>
-
-
     // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
     <label for="myfile">Select a file:</label>
     <input type="file" id="myfile" name="myfile">
@@ -115,30 +133,24 @@
 
     <!-- Events
       https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event
-    https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event
-    https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement#properties_file
+      https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event
+      https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement#properties_file
 
-<input placeholder="Enter some text" name="name"/>
-<p id="values"></p>
+      <input placeholder="Enter some text" name="name"/>
+      <p id="values"></p>
 
 
-const input = document.querySelector('input');
-const log = document.getElementById('values');
+      const input = document.querySelector('input');
+      const log = document.getElementById('values');
 
-input.addEventListener('input', updateValue);
+      input.addEventListener('input', updateValue);
 
-function updateValue(e) {
-  log.textContent = e.target.value;
-}
-
+      function updateValue(e) {
+        log.textContent = e.target.value;
+      }
     -->
     <br>
     <hr>
-
-    <br>
-    Save Rangers to Local Storage:
-    <button (click)="onBtnUpdateLocalStorage()" style="margin-bottom: 5px"
-      title="Preserve the edits above to the Rangers stored on this browser">Save Rangers</button><br>
 
     <br>
     The next two option will replace any Rangers above with a new set from files:<br>
@@ -149,16 +161,7 @@ function updateValue(e) {
     2) Import Rangers from a JSON file:
     <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">Import
       Rangers (JSON)</button><br>
-
     <br>
-    Delete ALL Rangers from Local Storage (then refresh page):
-    <button (click)="onBtnDeleteRangers()">Delete Rangers</button><br>
-
-
-    <div id="rangers__Fake">
-      Add some FAKE/Hardcoded rangers to any existing rangers (then refresh page):
-      <button (click)="generateFakeData()" type="button" id="enter__Fake--button">Add FAKE Rangers</button>
-    </div>
 
     <hr>
     <div id="ranger__ImportExcel--zzzzzz">

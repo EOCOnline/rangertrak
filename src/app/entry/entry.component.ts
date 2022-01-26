@@ -1,9 +1,8 @@
 import { DOCUMENT } from '@angular/common'
-import { AfterViewInit, Component, Inject, OnInit, isDevMode } from '@angular/core'
+import { Component, Inject, OnInit, isDevMode } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable,debounceTime, map, startWith } from 'rxjs'
-//import { debounceTime, map, startWith } from 'rxjs/operators'
 import { AlertsComponent } from '../alerts/alerts.component'
 import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
 
@@ -13,7 +12,7 @@ import { FieldReportService, FieldReportStatuses, RangerService, RangerType, Set
   styleUrls: ['./entry.component.scss'],
   providers: [RangerService, FieldReportService, SettingsService, TeamService]
 })
-export class EntryComponent implements OnInit { //}, AfterViewInit {
+export class EntryComponent implements OnInit {
   callsignCtrl = new FormControl()
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
@@ -59,7 +58,7 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
 
   private _filterRangers(value: string): RangerType[] {
     const filterValue = value.toLowerCase()
-    this.entryDetailsForm.value.callsign = filterValue // TODO: Have MAT input field auto sync w/ callsign
+    this.entryDetailsForm.value.callsign = filterValue
     return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
   }
 
@@ -88,7 +87,7 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
 
     this.entryDetailsForm = this.formBuilder.group({
       id: -1,
-      callsign: ['ngOnInitCallSign'],  // TODO: Not tied to the material design input field...
+      callsign: [''],
       team: ['T1'],
       address: ['default location (ngOnInit)'],
       lat: [this.settings.defLat, Validators.required], //Validators.minLength(4)
@@ -137,8 +136,6 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
     return (<FormArray>this.entryDetailsForm.get('keywords')).controls
   }   */
 
-
-
   // sleep(ms: number) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
   /*
@@ -156,40 +153,38 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
     element.style.animation = "";
   }
 
-
   // TODO: This also gets called if the Update Location button is clicked!!
   onFormSubmit(formData1: string): void {
     console.log(`Form submit at ${Date()}`)
     let formData = JSON.stringify(this.entryDetailsForm.value)
 
-
     let newReport = this.fieldReportService.addfieldReport(formData)
     console.log(`Report id # ${newReport.id} has been added.`)
     console.log("formData:  " + formData)
-    console.log("formData1: " + JSON.stringify(formData1))
+    //console.log("formData1: " + JSON.stringify(formData1))
 
     if (this.submitInfo) {
+      // Display fading confirmation to right of Submit button
       this.submitInfo.innerText = `Entry id # ${newReport.id} Saved. ${formData}`
       this.reset_animation(this.submitInfo)
     }
     else {
       console.log("NO this.submitInfo ID FOUND!!!")
     }
-
     this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
 
-    //this.entryDetailsForm.reset() // std reser just blanks values, doesn't initialize them...
+    //this.entryDetailsForm.reset() // std reset just blanks values, doesn't initialize them...
     this.resetForm()
   }
 
 
-  // TODO: Reset form: Callsign to blank, current date, status/notes
+  // TODO: Reset form: Callsign to blank, current date, status/note
   resetForm() {
     console.log("Resetting form...")
 
     this.entryDetailsForm = this.formBuilder.group({
       id: -2,
-      callsign: ['resetFormCallSign'],  // TODO: Not tied to the material design input field...
+      callsign: [''],
       team: ['T0'],
       address: ['default location (reset)'],
       lat: [this.settings.defLat,
@@ -202,21 +197,17 @@ export class EntryComponent implements OnInit { //}, AfterViewInit {
       ],
       date: [new Date()],
       status: [FieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
-      notes: ['']
+      note: ['']
     })
   }
 
-  /* What was the purpose?!
+  /* What was the purpose?! (If any location field is updated, reflect that in the other fields: Observable?!)
   updateLocation() {
     console.log("updateLocation() running")
     //this.entryDetailsForm.get(['', 'name'])
     //this.entryDetailsForm.controls['derivedAddress'].setValue('New Derived Address')
     var addr = this.document.getElementById("derivedAddress")
     if (addr) { addr.innerHTML = "New What3Words goes here!" }
-  }
-
-  ngAfterViewInit() {
-    console.log("ngAfterViewInit")
   }
   */
 }

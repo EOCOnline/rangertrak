@@ -118,8 +118,8 @@ export class RangersComponent implements OnInit {
     }
 
     if (!this.settings.debugMode) {
-      this.displayHide("rangers__Fake")
-      this.displayHide("ranger__ImportExcel")
+      //this.displayHide("rangers__Fake")
+      //this.displayHide("ranger__ImportExcel")
     }
   }
 
@@ -171,7 +171,21 @@ export class RangersComponent implements OnInit {
     //console.log
     alert(`onBtnImportRangers: Ranger Import from Excel file is unimoplemented currently`)
   }
-
+/*
+from https://blog.ag-grid.com/refresh-grid-after-data-change/
+  this.http
+  .get(
+    "https://raw.githubusercontent.com/ag-grid/ag-grid/master/grid-packages/ag-grid-docs/src/olympicWinnersSmall.json"
+  )
+  .subscribe((data: any[]) => {
+    data.length = 10;
+    data = data.map((row, index) => {
+      return { ...row, id: index + 1 };
+    });
+    this.backupRowData = data;
+    this.rowData = data;
+  });
+  */
 
   //--------------------------------------------------------------------------
   onBtnImportExcel() {

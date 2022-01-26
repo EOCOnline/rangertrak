@@ -12,6 +12,30 @@ export class myUnusedPipe implements PipeTransform{
   }
 }
 
+// TODO: https://blog.ag-grid.com/refresh-grid-after-data-change/
+// https://stackblitz.com/edit/ag-grid-angular-hello-world-n3aceq?file=src%2Fapp%2Fapp.component.ts
+// https://www.ag-grid.com/javascript-data-grid/immutable-data/
+//
+/*
+onGridReady(params) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+
+    this.http
+      .get(
+        "https://raw.githubusercontent.com/ag-grid/ag-grid/master/grid-packages/ag-grid-docs/src/olympicWinnersSmall.json"
+      )
+      .subscribe((data: any[]) => {
+        data.length = 10;
+        data = data.map((row, index) => {
+          return { ...row, id: index + 1 };
+        });
+        this.backupRowData = data;
+        this.rowData = data;
+      });
+  }
+*/
+
 @Component({
   selector: 'rangertrak-field-reports',
   templateUrl: './field-reports.component.html',
@@ -153,7 +177,7 @@ export class FieldReportsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //console.log("Field Report Form ngInit at ", Date())
+    console.log("Field Report Form ngInit at ", Date.now)
 
     this.fieldReports = this.fieldReportService.getFieldReports()
     console.log(`Now have ${this.fieldReports.length} Field Reports retrieved from Local Storage and/or fakes generated`)
@@ -163,6 +187,12 @@ export class FieldReportsComponent implements OnInit {
     if (!this.settings.debugMode) {
       this.displayHide("enter__Fake--id")
     }
+    if (this.gridApi) {
+    this.gridApi.refreshCells()
+    }else {
+      console.log("no this.gridApi yet in ngOnInit()")
+    }
+
   }
 
   isValidDate(d: any) {
@@ -183,6 +213,8 @@ export class FieldReportsComponent implements OnInit {
   // filteredReports:FieldReportType[] = this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000)) //FUTURE:
 
   onGridReady = (params: any) => {
+    console.log("Field Report Form onGridReady")
+
     this.gridApi = params.api
     this.gridColumnApi = params.columnApi
 
@@ -191,6 +223,11 @@ export class FieldReportsComponent implements OnInit {
 
   onFirstDataRendered(params: any) {
     params.api.sizeColumnsToFit();
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+      }else {
+        console.log("no this.gridApi yet in onFirstDataRendered()")
+      }
   }
 
     // following from https://ag-grid.com/javascript-data-grid/csv-export/

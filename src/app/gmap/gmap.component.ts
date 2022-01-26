@@ -52,7 +52,7 @@ GoogleMapsModule exports three components that we can use:
 
 declare const google: any
 const Kaanapali = new google.maps.LatLng(-34.397, 150.644)
-const kaanapali = new google.maps.LatLngLiteral({lat:-34.397, lng: 150.644})
+const kaanapali:google.maps.LatLngLiteral = {lat:-34.397, lng: 150.644}
 let marker: google.maps.Marker
 
 @Component({
@@ -78,7 +78,7 @@ export class GmapComponent implements OnInit {    //extends Map
   @ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
 
   // items for template
-  title = 'Google Map implemented as an Angular Component'
+  title = 'Google Map (implemented as an Angular Component)'
   display?: google.maps.LatLngLiteral;
 
   // items for <google-map>
@@ -196,16 +196,17 @@ export class GmapComponent implements OnInit {    //extends Map
     if (event.latLng) {
       console.log("Actually adding marker now...")
       let m = new google.maps.Marker({
-        draggable: true,
-        animation: google.maps.Animation.DROP,
+      //  draggable: true,
+      //  animation: google.maps.Animation.DROP,
         position: event.latLng, //.toJSON()
-        title: new Date().getTime().toString(),
-        label: {
+      //  title: new Date().getTime().toString(),
+     /*   label: {
           text: "\ue530", // codepoint from https://fonts.google.com/icons
           fontFamily: "Material Icons",
           color: "#ffffff",
           fontSize: "18px",
         },
+        */
         // label: labels[labelIndex++ % labels.length],
       })
 
@@ -312,7 +313,9 @@ export class GmapComponent implements OnInit {    //extends Map
       hybrid - displays a mixture of normal and satellite views.
       terrain - displays a physical map based on terrain information.
     */
-    var trafficLayer = new google.maps.TrafficLayer();
+   console.log(`addTrafficLayer(): this.map: ${this.map}`)
+   console.log(`addTrafficLayer(): this.map.center: ${this.map.center}`)
+    const trafficLayer = new google.maps.TrafficLayer();
     trafficLayer.setMap(this.map);
 
     // https://developers.google.com/maps/documentation/javascript/maptypes
