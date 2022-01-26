@@ -1,12 +1,11 @@
 <h1>{{title}}</h1>
 
 <details>
-  <summary>Instructions</summary>
+  <summary class="big">Instructions</summary>
   This currently displays all rangers/teams without filtering. In the future more options should be available, including different icons/text boxes, etc.<br />
   <ul>
     <li>NOTE: per <a href="https://issuetracker.google.com/issues/35827808" target="_blank">#35827808</a> this map is NOT available when offline!</li>
     <li>Click to add marker,</li>
-    <li>drag to move it</li>
     <li>right-click to remove last marker</li>
     <li>FUTURE: Click or hover to display coordinates and callsign</li>
   </ul>
@@ -18,14 +17,18 @@
   [center]="center" [zoom]="zoom" [options]="options"
   (mapClick)="addMarker($event)"
   (mapMousemove)="move($event)"
-  (mapRightclick)="removeLastMarker()">
+  (mapRightclick)="addTrafficLayer()">
 
   <div id="markerDiv" #markerDiv
     *ngFor="let marker of markers"
-    [position]="marker.position"
-    [options]="marker.options"
-    (mapClick)="openInfoWindow(marker.position)">
+
+    (mapClick)="openInfoWindow($event)">
   </div>
+
+      <!--
+        [position]="marker.position"
+        [options]="marker.options"  -->
+
 
   <map-info-window>{{ infoContent }}</map-info-window>
 
@@ -39,10 +42,12 @@
 <button (click)="zoomOut()">Zoom out</button>
 
 <details>
-  <summary>Advanced</summary>
+  <summary class="big">Advanced</summary>
   <ul>
     <li>This might be used to set filtering options - or maybe we rely on selections made in the Field Report
       pane/window...</li>
+      <li><a href="https://developers.google.com/maps/documentation/javascript/reference/map">Detailed code/option references</a></li>
+
   </ul>
   <button (click)="logCenter()">Log center</button>
   <!--button (click)="onInfoClick()">Info Window</button-->

@@ -77,7 +77,7 @@ export class GmapComponent implements OnInit {    //extends Map
   @ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
 
   // items for template
-  title = '<a href="https://developers.google.com/maps/documentation/javascript/reference/map">Google Map</a> implemented as an Angular Component'
+  title = 'Google Map implemented as an Angular Component'
   display?: google.maps.LatLngLiteral;
 
   // items for <google-map>
@@ -203,21 +203,8 @@ export class GmapComponent implements OnInit {    //extends Map
           fontSize: "18px",
         },
       })
-/* next line gets:
-RROR TypeError: Cannot read properties of undefined (reading 'addListener')
-    at GmapComponent.addMarker (gmap.component.ts:207:14)
-    at GmapComponent_Template_google_map_mapClick_24_listener (gmap.component.html:19:15)
-    at executeListenerWithErrorHandling (core.mjs:14952:1)
-    at wrapListenerIn_markDirtyAndPreventDefault (core.mjs:14990:1)
-    at Object.next (Subscriber.js:110:1)
-    at SafeSubscriber._next (Subscriber.js:60:1)
-    at SafeSubscriber.next (Subscriber.js:31:1)
-    at subscribe._OperatorSubscriber__WEBPACK_IMPORTED_MODULE_1__.OperatorSubscriber.innerSubscriber (switchMap.js:14:102)
-    at OperatorSubscriber._next (OperatorSubscriber.js:9:1)
-    at OperatorSubscriber.next (Subscriber.js:31:1) */
-    // google.maps.MapsEventListener
-      marker.addListener("click",
-        //this.toggleBounce)
+
+      m.addListener("click",   // this.toggleBounce)
         () => {
           this.infowindow.open({
             anchor: m,

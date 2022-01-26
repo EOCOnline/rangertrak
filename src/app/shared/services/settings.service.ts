@@ -73,6 +73,7 @@ export class SettingsService {
       note: "values set by code, please edit them to serve you!",
       defLat: 47.4472,
       defLong: -122.4627,  // Vashon EOC!
+      defZoom: 12,
       defPlusCode: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
       w3wLocale: "Vashon, WA",
       markerSize: 5,
