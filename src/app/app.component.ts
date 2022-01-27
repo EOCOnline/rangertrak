@@ -31,17 +31,21 @@ export class AppComponent implements OnInit {
       })));
 
 
-      if (updatesAvailable) {
-        // if( confirm(`Reload the page to update from current version ${evt.currentVersion} to latest version ${evt.latestVersion}. Proceed now?`)) { //TODO:
-        if( confirm(`Reload the page to update from the current to the latest version. Proceed now?`)) {
-          this.swUpdate.activateUpdate()
-          // TODO: OR????
-          // window.location.reload
-          console.log(`Page reloaded to install next version!`)
-        } else {
-          console.log(`Don't update YET...`)
-        }
-      }
+    if (updatesAvailable) {
+      // if( confirm(`Reload the page to update from current version ${evt.currentVersion} to latest version ${evt.latestVersion}. Proceed now?`)) { //TODO:
+      //if( confirm(`Reload the page to update from the current to the latest version. Proceed now?`)) { // TODO: This showed up for every page refresh!!! (Try CNTRL-F5?)
+      /* BUG: Gets: Error: Uncaught (in promise): Error: Service workers are disabled or not supported by this browser
+        Error: Service workers are disabled or not supported by this browser
+        at SwUpdate.activateUpdate (vendor.js:280128:29)
+        at AppComponent.ngOnInit (main.js:302:27) */
+      //this.swUpdate.activateUpdate()
+      // TODO: OR????
+      // window.location.reload
+      console.log(`Reload page to install next version????`)
+      //  } else {
+      //    console.log(`Don't update YET...`)
+      //  }
+    }
 
     /*
 

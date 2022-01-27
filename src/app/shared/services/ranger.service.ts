@@ -21,6 +21,17 @@ export interface RangerType {
 export enum RangerStatus { '', 'Normal', 'Need Rest', 'REW', 'OnSite', 'Checked-in', 'Checked-out' }  // TODO: Allow changing list & default of statuses in settings?!
 
 
+/* Following gets:
+index.js:553 [webpack-dev-server] WARNING
+D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies */
+import * as XLSX from 'xlsx';
+
+/* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
+// https://github.com/SheetJS/SheetJS.github.io
+// D:\Projects\ImportExcel\sheetjs-master\demos\angular2\src\app\sheetjs.component.ts
+type AOA = any[][]  // array of arrays
+
 
 @Injectable({ providedIn: 'root' })
 export class RangerService {
@@ -32,6 +43,7 @@ export class RangerService {
   private rangersSubject =
     new BehaviorSubject<RangerType[]>([]);  // REVIEW: Necessary?
   private localStorageRangerName = 'rangers'
+  excelData: any[][] = [[1, 2, 3], [4, 5, 6]];
 
   constructor(private httpClient: HttpClient) {
     console.log("Rangers Service Construction")
@@ -156,9 +168,39 @@ import { HttpClient } from '@angular/common/http';
     */
 
 
+  //--------------------------------------------------------------------------
+  // https://ag-grid.com/javascript-data-grid/excel-import/#example-excel-import"
+  // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
+  LoadRangersFromExcel(eventTarget: any) {  // HTMLInputElement event:target
+
+    type AOA2 = RangerType[]  // array of arrays
+
+    // wire up file reader
+    const target: DataTransfer = <DataTransfer>(eventTarget);
+
+    debugger
+
+    if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+    const reader: FileReader = new FileReader();
+    reader.onload = (e: any) => {
+
+      // read workbook
+      const ab: ArrayBuffer = e.target.result;
+      const wb: XLSX.WorkBook = XLSX.read(ab);
+
+      // grab first sheet
+      const wsname: string = wb.SheetNames[0];
+      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+
+      // save data
+      this.rangers = <AOA2>(XLSX.utils.sheet_to_json(ws, {header: 1}));
+    };
+    reader.readAsArrayBuffer(target.files[0]);
+    return this.rangers
+  }
 
   //--------------------------------------------------------------------------
-  LoadRangersFromExcel() {
+  LoadRangersFromExcel2() {
     debugger
     let fnc = new csvImport(document)
     fnc.importExcel2()

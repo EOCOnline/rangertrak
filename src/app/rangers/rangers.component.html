@@ -91,6 +91,18 @@
     </p>
 
     <hr>
+    The next two options will *replace* any Rangers above with a new set from files:<br>
+    1) Load Rangers from Excel - then refresh the page...
+    <input type="file" (change)="onBtnImportExcel($event)" multiple="false" />
+    <!--button (click)="onBtnReloadPage()" type="button">Reload Page</button-->
+
+    <!--button (click)="onBtnImportExcel2()" style="margin-bottom: 5px">Import Rangers (CSV)</button-->
+    <br>
+
+    2) Import Rangers from a JSON file:
+    <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">Import
+      Rangers (JSON)</button><br>
+    <br>
 
     <br>
     <p>To maintain these changes between browser sessions, we write the table
@@ -108,6 +120,7 @@
     <div id="rangers__Fake">
       Add some FAKE/Hardcoded rangers to any existing rangers (then refresh page):
       <button (click)="generateFakeData()" type="button" id="enter__Fake--button">Add FAKE Rangers</button>
+      <button (click)="onBtnReloadPage()" type="button">Reload Page</button>
     </div>
   </details>
 
@@ -143,20 +156,11 @@
     <label for="myfile2">Select a file:</label>
     <input type="file2" id="myfile2" name="myfile2">
 
-    The next two options will *replace* any Rangers above with a new set from files:<br>
-    1) Load Rangers from Excel. <a href="https://ag-grid.com/javascript-data-grid/excel-import/#example-excel-import"
-      target="_blank">details:</a>
-      <input type="file" (change)="onBtnImportExcel($event)" multiple="false" />
-    <button (click)="onBtnImportExcel()" style="margin-bottom: 5px">Import Rangers (CSV)</button><br>
-
-    2) Import Rangers from a JSON file:
-    <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">Import
-      Rangers (JSON)</button><br>
-    <br>
 
 
     <!-- Array<Array<any>> neatly maps to this table
          https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/  -->
+    excelData:
     <table class="sjs-table">
       <tr *ngFor="let row of excelData">
         <td *ngFor="let val of row">

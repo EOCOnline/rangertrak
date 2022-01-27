@@ -38,7 +38,8 @@ export class RangersComponent implements OnInit {
   maxSeperatorWarnings = 3
   now: Date
   settings
-  excelData: any[][] = [[1, 2, 3], [4, 5, 6]];
+  excelData: AOA = [[1, 2, 3], [4, 5, 6]];
+  excelData2: RangerType[] = [] //[[1, 2, 3], [4, 5, 6]];
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {
@@ -205,30 +206,34 @@ export class RangersComponent implements OnInit {
     */
 
   //--------------------------------------------------------------------------
-  // From https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
+  // https://ag-grid.com/javascript-data-grid/excel-import/#example-excel-import"
+  // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
   onBtnImportExcel(evt: any) {
-    /* wire up file reader */
+    this.excelData2 = this.rangerService.LoadRangersFromExcel(evt.target)
+    /*
+     wire up file reader
     const target: DataTransfer = <DataTransfer>(evt.target);
     if (target.files.length !== 1) throw new Error('Cannot use multiple files');
     const reader: FileReader = new FileReader();
     reader.onload = (e: any) => {
-      /* read workbook */
+      // read workbook
       const ab: ArrayBuffer = e.target.result;
       const wb: XLSX.WorkBook = XLSX.read(ab);
 
-      /* grab first sheet */
+      // grab first sheet
       const wsname: string = wb.SheetNames[0];
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
-      /* save data */
+      // save data
       this.excelData = <AOA>(XLSX.utils.sheet_to_json(ws, {header: 1}));
     };
     reader.readAsArrayBuffer(target.files[0]);
+    */
   }
 
   //--------------------------------------------------------------------------
   onBtnImportExcel2() {
-    this.rangerService.LoadRangersFromExcel()
+    this.rangerService.LoadRangersFromExcel2()
     console.log(`Got excel file`)
     window.location.reload
   }
@@ -313,8 +318,10 @@ export class RangersComponent implements OnInit {
     return wb;
   };
 
-
-
+ //--------------------------------------------------------------------------
+  onBtnReloadPage() {
+    window.location.reload
+  }
 
   //--------------------------------------------------------------------------
   // following from https://ag-grid.com/javascript-data-grid/csv-export/
