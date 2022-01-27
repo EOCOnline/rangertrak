@@ -38,7 +38,7 @@ export class RangersComponent implements OnInit {
   maxSeperatorWarnings = 3
   now: Date
   settings
-  data: any[][] = [[1, 2, 3], [4, 5, 6]];
+  excelData: any[][] = [[1, 2, 3], [4, 5, 6]];
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {
@@ -175,7 +175,7 @@ export class RangersComponent implements OnInit {
       }
     }
     else {
-      console.log(`${e != null} &&& ${e.target}`)
+      console.log(`${e} &&& ${e.target}`)
     }
     //this.localUrl //: any[]
     this.rangerService.LoadRangersFromJSON(e.target.files[0])
@@ -205,7 +205,29 @@ export class RangersComponent implements OnInit {
     */
 
   //--------------------------------------------------------------------------
-  onBtnImportExcel() {
+  // From https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
+  onBtnImportExcel(evt: any) {
+    /* wire up file reader */
+    const target: DataTransfer = <DataTransfer>(evt.target);
+    if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+    const reader: FileReader = new FileReader();
+    reader.onload = (e: any) => {
+      /* read workbook */
+      const ab: ArrayBuffer = e.target.result;
+      const wb: XLSX.WorkBook = XLSX.read(ab);
+
+      /* grab first sheet */
+      const wsname: string = wb.SheetNames[0];
+      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+
+      /* save data */
+      this.excelData = <AOA>(XLSX.utils.sheet_to_json(ws, {header: 1}));
+    };
+    reader.readAsArrayBuffer(target.files[0]);
+  }
+
+  //--------------------------------------------------------------------------
+  onBtnImportExcel2() {
     this.rangerService.LoadRangersFromExcel()
     console.log(`Got excel file`)
     window.location.reload
@@ -277,12 +299,12 @@ export class RangersComponent implements OnInit {
     const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
     /* save data */
-    this.data = (XLSX.utils.sheet_to_json(ws, { header: 1 }) as AOA);
+    this.excelData = (XLSX.utils.sheet_to_json(ws, { header: 1 }) as AOA);
   };
 
   write(): XLSX.WorkBook {
     /* generate worksheet */
-    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(this.data);
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(this.excelData);
 
     /* generate workbook and add the worksheet */
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
