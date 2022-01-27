@@ -192,7 +192,10 @@ export class FieldReportsComponent implements OnInit {
     }else {
       console.log("no this.gridApi yet in ngOnInit()")
     }
+  }
 
+  reloadPage() {
+    window.location.reload
   }
 
   isValidDate(d: any) {

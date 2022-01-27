@@ -93,7 +93,7 @@ export class RangersComponent implements OnInit {
     private _snackBar: MatSnackBar,
     @Inject(DOCUMENT) private document: Document
   ) {
-    console.log(`Rangers Component Construction at ${Date()}`)
+    console.log(`Rangers Component Construction at ${Date.now}`)
 
     this.alert = new AlertsComponent(this._snackBar, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
     //this.teamService = teamService
@@ -108,7 +108,7 @@ export class RangersComponent implements OnInit {
   ngOnInit(): void {
 
     this.rangers = this.rangerService.GetRangers()
-    console.log(`ngInit: ${this.rangers.length} Rangers retrieved from Local Storage and/or fakes generated`)
+    console.log(`ngInit: ${this.rangers.length} Rangers retrieved from Local Storage`)
 
     if (this.rangers.length < 1) {
       this.alert.Banner("No Rangers have been entered yet. Go to the bottom & click on 'Advanced' to resolve.")
@@ -128,14 +128,27 @@ export class RangersComponent implements OnInit {
     this.gridColumnApi = params.columnApi;
     params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
     // TODO: use this line, or next routine?!
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+    } else {
+      console.log("no this.gridApi yet in ngOnInit()")
+    }
   }
 
   onFirstDataRendered(params: any) {
     params.api.sizeColumnsToFit();
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+    } else {
+      console.log("no this.gridApi yet in ngOnInit()")
+    }
   }
-  // once the above is done, you can: <button (click)="myGrid.api.deselectAll()">Clear Selection</button>
 
   //--------------------------------------------------------------------------
+  onDeselectAll() {
+    this.gridApi.deselectAll()
+  }
+
   onBtnUpdateLocalStorage() {
     this.rangerService.UpdateLocalStorage()
   }
@@ -143,9 +156,10 @@ export class RangersComponent implements OnInit {
 
   //--------------------------------------------------------------------------
   onBtnImportJson(e: any): void { // PointerEvent ?!
+    console.log(`onBtnImportJson() ------------`)
     // TODO: Move to RangerService...
     let Logo: string
-    debugger
+    //debugger
 
 
     if (e != null && e.target != null) {
@@ -160,6 +174,9 @@ export class RangersComponent implements OnInit {
         reader.readAsDataURL(e.target.files[0]);
       }
     }
+    else {
+      console.log(`${e != null} &&& ${e.target}`)
+    }
     //this.localUrl //: any[]
     this.rangerService.LoadRangersFromJSON(e.target.files[0])
     window.location.reload
@@ -171,21 +188,21 @@ export class RangersComponent implements OnInit {
     //console.log
     alert(`onBtnImportRangers: Ranger Import from Excel file is unimoplemented currently`)
   }
-/*
-from https://blog.ag-grid.com/refresh-grid-after-data-change/
-  this.http
-  .get(
-    "https://raw.githubusercontent.com/ag-grid/ag-grid/master/grid-packages/ag-grid-docs/src/olympicWinnersSmall.json"
-  )
-  .subscribe((data: any[]) => {
-    data.length = 10;
-    data = data.map((row, index) => {
-      return { ...row, id: index + 1 };
+  /*
+  from https://blog.ag-grid.com/refresh-grid-after-data-change/
+    this.http
+    .get(
+      "https://raw.githubusercontent.com/ag-grid/ag-grid/master/grid-packages/ag-grid-docs/src/olympicWinnersSmall.json"
+    )
+    .subscribe((data: any[]) => {
+      data.length = 10;
+      data = data.map((row, index) => {
+        return { ...row, id: index + 1 };
+      });
+      this.backupRowData = data;
+      this.rowData = data;
     });
-    this.backupRowData = data;
-    this.rowData = data;
-  });
-  */
+    */
 
   //--------------------------------------------------------------------------
   onBtnImportExcel() {
