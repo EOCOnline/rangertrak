@@ -137,8 +137,6 @@ export class RangerService {
   //See pg. 279...
   //import * as data from filename;
   //let greeting = data.greeting;
-
-
   /*   import {default as AAA} from "VashonCallSigns";
         AAA.targetKey
         // this requires `"resolveJsonModule": true` in tsconfig.json
@@ -167,18 +165,15 @@ import { HttpClient } from '@angular/common/http';
 
     */
 
-
   //--------------------------------------------------------------------------
   // https://ag-grid.com/javascript-data-grid/excel-import/#example-excel-import"
   // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
   LoadRangersFromExcel(eventTarget: any) {  // HTMLInputElement event:target
 
-    type AOR = RangerType[]  // array of arrays
+    type AOR = RangerType[]  // array of Rangers
 
     // wire up file reader
     const target: DataTransfer = <DataTransfer>(eventTarget);
-
-
 
     if (target.files.length !== 1) throw new Error('Cannot use multiple files');
     console.log(`LoadRangersFromExcel(): About to read contents of ${target.files[0].name}`)
@@ -193,18 +188,57 @@ import { HttpClient } from '@angular/common/http';
       const wsname: string = wb.SheetNames[0];
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
-      // save data
-      this.rangers = <AOR>(XLSX.utils.sheet_to_json(ws, { header: 1 }))
+      debugger
 
+      let myJson = JSON.stringify(XLSX.utils.sheet_to_json(ws, { header: 1 }))
+
+      console.log(`myJson = ${myJson}`)
+      let myJson2 = JSON.parse(myJson)
+      console.log(`myJson2 = ${myJson2}`)
+      console.log(`1 Got ${this.rangers.length} rangers from Excel file.`)
+
+      // save data
+      this.rangers = <AOR>(myJson2)
+      console.log(`2 Got ${this.rangers.length} rangers from Excel file...`)
+
+      //this.rangers = JSON.parse(myJson)
     };
+    console.log(`3 Got ${this.rangers.length} rangers from Excel file.`)
+
     this.DisplayRangers(`Excel import from ${target.files[0].name}`)
+    console.log(`4 Got ${this.rangers.length} rangers from Excel file.`)
+
     reader.readAsArrayBuffer(target.files[0]);
 
+    console.log(`5 Got ${this.rangers.length} rangers from Excel file.`)
+    this.SortRangersByCallsign()
+
+    // this.UpdateLocalStorage
     return this.rangers
   }
 
+  /* Console log:
+    LoadRangersFromExcel(): About to read contents of RangersExport.2022-0-27_8_36.csv
+    ranger.service.ts:206 3 Got 0 rangers from Excel file.
+    ranger.service.ts:224 Excel import from RangersExport.2022-0-27_8_36.csv: (1st 0 rows:)
+    ranger.service.ts:209 4 Got 0 rangers from Excel file.
+    ranger.service.ts:213 5 Got 0 rangers from Excel file.
+    rangers.component.ts:214 excelData2: []
+    ranger.service.ts:195 myJson = [["CallSign","Name","Phone","Address","Image","Team","Icon","Status","Note"],
+    ["AC7TB","Sullivan, Timothy X","206-463-0000","St, Vashon, WA","./assets/imgs/REW/female.png",null,null,"Normal","no note"],
+    ["AE7MW","Smueles, Robert E","206-463-0000","St, Vashon, WA","./assets/imgs/REW/RickWallace.png",null,null,"Normal","no note"],
+    ["AE7RW","York, Randy K","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0003.jpg",null,null,"Normal","no note"],
+    ["AE7SD","Danielson, Sharon J","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0034.jpg",null,null,"Normal","no note"],["AE7TH","Hardy, Timothy R","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0038.jpg",null,null,"Normal","no note"],["AG7TJ","Lindgren, Katrina J","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0041.jpg",null,null,"Normal","no note"],["AK7C","Mcdonald, Michael E","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0056.jpg",null,null,"Normal","no note"],["K1SAB","Brown, Steven A","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0058.jpg",null,null,"Normal","no note"],["K3QNQ","Treese, F Mitch A","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0069.jpg",null,null,"Normal","no note"],["K6AJV","Valencia, Andrew J","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-007.jpg",null,null,"Normal","no note"],["K7AJT","Tharp, Adam J","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0073.jpg",null,null,"Normal","no note"],["K7DGL","Luechtefeld, Daniel","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0073.jpg",null,null,"Normal","no note"],["K7KMS","Paull, Steven","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0089.jpg",null,null,"Normal","no note"],["K7NHV","Francisco, Albert K","206-463-0000","St, Vashon, WA","./assets/imgs/REW/male.png",null,null,"Normal","no note"],["K7VMI","De Steiguer, Allen L","206-463-0000","St, Vashon, WA","./assets/imgs/REW/K7VMI.jpg",null,null,"Normal","no note"],["KA7THJ","Hanson, Jay R","206-463-0000","St, Vashon, WA","./assets/imgs/REW/male.png",null,null,"Normal","no note"],["KB0LJC","Hirsch, Justin D","206-463-0000","St, Vashon, WA","./assets/imgs/REW/male.png",null,null,"Normal","no note"],["KB7LEV","Lysen, Kurt A","206-463-0000","St, Vashon, WA","./assets/imgs/REW/female.png",null,null,"Normal","no note"],["KB7MTM","Meyer, Michael T","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0123.jpg",null,null,"Normal","no note"],["KE7KDQ","Cornelison, John","206-463-0000","St, Vashon, WA","./assets/imgs/REW/ke7kdq.jpg",null,null,"Normal","no note"]]
+    ranger.service.ts:197 myJson2 = CallSign,Name,Phone,Address,Image,Team,Icon,Status,Note,
+    AC7TB,Sullivan, Timothy X,206-463-0000,St, Vashon, WA,./assets/imgs/REW/female.png,,,Normal,no note,
+    AE7MW,Smueles, Robert E,206-463-0000,St, Vashon, WA,./assets/imgs/REW/RickWallace.png,,,Normal,no note,
+    AE7RW,York, Randy K,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0003.jpg,,,Normal,no note,AE7SD,Danielson, Sharon J,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0034.jpg,,,Normal,no note,AE7TH,Hardy, Timothy R,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0038.jpg,,,Normal,no note,AG7TJ,Lindgren, Katrina J,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0041.jpg,,,Normal,no note,AK7C,Mcdonald, Michael E,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0056.jpg,,,Normal,no note,K1SAB,Brown, Steven A,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0058.jpg,,,Normal,no note,K3QNQ,Treese, F Mitch A,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0069.jpg,,,Normal,no note,K6AJV,Valencia, Andrew J,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-007.jpg,,,Normal,no note,K7AJT,Tharp, Adam J,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0073.jpg,,,Normal,no note,K7DGL,Luechtefeld, Daniel,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0073.jpg,,,Normal,no note,K7KMS,Paull, Steven,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0089.jpg,,,Normal,no note,K7NHV,Francisco, Albert K,206-463-0000,St, Vashon, WA,./assets/imgs/REW/male.png,,,Normal,no note,K7VMI,De Steiguer, Allen L,206-463-0000,St, Vashon, WA,./assets/imgs/REW/K7VMI.jpg,,,Normal,no note,KA7THJ,Hanson, Jay R,206-463-0000,St, Vashon, WA,./assets/imgs/REW/male.png,,,Normal,no note,KB0LJC,Hirsch, Justin D,206-463-0000,St, Vashon, WA,./assets/imgs/REW/male.png,,,Normal,no note,KB7LEV,Lysen, Kurt A,206-463-0000,St, Vashon, WA,./assets/imgs/REW/female.png,,,Normal,no note,KB7MTM,Meyer, Michael T,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0123.jpg,,,Normal,no note,KE7KDQ,Cornelison, John,206-463-0000,St, Vashon, WA,./assets/imgs/REW/ke7kdq.jpg,,,Normal,no note
+    ranger.service.ts:198 1 Got 0 rangers from Excel file.
+    ranger.service.ts:202 2 Got 21 rangers from Excel file...
+*/
+
   //--------------------------------------------------------------------------
-  DisplayRangers(msg:string){
+  DisplayRangers(msg: string) {
     let len = 10
     if (this.rangers.length < len) len = this.rangers.length
     console.log(`${msg}: (1st ${len} rows:)`)
