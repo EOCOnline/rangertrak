@@ -262,12 +262,10 @@ export class GmapComponent implements OnInit {    //extends Map
     });
   }
 
-  onMapInitialized(x: google.maps.Map) {
-    console.log(`onMapInitialized() got called!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
-    //debugger
-    //console.log(`onMapInitialized() ${JSON.stringify(x)}`)
+  onMapInitialized(mappy: google.maps.Map) {
+    console.log(`onMapInitialized()`)
 
-    this.gMap = x
+    this.gMap = mappy
 
     if (this.gMap == null) {
       console.log("onMapInitialized(): This.gMap is null")
@@ -275,7 +273,11 @@ export class GmapComponent implements OnInit {    //extends Map
       console.log(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`)
 
       // Add a marker at the center of the map.
-      //this.addMarker(kaanapali);
+     /* new google.maps.Marker({
+        position: kahanaRidge,
+        map: this.gMap,
+        title: "Hello  kahanaRidge"
+      });*/
     }
 
     //this.gMap = document.getElementById("google-map") //as HTMLElement
@@ -300,11 +302,11 @@ export class GmapComponent implements OnInit {    //extends Map
     console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
   }
 
-  /*
+
     infowindow = new google.maps.InfoWindow({
-      content: 'How now Brown cow.',
-     // maxwidth: "200px",
-    });*/
+      //content: 'How now Brown cow.',
+      maxwidth: "200px",
+    });
 
   addMarker(event: google.maps.MapMouseEvent) {
     console.log(`addMarker`)
@@ -316,17 +318,18 @@ export class GmapComponent implements OnInit {    //extends Map
     if (event.latLng) {
       console.log("Actually adding marker now...")
       let m = new google.maps.Marker({
-        //  draggable: true,
-        //  animation: google.maps.Animation.DROP,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        map:this.gMap,
         position: event.latLng, //.toJSON()
-        //  title: new Date().getTime().toString(),
-        /*   label: {
+        title: Date.now,
+        label: {
              text: "\ue530", // codepoint from https://fonts.google.com/icons
              fontFamily: "Material Icons",
              color: "#ffffff",
              fontSize: "18px",
            },
-           */
+
         // label: labels[labelIndex++ % labels.length],
       })
 
@@ -350,18 +353,25 @@ export class GmapComponent implements OnInit {    //extends Map
         return marker;
       }
       */
-      /*
+     let time = Date.now()
+     let pos = JSON.stringify(event.latLng)
+     console.log(`addMarker: ${time}`)
+     console.log(`addMarker: ${pos}`)
+
             m.addListener("click",   // this.toggleBounce)
               () => {
+                this.infowindow.setContent(`time:, pos: `)
                 this.infowindow.open({
-                  anchor: m,
-                  setPosition: event.latLng,
-                  // map: this.map,
+                 // new google.maps.InfoWindow.open({
+                  //content: 'How now red cow.',
+                 // anchor: m,
+                  //setPosition: event.latLng,
+                  map: this.gMap,
                   // shouldFocus: false,
                 })
               }
             )
-      */
+
       // This event listener calls addMarker() when the map is clicked.
       /*  vs
           google.maps.event.addListener(map, "click", (event) => {
