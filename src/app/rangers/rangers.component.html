@@ -77,32 +77,17 @@
 
     If no rangers exist, or you would like to replace those shown above, either:
     <ol>
-      <li>BEST: Use the "Add FAKE Rangers" button to import some usable rangers. Contact John with a better list to have
-        these updated... Then REFRESH PAGE!</li>
+      <li>BEST: Use the "Add FAKE Rangers" button to import some usable rangers.   <p>This list of potential Rangers was taken from the FCC Database in January 2022. <br>
+        It has been significantly reformatted and your edits may alter it further.
+      </p>Contact John with a better list if desired... Then REFRESH PAGE!</li>
       <li>
-        FUTURE: Enter rangers into the grid</li>
-      <li>Create src/app/shared/services/rangers.json file for auto import, or</li>
-      <li>Future: import an excel file.</li>
-
+        FUTURE: Enter rangers into the grid. Then SAVE RANGERS below and then REFRESH PAGE!</li>
+      <li>Import Rangers from a JSON file:  <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">Import
+          Rangers (JSON)</button><br>, or</li>
+      <li>Replace existing Rangers with those from an Excel file:   <input type="file" (change)="onBtnImportExcel($event)" multiple="false"  accept=".csv, .xls, .xslt"/>
+        Then SAVE RANGERS below and then REFRESH PAGE!  </li>
     </ol>
-
-    <p>This list of potential Rangers was taken from the FCC Database in January 2022. <br>
-      It has been significantly reformatted and your edits may alter it further.
-    </p>
-
     <hr>
-    The next two options will *replace* any Rangers above with a new set from files:<br>
-    1) Load Rangers from Excel - then refresh the page...
-    <input type="file" (change)="onBtnImportExcel($event)" multiple="false" />
-    <!--button (click)="onBtnReloadPage()" type="button">Reload Page</button-->
-
-    <!--button (click)="onBtnImportExcel2()" style="margin-bottom: 5px">Import Rangers (CSV)</button-->
-    <br>
-
-    2) Import Rangers from a JSON file:
-    <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">Import
-      Rangers (JSON)</button><br>
-    <br>
 
     <br>
     <p>To maintain these changes between browser sessions, we write the table
@@ -120,7 +105,7 @@
     <div id="rangers__Fake">
       Add some FAKE/Hardcoded rangers to any existing rangers (then refresh page):
       <button (click)="generateFakeData()" type="button" id="enter__Fake--button">Add FAKE Rangers</button>
-      <button (click)="onBtnReloadPage()" type="button">Reload Page</button>
+      <!--button (click)="onBtnReloadPage()" type="button">Reload Page</button-->
     </div>
   </details>
 

@@ -64,6 +64,7 @@ export class RangersComponent implements OnInit {
     floatingFilter: true
   }
 
+  // ToDo: On hovering, display a larger image!
   imageCellRenderer = (params: { data: RangerType }) => {
     return `<img class="licenseImg" style="height:40px; width=40px;" alt= "${params.data.licensee}" title="${params.data.callsign} : ${params.data.licensee}"
     src= "${params.data.image}">`
@@ -76,15 +77,15 @@ export class RangersComponent implements OnInit {
   }
 
   columnDefs = [
-    { headerName: "CallSign", field: "callsign", cellRenderer: this.callsignCellRenderer },
-    { headerName: "Name", field: "licensee", tooltipField: "team" },
-    { headerName: "Phone", field: "phone", singleClickEdit: true, flex: 40 },
-    { headerName: "Address", field: "address", singleClickEdit: true, flex: 40 },
-    { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer },
-    { headerName: "Team", field: "team" },  // TODO: Change to string representation - within Ag-grid???
-    { headerName: "Icon", field: "icon" },  // TODO: Change to string representation - within Ag-grid???
-    { headerName: "Status", field: "status", flex: 40 },
-    { headerName: "Note", field: "note", flex: 60 },
+    { headerName: "callsign", field: "callsign", cellRenderer: this.callsignCellRenderer },
+    { headerName: "licensee", field: "licensee", tooltipField: "team" },
+    { headerName: "phone", field: "phone", singleClickEdit: true, flex: 40 },
+    { headerName: "address", field: "address", singleClickEdit: true, flex: 40 },
+    { headerName: "image", field: "image", cellRenderer: this.imageCellRenderer },
+    { headerName: "team", field: "team" },  // TODO: Change to string representation - within Ag-grid???
+    { headerName: "icon", field: "icon" },  // TODO: Change to string representation - within Ag-grid???
+    { headerName: "status", field: "status", flex: 40 },
+    { headerName: "note", field: "note", flex: 60 },
   ];
 
   constructor(

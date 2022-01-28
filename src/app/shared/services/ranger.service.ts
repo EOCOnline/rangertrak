@@ -8,7 +8,7 @@ import * as rangers from '../../../assets/data/Rangers.json'
 export interface RangerType {
   callsign: string
   licensee: string
-  licenseKey: number
+  // licenseKey: number
   phone: string
   address: string
   image: string
@@ -77,7 +77,7 @@ export class RangerService {
       ranger => ({
         callsign: ranger.callsign,
         licensee: ranger.licensee,
-        licenseKey: ranger.licenseKey,
+        // licenseKey: ranger.licenseKey,
         phone: ranger.phone,
         address: ranger.address,
         image: ranger.image,
@@ -173,14 +173,15 @@ import { HttpClient } from '@angular/common/http';
   // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
   LoadRangersFromExcel(eventTarget: any) {  // HTMLInputElement event:target
 
-    type AOA2 = RangerType[]  // array of arrays
+    type AOR = RangerType[]  // array of arrays
 
     // wire up file reader
     const target: DataTransfer = <DataTransfer>(eventTarget);
 
-    debugger
+
 
     if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+    console.log(`LoadRangersFromExcel(): About to read contents of ${target.files[0].name}`)
     const reader: FileReader = new FileReader();
     reader.onload = (e: any) => {
 
@@ -193,10 +194,24 @@ import { HttpClient } from '@angular/common/http';
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
       // save data
-      this.rangers = <AOA2>(XLSX.utils.sheet_to_json(ws, {header: 1}));
+      this.rangers = <AOR>(XLSX.utils.sheet_to_json(ws, { header: 1 }))
+
     };
+    this.DisplayRangers(`Excel import from ${target.files[0].name}`)
     reader.readAsArrayBuffer(target.files[0]);
+
     return this.rangers
+  }
+
+  //--------------------------------------------------------------------------
+  DisplayRangers(msg:string){
+    let len = 10
+    if (this.rangers.length < len) len = this.rangers.length
+    console.log(`${msg}: (1st ${len} rows:)`)
+    for (let i = 0; i < len; i++) {
+      console.log(`${i} as $$: ${JSON.stringify(this.rangers[i])}`)
+      //console.log(`${i} as $$: ${JSON.stringify(this.rangers[i])}`)
+    }
   }
 
   //--------------------------------------------------------------------------
@@ -284,26 +299,26 @@ import { HttpClient } from '@angular/common/http';
         */
 
     this.rangers.push(
-      { callsign: "KB0LJC", licensee: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "AC7TB", licensee: "Sullivan, Timothy X", image: "./assets/imgs/REW/female.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "KE7KDQ", licensee: "Cornelison, John", image: "./assets/imgs/REW/ke7kdq.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "AE7MW", licensee: "Smueles, Robert E", image: "./assets/imgs/REW/RickWallace.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "AE7RW", licensee: "York, Randy K", image: "./assets/imgs/REW/VI-0003.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "AE7SD", licensee: "Danielson, Sharon J", image: "./assets/imgs/REW/VI-0034.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "AE7TH", licensee: "Hardy, Timothy R", image: "./assets/imgs/REW/VI-0038.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "AG7TJ", licensee: "Lindgren, Katrina J", image: "./assets/imgs/REW/VI-0041.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "AK7C", licensee: "Mcdonald, Michael E", image: "./assets/imgs/REW/VI-0056.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "K1SAB", licensee: "Brown, Steven A", image: "./assets/imgs/REW/VI-0058.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "K3QNQ", licensee: "Treese, F Mitch A", image: "./assets/imgs/REW/VI-0069.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "K6AJV", licensee: "Valencia, Andrew J", image: "./assets/imgs/REW/VI-007.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "K7AJT", licensee: "Tharp, Adam J", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "K7DGL", licensee: "Luechtefeld, Daniel", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "K7KMS", licensee: "Paull, Steven", image: "./assets/imgs/REW/VI-0089.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "K7NHV", licensee: "Francisco, Albert K", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "K7VMI", licensee: "De Steiguer, Allen L", image: "./assets/imgs/REW/K7VMI.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "KA7THJ", licensee: "Hanson, Jay R", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "KB7LEV", licensee: "Lysen, Kurt A", image: "./assets/imgs/REW/female.png", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" },
-      { callsign: "KB7MTM", licensee: "Meyer, Michael T", image: "./assets/imgs/REW/VI-0123.jpg", phone: "206-463-0000", address: "St, Vashon, WA", licenseKey: 0, team: "", icon: "", status: "Normal", note: "" }
+      { callsign: "KB0LJC", licensee: "Hirsch, Justin D", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "AC7TB", licensee: "Sullivan, Timothy X", image: "./assets/imgs/REW/female.png", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "KE7KDQ", licensee: "Cornelison, John", image: "./assets/imgs/REW/ke7kdq.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "AE7MW", licensee: "Smueles, Robert E", image: "./assets/imgs/REW/RickWallace.png", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "AE7RW", licensee: "York, Randy K", image: "./assets/imgs/REW/VI-0003.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "AE7SD", licensee: "Danielson, Sharon J", image: "./assets/imgs/REW/VI-0034.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "AE7TH", licensee: "Hardy, Timothy R", image: "./assets/imgs/REW/VI-0038.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "AG7TJ", licensee: "Lindgren, Katrina J", image: "./assets/imgs/REW/VI-0041.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "AK7C", licensee: "Mcdonald, Michael E", image: "./assets/imgs/REW/VI-0056.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "K1SAB", licensee: "Brown, Steven A", image: "./assets/imgs/REW/VI-0058.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "K3QNQ", licensee: "Treese, F Mitch A", image: "./assets/imgs/REW/VI-0069.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "K6AJV", licensee: "Valencia, Andrew J", image: "./assets/imgs/REW/VI-007.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "K7AJT", licensee: "Tharp, Adam J", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "K7DGL", licensee: "Luechtefeld, Daniel", image: "./assets/imgs/REW/VI-0073.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "K7KMS", licensee: "Paull, Steven", image: "./assets/imgs/REW/VI-0089.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "K7NHV", licensee: "Francisco, Albert K", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "K7VMI", licensee: "De Steiguer, Allen L", image: "./assets/imgs/REW/K7VMI.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "KA7THJ", licensee: "Hanson, Jay R", image: "./assets/imgs/REW/male.png", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "KB7LEV", licensee: "Lysen, Kurt A", image: "./assets/imgs/REW/female.png", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" },
+      { callsign: "KB7MTM", licensee: "Meyer, Michael T", image: "./assets/imgs/REW/VI-0123.jpg", phone: "206-463-0000", address: "St, Vashon, WA", team: "", icon: "", status: "Normal", note: "" }
     )
     //console.log(`Next: update LocalStorage: ${this.localStorageRangerName}`)
     this.SortRangersByCallsign()
@@ -327,23 +342,23 @@ import { HttpClient } from '@angular/common/http';
 }
 
 
-  /*
-  export class Ranger {
+/*
+export class Ranger {
 
-    static nextId = 1;
-    id: Number;
-    date: Date;
-    callSign: string;
-    licensee: string;
+  static nextId = 1;
+  id: Number;
+  date: Date;
+  callSign: string;
+  licensee: string;
 
-    constructor(callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string) {
-      this.id = Ranger.nextId++; // TODO: OK if user restarts app during SAME mission #?
-      this.date = new Date();
-      this.callSign = callSign;
-      this.licensee = licensee;
+  constructor(callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string) {
+    this.id = Ranger.nextId++; // TODO: OK if user restarts app during SAME mission #?
+    this.date = new Date();
+    this.callSign = callSign;
+    this.licensee = licensee;
 
-      // add validation code here?! or in forms code?
-    }
+    // add validation code here?! or in forms code?
+  }
 
-  }*/
+}*/
 
