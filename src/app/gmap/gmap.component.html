@@ -2,11 +2,15 @@
 
 <details>
   <summary class="big">Instructions</summary>
-  This currently displays all rangers/teams without filtering. In the future more options should be available, including different icons/text boxes, etc.<br />
+  This currently displays all rangers/teams without filtering. In the future more options should be available, including
+  different icons/text boxes, etc.<br />
   <ul>
-    <li style="color:red">If most recent field reports are not displayed, please curse then refresh the page, or try switching temporarily to another views. Let me know, but I believe they are getting stored.</li>
-    <li>NOTE: per <a href="https://issuetracker.google.com/issues/35827808" target="_blank">#35827808</a> this map can NOT be made available when offline!</li>
-    <li>Zoom in close (in some populated areas) to display the tilt control at lower left on map: allows map tilting & rotation</li>
+    <li style="color:red">If most recent field reports are not displayed, please curse then refresh the page, or try
+      switching temporarily to another views. Let me know, but I believe they are getting stored.</li>
+    <li>NOTE: per <a href="https://issuetracker.google.com/issues/35827808" target="_blank">#35827808</a> this map can
+      NOT be made available when offline!</li>
+    <li>Zoom in close (in some populated areas) to display the tilt control at lower left on map: allows map tilting &
+      rotation</li>
     <li>Keyboard controls can be displayed with button at lower right of map</li>
     <li>FUTURE: Hover to display coordinates and callsign</li>
     <li>FUTURE: click to display coordinates</li>
@@ -16,40 +20,41 @@
 <br>
 <mat-icon aria-hidden="false" aria-label="Example icon">{{myIcon}}</mat-icon>
 
-<google-map id="map" width="100%"
-  [center]="center" [zoom]="zoom" [options]="options"
-  (mapClick)="addMarker($event)"
-  (mapMousemove)="move($event)"
-  (mapRightclick)="addTrafficLayer()">
+<div *ngIf="apiLoaded"> <!-- | async -->
+  <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options" (mapClick)="addMarker($event)"
+    (mapMousemove)="move($event)" (mapRightclick)="initZoomControl2()"
+    (mapInitialized)="onMapInitialized($event)">
 
-  <div id="markerDiv" #markerDiv
-    *ngFor="let marker of markers"
+    <div id="markerDiv" #markerDiv *ngFor="let marker of markers" (mapClick)="openInfoWindow($event)">
+    </div>
 
-    (mapClick)="openInfoWindow($event)">
-  </div>
-
-      <!--
+    <!--
         [position]="marker.position"
         [options]="marker.options"  -->
 
+        <map-circle [center]="circleCenter"
+              [radius]="radius"></map-circle>
 
-  <map-info-window>{{ infoContent }}</map-info-window>
+    <map-info-window>{{ infoContent }}</map-info-window>
 
-</google-map>
+  </google-map>
 
-<div>Latitude: {{display?.lat}}</div>
-<div>Longitude: {{display?.lng}}</div>
+  <div>Latitude: {{display?.lat}}</div>
+  <div>Longitude: {{display?.lng}}</div>
 
-<br>
-<button (click)="zoomIn()">Zoom in</button>
-<button (click)="zoomOut()">Zoom out</button>
+  <br>
+  <button (click)="zoomIn()">Zoom in</button>
+  <button (click)="zoomOut()">Zoom out</button>
+  <button (click)="onAustralia()">visit Australia</button>
+</div>
 
 <details>
   <summary class="big">Advanced</summary>
   <ul>
     <li>This might be used to set filtering options - or maybe we rely on selections made in the Field Report
       pane/window...</li>
-      <li><a href="https://developers.google.com/maps/documentation/javascript/reference/map">Detailed code/option references</a></li>
+    <li><a href="https://developers.google.com/maps/documentation/javascript/reference/map">Detailed code/option
+        references</a></li>
 
   </ul>
   <button (click)="logCenter()">Log center</button>
@@ -57,3 +62,5 @@
   <!--button (click)="addMarker()">Add marker</button-->
 </details>
 <br>
+<hr>
+<div id="map2"></div>

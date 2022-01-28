@@ -10,6 +10,8 @@ import { DOCUMENT, JsonPipe } from '@angular/common';
 // import "./style.css";
 import { SettingsService } from '../shared/services';
 import { ComponentFixture } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map, Observable, of } from 'rxjs';
 
 /* Status:
 This version tries to display map markers using markers[]: google.Map.Marker[]
@@ -51,8 +53,9 @@ GoogleMapsModule exports three components that we can use:
 */
 
 declare const google: any
-const Kaanapali = new google.maps.LatLng(-34.397, 150.644)
-const kaanapali:google.maps.LatLngLiteral = {lat:-34.397, lng: 150.644}
+//const Kaanapali = new google.maps.LatLng(-34.397, 150.644)
+const kaanapali: google.maps.LatLngLiteral = { lat: -34.397, lng: 150.644 }
+const kahanaRidge: google.maps.LatLngLiteral = { lat: 20.973375, lng: -156.664915 }
 let marker: google.maps.Marker
 
 @Component({
@@ -81,6 +84,10 @@ export class GmapComponent implements OnInit {    //extends Map
   title = 'Google Map (implemented as an Angular Component)'
   display?: google.maps.LatLngLiteral;
 
+
+  // google.maps.Map is NOT the same as GoogleMap...
+  gMap?: google.maps.Map
+
   // items for <google-map>
   zoom
   center: google.maps.LatLngLiteral
@@ -91,6 +98,7 @@ export class GmapComponent implements OnInit {    //extends Map
     mapTypeId: 'hybrid',
     maxZoom: 18,
     minZoom: 8,
+    draggableCursor: 'crosshair', //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
     //heading: 90,
   }
   //latitude
@@ -108,10 +116,21 @@ export class GmapComponent implements OnInit {    //extends Map
   labelIndex = 0;
   infoContent = ''
 
+  apiLoaded //: Observable<boolean>
   // infowindow5 = new google.maps.InfoWindow({ content: 'How now Brown cow.', });
+
+ // center: google.maps.LatLngLiteral = {lat: 24, lng: 12};
+  //zoom = 4;
+
+  circleCenter: google.maps.LatLngLiteral = kahanaRidge //{lat: 24, lng: 12}
+  radius = 30;
+
+
+
 
   constructor(
     private settingsService: SettingsService,
+    httpClient: HttpClient,
     @Inject(DOCUMENT) private document: Document) {
 
     // this.latitude = SettingsService.Settings.defLat
@@ -121,15 +140,28 @@ export class GmapComponent implements OnInit {    //extends Map
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
     this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }
-
+   // this.circleCenter: google.maps.LatLngLiteral = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong};
+    // https://github.com/angular/components/tree/master/src/google-maps
+    // this.apiLoaded = httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=${SettingsService.secrets[3].key}`, 'callback')
+    this.apiLoaded = true
+    /*httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4`, "callback")
+      .pipe(
+        map(() => true),
+        catchError(() => of(false)),
+      );
+*/
     //google.maps.event.addDomListener(window, 'load', this.initMap);
     // this.LoadMap()
 
-    //this.map = document.getElementById("google-map") //as HTMLElement
-    console.log('Google Maps API version: ' + google.maps.version)
-
+    //console.log('Google Maps API version: ' + google.maps.version)
     //super('MyName')
   }
+
+  apiLoadedCallbackUNUSED() {
+    console.log("got apiLoadedCallback()")
+  }
+
+
 
   ngOnInit(): void {
     console.log('into ngOnInit()')
@@ -144,6 +176,7 @@ export class GmapComponent implements OnInit {    //extends Map
       }
     })
 
+    // https://github.com/angular/components/tree/master/src/google-maps
     if (this.map == null) {
       console.log("This.map is null")
     } else {
@@ -155,14 +188,101 @@ export class GmapComponent implements OnInit {    //extends Map
       // Add a marker at the center of the map.
       //addMarker(kaanapali, this.map);
     }
-
-
+    if (this.gMap) {
+      console.log('try initZoomControl()')
+      this.initZoomControl(this.gMap)
+    } else {
+      console.log('gMap is null, so no initZoomControl()')
+    }
 
     console.log('out of ngOnInit()')
   }
 
   // -----------------------------------------------------------
   // Buttons
+  // TODO: Use mouse wheel to control zoom? Unused currently...
+  // consider: https://developers.google.com/maps/documentation/javascript/examples/control-custom-state
+  // https://developers.google.com/maps/documentation/javascript/examples/split-map-panes
+  // https://developers.google.com/maps/documentation/javascript/examples/inset-map
+
+  // from https://developers.google.com/maps/documentation/javascript/examples/control-replacement
+  initZoomControl(map: google.maps.Map) {
+    console.log('starting initZoomControl()');
+
+    (document.querySelector(".zoom-control-in") as HTMLElement).onclick =
+      function () {
+        map.setZoom(map.getZoom()! + 1);
+      };
+
+    (document.querySelector(".zoom-control-out") as HTMLElement).onclick =
+      function () {
+        map.setZoom(map.getZoom()! - 1);
+      };
+
+    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
+      document.querySelector(".zoom-control") as HTMLElement
+    );
+  }
+
+  initZoomControl2() {
+    if (this.gMap) {
+      console.log('try initZoomControl()')
+      this.initZoomControl(this.gMap)
+    } else {
+      console.log('gMap is null, so no initZoomControl()')
+    }
+  }
+
+  onAustralia(){
+    console.log('Lets visit Australia!')
+
+    //directly from
+    // https://developers.google.com/maps/documentation/javascript/examples/marker-simple#maps_marker_simple-typescript
+    const myLatLng = { lat: -25.363, lng: 131.044 };
+
+    const map = new google.maps.Map(
+      document.getElementById("map2") as HTMLElement,
+      {
+        zoom: 4,
+        center: myLatLng,
+        draggableCursor:'crosshair'
+      }
+    );
+/*
+    map.addListener("mousemove", () => {
+      map.setOptions({draggableCursor:'crosshair'});
+    }); */
+    // draggableCursor: The name or url of the cursor to display when mousing over a draggable map.
+    // draggingCursor:  The name or url of the cursor to display when the map is being dragged.
+
+    new google.maps.Marker({
+      position: myLatLng,
+      map,
+      title: "Hello World!",
+    });
+  }
+
+  onMapInitialized(x: google.maps.Map) {
+    console.log(`onMapInitialized() got called!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
+    //debugger
+    //console.log(`onMapInitialized() ${JSON.stringify(x)}`)
+
+    this.gMap = x
+
+    if (this.gMap == null) {
+      console.log("onMapInitialized(): This.gMap is null")
+    } else {
+      console.log(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`)
+
+      // Add a marker at the center of the map.
+      //this.addMarker(kaanapali);
+    }
+
+    //this.gMap = document.getElementById("google-map") //as HTMLElement
+  }
+
+
+
   zoomIn() {
     if (this.options.maxZoom != null) {
       if (this.zoom < this.options.maxZoom) this.zoom++
@@ -180,11 +300,11 @@ export class GmapComponent implements OnInit {    //extends Map
     console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
   }
 
-
-  infowindow = new google.maps.InfoWindow({
-    content: 'How now Brown cow.',
-    maxwidth: "200px",
-  });
+  /*
+    infowindow = new google.maps.InfoWindow({
+      content: 'How now Brown cow.',
+     // maxwidth: "200px",
+    });*/
 
   addMarker(event: google.maps.MapMouseEvent) {
     console.log(`addMarker`)
@@ -196,17 +316,17 @@ export class GmapComponent implements OnInit {    //extends Map
     if (event.latLng) {
       console.log("Actually adding marker now...")
       let m = new google.maps.Marker({
-      //  draggable: true,
-      //  animation: google.maps.Animation.DROP,
+        //  draggable: true,
+        //  animation: google.maps.Animation.DROP,
         position: event.latLng, //.toJSON()
-      //  title: new Date().getTime().toString(),
-     /*   label: {
-          text: "\ue530", // codepoint from https://fonts.google.com/icons
-          fontFamily: "Material Icons",
-          color: "#ffffff",
-          fontSize: "18px",
-        },
-        */
+        //  title: new Date().getTime().toString(),
+        /*   label: {
+             text: "\ue530", // codepoint from https://fonts.google.com/icons
+             fontFamily: "Material Icons",
+             color: "#ffffff",
+             fontSize: "18px",
+           },
+           */
         // label: labels[labelIndex++ % labels.length],
       })
 
@@ -230,18 +350,18 @@ export class GmapComponent implements OnInit {    //extends Map
         return marker;
       }
       */
-
-      m.addListener("click",   // this.toggleBounce)
-        () => {
-          this.infowindow.open({
-            anchor: m,
-            setPosition: event.latLng,
-           // map: this.map,
-           // shouldFocus: false,
-          })
-        }
-      )
-
+      /*
+            m.addListener("click",   // this.toggleBounce)
+              () => {
+                this.infowindow.open({
+                  anchor: m,
+                  setPosition: event.latLng,
+                  // map: this.map,
+                  // shouldFocus: false,
+                })
+              }
+            )
+      */
       // This event listener calls addMarker() when the map is clicked.
       /*  vs
           google.maps.event.addListener(map, "click", (event) => {
@@ -277,12 +397,13 @@ export class GmapComponent implements OnInit {    //extends Map
   }
 
   openInfoWindow(event: any) {
-    this.infowindow.open({
-      //anchor: m,
-      setPosition: event.latLng,
-      map: this.map,
-      shouldFocus: false,
-    })
+    /* this.infowindow.open({
+       //anchor: m,
+       setPosition: event.latLng,
+       map: this.gMap,
+       shouldFocus: false,
+     })
+     */
   }
 
   toggleBounce() {
@@ -313,10 +434,10 @@ export class GmapComponent implements OnInit {    //extends Map
       hybrid - displays a mixture of normal and satellite views.
       terrain - displays a physical map based on terrain information.
     */
-   console.log(`addTrafficLayer(): this.map: ${this.map}`)
-   console.log(`addTrafficLayer(): this.map.center: ${this.map.center}`)
+    console.log(`addTrafficLayer(): this.map: ${this.map}`)
+    console.log(`addTrafficLayer(): this.map.center: ${this.map.center}`)
     const trafficLayer = new google.maps.TrafficLayer();
-    trafficLayer.setMap(this.map);
+    trafficLayer.setMap(this.gMap);
 
     // https://developers.google.com/maps/documentation/javascript/maptypes
     // map.setTilt(45);
