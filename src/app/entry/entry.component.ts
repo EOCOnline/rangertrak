@@ -1,10 +1,16 @@
 import { DOCUMENT } from '@angular/common'
-import { Component, Inject, OnInit, isDevMode } from '@angular/core'
+import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar'
-import { Observable,debounceTime, map, startWith } from 'rxjs'
+import { Observable, debounceTime, map, startWith } from 'rxjs'
+
 import { AlertsComponent } from '../alerts/alerts.component'
 import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
+import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
+
+let marker: google.maps.Marker
+const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
+
 
 @Component({
   selector: 'rangertrak-entry',
@@ -13,6 +19,28 @@ import { FieldReportService, FieldReportStatuses, RangerService, RangerType, Set
   providers: [RangerService, FieldReportService, SettingsService, TeamService]
 })
 export class EntryComponent implements OnInit {
+
+  @ViewChild(GoogleMap, { static: false }) map!: GoogleMap // even needed?
+
+  display?: google.maps.LatLngLiteral;
+  vashon = new google.maps.LatLng(47.4471, -122.4627)
+
+  // google.maps.Map is NOT the same as GoogleMap...
+  gMap?: google.maps.Map
+  zoom = 13
+  center: google.maps.LatLngLiteral = Vashon
+  options: google.maps.MapOptions = {
+    zoomControl: false,
+    scrollwheel: false,
+    disableDoubleClickZoom: true,
+    mapTypeId: 'hybrid',
+    maxZoom: 18,
+    minZoom: 8,
+    draggableCursor: 'crosshair', //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
+    //heading: 90,
+  }
+
+
   callsignCtrl = new FormControl()
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
@@ -105,6 +133,8 @@ export class EntryComponent implements OnInit {
 
     console.log(`EntryForm ngOnInit completed at ${Date()}`)
   }
+
+
 
   private findIndex(call: string): number {
     for (let i = 0; i < this.rangers.length; i++) {
@@ -201,13 +231,111 @@ export class EntryComponent implements OnInit {
     })
   }
 
-  /* What was the purpose?! (If any location field is updated, reflect that in the other fields: Observable?!)
   updateLocation() {
     console.log("updateLocation() running")
     //this.entryDetailsForm.get(['', 'name'])
     //this.entryDetailsForm.controls['derivedAddress'].setValue('New Derived Address')
     var addr = this.document.getElementById("derivedAddress")
     if (addr) { addr.innerHTML = "New What3Words goes here!" }
+    this.displayMarker(this.vashon)
   }
-  */
+
+  // ------------------------------------------------------------------------
+  // Map stuff below
+
+  onMapInitialized(mappy: google.maps.Map) {
+    console.log(`onMapInitialized()`)
+    this.gMap = mappy
+
+    if (this.gMap == null) {
+      console.log("onMapInitialized(): This.gMap is null")
+    } else {
+      console.log(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`)
+    }
+    this.createOverviewMap()
+  }
+
+  zoomIn() {
+    if (this.options.maxZoom != null) {
+      if (this.zoom < this.options.maxZoom) this.zoom++
+    }
+  }
+
+  zoomOut() {
+    if (this.options.minZoom != null) {
+      if (this.zoom > this.options.minZoom) this.zoom--
+    }
+  }
+
+  createOverviewMap() {
+    // https://developers.google.com/maps/documentation/javascript/examples/marker-simple#maps_marker_simple-typescript
+
+    const map = new google.maps.Map(
+      document.getElementById("map") as HTMLElement,
+      {
+        zoom: 13,
+        center: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong },
+        draggableCursor: 'crosshair'
+      }
+    );
+  }
+
+  displayMarker(pos: google.maps.LatLng, titl = 'Latest Location') {
+    let onlyMarker = new google.maps.Marker({
+      draggable: false,
+      animation: google.maps.Animation.DROP,
+      map: this.gMap,
+      position: pos,
+      title: titl,
+      /* label: {
+         // label: this.labels[this.labelIndex++ % this.labels.length],
+         text: "grade", // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+         fontFamily: "Material Icons",
+         color: "#ffffff",
+         fontSize: "18px",
+       },
+       */
+      // label: labels[labelIndex++ % labels.length],
+    })
+  }
+
+  move(event: google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      this.display = event.latLng.toJSON()
+      console.log('moveing()');
+    }
+    else{
+      console.log('move(): NO event.latLng!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    }
+  }
+
+   // from https://developers.google.com/maps/documentation/javascript/examples/control-replacement
+   // TODO: Doesn't work...
+   initZoomControl(map: google.maps.Map) {
+    console.log('starting initZoomControl()');
+
+    (document.querySelector(".zoom-control-in") as HTMLElement).onclick =
+      function () {
+        map.setZoom(map.getZoom()! + 1);
+      };
+
+    (document.querySelector(".zoom-control-out") as HTMLElement).onclick =
+      function () {
+        map.setZoom(map.getZoom()! - 1);
+      };
+
+    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
+      document.querySelector(".zoom-control") as HTMLElement
+    );
+  }
+
+  initZoomControl2() {
+    if (this.gMap) {
+      console.log('try initZoomControl()')
+      this.initZoomControl(this.gMap)
+    } else {
+      console.log('gMap is null, so no initZoomControl()')
+    }
+  }
+
 }

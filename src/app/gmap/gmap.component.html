@@ -18,17 +18,18 @@
   </ul>
 </details>
 <br>
-<mat-icon aria-hidden="false" aria-label="Example icon">{{myIcon}}</mat-icon>
 
 <div *ngIf="apiLoaded"> <!-- | async -->
   <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options" (mapClick)="addMarker($event)"
     (mapMousemove)="move($event)" (mapRightclick)="initZoomControl2()"
     (mapInitialized)="onMapInitialized($event)">
 
-    <div id="markerDiv" #markerDiv *ngFor="let marker of markers" (mapClick)="openInfoWindow($event)">
+    <div id="markerDiv" #markerDiv *ngFor="let marker of markers" >
     </div>
 
     <!--
+      (mapClick)="openInfoWindow($event)"
+
         [position]="marker.position"
         [options]="marker.options"  -->
 
@@ -45,7 +46,6 @@
   <br>
   <button (click)="zoomIn()">Zoom in</button>
   <button (click)="zoomOut()">Zoom out</button>
-  <button (click)="onAustralia()">visit Australia</button>
 </div>
 
 <details>

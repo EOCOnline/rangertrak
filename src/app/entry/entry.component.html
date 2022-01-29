@@ -35,7 +35,20 @@
     </div>
 
 
-    <div id="enter__SmallMap"></div>
+    <div id="enter__SmallMap">
+      <div>
+        <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
+           (mapRightclick)="initZoomControl2()"
+           (mapMousemove)="move($event)"
+          (mapInitialized)="onMapInitialized($event)">
+        </google-map>
+        <div>Latitude: {{display?.lat}}</div>
+        <div>Longitude: {{display?.lng}}</div>
+        <br>
+        <button (click)="zoomIn()">Zoom in</button>
+        <button (click)="zoomOut()">Zoom out</button>
+      </div>
+    </div>
 
 
     <h2 class="elegant">Where</h2>
