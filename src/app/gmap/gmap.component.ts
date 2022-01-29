@@ -8,7 +8,7 @@ import { Map } from '../shared/'
 import { DOCUMENT, JsonPipe } from '@angular/common';
 //import { MarkerClusterer } from "@google-maps/markerclusterer";
 // import "./style.css";
-import { SettingsService, FieldReportService, FieldReportType } from '../shared/services';
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatuses } from '../shared/services';
 import { ComponentFixture } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
@@ -53,9 +53,11 @@ GoogleMapsModule exports three components that we can use:
 */
 
 declare const google: any
-//const Kaanapali = new google.maps.LatLng(20.9338, -156.7168)
+
 const kaanapali: google.maps.LatLngLiteral = { lat: 20.9338, lng: -156.7168 }
 const kahanaRidge: google.maps.LatLngLiteral = { lat: 20.973375, lng: -156.664915 }
+const vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
+
 let marker: google.maps.Marker
 
 @Component({
@@ -83,6 +85,8 @@ export class GmapComponent implements OnInit {    //extends Map
   // items for template
   title = 'Google Map (implemented as an Angular Component)'
   display?: google.maps.LatLngLiteral;
+  Vashon = new google.maps.LatLng(47.4471, -122.4627)
+  Kaanapali = new google.maps.LatLng(20.9338, -156.7168)
 
   // google.maps.Map is NOT the same as GoogleMap...
   gMap?: google.maps.Map
@@ -101,6 +105,11 @@ export class GmapComponent implements OnInit {    //extends Map
     //heading: 90,
   }
 
+  infowindow = new google.maps.InfoWindow({
+    //content: 'How now Brown cow.',
+    maxwidth: "150px",
+  });
+
   // Google MapMarker only wraps google.maps.LatLngLiteral (positions) - NOT google.maps.Marker: styles, behaviors, etc
   markers: google.maps.Marker[] = []
   // markerOptions = { draggable: false }
@@ -109,7 +118,7 @@ export class GmapComponent implements OnInit {    //extends Map
   labelIndex = 0;
   infoContent = ''
   apiLoaded //: Observable<boolean>
-  circleCenter: google.maps.LatLngLiteral = kahanaRidge
+  circleCenter: google.maps.LatLngLiteral = this.Vashon// kahanaRidge
   radius = 10;
 
   fieldReports?: FieldReportType[]
@@ -148,14 +157,14 @@ export class GmapComponent implements OnInit {    //extends Map
 
   ngOnInit(): void {
     console.log('into ngOnInit()')
-
-    navigator.geolocation.getCurrentPosition((position) => {
-      this.center = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      }
-    })
-
+    /* BUG:  uncomment for production!!!  ***********************
+        navigator.geolocation.getCurrentPosition((position) => {
+          this.center = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          }
+        })
+    ***********/
     // https://github.com/angular/components/tree/master/src/google-maps
     if (this.map == null) {
       console.log("This.map is null")
@@ -174,21 +183,22 @@ export class GmapComponent implements OnInit {    //extends Map
     } else {
       console.log(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`)
     }
-  //  this.initZoomControl(this.gMap)
 
-  /* BUG:
-  core.mjs:6461 ERROR TypeError: Cannot set properties of null (setting 'onclick')
-    at GmapComponent.initZoomControl (gmap.component.ts:197:72)
-    at GmapComponent.onMapInitialized (gmap.component.ts:177:10)
-    at GmapComponent_div_26_Template_google_map_mapInitialized_1_listener (gmap.component.html:25:23)
-    at executeListenerWithErrorHandling (core.mjs:14952:1)
-    at Object.wrapListenerIn_markDirtyAndPreventDefault [as next] (core.mjs:14990:1)
-    at Object.next (Subscriber.js:110:1)
-    at SafeSubscriber._next (Subscriber.js:60:1)
-    at SafeSubscriber.next (Subscriber.js:31:1)
-    at Subject.js:31:1
-    at errorContext (errorContext.js:19:1)
-    */
+
+    //  this.initZoomControl(this.gMap) gets...
+    /* BUG:
+    core.mjs:6461 ERROR TypeError: Cannot set properties of null (setting 'onclick')
+      at GmapComponent.initZoomControl (gmap.component.ts:197:72)
+      at GmapComponent.onMapInitialized (gmap.component.ts:177:10)
+      at GmapComponent_div_26_Template_google_map_mapInitialized_1_listener (gmap.component.html:25:23)
+      at executeListenerWithErrorHandling (core.mjs:14952:1)
+      at Object.wrapListenerIn_markDirtyAndPreventDefault [as next] (core.mjs:14990:1)
+      at Object.next (Subscriber.js:110:1)
+      at SafeSubscriber._next (Subscriber.js:60:1)
+      at SafeSubscriber.next (Subscriber.js:31:1)
+      at Subject.js:31:1
+      at errorContext (errorContext.js:19:1)
+      */
     this.displayAllMarkers()
   }
 
@@ -247,87 +257,16 @@ export class GmapComponent implements OnInit {    //extends Map
     console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
   }
 
-
-  infowindow = new google.maps.InfoWindow({
-    //content: 'How now Brown cow.',
-    maxwidth: "150px",
-  });
-
-  addMarker(event: google.maps.MapMouseEvent) {
+  addMarkerEvent(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
-      this.addMarker2(event.latLng)
+      this.addMarker(event.latLng)
     } else {
       console.log(`addMarker FAILED`)
 
     }
-    /*
-    console.log(`addMarker`)
-
-    let labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
-    // https://material.angular.io/components/icon/overview
-    //https://developers.google.com/fonts/docs/material_icons
-    //https://fonts.google.com/icons
-    if (event.latLng) {
-      let dt = new Date();
-      let time = `${this.zeroFill(dt.getHours(), 2)}:${this.zeroFill(dt.getMinutes(), 2)}:${this.zeroFill(dt.getSeconds(), 2)}` // :${this.zeroFill(dt.getMilliseconds(), 4)}`
-    /* REVIEW:
-      let lat:number = event.latLng.lat  // gets:  Type '() => number' is not assignable to type 'number'.
-      let lng:number = event.latLng.lng
-      lat = Math.round(lat * 1000.0) / 1000.0
-      lng = Math.round(lng * 1000.0) / 1000.0
-      let pos = `lat: ${lat}; long: ${lng} `
-      /
-      let pos = `lat: ${event.latLng.lat}; long: ${event.latLng.lng}`
-      //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; long: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
-
-      console.log("Actually adding marker now...")
-      let m = new google.maps.Marker({
-        draggable: true,
-        animation: google.maps.Animation.DROP,
-        map: this.gMap,
-        position: event.latLng,
-        title: time,
-        //icon: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
-        label: {
-          // label: this.labels[this.labelIndex++ % this.labels.length],
-          text: "grade", // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
-          fontFamily: "Material Icons",
-          color: "#ffffff",
-          fontSize: "18px",
-        },
-        // label: labels[labelIndex++ % labels.length],
-      })
-      // markers can only be keyboard focusable when they have click listeners
-      // open info window when marker is clicked
-     // marker.addListener("click", () => {
-        //this.infoWindow.setContent(label);
-        //this.infoWindow.open(this.map, marker);
-     // })
-
-      m.addListener("click",   // this.toggleBounce)
-        () => {
-          //this.infowindow.setContent(`${ SpecialMsg } `)
-          this.infowindow.setContent(`Manually dropped: ${ time } at ${ pos } `)
-          this.infowindow.open({
-            // new google.maps.InfoWindow.open({
-            //content: 'How now red cow.',
-            anchor: m,
-            //setPosition: event.latLng,
-            map: this.gMap,
-            // shouldFocus: false,
-          })
-        }
-      )
-      this.markers.push(m)
-    } else {
-      console.log("event.latLng is BAD; can not add marker..")
-    }
-    //this.refreshMarkerDisplay()
-    */
   }
 
-  addMarker2(latLng: google.maps.LatLng) {
+  addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText = "grade", title = "RangerTitle", labelColor = "#ffffff", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
     console.log(`addMarker`)
 
     let labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -351,17 +290,18 @@ export class GmapComponent implements OnInit {    //extends Map
       console.log("Actually adding marker now...")
       let m = new google.maps.Marker({
         draggable: true,
-        animation: google.maps.Animation.DROP,
+        animation: animation,
         map: this.gMap,
         position: latLng,
-        title: time,
-        //icon: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+        title: title,
+        icon: icon, //"https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
         label: {
           // label: this.labels[this.labelIndex++ % this.labels.length],
-          text: "grade", // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+          text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
           fontFamily: "Material Icons",
-          color: "#ffffff",
-          fontSize: "18px",
+          color: labelColor,
+
+          fontSize: fontSize,
         },
         // label: labels[labelIndex++ % labels.length],
       })
@@ -375,7 +315,8 @@ export class GmapComponent implements OnInit {    //extends Map
       m.addListener("click",   // this.toggleBounce)
         () => {
           //this.infowindow.setContent(`${ SpecialMsg } `)
-          this.infowindow.setContent(`Manually dropped: ${time} at ${pos} `)
+          //`Manually dropped: ${time} at ${pos} `
+          this.infowindow.setContent(infoContent)
           this.infowindow.open({
             // new google.maps.InfoWindow.open({
             //content: 'How now red cow.',
@@ -401,54 +342,75 @@ export class GmapComponent implements OnInit {    //extends Map
   }
 
   displayAllMarkers() {
-    let latlng:google.maps.LatLng
+    let latlng
+    let infoContent
+    let labelText
+    let title
+    let labelColor
+    let fr: FieldReportType
+    let FieldReportStatuses = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out'] // BUG: Grab it from FieldReportStatuses!!!
     this.fieldReports = this.fieldReportService.getFieldReports()
     console.log(`displayAllMarkers got ${this.fieldReports.length} field reports`)
     for (let i = 0; i < this.fieldReports.length; i++) {
-     latlng = new google.maps.LatLng (this.fieldReports[i].lat, this.fieldReports[i].long)
-     console.log(`displayAllMarkers adding marker at ${JSON.stringify(latlng)}`)
-      this.addMarker2(latlng)
+      fr = this.fieldReports[i]
+      latlng = new google.maps.LatLng(fr.lat, fr.long)
+      infoContent = `${fr.callsign} at ${fr.date} at lat ${fr.lat}, long ${fr.long}`
+      title = infoContent
+      switch (fr.status) {
+        case 'None': {
+          labelText = "grade"
+          labelColor = "black"
+          break
+        }
+        case 'Normal': {
+          labelText = "water_drop"
+          labelColor = "grey"
+          break
+        }
+        case 'Need Rest': {
+          labelText = "join_inner"
+          labelColor = "orange"
+          break
+        }
+        case 'Urgent': {
+          labelText = "rocket"
+          labelColor = "red"
+          break
+        }
+        case 'Objective Update': {
+          labelText = "noise_aware"
+          labelColor = "blue"
+          break
+        }
+        case 'Check-in': {
+          labelText = "rowing"
+          labelColor = "green"
+          break
+        }
+        case 'Check-out': {
+          labelText = "next_plan"
+          labelColor = "yellow"
+          break
+        }
+        default: {
+          labelText = "question_mark"
+          labelColor = "aqua"
+          break
+        }
+      }
+      console.log(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`)
+      this.addMarker(latlng, labelText, title, labelColor)
     }
+    console.log(`displayAllMarkers added ${this.fieldReports.length} markers`)
+
+    // addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText= "grade", title="RangerTitle", labelColor = "#ffffff", fontSize="18px", icon = "rocket", animation= google.maps.Animation.DROP) {
   }
-
-  // not needed: The new adds them to the map I guess. How to remove them?!
-  refreshMarkerDisplay() {
-    for (let i = 0; i < this.markers.length; i++) {
-      // markerDiv
-      // Add a marker at the center of the map.
-      //addMarker(bangalore, map);
-    }
-  }
-
-  /* openInfoWindow(event: any) {
-    this.infowindow.open({
-       //anchor: m,
-       setPosition: event.latLng,
-       map: this.gMap,
-       shouldFocus: false,
-     })
-
-  } */
-
-  /*toggleBounce() {
-    if (marker.getAnimation() !== null) {
-      marker.setAnimation(null);
-    } else {
-      marker.setAnimation(google.maps.Animation.BOUNCE);
-    }
-  }*/
 
   move(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
       this.display = event.latLng.toJSON()
     }
   }
-
-  // MapOptions:any = ''
-  //Map(mapDiv: Node, opts?: google.maps.MapOptions) {
-  // Supposedly Creates a new map inside of the given HTML container — which is typically a DIV element — using any (optional) parameters that are passed.
-  // no effect seemingly...
-  //}
 
   addTrafficLayer() {
     /*
@@ -466,82 +428,26 @@ export class GmapComponent implements OnInit {    //extends Map
     // https://developers.google.com/maps/documentation/javascript/maptypes
     // map.setTilt(45);
   }
-
-  /*  clickedMarkerxxx(label: string = 'nolabel', index: number) {
-      console.log(`clicked the marker: ${ label || index } `)
-    }
-    */
 }
-
-
-
 
 
 /*
-onMapClicked($event: google.maps.MapMouseEvent) {
-  this.markerLocations.push({
-    lat: $event.latLng.lat(),
-    lng: $event.latLng.lng(),
-    label: new Date().getTime().toString(),
-    draggable: true
-  });
-}
 
-display3() {
-  console.log('display() not implemented...');
-}
 
 markerDragEnd(m: marker, $event: google.maps.MouseEvent) {
   console.log('dragEnd', m, $event);
   this.latitude = $event.latLng.lat();
   this.longitude = $event.latLng.lng();
   this.getAddress(this.latitude, this.longitude);
-}*/
-/*
+}
   markerDragEnd2($event: google.maps.MouseEvent) {
     console.log($event);
     this.lat = $event.coords.lat;
     this.lng = $event.coords.lng;
     this.getAddress(this.latitude, this.longitude);
   }
-
-  markerDragEnd3($event: google.maps.MouseEvent) {
-    console.log($event);
-    this.lat = $event.latLng.lat();
-    this.lng = $event.latLng.lng();
-    this.getAddress(this.lat, this.lng);
-  }
-
-
-getAddress(latitude: any, longitude: any) {
-  throw new Error('Method not implemented.');
-}
-
-initMap2(): void {
-  console.log('initMap is running')
-    let myMap = document.getElementById("mapdiv") as HTMLElement
-
-    console.log('myMap = ' + myMap)
-    console.log('myMap = ' + myMap.innerHTML)
-    console.log('myMap = ' + myMap.style)
-
-    myMap.innerText = "<h1 style='background-color: aqua;'>Watch the lazy fox...</h1>"
-
-    const map = new google.maps.Map(
-    myMap,
-    {
-      zoom: 12,
-      center: { lat: this.latitude, lng: this.longitude },
-    }
-  );
-
-  const infoWindow = new google.maps.InfoWindow({
-    content: "Yes mamma!!!",
-    disableAutoPan: true,
-  });
-
   */
-    // Add a marker clusterer to manage the markers.
+    // TODO: Add a marker clusterer to manage the markers.
     // new MarkerClusterer({ markers, map });
 
 

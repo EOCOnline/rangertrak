@@ -20,7 +20,7 @@
 <br>
 
 <div *ngIf="apiLoaded"> <!-- | async -->
-  <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options" (mapClick)="addMarker($event)"
+  <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options" (mapClick)="addMarkerEvent($event)"
     (mapMousemove)="move($event)" (mapRightclick)="initZoomControl2()"
     (mapInitialized)="onMapInitialized($event)">
 

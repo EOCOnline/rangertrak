@@ -11,7 +11,6 @@ import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 let marker: google.maps.Marker
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
-
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
@@ -27,6 +26,7 @@ export class EntryComponent implements OnInit {
 
   // google.maps.Map is NOT the same as GoogleMap...
   gMap?: google.maps.Map
+  map2?: google.maps.Map
   zoom = 13
   center: google.maps.LatLngLiteral = Vashon
   options: google.maps.MapOptions = {
@@ -252,7 +252,8 @@ export class EntryComponent implements OnInit {
     } else {
       console.log(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`)
     }
-    this.createOverviewMap()
+    //this.createOverviewMap()
+    this.updateOverviewMap()
   }
 
   zoomIn() {
@@ -267,10 +268,17 @@ export class EntryComponent implements OnInit {
     }
   }
 
+  updateOverviewMap() {
+    // https://developers.google.com/maps/documentation/javascript/examples/marker-simple#maps_marker_simple-typescript
+
+    let latlng = new google.maps.LatLng (SettingsService.Settings.defLat, SettingsService.Settings.defLong)
+    this.gMap?.setCenter(latlng)
+    this.gMap?.setZoom(11)
+  }
   createOverviewMap() {
     // https://developers.google.com/maps/documentation/javascript/examples/marker-simple#maps_marker_simple-typescript
 
-    const map = new google.maps.Map(
+    this.map2 = new google.maps.Map(
       document.getElementById("map") as HTMLElement,
       {
         zoom: 13,
@@ -278,6 +286,7 @@ export class EntryComponent implements OnInit {
         draggableCursor: 'crosshair'
       }
     );
+
   }
 
   displayMarker(pos: google.maps.LatLng, titl = 'Latest Location') {
