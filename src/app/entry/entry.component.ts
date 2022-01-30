@@ -19,19 +19,21 @@ const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 })
 export class EntryComponent implements OnInit {
 
+  // imports this.map as a GoogleMap which is the Angular wrapper around a google.maps.Map...
   @ViewChild(GoogleMap, { static: false }) map!: GoogleMap // even needed?
+  // google.maps.Map is NOT the same as GoogleMap...
+  gMap?: google.maps.Map
+  map2?: google.maps.Map // unused
+
 
   display?: google.maps.LatLngLiteral;
   vashon = new google.maps.LatLng(47.4471, -122.4627)
 
-  // google.maps.Map is NOT the same as GoogleMap...
-  gMap?: google.maps.Map
-  map2?: google.maps.Map
   zoom = 13
   center: google.maps.LatLngLiteral = Vashon
   options: google.maps.MapOptions = {
-    zoomControl: false,
-    scrollwheel: false,
+    zoomControl: true,
+    scrollwheel: true,
     disableDoubleClickZoom: true,
     mapTypeId: 'hybrid',
     maxZoom: 18,
@@ -271,9 +273,9 @@ export class EntryComponent implements OnInit {
   updateOverviewMap() {
     // https://developers.google.com/maps/documentation/javascript/examples/marker-simple#maps_marker_simple-typescript
 
-    let latlng = new google.maps.LatLng (SettingsService.Settings.defLat, SettingsService.Settings.defLong)
+    let latlng = new google.maps.LatLng(SettingsService.Settings.defLat, SettingsService.Settings.defLong)
     this.gMap?.setCenter(latlng)
-    this.gMap.s
+    // this.gMap.s
     // this.gMap?.setZoom(14)
     // this.gMap?.setOptions({draggableCursor:"crosshair"}) // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
   }
@@ -289,8 +291,7 @@ export class EntryComponent implements OnInit {
         center: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong },
         draggableCursor: 'crosshair'
       }
-    );
-
+    )
   }
 
   displayMarker(pos: google.maps.LatLng, titl = 'Latest Location') {
@@ -317,14 +318,14 @@ export class EntryComponent implements OnInit {
       this.display = event.latLng.toJSON()
       console.log('moveing()');
     }
-    else{
+    else {
       console.log('move(): NO event.latLng!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     }
   }
 
-   // from https://developers.google.com/maps/documentation/javascript/examples/control-replacement
-   // TODO: Doesn't work...
-   initZoomControl(map: google.maps.Map) {
+  // from https://developers.google.com/maps/documentation/javascript/examples/control-replacement
+  // TODO: Doesn't work...
+  initZoomControl(map: google.maps.Map) {
     console.log('starting initZoomControl()');
 
     (document.querySelector(".zoom-control-in") as HTMLElement).onclick =
