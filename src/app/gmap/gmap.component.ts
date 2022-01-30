@@ -13,20 +13,7 @@ import { ComponentFixture } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
 
-/* Status:
-This version tries to display map markers using markers[]: google.Map.Marker[]
-but I cann't resolve [position]="marker" in HTML: not 'quite' the right types...
-
-Using markerPosition[]:google.maps.LatLngLiteral[] DOES work, but doesn't carry the icon/titles, etc that I want.
-
-Tried doing it all in code, as in https://developers.google.com/maps/documentation/javascript/examples/marker-labels,
-but markers don't show up...
-TODO: 1) Continue on last idea? Maybe in a fresh project??
-
-TODO: 2) Create a type (like google.Map.Marker) and use that???
-
-TODO: 3) peruse https://github.com/angular/components/blob/master/src/google-maps/README.md more...
-
+/*
   https://developers.google.com/maps/support/
   https://angular-maps.com/
   https://github.com/atmist/snazzy-info-window#html-structure
@@ -36,14 +23,12 @@ TODO: 3) peruse https://github.com/angular/components/blob/master/src/google-map
   https://github.com/angular-material-extensions/google-maps-autocomplete
 
    https://developers.google.com/maps/documentation/javascript/using-typescript
- TODO: https:github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
+ TODO: https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
  https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md
  TODO: Allow geocoding: https://rapidapi.com/blog/google-maps-api-react/
- TODO: Different layers: https://developers.google.com/maps/documentation/javascript/trafficlayer#transit_layer
 
  https://timdeschryver.dev/blog/google-maps-as-an-angular-component
  Option doc: https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions
- https://stackblitz.com/edit/angular-9-google-maps-5v2cu8?file=src%2Fapp%2Fapp.component.html
 
 
 GoogleMapsModule exports three components that we can use:

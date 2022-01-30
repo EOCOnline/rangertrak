@@ -10,14 +10,13 @@ import {
 } from '@angular-material-components/datetime-picker';
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { Observable, debounceTime, map, startWith } from 'rxjs'
+import { Observable, debounceTime, map, startWith, switchMap } from 'rxjs';
 
 import { AlertsComponent } from '../alerts/alerts.component'
 import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 
 
-let marker: google.maps.Marker
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
 @Component({
@@ -34,6 +33,8 @@ export class EntryComponent implements OnInit {
   gMap?: google.maps.Map
   map2?: google.maps.Map // unused
 
+  onlyMarker = new google.maps.Marker({draggable: false,
+    animation: google.maps.Animation.DROP}) // singleton...
 
   display?: google.maps.LatLngLiteral;
   vashon = new google.maps.LatLng(47.4471, -122.4627)
@@ -188,6 +189,23 @@ export class EntryComponent implements OnInit {
   }
 */
   AddressCtrlChanged(what:string) {
+
+    switch (what) {
+      case 'addr':
+
+      // Get new lat-lng
+
+        break;
+        case 'lat':
+        case 'lng':
+
+
+        break;
+      default:
+    console.log(`UNEXPECTED ${what} received in AddressCtrlChanged()`)
+        break;
+    }
+
     this.updateLocation()
   }
 
@@ -275,6 +293,25 @@ export class EntryComponent implements OnInit {
   // ------------------------------------------------------------------------
   // Map stuff below
 
+  displayMarker(pos: google.maps.LatLng, title = 'Latest Location') {
+    // Review: will this overwrite/remove any previous marker?
+    if (this.gMap) {
+      this.onlyMarker.setMap(this.gMap)
+    }
+    this.onlyMarker.setPosition(pos)
+    this.onlyMarker.setTitle(title)
+
+      /* label: {
+         // label: this.labels[this.labelIndex++ % this.labels.length],
+         text: "grade", // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+         fontFamily: "Material Icons",
+         color: "#ffffff",
+         fontSize: "18px",
+       },
+       */
+      // label: labels[labelIndex++ % labels.length],
+  }
+
   onMapInitialized(mappy: google.maps.Map) {
     console.log(`onMapInitialized()`)
     this.gMap = mappy
@@ -325,26 +362,6 @@ export class EntryComponent implements OnInit {
     )
   }
 
-  displayMarker(pos: google.maps.LatLng, titl = 'Latest Location') {
-    // Review: will this overwrite/remove any previous marker?
-    let onlyMarker = new google.maps.Marker({
-      draggable: false,
-      animation: google.maps.Animation.DROP,
-      map: this.gMap,
-      position: pos,
-      title: titl,
-      /* label: {
-         // label: this.labels[this.labelIndex++ % this.labels.length],
-         text: "grade", // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
-         fontFamily: "Material Icons",
-         color: "#ffffff",
-         fontSize: "18px",
-       },
-       */
-      // label: labels[labelIndex++ % labels.length],
-    })
-  }
-
   move(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
       this.display = event.latLng.toJSON()
@@ -354,34 +371,4 @@ export class EntryComponent implements OnInit {
       console.log('move(): NO event.latLng!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     }
   }
-
-  // from https://developers.google.com/maps/documentation/javascript/examples/control-replacement
-  // TODO: Doesn't work...
-  initZoomControl(map: google.maps.Map) {
-    console.log('starting initZoomControl()');
-
-    (document.querySelector(".zoom-control-in") as HTMLElement).onclick =
-      function () {
-        map.setZoom(map.getZoom()! + 1);
-      };
-
-    (document.querySelector(".zoom-control-out") as HTMLElement).onclick =
-      function () {
-        map.setZoom(map.getZoom()! - 1);
-      };
-
-    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
-      document.querySelector(".zoom-control") as HTMLElement
-    );
-  }
-
-  initZoomControl2() {
-    if (this.gMap) {
-      console.log('try initZoomControl()')
-      this.initZoomControl(this.gMap)
-    } else {
-      console.log('gMap is null, so no initZoomControl()')
-    }
-  }
-
 }
