@@ -69,14 +69,55 @@
         </div>
       </div>
 
-      <div class="input-group">Longitude:
+      <div class="input-group">
+        <legend>Longitude:</legend>
         <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
           type="number" formControlName="long" placeholder="Longitude" (change)="this.AddressCtrlChanged('lng')">
         <div *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
           class="text-sm text-danger">long is required
         </div>
       </div>
+
+
+
+
+      Street Address, +Code, or What3Words (optional): <input name="addresses" id="addresses" type="text" size="15"
+        value="" placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
+        onchange="chkAddresses()">
+      <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
+      <span id="addressLabel" value=""></span>
+      <span id="pCodeGlobal"></span>
+      <br>
+      Latitude: &nbsp;&nbsp;
+      <input name="latitudeQ" id="latitudeQ" type="text" value="N" size="1" pattern="'e','E','w','W'" title="E or W"
+        onchange="DMSCoordsChanged()"> <!-- Quadrant -->
+      <input name="latitudeD" id="latitudeD" type="text" value="47" size="2" min="0" max="180"
+        onchange="DMSCoordsChanged()">°
+      <input name="latitudeM" id="latitudeM" type="text" value="" size="2" min="0" max="59"
+        onchange="DMSCoordsChanged()">'
+      <input name="latitudeS" id="latitudeS" type="text" value="" size="5" min="0" max="59.99"
+        onchange="DMSCoordsChanged()">"
+      &nbsp;&nbsp; or &nbsp;&nbsp;<input name="latitudeDD" id="latitudeDD" type="text" size="7" min="-180" max="180"
+        onchange="DDCoordsChanged()">°
+      <br>
+      Longitude:
+      <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"
+        onchange="DMSCoordsChanged()">
+      <input name="longitudeD" id="longitudeD" type="text" value="122" size="2" max="180"
+        onchange="DMSCoordsChanged()">°
+      <input name="longitudeM" id="longitudeM" type="text" value="" size="2" min="0" max="59"
+        onchange="DMSCoordsChanged()">'
+      <input name="longitudeS" id="longitudeS" type="text" value="" size="5" min="0" max="59.99"
+        onchange="DMSCoordsChanged()">"
+      &nbsp;&nbsp; or &nbsp;&nbsp;<input name="longitudeDD" id="longitudeDD" type="text" size="7" min="-180" max="180"
+        onchange="DDCoordsChanged()">°
+      <br>
+
     </div>
+
+
+
+
 
     <h2 class="elegant">When</h2>
     <!-- TODO: Use Time Picker: https://material.io/components/time-pickers#usage

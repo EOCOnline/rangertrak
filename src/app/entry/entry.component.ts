@@ -33,8 +33,10 @@ export class EntryComponent implements OnInit {
   gMap?: google.maps.Map
   map2?: google.maps.Map // unused
 
-  onlyMarker = new google.maps.Marker({draggable: false,
-    animation: google.maps.Animation.DROP}) // singleton...
+  onlyMarker = new google.maps.Marker({
+    draggable: false,
+    animation: google.maps.Animation.DROP
+  }) // singleton...
 
   display?: google.maps.LatLngLiteral;
   vashon = new google.maps.LatLng(47.4471, -122.4627)
@@ -188,21 +190,21 @@ export class EntryComponent implements OnInit {
     }
   }
 */
-  AddressCtrlChanged(what:string) {
+  AddressCtrlChanged(what: string) {
 
     switch (what) {
       case 'addr':
 
-      // Get new lat-lng
+        // Get new lat-lng
 
         break;
-        case 'lat':
-        case 'lng':
+      case 'lat':
+      case 'lng':
 
 
         break;
       default:
-    console.log(`UNEXPECTED ${what} received in AddressCtrlChanged()`)
+        console.log(`UNEXPECTED ${what} received in AddressCtrlChanged()`)
         break;
     }
 
@@ -285,7 +287,7 @@ export class EntryComponent implements OnInit {
     console.log("updateLocation() running")
     //this.entryDetailsForm.get(['', 'name'])
     //this.entryDetailsForm.controls['derivedAddress'].setValue('New Derived Address')
-    var addr = this.document.getElementById("derivedAddress")
+    let addr = this.document.getElementById("derivedAddress")
     if (addr) { addr.innerHTML = "New What3Words goes here!" }
     this.displayMarker(this.vashon, 'Title:Latest Location')
   }
@@ -301,15 +303,14 @@ export class EntryComponent implements OnInit {
     this.onlyMarker.setPosition(pos)
     this.onlyMarker.setTitle(title)
 
-      /* label: {
-         // label: this.labels[this.labelIndex++ % this.labels.length],
-         text: "grade", // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
-         fontFamily: "Material Icons",
-         color: "#ffffff",
-         fontSize: "18px",
-       },
-       */
-      // label: labels[labelIndex++ % labels.length],
+    /* label: {
+       // label: this.labels[this.labelIndex++ % this.labels.length],
+       text: "grade", // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+       fontFamily: "Material Icons",
+       color: "#ffffff",
+       fontSize: "18px",
+     },
+     */
   }
 
   onMapInitialized(mappy: google.maps.Map) {
@@ -371,4 +372,191 @@ export class EntryComponent implements OnInit {
       console.log('move(): NO event.latLng!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     }
   }
+
+  //----------------------------------------------------------------------------------------
+  // Address stuff : Move to service???
+
+  chkAddresses() {
+    let addr = document.getElementById("addresses");
+    console.log("Got address: " + addr);
+    if (addr == null)
+      return;
+    let addrText = addr.value;
+    console.log("Got address: " + addrText);
+    if (addrText.length != 0)
+      if (addrText.includes("+")) {
+        this.chkPCodes();
+      } else {
+        this.Twords = addrText.split(".");
+        if (this.Twords.length == 3) {
+          this.chk3Words();
+        } else {
+          this.chkStreetAddress();
+        }
+      }
+  }
+
+  chkStreetAddress() {
+    console.log("Got street address to check");;
+  }
+
+  chkPCodes() {
+    // #region +Code doc
+    // https://plus.codes/developers
+    // https://github.com/google/open-location-code/wiki
+    /*
+       Plus Codes refer to variable-sized rectangles - NOT a point! (The regions do have center points however.)
+
+       Only 20 characters are valid: "23456789CFGHJMPQRVWX"
+
+       Global RegEx: /(^|\s)([23456789C][23456789CFGHJMPQRV][23456789CFGHJMPQRVWX]{6}\+[23456789CFGHJMPQRVWX]{2,3})(\s|$)/?i
+       This extracts (in capturing group 2) a global code at the start or end of a string, or enclosed with spaces, but not in the middle of a string.
+
+       Local RegEx: /(^|\s)([23456789CFGHJMPQRVWX]{4,6}\+[23456789CFGHJMPQRVWX]{2,3})(\s|$)/?i
+
+       If the query matches, and the user has not entered any other text, then another location must be used to recover the original code. If you are displaying a map to the user, then use the current map center, pass it to the recoverNearest() method to get a global code, and then decode it as above.
+
+       If there is no map, you can use the device location. If you have no map and cannot determine the device location, a local code is not sufficient and you should display a message back to the user asking them to provide a town or city name or the full global code.
+
+       * * *
+
+       Open Location Codes are encodings of WGS84 latitude and longitude coordinates in degrees. Decoding a code returns an area, not a point. The area of a code depends on the length (longer codes are more precise with smaller areas). A two-digit code has height and width[height_width] of 20 degrees, and with each pair of digits added to the code, both height and width are divided by 20.
+
+       The first digit of the code identifies the row (latitude), and the second digit the column (longitude). Subsequent steps divide that area into a 20 x 20 grid, and use one digit to identify the row and another to identify the column.
+
+       If the query matches, and the user has not entered any other text, then another location must be used to recover the original code. If you are displaying a map to the user, then use the current map center, pass it to the recoverNearest() method to get a global code, and then decode it as above.
+
+       globalPCode = encode(latDD,longDD);  // Need locality/focus (within half a degree latitude and half a degree longitude, or ideally 1/4 degree, 25km at equator) pt to get local +code.
+
+       The shorten() method in the OLC library may remove 2, 4, 6 or even 8 characters, depending on how close the reference location is. Although all of these are valid, we recommend only removing the first 4 characters, so that plus codes have a consistent appearance.
+    */
+    // #endregion
+
+    //
+    let pCode = document.getElementById("addresses")!.value;
+    console.log("chkPCodes got '" + pCode + "'");
+    if (pCode.length != 0) {
+      if (this.isValid(pCode)) {
+        if (pCode.isShort) {
+          pCode = this.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.recoverNearest
+        }
+
+        // Following needs a full (Global) code
+        let coord = this.decode(pCode); //OpenLocationCode.decode
+        console.log("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', long=' + coord.longitudeCenter);
+
+        this.updateCoords(coord.latitudeCenter, coord.longitudeCenter);
+      } else {
+        document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: ";
+        document.getElementById("pCodeGlobal")!.innerHTML = SettingsService.Settings.defPlusCode;
+      }
+    }
+  }
+
+  chk3Words() {
+    /*let settings = {
+      "async": true,
+      "crossDomain": true,
+      "url": "https://api.what3words.com/v3/autosuggest?key=0M5I8UPF&input=index.home.r&n-results=5&focus=51.521251%2C-0.203586&clip-to-country=BE%2CGB",
+      "method": "GET",
+      "headers": {}
+    }
+
+    $.ajax(settings).done(function (response) {
+      console.log("ddd=" +response);
+    });
+    */
+
+    // No 3 word results outside these values allowed!!
+    // south_lat <= north_lat & west_lng <= east_lng
+    let south_lat = 46.0;
+    let north_lat = 49.0;
+    let west_lng = -124.0;
+    let east_lng = -120.0;
+    let errMsg = "";
+
+    let TWords = document.getElementById("addresses")!.value;
+    console.log(TWords);
+    if (TWords.length) {
+      // soemthing entered...
+      console.log("3Words='" + TWords + "'");
+      what3words.api.autosuggest(TWords, {
+        nFocusResults: 1,
+        //clipTo####: ["US"],
+        cliptoboundingbox: { south_lat, west_lng, north_lat, east_lng }, // Clip prevents ANY values outside region
+        focus: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }, // Focus prioritizes words closer to this point
+        nResults: 1
+      })
+        .then(function (response) {
+          verifiedWords = response.suggestions[0].words;
+          console.log("Verified Words='" + verifiedWords + "'");
+          if (TWords != verifiedWords) {
+            document.getElementById("addressLabel")!.textContent = " Verified as: " + verifiedWords;
+          } else {
+            document.getElementById("addressLabel")!.textContent = " Verified.";
+          }
+          what3words.api.convertToCoordinates(verifiedWords).then(function (response) {
+            //async call HAS returned!
+            this.updateCoords(response.coordinates.lat, response.coordinates.lng);
+            // NOTE: Not saving nearest place: too vague to be of value
+            document.getElementById("addressLabel")!.textContent += "; Near: " + response.nearestPlace;
+          });
+        })
+        .catch(function (error) {
+          errMsg = "[code]=" + error.code + "; [message]=" + error.message + ".";
+          console.log("Unable to verify 3 words entered: " + errMsg);
+          document.getElementById("addressLabel")!.textContent = "*** Not able to verify 3 words! ***";
+        });
+    }
+    // async call not returned yet
+  }
+
+  updateCoords(latDD, lngDD) {
+    console.log("New Coordinates: lat:" + latDD + "; lng:" + lngDD);
+
+    document.getElementById("latitudeDD")!.value = latDD;
+    document.getElementById("longitudeDD")!.value = lngDD;
+
+    latDMS = DDToDMS(latDD, false);
+    document.getElementById("latitudeQ")!.value = latDMS.dir;
+    document.getElementById("latitudeD")!.value = latDMS.deg;
+    document.getElementById("latitudeM")!.value = latDMS.min;
+    document.getElementById("latitudeS")!.value = latDMS.sec;
+
+    lngDMS = DDToDMS(lngDD, true);
+    document.getElementById("longitudeQ")!.value = lngDMS.dir;
+    document.getElementById("longitudeD")!.value = lngDMS.deg;
+    document.getElementById("longitudeM")!.value = lngDMS.min;
+    document.getElementById("longitudeS")!.value = lngDMS.sec;
+
+    let pCode = encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
+    console.log("updateCoords: Encode returned PlusCode: " + pCode);
+    let fullCode;
+    if (pCode.length != 0) {
+
+      if (isValid(pCode)) {
+        if (pCode.isShort) {
+          // Recover the full code from a short code:
+          fullCode = recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.recoverNearest
+        } else {
+          fullCode = pCode;
+          console.log("Shorten +Codes, Global:" + fullCode + ", Lat:" + SettingsService.Settings.defLat + "; Long:" + SettingsService.Settings.defLong);
+          // Attempt to trim the first characters from a code; may return same value...
+          pCode = shorten(fullCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.shorten
+        }
+        console.log("New PlusCodes: " + pCode + "; Global: " + fullCode);
+        //document.getElementById("addresses")!.value = pCode;
+        //document.getElementById("addressLabel").innerHTML = defPCodeLabel;
+        document.getElementById("pCodeGlobal")!.innerHTML = " &nbsp;&nbsp; +Code: " + fullCode;
+      } else {
+        console.log("Invalid +PlusCode: " + pCode);
+        document.getElementById("pCodeGlobal")!.innerHTML = " &nbsp;&nbsp; Unable to get +Code"
+        //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: ";
+      }
+    }
+
+    //ToDO: Update 3 words too!
+    //if (initialized) this.displaySmallMap(latDD, lngDD);
+  }
+
 }
