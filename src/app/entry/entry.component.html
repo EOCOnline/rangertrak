@@ -1,9 +1,9 @@
 <div class="container">
   <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
 
-    <div id="enter__frm-reguritation">
+    <!--div id="enter__frm-reguritation">
       <pre>{{ frm.value |json}}</pre>
-    </div>
+    </div-->
 
     <h1>Entry Form</h1>
     <h2 class="elegant">Who</h2>
@@ -12,8 +12,8 @@
     <mat-form-field class="enter__Callsign" appearance="fill">
       <mat-label>CallSign</mat-label>
 
-      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns" formControlName="callsign"
-        [matAutocomplete]="auto" (change)=this.CallsignCtrlChanged()>
+      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
+        formControlName="callsign" [matAutocomplete]="auto" (change)="this.CallsignCtrlChanged()">
 
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
@@ -35,19 +35,17 @@
     </div>
 
 
-    <div id="enter__SmallMap">
-      <div style="width: 100px; height:100px;">
+    <div id="enter__SmallMap" >
+
         <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
-           (mapRightclick)="initZoomControl2()"
-           (mapMousemove)="move($event)"
-          (mapInitialized)="onMapInitialized($event)">
+          (mapMousemove)="move($event)"
+          (mapInitialized)="onMapInitialized($event)" style="width: 300px; height:300px;">
         </google-map>
-        <div>Latitude: {{display?.lat}}</div>
-        <div>Longitude: {{display?.lng}}</div>
-        <br>
+
+        <div>Latitude: {{display?.lat}}  Longitude: {{display?.lng}}</div>
+        <!--br>
         <button (click)="zoomIn()">Zoom in</button>
-        <button (click)="zoomOut()">Zoom out</button>
-      </div>
+        <button (click)="zoomOut()">Zoom out</button-->
     </div>
 
 
@@ -55,10 +53,10 @@
     <div class="input-group">Street Address:
       <input
         [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
-        type="text" formControlName="address" placeholder="Address">
+        type="text" formControlName="addressCtrl" placeholder="Address" (change)="this.AddressCtrlChanged('addr')">
       <!--div
-        *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
-        class="text-sm text-danger">address is required</div  -->
+      *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
+      class="text-sm text-danger">address is required</div  -->
       <!--/div-->
 
       <div>Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code: 8VCWVF22+</span>
@@ -66,21 +64,30 @@
 
       <div class="input-group">Latitude:
         <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
-          type="number" formControlName="lat" placeholder="Latitude">
+          type="number" formControlName="lat" placeholder="Latitude" (change)="this.AddressCtrlChanged('lat')">
         <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
-          class="text-sm text-danger">lat is required</div>
+          class="text-sm text-danger">lat is required
+        </div>
       </div>
 
       <div class="input-group">Longitude:
         <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
-          type="number" formControlName="long" placeholder="Longitude">
+          type="number" formControlName="long" placeholder="Longitude" (change)="this.AddressCtrlChanged('lng')">
         <div *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
-          class="text-sm text-danger">long is required</div>
+          class="text-sm text-danger">long is required
+        </div>
       </div>
     </div>
 
     <h2 class="elegant">When</h2>
-    <!-- TODO: Use Time Picker: https://material.io/components/time-pickers#usage -->
+    <!-- TODO: Use Time Picker: https://material.io/components/time-pickers#usage
+          showSpinners: If true, the spinners above and below input are visible
+          showSeconds: If true, it is not possible to select seconds
+          disableMinute: If true, the minute is readonly
+          defaultTime: An array [hour, minute, second] for default time when the date is not yet defined
+         -->
+
+    <hr>
     <div class="input-group">Date:
       <input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
         type="datetime" formControlName="date" placeholder="date">
@@ -125,10 +132,43 @@
     <br>
     <!--button (click)="updateLocation()">Update location</button> <br-->
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
-    <button (click)="resetForm()" title="Reset all form fields to their defaults" class ="eButton" type="button">Reset</button>
+    <button (click)="resetForm()" title="Reset all form fields to their defaults" class="eButton"
+      type="button">Reset</button>
     <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button eButton" type="submit">Submit</button>
 
     <span id="enter__Submit-info"></span>
 
   </form>
 </div>
+
+<!--
+<mat-form-field>
+  <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date & time" [(ngModel)]="myDatePicker">
+
+  <ngx-mat-timepicker [(ngModel)]="myTimePicker">
+  </ngx-mat-timepicker>
+
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+
+  <ngx-mat-datetime-picker #picker></ngx-mat-datetime-picker>
+</mat-form-field>
+
+<  IF Max & Min time desired:
+<mat-form-field>
+<input matInput [ngxMatDatetimePicker]="pickerFrom" placeholder="From date & time" [(ngModel)]="myDatePickerFrom">
+
+<mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+
+<ngx-mat-datetime-picker #pickerFrom [enableMeridian]="true"></ngx-mat-datetime-picker>
+</mat-form-field>
+
+<mat-form-field>
+<input matInput [ngxMatDatetimePicker]="pickerTo" placeholder="To date & time" [(ngModel)]="myDatePickerTo"
+[min]="myDatePickerFrom">
+
+<mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+
+<ngx-mat-datetime-picker #pickerTo [enableMeridian]="true"></ngx-mat-datetime-picker>
+</mat-form-field>
+
+-->

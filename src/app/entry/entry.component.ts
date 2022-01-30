@@ -1,12 +1,21 @@
 import { DOCUMENT } from '@angular/common'
 import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
+import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import {
+  NgxMatDatetimePickerModule,
+  NgxMatNativeDateModule,
+  NgxMatTimepickerModule
+} from '@angular-material-components/datetime-picker';
 import { MatSnackBar } from '@angular/material/snack-bar'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { Observable, debounceTime, map, startWith } from 'rxjs'
 
 import { AlertsComponent } from '../alerts/alerts.component'
 import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
+
 
 let marker: google.maps.Marker
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
@@ -44,6 +53,7 @@ export class EntryComponent implements OnInit {
 
 
   callsignCtrl = new FormControl()
+  addressCtrl = new FormControl()
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
   fieldReportStatuses
@@ -78,6 +88,7 @@ export class EntryComponent implements OnInit {
 
     // NOTE: workaround for onChange not working...
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))
+    this.addressCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))
 
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
     this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
@@ -161,6 +172,25 @@ export class EntryComponent implements OnInit {
     // TODO: update #enter__Callsign-upshot
   }
 
+  /*
+  addrInfo: HTMLElement | null = null
+
+  AddressChanged(addr: string) { // Just serves timer for input field - post interaction
+    this.addrInfo = this.document.getElementById("enter__Address-upshot")
+    if (this.addrInfo) {
+      console.log(`EntryForm AdressChanged looking for ${address}`)
+      //let ranger = this.rangers[this.findIndex(callsign)];
+      this.addrInfo.innerHTML = `addrInfo goes here`
+      //<img class="enter__Address-img" aria-hidden
+      // src="${ranger.image}" height="50">
+      // <span>${ranger.callsign}</span> | <small> ${ranger.licensee} | ${ranger.phone}</small>`
+    }
+  }
+*/
+  AddressCtrlChanged(what:string) {
+    this.updateLocation()
+  }
+
   // FUTURE: provider nicer time picker: https://www.freakyjolly.com/angular-material-109-datepicker-timepicker-tutorial/#Only_Show_Timepicker
   /*
     FUTURE: Allow entry of keywords
@@ -239,7 +269,7 @@ export class EntryComponent implements OnInit {
     //this.entryDetailsForm.controls['derivedAddress'].setValue('New Derived Address')
     var addr = this.document.getElementById("derivedAddress")
     if (addr) { addr.innerHTML = "New What3Words goes here!" }
-    this.displayMarker(this.vashon)
+    this.displayMarker(this.vashon, 'Title:Latest Location')
   }
 
   // ------------------------------------------------------------------------
@@ -274,6 +304,7 @@ export class EntryComponent implements OnInit {
     // https://developers.google.com/maps/documentation/javascript/examples/marker-simple#maps_marker_simple-typescript
 
     let latlng = new google.maps.LatLng(SettingsService.Settings.defLat, SettingsService.Settings.defLong)
+    // REVIEW: Or better yet, ensure the new latlng is already being shown: inside the map bounds?
     this.gMap?.setCenter(latlng)
     // this.gMap.s
     // this.gMap?.setZoom(14)
@@ -295,6 +326,7 @@ export class EntryComponent implements OnInit {
   }
 
   displayMarker(pos: google.maps.LatLng, titl = 'Latest Location') {
+    // Review: will this overwrite/remove any previous marker?
     let onlyMarker = new google.maps.Marker({
       draggable: false,
       animation: google.maps.Animation.DROP,

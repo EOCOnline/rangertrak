@@ -95,12 +95,12 @@ export class GmapComponent implements OnInit {    //extends Map
   zoom
   center: google.maps.LatLngLiteral
   options: google.maps.MapOptions = {
-    zoomControl: false,
-    scrollwheel: false,
+    zoomControl: true,
+    scrollwheel: true,
     disableDoubleClickZoom: true,
     mapTypeId: 'hybrid',
     maxZoom: 18,
-    minZoom: 8,
+    minZoom: 4,
     draggableCursor: 'crosshair', //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
     //heading: 90,
   }
@@ -227,8 +227,6 @@ export class GmapComponent implements OnInit {    //extends Map
       function () {
         map.setZoom(map.getZoom()! - 1);
       };
-
-
   }
 
   initZoomControl2() {
@@ -364,12 +362,12 @@ export class GmapComponent implements OnInit {    //extends Map
     for (let i = 0; i < this.fieldReports.length; i++) {
       fr = this.fieldReports[i]
       latlng = new google.maps.LatLng(fr.lat, fr.long)
-      infoContent = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, long ${fr.long} with "${fr.note}"ng de`
+      infoContent = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, long ${fr.long} with "${fr.note}".`
       title = infoContent
       switch (fr.status) {
         case 'None': {
           labelText = "grade"
-          labelColor = "black"
+          labelColor = "pink"
           break
         }
         case 'Normal': {
@@ -384,7 +382,7 @@ export class GmapComponent implements OnInit {    //extends Map
         }
         case 'Urgent': {
           labelText = "rocket"
-          labelColor = "red"
+          labelColor = "black"
           break
         }
         case 'Objective Update': {

@@ -11,17 +11,16 @@
       NOT be made available when offline!</li>
     <li>Zoom in close (in some populated areas) to display the tilt control at lower left on map: allows map tilting &
       rotation</li>
-    <li>Keyboard controls can be displayed with button at lower right of map</li>
-    <li>FUTURE: Hover to display coordinates and callsign</li>
-    <li>FUTURE: click to display coordinates</li>
-    <li>FUTURE: right-click to display traffic layer</li>
+    <li>Display Keyboard controls with button at lower right of map</li>
+    <li>Click or hover over marker to display coordinates and callsign</li>
+    <li>Right-click on map to display traffic layer</li>
   </ul>
 </details>
 <br>
 
 <div *ngIf="apiLoaded"> <!-- | async -->
   <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options" (mapClick)="addMarkerEvent($event)"
-    (mapMousemove)="move($event)" (mapRightclick)="initZoomControl2()"
+    (mapMousemove)="move($event)" (mapRightclick)="addTrafficLayer()"
     (mapInitialized)="onMapInitialized($event)">
 
     <div id="markerDiv" #markerDiv *ngFor="let marker of markers" >
@@ -43,9 +42,9 @@
   <div>Latitude: {{display?.lat}}</div>
   <div>Longitude: {{display?.lng}}</div>
 
-  <br>
+  <!--br>
   <button (click)="zoomIn()">Zoom in</button>
-  <button (click)="zoomOut()">Zoom out</button>
+  <button (click)="zoomOut()">Zoom out</button-->
 </div>
 
 <details>
