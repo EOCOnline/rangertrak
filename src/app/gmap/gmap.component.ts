@@ -157,14 +157,14 @@ export class GmapComponent implements OnInit {    //extends Map
 
   ngOnInit(): void {
     console.log('into ngOnInit()')
-    /* BUG:  uncomment for production!!!  ***********************
+    //* BUG:  uncomment for production!!!  ***********************
         navigator.geolocation.getCurrentPosition((position) => {
           this.center = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           }
         })
-    ***********/
+   // ***********/
     // https://github.com/angular/components/tree/master/src/google-maps
     if (this.map == null) {
       console.log("This.map is null")
@@ -269,6 +269,16 @@ export class GmapComponent implements OnInit {    //extends Map
   addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText = "grade", title = "RangerTitle", labelColor = "#ffffff", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
     console.log(`addMarker`)
 
+/*
+    infoContent = "InfoWindow Content"
+    labelText = "grade"
+   // title = "RangerTitle"
+    labelColor = "#ffffff"
+    fontSize = "18px"
+    //icon = "rocket"
+    animation = google.maps.Animation.DROP
+*/
+
     let labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
     // https://material.angular.io/components/icon/overview
@@ -294,7 +304,7 @@ export class GmapComponent implements OnInit {    //extends Map
         map: this.gMap,
         position: latLng,
         title: title,
-        icon: icon, //"https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+        //icon: icon, //"https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
         label: {
           // label: this.labels[this.labelIndex++ % this.labels.length],
           text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
@@ -354,7 +364,7 @@ export class GmapComponent implements OnInit {    //extends Map
     for (let i = 0; i < this.fieldReports.length; i++) {
       fr = this.fieldReports[i]
       latlng = new google.maps.LatLng(fr.lat, fr.long)
-      infoContent = `${fr.callsign} at ${fr.date} at lat ${fr.lat}, long ${fr.long}`
+      infoContent = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, long ${fr.long} with "${fr.note}"ng de`
       title = infoContent
       switch (fr.status) {
         case 'None': {
@@ -399,10 +409,11 @@ export class GmapComponent implements OnInit {    //extends Map
         }
       }
       console.log(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`)
-      this.addMarker(latlng, labelText, title, labelColor)
+      this.addMarker(latlng, infoContent, labelText, title, labelColor)
     }
     console.log(`displayAllMarkers added ${this.fieldReports.length} markers`)
 
+    //   addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText = "grade", title = "RangerTitle", labelColor = "#ffffff", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP)
     // addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText= "grade", title="RangerTitle", labelColor = "#ffffff", fontSize="18px", icon = "rocket", animation= google.maps.Animation.DROP) {
   }
 

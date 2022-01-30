@@ -44,6 +44,7 @@ export class SettingsService {
     //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
 
     // populate SettingsService.Settings
+    // BUG: Doesn't auto-update version & other settings not exposed!!!
     let localStorageSettings = localStorage.getItem(SettingsService.storageLocalName)
 
     let needSettings = SettingsService.Settings == undefined
@@ -60,16 +61,21 @@ export class SettingsService {
       }
     }
     if (needSettings) { SettingsService.ResetDefaults() }
+
+    //REVIEW:
+    SettingsService.Settings.version = '0.11.31'
   }
 
   static ResetDefaults() {
     //original hardcoded defaults... not saved until form is submitted... This form doesn't allow editing of all values
     console.log("Initialize App Settings from hardcoded values")
+
+    // TODO: Need different sets for each type of map, and perhaps various (selectable/savable) copies of 'preferences'
     SettingsService.Settings = {
       id: 0,  // FUTURE: allow different setts of settings (e.g., per location)???
       name: "standard hardcoded settings",
       application: "RangerTrak",
-      version: '0.11.0',
+      version: '0.11.30', //TODO: Auto update this...
       note: "values set by code, please edit them to serve you!",
       defLat: 47.4472,
       defLong: -122.4627,  // Vashon EOC!

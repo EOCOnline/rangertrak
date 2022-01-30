@@ -36,7 +36,7 @@ export class EntryComponent implements OnInit {
     mapTypeId: 'hybrid',
     maxZoom: 18,
     minZoom: 8,
-    draggableCursor: 'crosshair', //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
+    draggableCursor: 'crosshair', // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
     //heading: 90,
   }
 
@@ -273,11 +273,15 @@ export class EntryComponent implements OnInit {
 
     let latlng = new google.maps.LatLng (SettingsService.Settings.defLat, SettingsService.Settings.defLong)
     this.gMap?.setCenter(latlng)
-    this.gMap?.setZoom(11)
+    this.gMap.s
+    // this.gMap?.setZoom(14)
+    // this.gMap?.setOptions({draggableCursor:"crosshair"}) // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
   }
-  createOverviewMap() {
+
+  createOverviewMap_UNUSED() {
     // https://developers.google.com/maps/documentation/javascript/examples/marker-simple#maps_marker_simple-typescript
 
+    // TODO: this.map2 or this.gMap????
     this.map2 = new google.maps.Map(
       document.getElementById("map") as HTMLElement,
       {

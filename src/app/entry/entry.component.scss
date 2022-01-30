@@ -62,8 +62,8 @@ h3 {
   margin-right: 35vw;
   display: block;
   float: right;
-  height: 160px;
-  width: 15vw;
+  height: 50px;
+  width: 10vw;
   border: 1px solid  brown;
   background-color: rgb(240, 255, 250);
   font: 0.8em sans-serif;
@@ -72,9 +72,9 @@ h3 {
 #enter__SmallMap {
   display: block;
   float: right;
-  height: 35vh;
-  width: 40vw;
-  border: 1px brown;
+  width: 20vw; // 30vw;
+  height: 100px !important; // 10vh;
+  border:5px brown;
   background-color: aliceblue;
 }
 

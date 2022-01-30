@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SettingsService } from '../shared/services/'
 
 @Component({
   selector: 'rangertrak-footer',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FooterComponent implements OnInit {
 
+  // settings: SettingsType
   today = new Date()
+  version
 
-  constructor() { }
+  constructor(
+    private settingsService: SettingsService) {
+     // this.settings = SettingsService.Settings // only using static functions/values from the service...
+    this.version = SettingsService.Settings.version
+  }
 
   ngOnInit(): void {
   }
