@@ -4,7 +4,7 @@
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 import { MatIconModule } from '@angular/material/icon'
 import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone } from '@angular/core';
-import { Map } from '../shared/'
+import { Map, CodeArea, OpenLocationCode } from '../shared/'
 import { DOCUMENT, JsonPipe } from '@angular/common';
 //import { MarkerClusterer } from "@google-maps/markerclusterer";
 // import "./style.css";

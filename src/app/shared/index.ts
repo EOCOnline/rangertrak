@@ -5,6 +5,7 @@ import { FieldReportService } from "./field-report.service";
 import { FieldReport } from "./field-report";
 import { LocalStorageService } from "./local-storage.service";
 import { DataService } from "./data.service";
+import { CodeArea, OpenLocationCode } from "./data.service";
 // import { DataService } from "./data.service";
 */
 
@@ -15,6 +16,7 @@ import { DataService } from "./data.service";
 export { Map, LayerType } from "./map";
 export { OpPeriod } from "./op-period";
 export { Mission } from "./mission";
+export { CodeArea, OpenLocationCode } from "./open-location-code"
 //export { MarkerService } from "./marker.service";
 //export { PopupService } from "./popup.service";
 //export { ShapeService } from "./shape.service";

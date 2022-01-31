@@ -1,5 +1,6 @@
 // https://github.com/tspoke/typescript-open-location-code
 // details at: https://github.com/google/open-location-code/tree/main/js
+// https://github.com/google/open-location-code/tree/main/js#public-methods
 
 /*
 OpenLocationCode.encode(LATITUDE, LONGITUDE);
@@ -30,7 +31,7 @@ export class CodeArea {
    */
   public longitudeCenter: number;
 
-  constructor(public latitudeLo, public longitudeLo, public latitudeHi, public longitudeHi, public codeLength) {
+  constructor(public latitudeLo:number, public longitudeLo:number, public latitudeHi:number, public longitudeHi:number, public codeLength:number) {
     this.latitudeCenter = Math.min(latitudeLo + (latitudeHi - latitudeLo) / 2, LATITUDE_MAX);
     this.longitudeCenter = Math.min(longitudeLo + (longitudeHi - longitudeLo) / 2, LONGITUDE_MAX);
   }
@@ -177,7 +178,7 @@ export default class OpenLocationCode {
       }
       // There can only be one group and it must have even length.
       const padMatch = code.match(new RegExp("(" + OpenLocationCode.PADDING_CHARACTER_ + "+)", "g"));
-      if (padMatch.length > 1 || padMatch[0].length % 2 === 1 ||
+      if (!padMatch || padMatch.length > 1 || padMatch[0].length % 2 === 1 ||
         padMatch[0].length > OpenLocationCode.SEPARATOR_POSITION_ - 2) {
         return false;
       }
@@ -424,8 +425,6 @@ export default class OpenLocationCode {
         Math.round((lat + latPrecision) * 1e14) / 1e14,
         Math.round((lng + lngPrecision) * 1e14) / 1e14,
         Math.min(editedCode.length, OpenLocationCode.MAX_DIGIT_COUNT_));
-
-
   };
 
   /**

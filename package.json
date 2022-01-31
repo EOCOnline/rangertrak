@@ -14,7 +14,7 @@
     "@angular-material-components/datetime-picker": "^7.0.1",
     "@angular/animations": "~13.2.0",
     "@angular/cdk": "^13.2.0",
-    "@angular/cli": "^13.2.0",
+    "@angular/cli": "^13.2.1",
     "@angular/common": "~13.2.0",
     "@angular/compiler": "~13.2.0",
     "@angular/core": "^13.2.0",
@@ -49,7 +49,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~13.2.0",
+    "@angular-devkit/build-angular": "^13.2.1",
     "@angular/compiler-cli": "~13.2.0",
     "@types/jasmine": "~3.10.3",
     "@types/leaflet": "^1.7.9",
