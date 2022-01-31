@@ -434,6 +434,16 @@ export class GmapComponent implements OnInit {    //extends Map
     // https://developers.google.com/maps/documentation/javascript/maptypes
     // map.setTilt(45);
   }
+
+
+  // ---------------------------------------------------------------------------------------------------
+  // Google PlusCodes: Open Location Code
+  // https://github.com/tspoke/typescript-open-location-code
+  // https://github.com/google/open-location-code
+
+
+
+
 }
 
 

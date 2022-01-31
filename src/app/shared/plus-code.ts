@@ -1,4 +1,6 @@
 
+// https://github.com/tspoke/typescript-open-location-code
+// https://github.com/google/open-location-code
 
 /*
 
