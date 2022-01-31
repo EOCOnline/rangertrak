@@ -15,9 +15,8 @@ import { Observable, debounceTime, map, startWith, switchMap } from 'rxjs'
 import { AlertsComponent } from '../alerts/alerts.component'
 import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
-import { addressType } from '../lmap/lmap.component' // BUG:
-import { DDToDMS } from '../shared/coordinate'
-
+//import { addressType } from '../lmap/lmap.component' // BUG:
+import { Map, DDToDMS, CodeArea, OpenLocationCode, chk3Words } from '../shared/'
 
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
@@ -389,7 +388,7 @@ export class EntryComponent implements OnInit {
   // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
 
   chkAddresses() {
-    let tWords = document.getElementById("addresses")
+    let tWords = document.getElementById("addresses").getInnerText()
     let addr = document.getElementById("addresses")
     console.log("Got address: " + addr)
     if (addr == null)
@@ -482,7 +481,7 @@ export class EntryComponent implements OnInit {
   }
 
   w3wAuto() {
-    what3words.api.autosuggest("freshen.overlook.clo", {
+ /*   what3words.api.autosuggest("freshen.overlook.clo", {
       nFocusResults: 1,
       clipToCountry: ["FR"],
       focus: { lat: 48.856618, lng: 2.3522411 },
@@ -507,7 +506,7 @@ export class EntryComponent implements OnInit {
         console.log("[code]", error.code);
         console.log("[message]", error.message);
       });
-
+*/
   }
 
 
@@ -589,20 +588,20 @@ export class EntryComponent implements OnInit {
     document.getElementById("longitudeM")!.innerText = lngDMS.min.toString()
     document.getElementById("longitudeS")!.innerText = lngDMS.sec.toString()
 
-    let pCode = encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
+    let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
     console.log("updateCoords: Encode returned PlusCode: " + pCode);
     let fullCode;
     if (pCode.length != 0) {
 
-      if (isValid(pCode)) {
+      if (OpenLocationCode.isValid(pCode)) {
         if (pCode.isShort) {
           // Recover the full code from a short code:
-          fullCode = recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.recoverNearest
+          fullCode = OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.recoverNearest
         } else {
           fullCode = pCode;
           console.log("Shorten +Codes, Global:" + fullCode + ", Lat:" + SettingsService.Settings.defLat + "; Long:" + SettingsService.Settings.defLong);
           // Attempt to trim the first characters from a code; may return same innerText...
-          pCode = shorten(fullCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.shorten
+          pCode = OpenLocationCode.shorten(fullCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.shorten
         }
         console.log("New PlusCodes: " + pCode + "; Global: " + fullCode);
         //document.getElementById("addresses")!.innerText = pCode;

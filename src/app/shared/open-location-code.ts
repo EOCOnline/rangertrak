@@ -48,7 +48,7 @@ export class CodeArea {
 /**
  * Open Location Code implementation for TypeScript
  */
-export default class OpenLocationCode {
+export  class OpenLocationCode {   // TODO: default
 
   public constructor(public code: string) {
   }
