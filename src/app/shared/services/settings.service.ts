@@ -42,6 +42,7 @@ export class SettingsService {
     let secretWorkaround = JSON.stringify(secrets)
     SettingsService.secrets = JSON.parse(secretWorkaround)
     //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
+    // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key
 
     // populate SettingsService.Settings
     // BUG: Doesn't auto-update version & other settings not exposed!!!

@@ -143,13 +143,13 @@ export class GmapComponent implements OnInit {    //extends Map
   ngOnInit(): void {
     console.log('into ngOnInit()')
     //* BUG:  uncomment for production!!!  ***********************
-        navigator.geolocation.getCurrentPosition((position) => {
-          this.center = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          }
-        })
-   // ***********/
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.center = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      }
+    })
+    // ***********/
     // https://github.com/angular/components/tree/master/src/google-maps
     if (this.map == null) {
       console.log("This.map is null")
@@ -185,6 +185,15 @@ export class GmapComponent implements OnInit {    //extends Map
       at errorContext (errorContext.js:19:1)
       */
     this.displayAllMarkers()
+    this.fitBounds()
+  }
+
+  fitBounds() {
+    let reportBounds = this.fieldReportService.getFieldReportBounds()
+    var southWest = new google.maps.LatLng(reportBounds.south, reportBounds.west);
+    var northEast = new google.maps.LatLng(reportBounds.north,reportBounds.east);
+    var bounds = new google.maps.LatLngBounds(southWest,northEast);
+    this.gMap?.fitBounds(bounds);
   }
 
   // -----------------------------------------------------------
@@ -194,6 +203,7 @@ export class GmapComponent implements OnInit {    //extends Map
   // https://developers.google.com/maps/documentation/javascript/examples/split-map-panes
   // https://developers.google.com/maps/documentation/javascript/examples/inset-map
 
+  /*
   // from https://developers.google.com/maps/documentation/javascript/examples/control-replacement
   initZoomControl(map: google.maps.Map) {
     console.log('starting initZoomControl()');
@@ -234,7 +244,7 @@ export class GmapComponent implements OnInit {    //extends Map
       if (this.zoom > this.options.minZoom) this.zoom--
     }
   }
-
+*/
   // or on centerChanged
   logCenter() {
     console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
@@ -252,15 +262,15 @@ export class GmapComponent implements OnInit {    //extends Map
   addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText = "grade", title = "RangerTitle", labelColor = "#ffffff", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
     console.log(`addMarker`)
 
-/*
-    infoContent = "InfoWindow Content"
-    labelText = "grade"
-   // title = "RangerTitle"
-    labelColor = "#ffffff"
-    fontSize = "18px"
-    //icon = "rocket"
-    animation = google.maps.Animation.DROP
-*/
+    /*
+        infoContent = "InfoWindow Content"
+        labelText = "grade"
+       // title = "RangerTitle"
+        labelColor = "#ffffff"
+        fontSize = "18px"
+        //icon = "rocket"
+        animation = google.maps.Animation.DROP
+    */
 
     let labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
@@ -341,7 +351,9 @@ export class GmapComponent implements OnInit {    //extends Map
     let title
     let labelColor
     let fr: FieldReportType
-    let FieldReportStatuses = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out'] // BUG: Grab it from FieldReportStatuses!!!
+
+    let FieldReportStatuses = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out'] // TODO: Grab it from FieldReportStatuses!!!
+    // REVIEW: Might this mess with existing fr's?
     this.fieldReports = this.fieldReportService.getFieldReports()
     console.log(`displayAllMarkers got ${this.fieldReports.length} field reports`)
     for (let i = 0; i < this.fieldReports.length; i++) {

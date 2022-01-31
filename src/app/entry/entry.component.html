@@ -57,13 +57,15 @@
       *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
       class="text-sm text-danger">address is required</div  -->
       <!--/div-->
-
+      <p id="top3wa">Top 3 word address match: </p>
+      <p id="coords">WGS84 Coordinates: </p>
+      <p id="nearest_place">Nearest Place: </p>
       <div>Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code: 8VCWVF22+</span>
       </div>
 
       <div class="input-group">Latitude:
         <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
-          type="number" formControlName="lat" placeholder="Latitude" (change)="this.AddressCtrlChanged('lat')">
+          type="number" formControlName="lat" placeholder="Latitude" (change)="this.AddressCtrlChanged('lat')" id="enter__Lat">
         <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
           class="text-sm text-danger">lat is required
         </div>
@@ -72,7 +74,7 @@
       <div class="input-group">
         <legend>Longitude:</legend>
         <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
-          type="number" formControlName="long" placeholder="Longitude" (change)="this.AddressCtrlChanged('lng')">
+          type="number" formControlName="long" placeholder="Longitude" (change)="this.AddressCtrlChanged('lng')" id="enter__Long">
         <div *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
           class="text-sm text-danger">long is required
         </div>

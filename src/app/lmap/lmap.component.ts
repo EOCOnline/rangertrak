@@ -81,6 +81,16 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
 });
 
+
+
+
+// https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-leafletjs-map
+// https://developer.what3words.com/tutorial/combining-the-what3words-js-autosuggest-component-with-a-leafletjs-map
+
+
+
+
+
 const map2 = L.map('googleMapsPlaner', {
   center: [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR],
   zoom: POLSKA_ZOOM,

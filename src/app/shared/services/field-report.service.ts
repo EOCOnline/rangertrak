@@ -11,10 +11,10 @@ export const FieldReportStatuses = [
 
 export type FieldReportType = {
   id: number,
-  callsign: String, team: String,
-  address: String, lat: Number, long: Number,
+  callsign: string, team: string,
+  address: string, lat: number, long: number,
   date: Date,
-  status: String, note: String
+  status: string, note: string
 }
 
 @Injectable({ providedIn: 'root' })
@@ -61,6 +61,10 @@ export class FieldReportService {
 
   subscribe(observer: Observer<FieldReportType[]>) {
     this.fieldReportsSubject.subscribe(observer);
+  }
+
+  getFieldReports() {
+    return this.fieldReports
   }
 
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
@@ -122,9 +126,6 @@ export class FieldReportService {
     throw new Error(`FieldReport with id ${id} was not found!`);
   }
 
-  getFieldReports() {
-    return this.fieldReports
-  }
 
   sortFieldReportsByCallsign() {
     return this.fieldReports.sort((n1, n2) => {
@@ -140,6 +141,36 @@ export class FieldReportService {
       if (n1.date < n2.date) { return -1 }
       return 0;
     })
+  }
+
+  getFieldReportBounds() {
+    console.log(`displayAllMarkers got ${this.fieldReports.length} field reports`)
+
+    let N = this.fieldReports[0].lat
+    let W = this.fieldReports[0].long
+    let S = this.fieldReports[0].lat
+    let E = this.fieldReports[0].long
+
+    // https://www.w3docs.com/snippets/javascript/how-to-find-the-min-max-elements-in-an-array-in-javascript.html
+    // concludes with the results show that the standard loop is the fastest
+
+    for (let i = 1; i < this.fieldReports.length; i++) {
+      if (this.fieldReports[i].lat > N) {
+        N = this.fieldReports[i].lat
+      }
+      if (this.fieldReports[i].lat < S) {
+        S = this.fieldReports[i].lat
+      }
+      if (this.fieldReports[i].long > E) {
+        E = this.fieldReports[i].long
+      }
+      if (this.fieldReports[i].long > W) {
+        W = this.fieldReports[i].long
+      }
+    }
+
+    let bounds = new google.maps.LatLngBounds(new google.maps.LatLng(S, W), new google.maps.LatLng(N, E));
+    return { north: N, south: S, east: E, west: W, bounds: bounds}
   }
 
   /*
@@ -182,9 +213,7 @@ const filterParams = {
     return this.fieldReports.filter((report) => (report.date >= beg && report.date <= end))
   }
 
-
   generateFakeData(num: number = 15) {
-
     let teams = this.teamService.getTeams()
     let rangers = this.rangerService.GetRangers()
     if (rangers == null || rangers.length < 1) {

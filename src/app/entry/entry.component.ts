@@ -1,20 +1,22 @@
 import { DOCUMENT } from '@angular/common'
 import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker'
+import { MatInputModule } from '@angular/material/input'
 import {
   NgxMatDatetimePickerModule,
   NgxMatNativeDateModule,
   NgxMatTimepickerModule
-} from '@angular-material-components/datetime-picker';
+} from '@angular-material-components/datetime-picker'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { Observable, debounceTime, map, startWith, switchMap } from 'rxjs';
+import { Observable, debounceTime, map, startWith, switchMap } from 'rxjs'
 
 import { AlertsComponent } from '../alerts/alerts.component'
 import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
+import { addressType } from '../lmap/lmap.component' // BUG:
+import { DDToDMS } from '../shared/coordinate'
 
 
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
@@ -36,7 +38,7 @@ export class EntryComponent implements OnInit {
   onlyMarker = new google.maps.Marker({
     draggable: false,
     animation: google.maps.Animation.DROP
-  }) // singleton...
+  }) // i.e., a singleton...
 
   display?: google.maps.LatLngLiteral;
   vashon = new google.maps.LatLng(47.4471, -122.4627)
@@ -195,13 +197,31 @@ export class EntryComponent implements OnInit {
     switch (what) {
       case 'addr':
 
+        // if new PlaceId, then cll: thisgetLatLngAndAddressFromPlaceID()
+
+        // https://developer.what3words.com/tutorial/javascript-autosuggest-component-v4
+        // https://developer.what3words.com/tutorial/combining-the-what3words-js-autosuggest-component-with-a-google-map
+        // https://developer.what3words.com/tutorial/javascript
+        // https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-google-map
+
+
         // Get new lat-lng
 
         break;
       case 'lat':
       case 'lng':
 
+        let llat = Number(this.document.getElementById("enter__Lat")?.innerText)
+        let llng = Number(this.document.getElementById("enter__Long")?.innerText)
+        //this.document.getElementById("enter__Long")?.innerText
+        //this.document.getElementById("enter__Long")?.innerText
+        let ll = new google.maps.LatLng(llat, llng)
+        let newAddress = this.getAddressFromLatLng(ll)
 
+        let aadrs = this.document.getElementById("addressLabel")
+        if (aadrs) {
+          aadrs.innerText = newAddress
+        }
         break;
       default:
         console.log(`UNEXPECTED ${what} received in AddressCtrlChanged()`)
@@ -326,6 +346,7 @@ export class EntryComponent implements OnInit {
     this.updateOverviewMap()
   }
 
+  /*
   zoomIn() {
     if (this.options.maxZoom != null) {
       if (this.zoom < this.options.maxZoom) this.zoom++
@@ -337,6 +358,7 @@ export class EntryComponent implements OnInit {
       if (this.zoom > this.options.minZoom) this.zoom--
     }
   }
+*/
 
   updateOverviewMap() {
     // https://developers.google.com/maps/documentation/javascript/examples/marker-simple#maps_marker_simple-typescript
@@ -344,23 +366,8 @@ export class EntryComponent implements OnInit {
     let latlng = new google.maps.LatLng(SettingsService.Settings.defLat, SettingsService.Settings.defLong)
     // REVIEW: Or better yet, ensure the new latlng is already being shown: inside the map bounds?
     this.gMap?.setCenter(latlng)
-    // this.gMap.s
     // this.gMap?.setZoom(14)
     // this.gMap?.setOptions({draggableCursor:"crosshair"}) // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
-  }
-
-  createOverviewMap_UNUSED() {
-    // https://developers.google.com/maps/documentation/javascript/examples/marker-simple#maps_marker_simple-typescript
-
-    // TODO: this.map2 or this.gMap????
-    this.map2 = new google.maps.Map(
-      document.getElementById("map") as HTMLElement,
-      {
-        zoom: 13,
-        center: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong },
-        draggableCursor: 'crosshair'
-      }
-    )
   }
 
   move(event: google.maps.MapMouseEvent) {
@@ -369,38 +376,48 @@ export class EntryComponent implements OnInit {
       console.log('moveing()');
     }
     else {
-      console.log('move(): NO event.latLng!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+      console.log('move(): NO event.latLng!!!!!!!!!!!!!');
     }
   }
 
   //----------------------------------------------------------------------------------------
   // Address stuff : Move to service???
 
+  //https://developers.google.com/maps/documentation/javascript/places
+  // https://developer.what3words.com/tutorial/javascript
+
+  // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
+
   chkAddresses() {
-    let addr = document.getElementById("addresses");
-    console.log("Got address: " + addr);
+    let tWords = document.getElementById("addresses")
+    let addr = document.getElementById("addresses")
+    console.log("Got address: " + addr)
     if (addr == null)
-      return;
-    let addrText = addr.value;
-    console.log("Got address: " + addrText);
-    if (addrText.length != 0)
+      return
+    let addrText = addr.innerText //value;
+    console.log("Got address: " + addrText)
+    if (addrText.length)
       if (addrText.includes("+")) {
-        this.chkPCodes();
+        this.chkPCodes()
       } else {
-        this.Twords = addrText.split(".");
-        if (this.Twords.length == 3) {
-          this.chk3Words();
+        tWords = addrText.split(".")
+        if (tWords.length == 3) {
+          this.chk3Words()
         } else {
-          this.chkStreetAddress();
+          this.chkStreetAddress()
         }
       }
   }
 
   chkStreetAddress() {
-    console.log("Got street address to check");;
+    console.log("Got street address to check")
   }
 
   chkPCodes() {
+    // https://developer.what3words.com/tutorial/ux-guidelines
+    // https://developer.what3words.com/tutorial/javascript
+    // https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-google-map
+
     // #region +Code doc
     // https://plus.codes/developers
     // https://github.com/google/open-location-code/wiki
@@ -433,25 +450,68 @@ export class EntryComponent implements OnInit {
     // #endregion
 
     //
-    let pCode = document.getElementById("addresses")!.value;
+    let pCode = document.getElementById("addresses")!.innerText //value;
     console.log("chkPCodes got '" + pCode + "'");
-    if (pCode.length != 0) {
-      if (this.isValid(pCode)) {
-        if (pCode.isShort) {
-          pCode = this.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.recoverNearest
-        }
+    if (pCode.length) {
 
-        // Following needs a full (Global) code
-        let coord = this.decode(pCode); //OpenLocationCode.decode
-        console.log("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', long=' + coord.longitudeCenter);
+      let result = this.getLatLngAndAddressFromPlaceID(pCode)
+      if (result.position) {
+        document.getElementById("addressLabel")!.innerHTML = result.address
+        document.getElementById("lat")!.innerHTML = result.position.lat
+        document.getElementById("long")!.innerHTML = result.position.long
+      }
 
-        this.updateCoords(coord.latitudeCenter, coord.longitudeCenter);
-      } else {
+      /*
+            if (this.isValid(pCode)) {
+              if (pCode.isShort) {
+                pCode = this.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.recoverNearest
+              }
+
+              // Following needs a full (Global) code
+              let coord = this.decode(pCode); //OpenLocationCode.decode
+              console.log("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', long=' + coord.longitudeCenter);
+
+              this.updateCoords(coord.latitudeCenter, coord.longitudeCenter);
+            }
+            */
+      else {
         document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: ";
         document.getElementById("pCodeGlobal")!.innerHTML = SettingsService.Settings.defPlusCode;
       }
     }
   }
+
+  w3wAuto() {
+    what3words.api.autosuggest("freshen.overlook.clo", {
+      nFocusResults: 1,
+      clipToCountry: ["FR"],
+      focus: { lat: 48.856618, lng: 2.3522411 },
+      nResults: 1
+
+    })
+      .then(function (response: { suggestions: { words: any }[] }) {
+        var words = response.suggestions[0].words;
+
+        let top3wa = document.getElementById("top3wa");
+        top3wa!.innerHTML += words;
+
+        what3words.api.convertToCoordinates(words).then(function (response: { coordinates: { lat: string; lng: string }; nearestPlace: string }) {
+          let coords = document.getElementById("coords");
+          let nearestPlace = document.getElementById("nearest_place");
+
+          coords!.innerHTML += response.coordinates.lat + ', ' + response.coordinates.lng;
+          nearestPlace!.innerHTML += response.nearestPlace;
+        });
+      })
+      .catch(function (error: { code: any; message: any; }) {
+        console.log("[code]", error.code);
+        console.log("[message]", error.message);
+      });
+
+  }
+
+
+  // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
 
   chk3Words() {
     /*let settings = {
@@ -475,34 +535,34 @@ export class EntryComponent implements OnInit {
     let east_lng = -120.0;
     let errMsg = "";
 
-    let TWords = document.getElementById("addresses")!.value;
-    console.log(TWords);
-    if (TWords.length) {
+    let tWords = document.getElementById("addresses")!.innerText;
+    console.log(tWords);
+    if (tWords.length) {
       // soemthing entered...
-      console.log("3Words='" + TWords + "'");
-      what3words.api.autosuggest(TWords, {
+      console.log("3Words='" + tWords + "'");
+      what3words.api.autosuggest(tWords, {
         nFocusResults: 1,
         //clipTo####: ["US"],
         cliptoboundingbox: { south_lat, west_lng, north_lat, east_lng }, // Clip prevents ANY values outside region
         focus: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }, // Focus prioritizes words closer to this point
         nResults: 1
       })
-        .then(function (response) {
-          verifiedWords = response.suggestions[0].words;
+        .then((response: { suggestions: { words: any }[] }) => {
+          const verifiedWords = response.suggestions[0].words;
           console.log("Verified Words='" + verifiedWords + "'");
-          if (TWords != verifiedWords) {
+          if (tWords != verifiedWords) {
             document.getElementById("addressLabel")!.textContent = " Verified as: " + verifiedWords;
           } else {
             document.getElementById("addressLabel")!.textContent = " Verified.";
           }
-          what3words.api.convertToCoordinates(verifiedWords).then(function (response) {
+          what3words.api.convertToCoordinates(verifiedWords).then((response: { coordinates: { lat: any; lng: any }; nearestPlace: string }) => {
             //async call HAS returned!
             this.updateCoords(response.coordinates.lat, response.coordinates.lng);
             // NOTE: Not saving nearest place: too vague to be of value
             document.getElementById("addressLabel")!.textContent += "; Near: " + response.nearestPlace;
           });
         })
-        .catch(function (error) {
+        .catch(function (error: { code: string; message: string }) {
           errMsg = "[code]=" + error.code + "; [message]=" + error.message + ".";
           console.log("Unable to verify 3 words entered: " + errMsg);
           document.getElementById("addressLabel")!.textContent = "*** Not able to verify 3 words! ***";
@@ -511,23 +571,23 @@ export class EntryComponent implements OnInit {
     // async call not returned yet
   }
 
-  updateCoords(latDD, lngDD) {
+  updateCoords(latDD: number, lngDD: number) {
     console.log("New Coordinates: lat:" + latDD + "; lng:" + lngDD);
 
-    document.getElementById("latitudeDD")!.value = latDD;
-    document.getElementById("longitudeDD")!.value = lngDD;
+    document.getElementById("latitudeDD")!.innerText = latDD.toString()
+    document.getElementById("longitudeDD")!.innerText = lngDD.toString()
 
-    latDMS = DDToDMS(latDD, false);
-    document.getElementById("latitudeQ")!.value = latDMS.dir;
-    document.getElementById("latitudeD")!.value = latDMS.deg;
-    document.getElementById("latitudeM")!.value = latDMS.min;
-    document.getElementById("latitudeS")!.value = latDMS.sec;
+    const latDMS = DDToDMS(latDD, false);
+    document.getElementById("latitudeQ")!.innerText = latDMS.dir.toString()
+    document.getElementById("latitudeD")!.innerText = latDMS.deg.toString()
+    document.getElementById("latitudeM")!.innerText = latDMS.min.toString()
+    document.getElementById("latitudeS")!.innerText = latDMS.sec.toString()
 
-    lngDMS = DDToDMS(lngDD, true);
-    document.getElementById("longitudeQ")!.value = lngDMS.dir;
-    document.getElementById("longitudeD")!.value = lngDMS.deg;
-    document.getElementById("longitudeM")!.value = lngDMS.min;
-    document.getElementById("longitudeS")!.value = lngDMS.sec;
+    const lngDMS = DDToDMS(lngDD, true);
+    document.getElementById("longitudeQ")!.innerText = lngDMS.dir.toString()
+    document.getElementById("longitudeD")!.innerText = lngDMS.deg.toString()
+    document.getElementById("longitudeM")!.innerText = lngDMS.min.toString()
+    document.getElementById("longitudeS")!.innerText = lngDMS.sec.toString()
 
     let pCode = encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
     console.log("updateCoords: Encode returned PlusCode: " + pCode);
@@ -541,11 +601,11 @@ export class EntryComponent implements OnInit {
         } else {
           fullCode = pCode;
           console.log("Shorten +Codes, Global:" + fullCode + ", Lat:" + SettingsService.Settings.defLat + "; Long:" + SettingsService.Settings.defLong);
-          // Attempt to trim the first characters from a code; may return same value...
+          // Attempt to trim the first characters from a code; may return same innerText...
           pCode = shorten(fullCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.shorten
         }
         console.log("New PlusCodes: " + pCode + "; Global: " + fullCode);
-        //document.getElementById("addresses")!.value = pCode;
+        //document.getElementById("addresses")!.innerText = pCode;
         //document.getElementById("addressLabel").innerHTML = defPCodeLabel;
         document.getElementById("pCodeGlobal")!.innerHTML = " &nbsp;&nbsp; +Code: " + fullCode;
       } else {
@@ -559,4 +619,47 @@ export class EntryComponent implements OnInit {
     //if (initialized) this.displaySmallMap(latDD, lngDD);
   }
 
+  strToLatLng(str: string) {
+    const latlngStr = str.split(",", 2);
+    return new google.maps.LatLng(parseFloat(latlngStr[0]), parseFloat(latlngStr[1]))
+  }
+
+  getAddressFromLatLng(latLng: google.maps.LatLng): string {
+    const geocoder = new google.maps.Geocoder()
+
+    geocoder
+      .geocode({ location: latLng })
+      .then((response) => {
+        if (response.results[0]) {
+          return (response.results[0].formatted_address)
+        } else {
+          return ("") // No results found
+        }
+      })
+      .catch((e) => { return ("Geocoder failed due to: " + e) })
+    return ("?")
+  }
+
+  // https://developers.google.com/maps/documentation/javascript/geocoding#GeocodingResults
+  getLatLngAndAddressFromPlaceID(placeId: string): any
+  //({position:google.maps.LatLng, address:string})
+  {
+    let err = ""
+    const geocoder = new google.maps.Geocoder
+    geocoder
+      .geocode({ placeId: placeId })
+      .then(({ results }) => {
+        if (results[0]) {
+          return {
+            position: results[0].geometry.location,
+            address: results[0].formatted_address
+          }
+
+        } else {
+          return { position: null, address: "" }
+        }
+      })
+      .catch((e) => { err = "Geocoder failed due to: " + e })
+    return { position: null, address: err }
+  }
 }
