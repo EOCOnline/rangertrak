@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)https://4s855.csb.app/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="./sse-hooks.f648b14c15c640a14a557113a991cb8d.js.download"></script>
+    <script type="text/javascript" src="./banner.be879265d.js.download"></script>
+
+    <title>what3words JavaScript Component Sandbox</title>
+    <style data-styles="">what3words-symbol,what3words-address,what3words-autosuggest{visibility:hidden}.hydrated{visibility:inherit}</style>
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./what3words.esm.js.download"></script>
+    <script nomodule="" src="./what3words.js.download"></script>
+  </head>
+
+  <body>
+    <form id="form" method="GET">
+      <div class="container">
+        <h3>Default component</h3>
+        <p>
+          The component uses it's own styles for the input element and the
+          suggestions dropdown.
+        </p>
+
+        <!-- --  You will need to replace the api_key attribute with your own what3words API key to use outside of Codesandbox
+        at https://accounts.what3words.com/create-api-key---->
+
+        <label for="what3words1">what3words address (optional):</label>
+        <what3words-autosuggest api_key="DIPBZL9D"><!---->
+          <input type="text" id="what3words1" name="what3words1" optional="">
+        </what3words-autosuggest>
+      </div>
+    </form>
+
+    <script>
+      var words;
+      document.querySelector("what3words-autosuggest").addEventListener(
+        "selected_suggestion",
+        ({
+          detail: {
+            suggestion: { words }
+          }
+        }) => {
+          console.log("words");
+        }
+      );
+    </script>
+    <script crossorigin="" type="text/javascript" src="./watermark-button.be960f43b.js.download"></script>
+  
+
+</body></html>

@@ -1,0 +1,26 @@
+body {
+  font-family: Source Sans Pro, sans-serif;
+  box-sizing: border-box;
+  color: #0a3049;
+  font-size: 14px;
+}
+.container {
+  padding: 20px;
+  width: 80%;
+}
+
+.input {
+  width: 100%;
+  font-size: 16px;
+  border-width: 0px;
+  border-color: #000000;
+  background-color: #ffffff;
+  color: #000000;
+  border-style: outset;
+  border-radius: 0px;
+  box-shadow: 0px 0px 5px rgba(66, 66, 66, 0.75);
+  margin-top: 5px;
+}
+.input {
+  outline: none;
+}

@@ -49,6 +49,21 @@
 
 
     <h2 class="elegant">Where</h2>
+
+    <script type="module" src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.esm.js"></script>
+    <script nomodule src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.js?key=YOUR-API-KEY"></script>
+
+    <form id="form" method="GET">
+       <div>
+          <what3words-autosuggest>
+            <input type="text" />
+          </what3words-autosuggest>
+       </div>
+    </form>
+
+
+
+
     <div class="input-group">Street Address:
       <input
         [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
