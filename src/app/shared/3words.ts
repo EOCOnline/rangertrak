@@ -71,11 +71,11 @@ Example: Basic Autosuggest call
  * @param {string} [options.inputType] - 'text' | 'vocon-hybrid' | 'nmdp-asr' | 'generic-voice'
  * @param {string} [options.language] - The language to return autosuggest results in
  * @param {boolean} [options.preferLang] - Whether to bias towards results that are over land vs over the sea.
- * @returns {Promise} - Promise 3 word address autosuggestions response: any
- */
+ * @returns {Promise} - Promise 3 word address autosuggestions response
+ **/
  what3words.api.autosuggest("fun.with.code")
  .then(function(response: any) {
-    console.log("[autosuggest]", response: any);
+    console.log("[autosuggest]", response);
  });
 
  // AutoSuggest, clipping the results returned to France and Germany
@@ -83,7 +83,7 @@ Example: Basic Autosuggest call
 
  what3words.api.autosuggest("fun.with.code", { clipToCountry: ["FR", "DE"] })
  .then(function(response: any) {
-   console.log("[autosuggest]", response: any);
+   console.log("[autosuggest]", response);
  }
 );
 
