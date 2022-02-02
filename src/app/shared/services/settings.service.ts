@@ -64,7 +64,7 @@ export class SettingsService {
     if (needSettings) { SettingsService.ResetDefaults() }
 
     //REVIEW:
-    SettingsService.Settings.version = '0.11.32'
+    SettingsService.Settings.version = '0.11.33'
   }
 
   static ResetDefaults() {

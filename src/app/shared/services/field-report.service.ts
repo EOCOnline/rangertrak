@@ -2,6 +2,7 @@ import { BehaviorSubject, Observer } from 'rxjs';
 import { Injectable, OnInit } from '@angular/core';
 //import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 import { RangerService, RangerStatus, TeamService } from './index';
+import { LatLng } from 'leaflet';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
@@ -23,8 +24,10 @@ export class FieldReportService {
   private fieldReports: FieldReportType[] = []
   private storageLocalName = 'fieldReports'
   private nextId = 0
-  private fieldReportsSubject =
-    new BehaviorSubject<FieldReportType[]>([]);  // REVIEW: Necessary?
+  private fieldReportsSubject = new BehaviorSubject<FieldReportType[]>([]);  // REVIEW: Necessary?
+  // https://developers.google.com/maps/documentation/javascript/reference/coordinates?hl=en#LatLngBounds
+  public bounds = new google.maps.LatLngBounds(new google.maps.LatLng(90, 180), new google.maps.LatLng(-90, -180)) //SW, NE
+  public bound:google.maps.LatLngBoundsLiteral = { east: -180, north: -90, south: 90, west: 180 } //e,n,s,w
 
   constructor(private rangerService: RangerService, private teamService: TeamService) {
 
@@ -38,7 +41,7 @@ export class FieldReportService {
     }   */
 
     // XXX (localStorageFieldReports != null)= true
-    this.fieldReports = ((localStorageFieldReports != null) && (localStorageFieldReports.indexOf("licensee")<=0))
+    this.fieldReports = ((localStorageFieldReports != null) && (localStorageFieldReports.indexOf("licensee") <= 0))
       ? JSON.parse(localStorageFieldReports) : []   //TODO: clean up
     //this.fieldReports = []
     //debugger
@@ -121,9 +124,12 @@ export class FieldReportService {
 
   private findIndex(id: number): number {
     for (let i = 0; i < this.fieldReports.length; i++) {
-      if (this.fieldReports[i].id === id) return i;
+      if (this.fieldReports[i].id === id) {
+        return i
+      }
     }
-    throw new Error(`FieldReport with id ${id} was not found!`);
+    throw new Error(`FieldReport with id ${id} was not found!`)
+    // return -1
   }
 
 
@@ -143,37 +149,81 @@ export class FieldReportService {
     })
   }
 
+
+  // ------------------ BOUNDS ---------------------------
   getFieldReportBounds() {
+    return this.bounds
+  }
+
+  getFieldReportBound() {
+    return this.bound
+  }
+
+  recalcFieldBounds() {
     console.log(`displayAllMarkers got ${this.fieldReports.length} field reports`)
 
-    let N = this.fieldReports[0].lat
-    let W = this.fieldReports[0].long
-    let S = this.fieldReports[0].lat
-    let E = this.fieldReports[0].long
+    let north = this.fieldReports[0].lat
+    let west = this.fieldReports[0].long
+    let south = this.fieldReports[0].lat
+    let east = this.fieldReports[0].long
 
     // https://www.w3docs.com/snippets/javascript/how-to-find-the-min-max-elements-in-an-array-in-javascript.html
-    // concludes with the results show that the standard loop is the fastest
+    // concludes with: "the results show that the standard loop is the fastest"
 
     for (let i = 1; i < this.fieldReports.length; i++) {
-      if (this.fieldReports[i].lat > N) {
-        N = this.fieldReports[i].lat
+      if (this.fieldReports[i].lat > north) {
+        north = this.fieldReports[i].lat
       }
-      if (this.fieldReports[i].lat < S) {
-        S = this.fieldReports[i].lat
+      if (this.fieldReports[i].lat < south) {
+        south = this.fieldReports[i].lat
       }
-      if (this.fieldReports[i].long > E) {
-        E = this.fieldReports[i].long
+      if (this.fieldReports[i].long > east) {
+        east = this.fieldReports[i].long
       }
-      if (this.fieldReports[i].long > W) {
-        W = this.fieldReports[i].long
+      if (this.fieldReports[i].long > west) {
+        west = this.fieldReports[i].long
       }
     }
 
-    let bounds = new google.maps.LatLngBounds(new google.maps.LatLng(S, W), new google.maps.LatLng(N, E));
-    return { north: N, south: S, east: E, west: W, bounds: bounds}
+    this.bounds = new google.maps.LatLngBounds(new google.maps.LatLng(south, west), new google.maps.LatLng(north, east)) //SW, NE
+    this.bound = { east: east, north: north, south: south, west: west } //e,n,s,w
+    return this.bounds
   }
 
-  /*
+  updateFieldReportBounds(newFR: FieldReportType) {
+    this.bounds.extend(new google.maps.LatLng(newFR.lat, newFR.long))
+    this.bound = this.getBoundFromBounds(this.bounds)
+    return this.bounds
+  }
+
+  // TODO: put in coordinates or utility?
+  getBoundFromBounds(bounds: google.maps.LatLngBounds): google.maps.LatLngBoundsLiteral {
+    let NE = new google.maps.LatLng(bounds.getNorthEast())
+    let SW = new google.maps.LatLng(bounds.getSouthWest())
+    return {east: NE.lng(), north: NE.lat(), south: SW.lat(), west: SW.lng()}
+  }
+
+
+// --------------------------------------------------------
+
+  sortFieldReportsByTeam() {
+    return this.fieldReports.sort((n1, n2) => {
+      if (n1.team > n2.team) { return 1 }
+      if (n1.team < n2.team) { return -1 }
+      return 0;
+    })
+  }
+
+  filterFieldReportsByDate(beg: Date, end: Date) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
+    const minDate = new Date(0)
+    const maxDate = new Date(2999, 0)
+    beg = beg < minDate ? beg : minDate
+    end = (end < maxDate) ? end : maxDate
+
+    return this.fieldReports.filter((report) => (report.date >= beg && report.date <= end))
+  }
+
+    /*
 const filterParams = {
   comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
     const dateAsString = cellValue;
@@ -196,22 +246,6 @@ const filterParams = {
 }
 */
 
-  sortFieldReportsByTeam() {
-    return this.fieldReports.sort((n1, n2) => {
-      if (n1.team > n2.team) { return 1 }
-      if (n1.team < n2.team) { return -1 }
-      return 0;
-    })
-  }
-
-  filterFieldReportsByDate(beg: Date, end: Date) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
-    const minDate = new Date(0)
-    const maxDate = new Date(2999, 0)
-    beg = beg < minDate ? beg : minDate
-    end = (end < maxDate) ? end : maxDate
-
-    return this.fieldReports.filter((report) => (report.date >= beg && report.date <= end))
-  }
 
   generateFakeData(num: number = 15) {
     let teams = this.teamService.getTeams()
@@ -240,19 +274,14 @@ const filterParams = {
         note: notes[Math.floor(Math.random() * notes.length)]
       })
     }
+    this.recalcFieldBounds()
   }
 
 }
-/*
-@Injectable({ providedIn: 'root' })
-export class FieldReport {
-}
-*/
 
-// from https://ag-grid.com/angular-data-grid/column-definitions/#example-column-definition
-//import { HttpClient } from '@angular/common/http';
+// Example: read JSON file. https://ag-grid.com/angular-data-grid/column-definitions/#example-column-definition
 /*
-onGridReady(params) {
+  onGridReady(params) {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
 
@@ -264,9 +293,7 @@ onGridReady(params) {
 
 
 
-/*
-
-OLD CODE FROM 4.2 ===============================================================================================
+/*  OLD CODE FROM 4.2 ====================================================================
 
 function filterLocations(filters) {
 

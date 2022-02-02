@@ -26,27 +26,26 @@
     </mat-form-field>
     <span id="enter__Callsign-upshot"></span>
 
-    <!-- br>ToDo: [Future: Maybe only enter Team OR Callsign. If team, then ALL TeamMembers get checked in all at once???]  -->
+    <!-- br>ToDo: [Future: Maybe only enter Team OR Callsign. If team, then ALL TeamMembers get checked in all at once???]  >
     <div #div1 class="input-group">Team:
       <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
         type="text" formControlName="team" placeholder="Team">
       <div *ngIf="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.hasError('required')"
         class="text-sm text-danger">Team is required</div>
-    </div>
+    </div -->
 
 
     <div id="enter__SmallMap">
 
       <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
-        (mapMousemove)="move($event)" (mapInitialized)="onMapInitialized($event)" style="width: 300px; height:300px;">
+        (mapMousemove)="onMapMouseMove($event)" (mapInitialized)="onMapInitialized($event)" style="width: 300px; height:300px;">
       </google-map>
 
-      <div>Latitude: {{display?.lat}} Longitude: {{display?.lng}}</div>
-      <!--br>
-        <button (click)="zoomIn()">Zoom in</button>
-        <button (click)="zoomOut()">Zoom out</button-->
+      <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
+      <div>Latitude: <span class="strong">{{display?.lat | number:'1.4-5'}}</span>   Longitude: <span class="strong">{{display?.lng | number:'1.4-5'}}</span>
+      </div>
     </div>
-
+<br>
 
     <h2 class="elegant">Where</h2>
 
@@ -54,10 +53,10 @@
     <script nomodule src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.js?key=YOUR-API-KEY"></script>
 
     <form id="form" method="GET">
-       <div>
-          <what3words-autosuggest>
-            <input type="text" />
-          </what3words-autosuggest>
+       <div id= "what3words-autosuggest">
+          <!--what3words-autosuggest-->
+          what3words-autosuggest: <input type="text" />
+          <!--/what3words-autosuggest-->
        </div>
     </form>
 
@@ -144,18 +143,17 @@
           defaultTime: An array [hour, minute, second] for default time when the date is not yet defined
          -->
 
-    <hr>
+
     <div class="input-group">Date:
       <input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
-        type="datetime" formControlName="date" placeholder="date">
+        type="datetime" formControlName="date" placeholder="date" id="enter_When-input">
       <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
         class="text-sm text-danger">date is required</div>
     </div>
 
-    <h2 class="elegant">What</h2>
+    <h2 class="elegant bordered">What</h2>
 
-
-    <div class="input-group">Status:
+    <div class="input-group bordered" id="bordered">Status:
       <select formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid">
         <!--option [value]="'NewStatus'">Add a new status</option-->
@@ -187,7 +185,7 @@
 
     <br>
     <br>
-    <!--button (click)="updateLocation()">Update location</button> <br-->
+    <!--button (click)="onBtnUpdateLocation()">Update location</button> <br-->
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
     <button (click)="resetForm()" title="Reset all form fields to their defaults" class="eButton"
       type="button">Reset</button>

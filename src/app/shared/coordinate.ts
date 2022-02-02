@@ -1,5 +1,9 @@
-import { Injectable, OnInit } from '@angular/core';
-import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
+//import { Injectable, OnInit } from '@angular/core';
+//import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
+
+// REVIEW: Much of this is overlap with:
+// https://developers.google.com/maps/documentation/javascript/coordinates
+// https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
 
 export enum DirEnum {
@@ -11,7 +15,6 @@ export enum DirEnum {
 export type DirType = 'E' | 'W' | 'N' | 'S'
 
 class Point {
-
   constructor(private _age: number,
     private _firstName: string,
     private _lastName: string) {
@@ -40,10 +43,7 @@ class Point {
     this._firstName = parts[0];
     this._lastName = parts[1];
   }
-
 }
-
-
 
 export class Coordinate {
   constructor(private _lat: number, private _long: number) {
@@ -74,11 +74,13 @@ export class Coordinate {
   load(name: string) {
     ;
   }
-
 }
 
-
-
+// REVIEW: Duplicate of one in Utility class...
+export function strToLatLng(str: string) {
+  const latlngStr = str.split(",", 2);
+  return new google.maps.LatLng(parseFloat(latlngStr[0]), parseFloat(latlngStr[1]))
+}
 
 // Coord is a lat or lng in decimal degrees
 class Coord {
@@ -91,7 +93,7 @@ class Coord {
       if (coord > 180) throw "Coordinate over 180 degrees."
       // MAIN.dbug("Coordinate passed range check...")
     }
-    catch (err:unknown) {
+    catch (err: unknown) {
       // MAIN.dbug("Bad Coordinate at Coord(): " + err.message)
     }
   }
@@ -116,9 +118,6 @@ class Coord {
 
   */
 }
-
-
-
 
 // Get object {deg:, min:, sec:, dir:}
 // sec truncated to two digits (e.g. 3.14)

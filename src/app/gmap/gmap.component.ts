@@ -84,7 +84,7 @@ export class GmapComponent implements OnInit {    //extends Map
     scrollwheel: true,
     disableDoubleClickZoom: true,
     mapTypeId: 'hybrid',
-    maxZoom: 18,
+    maxZoom: 21,
     minZoom: 4,
     draggableCursor: 'crosshair', //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
     //heading: 90,
@@ -142,14 +142,13 @@ export class GmapComponent implements OnInit {    //extends Map
 
   ngOnInit(): void {
     console.log('into ngOnInit()')
-    //* BUG:  uncomment for production!!!  ***********************
+    // https://developers.google.com/maps/documentation/geolocation/overview
     navigator.geolocation.getCurrentPosition((position) => {
       this.center = {
         lat: position.coords.latitude,
         lng: position.coords.longitude
       }
     })
-    // ***********/
     // https://github.com/angular/components/tree/master/src/google-maps
     if (this.map == null) {
       console.log("This.map is null")
@@ -189,11 +188,11 @@ export class GmapComponent implements OnInit {    //extends Map
   }
 
   fitBounds() {
-    let reportBounds = this.fieldReportService.getFieldReportBounds()
-    var southWest = new google.maps.LatLng(reportBounds.south, reportBounds.west);
-    var northEast = new google.maps.LatLng(reportBounds.north,reportBounds.east);
-    var bounds = new google.maps.LatLngBounds(southWest,northEast);
-    this.gMap?.fitBounds(bounds);
+    //let reportBounds = this.fieldReportService.getFieldReportBounds()
+    //var southWest = new google.maps.LatLng(reportBounds, reportBounds.west);
+    //var northEast = new google.maps.LatLng(reportBounds.north,reportBounds.east);
+    //var bounds = new google.maps.LatLngBounds(southWest,northEast);
+    this.gMap?.fitBounds(this.fieldReportService.getFieldReportBounds());
   }
 
   // -----------------------------------------------------------

@@ -32,6 +32,21 @@ h3 {
   margin-bottom: 0px;
 }
 
+.bordered {
+  border: 2 px solid red;
+}
+#bordered {
+  border: 2 px solid red;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+#enter_When-input {
+  width: 350px;
+}
+
 .eButton {
   //display: inline-block;
   width: 80px;

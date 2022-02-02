@@ -18,12 +18,13 @@
 </details>
 <br>
 
-<div *ngIf="apiLoaded"> <!-- | async -->
-  <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options" (mapClick)="addMarkerEvent($event)"
-    (mapMousemove)="move($event)" (mapRightclick)="addTrafficLayer()"
+<div *ngIf="apiLoaded">
+  <!-- | async -->
+  <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
+    (mapClick)="addMarkerEvent($event)" (mapMousemove)="move($event)" (mapRightclick)="addTrafficLayer()"
     (mapInitialized)="onMapInitialized($event)">
 
-    <div id="markerDiv" #markerDiv *ngFor="let marker of markers" >
+    <div id="markerDiv" #markerDiv *ngFor="let marker of markers">
     </div>
 
     <!--
@@ -32,21 +33,17 @@
         [position]="marker.position"
         [options]="marker.options"  -->
 
-        <map-circle [center]="circleCenter"
-              [radius]="radius"></map-circle>
+    <map-circle [center]="circleCenter" [radius]="radius"></map-circle>
 
     <map-info-window>{{ infoContent }}</map-info-window>
 
   </google-map>
 
-  <div>Latitude: {{display?.lat}}</div>
-  <div>Longitude: {{display?.lng}}</div>
-
-  <!--br>
-  <button (click)="zoomIn()">Zoom in</button>
-  <button (click)="zoomOut()">Zoom out</button-->
+  <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
+  <div>Latitude: <span class="strong">{{display?.lat | number:'1.4-5'}}</span>   Longitude: <span class="strong">{{display?.lng | number:'1.4-5'}}</span>
+  </div>
 </div>
-
+<br>
 <details>
   <summary class="big">Advanced</summary>
   <ul>
