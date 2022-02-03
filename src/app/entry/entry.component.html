@@ -56,16 +56,20 @@
 
     <h2 class="elegant">Where</h2>
 
-    Street Address, +Code, or What3Words: <input name="addresses" id="addresses" type="text" size="15" value=""
-      placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
-      onchange="chkAddresses()"> (optional)
-    <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
-    <span id="addressLabel" value="">addressLabel</span>
-    <span id="pCodeGlobal">pCodeGlobal</span>
-<br>
+    Street Address, +Code, or What3Words:
     <input
     [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
-    type="text" formControlName="addressCtrl" placeholder="Address" (change)="this.addressCtrlChanged('addr')">
+    type="text" formControlName="addressCtrl" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." size="40" placeholder="Address" (change)="this.addressCtrlChanged('addr')"> (optional)
+
+    <!--input name="addresses" id="addresses" type="text" size="15" value=""
+      placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
+      onchange="chkAddresses()"> (optional) -->
+    <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
+    <br>
+    <span id="addressLabel" value="">addressLabel</span>&nbsp;&nbsp;
+    <span id="pCodeGlobal">pCodeGlobal</span>
+<br>
+
   <!--div
     *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
     class="text-sm text-danger">address is required</div  -->
@@ -86,7 +90,7 @@
 
 
     <input name="latitudeDD" id="latitudeDD" type="text" size="7" min="-180" max="180"
-      onchange="DDCoordsChanged()">°&nbsp;&nbsp; or (D, M, S) &nbsp;&nbsp;
+      onchange="DDCoordsChanged()">°&nbsp;&nbsp; or <span title="Degrees Minute Seconds - vs. Decimal Degrees">DMS</span>: &nbsp;&nbsp;
 
 
     <input name="latitudeQ" id="latitudeQ" type="text" value="N" size="1" pattern="'e','E','w','W'" title="E or W"
@@ -111,7 +115,7 @@
 
     Longitude:
     <input name="longitudeDD" id="longitudeDD" type="text" size="7" min="-180" max="180"
-      onchange="DDCoordsChanged()">°&nbsp;&nbsp; or (D, M, S) &nbsp;&nbsp;
+      onchange="DDCoordsChanged()">°&nbsp;&nbsp; or <span title="Degrees Minute Seconds - vs. Decimal Degrees">DMS</span>: &nbsp;&nbsp;
     <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"
       onchange="DMSCoordsChanged()">
     <input name="longitudeD" id="longitudeD" type="text" value="122" size="2" max="180" onchange="DMSCoordsChanged()">°
