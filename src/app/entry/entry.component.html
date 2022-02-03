@@ -38,95 +38,115 @@
     <div id="enter__SmallMap">
 
       <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
-        (mapMousemove)="onMapMouseMove($event)" (mapInitialized)="onMapInitialized($event)" style="width: 300px; height:300px;">
+        (mapMousemove)="onMapMouseMove($event)" (mapInitialized)="onMapInitialized($event)"
+        style="width: 300px; height:300px;">
       </google-map>
 
       <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-      <div>Latitude: <span class="strong">{{display?.lat | number:'1.4-5'}}</span>   Longitude: <span class="strong">{{display?.lng | number:'1.4-5'}}</span>
+      <div>Latitude: <span class="strong">{{display?.lat | number:'1.4-5'}}</span> Longitude: <span
+          class="strong">{{display?.lng | number:'1.4-5'}}</span>
       </div>
     </div>
-<br>
+    <br>
+
+
+
+
+
 
     <h2 class="elegant">Where</h2>
 
-    <script type="module" src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.esm.js"></script>
-    <script nomodule src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.js?key=YOUR-API-KEY"></script>
+    Street Address, +Code, or What3Words: <input name="addresses" id="addresses" type="text" size="15" value=""
+      placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
+      onchange="chkAddresses()"> (optional)
+    <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
+    <span id="addressLabel" value="">addressLabel</span>
+    <span id="pCodeGlobal">pCodeGlobal</span>
+<br>
+    <input
+    [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
+    type="text" formControlName="addressCtrl" placeholder="Address" (change)="this.addressCtrlChanged('addr')">
+  <!--div
+    *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
+    class="text-sm text-danger">address is required</div  -->
+  <!--/div-->
+    <br>   <br>
 
-    <form id="form" method="GET">
-       <div id= "what3words-autosuggest">
-          <!--what3words-autosuggest-->
-          what3words-autosuggest: <input type="text" />
-          <!--/what3words-autosuggest-->
-       </div>
-    </form>
 
+
+    <div class="input-group">Latitude:
+      <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
+        type="number" formControlName="lat" placeholder="Latitude" (change)="this.addressCtrlChanged('lat')"
+        id="enter__Lat">
+      <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
+        class="text-sm text-danger">lat is required
+      </div>
+    </div>
+
+
+
+    <input name="latitudeDD" id="latitudeDD" type="text" size="7" min="-180" max="180"
+      onchange="DDCoordsChanged()">°&nbsp;&nbsp; or (D, M, S) &nbsp;&nbsp;
+
+
+    <input name="latitudeQ" id="latitudeQ" type="text" value="N" size="1" pattern="'e','E','w','W'" title="E or W"
+      onchange="DMSCoordsChanged()"> <!-- Quadrant -->
+    <input name="latitudeD" id="latitudeD" type="text" value="47" size="2" min="0" max="180"
+      onchange="DMSCoordsChanged()">°
+    <input name="latitudeM" id="latitudeM" type="text" value="" size="2" min="0" max="59"
+      onchange="DMSCoordsChanged()">'
+    <input name="latitudeS" id="latitudeS" type="text" value="" size="5" min="0" max="59.99"
+      onchange="DMSCoordsChanged()">"
+    <br>
+    <br>
+    <div class="input-group">
+      Longitude:
+      <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
+        type="number" formControlName="long" placeholder="Longitude" (change)="this.addressCtrlChanged('lng')"
+        id="enter__Long">
+      <div *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
+        class="text-sm text-danger">long is required
+      </div>
+    </div>
+
+    Longitude:
+    <input name="longitudeDD" id="longitudeDD" type="text" size="7" min="-180" max="180"
+      onchange="DDCoordsChanged()">°&nbsp;&nbsp; or (D, M, S) &nbsp;&nbsp;
+    <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"
+      onchange="DMSCoordsChanged()">
+    <input name="longitudeD" id="longitudeD" type="text" value="122" size="2" max="180" onchange="DMSCoordsChanged()">°
+    <input name="longitudeM" id="longitudeM" type="text" value="" size="2" min="0" max="59"
+      onchange="DMSCoordsChanged()">'
+    <input name="longitudeS" id="longitudeS" type="text" value="" size="5" min="0" max="59.99"
+      onchange="DMSCoordsChanged()">"
+
+      <br>
+    <br>
 
 
     <div class="input-group">Street Address:
-      <input
-        [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
-        type="text" formControlName="addressCtrl" placeholder="Address" (change)="this.addressCtrlChanged('addr')">
-      <!--div
-      *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
-      class="text-sm text-danger">address is required</div  -->
-      <!--/div-->
+
       <p id="top3wa">Top 3 word address match: </p>
       <p id="coords">WGS84 Coordinates: </p>
       <p id="nearest_place">Nearest Place: </p>
       <div>Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code: 8VCWVF22+</span>
       </div>
 
-      <div class="input-group">Latitude:
-        <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
-          type="number" formControlName="lat" placeholder="Latitude" (change)="this.addressCtrlChanged('lat')" id="enter__Lat">
-        <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
-          class="text-sm text-danger">lat is required
+
+      <script type="module"
+        src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.esm.js"></script>
+      <script nomodule
+        src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.js?key=YOUR-API-KEY"></script>
+
+      <form id="form" method="GET">
+        <div id="what3words-autosuggest">
+          <!--what3words-autosuggest-->
+          what3words-autosuggest: <input type="text" />
+          <!--/what3words-autosuggest-->
         </div>
-      </div>
-
-      <div class="input-group">
-        Longitude:
-        <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
-          type="number" formControlName="long" placeholder="Longitude" (change)="this.addressCtrlChanged('lng')" id="enter__Long">
-        <div *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
-          class="text-sm text-danger">long is required
-        </div>
-      </div>
+      </form>
 
 
-
-
-      Street Address, +Code, or What3Words (optional): <input name="addresses" id="addresses" type="text" size="15"
-        value="" placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
-        onchange="chkAddresses()">
-      <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
-      <span id="addressLabel" value=""></span>
-      <span id="pCodeGlobal"></span>
-      <br>
-      Latitude: &nbsp;&nbsp;
-      <input name="latitudeQ" id="latitudeQ" type="text" value="N" size="1" pattern="'e','E','w','W'" title="E or W"
-        onchange="DMSCoordsChanged()"> <!-- Quadrant -->
-      <input name="latitudeD" id="latitudeD" type="text" value="47" size="2" min="0" max="180"
-        onchange="DMSCoordsChanged()">°
-      <input name="latitudeM" id="latitudeM" type="text" value="" size="2" min="0" max="59"
-        onchange="DMSCoordsChanged()">'
-      <input name="latitudeS" id="latitudeS" type="text" value="" size="5" min="0" max="59.99"
-        onchange="DMSCoordsChanged()">"
-      &nbsp;&nbsp; or &nbsp;&nbsp;<input name="latitudeDD" id="latitudeDD" type="text" size="7" min="-180" max="180"
-        onchange="DDCoordsChanged()">°
-      <br>
-      Longitude:
-      <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"
-        onchange="DMSCoordsChanged()">
-      <input name="longitudeD" id="longitudeD" type="text" value="122" size="2" max="180"
-        onchange="DMSCoordsChanged()">°
-      <input name="longitudeM" id="longitudeM" type="text" value="" size="2" min="0" max="59"
-        onchange="DMSCoordsChanged()">'
-      <input name="longitudeS" id="longitudeS" type="text" value="" size="5" min="0" max="59.99"
-        onchange="DMSCoordsChanged()">"
-      &nbsp;&nbsp; or &nbsp;&nbsp;<input name="longitudeDD" id="longitudeDD" type="text" size="7" min="-180" max="180"
-        onchange="DDCoordsChanged()">°
-      <br>
 
     </div>
 
@@ -141,6 +161,9 @@
           disableMinute: If true, the minute is readonly
           defaultTime: An array [hour, minute, second] for default time when the date is not yet defined
          -->
+
+    <!--ngx-mat-timepicker [(ngModel)]="myTimePicker">
+        </ngx-mat-timepicker -->
 
 
     <div class="input-group">Date:

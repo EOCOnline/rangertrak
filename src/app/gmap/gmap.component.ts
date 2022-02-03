@@ -12,6 +12,7 @@ import { SettingsService, FieldReportService, FieldReportType, FieldReportStatus
 import { ComponentFixture } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
+import { LatLng } from 'leaflet';
 
 /*
   https://developers.google.com/maps/support/
@@ -84,7 +85,8 @@ export class GmapComponent implements OnInit {    //extends Map
     scrollwheel: true,
     disableDoubleClickZoom: true,
     mapTypeId: 'hybrid',
-    maxZoom: 21,
+    zoom: 16,
+    maxZoom: 20,
     minZoom: 4,
     draggableCursor: 'crosshair', //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
     //heading: 90,
@@ -162,12 +164,13 @@ export class GmapComponent implements OnInit {    //extends Map
     console.log(`onMapInitialized()`)
     this.gMap = mappy
 
+    /*
     if (this.gMap == null) {
       console.log("onMapInitialized(): This.gMap is null")
     } else {
       console.log(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`)
     }
-
+*/
 
     //  this.initZoomControl(this.gMap) gets...
     /* BUG:
@@ -184,6 +187,9 @@ export class GmapComponent implements OnInit {    //extends Map
       at errorContext (errorContext.js:19:1)
       */
     this.displayAllMarkers()
+    // REVIEW: Doesn't work with NO Markers?
+    this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong })
+    this.gMap.setZoom(SettingsService.Settings.defZoom)
     this.fitBounds()
   }
 
@@ -411,7 +417,7 @@ export class GmapComponent implements OnInit {    //extends Map
     // addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText= "grade", title="RangerTitle", labelColor = "#ffffff", fontSize="18px", icon = "rocket", animation= google.maps.Animation.DROP) {
   }
 
-  move(event: google.maps.MapMouseEvent) {
+  onMapMouseMove(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
       this.display = event.latLng.toJSON()
     }

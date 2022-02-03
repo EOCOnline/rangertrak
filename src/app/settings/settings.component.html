@@ -52,7 +52,7 @@
         class="text-sm text-danger">longitude is required</div>
     </div>
 
-    <div class="input-group">Zoom (1-16):
+    <div class="input-group">Zoom (3-21):
       <input
         [class.border-danger]="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.invalid"
         type="number" formControlName="zoom" placeholder=15>
@@ -161,7 +161,7 @@
 
     Save above settings (to local storage):
     <button [disabled]="settingsEditorForm.invalid" style="margin-top: 40px;" type="submit">Save</button>
-    // REVIEW: Other pages only reflect these changes if refreshed!!!
+    <!-- REVIEW: Other pages only reflect these changes if refreshed!!! -->
 
     <br>
     <br>

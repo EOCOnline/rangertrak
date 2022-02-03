@@ -52,7 +52,7 @@ export class SettingsComponent implements OnInit {
       note: [this.settings.note],
       latitude: [this.settings.defLat, Validators.required],
       longitude: [this.settings.defLong, Validators.required],
-      zoom: [this.settings.defZoom],
+      zoom: [this.settings.defZoom, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation
       plusCode: [this.settings.defPlusCode],
       w3wLocale: [this.settings.w3wLocale],
       markerSize: [this.settings.markerSize],
