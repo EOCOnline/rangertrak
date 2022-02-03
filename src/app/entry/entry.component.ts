@@ -18,6 +18,7 @@ import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 //import { addressType } from '../lmap/lmap.component' // BUG:
 // BUG: What3Words,
 import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/'
+import { LatLng } from 'leaflet';
 
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
@@ -34,7 +35,7 @@ export class EntryComponent implements OnInit {
   @ViewChild(GoogleMap, { static: false }) map!: GoogleMap // even needed?
   // google.maps.Map is NOT the same as GoogleMap...
   gMap?: google.maps.Map
-  map2?: google.maps.Map // unused
+  //map2?: google.maps.Map // unused
 
   onlyMarker = new google.maps.Marker({
     draggable: false,
@@ -62,7 +63,7 @@ export class EntryComponent implements OnInit {
   // --------------- ENTRY FORM -----------------
   // creating controls in a component class, provides immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
   callsignCtrl = new FormControl()
-  addressCtrl = new FormControl()
+  addressCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
   fieldReportStatuses
@@ -73,7 +74,7 @@ export class EntryComponent implements OnInit {
   callInfo: HTMLElement | null = null
   alert: any
 
-  //myTimePicker:
+  //myTimePicker = null
 
   constructor(
     private formBuilder: FormBuilder,
@@ -101,6 +102,7 @@ export class EntryComponent implements OnInit {
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))
     // TODO: NOt working yet...
     console.log(`addressCtrl.valueChanges`)
+    // TODO: No formControlName="addressCtrl"!!!!
 
     this.addressCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
 
@@ -130,7 +132,7 @@ export class EntryComponent implements OnInit {
       id: -1,
       callsign: [''],
       team: ['T1'],
-      address: ['default location (ngOnInit)'],
+      address: [''],  // ' , Vashon, WA 98070' ?
       lat: [this.settings.defLat, Validators.required], //Validators.minLength(4)
       long: [this.settings.defLong, Validators.required], //Validators.minLength(4)
       date: [new Date()],
@@ -144,37 +146,51 @@ export class EntryComponent implements OnInit {
       this.displayHide("enter__frm-reguritation")
     }
 
-
-
     // On Location/Address Change subscriptions
-
     if (this.entryDetailsForm) {
       this.entryDetailsForm.get("lat")?.valueChanges.subscribe(x => {
-        console.log('latitude value changed: ' + x)
+        console.log('#############  latitude value changed: ' + x)
       })
 
-
       this.entryDetailsForm.get("long")?.valueChanges.subscribe(x => {
-        console.log('longitude value changed: ' + x)
+        console.log('#############  longitude value changed: ' + x)
       })
 
       this.entryDetailsForm.get("address")?.valueChanges.subscribe(x => {
-        console.log('address value changed: ' + x)
+        console.log('#############  address value changed: ' + x)
       })
     }
-
-
 
     console.log(`EntryForm ngOnInit completed at ${Date()}`)
   }
 
-  /* use service's version...
-  private findIndex(call: string): number {
-    for (let i = 0; i < this.rangers.length; i++) {
-      if (this.rangers[i].callsign == call) return i;
-    }
-    throw new Error(`Entry - findIndex(): Ranger with id ${ call } was not found!`);
-  }*/
+  // this.myReactiveForm.reset(this.myReactiveForm.value)
+  // https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
+  // https://stackoverflow.com/a/54048660
+  resetForm() {
+    console.log("Resetting form...")
+
+    this.entryDetailsForm = this.formBuilder.group({
+      id: -2,
+      callsign: [''],
+      team: ['T0'],
+      address: [''], // ' , Vashon, WA 98070' ?
+      lat: [this.settings.defLat,
+      Validators.required,
+        //Validators.minLength(4)
+      ],
+      long: [this.settings.defLong,
+      Validators.required,
+        //Validators.minLength(4)
+      ],
+      date: [new Date()],
+      status: [FieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
+      note: ['']
+    })
+    this.entryDetailsForm.markAsPristine();
+    this.entryDetailsForm.markAsUntouched();
+  }
+
 
   // TODO: NOt working yet...
   CallsignChanged(callsign: string) { // Just serves timer for input field - post interaction
@@ -188,9 +204,6 @@ src = "${ranger.image}" height = "50" >
   <span>${ranger.callsign} </span> | <small> ${ranger.licensee} | ${ranger.phone}</small > `
     }
   }
-
-
-
 
   CallsignCtrlChanged() { // NOTE: NEVER CALLED (my error, maybe does now..)!!!, so use workaround above...
     console.log("callsign Ctrl Changed at ", Date(), ". call=" + "myCall")
@@ -240,32 +253,6 @@ src = "${ranger.image}" height = "50" >
   }
 
 
-  // this.myReactiveForm.reset(this.myReactiveForm.value)
-  // https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
-  // https://stackoverflow.com/a/54048660
-  resetForm() {
-    console.log("Resetting form...")
-
-    this.entryDetailsForm = this.formBuilder.group({
-      id: -2,
-      callsign: [''],
-      team: ['T0'],
-      address: ['default location (reset)'],
-      lat: [this.settings.defLat,
-      Validators.required,
-        //Validators.minLength(4)
-      ],
-      long: [this.settings.defLong,
-      Validators.required,
-        //Validators.minLength(4)
-      ],
-      date: [new Date()],
-      status: [FieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
-      note: ['']
-    })
-    this.entryDetailsForm.markAsPristine();
-    this.entryDetailsForm.markAsUntouched();
-  }
 
   /*
   FUTURE: Allow entry of keywords
@@ -277,25 +264,6 @@ src = "${ranger.image}" height = "50" >
   // ------------------------------------------------------------------------
   // Map stuff below
   //#region
-  displayMarker(pos: google.maps.LatLng, title = 'Latest Location') {
-    console.log(`displayMarker`)
-
-    // Review: will this overwrite/remove any previous marker?
-    if (this.gMap) {
-      this.onlyMarker.setMap(this.gMap)
-    }
-    this.onlyMarker.setPosition(pos)
-    this.onlyMarker.setTitle(title)
-
-    /* label: {
-       // label: this.labels[this.labelIndex++ % this.labels.length],
-       text: "grade", // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
-       fontFamily: "Material Icons",
-       color: "#ffffff",
-       fontSize: "18px",
-     },
-     */
-  }
 
   onMapInitialized(newMapReference: google.maps.Map) {
     console.log(`onMapInitialized()`)
@@ -327,16 +295,19 @@ src = "${ranger.image}" height = "50" >
       console.log('moveing()');
     }
     else {
-      console.log('move(): NO event.latLng!!!!!!!!!!!!!');
+      console.warn('move(): NO event.latLng!!!!!!!!!!!!!');
     }
   }
+
+
+
   //#endregion
 
 
   //----------------------------------------------------------------------------------------
   // Address stuff : Move to service/utility for us by big maps? Also future is to chg miniMap out with Leaflet map (for offline use)
-
   // #region
+
   // https://developers.google.com/maps/documentation/javascript/places
   // https://developer.what3words.com/tutorial/javascript
   // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
@@ -345,17 +316,45 @@ src = "${ranger.image}" height = "50" >
   // https://angular.io/guide/form-validation
   // https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
   addressCtrlChanged2(newAddr: string) {
+    // TODO: No formControlName="addressCtrl"!!!!
     console.log(`addressCtrlChanged2: ${newAddr} `)
 
   }
 
-  UpdateLocation() {
+  UpdateLocation(loc: google.maps.LatLngLiteral, title: string = "") {
     console.log("updateLocation() running")
     //this.entryDetailsForm.get(['', 'name'])
     //this.entryDetailsForm.controls['derivedAddress'].setValue('New Derived Address')
     let addr = this.document.getElementById("derivedAddress")
-    if (addr) { addr.innerHTML = "New What3Words goes here!" } // TODO:
-    this.displayMarker(this.vashon, 'Title:Latest Location')
+    if (addr) { addr.innerHTML = "New What3Words goes here!" } // TODO: move to another routine...
+
+    if (title == "") {
+      title = `${Date.now} at lat ${loc.lat}, lng ${loc.lng}.`
+    }
+
+    this.displayMarker(loc, title)
+  }
+
+  displayMarker(pos: google.maps.LatLngLiteral, title = 'Latest Location') {
+    console.log(`displayMarker at ${pos}, title: ${title}`)
+
+    // Review: will this overwrite/remove any previous marker?
+    if (this.gMap) {
+      this.onlyMarker.setMap(this.gMap)
+    } else {
+      console.warn('gMap NOT set in displayMarker!!!!')
+    }
+    this.onlyMarker.setPosition(pos)
+    this.onlyMarker.setTitle(title)
+
+    /* label: {
+       // label: this.labels[this.labelIndex++ % this.labels.length],
+       text: "grade", // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+       fontFamily: "Material Icons",
+       color: "#ffffff",
+       fontSize: "18px",
+     },
+     */
   }
 
   /*
@@ -410,6 +409,7 @@ src = "${ranger.image}" height = "50" >
 
   addressCtrlChanged(what: string) {
     console.log(`addressCtrlChanged`)
+    // TODO: No formControlName="addressCtrl"!!!!
 
     // this.form.markAsPristine();
     // this.form.markAsUntouched();
@@ -453,47 +453,16 @@ src = "${ranger.image}" height = "50" >
           //addrLabel.markAsPristine()
           //addrLabel. .markAsUntouched()
         }
+        this.UpdateLocation( {lat: llat, lng: llng}, `Time: ${Date.now} at Lat: ${llat}, Lng: ${llng}, street: ${newAddress}`)
         break;
       default:
         console.log(`UNEXPECTED ${what} received in AddressCtrlChanged()`)
         break;
     }
 
-    this.UpdateLocation()
-    console.log('addressCtrlChanged done')
-  }
 
-
-  chkAddresses_UNUSED() {
-    let tWords // = document.getElementById("addresses")!.innerText
-    let addr = document.getElementById("addresses") // ?.innerText
-    console.log("Got address: " + addr)
-    if (addr == null)
-      return
-    let addrText = addr.innerText //value;
-    console.log("Got address: " + addrText)
-    if (addrText.length)
-      if (addrText.includes("+")) {
-        this.chkPCodes()
-      } else {
-        tWords = addrText.split(".")
-        if (tWords.length == 3) {
-          this.chk3Words()
-        } else {
-          let result = this.geocoder.isValidAddress(addrText)
-          //  TODO: Untested/not complete
-          console.log(`geocoder.isValidAddress returned: ${JSON.stringify(result)} ++++++++++++++++++++++`)
-          //this.chkStreetAddress()
-        }
-      }
+    console.log('addressCtrlChanged done') // TODO: No formControlName="addressCtrl"!!!!
   }
-
-  /*
-  chkStreetAddress_UNUSED() {
-    //https://developers.google.com/maps/documentation/geocoding/requests-geocoding
-    console.log("Got street address to check")
-  }
-  */
 
   updateCoords(latDD: number, lngDD: number) {
     console.log("New Coordinates: lat:" + latDD + "; lng:" + lngDD);
@@ -641,6 +610,36 @@ src = "${ranger.image}" height = "50" >
   }
   //#endregion
 
+  chkAddresses_UNUSED() {
+    let tWords // = document.getElementById("addresses")!.innerText
+    let addr = document.getElementById("addresses") // ?.innerText
+    console.log("Got address: " + addr)
+    if (addr == null)
+      return
+    let addrText = addr.innerText //value;
+    console.log("Got address: " + addrText)
+    if (addrText.length)
+      if (addrText.includes("+")) {
+        this.chkPCodes()
+      } else {
+        tWords = addrText.split(".")
+        if (tWords.length == 3) {
+          this.chk3Words()
+        } else {
+          let result = this.geocoder.isValidAddress(addrText)
+          //  TODO: Untested/not complete
+          console.log(`geocoder.isValidAddress returned: ${JSON.stringify(result)} ++++++++++++++++++++++`)
+          //this.chkStreetAddress()
+        }
+      }
+  }
+
+  /*
+  chkStreetAddress_UNUSED() {
+    //https://developers.google.com/maps/documentation/geocoding/requests-geocoding
+    console.log("Got street address to check")
+  }
+  */
 
   // ---------------- MISC HELPERS -----------------------------
   displayHide(htmlElementID: string) {

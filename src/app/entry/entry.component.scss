@@ -1,8 +1,6 @@
 @use "@material/theme"
-with (
-  $primary: #962f10,
-  $on-primary: #442C2E
-);
+with ($primary: #962f10,
+  $on-primary: #442C2E);
 @use "@material/button";
 @use "@material/button/styles";
 @use "@material/banner";
@@ -16,11 +14,11 @@ with (
 }
 
 #enter__SmallMap {
-  display: block;
-  float: right;
-  width: 30vw; // 30vw;
-  height:  10vh; //200px !important; //
-  border:5px brown;
+  display         : block;
+  float           : right;
+  width           : 30vw; // 30vw;
+  height          : 10vh; //200px !important; //
+  border          : 5px brown;
   background-color: aliceblue;
 }
 
@@ -35,6 +33,7 @@ h3 {
 .bordered {
   border: 2 px solid red;
 }
+
 #bordered {
   border: 2 px solid red;
 }
@@ -47,34 +46,56 @@ h3 {
   font-weight: bold;
 }
 
+.strongish {
+  font-weight: 500;
+}
+
+// https://www.codingtag.com/remove-arrows-from-input-type-number
+// to hide spinners
+ /* Chrome, Safari, Edge, Opera */
+ input::-webkit-outer-spin-button,
+ input::-webkit-inner-spin-button {
+   -webkit-appearance: none;
+   margin: 0;
+ }
+ /* Specilly used for Firefox */
+ input[type=number] {
+  -moz-appearance: textfield;
+}
+
+#enter__Lat,
+#enter__Long {
+  width: 70px;
+}
+
 #enter_When-input {
-  width: 350px;
+  width: 400px;
 }
 
 .eButton {
   //display: inline-block;
-  width: 80px;
-  font-weight: bold;
+  width             : 80px;
+  font-weight       : bold;
   //background-color: red;
-  margin: 30 px;
+  margin            : 30 px;
   //padding: 10px;
 }
 
 .elegant {
-  margin-top   : 15px;
+  margin-top   : 25px;
   margin-bottom: 0px;
 }
 
 .enter__form {
-  margin: 0px 10px 25px;
-  min-width: 160px;
+  margin     : 0px 10px 15px;
+  min-width  : 160px;
   //max-width: 300px;
-  width    : 100%;
+  width      : 100%;
 }
 
 .enter__Callsign {
   min-width: 350px;
-  width: 30%;
+  width    : 35%;
 }
 
 .enter__Callsign-img {
@@ -88,52 +109,56 @@ h3 {
 }
 
 #enter__Callsign-upshot {
-  margin: 10px;
+  margin   : 10px;
   font-size: small;
 }
 
 #enter__frm-reguritation {
-  margin-right: 35vw;
-  display: block;
-  float: right;
-  height: 50px;
-  width: 10vw;
-  border: 1px solid  brown;
+  margin-right    : 35vw;
+  display         : block;
+  float           : right;
+  height          : 50px;
+  width           : 10vw;
+  border          : 1px solid brown;
   background-color: rgb(240, 255, 250);
-  font: 0.8em sans-serif;
+  font            : 0.8em sans-serif;
 }
 
 .enter__What--note {
-  margin-bottom: 120px;
+  margin-bottom: 0px;
 }
 
 .enter__What--area {
-  border: 1px dotted rgb(52, 28, 192);
+  border            : 1px dotted rgb(52, 28, 192);
   //text-orientation: upright;
   //text-transform: capitalize;
-  float: left;
-  margin-left: 75px;
-  position:absolute;
+  //float             : left;
+  //margin-left       : 75px;
+  //position          : absolute;
   //bottom:40px;
 }
 
 .enter__Submit-button {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-left     : 10px;
+  margin-top      : 0px;
+  margin-bottom   : 10px;
   background-color: rgb(204, 212, 90);
 }
 
 #enter__Submit-info {
-  margin   : 10px;
-  border   : 1px rgb(204, 212, 90) solid;
+  margin       : 10px;
+  border       : 1px rgb(204, 212, 90) solid;
   border-radius: 5px;
-  opacity  : 0;
-  animation: fadeout 20s ease-out;
+  opacity      : 0;
+  animation    : fadeout 20s ease-out;
 }
 
 @keyframes fadeout {
-  0% {opacity: 1}
-  100% {opacity: 0}
+  0% {
+    opacity: 1
+  }
+
+  100% {
+    opacity: 0
+  }
 }
-
-
