@@ -34,14 +34,15 @@
   where it will remain until deleted.<br />
   <ul>
     <li>The photos are not associated with the correct person currently. </li>
-    <li>Some fields may be editable (single or double-click), and "Should" be savable to a CSV file.. Edits can be
-      MANUALLY saved by selecting the "Save Data" button in the Advanced section below. </li>
+    <li>Some fields may be editable (single or double-click), and ONCE SAVED can be exported to a CSV file.</li>
+    <li><span style="color:red;">Edits HAVE to be
+      MANUALLY saved by selecting the "Save Data" button in the Advanced section below.</span> </li>
     <li>Click on a column heading to sort by that field.</li>
     <li>Click & Drag on a column heading to move columns</li>
     <li>Hovering over a cell (e.g., any callsign) may show additional information. </li>
     <li>Icons at the top right of each column allows filtering on the value</li>
-    <li>Save/load data grid to/from Excel. See https://ag-grid.com/javascript-data-grid/csv-export for details</li>
-    <li>FUTURE: Import Excel button currently 'works', but imports wrong spreadsheet and does nothing with it!</li>
+    <li>Export Rangers will save data as a CSV file for Excel. For <a href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank">details</a></li>
+    <li>FUTURE: Import Excel button currently brings in the data - but due to imporoper quoting it doesn't show up, so isn't working - yet.</li>
   </ul>
 </details>
 <br>
@@ -71,6 +72,10 @@
   </div>
   <br>
   <button (click)="onDeselectAll()">Clear Selection</button>
+  <br>
+  <br>
+  <button (click)="onBtnAddRanger()">Add new Ranger or Team</button> (& then REFRESH PAGE!)
+  <br>
   <br>
   <details>
     <summary><span class="big" id="Advanced">Advanced</span></summary>

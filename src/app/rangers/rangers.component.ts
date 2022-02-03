@@ -80,10 +80,10 @@ export class RangersComponent implements OnInit {
     { headerName: "callsign", field: "callsign", cellRenderer: this.callsignCellRenderer },
     { headerName: "licensee", field: "licensee", tooltipField: "team" },
     { headerName: "phone", field: "phone", singleClickEdit: true, flex: 40 },
-    { headerName: "address", field: "address", singleClickEdit: true, flex: 40 },
-    { headerName: "image", field: "image", cellRenderer: this.imageCellRenderer },
-    { headerName: "team", field: "team" },  // TODO: Change to string representation - within Ag-grid???
-    { headerName: "icon", field: "icon" },  // TODO: Change to string representation - within Ag-grid???
+    //{ headerName: "address", field: "address", singleClickEdit: true, flex: 40 },
+    //{ headerName: "image", field: "image", cellRenderer: this.imageCellRenderer },
+    //{ headerName: "team", field: "team" },  // TODO: Change to string representation - within Ag-grid???
+    //{ headerName: "icon", field: "icon" },  // TODO: Change to string representation - within Ag-grid???
     { headerName: "status", field: "status", flex: 40 },
     { headerName: "note", field: "note", flex: 60 },
   ];
@@ -144,6 +144,18 @@ export class RangersComponent implements OnInit {
     } else {
       console.log("no this.gridApi yet in ngOnInit()")
     }
+  }
+
+  //--------------------------------------------------------------------------
+
+  onBtnAddRanger(formData?:string) {
+    console.log("Adding new ranger")
+    this.rangerService.AddRanger()
+  }
+
+  onBtnDeleteRanger(callsign: string) {
+    console.log(`Deleteing ranger with callsign: ${callsign}`)
+    this.rangerService.deleteRanger(callsign)
   }
 
   //--------------------------------------------------------------------------
@@ -211,7 +223,7 @@ export class RangersComponent implements OnInit {
   // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
   onBtnImportExcel(evt: any) {
     this.excelData2 = this.rangerService.LoadRangersFromExcel(evt.target)
-    console.log("excelData2: "+JSON.stringify(this.excelData2))
+    console.log("excelData2: " + JSON.stringify(this.excelData2))
   }
 
   //--------------------------------------------------------------------------
@@ -301,7 +313,7 @@ export class RangersComponent implements OnInit {
     return wb;
   };
 
- //--------------------------------------------------------------------------
+  //--------------------------------------------------------------------------
   onBtnReloadPage() {
     window.location.reload
   }

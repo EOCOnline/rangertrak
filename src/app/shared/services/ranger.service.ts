@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
+import { formatDate } from '@angular/common';
 import { BehaviorSubject, Observable, Observer, of } from 'rxjs';
 import { csvImport } from 'src/app/rangers/csvImport';
 //import { debounceTime, map, startWith } from 'rxjs/operators'
@@ -277,10 +278,25 @@ import { HttpClient } from '@angular/common/http';
   }
 
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
-  AddRanger_Unused(formData: string): RangerType {
+  AddRanger(formData: string=""): RangerType {
     console.log(`RangerService: Got new ranger: ${formData}`)
-
-    let newRanger: RangerType = JSON.parse(formData)
+    let newRanger: RangerType
+    if (formData!="") {
+      newRanger = JSON.parse(formData)
+    } else {
+      newRanger = {
+        callsign: "AAA_New_Tactical",
+        licensee: "AAA_New_Name",
+        // licenseKey: number
+        image: "./assets/imgs/REW/male.png",
+        phone: "206-463-0000",
+        address: "St, Vashon, WA 98070",
+        team: "",
+        icon: "",
+        status: "",
+        note: `Manually added at ${formatDate( Date.now(), 'short', "en-US")}.` //https://angular.io/guide/i18n-common-locale-id
+      }
+    }
     this.rangers.push(newRanger)
 
     this.UpdateLocalStorage();
