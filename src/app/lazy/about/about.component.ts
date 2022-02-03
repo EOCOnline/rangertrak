@@ -1,25 +1,24 @@
-import { Component, OnInit } from '@angular/core';
 
-import { SettingsComponent } from '../../settings/settings.component';
+import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
+
+import {  SettingsService } from '../../shared/services'
 
 @Component({
   selector: 'rangertrak-about',
   templateUrl: './about.component.html',
-  styleUrls: ['./about.component.scss']
+  styleUrls: ['./about.component.scss'],
+  providers: [SettingsService]
 })
-export class AboutComponent implements OnInit {
+export class AboutComponent {  //implements OnInit {
 
-  version: string = "0.11"
-/*
-  // TODO: Enable getting settings (e.g. version) from non-lazy loaded component...
-  constructor(settingsComponent: SettingsComponent) {
+  version = ""
+
+  constructor(
+    //private settingsService: SettingsService
+  ) {
     console.log("AboutComponent getting constructed")
-    this.version = SettingsComponent.version
-    */
-   constructor(){
+    this.version = SettingsService.Settings.version
   }
 
-  ngOnInit(): void {
-  }
-
+  //ngOnInit() {  }
 }

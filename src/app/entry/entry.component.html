@@ -62,11 +62,10 @@
 
 
 
-
     <div class="input-group">Street Address:
       <input
         [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
-        type="text" formControlName="addressCtrl" placeholder="Address" (change)="this.AddressCtrlChanged('addr')">
+        type="text" formControlName="addressCtrl" placeholder="Address" (change)="this.addressCtrlChanged('addr')">
       <!--div
       *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
       class="text-sm text-danger">address is required</div  -->
@@ -79,16 +78,16 @@
 
       <div class="input-group">Latitude:
         <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
-          type="number" formControlName="lat" placeholder="Latitude" (change)="this.AddressCtrlChanged('lat')" id="enter__Lat">
+          type="number" formControlName="lat" placeholder="Latitude" (change)="this.addressCtrlChanged('lat')" id="enter__Lat">
         <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
           class="text-sm text-danger">lat is required
         </div>
       </div>
 
       <div class="input-group">
-        <legend>Longitude:</legend>
+        Longitude:
         <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
-          type="number" formControlName="long" placeholder="Longitude" (change)="this.AddressCtrlChanged('lng')" id="enter__Long">
+          type="number" formControlName="long" placeholder="Longitude" (change)="this.addressCtrlChanged('lng')" id="enter__Long">
         <div *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
           class="text-sm text-danger">long is required
         </div>
