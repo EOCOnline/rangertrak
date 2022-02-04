@@ -192,7 +192,7 @@ export class RangersComponent implements OnInit {
       console.log(`${e} &&& ${e.target}`)
     }
     //this.localUrl //: any[]
-    this.rangerService.LoadRangersFromJSON(e.target.files[0])
+    //this.rangerService.LoadRangersFromJSON(e.target.files[0])
     window.location.reload
   }
 

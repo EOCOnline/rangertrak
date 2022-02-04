@@ -1,0 +1,107 @@
+{"Rangers": [
+ {"callsign": "AH6B", "licensee": "Pine, Douglas E", "phone": "206-463-", address: "9700 Sw 285Th St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …},
+ {"callsign": "AJ7T", "licensee": "Pinter, Robert B", "phone": "206-463-", address: "12203 Sw 153Rd St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …},
+2: {"callsign": "AK7C", "licensee": "Mcdonald, Michael E", "phone": "206-463-", address: "24107 Wax Orchard Rd Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+3: {"callsign": "K7NHV", "licensee": "Francisco, Albert K", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+4: {"callsign": "K7VJJ", "licensee": "Gleason, Keith H", "phone": "206-463-", address: "11423 99Th Ave, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+5: {"callsign": "KA2QLV", "licensee": "Paull, Steven", "phone": "206-463-", address: "11610 Sw 220Th St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+6: {"callsign": "KA7DGV", "licensee": "Hardy, Timothy R", "phone": "206-463-", address: "29715 128Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+7: {"callsign": "KA7GDT", "licensee": "White, Victor S", "phone": "206-463-", address: "15314 Vermontville, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+8: {"callsign": "KA7IXC", "licensee": "Carr, David W", "phone": "206-463-", address: "Rt 1 Box 244, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+9: {"callsign": "KA7THJ", "licensee": "Hanson, Jay R", "phone": "206-463-", address: "12424 Sw Cove Rd, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+10: {"callsign": "KB0LJC", "licensee": "Hirsch, Justin D", "phone": "206-463-", address: "10518 Sw 132Nd Pl, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+11: {"callsign": "KB7AOK", "licensee": "Perena, Jose K", "phone": "206-463-", address: "21226 Tramp Harbor Drive Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+12: {"callsign": "KB7DQG", "licensee": "Ammon, Paul G", "phone": "206-463-", address: "Rt 1 Box 1142, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+13: {"callsign": "KB7DQI", "licensee": "Gleb, Phillip L", "phone": "206-463-", address: "R 3 B 427, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+14: {"callsign": "KB7EIF", "licensee": "Ammon, Virginia M", "phone": "206-463-", address: "Rt 1 Box 1142, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+15: {"callsign": "KB7IHS", "licensee": "Gregory, Arthur J", "phone": "206-463-", address: "Rt 3 Box 279, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+16: {"callsign": "KB7IMA", "licensee": "Fultz, Howard T", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+17: {"callsign": "KB7NDW", "licensee": "Hacker, Richard M", "phone": "206-463-", address: "25407 Wax Orchard Rd Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+18: {"callsign": "KB7OXU", "licensee": "Weir, Janet J", "phone": "206-463-", address: "8115 Sw Klahanie Rd, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+19: {"callsign": "KB7OXV", "licensee": "Weir, Robert D", "phone": "206-463-", address: "8115 Sw Klahanie Rd, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+20: {"callsign": "KB7QFF", "licensee": "Lindgren, Clifford W", "phone": "206-463-", address: "27405 99Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+21: {"callsign": "KB7YYM", "licensee": "Mermoud Babbott, Leslie R", "phone": "206-463-", address: "8131 Sw Dilworth Rd, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+22: {"callsign": "KC2ELS", "licensee": "Twilley, John M", "phone": "206-463-", address: "10210 Sw 210Th St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+23: {"callsign": "KC7AUT", "licensee": "Nishiyori, Kenneth W", "phone": "206-463-", address: "17520 115Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+24: {"callsign": "KC7AUY", "licensee": "Blichfeldt, Bent", "phone": "206-463-", address: "26620 99Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+25: {"callsign": "KC7IXZ", "licensee": "Harrigan, Sparky", "phone": "206-463-", address: "14609 Bethel Ln Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+26: {"callsign": "KC7IYA", "licensee": "Carr, Marvin E", "phone": "206-463-", address: "8923 Sw Qtrmstr Dr, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+27: {"callsign": "KC7JMQ", "licensee": "Hardy, Denise L", "phone": "206-463-", address: "29715 128Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+28: {"callsign": "KC7JOH", "licensee": "Ferch, Carol A", "phone": "206-463-", address: "10977 Pt Vashon Dr Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+29: {"callsign": "KC7ZOX", "licensee": "Hanusa, Mark M", "phone": "206-463-", address: "23910 51St Ln Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+30: {"callsign": "KC7ZOY", "licensee": "Carpenter, Mary L", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+31: {"callsign": "KD7AYE", "licensee": "Ruzicka, David L", "phone": "206-463-", address: "15117 119Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+32: {"callsign": "KD7BUR", "licensee": "Hill, Gerald C", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+33: {"callsign": "KD7CEK", "licensee": "Hill, Melinda R", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+34: {"callsign": "KD7DQO", "licensee": "Silver, Lowell E", "phone": "206-463-", address: "22916 107Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+35: {"callsign": "KD7FWQ", "licensee": "Hill, Joseph V", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+36: {"callsign": "KE6OOQ", "licensee": "Rockwell, Neil I", "phone": "206-463-", address: "12233 Sw Cove Rd, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+37: {"callsign": "KE6WXA", "licensee": "Garrison, Elizabeth B", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+38: {"callsign": "KG7CM", "licensee": "Galus, John F", "phone": "206-463-", address: "19323 Westside Hwy Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+39: {"callsign": "KI7UQ", "licensee": "Willsie, Howard D", "phone": "206-463-", address: "10977 Pt Vashon Dr Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+40: {"callsign": "KJ7MM", "licensee": "Babbott Iii, Frank L", "phone": "206-463-", address: "8131 Sw Dilworth Rd, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+41: {"callsign": "N6QIV", "licensee": "Goard, Carolyn S", "phone": "206-463-", address: "10613 Sw 133Rd St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+42: {"callsign": "N6SCM", "licensee": "Valencia, Jane K", "phone": "206-463-", address: "16917 Vashon Hwy Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+43: {"callsign": "N7DZD", "licensee": "Vornbrock, John T", "phone": "206-463-", address: "13617 Sw 235 St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+44: {"callsign": "N7EUL", "licensee": "Konecki, John T", "phone": "206-463-", address: "17904 Westside Hwy Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+45: {"callsign": "N7KOC", "licensee": "Gee, E Howard", "phone": "206-463-", address: "Rt 3 Box 287, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+46: {"callsign": "N7MSN", "licensee": "Dreisbach, Ezra M", "phone": "206-463-", address: "Rt 5 Box 436 Bank Rd, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+47: {"callsign": "N7PAE", "licensee": "Tousley, Jeffrey L", "phone": "206-463-", address: "11020 Sw 232 St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+48: {"callsign": "W5RCO", "licensee": "Gregory, John R", "phone": "206-463-", address: "11120 Sw Sylvan Beach Rd, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+49: {"callsign": "W7ATK", "licensee": "Benzon, Frank A", "phone": "206-463-", address: "10709 Sw 238 St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+50: {"callsign": "W7AY", "licensee": "Cruse, Wilke E", "phone": "206-463-", address: "11506 105Th Pl Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+51: {"callsign": "W7IDF", "licensee": "Cole, Edwin K", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+52: {"callsign": "W7KYI", "licensee": "Merrell, Stanton C", "phone": "206-463-", address: "24186 Vashon Hwy Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+53: {"callsign": "W7PPA", "licensee": "Hickox, Ernest C", "phone": "206-463-", address: "6113 Sw 240Th St., Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+54: {"callsign": "W7TSD", "licensee": "Allen, Bruce B", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+55: {"callsign": "W7WS", "licensee": "Williams, Jerry B", "phone": "206-463-", address: "22317 Dockton Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+56: {"callsign": "WA6VJQ", "licensee": "Garland, Earl E", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+57: {"callsign": "WA7EAW", "licensee": "Mc Farlane, Claude L", "phone": "206-463-", address: "9127 Sw Bayview Drive, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+58: {"callsign": "WA7HJJ", "licensee": "Kellum, Donald F", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+59: {"callsign": "WA7KYI", "licensee": "Tharp, James C", "phone": "206-463-", address: "9236 Sw 274Th, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+60: {"callsign": "WA7SVS", "licensee": "Ball Jr, Lemuel B", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+61: {"callsign": "WB5PSV", "licensee": "Bardwell, Randall D", "phone": "206-463-", address: "25236 107Th Ave Se, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+62: {"callsign": "WB6RRU", "licensee": "Valencia, Andrew J", "phone": "206-463-", address: "16245 Westside Hwy, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+63: {"callsign": "WB7FCH", "licensee": "Vogel, Keith W", "phone": "206-463-", address: "9230 Sw 192Nd St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+64: {"callsign": "WB7QIJ", "licensee": "Linden, George M", "phone": "206-463-", address: "8768 Sw 190 St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+65: {"callsign": "WB7VKE", "licensee": "Sullivan, Timothy X", "phone": "206-463-", address: "23515 Kingsbury Rd Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+66: {"callsign": "KD7GMW", "licensee": "Hill, Deborah", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+67: {"callsign": "KD5JYQ", "licensee": "Lund, David W", "phone": "206-463-", address: "9525 Sw 288Th St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+68: {"callsign": "KD7JWH", "licensee": "Kovarik, Krejimir", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+69: {"callsign": "KD7JWI", "licensee": "Bajramovic, Nermin", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+70: {"callsign": "KD7JWJ", "licensee": "Corsi, Pietro", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+71: {"callsign": "K5CRO", "licensee": "Kovarik, Kresimir", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+72: {"callsign": "KD7MUB", "licensee": "Clemens, Barry M", "phone": "206-463-", address: "10330 Sw Bank Rd, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+73: {"callsign": "KG6IGC", "licensee": "Vashon-Maury Island Radio Club", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+74: {"callsign": "KD7OPX", "licensee": "Vashon-Maury Island Radio Club", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+75: {"callsign": "KD7PAZ", "licensee": "Miller, Lee A", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+76: {"callsign": "KD7PBA", "licensee": "Zook, Phillip D", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+77: {"callsign": "KD7PBB", "licensee": "Miller, Joan A", "phone": "206-463-", address: "8931 Sw Quartermaster Dr, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+78: {"callsign": "KD7PBC", "licensee": "Kremer, Richard H", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+79: {"callsign": "KD7PBD", "licensee": "Treese, F Mitch A", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+80: {"callsign": "KD7PBE", "licensee": "Loveness, Gary R", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+81: {"callsign": "KD7PBF", "licensee": "Loveness, Ghyrn W", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+82: {"callsign": "KD7PBG", "licensee": "Sommers, Gayle", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+83: {"callsign": "KD7PFA", "licensee": "Frye, Leslie G", "phone": "206-463-", address: "22829 107Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+84: {"callsign": "KD7PFB", "licensee": "Frye, Richard D", "phone": "206-463-", address: "22829 107Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+85: {"callsign": "KD7PMV", "licensee": "Lickfelt, Kevin R", "phone": "206-463-", address: "9857 Sw 148Th St, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+86: {"callsign": "KD7PMW", "licensee": "Clemens, Lauren M", "phone": "206-463-", address: "10330 Sw Bank Rd, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+87: {"callsign": "KD7PMX", "licensee": "Silver, Nancy R", "phone": "206-463-", address: "22916 107Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+88: {"callsign": "KD7QAM", "licensee": "Richards, John A", "phone": "206-463-", address: "9133 Sw 274Th, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+89: {"callsign": "KD7QEX", "licensee": "Snow, Brett S", "phone": "206-463-", address: "10809 Sw 204Th, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+90: {"callsign": "N7GRL", "licensee": "Loveness, Gary R", "phone": "206-463-", address: "14122 Sw 220Th Street, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+91: {"callsign": "W7GWL", "licensee": "Loveness, Ghyrn W", "phone": "206-463-", address: "14122 Sw 220Th Street, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+92: {"callsign": "W7CXB", "licensee": "Richards, John M", "phone": "206-463-", address: "9133 Sw 274Th, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+93: {"callsign": "K3QNQ", "licensee": "Treese, F Mitch A", "phone": "206-463-", address: "15024 107Th Way Sw Express Mail Only, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+94: {"callsign": "W7PDZ", "licensee": "Zook, Phillip D", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+95: {"callsign": "W7TRH", "licensee": "Hardy, Timothy R", "phone": "206-463-", address: "29715 128Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+96: {"callsign": "KD7RWJ", "licensee": "Nelson, Jack H", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+97: {"callsign": "KU0W", "licensee": "Frye, Richard D", "phone": "206-463-", address: "22829 107Th Ave Sw, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+98: {"callsign": "KD7SMI", "licensee": "Griswold, James E", "phone": "206-463-", address: "5724 Sw 244Th, Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+99: {"callsign": "W7VMI", "licensee": "Vashon-Maury Island Radio Club", "phone": "206-463-", address: ", Vashon, WA 98070", image: "./assets/imgs/REW/male.png", …}
+[100 … 199]
+[200 … 285]
+length: 286
+[[Prototype]]: Array(0)
+default: {Rangers: Array(286)}
+[[Prototype]]: Object

@@ -36,10 +36,10 @@ type AOA = any[][]  // array of arrays
 
 @Injectable({ providedIn: 'root' })
 export class RangerService {
-  orangers$: Observable<RangerType[]> | null = null
+  observRangers$: Observable<RangerType[]> | null = null
 
   rangers: RangerType[] = []
-  rangers2: RangerType[] = []  // BUG: Rangers loaded from JSON are NEVER USED!
+  //rangers2: RangerType[] = []  // BUG: Rangers loaded from JSON are NEVER USED!
   private nextId = 0
   private rangersSubject =
     new BehaviorSubject<RangerType[]>([]);  // REVIEW: Necessary?
@@ -52,7 +52,7 @@ export class RangerService {
     console.log(`Got ${this.rangers.length} from Local Storage`)
 
     if(this.rangers.length == 0) {
-      this.LoadRangersFromJSON() // Have user use button to initiate this
+      //this.LoadRangersFromJSON() // Have user use button to initiate this
       console.log(`No Rangers in Local storage, so grabbed ${this.rangers.length} from Rangers.2Feb22.json file.`)
     }
 
@@ -77,7 +77,7 @@ export class RangerService {
     localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
     //console.log("Updated Rangers to " + JSON.stringify(this.rangers))
 
-    this.SortRangersByCallsign()
+    //this.SortRangersByCallsign()
 
     this.rangersSubject.next(this.rangers.map(
       ranger => ({
@@ -108,14 +108,14 @@ export class RangerService {
   }
 
   //--------------------------------------------------------------------------
-  LoadRangersFromJSON(fileName: string = '../../../assets/data/Rangers.3Feb22.json') {  // WARN: Replaces any existing Rangers
+  LoadRangersFromJSON_unused(fileName: string = '../../../assets/data/Rangers.3Feb22.json') {  // WARN: Replaces any existing Rangers
     console.log(`RangerService: loading new Rangers from ${fileName}`)
 
-   //  debugger
+     debugger
 
     // also see secretss import as an example: Settings.ts
 
-    this.orangers$ = this.httpClient.get<RangerType[]>(fileName) // from pg 281
+    this.observRangers$ = this.httpClient.get<RangerType[]>(fileName) // from pg 281
 
     //this.rangers = []
     if (rangers != null) {
@@ -221,26 +221,6 @@ import { HttpClient } from '@angular/common/http';
     return this.rangers
   }
 
-  /* Console log:
-    LoadRangersFromExcel(): About to read contents of RangersExport.2022-0-27_8_36.csv
-    ranger.service.ts:206 3 Got 0 rangers from Excel file.
-    ranger.service.ts:224 Excel import from RangersExport.2022-0-27_8_36.csv: (1st 0 rows:)
-    ranger.service.ts:209 4 Got 0 rangers from Excel file.
-    ranger.service.ts:213 5 Got 0 rangers from Excel file.
-    rangers.component.ts:214 excelData2: []
-    ranger.service.ts:195 myJson = [["CallSign","Name","Phone","Address","Image","Team","Icon","Status","Note"],
-    ["AC7TB","Sullivan, Timothy X","206-463-0000","St, Vashon, WA","./assets/imgs/REW/female.png",null,null,"Normal","no note"],
-    ["AE7MW","Smueles, Robert E","206-463-0000","St, Vashon, WA","./assets/imgs/REW/RickWallace.png",null,null,"Normal","no note"],
-    ["AE7RW","York, Randy K","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0003.jpg",null,null,"Normal","no note"],
-    ["AE7SD","Danielson, Sharon J","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0034.jpg",null,null,"Normal","no note"],["AE7TH","Hardy, Timothy R","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0038.jpg",null,null,"Normal","no note"],["AG7TJ","Lindgren, Katrina J","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0041.jpg",null,null,"Normal","no note"],["AK7C","Mcdonald, Michael E","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0056.jpg",null,null,"Normal","no note"],["K1SAB","Brown, Steven A","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0058.jpg",null,null,"Normal","no note"],["K3QNQ","Treese, F Mitch A","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0069.jpg",null,null,"Normal","no note"],["K6AJV","Valencia, Andrew J","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-007.jpg",null,null,"Normal","no note"],["K7AJT","Tharp, Adam J","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0073.jpg",null,null,"Normal","no note"],["K7DGL","Luechtefeld, Daniel","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0073.jpg",null,null,"Normal","no note"],["K7KMS","Paull, Steven","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0089.jpg",null,null,"Normal","no note"],["K7NHV","Francisco, Albert K","206-463-0000","St, Vashon, WA","./assets/imgs/REW/male.png",null,null,"Normal","no note"],["K7VMI","De Steiguer, Allen L","206-463-0000","St, Vashon, WA","./assets/imgs/REW/K7VMI.jpg",null,null,"Normal","no note"],["KA7THJ","Hanson, Jay R","206-463-0000","St, Vashon, WA","./assets/imgs/REW/male.png",null,null,"Normal","no note"],["KB0LJC","Hirsch, Justin D","206-463-0000","St, Vashon, WA","./assets/imgs/REW/male.png",null,null,"Normal","no note"],["KB7LEV","Lysen, Kurt A","206-463-0000","St, Vashon, WA","./assets/imgs/REW/female.png",null,null,"Normal","no note"],["KB7MTM","Meyer, Michael T","206-463-0000","St, Vashon, WA","./assets/imgs/REW/VI-0123.jpg",null,null,"Normal","no note"],["KE7KDQ","Cornelison, John","206-463-0000","St, Vashon, WA","./assets/imgs/REW/ke7kdq.jpg",null,null,"Normal","no note"]]
-    ranger.service.ts:197 myJson2 = CallSign,Name,Phone,Address,Image,Team,Icon,Status,Note,
-    AC7TB,Sullivan, Timothy X,206-463-0000,St, Vashon, WA,./assets/imgs/REW/female.png,,,Normal,no note,
-    AE7MW,Smueles, Robert E,206-463-0000,St, Vashon, WA,./assets/imgs/REW/RickWallace.png,,,Normal,no note,
-    AE7RW,York, Randy K,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0003.jpg,,,Normal,no note,AE7SD,Danielson, Sharon J,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0034.jpg,,,Normal,no note,AE7TH,Hardy, Timothy R,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0038.jpg,,,Normal,no note,AG7TJ,Lindgren, Katrina J,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0041.jpg,,,Normal,no note,AK7C,Mcdonald, Michael E,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0056.jpg,,,Normal,no note,K1SAB,Brown, Steven A,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0058.jpg,,,Normal,no note,K3QNQ,Treese, F Mitch A,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0069.jpg,,,Normal,no note,K6AJV,Valencia, Andrew J,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-007.jpg,,,Normal,no note,K7AJT,Tharp, Adam J,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0073.jpg,,,Normal,no note,K7DGL,Luechtefeld, Daniel,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0073.jpg,,,Normal,no note,K7KMS,Paull, Steven,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0089.jpg,,,Normal,no note,K7NHV,Francisco, Albert K,206-463-0000,St, Vashon, WA,./assets/imgs/REW/male.png,,,Normal,no note,K7VMI,De Steiguer, Allen L,206-463-0000,St, Vashon, WA,./assets/imgs/REW/K7VMI.jpg,,,Normal,no note,KA7THJ,Hanson, Jay R,206-463-0000,St, Vashon, WA,./assets/imgs/REW/male.png,,,Normal,no note,KB0LJC,Hirsch, Justin D,206-463-0000,St, Vashon, WA,./assets/imgs/REW/male.png,,,Normal,no note,KB7LEV,Lysen, Kurt A,206-463-0000,St, Vashon, WA,./assets/imgs/REW/female.png,,,Normal,no note,KB7MTM,Meyer, Michael T,206-463-0000,St, Vashon, WA,./assets/imgs/REW/VI-0123.jpg,,,Normal,no note,KE7KDQ,Cornelison, John,206-463-0000,St, Vashon, WA,./assets/imgs/REW/ke7kdq.jpg,,,Normal,no note
-    ranger.service.ts:198 1 Got 0 rangers from Excel file.
-    ranger.service.ts:202 2 Got 21 rangers from Excel file...
-*/
-
   //--------------------------------------------------------------------------
   DisplayRangers(msg: string) {
     let len = 10
@@ -323,7 +303,12 @@ import { HttpClient } from '@angular/common/http';
   // this needs be done for the autocomplete control in the enter comonent to work correctly
   SortRangersByCallsign() {
     console.log("SortRangersByCallsign...")
-    return
+
+    //debugger
+    return this.rangers
+
+
+    //let sorted4 = this.rangers
 
     this.rangers.sort((a, b) => {
       if (b.callsign > a.callsign) return 1
@@ -331,19 +316,20 @@ import { HttpClient } from '@angular/common/http';
       return 0
     })
 
-
 /*
+
     let sorted = this.rangers.sort((first, second) => first.callsign > second.callsign ? 1 : -1)
     //let sorted = this.rangers.sort((first, second) => {first.callsign > second.callsign ? 1 : -1})
 
-    return this.rangers.sort((first, second) => {
-      if (first.callsign > second.callsign) { return 1 }
-      if (first.callsign < second.callsign) { return -1 }
-      return 0;
+     // reversed from A & B above!
+     sorted4.sort((first, second) => {
+      if (first.callsign > second.callsign)  {return 1 }
+      if (first.callsign < second.callsign)  {return -1 }
+      return 0
     })
-    */
+*/
     console.log("SortRangersByCallsign...DONE")
-  // return sorted
+   return this.rangers
 
   }
 
