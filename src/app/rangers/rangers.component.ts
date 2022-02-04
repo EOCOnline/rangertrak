@@ -80,7 +80,7 @@ export class RangersComponent implements OnInit {
     { headerName: "callsign", field: "callsign", cellRenderer: this.callsignCellRenderer },
     { headerName: "licensee", field: "licensee", tooltipField: "team" },
     { headerName: "phone", field: "phone", singleClickEdit: true, flex: 40 },
-    //{ headerName: "address", field: "address", singleClickEdit: true, flex: 40 },
+    { headerName: "address", field: "address", singleClickEdit: true, flex: 40 },
     //{ headerName: "image", field: "image", cellRenderer: this.imageCellRenderer },
     //{ headerName: "team", field: "team" },  // TODO: Change to string representation - within Ag-grid???
     //{ headerName: "icon", field: "icon" },  // TODO: Change to string representation - within Ag-grid???

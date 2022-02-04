@@ -115,14 +115,12 @@ export class RangerService {
     //this.rangers = []
     if (rangers != null) {
       // Use JSON file imported at the top
-      //this.rangers = JSON.parse(rangers) || []
+      // this.rangers = JSON.parse(rangers) || []
       // this.rangers = rangers
       /* TODO: Add missing fields:
       Type '{ callsign: string; label: string; licensee: string; licenseKey: string; phone: string; team: string; icon: string; }[]' is not assignable to type 'RangerType[]'.
 
       Type '{ callsign: string; label: string; licensee: string; licenseKey: string; phone: string; team: string; icon: string; }is missing the following properties from type
-
-
       'RangerType': address, image, status, notets(2322)
 
       */
@@ -288,7 +286,7 @@ import { HttpClient } from '@angular/common/http';
         callsign: "AAA_New_Tactical",
         licensee: "AAA_New_Name",
         // licenseKey: number
-        image: "./assets/imgs/REW/male.png",
+      image: "  ",
         phone: "206-463-0000",
         address: "St, Vashon, WA 98070",
         team: "",
