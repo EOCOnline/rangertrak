@@ -4,7 +4,7 @@ import { formatDate } from '@angular/common';
 import { BehaviorSubject, Observable, Observer, of } from 'rxjs';
 import { csvImport } from 'src/app/rangers/csvImport';
 //import { debounceTime, map, startWith } from 'rxjs/operators'
-import * as rangers from '../../../assets/data/Rangers.json'
+import * as rangers from '../../../assets/data/Rangers.3Feb22.json'
 
 export interface RangerType {
   callsign: string
@@ -49,7 +49,12 @@ export class RangerService {
   constructor(private httpClient: HttpClient) {
     console.log("Rangers Service Construction")
     this.LoadRangersFromLocalStorage()
-    //this.LoadRangersFromJSON() // Have user use button to initiate this
+    console.log(`Got ${this.rangers.length} from Local Storage`)
+
+    if(this.rangers.length == 0) {
+      this.LoadRangersFromJSON() // Have user use button to initiate this
+      console.log(`No Rangers in Local storage, so grabbed ${this.rangers.length} from Rangers.2Feb22.json file.`)
+    }
 
     // Needed? Maybe to expose observable?
     this.UpdateLocalStorage()
@@ -103,7 +108,7 @@ export class RangerService {
   }
 
   //--------------------------------------------------------------------------
-  LoadRangersFromJSON(fileName: string = '../../../assets/data/Rangers.json') {  // WARN: Replaces any existing Rangers
+  LoadRangersFromJSON(fileName: string = '../../../assets/data/Rangers.3Feb22.json') {  // WARN: Replaces any existing Rangers
     console.log(`RangerService: loading new Rangers from ${fileName}`)
 
     debugger
@@ -140,7 +145,7 @@ export class RangerService {
         AAA.targetKey
         // this requires `"resolveJsonModule": true` in tsconfig.json
 
-        import {default as yyy} from './VashonCallSigns.json'
+        import {default as yyy} from './Rangers.3Feb22.json'
 import { HttpClient } from '@angular/common/http';
         yyy.primaryMain
 
