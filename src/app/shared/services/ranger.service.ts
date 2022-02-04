@@ -111,7 +111,7 @@ export class RangerService {
   LoadRangersFromJSON(fileName: string = '../../../assets/data/Rangers.3Feb22.json') {  // WARN: Replaces any existing Rangers
     console.log(`RangerService: loading new Rangers from ${fileName}`)
 
-    debugger
+   //  debugger
 
     // also see secretss import as an example: Settings.ts
 
@@ -322,11 +322,29 @@ import { HttpClient } from '@angular/common/http';
 
   // this needs be done for the autocomplete control in the enter comonent to work correctly
   SortRangersByCallsign() {
-    return this.rangers.sort((n1, n2) => {
-      if (n1.callsign > n2.callsign) { return 1 }
-      if (n1.callsign < n2.callsign) { return -1 }
+    console.log("SortRangersByCallsign...")
+    return
+
+    this.rangers.sort((a, b) => {
+      if (b.callsign > a.callsign) return 1
+      if (b.callsign < a.callsign) return -1
+      return 0
+    })
+
+
+/*
+    let sorted = this.rangers.sort((first, second) => first.callsign > second.callsign ? 1 : -1)
+    //let sorted = this.rangers.sort((first, second) => {first.callsign > second.callsign ? 1 : -1})
+
+    return this.rangers.sort((first, second) => {
+      if (first.callsign > second.callsign) { return 1 }
+      if (first.callsign < second.callsign) { return -1 }
       return 0;
     })
+    */
+    console.log("SortRangersByCallsign...DONE")
+  // return sorted
+
   }
 
   //--------------------------------------------------------------------------
