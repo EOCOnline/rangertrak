@@ -18,7 +18,7 @@ export { Map, LayerType } from "./map";
 export { OpPeriod } from "./op-period";
 export { Mission } from "./mission";
 export { CodeArea, OpenLocationCode } from "./open-location-code"  // HAD TO REMMOVE default KEYWORD????
-// BUG:export { What3Words } from "./3words"
+//export { What3Words } from "./3words"
 export { GoogleGeocode } from "./google-geocode"
 export { Utility } from "./utility"
 // not exported: GetLatLongFrom3Words

@@ -55,7 +55,8 @@ export class GoogleGeocode {
       console.error(e);
       encoded = "Bad%20Address"
     }
-debugger
+
+    // debugger
     // BUG: Following hasn't even been tried yet!...
     GoogleGeocode.geocoder
       .geocode({ address: encoded })
@@ -73,7 +74,8 @@ debugger
           return { position: null, address: "", partial_match: "", placeId: "", plus_code: ""}
         }
       })
-      .catch((e) => {debugger
+      .catch((e) => {
+        //debugger
          err = "Geocoder failed due to: " + e })
     return { position: null, address: err, partial_match: "", placeId: "", plus_code: "" }
   }
@@ -121,7 +123,7 @@ debugger
       .geocode({ placeId: placeId })
       .then(({ results }) => {
         if (results[0]) {
-          console.log(`geocoder.isValidAddress returned: ${JSON.stringify(results)} ++`)
+          console.log(`getLatLngAndAddressFromPlaceID geocoder returned: ${JSON.stringify(results)} ++`)
           return {
             position: results[0].geometry.location,
             address: results[0].formatted_address,
@@ -132,8 +134,17 @@ debugger
         }
       })
       .catch((e) => {
-        debugger
+        // debugger
         err = "Geocoder failed due to: " + e })
+        /* _.KA {message: 'GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocoding reque… error. The request may succeed if you try again.', stack: 'Error: GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocodin…DPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&token=57451:1:28', name: 'MapsServerError', endpoint: 'GEOCODER_GEOCODE', code: 'UNKNOWN_ERROR'}
+        Local
+        this: undefined
+        e: _.KA {message: 'GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocoding reque… error. The request may succeed if you try again.', stack: 'Error: GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocodin…DPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&token=57451:1:28', name: 'MapsServerError', endpoint: 'GEOCODER_GEOCODE', code: 'UNKNOWN_ERROR'}
+        Closure (getLatLngAndAddressFromPlaceID)
+        Block
+        Closure (9614)
+        Window
+        Global*/
     return { position: null, address: err, placeId: "" }
   }
 

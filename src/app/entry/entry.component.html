@@ -77,10 +77,15 @@
 
 
     <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude:
-      <input [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
+      <input
+        [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
         type="number" formControlName="lat" placeholder="Latitude" (change)="this.addressCtrlChanged('lat')"
-        name="latitudeDD" id="latitudeDD" step="0.001" size="11" min="-180" max="180" id="enter__Lat">
-      <!--onchange="DDCoordsChanged()"    -->
+        name="latitudeDD" id="latitudeDD" step="0.001" size="12" min="-180" max="180" id="enter__Lat">
+
+        <!--onchange="DDCoordsChanged()"
+      {{lat | number:'1.4-5'}}
+      {{entryDetailsForm.get(lat) | number:'1.4-5'}}
+        -->
       <span *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
         class="text-sm text-danger">lat is required
       </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
@@ -101,7 +106,7 @@
       Longitude:
       <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
         type="number" formControlName="long" placeholder="Longitude" (change)="this.addressCtrlChanged('lng')"
-        name="longitudeDD" id="longitudeDD" step="0.001" size="11" min="-180" max="180" id="enter__Long">
+        name="longitudeDD" id="longitudeDD" step="0.001" size="12" min="-180" max="180" id="enter__Long">
       <!-- onchange="DDCoordsChanged()" -->
       <span *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
         class="text-sm text-danger">long is required
@@ -117,9 +122,9 @@
         onchange="DMSCoordsChanged()">"
       <span title="Degrees Minute Seconds">DMS</span>
     </div>
-    <br>
+    <!--br-->
 
-    <div class="input-group"><span class="strongish">Derived Addresses:</span>
+    <!--div class="input-group"><span class="strongish">Derived Addresses:</span>
       <div id="top3wa">&nbsp;&nbsp;&nbsp;Top 3 word address match: </div>
       <div id="coords">&nbsp;&nbsp;&nbsp;WGS84 Coordinates: </div>
       <div id="nearest_place">&nbsp;&nbsp;&nbsp;Nearest Place: </div>
@@ -127,19 +132,19 @@
           8VCWVF22+</span>
       </div>
 
-      <!--script type="module"
+      <!- -script type="module"
         src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.esm.js"></script>
       <script nomodule
-        src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.js?key=YOUR-API-KEY"></script-->
+        src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.js?key=YOUR-API-KEY"></script- ->
 
-      <!--form id="form" method="GET"-->
+      <!- -form id="form" method="GET"- ->
       <div id="what3words-autosuggest">
-        <!--what3words-autosuggest-->
+        <!- -what3words-autosuggest- ->
         &nbsp;&nbsp;&nbsp;what3words-autosuggest: <input type="text" />
-        <!--/what3words-autosuggest-->
+        <!- -/what3words-autosuggest- ->
       </div>
-      <!--/form-->
-    </div>
+      <!- -/form- ->
+    </div-->
 
 
     <h2 class="elegant">When</h2>

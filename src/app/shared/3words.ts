@@ -1,19 +1,43 @@
 //import * as I from "./"
 //import { Components as W3W  } from "@what3words/javascript-components"
-import * as W3W from "@what3words/javascript-components"
 import { DOCUMENT } from '@angular/common'
 import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
 import { AlertsComponent } from '../alerts/alerts.component'
-
-
-// <script src="https://assets.what3words.com/sdk/v3/what3words.js?key=YOUR_API_KEY"></script>
-// mainly from https://developer.what3words.com/tutorial/javascript
-import { UrlHandlingStrategy } from "@angular/router";
+//import { UrlHandlingStrategy } from "@angular/router";
 import { SettingsService } from "./services";
-import { W3W_REGEX } from "@what3words/javascript-components/dist/types/lib/constants";
+
+// https://github.com/what3words/w3w-node-wrapper has the answers!!!
+//import * as W3W from "@what3words/javascript-components"
+// import what3words, { ApiVersion, What3wordsService, AutosuggestClient, AutosuggestOptions, AutosuggestResponse, ConvertToCoordinatesClient, ConvertToCoordinatesOptions, ConvertTo3waClient, ConvertTo3waOptions } from '@what3words/api';
+import what3words, * as w3w from '@what3words/api';
+//import { W3W_REGEX } from "@what3words/javascript-components/dist/types/lib/constants";
+import { GoogleMap } from '@angular/google-maps';
+// <script src="https://assets.what3words.com/sdk/v3/what3words.js?key=YOUR_apiKey"></script>
+// mainly from https://developer.what3words.com/tutorial/javascript
+
+/*
+https://github.com/what3words/w3w-node-wrapper/issues/40
+ See also: https://dev.to/przpiw/react-pdf-rendering-4g7b & https://github.com/angular/angular-cli/issues/20819
+
+
+./node_modules/@what3words/api/dist/lib/constants.js:4:11-24 - Error: Module not found: Error: Can't resolve 'os' in 'D:\Projects\RangerTrak\rangertrak\node_modules\@what3words\api\dist\lib'
+
+BREAKING CHANGE: webpack < 5 used to include polyfills for node.js core modules by default.
+This is no longer the case. Verify if you need this module and configure a polyfill for it.
+
+If you want to include a polyfill, you need to:
+        - add a fallback 'resolve.fallback: { "os": require.resolve("os-browserify/browser") }'
+        - install 'os-browserify'
+If you don't want to include a polyfill, you can use an empty module like this:
+        resolve.fallback: { "os": false }
+
+
+
+× Failed to compile.
+*/
 
 // from @what3words/javascript-components:
-export interface What3wordsAddress {
+export interface What3wordsAddress33 {
   "iconColor": string;
   "link": boolean;
   "showTooltip": boolean;
@@ -25,8 +49,8 @@ export interface What3wordsAddress {
   "words": string;
 }
 
-export interface What3wordsAutosuggest {
-  "api_key": string;
+export interface What3wordsAutosuggest33 {
+  "apiKey": string;
   "autosuggest_focus": string;
   "base_url": string;
   "callback": string;
@@ -45,7 +69,7 @@ export interface What3wordsAutosuggest {
   //"variant"//: Variant; // Can't find Variant...
 }
 
-export interface What3wordsSymbol {
+export interface What3wordsSymbol33 {
   "color": string;
   "size": number;
 }
@@ -57,7 +81,30 @@ export interface What3wordsSymbol {
 
 export class What3Words {
 
-  private static API_KEY = "YBIMPRHH" // For RangerTrak  // TODO: Hide as a private key
+  private static apiKey = "YBIMPRHH" // For RangerTrak  // TODO: Hide as a private key
+  //const apiKey: string = '<YOUR_apiKey>';
+
+  //const
+  config: {
+    host: string,
+    apiVersion: w3w.ApiVersion,
+  } = {
+      host: 'https://api.what3words.com',
+      apiVersion: w3w.ApiVersion.Version3,  // or v3
+    };
+
+  /* The transport is a function responsible for executing the request against the API. Given a
+  ClientRequest the transport should return a promise that resolves to TransportResponse. */
+  // const
+  transport: 'axios' | 'fetch' = 'fetch';
+
+  /* The What3wordsService provides a quick and easy way to instantiate the API clients that can
+  be used to make requests against the what3words API. It also provides helper functions for
+  setting API configuration, such as host and API version and your API key across
+  the what3words API clients.*/
+  //const w3wService: What3wordsService = what3words(What3Words.apiKey, this.config, { this.transport });
+  //const
+  w3wService: w3w.What3wordsService = what3words(What3Words.apiKey, this.config,);
 
   // Components.What3wordsAddress
   // Components.What3wordsAutosuggest
@@ -68,57 +115,56 @@ export class What3Words {
     //@Inject(DOCUMENT) private document: Document
   ) {
 
-
   }
+  /*
+    reg = W3W_REGEX
+    w3w = W3W
 
-  reg = W3W_REGEX
-  w3w = W3W
+    a: What3wordsAddress = {"iconColor": "red",
+    "link": false,
+    "showTooltip": true,
+    "size": 5,
+    "target": "target",
+    "textColor": "blue",
+    "tooltip": true,
+    "tooltipLocation": "top",
+    "words": "///existed.unanswered.articulated"}
 
-  a: What3wordsAddress = {"iconColor": "red",
-  "link": false,
-  "showTooltip": true,
-  "size": 5,
-  "target": "target",
-  "textColor": "blue",
-  "tooltip": true,
-  "tooltipLocation": "top",
-  "words": "///existed.unanswered.articulated"}
+    b: What3wordsAutosuggest = {
+      "apiKey": What3Words.apiKey,
+    "autosuggest_focus": "existed.unanswered.articulated",
+    "base_url": "base",
+    "callback": "callback()",
+    "clip_to_bounding_box": "",
+    "clip_to_circle": "",
+    "clip_to_country": "US",
+    "clip_to_polygon": "",
+    "headers": "",
+    "initial_value": "",
+    "invalid_address_error_message": "Bad Address...",
+    "language": "English",
+    "n_focus_results": 2,
+    "name": "John",
+    "return_coordinates": false,
+    "typeahead_delay": 5,
+    //"variant"//: Variant; // Can't find Variant...
+    }
 
-  b: What3wordsAutosuggest = {
-    "api_key": What3Words.API_KEY,
-  "autosuggest_focus": "existed.unanswered.articulated",
-  "base_url": "base",
-  "callback": "callback()",
-  "clip_to_bounding_box": "",
-  "clip_to_circle": "",
-  "clip_to_country": "US",
-  "clip_to_polygon": "",
-  "headers": "",
-  "initial_value": "",
-  "invalid_address_error_message": "Bad Address...",
-  "language": "English",
-  "n_focus_results": 2,
-  "name": "John",
-  "return_coordinates": false,
-  "typeahead_delay": 5,
-  //"variant"//: Variant; // Can't find Variant...
-  }
+    c: What3wordsSymbol = {"color": "green",
+      "size": 7}
 
-  c: What3wordsSymbol = {"color": "green",
-    "size": 7}
+    // reg
+    // w3w
 
-  // reg
-  // w3w
-
-  test() {
-    // let x = W3W.
-  }
-
+    test() {
+      // let x = W3W.
+    }
+  */
 
   static settings = {
     "async": true,
     "crossDomain": true,
-    "url": "https://api.what3words.com/v3/autosuggest?key=" + What3Words.API_KEY + "&input=index.home.r&n-results=5&focus=51.521251%2C-0.203586&clip-to-country=BE%2CGB",
+    "url": "https://api.what3words.com/v3/autosuggest?key=" + What3Words.apiKey + "&input=index.home.r&n-results=5&focus=51.521251%2C-0.203586&clip-to-country=BE%2CGB",
     "method": "GET",
     "headers": {}
   }
@@ -136,7 +182,7 @@ export class What3Words {
       return false
   }
 
-  Get3WordsFromLatLong(lat: number, lng: number, lang:string='en'): string {
+  Get3WordsFromLatLong(lat: number, lng: number, lang: string = 'en'): string {
     /**
      * Converts a coordinate to a 3 word address
      * @param {Object} coordinates - The coordinate object
@@ -145,17 +191,28 @@ export class What3Words {
      * @param {string} [language=en] - The language to return the 3 word address in
      * @returns {Promise} Promise 3 word address response
      */
-    // What3Words.api.
-    convertTo3wa({ lat, lng }, lang)
-      .then(function (response: any) {
-        console.log("[convertTo3wa]", JSON.stringify(response));
-        return response
-      })
-      .catch(function (error: any) {
-        console.log("[code]", error.code);
-        console.log("[message]", error.message)
-        return `Error: [code]: ${error.code} [message]: ${error.message}`
-      })
+
+    /* Property 'convertTo3wa' does not exist on type '(apiKey?: string | undefined, config?: ApiClientConfiguration | undefined, opts?: { transport: "axios" | "fetch" | Transport; } | undefined) => What3wordsService'. */
+
+    const client: w3w.ConvertTo3waClient = w3w.ConvertTo3waClient.init(What3Words.apiKey)
+    const options: w3w.ConvertTo3waOptions = { coordinates: { lat: lat, lng: lng } };
+    debugger
+    client.run(options)
+      .then((res: any/*ConvertTo3waResponse*/) => console.log('Convert to 3wa', res));
+    debugger
+
+    /*
+        w3w.ConvertTo3waClient.convertTo3wa({ lat, lng }, lang)
+          .then(function (response: any) {
+            console.log("[convertTo3wa]", JSON.stringify(response));
+            return response
+          })
+          .catch(function (error: any) {
+            console.log("[code]", error.code);
+            console.log("[message]", error.message)
+            return `Error: [code]: ${error.code} [message]: ${error.message}`
+          })
+          */
     return "No suggested 3 words"
   }
 
@@ -165,47 +222,61 @@ export class What3Words {
      * @param {string} words - The 3 word address words to convert to coordinates
      * @returns {Promise} - Promise coordinates response
      */
-    what3words.api.convertToCoordinates("filled.count.soap")
-      .then(function (response: any) {
-        console.log("[convertToCoordinates]", response);
-      })
-      .catch(function (error: any) {
-        console.log("[code]", error.code);
-        console.log("[message]", error.message);
-      })
+
+
+    const client: w3w.ConvertToCoordinatesClient = w3w.ConvertToCoordinatesClient.init(What3Words.apiKey)
+    const options: w3w.ConvertToCoordinatesOptions = { words: threeWords };
+
+    debugger
+    client.run(options)
+      .then((res: any /*ConvertToCoordinatesResponse*/) => console.log('Convert to coordinates', res));
+    debugger
+
+    /*
+        w3w.convertToCoordinates("filled.count.soap")
+          .then(function (response: any) {
+            console.log("[convertToCoordinates]", response);
+          })
+          .catch(function (error: any) {
+            console.log("[code]", error.code);
+            console.log("[message]", error.message);
+          })
+    */
 
     if (threeWords.length) {
       // something entered...
 
       console.log("3Words='" + threeWords + "'")
-      what3words.api.autosuggest(threeWords, {
-        nFocusResults: 1,
-        //clipTo####: ["US"], - done by default
-        // TODO: cliptoboundingbox: { south_lat, west_lng, north_lat, east_lng }, // Clip prevents ANY values outside region
-        focus: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }, // Focus prioritizes words closer to this point
-        nResults: 1
-      })
-        .then(function (response: any) {
-          what3words.api.verifiedWords = response.suggestions[0].words
-          console.log("Verified Words='" + what3words.api.verifiedWords + "'")
-          if (threeWords != what3words.api.verifiedWords) {
-            // TODO: Don't tie to HTML!!!
-            document.getElementById("addressLabel")!.textContent = " Verified as: " + what3words.api.verifiedWords
-          } else {
-            document.getElementById("addressLabel")!.textContent = " Verified."
-          }
-          what3words.api.convertToCoordinates(what3words.api.verifiedWords).then(function (response: any) {
-            //async call HAS returned!
-            what3words.api.updateCoords(response.coordinates.lat, response.coordinates.lng)
-            // NOTE: Not saving nearest place: too vague to be of value
-            document.getElementById("addressLabel")!.textContent += " Near: " + response.nearestPlace
-          })
-        })
-        .catch(function (error: any) {
-          let errMsg = "[code]=" + error.code + " [message]=" + error.message + "."
-          console.log("Unable to verify 3 words entered: " + errMsg)
-          document.getElementById("addressLabel")!.textContent = "*** Not able to verify 3 words! ***"
-        })
+      /*
+            w3w.autosuggest(threeWords, {
+              nFocusResults: 1,
+              //clipTo####: ["US"], - done by default
+              // TODO: cliptoboundingbox: { south_lat, west_lng, north_lat, east_lng }, // Clip prevents ANY values outside region
+              focus: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }, // Focus prioritizes words closer to this point
+              nResults: 1
+            })
+              .then(function (response: any) {
+                what3words.api.verifiedWords = response.suggestions[0].words
+                console.log("Verified Words='" + what3words.api.verifiedWords + "'")
+                if (threeWords != what3words.api.verifiedWords) {
+                  // TODO: Don't tie to HTML!!!
+                  document.getElementById("addressLabel")!.textContent = " Verified as: " + what3words.api.verifiedWords
+                } else {
+                  document.getElementById("addressLabel")!.textContent = " Verified."
+                }
+                what3words.api.convertToCoordinates(what3words.api.verifiedWords).then(function (response: any) {
+                  //async call HAS returned!
+                  what3words.api.updateCoords(response.coordinates.lat, response.coordinates.lng)
+                  // NOTE: Not saving nearest place: too vague to be of value
+                  document.getElementById("addressLabel")!.textContent += " Near: " + response.nearestPlace
+                })
+              })
+              .catch(function (error: any) {
+                let errMsg = "[code]=" + error.code + " [message]=" + error.message + "."
+                console.log("Unable to verify 3 words entered: " + errMsg)
+                document.getElementById("addressLabel")!.textContent = "*** Not able to verify 3 words! ***"
+              })
+              */
     }
     // async call not returned yet
 
@@ -213,7 +284,7 @@ export class What3Words {
 
 
 
-  getGrid() {
+  getGrid(southwest: google.maps.LatLngLiteral, northeast: google.maps.LatLngLiteral) {
     /**
    * Returns a section of the what3words grid
    * @param {Object} boundingBox - The bounding box for the grid to return
@@ -225,9 +296,12 @@ export class What3Words {
    * @param {Object} [boundingBox.northeast.lng] - The longitude of the northeast corner of the bounding box
    * @return {Promise} - Promise the grid section
    */
-    what3words.api.gridSection({
-      southwest: { lat: 51.508341, lng: -0.125499 },
-      northeast: { lat: 51.507341, lng: -0.124499 }
+
+    // see https://github.com/what3words/w3w-node-wrapper#grid-section
+    /*
+    w3w.gridSection({
+      southwest: southwest, // { lat: 51.508341, lng: -0.125499 },
+      northeast: northeast // { lat: 51.507341, lng: -0.124499 }
     })
       .then(function (response: any) {
         console.log("[gridSection]", response)
@@ -239,31 +313,61 @@ export class What3Words {
   }
 
 
-
-
-
-
-
   /*
   $.ajax(settings).done(function (response) {
     MAIN.dbug("ddd=" + response)
   })
     */
 
-  // No 3 word results outside these values allowed!!
-  // south_lat <= north_lat & west_lng <= east_lng
-  /*
-  let south_lat = 46.0
-  let north_lat = 49.0
-  let west_lng = -124.0
-  let east_lng = -120.0
-  let errMsg = ""
+    // No 3 word results outside these values allowed!!
+    // south_lat <= north_lat & west_lng <= east_lng
+    /*
+    let south_lat = 46.0
+    let north_lat = 49.0
+    let west_lng = -124.0
+    let east_lng = -120.0
+    let errMsg = ""
+    */
+    //let threeWords = document.getElementById("address")!.innerHTML // was 'addresses'...
+    //MAIN.dbug(threeWords)
+
+  }
+
+  w3wAuto(w3wSuggestion: string) {
+
+    const client: w3w.AutosuggestClient = w3w.AutosuggestClient.init(What3Words.apiKey);
+    const options: w3w.AutosuggestOptions = {
+      input: w3wSuggestion,
+    }
+    let res
+    debugger
+    client.run(options)
+      .then((res: w3w.AutosuggestResponse) =>
+        console.log(`suggestions for "${w3wSuggestion}"`, JSON.stringify(res))
+      );
+      debugger
+    return res
+
+/*
+"apiKey": string;
+  "autosuggest_focus": string;
+  "base_url": string;
+  "callback": string;
+  "clip_to_bounding_box": string;
+  "clip_to_circle": string;
+  "clip_to_country": string;
+  "clip_to_polygon": string;
+  "headers": string;
+  "initial_value": string;
+  "invalid_address_error_message": string;
+  "language": string;
+  "n_focus_results": number;
+  "name": string;
+  "return_coordinates": boolean;
+  "typeahead_delay": number;
   */
-  //let threeWords = document.getElementById("address")!.innerHTML // was 'addresses'...
-  //MAIN.dbug(threeWords)
 
 
-  w3wAuto() {
     /*   what3words.api.autosuggest("freshen.overlook.clo", {
          nFocusResults: 1,
          clipToCountry: ["FR"],
@@ -356,7 +460,8 @@ export class What3Words {
      * @param {boolean} [options.preferLang] - Whether to bias towards results that are over land vs over the sea.
      * @returns {Promise} - Promise 3 word address autosuggestions response
      **/
-    what3words.api.autosuggest("fun.with.code")
+    /*
+    w3w.autosuggest("fun.with.code")
       .then(function (response: any) {
         console.log("[autosuggest]", response);
       })
@@ -377,5 +482,6 @@ export class What3Words {
     })
     what3words.api.autosuggest("fun.with.code", { focus: { lat: 51.4243877, lng: -0.34745 } })
     what3words.api.autosuggest("fun with code", { inputType: "generic-voice", language: "en" })
+    */
   }
 }

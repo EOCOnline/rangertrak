@@ -1,4 +1,3 @@
-
 /// <reference types="@types/google.maps" />
 
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
@@ -201,9 +200,8 @@ export class GmapComponent implements OnInit {    //extends Map
     //var bounds = new google.maps.LatLngBounds(southWest,northEast);
     this.fieldReportService.recalcFieldBounds()
     let bounds = this.fieldReportService.getFieldReportBounds()
-
-    this.gMap?.fitBounds(bounds)
     console.log (`Fitting bounds= :${JSON.stringify(bounds)}`)
+    this.gMap?.fitBounds(bounds)
   }
 
   // -----------------------------------------------------------
@@ -269,15 +267,19 @@ export class GmapComponent implements OnInit {    //extends Map
     }
   }
 
-  addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText = "grade", title = "RangerTitle", labelColor = "#ffffff", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
+  addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
     console.log(`addMarker`)
 
-    /*
-        infoContent = "InfoWindow Content"
+    if (infoContent=="") {
+        infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}`
+    }
+    if (title=="") {
+        title=infoContent
+    }
         labelText = "grade"
-       // title = "RangerTitle"
-        labelColor = "#ffffff"
-        fontSize = "18px"
+        //icon = "rocket"
+        fontSize = "20px"
+    /*
         //icon = "rocket"
         animation = google.maps.Animation.DROP
     */

@@ -5,15 +5,15 @@ import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MatInputModule } from '@angular/material/input'
 import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker'
 import { MatSnackBar } from '@angular/material/snack-bar'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+//import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { Observable, debounceTime, map, startWith, switchMap } from 'rxjs'
+import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 
 import { AlertsComponent } from '../alerts/alerts.component'
 import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
-import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
+
 //import { addressType } from '../lmap/lmap.component' // BUG:
-// BUG: What3Words,
-import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/'
+import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
 import { LatLng } from 'leaflet';
 
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
@@ -65,6 +65,7 @@ export class EntryComponent implements OnInit {
   fieldReportStatuses
   settings
   entryDetailsForm!: FormGroup
+  //w3w = new What3Words()
 
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
@@ -72,6 +73,10 @@ export class EntryComponent implements OnInit {
 
   //myTimePicker = null
 
+  /* following causes:  No suitable injection token for parameter 'formBuilder' of class 'EntryComponent'.
+  Consider using the @Inject decorator to specify an injection token.(-992003)
+entry.component.ts(77, 26): This type does not have a value, so it cannot be used as injection token.
+*/
   constructor(
     private formBuilder: FormBuilder,
     private rangerService: RangerService,
@@ -343,6 +348,7 @@ export class EntryComponent implements OnInit {
     }
     this.onlyMarker.setPosition(pos)
     this.onlyMarker.setTitle(title)
+    this.gMap?.setCenter(pos)
 
     /* label: {
        // label: this.labels[this.labelIndex++ % this.labels.length],
@@ -438,14 +444,17 @@ export class EntryComponent implements OnInit {
       case 'lat':
       case 'lng':
 
-        let llat = Number(this.document.getElementById("enter__Lat")?.innerText)
-        let llng = Number(this.document.getElementById("enter__Long")?.innerText)
+        let llat = Number((this.document.getElementById("enter__Lat") as HTMLInputElement).value)
+        let llng = Number((this.document.getElementById("enter__Long") as HTMLInputElement).value)
         //this.document.getElementById("enter__Long")?.innerText
         //this.document.getElementById("enter__Long")?.innerText
         let ll = new google.maps.LatLng(llat, llng)
         let newAddress = this.geocoder.getAddressFromLatLng(ll)
+        console.log(`addressCtrlChanged new ll: ${JSON.stringify(ll)}; addr: ${newAddress}`)
 
-        let addrLabel = this.document.getElementById("addressLabel")
+        this.updateCoords(llat,llng)
+
+        let addrLabel = this.document.getElementById("addressLabel") // as HTMLLabelElement
         if (addrLabel) {
           addrLabel.innerText = newAddress
           //addrLabel.markAsPristine()
@@ -474,23 +483,23 @@ export class EntryComponent implements OnInit {
 
 
 
-    let tWords // = document.getElementById("addresses")!.innerText
+    let tWords // = document.getElementById("addresses")!.innerText // as HTMLInputElement).value
     let addr = document.getElementById("addressCtrl") as HTMLInputElement// ?.innerText
     console.log(`Looking into address: ${addr}`)
     if (addr == null)
       return
     //debugger
     let addrText = addr.value;
-    console.log(`Got Street address: ${addrText}`)
+    console.log(`Got some kind of address: ${addrText}`)
     if (addrText.length) {
       if (addrText.includes("+")) {
         console.log("Got PCode: " + addrText)
-        this.chkPCodes()
+        this.chkPCodes(addrText)
       } else {
         tWords = addrText.split(".")
         if (tWords.length == 3) {
           console.log("Got What 3 Words: " + addrText)
-          this.chk3Words()
+          this.chk3Words(addrText)
         } else {
           let result = this.chkStreetAddress(addrText)
           let addrLabel = document.getElementById("addressLabel") as HTMLLabelElement
@@ -505,23 +514,28 @@ export class EntryComponent implements OnInit {
     }
   }
 
+
   updateCoords(latDD: number, lngDD: number) {
-    console.log("New Coordinates: lat:" + latDD + "; lng:" + lngDD)
+    console.log(`updateCoords with new Coordinates: lat: ${latDD}; latDD: ${latDD.toString()}`);
 
-    document.getElementById("latitudeDD")!.innerText = latDD.toString()
-    document.getElementById("longitudeDD")!.innerText = lngDD.toString()
+    let latitudeDD = document.getElementById("enter__Lat" ) as HTMLInputElement
+    console.log(`updateCoords latitudeDD: ${latitudeDD}; lng: ${latDD}`);
 
-    const latDMS = DDToDMS(latDD, false);
-    document.getElementById("latitudeQ")!.innerText = latDMS.dir.toString()
-    document.getElementById("latitudeD")!.innerText = latDMS.deg.toString()
-    document.getElementById("latitudeM")!.innerText = latDMS.min.toString()
-    document.getElementById("latitudeS")!.innerText = latDMS.sec.toString()
+    // TODO: Only display 4-6 positions after decimal
+    latitudeDD.value = latDD.toString();
+    (document.getElementById("enter__Long") as HTMLInputElement).value = lngDD.toString();
 
-    const lngDMS = DDToDMS(lngDD, true);
-    document.getElementById("longitudeQ")!.innerText = lngDMS.dir.toString()
-    document.getElementById("longitudeD")!.innerText = lngDMS.deg.toString()
-    document.getElementById("longitudeM")!.innerText = lngDMS.min.toString()
-    document.getElementById("longitudeS")!.innerText = lngDMS.sec.toString()
+    let latDMS = DDToDMS(latDD, false);
+    (document.getElementById("latitudeQ") as HTMLInputElement).value = latDMS.dir;
+    (document.getElementById("latitudeD") as HTMLInputElement).value = latDMS.deg.toString();
+    (document.getElementById("latitudeM") as HTMLInputElement).value = latDMS.min.toString();
+    (document.getElementById("latitudeS") as HTMLInputElement).value = latDMS.sec.toString();
+
+    let lngDMS = DDToDMS(lngDD, true);
+    (document.getElementById("longitudeQ") as HTMLInputElement).value = lngDMS.dir.toString();
+    (document.getElementById("longitudeD") as HTMLInputElement).value = lngDMS.deg.toString();
+    (document.getElementById("longitudeM") as HTMLInputElement).value = lngDMS.min.toString();
+    (document.getElementById("longitudeS") as HTMLInputElement).value = lngDMS.sec.toString();
 
     let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
     console.log("updateCoords: Encode returned PlusCode: " + pCode)
@@ -539,31 +553,39 @@ export class EntryComponent implements OnInit {
           pCode = OpenLocationCode.shorten(fullCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong)
         }
         console.log("New PlusCodes: " + pCode + "; Global: " + fullCode);
-        //document.getElementById("addresses")!.innerText = pCode;
-        //document.getElementById("addressLabel").innerHTML = defPCodeLabel;
-        document.getElementById("pCodeGlobal")!.innerHTML = " &nbsp;&nbsp; +Code: " + fullCode;
+        //(document.getElementById("addresses") as HTMLInputElement).value = pCode;
+        //document.getElementById("addressLabel").innerHTML = defPCodeLabel; // as HTMLLabelElement
+        (document.getElementById("pCodeGlobal") as HTMLLabelElement).innerHTML = " &nbsp;&nbsp; +Code: " + fullCode;
       } else {
         console.log("Invalid +PlusCode: " + pCode);
         document.getElementById("pCodeGlobal")!.innerHTML = " &nbsp;&nbsp; Unable to get +Code"
-        //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: ";
+        //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
       }
     }
 
+    //this.addressCtrlChanged('lat') // HACK: to display marker
+    this.UpdateLocation({lat:latDD, lng:lngDD})
     //ToDO: Update 3 words too!
     //if (initialized) this.displaySmallMap(latDD, lngDD);
   }
 
-  chkPCodes() {
+  chkPCodes(pCode:string) {
     // REVIEW: Duplicate of code above...
-    let pCode = document.getElementById("addresses")!.innerText //value;
+    //let pCode = document.getElementById("addresses")!.innerText //value;
     console.log("chkPCodes got '" + pCode + "'");
     if (pCode.length) {
 
       let result = this.geocoder.getLatLngAndAddressFromPlaceID(pCode)
+      console.log(`chkPCode of ${pCode} got result:${JSON.stringify(result)}`);
+
       if (result.position) {
-        document.getElementById("addressLabel")!.innerHTML = result.address
-        document.getElementById("lat")!.innerHTML = JSON.stringify(result.position)
-        document.getElementById("long")!.innerHTML = JSON.stringify(result.position)
+        (document.getElementById("addressLabel")as HTMLLabelElement).innerText = result.address;
+        (document.getElementById("enter__Lat") as HTMLInputElement).value = "result.position.lat";
+          // BUG: position has type of never????!!!!
+        (document.getElementById("long") as HTMLInputElement).value = "JSON.stringify(result.position)";
+      }
+      else {
+        console.log(`chkPCode of ${pCode} got NULL result!!!`);
       }
 
 
@@ -587,7 +609,7 @@ export class EntryComponent implements OnInit {
   }
 
   // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
-  chk3Words() {
+  chk3Words(tWords:string) {
     /*let settings = {
       "async": true,
       "crossDomain": true,
@@ -609,12 +631,12 @@ export class EntryComponent implements OnInit {
     let east_lng = -120.0;
     let errMsg = "";
 
-    let tWords = document.getElementById("addresses")!.innerText;
+   // let tWords = document.getElementById("addresses")!.innerText;// as HTMLInputElement).value
     console.log('chk3Words - ' + tWords);
     if (tWords.length) {
       // soemthing entered...
       console.log("3Words='" + tWords + "'");
-      // this.w3w.w3wAuto()
+       //this.w3w.w3wAuto(tWords)
       /* BUG:
           this.w3w.w3wAuto.autosuggest(tWords, {
             nFocusResults: 1,
@@ -627,7 +649,7 @@ export class EntryComponent implements OnInit {
               const verifiedWords = response.suggestions[0].words;
               console.log("Verified Words='" + verifiedWords + "'");
               if (tWords != verifiedWords) {
-                document.getElementById("addressLabel")!.textContent = " Verified as: " + verifiedWords;
+                document.getElementById("addressLabel")!.textContent = " Verified as: " + verifiedWords; // as HTMLLabelElement
               } else {
                 document.getElementById("addressLabel")!.textContent = " Verified.";
               }
@@ -636,15 +658,17 @@ export class EntryComponent implements OnInit {
                 //async call HAS returned!
                 this.updateCoords(response.coordinates.lat, response.coordinates.lng);
                 // NOTE: Not saving nearest place: too vague to be of value
-                document.getElementById("addressLabel")!.textContent += "; Near: " + response.nearestPlace;
+                document.getElementById("addressLabel")!.textContent += "; Near: " + response.nearestPlace; // as HTMLLabelElement
               });
             })
             .catch(function (error: { code: string; message: string }) {
               errMsg = "[code]=" + error.code + "; [message]=" + error.message + ".";
               */
+
+              // TODO: this.updateCoords(lat,lng)
       errMsg = ""
       console.log("Unable to verify 3 words entered: " + errMsg);
-      document.getElementById("addressLabel")!.textContent = "*** Not able to verify 3 words! ***";
+      document.getElementById("addressLabel")!.textContent = "*** Not able to verify 3 words! ***"; // as HTMLLabelElement
       //})
     }
     // async call not returned yet
@@ -658,6 +682,8 @@ export class EntryComponent implements OnInit {
     // Type 'GeocoderResult' must have a '[Symbol.iterator]()' method that returns an iterator.
     //let result:google.maps.GeocoderResult = this.geocoder.isValidAddress(addrText)
     return this.geocoder.isValidAddress(addrText)
+    // TODO: this.updateCoords(lat,lng)
+
   }
 
 
