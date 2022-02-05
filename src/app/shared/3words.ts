@@ -136,7 +136,7 @@ export class What3Words {
       return false
   }
 
-  Get3WordsFromLatLong(lat: number, long: number): string {
+  Get3WordsFromLatLong(lat: number, lng: number, lang:string='en'): string {
     /**
      * Converts a coordinate to a 3 word address
      * @param {Object} coordinates - The coordinate object
@@ -145,9 +145,10 @@ export class What3Words {
      * @param {string} [language=en] - The language to return the 3 word address in
      * @returns {Promise} Promise 3 word address response
      */
-    what3words.api.convertTo3wa({ lat: 51.508344, lng: -0.12549900 }, 'en')
+    // What3Words.api.
+    convertTo3wa({ lat, lng }, lang)
       .then(function (response: any) {
-        console.log("[convertTo3wa]", response);
+        console.log("[convertTo3wa]", JSON.stringify(response));
         return response
       })
       .catch(function (error: any) {
@@ -377,5 +378,4 @@ export class What3Words {
     what3words.api.autosuggest("fun.with.code", { focus: { lat: 51.4243877, lng: -0.34745 } })
     what3words.api.autosuggest("fun with code", { inputType: "generic-voice", language: "en" })
   }
-
 }
