@@ -189,14 +189,17 @@ export class EntryComponent implements OnInit {
 
   // TODO: NOt working yet...
   CallsignChanged(callsign: string) { // Just serves timer for input field - post interaction
+    console.log(`EntryForm CallsignChanged()`)
+
     this.callInfo = this.document.getElementById("enter__Callsign-upshot")
     if (this.callInfo) {
       console.log(`EntryForm CallsignChanged looking for ${callsign}`)
       //let ranger = this.rangers[this.findIndex(callsign)]
       let ranger = this.rangerService.getRanger(callsign)  // REVIEW is this.rangers here & service in sync?
-      this.callInfo.innerHTML = `< img class= "enter__Callsign-img" aria - hidden
-src = "${ranger.image}" height = "50" >
-  <span>${ranger.callsign} </span> | <small> ${ranger.licensee} | ${ranger.phone}</small > `
+      this.callInfo.innerHTML = `<span>${ranger.callsign} </span> | <small> ${ranger.licensee} | ${ranger.phone}</small > `
+      //< img class= "enter__Callsign-img" aria-hidden src = "${ranger.image}" height = "50" >
+    } else {
+      console.log(`EntryForm CallsignChanged did not find enter__Callsign-upshot`)
     }
   }
 
