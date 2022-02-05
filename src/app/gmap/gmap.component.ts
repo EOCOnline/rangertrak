@@ -85,7 +85,7 @@ export class GmapComponent implements OnInit {    //extends Map
     scrollwheel: true,
     disableDoubleClickZoom: true,
     mapTypeId: 'hybrid',
-    zoom: 16,
+    zoom: 12,
     maxZoom: 20,
     minZoom: 4,
     draggableCursor: 'crosshair', //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
@@ -105,7 +105,7 @@ export class GmapComponent implements OnInit {    //extends Map
   labelIndex = 0;
   infoContent = ''
   apiLoaded //: Observable<boolean>
-  circleCenter: google.maps.LatLngLiteral = this.Vashon// kahanaRidge
+  circleCenter: google.maps.LatLngLiteral =   {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong}  // this.Vashon// kahanaRidge
   radius = 10;
 
   fieldReports?: FieldReportType[]
@@ -188,6 +188,7 @@ export class GmapComponent implements OnInit {    //extends Map
       */
     this.displayAllMarkers()
     // REVIEW: Doesn't work with NO Markers?
+    console.log (`Setting Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLong}, zoom: ${SettingsService.Settings.defZoom}`)
     this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong })
     this.gMap.setZoom(SettingsService.Settings.defZoom)
     this.fitBounds()
@@ -198,7 +199,11 @@ export class GmapComponent implements OnInit {    //extends Map
     //var southWest = new google.maps.LatLng(reportBounds, reportBounds.west);
     //var northEast = new google.maps.LatLng(reportBounds.north,reportBounds.east);
     //var bounds = new google.maps.LatLngBounds(southWest,northEast);
-    this.gMap?.fitBounds(this.fieldReportService.getFieldReportBounds());
+    this.fieldReportService.recalcFieldBounds()
+    let bounds = this.fieldReportService.getFieldReportBounds()
+
+    this.gMap?.fitBounds(bounds)
+    console.log (`Fitting bounds= :${JSON.stringify(bounds)}`)
   }
 
   // -----------------------------------------------------------

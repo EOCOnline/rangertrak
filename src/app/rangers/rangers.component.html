@@ -30,19 +30,22 @@
   <summary class="big">Instructions</summary>
   This list of participants was taken from the FCC Database February 3, 2022. <br />
   It has been significantly reformatted and your edits may alter it further.<br />
-  To maintain these changes between browser sessions, a button in the Advanced sectino below allows writing the following table to the Browser Local Storage
+  To maintain these changes between browser sessions, a button in the Advanced sectino below allows writing the
+  following table to the Browser Local Storage
   where it will remain (thru multiple browser sessions) until explicitly deleted.<br />
   <ul>
     <li>The photos are not associated with the correct person currently - so are disabled for now. </li>
     <li>Some fields may be editable (single or double-click), and ONCE SAVED can be exported to a CSV file.</li>
     <li><span style="color:red;">Edits HAVE to be
-      MANUALLY saved by selecting the "Save Data" button in the Advanced section below.</span> </li>
+        MANUALLY saved by selecting the "Save Data" button in the Advanced section below.</span> </li>
     <li>Click on a column heading to sort by that field.</li>
     <li>Click & Drag on a column heading to move columns</li>
     <li>Hovering over a cell (e.g., any callsign) may show additional information. </li>
     <li>Icons at the top right of each column allows filtering on the value</li>
-    <li>Export Rangers will save data as a CSV file for Excel. For <a href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank">details</a></li>
-    <li>FUTURE: Import Excel button currently brings in the data - but due to imporoper quoting it doesn't show up, so isn't working - yet.</li>
+    <li>Export Rangers will save data as a CSV file for Excel. For <a
+        href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank">details</a></li>
+    <li>FUTURE: Import Excel button currently brings in the data - but due to imporoper quoting it doesn't show up, so
+      isn't working - yet.</li>
   </ul>
 </details>
 <br>
@@ -50,7 +53,7 @@
 <div id="rangersgrid">
   <ag-grid-angular #rangerGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 60vh;"
     (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="rangers"
-    [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [tooltipShowDelay]="500"  >
+    [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [tooltipShowDelay]="500">
     <!--
           (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1
 
@@ -74,7 +77,9 @@
   <button (click)="onDeselectAll()">Clear Selection</button>
   <br>
   <br>
-  <button (click)="onBtnAddRanger()" title="Add a new Ranger, or a new CERT, or a new Team Tactical sign: they're considered identically">Add new tactical sign</button> (& then REFRESH PAGE!)
+  <button (click)="onBtnAddRanger()"
+    title="Add a new Ranger, or a new CERT, or a new Team Tactical sign: they're considered identically">Add new
+    tactical sign</button> (& then REFRESH PAGE!)
   <br>
   <br>
   <details>
@@ -82,14 +87,11 @@
 
     If no rangers exist, or you would like to replace those shown above, either:
     <ol>
-      <li>BEST: Use the "Add Vashon Rangers" button to import all known HAM Radio licensees.   <p>This list of potential Rangers was taken from the FCC Database Feb 3, 2022. <br>
-        It has been significantly reformatted and your edits may alter it further.<br>
-        Contact John with a better list if desired... Then REFRESH PAGE!</li>
+      <li>BEST: Use the "Add Vashon Rangers" button to import all known HAM Radio licensees. <p>This list of potential
+          Rangers was taken from the FCC Database Feb 3, 2022. <br>
+          It has been significantly reformatted and your edits may alter it further.<br>
+          Contact John with a better list if desired... Then REFRESH PAGE!</li>
       <li>Add new rangers (or other tactical signs such as Team Names/CERTs) into the grid. Then REFRESH PAGE!</li>
-      <li>FUTURE: Import Rangers from a JSON file:  <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">Import
-          Rangers (JSON)</button><br>, or</li>
-      <li>FUTURE: Replace existing Rangers with those from an Excel file:   <input type="file" (change)="onBtnImportExcel($event)" multiple="false"  accept=".csv, .xls, .xslt"/>
-        Then SAVE RANGERS below and then REFRESH PAGE!  </li>
     </ol>
     <hr>
 
@@ -102,13 +104,12 @@
     <button (click)="onBtnUpdateLocalStorage()" style="margin-bottom: 5px"
       title="Preserve the edits above to the Rangers stored on this browser">Save Rangers</button><br>
 
-
     Delete ALL Rangers from Local Storage (then refresh page):
     <button (click)="onBtnDeleteRangers()">Delete Rangers</button><br>
 
     <div id="rangers__Fake">
-      Add Vashon rangers to any existing rangers (then refresh page):
-      <button (click)="generateFakeData()" type="button" id="enter__Fake--button">Add Vashon Rangers</button>
+      Add Vashon rangers to any existing rangers (then REFRESH page!):
+      <button (click)="loadVashonRangers()" type="button" id="enter__Fake--button">Add Vashon Rangers</button>
       <!--button (click)="onBtnReloadPage()" type="button">Reload Page</button-->
     </div>
   </details>
@@ -117,6 +118,14 @@
   <br>
   <details>
     <summary><span class="big">Untested or unlikely to work!</span></summary>
+    <ul>
+      <li>FUTURE: Import Rangers from a JSON file: <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px"
+          title="Import Rangers from JSON file">Import
+          Rangers (JSON)</button><br>, or</li>
+      <li>FUTURE: Replace existing Rangers with those from an Excel file: <input type="file"
+          (change)="onBtnImportExcel($event)" multiple="false" accept=".csv, .xls, .xslt" />
+        Then SAVE RANGERS below and then REFRESH PAGE! </li>
+    </ul>
 
     FUTURE: Import Excel button currently 'works', but imports wrong spreadsheet and does nothing with it!<br>
     // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
