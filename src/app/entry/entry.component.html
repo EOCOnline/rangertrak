@@ -13,7 +13,7 @@
       <mat-label>CallSign</mat-label>
 
       <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
-        formControlName="callsign" [matAutocomplete]="auto" (change)="this.CallsignCtrlChanged()">
+        formControlName="callsign" [matAutocomplete]="auto" (change)="this.CallsignCtrlChanged()" id="enter__Callsign-input">
 
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">

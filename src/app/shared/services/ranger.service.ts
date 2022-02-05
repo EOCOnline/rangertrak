@@ -80,7 +80,7 @@ export class RangerService {
     //localStorage.setItem("SpecialRangers", JSON.stringify(this.rangers2))
     //console.log("Updated Rangers to " + JSON.stringify(this.rangers))
 
-    //this.SortRangersByCallsign()
+    this.SortRangersByCallsign()
 
 
     // now gets:
@@ -89,7 +89,7 @@ export class RangerService {
           at RangerService.UpdateLocalStorage (ranger.service.ts:82:43)
           at new RangerService (ranger.service.ts:60:10)
   */
-    /*
+
     // licenseKey: ranger.licenseKey,
     this.rangersSubject.next(this.rangers.map(
       ranger => ({callsign: ranger.callsign,
@@ -103,7 +103,7 @@ export class RangerService {
         note: ranger.note
       })
     ))
-    */
+
   }
 
   //--------------------------------------------------------------------------

@@ -159,6 +159,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
         console.log('#######  address value changed: ' + x)
       })
     }
+    //this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))
     console.log(`EntryForm ngOnInit completed at ${Date()}`)
   }
 
@@ -208,7 +209,13 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
   }
 
   CallsignCtrlChanged() { // NOTE: NEVER CALLED (my error, maybe does now..)!!!, so use workaround above...
-    console.log("callsign Ctrl Changed at ", Date(), ". call=" + "myCall")
+    return
+    let callSign:string = (this.document.getElementById("enter__Callsign-input") as HTMLInputElement).value
+    if (callSign) {
+      console.log(`CallsignCtrlChanged() call= ${callSign} at ${Date.now}`)
+      this.CallsignChanged(callSign)
+    }
+
     // TODO: update #enter__Callsign-upshot
   }
 
