@@ -117,7 +117,7 @@ export class FieldReportsComponent implements OnInit {
   columnDefs = [
     { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!'},
     { headerName: "CallSign", field: "callsign", tooltipField: "team" },
-    { headerName: "Team", field: "team" },
+    // { headerName: "Team", field: "team" },
     { headerName: "Address", field: "address", singleClickEdit: true, flex: 50 }, //, maxWidth: 200
     { headerName: "Lat", field: "lat", singleClickEdit: true },
     { headerName: "Long", field: "long", cellClass: 'number-cell' },

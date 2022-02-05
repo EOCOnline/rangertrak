@@ -41,7 +41,7 @@ export class EntryComponent implements OnInit {
   display?: google.maps.LatLngLiteral
   vashon = new google.maps.LatLng(47.4471, -122.4627)
 
-  zoom = 13
+  zoom = 11
   center: google.maps.LatLngLiteral = Vashon
   options: google.maps.MapOptions = {
     zoomControl: true,
@@ -144,15 +144,15 @@ export class EntryComponent implements OnInit {
     // On Location/Address Change subscriptions
     if (this.entryDetailsForm) {
       this.entryDetailsForm.get("lat")?.valueChanges.subscribe(x => {
-        console.log('#############  latitude value changed: ' + x)
+        console.log('########  latitude value changed: ' + x)
       })
 
       this.entryDetailsForm.get("long")?.valueChanges.subscribe(x => {
-        console.log('#############  longitude value changed: ' + x)
+        console.log('##########  longitude value changed: ' + x)
       })
 
       this.entryDetailsForm.get("address")?.valueChanges.subscribe(x => {
-        console.log('#############  address value changed: ' + x)
+        console.log('#######  address value changed: ' + x)
       })
     }
 
@@ -280,8 +280,10 @@ src = "${ranger.image}" height = "50" >
     //let latlng = new google.maps.LatLng(SettingsService.Settings.defLat, SettingsService.Settings.defLong)
     //let latlngL = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong}
 
+    // TODO: FitBounds to new point, not to DefLat & DefLong  -- do it on addMarker?
     // this.gMap?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
     this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }))
+    //this.gMap?.setZoom(10) no effect
   }
 
   onMapMouseMove(event: google.maps.MapMouseEvent) {
@@ -293,10 +295,8 @@ src = "${ranger.image}" height = "50" >
       console.warn('move(): NO event.latLng!!!!!!!!!!!!!');
     }
   }
-
-
-
   //#endregion
+
 
 
   //----------------------------------------------------------------------------------------

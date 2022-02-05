@@ -59,6 +59,7 @@ export class FieldReportService {
         if (fieldReport.id >= this.nextId) this.nextId = fieldReport.id + 1
       }
       this.UpdateFieldReports()
+      this.recalcFieldBounds()
     }
   }
 
@@ -160,7 +161,7 @@ export class FieldReportService {
   }
 
   recalcFieldBounds() {
-    console.log(`displayAllMarkers got ${this.fieldReports.length} field reports`)
+    console.log(`recalcFieldBounds got ${this.fieldReports.length} field reports`)
 
     let north = this.fieldReports[0].lat
     let west = this.fieldReports[0].long
@@ -183,6 +184,18 @@ export class FieldReportService {
       if (this.fieldReports[i].long > west) {
         west = this.fieldReports[i].long
       }
+    }
+
+    console.log(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `)
+    if (east-west<0.005) {
+      east+=0.0025
+      west-=0.0025
+      console.log(`recalcFieldBounds BROADENED to E:${east} W:${west} `)
+    }
+    if (north-south<0.005) {
+      north+=0.0025
+      south-=0.0025
+      console.log(`recalcFieldBounds BROADENED to N:${north} S:${south} `)
     }
 
     this.bounds = new google.maps.LatLngBounds(new google.maps.LatLng(south, west), new google.maps.LatLng(north, east)) //SW, NE
