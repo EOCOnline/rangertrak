@@ -381,11 +381,14 @@ export class RangersComponent implements OnInit {
 
   //--------------------------------------------------------------------------
 
-  generateFakeData() {
-    // Number is ignored currently
-    this.rangerService.generateFakeData(10)
+  loadVashonRangers() {
+    this.rangerService.loadHardcodedRangers()
     // TODO: Refresh the page, or why not showing???? - until page goes thoiugh another init cycle?!
+
+    console.log("loadVashonRangers calling ngInit...")
     this.ngOnInit()
+
+    console.log("loadVashonRangers calling window.location.reload...")
     window.location.reload
   }
 
