@@ -1,5 +1,6 @@
 //import * as I from "./"
-import { what3words } from "@what3words/javascript-components"
+//import { Components as W3W  } from "@what3words/javascript-components"
+import * as W3W from "@what3words/javascript-components"
 import { DOCUMENT } from '@angular/common'
 import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
 import { AlertsComponent } from '../alerts/alerts.component'
@@ -9,46 +10,45 @@ import { AlertsComponent } from '../alerts/alerts.component'
 // mainly from https://developer.what3words.com/tutorial/javascript
 import { UrlHandlingStrategy } from "@angular/router";
 import { SettingsService } from "./services";
+import { W3W_REGEX } from "@what3words/javascript-components/dist/types/lib/constants";
 
-/*
- from @what3words/javascript-components:
-  export namespace Components {
-    interface What3wordsAddress {
-        "iconColor": string;
-        "link": boolean;
-        "showTooltip": boolean;
-        "size": number;
-        "target": string;
-        "textColor": string;
-        "tooltip": boolean;
-        "tooltipLocation": string;
-        "words": string;
-    }
-    interface What3wordsAutosuggest {
-        "api_key": string;
-        "autosuggest_focus": string;
-        "base_url": string;
-        "callback": string;
-        "clip_to_bounding_box": string;
-        "clip_to_circle": string;
-        "clip_to_country": string;
-        "clip_to_polygon": string;
-        "headers": string;
-        "initial_value": string;
-        "invalid_address_error_message": string;
-        "language": string;
-        "n_focus_results": number;
-        "name": string;
-        "return_coordinates": boolean;
-        "typeahead_delay": number;
-        "variant": Variant;
-    }
-    interface What3wordsSymbol {
-        "color": string;
-        "size": number;
-    }
+// from @what3words/javascript-components:
+export interface What3wordsAddress {
+  "iconColor": string;
+  "link": boolean;
+  "showTooltip": boolean;
+  "size": number;
+  "target": string;
+  "textColor": string;
+  "tooltip": boolean;
+  "tooltipLocation": string;
+  "words": string;
 }
-*/
+
+export interface What3wordsAutosuggest {
+  "api_key": string;
+  "autosuggest_focus": string;
+  "base_url": string;
+  "callback": string;
+  "clip_to_bounding_box": string;
+  "clip_to_circle": string;
+  "clip_to_country": string;
+  "clip_to_polygon": string;
+  "headers": string;
+  "initial_value": string;
+  "invalid_address_error_message": string;
+  "language": string;
+  "n_focus_results": number;
+  "name": string;
+  "return_coordinates": boolean;
+  "typeahead_delay": number;
+  //"variant"//: Variant; // Can't find Variant...
+}
+
+export interface What3wordsSymbol {
+  "color": string;
+  "size": number;
+}
 
 
 // -----------------------------------------------------------------------------------------
@@ -59,11 +59,61 @@ export class What3Words {
 
   private static API_KEY = "YBIMPRHH" // For RangerTrak  // TODO: Hide as a private key
 
+  // Components.What3wordsAddress
+  // Components.What3wordsAutosuggest
+  // Components.What3wordsSymbol
+
+
   constructor(
     //@Inject(DOCUMENT) private document: Document
-    ) {
+  ) {
+
 
   }
+
+  reg = W3W_REGEX
+  w3w = W3W
+
+  a: What3wordsAddress = {"iconColor": "red",
+  "link": false,
+  "showTooltip": true,
+  "size": 5,
+  "target": "target",
+  "textColor": "blue",
+  "tooltip": true,
+  "tooltipLocation": "top",
+  "words": "///existed.unanswered.articulated"}
+
+  b: What3wordsAutosuggest = {
+    "api_key": What3Words.API_KEY,
+  "autosuggest_focus": "existed.unanswered.articulated",
+  "base_url": "base",
+  "callback": "callback()",
+  "clip_to_bounding_box": "",
+  "clip_to_circle": "",
+  "clip_to_country": "US",
+  "clip_to_polygon": "",
+  "headers": "",
+  "initial_value": "",
+  "invalid_address_error_message": "Bad Address...",
+  "language": "English",
+  "n_focus_results": 2,
+  "name": "John",
+  "return_coordinates": false,
+  "typeahead_delay": 5,
+  //"variant"//: Variant; // Can't find Variant...
+  }
+
+  c: What3wordsSymbol = {"color": "green",
+    "size": 7}
+
+  // reg
+  // w3w
+
+  test() {
+    // let x = W3W.
+  }
+
 
   static settings = {
     "async": true,
@@ -162,7 +212,7 @@ export class What3Words {
 
 
 
- getGrid() {
+  getGrid() {
     /**
    * Returns a section of the what3words grid
    * @param {Object} boundingBox - The bounding box for the grid to return

@@ -54,7 +54,7 @@
 
     Street Address, +Code, or What.3.Words:
     <input [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
-      type="text" formControlName="address"
+      type="text" formControlName="address"  id="addressCtrl"
       title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." size="40"
       placeholder="Address" (change)="this.addressCtrlChanged('addr')"> (optional)
 

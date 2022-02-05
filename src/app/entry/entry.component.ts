@@ -143,19 +143,17 @@ export class EntryComponent implements OnInit {
 
     // On Location/Address Change subscriptions
     if (this.entryDetailsForm) {
-      this.entryDetailsForm.get("lat")?.valueChanges.subscribe(x => {
+      // this.addressCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
+      this.entryDetailsForm.get("lat")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         console.log('########  latitude value changed: ' + x)
       })
-
-      this.entryDetailsForm.get("long")?.valueChanges.subscribe(x => {
+      this.entryDetailsForm.get("long")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         console.log('##########  longitude value changed: ' + x)
       })
-
-      this.entryDetailsForm.get("address")?.valueChanges.subscribe(x => {
+      this.entryDetailsForm.get("address")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         console.log('#######  address value changed: ' + x)
       })
     }
-
     console.log(`EntryForm ngOnInit completed at ${Date()}`)
   }
 
@@ -182,6 +180,7 @@ export class EntryComponent implements OnInit {
       status: [FieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
       note: ['']
     })
+    // Allow getting new OnCha ngeUpdates - or use the subscription?!
     this.entryDetailsForm.markAsPristine();
     this.entryDetailsForm.markAsUntouched();
   }
@@ -413,16 +412,17 @@ export class EntryComponent implements OnInit {
     // this.form.markAsUntouched();
     if (this.entryDetailsForm.get('address')?.touched) {
       console.log('address WAS touched')
-      this.entryDetailsForm.get('address')?.markAsUntouched
+      //this.entryDetailsForm.get('address')?.markAsUntouched
     }
     if (this.entryDetailsForm.get('address')?.dirty) {
       console.log('address WAS dirty')
-      this.entryDetailsForm.get('address')?.markAsPristine
+      //this.entryDetailsForm.get('address')?.markAsPristine
     }
 
     switch (what) {
       case 'addr':
 
+        this.chkAddresses()
         // if new PlaceId(??? or plus code or ???), then call:
         // TODO: this.geocoder.getLatLngAndAddressFromPlaceID( PlaceID)
 
@@ -451,19 +451,62 @@ export class EntryComponent implements OnInit {
           //addrLabel.markAsPristine()
           //addrLabel. .markAsUntouched()
         }
-        this.UpdateLocation( {lat: llat, lng: llng}, `Time: ${Date.now} at Lat: ${llat}, Lng: ${llng}, street: ${newAddress}`)
+        this.UpdateLocation({ lat: llat, lng: llng }, `Time: ${Date.now} at Lat: ${llat}, Lng: ${llng}, street: ${newAddress}`)
         break;
       default:
         console.log(`UNEXPECTED ${what} received in AddressCtrlChanged()`)
         break;
     }
-
-
     console.log('addressCtrlChanged done') // TODO: No formControlName="addressCtrl"!!!!
   }
 
+  chkAddresses() {
+
+    /* if JSON.stringify(addr): gets
+    TypeError: Converting circular structure to JSON
+        --> starting at object with constructor 'TView'
+        |     property 'blueprint' -> object with constructor 'LViewBlueprint'
+        --- index 1 closes the circle
+        at JSON.stringify (<anonymous>)
+        at EntryComponent.chkAddresses (entry.component.ts:465:47)
+        at EntryComponent.addressCtrlChanged (entry.component.ts:424:14)
+        */
+
+
+
+    let tWords // = document.getElementById("addresses")!.innerText
+    let addr = document.getElementById("addressCtrl") as HTMLInputElement// ?.innerText
+    console.log(`Looking into address: ${addr}`)
+    if (addr == null)
+      return
+    //debugger
+    let addrText = addr.value;
+    console.log(`Got Street address: ${addrText}`)
+    if (addrText.length) {
+      if (addrText.includes("+")) {
+        console.log("Got PCode: " + addrText)
+        this.chkPCodes()
+      } else {
+        tWords = addrText.split(".")
+        if (tWords.length == 3) {
+          console.log("Got What 3 Words: " + addrText)
+          this.chk3Words()
+        } else {
+          let result = this.chkStreetAddress(addrText)
+          let addrLabel = document.getElementById("addressLabel") as HTMLLabelElement
+          if (result.position) {
+            addrLabel.innerText
+              = `STREET ADDRESS: Formatted address: ${result.address}; Google PlaceID: ${result.placeId}; Position: ${result.position}; partial_match: ${result.partial_match}; placeId: ${result.placeId}; plus_code: ${result.plus_code}`
+          } else {
+            addrLabel.innerText = `STREET ADDRESS: unable to geocode. ${result.address}`
+          }
+        }
+      }
+    }
+  }
+
   updateCoords(latDD: number, lngDD: number) {
-    console.log("New Coordinates: lat:" + latDD + "; lng:" + lngDD);
+    console.log("New Coordinates: lat:" + latDD + "; lng:" + lngDD)
 
     document.getElementById("latitudeDD")!.innerText = latDD.toString()
     document.getElementById("longitudeDD")!.innerText = lngDD.toString()
@@ -481,8 +524,8 @@ export class EntryComponent implements OnInit {
     document.getElementById("longitudeS")!.innerText = lngDMS.sec.toString()
 
     let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
-    console.log("updateCoords: Encode returned PlusCode: " + pCode);
-    let fullCode;
+    console.log("updateCoords: Encode returned PlusCode: " + pCode)
+    let fullCode
     if (pCode.length != 0) {
 
       if (OpenLocationCode.isValid(pCode)) {
@@ -519,8 +562,8 @@ export class EntryComponent implements OnInit {
       let result = this.geocoder.getLatLngAndAddressFromPlaceID(pCode)
       if (result.position) {
         document.getElementById("addressLabel")!.innerHTML = result.address
-        document.getElementById("lat")!.innerHTML = result.position.lat
-        document.getElementById("long")!.innerHTML = result.position.long
+        document.getElementById("lat")!.innerHTML = JSON.stringify(result.position)
+        document.getElementById("long")!.innerHTML = JSON.stringify(result.position)
       }
 
 
@@ -608,36 +651,15 @@ export class EntryComponent implements OnInit {
   }
   //#endregion
 
-  chkAddresses_UNUSED() {
-    let tWords // = document.getElementById("addresses")!.innerText
-    let addr = document.getElementById("addresses") // ?.innerText
-    console.log("Got address: " + addr)
-    if (addr == null)
-      return
-    let addrText = addr.innerText //value;
-    console.log("Got address: " + addrText)
-    if (addrText.length)
-      if (addrText.includes("+")) {
-        this.chkPCodes()
-      } else {
-        tWords = addrText.split(".")
-        if (tWords.length == 3) {
-          this.chk3Words()
-        } else {
-          let result = this.geocoder.isValidAddress(addrText)
-          //  TODO: Untested/not complete
-          console.log(`geocoder.isValidAddress returned: ${JSON.stringify(result)} ++++++++++++++++++++++`)
-          //this.chkStreetAddress()
-        }
-      }
+
+  chkStreetAddress(addrText: string) {
+    //https://developers.google.com/maps/documentation/geocoding/requests-geocoding
+    console.log("Got street address to check: " + addrText)
+    // Type 'GeocoderResult' must have a '[Symbol.iterator]()' method that returns an iterator.
+    //let result:google.maps.GeocoderResult = this.geocoder.isValidAddress(addrText)
+    return this.geocoder.isValidAddress(addrText)
   }
 
-  /*
-  chkStreetAddress_UNUSED() {
-    //https://developers.google.com/maps/documentation/geocoding/requests-geocoding
-    console.log("Got street address to check")
-  }
-  */
 
   // ---------------- MISC HELPERS -----------------------------
   displayHide(htmlElementID: string) {
@@ -653,6 +675,4 @@ export class EntryComponent implements OnInit {
       e.style.visibility = "visible";
     }
   }
-
-
 }
