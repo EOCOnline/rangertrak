@@ -52,43 +52,30 @@
 
     <h2 class="elegant">Where</h2>
 
-    Street Address, +Code, or What.3.Words:
-    <input [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
-      type="text" formControlName="address"  id="addressCtrl"
-      title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." size="40"
-      placeholder="Address" (change)="this.addressCtrlChanged('addr')"> (optional)
-
-    <!-- formControlName="addressCtrl"
-
-      input name="addresses" id="addresses" type="text" size="15" value=""
-      placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
-      onchange="chkAddresses()"> (optional) -->
-    <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
-    <br>
-    <span id="addressLabel" value="">addressLabel</span>&nbsp;&nbsp;
-    <span id="pCodeGlobal">pCodeGlobal</span>
-    <br>
-
-    <!--div
-    *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
-    class="text-sm text-danger">address is required</div  -->
-    <!--/div-->
-    <br>
-
-
     <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude:
       <input
-        [class.border-danger]="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.invalid"
-        type="number" formControlName="lat" placeholder="Latitude" (change)="this.addressCtrlChanged('lat')"
-        name="latitudeDD" id="latitudeDD" step="0.001" size="12" min="-180" max="180" id="enter__Lat">
+      [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
+      type="number" formControlName="latI" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
+      name="latitudeDDI" id="latitudeDDI"  size="4" min="-180" max="180" id="enter__LatI">
+
+      <span *ngIf="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
+        class="text-sm text-danger">lat is required
+      </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
+
+
+      <input
+        [class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
+        type="number" formControlName="latD" placeholder="LatitudeD" (change)="this.addressCtrlChanged('latD')"
+        name="latitudeDDD" id="latitudeDDD" step="0.001" size="8" min="0" max="99999" id="enter__LatD">
 
         <!--onchange="DDCoordsChanged()"
       {{lat | number:'1.4-5'}}
       {{entryDetailsForm.get(lat) | number:'1.4-5'}}
         -->
-      <span *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
+      <span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')"
         class="text-sm text-danger">lat is required
       </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
+
 
       <input name="latitudeQ" id="latitudeQ" type="text" value="N" size="1" pattern="'e','E','w','W'" title="E or W"
         onchange="DMSCoordsChanged()"> <!-- Quadrant -->
@@ -122,6 +109,31 @@
         onchange="DMSCoordsChanged()">"
       <span title="Degrees Minute Seconds">DMS</span>
     </div>
+
+    Street Address, +Code, or What.3.Words:
+    <input [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
+      type="text" formControlName="address"  id="addressCtrl"
+      title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." size="40"
+      placeholder="Address" (change)="this.addressCtrlChanged('addr')"> (optional)
+
+    <!-- formControlName="addressCtrl"
+
+      input name="addresses" id="addresses" type="text" size="15" value=""
+      placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
+      onchange="chkAddresses()"> (optional) -->
+    <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
+    <br>
+    <span id="addressLabel" value="">addressLabel</span>&nbsp;&nbsp;
+    <span id="pCodeGlobal">pCodeGlobal</span>
+    <br>
+
+    <!--div
+    *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
+    class="text-sm text-danger">address is required</div  -->
+    <!--/div-->
+    <br>
+
+
     <!--br-->
 
     <!--div class="input-group"><span class="strongish">Derived Addresses:</span>

@@ -21,7 +21,7 @@
 <div *ngIf="apiLoaded">
   <!-- | async -->
   <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
-    (mapClick)="addMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="addTrafficLayer()"
+    (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="addTrafficLayer()"
     (mapInitialized)="onMapInitialized($event)">
 
     <div id="markerDiv" #markerDiv *ngFor="let marker of markers">

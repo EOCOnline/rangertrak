@@ -350,7 +350,7 @@ export class RangersComponent implements OnInit {
     let dt = new Date()
     return {
       columnSeparator: this.getSeperatorValue('columnSeparator'),
-      fileName: `RangersExport.${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,
+      fileName: `RangersExport.${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`, // ONLY month is zero based!
     }
   }
 

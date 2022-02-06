@@ -23,6 +23,7 @@ export type SettingsType = {
   markerSize: number,
   markerShape: number,
   defRangerStatus: number
+  allowManualPinDrops: boolean,
   debugMode: boolean,
   logToPanel: boolean,
   logToConsole: boolean
@@ -80,12 +81,13 @@ export class SettingsService {
       note: "values set by code, please edit them to serve you!",
       defLat: 47.4472,
       defLong: -122.4627,  // Vashon EOC!
-      defZoom: 12,
+      defZoom: 14,
       defPlusCode: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
       w3wLocale: "Vashon, WA",
       markerSize: 5,
       markerShape: 1,
       defRangerStatus: 0,
+      allowManualPinDrops: false,
       debugMode: true,
       logToPanel: true,
       logToConsole: true

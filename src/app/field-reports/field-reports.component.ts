@@ -105,7 +105,7 @@ export class FieldReportsComponent implements OnInit {
 
   myMinuteGetter = (params: { data: FieldReportType }) => {
   // performance.now() is better - for elapsed time...
-  let pi: number = 3.14159265359
+  //let pi: number = 3.14159265359
     let dt = new Date(params.data.date).getTime()
     let milliseconds = Date.now() - dt
     let seconds:string = (Math.round(milliseconds / 1000) % 60).toString().padStart(2 , '0')
@@ -257,7 +257,7 @@ export class FieldReportsComponent implements OnInit {
       let dt = new Date()
        return {
         columnSeparator: this.getValue('columnSeparator'),
-        fileName: `FieldReportsExport.${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,
+        fileName: `FieldReportsExport.${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,  // REVIEW: ONLY month is zero based, requires +1?!
       }
     }
 

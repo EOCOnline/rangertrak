@@ -57,8 +57,9 @@ export class SettingsComponent implements OnInit {
       w3wLocale: [this.settings.w3wLocale],
       markerSize: [this.settings.markerSize],
       markerShape: [this.settings.markerShape, Validators.required],
-      defRangerStatus: [this.settings.defRangerStatus], // not shown for editing
-      debugMode: [this.settings.debugMode], // not shown for editing
+      defRangerStatus: [this.settings.defRangerStatus],
+      allowManualPinDrops: [this.settings.allowManualPinDrops],
+      debugMode: [this.settings.debugMode],
       logToPanel: [this.settings.logToPanel], // null or blank for unchecked 'yes'
       logToConsole: [this.settings.logToConsole], // null or blank for unchecked 'check'
     })
@@ -79,6 +80,7 @@ export class SettingsComponent implements OnInit {
       markerSize: this.settingsEditorForm.value.markerSize as number,
       markerShape: this.settingsEditorForm.value.markerShape as number,
       defRangerStatus: this.settingsEditorForm.value.defRangerStatus as number,
+      allowManualPinDrops: this.settingsEditorForm.value.allowManualPinDrops as boolean,
       debugMode: this.settingsEditorForm.value.debugMode as boolean,
       logToPanel: this.settingsEditorForm.value.logToPanel as boolean,
       logToConsole: this.settingsEditorForm.value.logToConsole as boolean,

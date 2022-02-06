@@ -3,7 +3,7 @@
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 import { MatIconModule } from '@angular/material/icon'
 import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone } from '@angular/core';
-import { Map, CodeArea, OpenLocationCode } from '../shared/'
+import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
 import { DOCUMENT, JsonPipe } from '@angular/common';
 //import { MarkerClusterer } from "@google-maps/markerclusterer";
 // import "./style.css";
@@ -84,15 +84,14 @@ export class GmapComponent implements OnInit {    //extends Map
     scrollwheel: true,
     disableDoubleClickZoom: true,
     mapTypeId: 'hybrid',
-    zoom: 12,
-    maxZoom: 20,
+    zoom: 17,
+    maxZoom: 21,
     minZoom: 4,
     draggableCursor: 'crosshair', //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
     //heading: 90,
   }
 
   infowindow = new google.maps.InfoWindow({
-    //content: 'How now Brown cow.',
     maxwidth: "150px",
   });
 
@@ -104,7 +103,9 @@ export class GmapComponent implements OnInit {    //extends Map
   labelIndex = 0;
   infoContent = ''
   apiLoaded //: Observable<boolean>
-  circleCenter: google.maps.LatLngLiteral =   {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong}  // this.Vashon// kahanaRidge
+
+  // next 2 even used?
+  circleCenter: google.maps.LatLngLiteral = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }  // this.Vashon// kahanaRidge
   radius = 10;
 
   fieldReports?: FieldReportType[]
@@ -187,7 +188,7 @@ export class GmapComponent implements OnInit {    //extends Map
       */
     this.displayAllMarkers()
     // REVIEW: Doesn't work with NO Markers?
-    console.log (`Setting Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLong}, zoom: ${SettingsService.Settings.defZoom}`)
+    console.log(`Setting Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLong}, zoom: ${SettingsService.Settings.defZoom}`)
     this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong })
     this.gMap.setZoom(SettingsService.Settings.defZoom)
     this.fitBounds()
@@ -200,7 +201,7 @@ export class GmapComponent implements OnInit {    //extends Map
     //var bounds = new google.maps.LatLngBounds(southWest,northEast);
     this.fieldReportService.recalcFieldBounds()
     let bounds = this.fieldReportService.getFieldReportBounds()
-    console.log (`Fitting bounds= :${JSON.stringify(bounds)}`)
+    console.log(`Fitting bounds= :${JSON.stringify(bounds)}`)
     this.gMap?.fitBounds(bounds)
   }
 
@@ -258,27 +259,28 @@ export class GmapComponent implements OnInit {    //extends Map
     console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
   }
 
-  addMarkerEvent(event: google.maps.MapMouseEvent) {
-    if (event.latLng) {
-      this.addMarker(event.latLng)
-    } else {
-      console.log(`addMarker FAILED`)
-
+  addManualMarkerEvent(event: google.maps.MapMouseEvent) {
+    if (SettingsService.Settings.allowManualPinDrops) {
+      if (event.latLng) {
+        this.addMarker(event.latLng)
+      } else {
+        console.log(`addMarker FAILED`)
+      }
     }
   }
 
   addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
     console.log(`addMarker`)
 
-    if (infoContent=="") {
-        infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}`
+    if (infoContent == "") {
+      infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}`
     }
-    if (title=="") {
-        title=infoContent
+    if (title == "") {
+      title = infoContent
     }
-        labelText = "grade"
-        //icon = "rocket"
-        fontSize = "20px"
+    labelText = "grade"
+    //icon = "rocket"
+    fontSize = "20px"
     /*
         //icon = "rocket"
         animation = google.maps.Animation.DROP
@@ -291,7 +293,7 @@ export class GmapComponent implements OnInit {    //extends Map
     //https://fonts.google.com/icons
     if (latLng) {
       let dt = new Date();
-      let time = `${this.zeroFill(dt.getHours(), 2)}:${this.zeroFill(dt.getMinutes(), 2)}:${this.zeroFill(dt.getSeconds(), 2)}` // :${this.zeroFill(dt.getMilliseconds(), 4)}`
+      let time = `${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}` // :${Utility.zeroFill(dt.getMilliseconds(), 4)}`
       /* REVIEW:
        let lat:number = event.latLng.lat  // gets:  Type '() => number' is not assignable to type 'number'.
        let lng:number = event.latLng.lng
@@ -347,13 +349,6 @@ export class GmapComponent implements OnInit {    //extends Map
       console.log("event.latLng is BAD; can not add marker..")
     }
     //this.refreshMarkerDisplay()
-  }
-
-  zeroFill(integ: number, lngth: number) {
-    var strg = integ.toString();
-    while (strg.length < lngth)
-      strg = "0" + strg;
-    return strg;
   }
 
   displayAllMarkers() {

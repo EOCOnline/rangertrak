@@ -111,12 +111,26 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       startWith(''),
       map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
     )
+    console.log (`constructor: ranger ${(this.filteredRangers)}`) //JSON.stringify
+
+    // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
+    // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
   }
 
   private _filterRangers(value: string): RangerType[] {
+    console.log (`_filterRangers  value changed: ${value}`)
+
     const filterValue = value.toLowerCase()
     this.entryDetailsForm.value.callsign = filterValue
-    return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
+      return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
+    /* NEW:
+      this.entryDetailsForm.value.callsign = filterValue
+      return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
+    */
+    /* OLD:
+      this.entryDetailsForm.controls['ranger'].setValue(filterValue) // TODO: MAT input field not automatically set into entryForm
+      return this.rangers.filter(ranger => ranger.callsign.toLowerCase().includes(filterValue));
+    */
   }
 
   ngOnInit(): void {

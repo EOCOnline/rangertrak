@@ -16,7 +16,7 @@
     <br>
 
     <div class="input-group">Notes for this group of settings:
-      <textarea formControlName="note" id="" cols="30" rows="1" placeholder="Enter Any Notes"></textarea>
+      <textarea formControlName="note" id="" cols="50" rows="1" placeholder="Description of this group of settings"></textarea>
     </div>
     <br>
 
@@ -70,6 +70,17 @@
         class="text-sm text-danger">plusCode is required</div>
     </div>
 
+    <h2>Markers</h2>
+
+    <div class="input-group">
+      <input
+        [class.border-danger]="settingsEditorForm.get('allowManualPinDrops')?.touched && settingsEditorForm.get('allowManualPinDrops')?.invalid"
+        type="checkbox" formControlName="allowManualPinDrops" placeholder="allowManualPinDrops">
+      <div
+        *ngIf="settingsEditorForm.get('allowManualPinDrops')?.touched && settingsEditorForm.get('debugMallowManualPinDropsode')?.hasError('required')"
+        class="text-sm text-danger">allowManualPinDrops is required</div>
+        Allow Manual Pin Drops on Google & Leaflet Maps (default: false)
+    </div>
 
     <!--h2>Markers</h2>
 
