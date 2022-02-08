@@ -36,6 +36,7 @@
 
 
     <div id="enter__SmallMap">
+      <h2>Current Entry Location</h2>
 
       <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
         (mapMousemove)="onMapMouseMove($event)" (mapInitialized)="onMapInitialized($event)"
@@ -50,30 +51,48 @@
     <br>
 
 
-    <h2 class="elegant">Where</h2>
-
-    <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude:
-      <input
-      [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
-      type="number" formControlName="latI" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
-      name="latitudeDDI" id="latitudeDDI"  size="4" min="-180" max="180" id="enter__LatI">
-
-      <span *ngIf="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
-        class="text-sm text-danger">lat is required
-      </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
-
-
-      <input
-        [class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
-        type="number" formControlName="latD" placeholder="LatitudeD" (change)="this.addressCtrlChanged('latD')"
-        name="latitudeDDD" id="latitudeDDD" step="0.001" size="8" min="0" max="99999" id="enter__LatD">
+    <svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
+      <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
+  </svg>
+      <!-- icons:  https://dev.materialdesignicons.com/getting-started/angular
+      https://iconify.design/
+      https://dev.materialdesignicons.com/getting-started
+      style="width:15px;height:15px"
+      {{mdiAccount}} dddfdd {{mdiIformationOutline}}
+    -->
+    <fa-icon [icon]="faMapMarkedAlt"></fa-icon>
+  <!-- https://fontawesome.com/v5.15/icons
+<img src="../../assets/icons/information-outline.png"
+    icon path="mdiAccount"></icon>
+  <icon path="mdiInformationOutline"></icon-->
 
         <!--onchange="DDCoordsChanged()"
       {{lat | number:'1.4-5'}}
       {{entryDetailsForm.get(lat) | number:'1.4-5'}}
         -->
-      <span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')"
+
+    <h2 class="elegant">Where</h2>
+    <span>(will update map to the right)</span>
+
+
+    <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude <i class="fas fa-info-circle" title= "Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon"></i>:
+      <input
+      [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
+      type="number" formControlName="latI" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
+      name="latitudeDDI" id="latitudeDDI"  size="2" min="-180" max="180" id="enter__LatI">
+
+
+      <span *ngIf="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
         class="text-sm text-danger">lat is required
+      </span>.
+      <input
+        [class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
+        type="number" formControlName="latD" placeholder="LatitudeD" (change)="this.addressCtrlChanged('latD')"
+        name="latitudeDDD" id="latitudeDDD" step="0.001" size="8" min="0" max="99999" id="enter__LatD">
+
+      <span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')
+                  && entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
+        class="text-sm text-danger">Latitude is required
       </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
 
 
@@ -89,14 +108,14 @@
     </div>
 
 
-    <div class="input-group">
-      Longitude:
-      <input [class.border-danger]="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.invalid"
-        type="number" formControlName="long" placeholder="Longitude" (change)="this.addressCtrlChanged('lng')"
+
+    <div class="input-group">Longitude<img src="../../assets/icons/information-outline.png" title= "Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon"/>:
+      <input [class.border-danger]="entryDetailsForm.get('lng')?.touched && entryDetailsForm.get('lng')?.invalid"
+        type="number" formControlName="lng" placeholder="Longitude" (change)="this.addressCtrlChanged('lng')"
         name="longitudeDD" id="longitudeDD" step="0.001" size="12" min="-180" max="180" id="enter__Long">
       <!-- onchange="DDCoordsChanged()" -->
-      <span *ngIf="entryDetailsForm.get('long')?.touched && entryDetailsForm.get('long')?.hasError('required')"
-        class="text-sm text-danger">long is required
+      <span *ngIf="entryDetailsForm.get('lng')?.touched && entryDetailsForm.get('lng')?.hasError('required')"
+        class="text-sm text-danger">longitude is required
       </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
 
       <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"

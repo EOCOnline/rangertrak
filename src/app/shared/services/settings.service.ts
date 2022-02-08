@@ -65,7 +65,7 @@ export class SettingsService {
     if (needSettings) { SettingsService.ResetDefaults() }
 
     //REVIEW:
-    SettingsService.Settings.version = '0.11.34'
+    SettingsService.Settings.version = '0.11.35'
   }
 
   static ResetDefaults() {
@@ -77,7 +77,7 @@ export class SettingsService {
       id: 0,  // FUTURE: allow different setts of settings (e.g., per location)???
       name: "standard hardcoded settings",
       application: "RangerTrak",
-      version: '0.11.34', //TODO: Auto update this...
+      version: '0.11.35', //TODO: Auto update this...
       note: "values set by code, please edit them to serve you!",
       defLat: 47.4472,
       defLong: -122.4627,  // Vashon EOC!

@@ -63,6 +63,17 @@ h3 {
   -moz-appearance: textfield;
 }
 
+#latitudeDDI,
+#longitudeDDI {
+  width: 30px;
+}
+
+#latitudeDDD,
+#longitudeDDD {
+  width: 80px;
+}
+
+
 #enter__Lat,
 #enter__Long {
   width: 80px;

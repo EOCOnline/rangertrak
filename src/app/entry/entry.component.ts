@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common'
-import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
+import { Component, Inject, OnInit, ViewChild, isDevMode, Input } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MatInputModule } from '@angular/material/input'
@@ -16,7 +16,37 @@ import { FieldReportService, FieldReportStatuses, RangerService, RangerType, Set
 import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
 import { LatLng } from 'leaflet';
 
+import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { mdiAccount, mdiInformationOutline} from '@mdi/js';
+//import { lookupCollections, locate } from '@iconify/json'; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
+
+
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
+
+
+
+
+
+@Component({
+  selector: 'icon',
+  template: `
+    <svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
+        <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
+    </svg>
+  `
+})
+export class IconComponent {
+  @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
+}
+
+
+
+
+
+
+
+
+
 
 @Component({
   selector: 'rangertrak-entry',
@@ -25,6 +55,13 @@ const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
   providers: [RangerService, FieldReportService, SettingsService, TeamService]
 })
 export class EntryComponent implements OnInit {
+
+  @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
+
+  faMapMarkedAlt = faMapMarkedAlt;
+  mdiAccount: string = mdiAccount;
+  mdiInformationOutline: string = mdiInformationOutline;
+
 
   // ------------------ MAP STUFF  ------------------
   // imports this.map as a GoogleMap which is the Angular wrapper around a google.maps.Map...
@@ -151,7 +188,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       long: [this.settings.defLong, Validators.required], //Validators.minLength(4)
       date: [new Date()],
       status: [FieldReportStatuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
-      note: ['']
+      note: [mdiInformationOutline]
     })
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
