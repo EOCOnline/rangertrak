@@ -36,6 +36,7 @@ chrome-profiler-events*.json
 
 # misc
 /docs
+/src/assets/imgs/REW
 /.angular/cache
 /.sass-cache
 /connect.lock
