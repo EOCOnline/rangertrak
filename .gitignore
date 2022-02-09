@@ -4,6 +4,10 @@
 secrets.json
 RangerTrak-secrets.json
 
+# personnel info
+/src/assets/imgs/REW
+/src/assets/data/ranger*.json
+
 # compiled output
 /dist
 /tmp
@@ -36,7 +40,6 @@ chrome-profiler-events*.json
 
 # misc
 /docs
-/src/assets/imgs/REW
 /.angular/cache
 /.sass-cache
 /connect.lock
