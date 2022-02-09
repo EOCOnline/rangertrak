@@ -10,7 +10,7 @@ import { Observable, debounceTime, map, startWith, switchMap } from 'rxjs'
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 
 import { AlertsComponent } from '../alerts/alerts.component'
-import { FieldReportService, FieldReportStatuses, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
+import { FieldReportService, FieldReportStatusType, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
 
 //import { addressType } from '../lmap/lmap.component' // BUG:
 import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
@@ -19,12 +19,21 @@ import { LatLng } from 'leaflet';
 import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { mdiAccount, mdiInformationOutline} from '@mdi/js';
 //import { lookupCollections, locate } from '@iconify/json'; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
-
+import {DomSanitizer} from '@angular/platform-browser';
+import {MatIconRegistry} from '@angular/material/icon';// https://material.angular.io/components/icon/examples
 
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
 
-
+const THUMBUP_ICON =
+  `
+  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px">
+    <path d="M0 0h24v24H0z" fill="none"/>
+    <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.` +
+  `44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5` +
+  `1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z"/>
+  </svg>
+`
 
 
 @Component({
@@ -43,11 +52,6 @@ export class IconComponent {
 
 
 
-
-
-
-
-
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
@@ -58,9 +62,10 @@ export class EntryComponent implements OnInit {
 
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
 
-  faMapMarkedAlt = faMapMarkedAlt;
-  mdiAccount: string = mdiAccount;
-  mdiInformationOutline: string = mdiInformationOutline;
+  faMapMarkedAlt = faMapMarkedAlt
+  faInfoCircle = faInfoCircle
+  mdiAccount: string = mdiAccount
+  mdiInformationOutline: string = mdiInformationOutline
 
 
   // ------------------ MAP STUFF  ------------------
@@ -99,7 +104,7 @@ export class EntryComponent implements OnInit {
   addressCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
-  fieldReportStatuses
+  fieldReportStatuses: FieldReportStatusType[] =[]
   settings
   entryDetailsForm!: FormGroup
   //w3w = new What3Words()
@@ -118,10 +123,20 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     private formBuilder: FormBuilder,
     private rangerService: RangerService,
     private fieldReportService: FieldReportService,
-    //private settingsService: SettingsService,
+    private settingsService: SettingsService,
     // private teamService: TeamService,
     private _snackBar: MatSnackBar,
+
+    iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, // for svg mat icons
+
     @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
+
+
+    // https://fonts.google.com/icons && https://material.angular.io/components/icon
+    // Note that we provide the icon here as a string literal here due to a limitation in
+    // Stackblitz. If you want to provide the icon from a URL, you can use:
+    iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
+    //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
 
     this.rangers = rangerService.GetRangers() // TODO: or getActiveRangers?!
 
@@ -133,7 +148,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     }
 
     this.fieldReportService = fieldReportService
-    this.fieldReportStatuses = FieldReportStatuses
+    this.fieldReportStatuses = settingsService.getFieldReportStatuses() // TODO: Need to update if user modified settings page: SUBSCRIBE!!
     this.settings = SettingsService.Settings
 
     // NOTE: workaround for onChange not working...
@@ -187,8 +202,8 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       lat: [this.settings.defLat, Validators.required], //Validators.minLength(4)
       long: [this.settings.defLong, Validators.required], //Validators.minLength(4)
       date: [new Date()],
-      status: [FieldReportStatuses[0]],   // TODO: Allow changing list & default of statuses in settings?!
-      note: [mdiInformationOutline]
+      status: [this.fieldReportStatuses[this.settings.defRangerStatus]],
+      note: ['']
     })
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
@@ -234,7 +249,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
         //Validators.minLength(4)
       ],
       date: [new Date()],
-      status: [FieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
+      status: [this.fieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
       note: ['']
     })
     // Allow getting new OnCha ngeUpdates - or use the subscription?!

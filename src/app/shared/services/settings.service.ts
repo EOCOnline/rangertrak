@@ -29,15 +29,20 @@ export type SettingsType = {
   logToConsole: boolean
 }
 
+export type FieldReportStatusType = { status: string, color: string }
+
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
   static storageLocalName = 'appSettings'
   static secrets: SecretType[]
   static Settings: SettingsType
   static debugMode: any;
+  static localStorageFieldReportStatusName = 'fieldReportStatuses'
+   fieldReportStatuses: FieldReportStatusType[] = []
 
   constructor() {
     console.log("Contructing SettingsService: once or repeatedly?!--------------") // XXX
+
 
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
     let secretWorkaround = JSON.stringify(secrets)
@@ -45,11 +50,11 @@ export class SettingsService {
     //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
     // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key
 
+
     // populate SettingsService.Settings
     // BUG: Doesn't auto-update version & other settings not exposed!!!
     let localStorageSettings = localStorage.getItem(SettingsService.storageLocalName)
-
-    let needSettings = SettingsService.Settings == undefined
+    let needSettings =  SettingsService.Settings==undefined
     if (needSettings) {
       console.log("Get Settings...")
       try {
@@ -63,9 +68,25 @@ export class SettingsService {
       }
     }
     if (needSettings) { SettingsService.ResetDefaults() }
-
     //REVIEW:
     SettingsService.Settings.version = '0.11.35'
+
+    let localStorageFieldReportStatuses = localStorage.getItem(SettingsService.localStorageFieldReportStatusName)
+    let needStatuses =  this.fieldReportStatuses==undefined
+    if (needStatuses) {
+      console.log("Get Settings...")
+      try {
+        if (localStorageFieldReportStatuses != null && localStorageFieldReportStatuses.indexOf("status") > 0) {
+          this.fieldReportStatuses = JSON.parse(localStorageFieldReportStatuses)
+          console.log("Initialized fieldreport statuses from localstorage")
+          needStatuses = false
+        }
+      } catch (error: any) {
+        console.log(`localstorage App Settings i.e., ${localStorageSettings} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
+      }
+    }
+    if (needSettings) { this.ResetFieldReportStatusDefaults() }
+
   }
 
   static ResetDefaults() {
@@ -86,12 +107,24 @@ export class SettingsService {
       w3wLocale: "Vashon, WA",
       markerSize: 5,
       markerShape: 1,
-      defRangerStatus: 0,
+      defRangerStatus: 0, // TODO: Allow editing this
       allowManualPinDrops: false,
       debugMode: true,
       logToPanel: true,
       logToConsole: true
     }
+  }
+
+  // TODO: Use a Map instead: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map#objects_vs._maps
+  ResetFieldReportStatusDefaults() {
+    this.fieldReportStatuses = [           // TODO: Allow editing this
+      { status: 'Normal', color: '' },  // Often the default value: see SettingsService.defRangerStatus
+      { status: 'Need Rest', color: 'yellow' },
+      { status: 'Urgent', color: 'red' },
+      { status: 'Objective Update', color: 'aqua' },
+      { status: 'Check-in', color: 'grey' },
+      { status: 'Check-out', color: 'dark-grey' }
+    ]
   }
 
   static Update(newSettings: SettingsType) {
@@ -100,7 +133,17 @@ export class SettingsService {
     console.log("Updated Application Settings to " + JSON.stringify(newSettings))
   }
 
-  LocalStorageVoyeur() {
+  public getFieldReportStatuses() {
+    return this.fieldReportStatuses
+  }
+
+  updateFieldReportStatus(newStatuses: FieldReportStatusType[]) {
+    // TODO: any validation...
+    localStorage.setItem(SettingsService.localStorageFieldReportStatusName, JSON.stringify(newStatuses));
+    console.log("Updated FieldReport Statuses to " + JSON.stringify(newStatuses))
+  }
+
+  localStorageVoyeur() {
     let key
     for (var i = 0; i < localStorage.length; i++) {
       key = localStorage.key(i)

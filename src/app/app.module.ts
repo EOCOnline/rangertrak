@@ -1,4 +1,4 @@
-import { FieldReportService, FieldReportSource, FieldReportStatuses, FieldReportType, MarkerService, PopupService, RangerService, RangerStatus, RangerType, SettingsService, SettingsType, ShapeService, TeamService, TeamType } from './shared/services/';
+import { FieldReportService, FieldReportSource, FieldReportStatusType, FieldReportType, MarkerService, PopupService, RangerService, RangerStatus, RangerType, SettingsService, SettingsType, ShapeService, TeamService, TeamType } from './shared/services/';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AgGridModule } from 'ag-grid-angular';

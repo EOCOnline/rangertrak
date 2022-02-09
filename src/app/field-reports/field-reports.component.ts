@@ -1,12 +1,11 @@
 import { Component, Inject, Pipe, PipeTransform, OnInit } from '@angular/core';
-import { FieldReportService, FieldReportType, RangerService, SettingsService, TeamService } from '../shared/services';
+import { FieldReportService, FieldReportType, FieldReportStatusType, RangerService, SettingsService, TeamService } from '../shared/services';
 
 import { DOCUMENT, formatDate } from '@angular/common'
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { FieldReportStatuses } from '../shared/services/field-report.service';
 
-@Pipe({ name: 'myUnusedPipe'})
-export class myUnusedPipe implements PipeTransform{
+@Pipe({ name: 'myUnusedPipe' })
+export class myUnusedPipe implements PipeTransform {
   transform(val: string) {
     return val.toUpperCase()
   }
@@ -44,9 +43,11 @@ onGridReady(params) {
 export class FieldReportsComponent implements OnInit {
 
   fieldReports: FieldReportType[] = []
+  fieldReportStatuses: FieldReportStatusType[] = []
+  private settings
+
   private gridApi: any
   private gridColumnApi
-  private settings
   now: Date
   http: any
   numSeperatorWarnings = 0
@@ -77,6 +78,23 @@ export class FieldReportsComponent implements OnInit {
     floatingFilter: true
   }
 
+  constructor(
+    private formBuilder: FormBuilder,
+    private fieldReportService: FieldReportService,
+    private teamService: TeamService,
+    private rangerService: RangerService,
+    private settingsService: SettingsService,
+    @Inject(DOCUMENT) private document: Document
+  ) {
+    this.now = new Date()
+    this.gridApi = ""
+    this.gridColumnApi = ""
+
+    this.settings = SettingsService
+    this.fieldReportStatuses = settingsService.getFieldReportStatuses() // TODO: Only obtained at construction, won't reflect an update from the settings page??? : SUBSCRIBE!!
+  }
+
+
   myDateGetter = (params: { data: FieldReportType }) => {
     const weekday = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
     let dt = 'unknown date'
@@ -84,11 +102,11 @@ export class FieldReportsComponent implements OnInit {
     //console.log(`Day is: ${d.toISOString()}`)
     //console.log(`WeekDay is: ${d.getDay}`)
 
-    try {
+    try {  // TODO: Use the date pipe instead?
       //weekday[d.getDay()] +
       dt = formatDate(d, 'M-dd HH:MM:ss', 'en-US')
       //console.log(`Day is: ${params.data.date.toISOString()}`)
-    } catch (error:any) {
+    } catch (error: any) {
       dt = `Bad date format: Error name: ${error.name}; msg: ${error.message}`
     }
 
@@ -104,18 +122,18 @@ export class FieldReportsComponent implements OnInit {
   }
 
   myMinuteGetter = (params: { data: FieldReportType }) => {
-  // performance.now() is better - for elapsed time...
-  //let pi: number = 3.14159265359
+    // performance.now() is better - for elapsed time...
+    //let pi: number = 3.14159265359
     let dt = new Date(params.data.date).getTime()
     let milliseconds = Date.now() - dt
-    let seconds:string = (Math.round(milliseconds / 1000) % 60).toString().padStart(2 , '0')
-    let minutes:string = Math.round((milliseconds / (1000*60)) % 60).toString().padStart(2 , '0')
-    let hours = Math.round((milliseconds / (1000*60*60)) % 24);
+    let seconds: string = (Math.round(milliseconds / 1000) % 60).toString().padStart(2, '0')
+    let minutes: string = Math.round((milliseconds / (1000 * 60)) % 60).toString().padStart(2, '0')
+    let hours = Math.round((milliseconds / (1000 * 60 * 60)) % 24);
     return (`${hours}:${minutes}:${seconds}`)
   }
 
   columnDefs = [
-    { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!'},
+    { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!' },
     { headerName: "CallSign", field: "callsign", tooltipField: "team" },
     // { headerName: "Team", field: "team" },
     { headerName: "Address", field: "address", singleClickEdit: true, flex: 50 }, //, maxWidth: 200
@@ -129,22 +147,19 @@ export class FieldReportsComponent implements OnInit {
       headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report',
       valueGetter: this.myMinuteGetter,
     },
-    { headerName: "Status", field: "status", flex: 50,
-    cellStyle: (params: { value: string; }) => {
-      if (params.value === FieldReportStatuses[3]) {
-          return {backgroundColor: 'lightcoral'};
+    {
+      headerName: "Status", field: "status", flex: 50,
+      cellStyle: (params: { value: string; }) => {
+        //this.fieldReportStatuses.forEach(function(value) { (params.value === value.status) ? { backgroundColor: value.color }  : return(null) }
+        for (let i = 0; i < this.fieldReportStatuses.length; i++) {
+          if (params.value === this.fieldReportStatuses[i].status) {
+            return { backgroundColor: this.fieldReportStatuses[i].color }
+          }
+        }
+        return null
       }
-      if (params.value === FieldReportStatuses[6]) {
-        return {backgroundColor: 'lavender'};
-      }
-      if (params.value === FieldReportStatuses[5]) {
-        return {backgroundColor: 'lightgrey'};
-      }
-      return null;
-  }
-
-    //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
-  },
+      //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
+    },
     { headerName: "Note", field: "note", flex: 50 }, //, maxWidth: 300
   ];
 
@@ -160,21 +175,6 @@ export class FieldReportsComponent implements OnInit {
   }
 */
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private fieldReportService: FieldReportService,
-    private teamService: TeamService,
-    private rangerService: RangerService,
-    private settingsService: SettingsService,
-
-    @Inject(DOCUMENT) private document: Document
-  ) {
-    this.now = new Date()
-    this.gridApi = ""
-    this.gridColumnApi = ""
-
-    this.settings = SettingsService.Settings
-  }
 
   ngOnInit(): void {
     console.log("Field Report Form ngInit at ", Date.now)
@@ -188,8 +188,8 @@ export class FieldReportsComponent implements OnInit {
       this.displayHide("enter__Fake--id")
     }
     if (this.gridApi) {
-    this.gridApi.refreshCells()
-    }else {
+      this.gridApi.refreshCells()
+    } else {
       console.log("no this.gridApi yet in ngOnInit()")
     }
   }
@@ -228,86 +228,86 @@ export class FieldReportsComponent implements OnInit {
     params.api.sizeColumnsToFit();
     if (this.gridApi) {
       this.gridApi.refreshCells()
-      }else {
-        console.log("no this.gridApi yet in onFirstDataRendered()")
-      }
+    } else {
+      console.log("no this.gridApi yet in onFirstDataRendered()")
+    }
   }
 
-    // following from https://ag-grid.com/javascript-data-grid/csv-export/
-    getValue(inputSelector: string) {
-      //let selector = this.document.querySelector(inputSelector) as HTMLSelectElement
-      let selector = this.document.getElementById('columnSeparator') as HTMLSelectElement
-      var sel = selector.selectedIndex;
-      var opt = selector.options[sel];
-      var selVal = (<HTMLOptionElement>opt).value;
-      var selText = (<HTMLOptionElement>opt).text
-      // console.log(`Got column seperator text:"${selText}", val:"${selVal}"`)
+  // following from https://ag-grid.com/javascript-data-grid/csv-export/
+  getValue(inputSelector: string) {
+    //let selector = this.document.querySelector(inputSelector) as HTMLSelectElement
+    let selector = this.document.getElementById('columnSeparator') as HTMLSelectElement
+    var sel = selector.selectedIndex;
+    var opt = selector.options[sel];
+    var selVal = (<HTMLOptionElement>opt).value;
+    var selText = (<HTMLOptionElement>opt).text
+    // console.log(`Got column seperator text:"${selText}", val:"${selVal}"`)
 
-      switch (selVal) {
-        case 'none':
-          return;
-        case 'tab':
-          return '\t';
-        default:
-          return selVal;
-      }
+    switch (selVal) {
+      case 'none':
+        return;
+      case 'tab':
+        return '\t';
+      default:
+        return selVal;
     }
+  }
 
-    getParams() {
-      let dt = new Date()
-       return {
-        columnSeparator: this.getValue('columnSeparator'),
-        fileName: `FieldReportsExport.${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,  // REVIEW: ONLY month is zero based, requires +1?!
-      }
+  getParams() {
+    let dt = new Date()
+    return {
+      columnSeparator: this.getValue('columnSeparator'),
+      fileName: `FieldReportsExport.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,  // REVIEW: ONLY month is zero based, requires +1?!
     }
+  }
 
-    onSeperatorChange() {
-      var params = this.getParams();
-      if (params.columnSeparator && this.numSeperatorWarnings++ < this.maxSeperatorWarnings) {
-        alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`)
-      }
+  onSeperatorChange() {
+    var params = this.getParams();
+    if (params.columnSeparator && this.numSeperatorWarnings++ < this.maxSeperatorWarnings) {
+      alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`)
     }
+  }
 
-    onBtnExport() {
-      var params = this.getParams();
-      //console.log(`Got column seperator value "${params.columnSeparator}"`)
-      //console.log(`Got filename of "${params.fileName}"`)
-      //if (params.columnSeparator) {
-      //  alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
-      //}
-      this.gridApi.exportDataAsCsv(params);
-    }
+  onBtnExport() {
+    var params = this.getParams();
+    //console.log(`Got column seperator value "${params.columnSeparator}"`)
+    //console.log(`Got filename of "${params.fileName}"`)
+    //if (params.columnSeparator) {
+    //  alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
+    //}
+    this.gridApi.exportDataAsCsv(params);
+  }
 
-    onBtnClearFieldReports() {
-      this.fieldReportService.deleteAllFieldReports()
-    }
-    onBtnUpdateFieldReports() {
-      this.fieldReportService.UpdateFieldReports()
-    }
+  onBtnClearFieldReports() {
+    this.fieldReportService.deleteAllFieldReports()
+  }
+  onBtnUpdateFieldReports() {
+    this.fieldReportService.UpdateFieldReports()
+  }
 
-    onBtnImportFieldReports() {
-      alert(`onBtnImportFieldReports is unimplemented`)
-    }
+  onBtnImportFieldReports() {
+    alert(`onBtnImportFieldReports is unimplemented`)
+  }
 
-    generateFakeFieldReports(num = this.nFakes) {
-      this.fieldReportService.generateFakeData(num)
-      console.log(`Generated ${num} FAKE Field Reports`)
-      //window.location.reload() //TODO: OK?!
-    }
+  generateFakeFieldReports(num = this.nFakes) {
+    this.fieldReportService.generateFakeData(num)
+    console.log(`Generated ${num} FAKE Field Reports`)
+    //window.location.reload() //TODO: OK?!
+  }
 
-    displayHide(htmlElementID: string) {
-      let e = this.document.getElementById(htmlElementID)
-      if (e) {
-        e.style.visibility = "hidden";
-      }
+  displayHide(htmlElementID: string) {
+    let e = this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility = "hidden";
     }
+  }
 
-    displayShow(htmlElementID: string) {
-      let e = this.document.getElementById(htmlElementID)
-      if (e) {
-        e.style.visibility = "visible";
-      }
+  displayShow(htmlElementID: string) {
+    let e = this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility = "visible";
     }
+  }
 }
 function floor(arg0: number) {
   throw new Error('Function not implemented.');

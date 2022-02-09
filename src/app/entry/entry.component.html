@@ -13,7 +13,8 @@
       <mat-label>CallSign</mat-label>
 
       <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
-        formControlName="callsign" [matAutocomplete]="auto" (change)="this.CallsignCtrlChanged()" id="enter__Callsign-input">
+        formControlName="callsign" [matAutocomplete]="auto" (change)="this.CallsignCtrlChanged()"
+        id="enter__Callsign-input">
 
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
@@ -36,7 +37,7 @@
 
 
     <div id="enter__SmallMap">
-      <h2>Current Entry Location</h2>
+      <h2>Current Location</h2>
 
       <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
         (mapMousemove)="onMapMouseMove($event)" (mapInitialized)="onMapInitialized($event)"
@@ -51,42 +52,52 @@
     <br>
 
 
-    <svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
+    <!--svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
       <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
-  </svg>
-      <!-- icons:  https://dev.materialdesignicons.com/getting-started/angular
+  </svg-->
+    <!-- icons:  https://dev.materialdesignicons.com/getting-started/angular
       https://iconify.design/
       https://dev.materialdesignicons.com/getting-started
       style="width:15px;height:15px"
       {{mdiAccount}} dddfdd {{mdiIformationOutline}}
+      <fa-icon [icon]="faMapMarkedAlt"></fa-icon>
     -->
-    <fa-icon [icon]="faMapMarkedAlt"></fa-icon>
-  <!-- https://fontawesome.com/v5.15/icons
+
+
+    <!-- https://fontawesome.com/v5.15/icons
 <img src="../../assets/icons/information-outline.png"
     icon path="mdiAccount"></icon>
   <icon path="mdiInformationOutline"></icon-->
 
-        <!--onchange="DDCoordsChanged()"
+    <!--onchange="DDCoordsChanged()"
       {{lat | number:'1.4-5'}}
       {{entryDetailsForm.get(lat) | number:'1.4-5'}}
-        -->
-
-    <h2 class="elegant">Where</h2>
-    <span>(will update map to the right)</span>
 
 
-    <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude <i class="fas fa-info-circle" title= "Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon"></i>:
-      <input
-      [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
-      type="number" formControlName="latI" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
-      name="latitudeDDI" id="latitudeDDI"  size="2" min="-180" max="180" id="enter__LatI">
+
+      https://material.angular.io/components/icon/examples
+    -->
+    <mat-icon aria-hidden="false" aria-label="Example home icon">home</mat-icon>
+    <mat-icon aria-hidden="false" aria-label="info icon">info</mat-icon>
+    <mat-icon aria-hidden="false" aria-label="info icon">hiking</mat-icon>
+    <mat-icon svgIcon="thumbs-up" aria-hidden="false" aria-label="thumbs up SVG icon"></mat-icon>thumbsup
+    <span class="material-icons-two-tone">info</span>
+
+    <h2 class="elegant">Where&nbsp;&nbsp;<span class="small">(updates map to the right)</span></h2>
+
+
+
+    <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude <fa-icon [icon]="faInfoCircle"
+        title="Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon"></fa-icon>:
+      <input [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
+        type="number" formControlName="latI" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
+        name="latitudeDDI" id="latitudeDDI" size="2" min="-180" max="180" id="enter__LatI">
 
 
       <span *ngIf="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
         class="text-sm text-danger">lat is required
       </span>.
-      <input
-        [class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
+      <input [class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
         type="number" formControlName="latD" placeholder="LatitudeD" (change)="this.addressCtrlChanged('latD')"
         name="latitudeDDD" id="latitudeDDD" step="0.001" size="8" min="0" max="99999" id="enter__LatD">
 
@@ -107,9 +118,8 @@
         onchange="DMSCoordsChanged()">"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
     </div>
 
-
-
-    <div class="input-group">Longitude<img src="../../assets/icons/information-outline.png" title= "Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon"/>:
+    <div class="input-group">Longitude<img src="../../assets/icons/information-outline.png"
+        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" />:
       <input [class.border-danger]="entryDetailsForm.get('lng')?.touched && entryDetailsForm.get('lng')?.invalid"
         type="number" formControlName="lng" placeholder="Longitude" (change)="this.addressCtrlChanged('lng')"
         name="longitudeDD" id="longitudeDD" step="0.001" size="12" min="-180" max="180" id="enter__Long">
@@ -131,7 +141,7 @@
 
     Street Address, +Code, or What.3.Words:
     <input [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
-      type="text" formControlName="address"  id="addressCtrl"
+      type="text" formControlName="address" id="addressCtrl"
       title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." size="40"
       placeholder="Address" (change)="this.addressCtrlChanged('addr')"> (optional)
 
@@ -142,7 +152,9 @@
       onchange="chkAddresses()"> (optional) -->
     <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
     <br>
-    <span id="addressLabel" value="">addressLabel</span>&nbsp;&nbsp;
+    <span id="addressLabel" value=""></span>&nbsp;&nbsp;
+    <br>
+
     <span id="pCodeGlobal">pCodeGlobal</span>
     <br>
 

@@ -7,7 +7,7 @@ import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
 import { DOCUMENT, JsonPipe } from '@angular/common';
 //import { MarkerClusterer } from "@google-maps/markerclusterer";
 // import "./style.css";
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatuses } from '../shared/services';
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
 import { ComponentFixture } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';

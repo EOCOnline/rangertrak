@@ -1,14 +1,11 @@
 import { BehaviorSubject, Observer } from 'rxjs';
 import { Injectable, OnInit } from '@angular/core';
 //import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
-import { RangerService, RangerStatus, TeamService } from './index';
+import { RangerService, RangerStatus, SettingsService, FieldReportStatusType, TeamService } from './index';
 import { LatLng } from 'leaflet';
+import { HttpClient } from '@angular/common/http';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
-
-export const FieldReportStatuses = [
-  'None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out'
-]
 
 export type FieldReportType = {
   id: number,
@@ -21,15 +18,21 @@ export type FieldReportType = {
 @Injectable({ providedIn: 'root' })
 export class FieldReportService {
 
+  private uri = 'http://localhost:4000/products'
   private fieldReports: FieldReportType[] = []
+  private fieldReportStatuses: FieldReportStatusType[] = []
   private storageLocalName = 'fieldReports'
   private nextId = 0
   private fieldReportsSubject = new BehaviorSubject<FieldReportType[]>([]);  // REVIEW: Necessary?
   // https://developers.google.com/maps/documentation/javascript/reference/coordinates?hl=en#LatLngBounds
   public bounds = new google.maps.LatLngBounds(new google.maps.LatLng(90, 180), new google.maps.LatLng(-90, -180)) //SW, NE
-  public bound:google.maps.LatLngBoundsLiteral = { east: -180, north: -90, south: 90, west: 180 } //e,n,s,w
+  public bound: google.maps.LatLngBoundsLiteral = { east: -180, north: -90, south: 90, west: 180 } //e,n,s,w
 
-  constructor(private rangerService: RangerService, private teamService: TeamService) {
+  constructor(
+    private rangerService: RangerService,
+    private teamService: TeamService,
+    private settingService: SettingsService,
+    private httpClient: HttpClient) {
 
     console.log("Contructing FieldReportService: once or repeatedly?!--------------") // XXX
     console.log(`FieldReport length= ${this.fieldReports.length}`) // XXX
@@ -39,6 +42,8 @@ export class FieldReportService {
     if (temp != null) {
       this.fieldReports = JSON.parse(temp) || []
     }   */
+
+    this.fieldReportStatuses = this.settingService.getFieldReportStatuses()
 
     // XXX (localStorageFieldReports != null)= true
     this.fieldReports = ((localStorageFieldReports != null) && (localStorageFieldReports.indexOf("licensee") <= 0))
@@ -80,6 +85,15 @@ export class FieldReportService {
     this.fieldReports.push(newReport)
 
     this.UpdateFieldReports();
+
+    console.log("Sending new report to server (via subscription)...");
+
+    // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
+    this.httpClient.post(`${this.uri}/add`, newReport)
+      .subscribe(res => console.log('Subscription of add report to httpClient is Done'));
+
+    console.log("Sent new report to server (via subscription)...");
+
     return newReport;
   }
 
@@ -98,11 +112,14 @@ export class FieldReportService {
     const index = this.findIndex(id);
     this.fieldReports.splice(index, 1);
     this.UpdateFieldReports();
+    // this.nextId-- // REVIEW: is this desired???
   }
 
   deleteAllFieldReports() {
     this.fieldReports = []
     localStorage.removeItem(this.storageLocalName)
+    // this.nextId = 0 // REVIEW: is this desired???
+
   }
 
   UpdateFieldReports() {
@@ -133,13 +150,15 @@ export class FieldReportService {
     // return -1
   }
 
-
   sortFieldReportsByCallsign() {
     return this.fieldReports.sort((n1, n2) => {
       if (n1.callsign > n2.callsign) { return 1 }
       if (n1.callsign < n2.callsign) { return -1 }
       return 0;
     })
+
+    // let sorted = this.fieldReports.sort((a, b) => a.callsign > b.callsign ? 1 : -1)
+    // console.log("SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!")
   }
 
   sortFieldReportsByDate() {
@@ -149,7 +168,6 @@ export class FieldReportService {
       return 0;
     })
   }
-
 
   // ------------------ BOUNDS ---------------------------
   getFieldReportBounds() {
@@ -187,14 +205,14 @@ export class FieldReportService {
     }
 
     console.log(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `)
-    if (east-west<0.005) {
-      east+=0.0025
-      west-=0.0025
+    if (east - west < 0.005) {
+      east += 0.0025
+      west -= 0.0025
       console.log(`recalcFieldBounds BROADENED to E:${east} W:${west} `)
     }
-    if (north-south<0.005) {
-      north+=0.0025
-      south-=0.0025
+    if (north - south < 0.005) {
+      north += 0.0025
+      south -= 0.0025
       console.log(`recalcFieldBounds BROADENED to N:${north} S:${south} `)
     }
 
@@ -213,11 +231,11 @@ export class FieldReportService {
   getBoundFromBounds(bounds: google.maps.LatLngBounds): google.maps.LatLngBoundsLiteral {
     let NE = new google.maps.LatLng(bounds.getNorthEast())
     let SW = new google.maps.LatLng(bounds.getSouthWest())
-    return {east: NE.lng(), north: NE.lat(), south: SW.lat(), west: SW.lng()}
+    return { east: NE.lng(), north: NE.lat(), south: SW.lat(), west: SW.lng() }
   }
 
 
-// --------------------------------------------------------
+  // --------------------------------------------------------
 
   sortFieldReportsByTeam() {
     return this.fieldReports.sort((n1, n2) => {
@@ -236,26 +254,26 @@ export class FieldReportService {
     return this.fieldReports.filter((report) => (report.date >= beg && report.date <= end))
   }
 
-    /*
+  /*
 const filterParams = {
-  comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
-    const dateAsString = cellValue;
-    const dateParts = dateAsString.split('/');
-    const cellDate = new Date(
-      Number(dateParts[2]),
-      Number(dateParts[1]) - 1,
-      Number(dateParts[0])
-    );
-    if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
-      return 0;
-    }
-    if (cellDate < filterLocalDateAtMidnight) {
-      return -1;
-    }
-    //if (cellDate > filterLocalDateAtMidnight) {
-    return 1;
-    //}
-  },
+comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
+  const dateAsString = cellValue;
+  const dateParts = dateAsString.split('/');
+  const cellDate = new Date(
+    Number(dateParts[2]),
+    Number(dateParts[1]) - 1,
+    Number(dateParts[0])
+  );
+  if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+    return 0;
+  }
+  if (cellDate < filterLocalDateAtMidnight) {
+    return -1;
+  }
+  //if (cellDate > filterLocalDateAtMidnight) {
+  return 1;
+  //}
+},
 }
 */
 
@@ -283,7 +301,7 @@ const filterParams = {
         lat: 45 + Math.floor(Math.random() * 2000) / 1000,
         long: -121 + Math.floor(Math.random() * 1000) / 1000,
         date: new Date(Math.floor(msSince1970 - (Math.random() * 25 * 60 * 60 * 1000))), // 0-25 hrs earlier
-        status: FieldReportStatuses[Math.floor(Math.random() * FieldReportStatuses.length)],
+        status: this.fieldReportStatuses[Math.floor(Math.random() * this.fieldReportStatuses.length)].status,
         note: notes[Math.floor(Math.random() * notes.length)]
       })
     }
@@ -534,4 +552,14 @@ function filterLocations(filters) {
 // bigMap._onResize();
   }
 
+
+
+  export class AppComponent {
+    ST: {a:string, b:any}[] = [
+      {
+        a: 'Bobby',
+        b: 'USA'
+      },
+    ];
+  }
   */
