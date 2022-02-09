@@ -1,0 +1,69 @@
+<!-- Only 1 banner at a time... -->
+<!-- https://material.io/components/banners/web#banners -->
+<div class="mdc-banner mdc-banner--centered mdc-banner--mobile-stacked" role="banner">
+  <div class="mdc-banner__fixed">
+    <div class="mdc-banner__content" role="alertdialog" aria-live="assertive">
+      <div class="mdc-banner__graphic-text-wrapper">
+
+        <!-- https://fonts.google.com/icons?selected=Material+Icons -->
+        <div class="mdc-banner__graphic" role="img" alt=""><i class="material-icons mdc-banner__icon">{{emoji}}</i>
+        </div>
+        <div class="mdc-banner__text">
+        </div>
+      </div>
+      <div class="mdc-banner__actions">
+
+        <button type="button"
+          class="mdc-button mdc-banner__secondary-action mdc-button--icon-leading mdc-button--raised">
+          <div class="mdc-button__ripple"></div>
+          <i class="material-icons mdc-button__icon" aria-hidden="true">done</i>
+          <span class="mdc-button__label">Ignore</span>
+        </button>
+
+        <a href="/rangers#advanced" title="Click to go there now">
+          <button type="button" class="mdc-button mdc-banner__primary-action mdc-button--icon-leading">
+            <div class="mdc-button__ripple"></div>
+            <i class="material-icons mdc-button__icon" aria-hidden="true">build</i>
+            <span class="mdc-button__label">Go to Rangers Page</span>
+          </button>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div [hidden]="isAlertHidden">
+  <mat-card style="background-color: rgb(241, 201, 125);">
+    <mat-card-subtitle>Welcome to RangerTrak! Updates and alerts will appear here.</mat-card-subtitle>
+
+    <div style="font-size: x-small; text-align: right;">
+      <a href="https://jasonwatmore.com/post/2020/07/16/angular-10-alert-notifications-example"
+        target="_blank">https://jasonwatmore.com/post/2020/07/16/angular-10-alert-notifications-example</a> &
+      <a href="https://material.angular.io/components/snack-bar/overview"
+        target="_blank">https://material.angular.io/components/snack-bar/overview</a><br>
+      <a href="https://https://www.tutsmake.com/angular-11-toaster-notification-example/"
+        target="_blank">https://www.tutsmake.com/angular-11-toaster-notification-example/</a><br>
+      <a href="https://www.w3schools.com/bootstrap4/bootstrap_alerts.asp"
+        target="_blank">https://www.w3schools.com/bootstrap4/bootstrap_alerts.asp</a><br>
+    </div>
+    <mat-card-actions>
+
+      <button (click)="onBtnCloseBottomAlert()" class="Alerts__Close">Close</button>
+      <!--button mat-raised-button color="accent">X</button-->
+      <!--    https://material.angular.io/components/icon/overview
+          https://material.angular.io/components/button-toggle/overview
+          https://developers.google.com/fonts/docs/material_icons   -->
+      <!--span class="mat-icon" aria-hidden="false" aria-label="Error icon">X Icon</span-->
+
+    </mat-card-actions>
+  </mat-card>
+
+  <div class="alert alert-success">
+    <strong>Requires Bootstrap4!</strong> You should <a href="#" class="alert-link">read this message</a>.
+  </div>
+
+  <hr>
+</div>

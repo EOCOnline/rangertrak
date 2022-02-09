@@ -1,0 +1,186 @@
+<div class="container">
+  <form [formGroup]="settingsEditorForm" (ngSubmit)="onFormSubmit()">
+
+    <h1>Application Defaults</h1>
+
+    <details>
+      <summary>Instructions</summary>
+      <ul>
+        <li>Any saved settings are restored from the browser's local storage.</li>
+        <li>If nothing has been saved, or the user selects "Reset all values", then hardcoded values are used.</li>
+        <li>Settings are NOT shared with other browsers, whether on this device or others.</li>
+        <li>Browser local storage contents are viewable using a browser's developer tools: F12</li>
+        <li>Change font size using CTRL+mouse wheel or your browser's view size settings.</li>
+      </ul>
+    </details>
+    <br>
+
+    <div class="input-group">Notes for this group of settings:
+      <textarea formControlName="note" id="" cols="50" rows="1" placeholder="Description of this group of settings"></textarea>
+    </div>
+    <br>
+
+    <h2>Entry Form Defaults</h2>
+    <!--legend>Default </legend-->
+    <details>
+      <summary>Location Guidance</summary>
+      <ul>
+        <li>This sets initial (default) values for lat & long in the entry form.</li>
+        <li>What3Words uses this to set the focus, prioritizing suggested
+          results (for incorrect words) by proximity to this point.</li>
+        <li>PlusCodes uses this for converting short to full/global codes.</li>
+        <li>Maps do not use this. They are auto-centered on the bounding
+          coordinates centroid of all points entered and the map is then
+          zoomed to show all points.</li>
+      </ul>
+    </details>
+    <div class="input-group">Latitude:
+      <input
+        [class.border-danger]="settingsEditorForm.get('latitude')?.touched && settingsEditorForm.get('latitude')?.invalid"
+        type="number" formControlName="latitude" placeholder=47.5>
+      <div
+        *ngIf="settingsEditorForm.get('latitude')?.touched && settingsEditorForm.get('latitude')?.hasError('required')"
+        class="text-sm text-danger">latitude is required</div>
+    </div>
+
+    <div class="input-group">Longitude:
+      <input
+        [class.border-danger]="settingsEditorForm.get('longitude')?.touched && settingsEditorForm.get('longitude')?.invalid"
+        type="number" formControlName="longitude" placeholder=-122.5>
+      <div
+        *ngIf="settingsEditorForm.get('longitude')?.touched && settingsEditorForm.get('longitude')?.hasError('required')"
+        class="text-sm text-danger">longitude is required</div>
+    </div>
+
+    <div class="input-group">Zoom (3-21):
+      <input
+        [class.border-danger]="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.invalid"
+        type="number" formControlName="zoom" placeholder=15>
+      <div
+        *ngIf="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.hasError('required')"
+        class="text-sm text-danger">zoom is required</div>
+    </div>
+
+    <div class="input-group">Plus Code:
+      <input
+        [class.border-danger]="settingsEditorForm.get('plusCode')?.touched && settingsEditorForm.get('plusCode')?.invalid"
+        type="text" formControlName="plusCode" placeholder="84VVCGWP+VW">
+      <div
+        *ngIf="settingsEditorForm.get('plusCode')?.touched && settingsEditorForm.get('plusCode')?.hasError('required')"
+        class="text-sm text-danger">plusCode is required</div>
+    </div>
+
+    <h2>Markers</h2>
+
+    <div class="input-group">
+      <input
+        [class.border-danger]="settingsEditorForm.get('allowManualPinDrops')?.touched && settingsEditorForm.get('allowManualPinDrops')?.invalid"
+        type="checkbox" formControlName="allowManualPinDrops" placeholder="allowManualPinDrops">
+      <div
+        *ngIf="settingsEditorForm.get('allowManualPinDrops')?.touched && settingsEditorForm.get('debugMallowManualPinDropsode')?.hasError('required')"
+        class="text-sm text-danger">allowManualPinDrops is required</div>
+        Allow Manual Pin Drops on Google & Leaflet Maps (default: false)
+    </div>
+
+    <!--h2>Markers</h2>
+
+    <div class="input-group">Marker Shape:
+      <select formControlName="markerShape" class="wideField">
+        <! -- [class.border-danger]="settingsEditorForm.get('markerShape')?.touched && settingsEditorForm.get('markerShape')?.invalid" -- >
+        <! --option [va xx lue]="''">Select markerShape</option>
+        <option [va xx lue]="shape.shapeId" id="shapeOptions" *ngFor="let shape of shapes">{{sha  pe.sha  s eName}}</option-- >
+        <option [value]="shape" id="shapeOptions" *ngFor="let shape of shapes">{{shape}}</option>
+      </select>
+      <div
+        *ngIf="settingsEditorForm.get('markerShape')?.touched && settingsEditorForm.get('markerShape')?.hasError('required')"
+        class="text-sm text-danger">markerShape is required</div>
+    </div>
+
+    <div class="input-group">Marker Size:
+      <input
+        [class.border-danger]="settingsEditorForm.get('markerSize')?.touched && settingsEditorForm.get('markerSize')?.invalid"
+        type="number" formControlName="markerSize" placeholder="5">
+      <div
+        *ngIf="settingsEditorForm.get('markerSize')?.touched && settingsEditorForm.get('markerSize')?.hasError('required')"
+        class="text-sm text-danger">markerSize is required</div>
+    </div-->
+
+
+    <br>
+    <h2>Debug</h2>
+
+    <div class="input-group">
+      <input
+        [class.border-danger]="settingsEditorForm.get('debugMode')?.touched && settingsEditorForm.get('debugMode')?.invalid"
+        type="checkbox" formControlName="debugMode" placeholder="debugMode">
+      <div
+        *ngIf="settingsEditorForm.get('debugMode')?.touched && settingsEditorForm.get('debugMode')?.hasError('required')"
+        class="text-sm text-danger">debug mode is required</div>
+      Debug Mode
+    </div>
+
+    <!--div class="input-group">
+      <input
+        [class.border-danger]="settingsEditorForm.get('logToPanel')?.touched && settingsEditorForm.get('logToPanel')?.invalid"
+        type="checkbox" formControlName="logToPanel" placeholder="logToPanel">
+      <div
+        *ngIf="settingsEditorForm.get('logToPanel')?.touched && settingsEditorForm.get('logToPanel')?.hasError('required')"
+        class="text-sm text-danger">logToPanel is required</div>
+      Log to Panel
+    </div>
+
+    <div class="input-group">
+      <input
+        [class.border-danger]="settingsEditorForm.get('logToConsole')?.touched && settingsEditorForm.get('logToConsole')?.invalid"
+        type="checkbox" formControlName="logToConsole" placeholder="logToConsole">
+      <div
+        *ngIf="settingsEditorForm.get('logToConsole')?.touched && settingsEditorForm.get('logToConsole')?.hasError('required')"
+        class="text-sm text-danger">logToConsole is required</div>
+      Log to Browser Console
+    </div -->
+
+
+
+    <!--h2>Teams</h2>
+    <details>
+      <summary>Team Details</summary>
+      <ul>
+        <li>If Shape = 'Marker', then display the icon</li>
+        <li>If Shape = 'Circle', then display circles using color & fillColor</li>
+        <li>Notes are ignored. They are displayed below for your optional use, if desired</li>
+      </ul>
+    </details-->
+
+    <!-- https://www.ag-grid.com/angular-data-grid/grid-interface/
+    <div id="teamgrid">
+      <ag-grid-angular #teamGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 400px;"
+        class="ag-theme-alpine" [rowData]="teams" [columnDefs]="columns" [defaultColDef]="{
+            flex: 1,
+            minWidth: 60,
+            editable: true,
+            resizable: true
+          }" (gridReady)="onGridReady($event)">
+      </ag-grid-angular>
+      <br />
+      <button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
+      <button (click)="onBtNormal()">Normal Layout</button>
+      <! -- <div><button (click)="addTeamRow()">Add a new (blank) Team</button></div> ->
+      <div>TODO: <button (click)="exportDataAsCsv()">Export Team Grid</button></div>
+      <! -- <div>TODO: <button (click)="setQuickFilter()">Filter Teams</button></div> ->
+    </div-->
+
+
+    Save above settings (to local storage):
+    <button [disabled]="settingsEditorForm.invalid" style="margin-top: 40px;" type="submit">Save</button>
+    <!-- REVIEW: Other pages only reflect these changes if refreshed!!! -->
+
+    <br>
+    <br>
+
+    <details>
+      <summary><span class="big">Advanced Options</span></summary>
+      <button (click)="onBtnResetDefaults()">Reset All these Settings to Default values</button><br>
+    </details>
+
+  </form>
+</div>

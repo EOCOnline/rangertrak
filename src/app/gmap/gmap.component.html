@@ -1,0 +1,62 @@
+<h1>{{title}}</h1>
+
+<details>
+  <summary class="big">Instructions</summary>
+  This currently displays all rangers/teams without filtering. In the future more options should be available, including
+  different icons/text boxes, etc.<br />
+  <ul>
+    <li style="color:red">If most recent field reports are not displayed, please curse, then refresh the page, or try
+      switching temporarily to the Field Reports screen to ensure they were recorded. Let me know, but I believe they are getting stored.</li>
+    <li>NOTE: per <a href="https://issuetracker.google.com/issues/35827808" target="_blank">#35827808</a> this map can
+      NOT be made available when offline!</li>
+    <li>Zoom in close (in some populated areas) to display the tilt control at lower left on map: allows map tilting &
+      rotation</li>
+    <li>Display Keyboard controls with button at lower right of map</li>
+    <li>Click or hover over marker to display coordinates and callsign</li>
+    <li>Right-click on map to display traffic layer</li>
+  </ul>
+</details>
+<br>
+
+<div *ngIf="apiLoaded">
+  <!-- | async -->
+  <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
+    (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="addTrafficLayer()"
+    (mapInitialized)="onMapInitialized($event)">
+
+    <div id="markerDiv" #markerDiv *ngFor="let marker of markers">
+    </div>
+
+    <!--
+      (mapClick)="openInfoWindow($event)"
+
+        [position]="marker.position"
+        [options]="marker.options"  -->
+
+    <map-circle [center]="circleCenter" [radius]="radius"></map-circle>
+
+    <map-info-window>{{ infoContent }}</map-info-window>
+
+  </google-map>
+
+  <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
+  <div>Latitude: <span class="strong">{{display?.lat | number:'1.4-5'}}</span>   Longitude: <span class="strong">{{display?.lng | number:'1.4-5'}}</span>
+  </div>
+</div>
+<br>
+<details>
+  <summary class="big">Advanced</summary>
+  <ul>
+    <li>This might be used to set filtering options - or maybe we rely on selections made in the Field Report
+      pane/window...</li>
+    <li><a href="https://developers.google.com/maps/documentation/javascript/reference/map">Detailed code/option
+        references</a></li>
+
+  </ul>
+  <button (click)="logCenter()">Log center</button>
+  <!--button (click)="onInfoClick()">Info Window</button-->
+  <!--button (click)="addMarker()">Add marker</button-->
+</details>
+<br>
+<hr>
+<div id="map2"></div>

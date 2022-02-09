@@ -1,0 +1,178 @@
+@use "@material/theme"
+with ($primary: #962f10,
+  $on-primary: #442C2E);
+@use "@material/button";
+@use "@material/button/styles";
+@use "@material/banner";
+//@use "@material/banner/styles";
+// https://material.io/components/buttons/web#api
+
+
+.map-container {
+  height: 200px !important;
+  // "some" map-container is setting height to 500px. How to reseet/overrule?
+}
+
+#enter__SmallMap {
+  display         : block;
+  float           : right;
+  width           : 30vw; // 30vw;
+  height          : 10vh; //200px !important; //
+  border          : 5px brown;
+  background-color: aliceblue;
+}
+
+
+h1,
+h2,
+h3 {
+  margin-top   : 15px;
+  margin-bottom: 0px;
+}
+
+.bordered {
+  border: 2 px solid red;
+}
+
+#bordered {
+  border: 2 px solid red;
+}
+
+#addresses {
+  width: 200px;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+.strongish {
+  font-weight: 500;
+}
+
+// https://www.codingtag.com/remove-arrows-from-input-type-number
+// to hide spinners
+ /* Chrome, Safari, Edge, Opera */
+ input::-webkit-outer-spin-button,
+ input::-webkit-inner-spin-button {
+   -webkit-appearance: none;
+   margin: 0;
+ }
+ /* Specilly used for Firefox */
+ input[type=number] {
+  -moz-appearance: textfield;
+}
+
+#latitudeDDI,
+#longitudeDDI {
+  width: 30px;
+}
+
+#latitudeDDD,
+#longitudeDDD {
+  width: 80px;
+}
+
+.small {
+  font-size: 12px;
+}
+
+#enter__Lat,
+#enter__Long {
+  width: 80px;
+}
+
+#enter_When-input {
+  width: 400px;
+}
+
+.eButton {
+  //display: inline-block;
+  width             : 80px;
+  font-weight       : bold;
+  //background-color: red;
+  margin            : 30 px;
+  //padding: 10px;
+}
+
+.elegant {
+  margin-top   : 25px;
+  margin-bottom: 0px;
+}
+
+.enter__form {
+  margin     : 0px 10px 15px;
+  min-width  : 160px;
+  //max-width: 300px;
+  width      : 100%;
+}
+
+.enter__Callsign {
+  min-width: 350px;
+  width    : 35%;
+}
+
+.enter__Callsign-img {
+  vertical-align: middle;
+  margin-right  : 8px;
+}
+
+[dir='rtl'] .enter__Callsign-imgimg {
+  margin-right: 0;
+  margin-left : 8px;
+}
+
+#enter__Callsign-upshot {
+  margin   : 10px;
+  font-size: small;
+}
+
+#enter__frm-reguritation {
+  margin-right    : 35vw;
+  display         : block;
+  float           : right;
+  height          : 50px;
+  width           : 10vw;
+  border          : 1px solid brown;
+  background-color: rgb(240, 255, 250);
+  font            : 0.8em sans-serif;
+}
+
+.enter__What--note {
+  margin-bottom: 0px;
+}
+
+.enter__What--area {
+  border            : 1px dotted rgb(52, 28, 192);
+  //text-orientation: upright;
+  //text-transform: capitalize;
+  //float             : left;
+  //margin-left       : 75px;
+  //position          : absolute;
+  //bottom:40px;
+}
+
+.enter__Submit-button {
+  margin-left     : 10px;
+  margin-top      : 0px;
+  margin-bottom   : 10px;
+  background-color: rgb(204, 212, 90);
+}
+
+#enter__Submit-info {
+  margin       : 10px;
+  border       : 1px rgb(204, 212, 90) solid;
+  border-radius: 5px;
+  opacity      : 0;
+  animation    : fadeout 20s ease-out;
+}
+
+@keyframes fadeout {
+  0% {
+    opacity: 1
+  }
+
+  100% {
+    opacity: 0
+  }
+}

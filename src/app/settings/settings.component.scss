@@ -1,0 +1,55 @@
+
+label {
+  font-weight: bold;
+  padding-bottom: .5rem;
+  padding-top: 1rem;
+  display: inline-block;
+}
+
+button {
+  max-width: 300px;
+}
+
+.big {
+  font-size: large;
+  font-weight: bold;
+}
+
+h1,h2,h3 {
+  margin-top: 10px;
+  margin-bottom: 1px;
+}
+
+.wideField {
+  width:10em;
+}
+
+.example-form {
+  min-width: 150px;
+  max-width: 300px;
+  width: 100%;
+}
+
+.example-full-width {
+  width: 100%;
+}
+
+.fill-warning {
+  background-color:rgb(212, 179, 106) ;
+}
+
+.text-warning {
+  color: rgb(175, 75, 35); ;
+}
+
+.border-warning {
+  border-color: orange;
+  border-style: groove;
+}
+
+#teamgrid1 {
+  background-color: rgb(215, 241, 143);
+  /*display: inline-block;*/
+  height: 40em;
+  width: 40em;
+}
