@@ -87,8 +87,8 @@
 
 
 
-    <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude <!--fa-icon [ico n]="faInfoCircle"
-        title="Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon"></fa-icon-->:
+    <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude <fa-icon [icon]="faInfoCircle"
+        title="Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon"></fa-icon>:
       <input [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
         type="number" formControlName="latI" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
         name="latitudeDDI" id="latitudeDDI" size="2" min="-180" max="180" id="enter__LatI">
