@@ -16,11 +16,16 @@ import { FieldReportService, FieldReportStatusType, RangerService, RangerType, S
 import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
 import { LatLng } from 'leaflet';
 
+
+import { createPopper } from '@popperjs/core';
+import type { StrictModifiers } from '@popperjs/core';
+
+
 import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { mdiAccount, mdiInformationOutline} from '@mdi/js';
+import { mdiAccount, mdiInformationOutline } from '@mdi/js';
 //import { lookupCollections, locate } from '@iconify/json'; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
-import {DomSanitizer} from '@angular/platform-browser';
-import {MatIconRegistry} from '@angular/material/icon';// https://material.angular.io/components/icon/examples
+import { DomSanitizer } from '@angular/platform-browser';
+import { MatIconRegistry } from '@angular/material/icon';// https://material.angular.io/components/icon/examples
 
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
@@ -61,6 +66,8 @@ export class IconComponent {
 export class EntryComponent implements OnInit {
 
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
+
+  createPopper<StrictModifiers>(referenceElement, popperElement, options)
 
   faMapMarkedAlt = faMapMarkedAlt
   faInfoCircle = faInfoCircle
@@ -104,7 +111,7 @@ export class EntryComponent implements OnInit {
   addressCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
-  fieldReportStatuses: FieldReportStatusType[] =[]
+  fieldReportStatuses: FieldReportStatusType[] = []
   settings
   entryDetailsForm!: FormGroup
   //w3w = new What3Words()
@@ -163,18 +170,25 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       startWith(''),
       map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
     )
-    console.log (`constructor: ranger ${(this.filteredRangers)}`) //JSON.stringify
+    console.log(`constructor: ranger ${(this.filteredRangers)}`) //JSON.stringify
 
     // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
     // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
   }
 
+
+  //https://www.c-sharpcorner.com/article/formbuilder-service-in-angular/
+  //change the setTimeout statement by replacing setValue to patchValue.
+  // setTimeout(() => this.registrationForm.patchValue(this.sampleData), 5000);
+  //Now you can skip giving any field control value from the sampleData object. It will not throw error and set the values that are available.
+
+
   private _filterRangers(value: string): RangerType[] {
-    console.log (`_filterRangers  value changed: ${value}`)
+    console.log(`_filterRangers  value changed: ${value}`)
 
     const filterValue = value.toLowerCase()
     this.entryDetailsForm.value.callsign = filterValue
-      return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
+    return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
     /* NEW:
       this.entryDetailsForm.value.callsign = filterValue
       return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
@@ -276,7 +290,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
   CallsignCtrlChanged() { // NOTE: NEVER CALLED (my error, maybe does now..)!!!, so use workaround above...
     return
-    let callSign:string = (this.document.getElementById("enter__Callsign-input") as HTMLInputElement).value
+    let callSign: string = (this.document.getElementById("enter__Callsign-input") as HTMLInputElement).value
     if (callSign) {
       console.log(`CallsignCtrlChanged() call= ${callSign} at ${Date.now}`)
       this.CallsignChanged(callSign)
@@ -525,7 +539,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
         let newAddress = this.geocoder.getAddressFromLatLng(ll)
         console.log(`addressCtrlChanged new ll: ${JSON.stringify(ll)}; addr: ${newAddress}`)
 
-        this.updateCoords(llat,llng)
+        this.updateCoords(llat, llng)
 
         let addrLabel = this.document.getElementById("addressLabel") // as HTMLLabelElement
         if (addrLabel) {
@@ -591,7 +605,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
   updateCoords(latDD: number, lngDD: number) {
     console.log(`updateCoords with new Coordinates: lat: ${latDD}; latDD: ${latDD.toString()}`);
 
-    let latitudeDD = document.getElementById("enter__Lat" ) as HTMLInputElement
+    let latitudeDD = document.getElementById("enter__Lat") as HTMLInputElement
     console.log(`updateCoords latitudeDD: ${latitudeDD}; lng: ${latDD}`);
 
     // TODO: Only display 4-6 positions after decimal
@@ -637,12 +651,12 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     }
 
     //this.addressCtrlChanged('lat') // HACK: to display marker
-    this.UpdateLocation({lat:latDD, lng:lngDD})
+    this.UpdateLocation({ lat: latDD, lng: lngDD })
     //ToDO: Update 3 words too!
     //if (initialized) this.displaySmallMap(latDD, lngDD);
   }
 
-  chkPCodes(pCode:string) {
+  chkPCodes(pCode: string) {
     // REVIEW: Duplicate of code above...
     //let pCode = document.getElementById("addresses")!.innerText //value;
     console.log("chkPCodes got '" + pCode + "'");
@@ -652,9 +666,9 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       console.log(`chkPCode of ${pCode} got result:${JSON.stringify(result)}`);
 
       if (result.position) {
-        (document.getElementById("addressLabel")as HTMLLabelElement).innerText = result.address;
+        (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
         (document.getElementById("enter__Lat") as HTMLInputElement).value = "result.position.lat";
-          // BUG: position has type of never????!!!!
+        // BUG: position has type of never????!!!!
         (document.getElementById("long") as HTMLInputElement).value = "JSON.stringify(result.position)";
       }
       else {
@@ -682,7 +696,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
   }
 
   // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
-  chk3Words(tWords:string) {
+  chk3Words(tWords: string) {
     /*let settings = {
       "async": true,
       "crossDomain": true,
@@ -704,12 +718,12 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     let east_lng = -120.0;
     let errMsg = "";
 
-   // let tWords = document.getElementById("addresses")!.innerText;// as HTMLInputElement).value
+    // let tWords = document.getElementById("addresses")!.innerText;// as HTMLInputElement).value
     console.log('chk3Words - ' + tWords);
     if (tWords.length) {
       // soemthing entered...
       console.log("3Words='" + tWords + "'");
-       //this.w3w.w3wAuto(tWords)
+      //this.w3w.w3wAuto(tWords)
       /* BUG:
           this.w3w.w3wAuto.autosuggest(tWords, {
             nFocusResults: 1,
@@ -738,7 +752,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
               errMsg = "[code]=" + error.code + "; [message]=" + error.message + ".";
               */
 
-              // TODO: this.updateCoords(lat,lng)
+      // TODO: this.updateCoords(lat,lng)
       errMsg = ""
       console.log("Unable to verify 3 words entered: " + errMsg);
       document.getElementById("addressLabel")!.textContent = "*** Not able to verify 3 words! ***"; // as HTMLLabelElement
@@ -773,5 +787,54 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     if (e) {
       e.style.visibility = "visible";
     }
+  }
+
+  // TODO: https://popper.js.org/
+  // https://popper.js.org/docs/v2/
+  // https://bobrov.dev/angular-popper/
+  // https://sergeygultyayev.medium.com/use-popper-js-in-angular-projects-7b34f18da1c
+  // https://github.com/gultyaev/angular-popper-example
+
+  // The hint to display
+  @Input() target!: HTMLElement
+  // Its positioning (check docs for available options)
+  @Input() placement?: string;
+  // Optional hint target if you desire using other element than
+  // specified one
+  @Input() appPopper?: HTMLElement;
+
+// The popper instance
+popper: popper;
+private readonly defaultConfig: PopperOptions = {
+  placement: 'top',
+  removeOnDestroy: true
+};
+constructor(private readonly el: ElementRef) {}
+ngOnInit(): void {
+  // An element to position the hint relative to
+  const reference = this.appPopper ? this.appPopper : this.el.nativeElement;
+  this.popper = new Popper(reference, this.target, this.defaultConfig);
+}
+ngOnDestroy(): void {
+  if (!this.popper) {
+    return;
+  }
+
+  this.popper.destroy();
+}
+
+
+
+  popcorn = this.document.querySelector('#popcorn') as HTMLAnchorElement // BUG:
+  tooltip = this.document.querySelector('#tooltip') as HTMLAnchorElement
+
+  createPopper(popcorn: HTMLAnchorElement, tooltip: HTMLAnchorElement, {
+    //   placement: 'top-end',
+  }) {
+
+  }
+
+  onInfoWhere() {
+    let s = "for Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds"
   }
 }
