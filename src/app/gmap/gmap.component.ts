@@ -105,7 +105,7 @@ export class GmapComponent implements OnInit {    //extends Map
   apiLoaded //: Observable<boolean>
 
   // next 2 even used?
-  circleCenter: google.maps.LatLngLiteral = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }  // this.Vashon// kahanaRidge
+  circleCenter: google.maps.LatLngLiteral = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }  // this.Vashon// kahanaRidge
   radius = 10;
 
   fieldReports?: FieldReportType[]
@@ -121,7 +121,7 @@ export class GmapComponent implements OnInit {    //extends Map
     // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
-    this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }
+    this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
     // this.circleCenter: google.maps.LatLngLiteral = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong};
     // https://github.com/angular/components/tree/master/src/google-maps
     // this.apiLoaded = httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=${SettingsService.secrets[3].key}`, 'callback')
@@ -188,8 +188,8 @@ export class GmapComponent implements OnInit {    //extends Map
       */
     this.displayAllMarkers()
     // REVIEW: Doesn't work with NO Markers?
-    console.log(`Setting Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLong}, zoom: ${SettingsService.Settings.defZoom}`)
-    this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong })
+    console.log(`Setting Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLng}, zoom: ${SettingsService.Settings.defZoom}`)
+    this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })
     this.gMap.setZoom(SettingsService.Settings.defZoom)
     this.fitBounds()
   }

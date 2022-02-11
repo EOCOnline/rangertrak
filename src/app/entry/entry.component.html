@@ -87,7 +87,8 @@
     <!-- https://popper.js.org/docs/v2/tutorial/ -->
     <h2 class="elegant">Where&nbsp;&nbsp;<fa-icon [icon]="faInfoCircle" id="button" aria-describedby="tooltip"
         title="Click info icon for info!" alt="info icon"></fa-icon><span class="small">(updates map to the right)
-        onclick="onWhereInfo()"</span></h2>
+        onclick="onWhereInfo()"</span>|<img src="../../assets/icons/information-outline.png"
+        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" /></h2>
 
     <div id="tooltip" role="tooltip">
       My tooltip: Instructions for how to enter location into RangerTrak:
@@ -96,10 +97,10 @@
       <div id="arrow" data-popper-arrow></div>
     </div>
 
-    <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude :
+    <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude:
       <input [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
         type="number" formControlName="latI" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
-        name="latitudeDDI" id="latitudeDDI" size="2" min="-180" max="180" id="enter__LatI">
+        name="latitudeDDI" id="latitudeDDI" size="2" min="-180" max="180" id="enter__Where--LatI">
 
 
       <span *ngIf="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
@@ -107,7 +108,7 @@
       </span>.
       <input [class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
         type="number" formControlName="latD" placeholder="LatitudeD" (change)="this.addressCtrlChanged('latD')"
-        name="latitudeDDD" id="latitudeDDD" step="0.001" size="8" min="0" max="99999" id="enter__LatD" tabindex="2">
+        name="latitudeDDD" id="latitudeDDD" step="0.001" size="8" min="0" max="99999" id="enter__Where--LatD" tabindex="2">
 
       <span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')
                   && entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
@@ -126,14 +127,24 @@
         onchange="DMSCoordsChanged()">"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
     </div>
 
-    <div class="input-group">Longitude<img src="../../assets/icons/information-outline.png"
-        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" />:
-      <input [class.border-danger]="entryDetailsForm.get('lng')?.touched && entryDetailsForm.get('lng')?.invalid"
-        type="number" formControlName="lng" placeholder="Longitude" (change)="this.addressCtrlChanged('lng')"
-        name="longitudeDD" id="longitudeDD" step="0.001" size="12" min="-180" max="180" id="enter__Long" tabindex="3">
+    <div class="input-group">Longitude<!--img src="../../assets/icons/information-outline.png"
+        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" /  size="30"   -->:
+      <input [class.border-danger]="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.invalid"
+        type="number" formControlName="lngI" placeholder="LongitudeI" (change)="this.addressCtrlChanged('lngI')"
+        name="longitudeDDI" id="longitudeDDI"  min="-90" max="90" id="enter__Where--LngI" tabindex="3">
+
       <!-- onchange="DDCoordsChanged()" -->
-      <span *ngIf="entryDetailsForm.get('lng')?.touched && entryDetailsForm.get('lng')?.hasError('required')"
+      <span *ngIf="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.hasError('required')"
         class="text-sm text-danger">longitude is required
+      </span>&nbsp;&nbsp;.
+
+      <input [class.border-danger]="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.invalid"
+        type="number" formControlName="lngD" placeholder="LongitudeD" (change)="this.addressCtrlChanged('lngD')"
+        name="latitudeDDD" id="latitudeDDD" step="0.001" size="9" min="0" max="99999" id="enter__Where--LngD" tabindex="4">
+
+      <span *ngIf="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')
+                  && entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
+        class="text-sm text-danger">Latitude is required
       </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
 
       <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"
@@ -149,9 +160,9 @@
 
     Street Address, +Code, or What.3.Words:
     <input [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
-      type="text" formControlName="address" id="addressCtrl" tabindex="4"
+      type="text" formControlName="address" id="addressCtrl" tabindex="5"
       title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." size="40"
-      placeholder="Address" (change)="this.addressCtrlChanged('addr')"> (optional)
+      placeholder="Optional Address" (change)="this.addressCtrlChanged('addr')">
 
     <!-- formControlName="addressCtrl"
 
@@ -160,11 +171,10 @@
       onchange="chkAddresses()"> (optional) -->
     <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
     <br>
-    <span id="addressLabel" value=""></span>&nbsp;&nbsp;
+    <span id="addressLabel" value="">aL</span>&nbsp;&nbsp;
     <br>
 
-    <span id="pCodeGlobal">pCodeGlobal</span>
-    <br>
+    <span id="pCodeGlobal">pCG</span>
 
     <!--div
     *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
@@ -211,17 +221,17 @@
 
     <div class="input-group">Date:
       <input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
-        type="datetime" formControlName="date" placeholder="date" id="enter_When-input" tabindex="5">
+        type="datetime" formControlName="date" placeholder="date" id="enter__When-input" tabindex="6">
       <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
         class="text-sm text-danger">date is required</div>
     </div>
 
     <h2 class="elegant bordered">What</h2>
 
-    <div class="input-group bordered" id="bordered">Status:
+    <div class="input-group bordered">Status:
       <mat-radio-group labelPosition="after" formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid"
-        tabindex="6">
+        tabindex="7">
         <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat}}>{{stat}} &nbsp;&nbsp;&nbsp;
         </mat-radio-button>
       </mat-radio-group>
@@ -230,7 +240,7 @@
         class="text-sm text-danger">Status is required</div>
       <br><br>
       <textarea class="input-group enter__What--area" formControlName="note" id="enter__What--area" cols="80" rows="5"
-        placeholder="Enter Any Notes" tabindex="7"></textarea>
+        placeholder="Enter Any Notes" tabindex="8"></textarea>
     </div>
 
 
@@ -257,7 +267,7 @@
     <button (click)="resetForm()" title="Reset all form fields to their defaults" class="eButton"
       type="button">Reset</button>
     <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button eButton" type="submit"
-      tabindex="8">Submit</button>
+      tabindex="9">Submit</button>
 
     <span id="enter__Submit-info"></span>
 

@@ -246,7 +246,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       team: ['T1'],
       address: [''],  // ' , Vashon, WA 98070' ?
       lat: [this.settings.defLat, Validators.required], //Validators.minLength(4)
-      long: [this.settings.defLong, Validators.required], //Validators.minLength(4)
+      lng: [this.settings.defLng, Validators.required], //Validators.minLength(4)
       date: [new Date()],
       status: [this.fieldReportStatuses[this.settings.defRangerStatus]],
       note: ['']
@@ -264,7 +264,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       this.entryDetailsForm.get("lat")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         console.log('########  latitude value changed: ' + x)
       })
-      this.entryDetailsForm.get("long")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      this.entryDetailsForm.get("lng")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         console.log('##########  longitude value changed: ' + x)
       })
       this.entryDetailsForm.get("address")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
@@ -305,7 +305,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       Validators.required,
         //Validators.minLength(4)
       ],
-      long: [this.settings.defLong,
+      lng: [this.settings.defLng,
       Validators.required,
         //Validators.minLength(4)
       ],
@@ -418,12 +418,12 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
   updateOverviewMap() {
     console.log(`updateOverviewMap`)
 
-    //let latlng = new google.maps.LatLng(SettingsService.Settings.defLat, SettingsService.Settings.defLong)
-    //let latlngL = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong}
+    //let latlng = new google.maps.LatLng(SettingsService.Settings.defLat, SettingsService.Settings.deflng)
+    //let latlngL = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.deflng}
 
-    // TODO: FitBounds to new point, not to DefLat & DefLong  -- do it on addMarker?
+    // TODO: FitBounds to new point, not to DefLat & Deflng  -- do it on addMarker?
     // this.gMap?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
-    this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }))
+    this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }))
     //this.gMap?.setZoom(10) no effect
   }
 
@@ -498,7 +498,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
      addrInfo: HTMLElement | null = null
 
      AddressChanged(addr: string) { // Just serves timer for input field - post interaction
-       this.addrInfo = this.document.getElementById("enter__Address-upshot")
+       this.addrInfo = this.document.getElementById("enter__Where--Address-upshot")
        if (this.addrInfo) {
          console.log(`EntryForm AdressChanged looking for ${ address }`)
          //let ranger = this.rangers[this.findIndex(callsign)];
@@ -515,7 +515,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
   // https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
   // https://angular.io/api/common/AsyncPipe
-  // this.document.getElementById("enter__Lat")?.onchange
+  // this.document.getElementById("enter__Where--Lat")?.onchange
 
   // https://angular.io/api/forms/AbstractControl
   // https://angular.io/api/forms/NgControlStatus ARE CSS Classes.
@@ -578,10 +578,10 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       case 'lat':
       case 'lng':
 
-        let llat = Number((this.document.getElementById("enter__Lat") as HTMLInputElement).value)
-        let llng = Number((this.document.getElementById("enter__Long") as HTMLInputElement).value)
-        //this.document.getElementById("enter__Long")?.innerText
-        //this.document.getElementById("enter__Long")?.innerText
+        let llat = Number((this.document.getElementById("enter__Where--Lat") as HTMLInputElement).value)
+        let llng = Number((this.document.getElementById("enter__Where--Lng") as HTMLInputElement).value)
+        //this.document.getElementById("enter__Where--lng")?.innerText
+        //this.document.getElementById("enter__Where--lng")?.innerText
         let ll = new google.maps.LatLng(llat, llng)
         let newAddress = this.geocoder.getAddressFromLatLng(ll)
         console.log(`addressCtrlChanged new ll: ${JSON.stringify(ll)}; addr: ${newAddress}`)
@@ -651,13 +651,20 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
   updateCoords(latDD: number, lngDD: number) {
     console.log(`updateCoords with new Coordinates: lat: ${latDD}; latDD: ${latDD.toString()}`);
+    console.log(`updateCoords with new Coordinates: lng: ${lngDD}; lngDD: ${lngDD.toString()}`);
 
-    let latitudeDD = document.getElementById("enter__Lat") as HTMLInputElement
-    console.log(`updateCoords latitudeDD: ${latitudeDD}; lng: ${latDD}`);
+    let latitudeDDI  = document.getElementById("enter__Where--LatI") as HTMLInputElement
+    let latitudeDDD  = document.getElementById("enter__Where--LatD") as HTMLInputElement
+    let longitudeDDI = document.getElementById("enter__Where--LngI") as HTMLInputElement
+    let longitudeDDD = document.getElementById("enter__Where--LngD") as HTMLInputElement
+    console.log(`updateCoords latitudeDDI: ${latitudeDDI}; latitudeDDD: ${latitudeDDD}`);
+    console.log(`updateCoords longitudeDDI: ${longitudeDDI}; longitudeDDD: ${longitudeDDD}`);
 
     // TODO: Only display 4-6 positions after decimal
-    latitudeDD.value = latDD.toString();
-    (document.getElementById("enter__Long") as HTMLInputElement).value = lngDD.toString();
+    latitudeDDI.value =          Math.floor(latDD).toString();
+    latitudeDDD.value = (latDD - Math.floor(latDD)).toString().slice(0,4);
+    //(document.getElementById("enter__Where--LngI") as HTMLInputElement).value = lngDD.toString();
+    //(document.getElementById("enter__Where--LngD") as HTMLInputElement).value = lngDD.toString();
 
     let latDMS = DDToDMS(latDD, false);
     (document.getElementById("latitudeQ") as HTMLInputElement).value = latDMS.dir;
@@ -679,12 +686,12 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       if (OpenLocationCode.isValid(pCode)) {
         if (OpenLocationCode.isShort(pCode)) {
           // Recover the full code from a short code:
-          fullCode = OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong)
+          fullCode = OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
         } else {
           fullCode = pCode;
-          console.log("Shorten +Codes, Global:" + fullCode + ", Lat:" + SettingsService.Settings.defLat + "; Long:" + SettingsService.Settings.defLong);
+          console.log("Shorten +Codes, Global:" + fullCode + ", Lat:" + SettingsService.Settings.defLat + "; lng:" + SettingsService.Settings.defLng);
           // Attempt to trim the first characters from a code; may return same innerText...
-          pCode = OpenLocationCode.shorten(fullCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong)
+          pCode = OpenLocationCode.shorten(fullCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
         }
         console.log("New PlusCodes: " + pCode + "; Global: " + fullCode);
         //(document.getElementById("addresses") as HTMLInputElement).value = pCode;
@@ -714,9 +721,9 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
       if (result.position) {
         (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
-        (document.getElementById("enter__Lat") as HTMLInputElement).value = "result.position.lat";
+        (document.getElementById("enter__Where--Lat") as HTMLInputElement).value = "result.position.lat";
         // BUG: position has type of never????!!!!
-        (document.getElementById("long") as HTMLInputElement).value = "JSON.stringify(result.position)";
+        (document.getElementById("lng") as HTMLInputElement).value = "JSON.stringify(result.position)";
       }
       else {
         console.log(`chkPCode of ${pCode} got NULL result!!!`);
@@ -725,19 +732,19 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
       if (OpenLocationCode.isValid(pCode)) {
         if (OpenLocationCode.isShort(pCode)) {
-          pCode = OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong)
+          pCode = OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
         }
 
         // Following needs a full (Global) code
         let coord = OpenLocationCode.decode(pCode)
-        console.log("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', long=' + coord.longitudeCenter);
+        console.log("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', lng=' + coord.longitudeCenter);
 
         this.updateCoords(coord.latitudeCenter, coord.longitudeCenter);
       }
 
       else {
-        document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: ";
-        document.getElementById("pCodeGlobal")!.innerHTML = SettingsService.Settings.defPlusCode;
+        document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: " + SettingsService.Settings.defPlusCode
+        //document.getElementById("pCodeGlobal")!.innerHTML = SettingsService.Settings.defPlusCode
       }
     }
   }
@@ -776,7 +783,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
             nFocusResults: 1,
             //clipTo####: ["US"],
             cliptoboundingbox: { south_lat, west_lng, north_lat, east_lng }, // Clip prevents ANY values outside region
-            focus: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }, // Focus prioritizes words closer to this point
+            focus: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.deflng }, // Focus prioritizes words closer to this point
             nResults: 1
           })
             .then((response: { suggestions: { words: any }[] }) => {
@@ -787,7 +794,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
               } else {
                 document.getElementById("addressLabel")!.textContent = " Verified.";
               }
-              // this.w3w.GetLatLongFrom3Words(verifiedWords)
+              // this.w3w.GetLatlngFrom3Words(verifiedWords)
               this.w3w.convertToCoordinates(verifiedWords).then((response: { coordinates: { lat: any; lng: any }; nearestPlace: string }) => {
                 //async call HAS returned!
                 this.updateCoords(response.coordinates.lat, response.coordinates.lng);

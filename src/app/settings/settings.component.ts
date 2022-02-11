@@ -64,7 +64,7 @@ export class SettingsComponent implements OnInit {
       name: [this.settings.name],
       note: [this.settings.note],
       latitude: [this.settings.defLat, Validators.required],
-      longitude: [this.settings.defLong, Validators.required],
+      longitude: [this.settings.defLng, Validators.required],
 
       /* REVIEW: Following line gets:
         Error: Expected validator to return Promise or Observable.
@@ -101,7 +101,7 @@ export class SettingsComponent implements OnInit {
       name: this.settingsEditorForm.value.name as string,
       note: this.settingsEditorForm.value.note as string,
       defLat: this.settingsEditorForm.value.latitude as number,
-      defLong: this.settingsEditorForm.value.longitude as number,
+      defLng: this.settingsEditorForm.value.longitude as number,
       defZoom: this.settingsEditorForm.value.zoom as number,
       defPlusCode: this.settingsEditorForm.value.plusCode as string,
       w3wLocale: this.settingsEditorForm.value.w3wLocale as string,

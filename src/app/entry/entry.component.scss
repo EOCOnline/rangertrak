@@ -22,15 +22,12 @@ with ($primary: #962f10,
 #tooltip[data-popper-placement^='top']>#arrow {
   bottom: -4px;
 }
-
 #tooltip[data-popper-placement^='bottom']>#arrow {
   top: -4px;
 }
-
 #tooltip[data-popper-placement^='left']>#arrow {
   right: -4px;
 }
-
 #tooltip[data-popper-placement^='right']>#arrow {
   left: -4px;
 }
@@ -57,11 +54,10 @@ with ($primary: #962f10,
   transform : rotate(45deg);
 }
 
-
-.map-container {
-  height: 200px !important;
+//.map-container {
+  //height: 200px !important;
   // "some" map-container is setting height to 500px. How to reseet/overrule?
-}
+//}
 
 #enter__SmallMap {
   display         : block;
@@ -72,7 +68,6 @@ with ($primary: #962f10,
   background-color: aliceblue;
 }
 
-
 h1,
 h2,
 h3 {
@@ -81,10 +76,6 @@ h3 {
 }
 
 .bordered {
-  border: 2 px solid red;
-}
-
-#bordered {
   border: 2 px solid red;
 }
 
@@ -114,26 +105,26 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-#latitudeDDI,
-#longitudeDDI {
-  width: 30px;
-}
+//#latitudeDDI,
+//#longitudeDDI {
+//  width: 60//px;
+//}
 
-#latitudeDDD,
-#longitudeDDD {
-  width: 80px;
-}
+// #latitudeDDD,
+// #longitudeDDD {
+//   width: 180px;
+// }
 
 .small {
   font-size: 12px;
 }
 
-#enter__Lat,
-#enter__Long {
-  width: 80px;
-}
+// #enter__Lat,
+// #enter__Lng {
+//   width: 80px;
+// }
 
-#enter_When-input {
+#enter__When-input {
   width: 400px;
 }
 

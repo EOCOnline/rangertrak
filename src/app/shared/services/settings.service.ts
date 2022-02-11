@@ -16,7 +16,7 @@ export type SettingsType = {
   version: string,
   note: string,
   defLat: number,
-  defLong: number,
+  defLng: number,
   defZoom: number,
   defPlusCode: string,
   w3wLocale: string,
@@ -103,7 +103,7 @@ export class SettingsService {
       version: _version, //TODO: Auto update this...
       note: "values set by code, please edit them to serve you!",
       defLat: 47.4472,
-      defLong: -122.4627,  // Vashon EOC!
+      defLng: -122.4627,  // Vashon EOC!
       defZoom: 14,
       defPlusCode: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
       w3wLocale: "Vashon, WA",
