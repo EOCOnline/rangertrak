@@ -1,13 +1,14 @@
 {
   "name": "rangertrak",
-  "version": "0.11.36",
+  "version": "0.11.37",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "server": "http-server -p 8080 -c-1 dist/rangertrak"
+    "server": "http-server -p 8080 -c-1 dist/rangertrak",
+    "release": "standard-version"
   },
   "private": true,
   "dependencies": {
