@@ -8,6 +8,56 @@ with ($primary: #962f10,
 // https://material.io/components/buttons/web#api
 
 
+// https://popper.js.org/docs/v2/tutorial/
+#tooltip {
+  background   : #333;
+  color        : white;
+  font-weight  : bold;
+  padding      : 4px 8px;
+  font-size    : 13px;
+  border-radius: 4px;
+  display      : none;
+}
+
+#tooltip[data-popper-placement^='top']>#arrow {
+  bottom: -4px;
+}
+
+#tooltip[data-popper-placement^='bottom']>#arrow {
+  top: -4px;
+}
+
+#tooltip[data-popper-placement^='left']>#arrow {
+  right: -4px;
+}
+
+#tooltip[data-popper-placement^='right']>#arrow {
+  left: -4px;
+}
+
+#tooltip[data-show] {
+  display: block;
+}
+
+#arrow,
+#arrow::before {
+  position  : absolute;
+  width     : 8px;
+  height    : 8px;
+  background: inherit;
+}
+
+#arrow {
+  visibility: hidden;
+}
+
+#arrow::before {
+  visibility: visible;
+  content   : '';
+  transform : rotate(45deg);
+}
+
+
 .map-container {
   height: 200px !important;
   // "some" map-container is setting height to 500px. How to reseet/overrule?
@@ -52,14 +102,15 @@ h3 {
 
 // https://www.codingtag.com/remove-arrows-from-input-type-number
 // to hide spinners
- /* Chrome, Safari, Edge, Opera */
- input::-webkit-outer-spin-button,
- input::-webkit-inner-spin-button {
-   -webkit-appearance: none;
-   margin: 0;
- }
- /* Specilly used for Firefox */
- input[type=number] {
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin            : 0;
+}
+
+/* Specilly used for Firefox */
+input[type=number] {
   -moz-appearance: textfield;
 }
 
@@ -143,7 +194,7 @@ h3 {
 }
 
 .enter__What--area {
-  border            : 1px dotted rgb(52, 28, 192);
+  border              : 1px dotted rgb(52, 28, 192);
   //text-orientation: upright;
   //text-transform: capitalize;
   //float             : left;

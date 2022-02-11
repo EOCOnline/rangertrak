@@ -5,6 +5,7 @@
       <pre>{{ frm.value |json}}</pre>
     </div-->
 
+
     <h1>Entry Form</h1>
     <h2 class="elegant">Who</h2>
 
@@ -52,7 +53,6 @@
     </div>
     <br>
 
-
     <!--svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
       <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
   </svg-->
@@ -84,10 +84,17 @@
     <mat-icon svgIcon="thumbs-up" aria-hidden="false" aria-label="thumbs up SVG icon"></mat-icon>thumbsup
     <span class="material-icons-two-tone">info</span-->
 
-    <h2 class="elegant">Where&nbsp;&nbsp;<fa-icon [icon]="faInfoCircle"
-      title="Click info icon for info!" onclick="onWhereInfo()" alt="info icon"></fa-icon><span class="small">(updates map to the right)</span></h2>
+    <!-- https://popper.js.org/docs/v2/tutorial/ -->
+    <h2 class="elegant">Where&nbsp;&nbsp;<fa-icon [icon]="faInfoCircle" id="button" aria-describedby="tooltip"
+        title="Click info icon for info!" alt="info icon"></fa-icon><span class="small">(updates map to the right)
+        onclick="onWhereInfo()"</span></h2>
 
-
+    <div id="tooltip" role="tooltip">
+      My tooltip: Instructions for how to enter location into RangerTrak:
+      Enter Lat & Lng as decimal values or DMS, OR as an address
+       - which will update/REPLACE the coordinates!
+      <div id="arrow" data-popper-arrow></div>
+    </div>
 
     <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude :
       <input [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
@@ -142,7 +149,7 @@
 
     Street Address, +Code, or What.3.Words:
     <input [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
-      type="text" formControlName="address" id="addressCtrl"  tabindex="4"
+      type="text" formControlName="address" id="addressCtrl" tabindex="4"
       title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." size="40"
       placeholder="Address" (change)="this.addressCtrlChanged('addr')"> (optional)
 
@@ -213,7 +220,8 @@
 
     <div class="input-group bordered" id="bordered">Status:
       <mat-radio-group labelPosition="after" formControlName="status"
-        [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid" tabindex="6">
+        [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid"
+        tabindex="6">
         <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat}}>{{stat}} &nbsp;&nbsp;&nbsp;
         </mat-radio-button>
       </mat-radio-group>
@@ -248,7 +256,8 @@
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
     <button (click)="resetForm()" title="Reset all form fields to their defaults" class="eButton"
       type="button">Reset</button>
-    <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button eButton" type="submit" tabindex="8">Submit</button>
+    <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button eButton" type="submit"
+      tabindex="8">Submit</button>
 
     <span id="enter__Submit-info"></span>
 

@@ -17,7 +17,8 @@ import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shar
 import { LatLng } from 'leaflet';
 
 
-import { createPopper } from '@popperjs/core';
+import * as P from '@popperjs/core';
+//import { createPopper } from '@popperjs/core';
 import type { StrictModifiers } from '@popperjs/core';
 
 
@@ -39,6 +40,32 @@ const THUMBUP_ICON =
   `1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z"/>
   </svg>
 `
+
+// https://popper.js.org/docs/v2/constructors/
+type Placement =
+  | 'auto'
+  | 'auto-start'
+  | 'auto-end'
+  | 'top'
+  | 'top-start'
+  | 'top-end'
+  | 'bottom'
+  | 'bottom-start'
+  | 'bottom-end'
+  | 'right'
+  | 'right-start'
+  | 'right-end'
+  | 'left'
+  | 'left-start'
+  | 'left-end';
+type Strategy = 'absolute' | 'fixed';
+/*type Options = {|
+  placement: Placement, // "bottom"
+  modifiers: Array<$Shape<Modifier<any>>>, // []
+  strategy: PositioningStrategy, // "absolute",
+  onFirstUpdate?: ($Shape<State>) => void, // undefined
+|};*/
+
 
 
 @Component({
@@ -67,7 +94,7 @@ export class EntryComponent implements OnInit {
 
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
 
-  createPopper<StrictModifiers>(referenceElement, popperElement, options)
+  //createPopper<StrictModifiers>(referenceElement, popperElement, options)
 
   faMapMarkedAlt = faMapMarkedAlt
   faInfoCircle = faInfoCircle
@@ -121,6 +148,11 @@ export class EntryComponent implements OnInit {
   alert: any
 
   //myTimePicker = null
+
+  button: HTMLButtonElement | undefined
+  tooltip: HTMLHtmlElement | undefined
+  popperInstance: any //typeof P.createPopper | undefined
+
 
   /* following causes:  No suitable injection token for parameter 'formBuilder' of class 'EntryComponent'.
   Consider using the @Inject decorator to specify an injection token.(-992003)
@@ -240,6 +272,21 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       })
     }
     //this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))
+
+    this.button = document.querySelector('#button') as HTMLButtonElement
+    this.tooltip = document.querySelector('#tooltip') as HTMLHtmlElement
+    // https://popper.js.org/docs/v2/constructors/
+    this.popperInstance = P.createPopper(this.button, this.tooltip, {
+      modifiers: [
+        {
+          name: 'offset',
+          options: {
+            offset: [0, 8],
+          },
+        },
+      ],
+    })
+
     console.log(`EntryForm ngOnInit completed at ${Date()}`)
   }
 
@@ -789,51 +836,113 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     }
   }
 
+  // --------------------------- POPPER ---------------------------
+
+
+  // https://popper.js.org/docs/v2/tutorial/
   // TODO: https://popper.js.org/
   // https://popper.js.org/docs/v2/
+
+  show() {
+    if (this.tooltip) {
+      this.tooltip.setAttribute('data-show', '');
+    }
+
+    // Enable the event listeners
+    this.popperInstance.setOptions((options: { modifiers: any }) => ({
+      ...options,
+      modifiers: [
+        ...options.modifiers,
+        { name: 'eventListeners', enabled: true },
+      ],
+    }))
+
+    // update the tooltip position
+    if (this.popperInstance) {
+      //this.popperInstance.update();
+    }
+  }
+
+  hide() {
+    if (this.tooltip) {
+      this.tooltip.removeAttribute('data-show')
+    }
+
+    // Disable the event listeners
+    this.popperInstance.setOptions((options: { modifiers: any }) => ({
+      ...options,
+      modifiers: [
+        ...options.modifiers,
+        { name: 'eventListeners', enabled: false },
+      ],
+    }))
+  }
+
+  myPop() {  // TODO: Not supposed to be hidden in a routine...
+    const showEvents = ['mouseenter', 'focus']
+    const hideEvents = ['mouseleave', 'blur']
+
+    showEvents.forEach((event) => {
+      if (this.button) {
+        this.button.addEventListener(event, this.show)
+      }
+    })
+
+    hideEvents.forEach((event) => {
+      if (this.button) {
+        this.button.addEventListener(event, this.hide);
+      }
+    })
+  }
+
+
+
+
+
   // https://bobrov.dev/angular-popper/
   // https://sergeygultyayev.medium.com/use-popper-js-in-angular-projects-7b34f18da1c
   // https://github.com/gultyaev/angular-popper-example
 
   // The hint to display
-  @Input() target!: HTMLElement
+  //  @Input() target!: HTMLElement
   // Its positioning (check docs for available options)
-  @Input() placement?: string;
+  //  @Input() placement?: string;
   // Optional hint target if you desire using other element than
   // specified one
-  @Input() appPopper?: HTMLElement;
+  //  @Input() appPopper?: HTMLElement;
 
-// The popper instance
-popper: popper;
-private readonly defaultConfig: PopperOptions = {
-  placement: 'top',
-  removeOnDestroy: true
-};
-constructor(private readonly el: ElementRef) {}
-ngOnInit(): void {
-  // An element to position the hint relative to
-  const reference = this.appPopper ? this.appPopper : this.el.nativeElement;
-  this.popper = new Popper(reference, this.target, this.defaultConfig);
-}
-ngOnDestroy(): void {
-  if (!this.popper) {
-    return;
+  // The popper instance
+  /*
+  popper: popper;
+  private readonly defaultConfig: PopperOptions = {
+    placement: 'top',
+    removeOnDestroy: true
+  };
+  constructor(private readonly el: ElementRef) {}
+  ngOnInit(): void {
+    // An element to position the hint relative to
+    const reference = this.appPopper ? this.appPopper : this.el.nativeElement;
+    this.popper = new Popper(reference, this.target, this.defaultConfig);
+  }
+  ngOnDestroy(): void {
+    if (!this.popper) {
+      return;
+    }
+
+    this.popper.destroy();
   }
 
-  this.popper.destroy();
-}
 
 
+    popcorn = this.document.querySelector('#popcorn') as HTMLAnchorElement // BUG:
+    tooltip = this.document.querySelector('#tooltip') as HTMLAnchorElement
 
-  popcorn = this.document.querySelector('#popcorn') as HTMLAnchorElement // BUG:
-  tooltip = this.document.querySelector('#tooltip') as HTMLAnchorElement
+    createPopper(popcorn: HTMLAnchorElement, tooltip: HTMLAnchorElement, {
+      //   placement: 'top-end',
+    }) {
 
-  createPopper(popcorn: HTMLAnchorElement, tooltip: HTMLAnchorElement, {
-    //   placement: 'top-end',
-  }) {
-
-  }
-
+    }
+  */
   onInfoWhere() {
     let s = "for Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds"
   }
