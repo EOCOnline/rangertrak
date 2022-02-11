@@ -4,6 +4,7 @@
     color: white;
     border-radius: 3px;
     padding: 1em;
+
     font-family: sans-serif;
   }
   .main-nav > ul {
@@ -31,6 +32,10 @@
     color: orangered;
     padding: 0 1em;
     margin-left: .3em;
+  }
+  .main-nav a {
+    margin-left: 10px;
+    margin-right: 10px;
   }
  @media screen and (max-width: 575px) {
    .main-nav {

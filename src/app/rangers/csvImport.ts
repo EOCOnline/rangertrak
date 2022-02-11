@@ -56,7 +56,7 @@ export class csvImport {
     // AG Grid will not find the div in the document.
     this.document.addEventListener("DOMContentLoaded", () => {
 
-      debugger
+      //debugger
       // lookup the container we want the Grid to use
       let eGridDiv = document.querySelector('#rangerGrid')
 

@@ -70,9 +70,9 @@
         class="text-sm text-danger">plusCode is required</div>
     </div>
 
-    <h2>Markers</h2>
+    <h2>Field Reports</h2>
 
-    <div class="input-group">
+    <div class="input-group">Markers
       <input
         [class.border-danger]="settingsEditorForm.get('allowManualPinDrops')?.touched && settingsEditorForm.get('allowManualPinDrops')?.invalid"
         type="checkbox" formControlName="allowManualPinDrops" placeholder="allowManualPinDrops">
@@ -81,7 +81,22 @@
         class="text-sm text-danger">allowManualPinDrops is required</div>
         Allow Manual Pin Drops on Google & Leaflet Maps (default: false)
     </div>
+<br>
 
+    Field Report Statuses: (<span onclick="displayShow()" >Display Color Chart</span>)
+    <div id="settings__ColorChart" display="hidden">
+      <img src= '../../assets/imgs/ColorChart.png' title="These 3 letter codes ARE valid colors!, from https://html-color-codes.com/" id ="settings__ColorChart-img"/>
+    </div>
+    <ag-grid-angular
+      class="ag-theme-alpine"
+      (gridReady)="onGridReady($event)"
+      [gridOptions]="gridOptions"
+      [defaultColDef]="defaultColDef"
+      [tooltipShowDelay]=500
+      [rowData]="rowData"
+      [columnDefs]="columnDefs">
+    </ag-grid-angular>
+    <br>
     <!--h2>Markers</h2>
 
     <div class="input-group">Marker Shape:
@@ -184,3 +199,63 @@
 
   </form>
 </div>
+
+<!--hr>
+<div class="card">
+  <div class="card-header">
+      <h5>Reactive Forms with PrimeNg Table</h5>
+  </div>
+  <div class="card-body">
+      <form [formGroup]="employeeForm">
+          <p-table [value]="tableRowArray.controls" [responsive]="true">
+              <ng-template pTemplate="header">
+                  <tr>
+                      <ng-container *ngFor="let col of columns">
+                          <td>{{col}}</td>
+                      </ng-container>
+                  </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                  <ng-container formArrayName="tableRowArray">
+                      <tr [formGroupName]="rowIndex">
+                          <td>
+                              <input type="text" class="form-control form-control-sm" formControlName="name" />
+                              <div class="text-danger" *ngIf="rowData.get('name').errors && (rowData.get('name').dirty || rowData.get('name').touched)">
+                                  <div *ngIf="rowData.get('name').errors?.required">Name is Required</div>
+                              </div>
+                          </td>
+                          <td>
+                              <input type="text" class="form-control form-control-sm" formControlName="address" />
+                              <div class="text-danger" *ngIf="rowData.get('address').errors && (rowData.get('address').dirty || rowData.get('address').touched)">
+                                  <div *ngIf="rowData.get('address').errors?.required">Address is Required</div>
+                              </div>
+                          </td>
+                          <td>
+                              <input type="text" class="form-control form-control-sm" formControlName="salary" />
+                              <div class="text-danger" *ngIf="rowData.get('salary').errors && (rowData.get('salary').dirty || rowData.get('salary').touched)">
+                                  <div *ngIf="rowData.get('salary').errors?.required">Salary is Required</div>
+                                  <div *ngIf="rowData.get('salary').errors?.pattern">Number Only, max 6 digits with max 2 decimals</div>
+                              </div>
+                          </td>
+                          <td>
+                              <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" formControlName="isActive" />
+                                  <label class="form-check-label"></label>
+                              </div>
+                          </td>
+                          <td>
+                              <button type="button" class="btn btn-default" title="Delete" (click)="onDeleteRow(rowIndex)">
+                                  <i class="fa fa-trash-o" aria-hidden="true"></i>
+                              </button>
+                          </td>
+                      </tr>
+                  </ng-container>
+              </ng-template>
+          </p-table>
+      </form>
+  </div>
+  <div class="card-footer">
+      <button type="button" class="btn btn-primary btn-sm pull-left" (click)="addNewRow()">Add Row</button>
+      <button type="button" class="btn btn-success btn-sm pull-right" title="Save">Save</button>
+  </div>
+</div-->

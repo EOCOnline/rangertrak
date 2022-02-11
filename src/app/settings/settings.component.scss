@@ -1,3 +1,25 @@
+@import "ag-grid-community/dist/styles/ag-grid.css";
+@import "ag-grid-community/dist/styles/ag-theme-balham.css";
+
+ag-grid-angular {
+  height: 400px;
+  width: 600px;
+}
+
+#settings__ColorChart {
+  //visibility      : hidden;
+  display         : block;
+  float           : right;
+  width           : 400px; // 30vw;
+  height          : 400px; //10vh;
+  border          : 5px brown;
+  background-color: aliceblue;
+}
+
+#settings__ColorChart-img {
+  width           : 400px; // 30vw;
+  height          : 400px; //10vh;
+}
 
 label {
   font-weight: bold;

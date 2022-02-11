@@ -36,6 +36,7 @@
     "@material/slider": "^13.0.0",
     "@mdi/js": "^6.5.95",
     "@ngx-pwa/local-storage": "^13.0.2",
+    "@popperjs/core": "^2.11.2",
     "@types/google-maps": "^3.2.3",
     "@types/google.maps": "^3.47.4",
     "@what3words/api": "^4.0.4",

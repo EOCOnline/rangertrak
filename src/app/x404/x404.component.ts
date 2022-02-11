@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+// TODO: https://bobrov.dev/blog/angular-smart-404-page/
 
 @Component({
   selector: 'rangertrak-x404',

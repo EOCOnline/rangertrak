@@ -29,7 +29,7 @@ export type SettingsType = {
   logToConsole: boolean
 }
 
-export type FieldReportStatusType = { status: string, color: string }
+export type FieldReportStatusType = { status: string, color: string, icon: string }
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
@@ -118,12 +118,12 @@ export class SettingsService {
   // TODO: Use a Map instead: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map#objects_vs._maps
   ResetFieldReportStatusDefaults() {
     this.fieldReportStatuses = [           // TODO: Allow editing this
-      { status: 'Normal', color: '' },  // Often the default value: see SettingsService.defRangerStatus
-      { status: 'Need Rest', color: 'yellow' },
-      { status: 'Urgent', color: 'red' },
-      { status: 'Objective Update', color: 'aqua' },
-      { status: 'Check-in', color: 'grey' },
-      { status: 'Check-out', color: 'dark-grey' }
+      { status: 'Normal', color: '', icon: '' },  // Often the default value: see SettingsService.defRangerStatus
+      { status: 'Need Rest', color: 'cce', icon: '' },
+      { status: 'Urgent', color: 'red', icon: '' },
+      { status: 'Objective Update', color: 'aqua', icon: '' },
+      { status: 'Check-in', color: 'grey', icon: '' },
+      { status: 'Check-out', color: 'dark-grey', icon: '' }
     ]
   }
 

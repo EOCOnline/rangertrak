@@ -196,10 +196,10 @@ export class What3Words {
 
     const client: w3w.ConvertTo3waClient = w3w.ConvertTo3waClient.init(What3Words.apiKey)
     const options: w3w.ConvertTo3waOptions = { coordinates: { lat: lat, lng: lng } };
-    debugger
+    // debugger
     client.run(options)
       .then((res: any/*ConvertTo3waResponse*/) => console.log('Convert to 3wa', res));
-    debugger
+    // debugger
 
     /*
         w3w.ConvertTo3waClient.convertTo3wa({ lat, lng }, lang)
@@ -227,10 +227,10 @@ export class What3Words {
     const client: w3w.ConvertToCoordinatesClient = w3w.ConvertToCoordinatesClient.init(What3Words.apiKey)
     const options: w3w.ConvertToCoordinatesOptions = { words: threeWords };
 
-    debugger
+    // debugger
     client.run(options)
       .then((res: any /*ConvertToCoordinatesResponse*/) => console.log('Convert to coordinates', res));
-    debugger
+    // debugger
 
     /*
         w3w.convertToCoordinates("filled.count.soap")
@@ -340,12 +340,12 @@ export class What3Words {
       input: w3wSuggestion,
     }
     let res
-    debugger
+    // debugger
     client.run(options)
       .then((res: w3w.AutosuggestResponse) =>
         console.log(`suggestions for "${w3wSuggestion}"`, JSON.stringify(res))
       );
-      debugger
+      // debugger
     return res
 
 /*
