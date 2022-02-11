@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core'
+//import * as V from 'standard-version'
 import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
+import * as packageJson from '../../../../package.json'
 
 export type SecretType = {
   "id": number,
@@ -31,8 +33,6 @@ export type SettingsType = {
 
 export type FieldReportStatusType = { status: string, color: string, icon: string }
 
-const _version = '0.11.36'  // ALSO NEED TO UPDATE package.json!!!
-
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
   static storageLocalName = 'appSettings'
@@ -41,10 +41,10 @@ export class SettingsService {
   static debugMode: any;
   static localStorageFieldReportStatusName = 'fieldReportStatuses'
    fieldReportStatuses: FieldReportStatusType[] = []
+   static version:string
 
   constructor() {
     console.log("Contructing SettingsService: once or repeatedly?!--------------") // XXX
-
 
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
     let secretWorkaround = JSON.stringify(secrets)
@@ -52,9 +52,13 @@ export class SettingsService {
     //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
     // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key
 
+    // get Version from package.json
+    let ddds = JSON.stringify(packageJson)
+    let dddp = JSON.parse(ddds)
+    SettingsService.version = dddp.version
 
     // populate SettingsService.Settings
-    // BUG: Doesn't auto-update version & other settings not exposed!!!
+    // BUG: Doesn't auto-update settings that are not exposed in the Settings Edit Component!!!
     let localStorageSettings = localStorage.getItem(SettingsService.storageLocalName)
     let needSettings =  SettingsService.Settings==undefined
     if (needSettings) {
@@ -63,15 +67,14 @@ export class SettingsService {
         if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") > 0) {
           SettingsService.Settings = JSON.parse(localStorageSettings)
           console.log("Initialized App Settings from localstorage")
-          needSettings = false
+          needSettings = false // Warning: Critical dependency: the request of a dependency is an expression
         }
-      } catch (error: any) {
+      } catch (error: any) { // Warning: Critical dependency: the request of a dependency is an expression
         console.log(`localstorage App Settings i.e., ${localStorageSettings} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
       }
     }
     if (needSettings) { SettingsService.ResetDefaults() }
-    //REVIEW:
-    SettingsService.Settings.version = _version
+    SettingsService.Settings.version = SettingsService.version
 
     let localStorageFieldReportStatuses = localStorage.getItem(SettingsService.localStorageFieldReportStatusName)
     let needStatuses =  this.fieldReportStatuses==undefined
@@ -88,7 +91,6 @@ export class SettingsService {
       }
     }
     if (needSettings) { this.ResetFieldReportStatusDefaults() }
-
   }
 
   static ResetDefaults() {
@@ -100,7 +102,7 @@ export class SettingsService {
       id: 0,  // FUTURE: allow different setts of settings (e.g., per location)???
       name: "standard hardcoded settings",
       application: "RangerTrak",
-      version: _version, //TODO: Auto update this...
+      version: SettingsService.version,
       note: "values set by code, please edit them to serve you!",
       defLat: 47.4472,
       defLng: -122.4627,  // Vashon EOC!
