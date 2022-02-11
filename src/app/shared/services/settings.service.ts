@@ -31,6 +31,8 @@ export type SettingsType = {
 
 export type FieldReportStatusType = { status: string, color: string, icon: string }
 
+const _version = '0.11.36'  // ALSO NEED TO UPDATE package.json!!!
+
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
   static storageLocalName = 'appSettings'
@@ -69,7 +71,7 @@ export class SettingsService {
     }
     if (needSettings) { SettingsService.ResetDefaults() }
     //REVIEW:
-    SettingsService.Settings.version = '0.11.35'
+    SettingsService.Settings.version = _version
 
     let localStorageFieldReportStatuses = localStorage.getItem(SettingsService.localStorageFieldReportStatusName)
     let needStatuses =  this.fieldReportStatuses==undefined
@@ -98,7 +100,7 @@ export class SettingsService {
       id: 0,  // FUTURE: allow different setts of settings (e.g., per location)???
       name: "standard hardcoded settings",
       application: "RangerTrak",
-      version: '0.11.35', //TODO: Auto update this...
+      version: _version, //TODO: Auto update this...
       note: "values set by code, please edit them to serve you!",
       defLat: 47.4472,
       defLong: -122.4627,  // Vashon EOC!
