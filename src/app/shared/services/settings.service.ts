@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core'
-//import * as V from 'standard-version'
 import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
 import * as packageJson from '../../../../package.json'
 
@@ -40,8 +39,8 @@ export class SettingsService {
   static Settings: SettingsType
   static debugMode: any;
   static localStorageFieldReportStatusName = 'fieldReportStatuses'
-   fieldReportStatuses: FieldReportStatusType[] = []
-   static version:string
+  fieldReportStatuses: FieldReportStatusType[] = []
+  static version: string
 
   constructor() {
     console.log("Contructing SettingsService: once or repeatedly?!--------------") // XXX
@@ -50,17 +49,24 @@ export class SettingsService {
     let secretWorkaround = JSON.stringify(secrets)
     SettingsService.secrets = JSON.parse(secretWorkaround)
     //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
-    // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key
+    // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key: environmental values, GitHub vault, or  encryption?
 
     // get Version from package.json
-    let ddds = JSON.stringify(packageJson)
-    let dddp = JSON.parse(ddds)
-    SettingsService.version = dddp.version
+    let packageAsString = JSON.stringify(packageJson)
+    let packageAsJson = JSON.parse(packageAsString)
+    SettingsService.version = packageAsJson.version
+    // TODO: force garbage collection of package.json, for security?
 
     // populate SettingsService.Settings
-    // BUG: Doesn't auto-update settings that are not exposed in the Settings Edit Component!!!
+    // BUG: Doesn't auto-update settings that are not exposed in the Settings Edit Component
+
+
+    alert("review Settings Service Constructor!")
+
+
+
     let localStorageSettings = localStorage.getItem(SettingsService.storageLocalName)
-    let needSettings =  SettingsService.Settings==undefined
+    let needSettings = SettingsService.Settings == undefined
     if (needSettings) {
       console.log("Get Settings...")
       try {
@@ -74,23 +80,28 @@ export class SettingsService {
       }
     }
     if (needSettings) { SettingsService.ResetDefaults() }
-    SettingsService.Settings.version = SettingsService.version
+    // REVIEW: remove? SettingsService.Settings.version = SettingsService.version
+
 
     let localStorageFieldReportStatuses = localStorage.getItem(SettingsService.localStorageFieldReportStatusName)
-    let needStatuses =  this.fieldReportStatuses==undefined
-    if (needStatuses) {
-      console.log("Get Settings...")
+    if (localStorageFieldReportStatuses != undefined) { //|| this.fieldReportStatuses.length == 0
+      console.log("Got fieldReportStatuses from LocalStorage, parse 'em")
       try {
         if (localStorageFieldReportStatuses != null && localStorageFieldReportStatuses.indexOf("status") > 0) {
           this.fieldReportStatuses = JSON.parse(localStorageFieldReportStatuses)
           console.log("Initialized fieldreport statuses from localstorage")
-          needStatuses = false
         }
       } catch (error: any) {
-        console.log(`localstorage App Settings i.e., ${localStorageSettings} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
+        console.error(`localstorage App Settings i.e., ${SettingsService.localStorageFieldReportStatusName} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
+        // TODO: Do it!
+        // REVIEW: localStorage.removeItem(SettingsService.localStorageFieldReportStatusName)
       }
     }
-    if (needSettings) { this.ResetFieldReportStatusDefaults() }
+    if ((this.fieldReportStatuses == undefined) || (this.fieldReportStatuses == null) || (this.fieldReportStatuses.length == 0)) {
+      this.ResetFieldReportStatusDefaults()
+    }
+    console.log("FieldReport Statuses initialized: " + JSON.stringify(this.fieldReportStatuses))
+
   }
 
   static ResetDefaults() {
@@ -121,7 +132,8 @@ export class SettingsService {
 
   // TODO: Use a Map instead: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map#objects_vs._maps
   ResetFieldReportStatusDefaults() {
-    this.fieldReportStatuses = [           // TODO: Allow editing this
+    console.log("ResetFieldReportStatusDefaults................................. ")
+    this.fieldReportStatuses = [
       { status: 'Normal', color: '', icon: '' },  // Often the default value: see SettingsService.defRangerStatus
       { status: 'Need Rest', color: 'cce', icon: '' },
       { status: 'Urgent', color: 'red', icon: '' },
@@ -143,8 +155,9 @@ export class SettingsService {
 
   updateFieldReportStatus(newStatuses: FieldReportStatusType[]) {
     // TODO: any validation...
+    this.fieldReportStatuses = newStatuses
     localStorage.setItem(SettingsService.localStorageFieldReportStatusName, JSON.stringify(newStatuses));
-    console.log("Updated FieldReport Statuses to " + JSON.stringify(newStatuses))
+    console.log("Replaced FieldReport Statuses with " + JSON.stringify(newStatuses))
   }
 
   localStorageVoyeur() {

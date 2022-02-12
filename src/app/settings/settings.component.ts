@@ -17,6 +17,37 @@ export class SettingsComponent implements OnInit {
 
   private gridApi: any
   private gridColumnApi: any
+  rowData: FieldReportStatusType[] = []
+
+  // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
+  gridOptions = {}// rowSelection: "multiple"}
+
+  defaultColDef = {
+    flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
+    minWidth: 30,
+    editable: true,
+    resizable: true,
+    sortable: true,
+    //filter: true,
+    //floatingFilter: true
+  }
+
+  columnDefs = [
+    {
+      headerName: "Status", field: "status", flex: 50,
+      cellStyle: (params: { value: string; }) => {
+        for (let i = 0; i < this.rowData.length; i++) {
+          if (params.value === this.rowData[i].status) {
+            return { backgroundColor: this.rowData[i].color }
+          }
+        }
+        return null
+      }
+    },
+    { headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code" },
+    { headerName: "Icon", field: "icon" } //, minWidth: "25px" }
+  ];
+
 
   constructor(
     private fb: FormBuilder,
@@ -28,10 +59,6 @@ export class SettingsComponent implements OnInit {
     //this.settings = settingService()
     this.settings = SettingsService.Settings // only using static functions/values from the service...
     console.log('Application Settings set to static values. But not initialized???')
-
-    // TODO: Initial attempt of using a table to edit FieldReportStatuses
-    // this.columns = ["Name", "Address", "Salary", "IsActive", "Delete"];
-    //this.employeeForm= this.createTableRow()
   }
 
   ngOnInit(): void {
@@ -43,9 +70,8 @@ export class SettingsComponent implements OnInit {
     }
 
     this.settingsEditorForm = this.getFormArrayFromSettingsArray()
-
-    this.getFieldReportStatuses()
-    //console.log("settings component ngInit done at ", Date())
+    this.rowData = this.settingsService.getFieldReportStatuses()
+    console.log("settings component ngInit done at ", Date())
   }
 
   onBtnResetDefaults() {
@@ -66,19 +92,6 @@ export class SettingsComponent implements OnInit {
       latitude: [this.settings.defLat, Validators.required],
       longitude: [this.settings.defLng, Validators.required],
 
-      /* REVIEW: Following line gets:
-        Error: Expected validator to return Promise or Observable.
-        at toObservable (forms.mjs:797:15)
-        at FormControl._runAsyncValidator (forms.mjs:2536:25)
-        at FormControl.updateValueAndValidity (forms.mjs:2510:22)
-        at new FormControl (forms.mjs:2888:14)
-        at FormBuilder.control (forms.mjs:7188:16)
-        at FormBuilder._createControl (forms.mjs:7225:25)
-        at forms.mjs:7212:42
-        at Array.forEach (<anonymous>)
-        at FormBuilder._reduceControls (forms.mjs:7211:37)
-        at FormBuilder.group (forms.mjs:7145:31)
-      */
       zoom: [this.settings.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation
 
       plusCode: [this.settings.defPlusCode],
@@ -115,76 +128,6 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  getFieldReportStatuses() {
-    this.frs = this.settingsService.getFieldReportStatuses()
-    this.rowData = this.frs
-
-  }
-  frs: FieldReportStatusType[] = []
-
-  // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
-  gridOptions = {}// rowSelection: "multiple"}
-
-  defaultColDef = {
-    flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
-    minWidth: 50,
-    editable: true,
-    resizable: true,
-    sortable: true,
-    //filter: true,
-    //floatingFilter: true
-  }
-
-  columnDefs = [
-    //{ headerName: "Status", field: "status", headerTooltip: 'Enter  a status value' },
-    {
-      headerName: "Status", field: "status", minwidth: "75px", flex: 50,
-      cellStyle: (params: { value: string; }) => {
-        //this.fieldReportStatuses.forEach(function(value) { (params.value === value.status) ? { backgroundColor: value.color }  : return(null) }
-        for (let i = 0; i < this.frs.length; i++) {
-          if (params.value === this.frs[i].status) {
-            return { backgroundColor: this.frs[i].color }
-          }
-        }
-        return null
-      }
-    },
-    { headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code", minwidth: "25px"},
-    { headerName: "Icon", field: "icon", minwidth: "25px"}
-    //headerTooltip: 'Report date', valueGetter: this.myValueGetter},
-    /*   {
-         headerName: "Status", field: "status", flex: 50,
-         cellStyle: (params: { value: string; }) => {
-           //this.fieldReportStatuses.forEach(function(value) { (params.value === value.status) ? { backgroundColor: value.color }  : return(null) }
-           for (let i = 0; i < this.fieldReportStatuses.length; i++) {
-             if (params.value === this.fieldReportStatuses[i].status) {
-               return { backgroundColor: this.fieldReportStatuses[i].color }
-             }
-           }
-           return null
-         }
-         },
-         */
-  ];
-
-
-  rowData: FieldReportStatusType[] = []
-
-  myValueGetter = (params: { data: FieldReportStatusType }) => {
-    let dt = 'unknown date'
-    //let d: Date = params.data.date
-    /*
-    try {  // TODO: Use the date pipe instead?
-      //weekday[d.getDay()] +
-      dt = formatDate(d, 'M-dd HH:MM:ss', 'en-US')
-      //console.log(`Day is: ${params.data.date.toISOString()}`)
-    } catch (error: any) {
-      dt = `Bad date format: Error name: ${error.name}; msg: ${error.message}`
-    }
-    */
-    return dt
-  }
-
   onGridReady = (params: any) => {
     console.log("Settings Form onGridReady")
 
@@ -203,68 +146,27 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  onBtnAddFRStatus() {
+    this.rowData.push({ status: 'New Status', color: '', icon: '' })
 
-  // https://www.c-sharpcorner.com/article/creating-table-with-reactive-forms-in-angular-9-using-primeng-table2/
-  useTableToEditFieldReportStatuses() {
-
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+    } else {
+      console.log("no this.gridApi yet in onFirstDataRendered()")
+    }
+    this.gridApi.sizeColumnsToFit();
   }
-  /*
-    employeeForm: FormGroup ;
-    columns: string[]; // priming turbo table columns
-    formBuilder = new FormBuilder
-    /
-   * Initializes the Form & by default adds an empty row to the PRIMENG TABLE
-   *
-    private createForm(): void {
-      this.employeeForm = this.formBuilder.group({
-        //tableRowArray is a FormArray which holds a list of FormGroups
-        tableRowArray: this.formBuilder.array([
-          this.createTableRow()
-        ])
-      })
-    }
 
-    **
-     * Returns the FormGroup as a Table Row
-     *
-    private createTableRow(): FormGroup {
-      return this.formBuilder.group({
-        name: new FormControl(null, {
-          validators: [Validators.required, Validators.minLength(3), Validators.maxLength(50)]
-        }),
-        address: new FormControl(null, {
-          validators: [Validators.required, Validators.maxLength(500)]
-        }),
-        salary: new FormControl(null, {
-          validators: [Validators.required, Validators.pattern(/^\d{1,6}(?:\.\d{0,2})?$/), Validators.minLength(3), Validators.maxLength(50)]
-        }),
-        isActive: new FormControl({
-          value: true,
-          disabled: true
-        })
-      });
-    }
-
-    get tableRowArray(): FormArray {
-      return this.employeeForm.get('tableRowArray') as FormArray;
-    }
-
-    addNewRow(): void {
-      this.tableRowArray.push(this.createTableRow());
-    }
-
-    onDeleteRow(rowIndex: number): void {
-      this.tableRowArray.removeAt(rowIndex);
-    }
-  */
-
+  //TODO: If user edits field report status color, need to update background: refreshCells()????
   onFormSubmit(): void {
     console.log("Update Application Settings...")
     let newSettings: SettingsType = this.getSettingsArrayFromFormArray()
     SettingsService.Update(newSettings)
 
-    // TODO: Set this up as an observable, or Componts that have ALREADY pulled down the values won't refresh them!!!!
+    console.log(`Update FieldReportStatuses... ${JSON.stringify(this.rowData)}`)
+    this.settingsService.updateFieldReportStatus(this.rowData)
 
+    // TODO: Set this up as an observable, or Components that have ALREADY pulled down the values won't refresh them!!!!
     // TODO: If Debug disabled then call:
     //enableProdMode()
   }
