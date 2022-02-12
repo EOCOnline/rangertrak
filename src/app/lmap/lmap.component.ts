@@ -1,20 +1,12 @@
-// see https://stackblitz.com/edit/ts-leaflet-markercluster?file=index.ts
+import "leaflet.markercluster"
+import * as L from 'leaflet'
 
-//import { Console } from 'console';
-
-//import 'leaflet';
-//import "leaflet.markercluster";
-//import * as L from 'leaflet';
-
-import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
-import { DOCUMENT, JsonPipe } from '@angular/common';
-import { MarkerService, SettingsService, ShapeService } from '../shared/services';
+import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
+import { DOCUMENT, JsonPipe } from '@angular/common'
+import { MarkerService, SettingsService, ShapeService } from '../shared/services'
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
-
-//import { Component, OnInit } from '@angular/core';
-import * as L from 'leaflet';
 
 //const L = window['L'];
 
@@ -42,9 +34,6 @@ let tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 })
 */
 
-export const POLSKA_SZER_GEOGR = 51.9874;
-export const POLSKA_DL_GEOGR = 19.0162;
-export const POLSKA_ZOOM = 5;
 
 /*export type addressType = {
 title:string;
@@ -55,9 +44,9 @@ num: number
   selector: 'rangertrak-lmap',
   templateUrl: './lmap.component.html',
   styleUrls: [
-    '../../../node_modules/leaflet/dist/leaflet.css',
-    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css",
-    './lmap.component.scss'
+    './lmap.component.scss',
+    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css", // REVIEW: also added to angular.json: needed there?
+    '../../../node_modules/leaflet/dist/leaflet.css', // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)
   ],
   providers: [SettingsService]
 })
@@ -94,30 +83,15 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     this.initMap();
   }
 
-  private initMap1(): void {
-    this.lmap = L.map('map', {
-      center: [39.8282, -98.5795],
-      zoom: 3
-    });
-
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      minZoom: 3,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-
-    tiles.addTo(this.lmap);
-  }
-
   private initMap() {
     console.log("Init Leaflet Map..........")
-    this.lmap = L.map('map', {
+    this.lmap = L.map('lmap', {
       center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
       zoom: 12
     })
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
+      maxZoom: 21,
       minZoom: 3,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
@@ -126,6 +100,7 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
   }
 
 
+  // https://stackblitz.com/edit/ts-leaflet-markercluster
 
   /*
    //console.log("ngAfterViewInit..........")
