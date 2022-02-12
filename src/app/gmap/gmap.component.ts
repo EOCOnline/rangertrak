@@ -3,15 +3,15 @@
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 import { MatIconModule } from '@angular/material/icon'
 import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone } from '@angular/core';
-import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
 import { DOCUMENT, JsonPipe } from '@angular/common';
-//import { MarkerClusterer } from "@google-maps/markerclusterer";
-// import "./style.css";
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
 import { ComponentFixture } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
-import { LatLng } from 'leaflet';
+
+//import { MarkerClusterer } from "@google-maps/markerclusterer";
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
+import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
+//import { LatLng } from 'leaflet';
 
 /*
   https://developers.google.com/maps/support/
@@ -68,8 +68,8 @@ export class GmapComponent implements OnInit {    //extends Map
   @ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
 
   // items for template
-  title = 'Google Map (implemented as an Angular Component)'
-  display?: google.maps.LatLngLiteral;
+  title = 'Google Map'
+  currentLocation?: google.maps.LatLngLiteral;
   Vashon = new google.maps.LatLng(47.4471, -122.4627)
   Kaanapali = new google.maps.LatLng(20.9338, -156.7168)
 
@@ -101,7 +101,7 @@ export class GmapComponent implements OnInit {    //extends Map
   // label = 'RangerTrak Label'
 
   labelIndex = 0;
-  infoContent = ''
+  // infoContent = ''
   apiLoaded //: Observable<boolean>
 
   // next 2 even used?
@@ -127,7 +127,7 @@ export class GmapComponent implements OnInit {    //extends Map
     // this.apiLoaded = httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=${SettingsService.secrets[3].key}`, 'callback')
     this.apiLoaded = true
     /*
-    httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4`, "callback")
+    httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=YOUR_API_HERE`, "callback")
       .pipe(
         map(() => true),
         catchError(() => of(false)),
@@ -152,11 +152,11 @@ export class GmapComponent implements OnInit {    //extends Map
       }
     })
     // https://github.com/angular/components/tree/master/src/google-maps
-    if (this.map == null) {
-      console.log("This.map is null")
-    } else {
-      console.log(`this.map zoom =${this.map.getZoom()}`)
-    }
+    /* if (this.map == null) {
+       console.log("This.map is null")
+     } else {
+       console.log(`this.map zoom =${this.map.getZoom()}`)
+     }*/
     // gMap is still null...
   }
 
@@ -353,66 +353,33 @@ export class GmapComponent implements OnInit {    //extends Map
 
   displayAllMarkers() {
     let latlng
-    let infoContent
+    //let infoContent
     let labelText
     let title
     let labelColor
     let fr: FieldReportType
 
-    let FieldReportStatuses = ['None', 'Normal', 'Need Rest', 'Urgent', 'Objective Update', 'Check-in', 'Check-out'] // TODO: Grab it from FieldReportStatuses!!!
+    let fieldReportStatuses: FieldReportStatusType[] = this.settingsService.getFieldReportStatuses()
     // REVIEW: Might this mess with existing fr's?
     this.fieldReports = this.fieldReportService.getFieldReports()
     console.log(`displayAllMarkers got ${this.fieldReports.length} field reports`)
     for (let i = 0; i < this.fieldReports.length; i++) {
       fr = this.fieldReports[i]
       latlng = new google.maps.LatLng(fr.lat, fr.long)
-      infoContent = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, long ${fr.long} with "${fr.note}".`
-      title = infoContent
-      switch (fr.status) {
-        case 'None': {
-          labelText = "grade"
-          labelColor = "pink"
-          break
-        }
-        case 'Normal': {
-          labelText = "water_drop"
-          labelColor = "grey"
-          break
-        }
-        case 'Need Rest': {
-          labelText = "join_inner"
-          labelColor = "orange"
-          break
-        }
-        case 'Urgent': {
-          labelText = "rocket"
-          labelColor = "black"
-          break
-        }
-        case 'Objective Update': {
-          labelText = "noise_aware"
-          labelColor = "blue"
-          break
-        }
-        case 'Check-in': {
-          labelText = "rowing"
-          labelColor = "green"
-          break
-        }
-        case 'Check-out': {
-          labelText = "next_plan"
-          labelColor = "yellow"
-          break
-        }
-        default: {
-          labelText = "question_mark"
-          labelColor = "aqua"
-          break
-        }
+      title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, long ${fr.long} with "${fr.note}".`
+      //title = infoContent
+
+      for (let j = 0; j < fieldReportStatuses.length; j++) {
+        if (fieldReportStatuses[j].status != fr.status) continue
+        labelText = fieldReportStatuses[j].icon
+        labelColor = fieldReportStatuses[j].color
+        break
       }
+
       console.log(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`)
-      this.addMarker(latlng, infoContent, labelText, title, labelColor)
+      this.addMarker(latlng, title, labelText, title, labelColor)
     }
+
     console.log(`displayAllMarkers added ${this.fieldReports.length} markers`)
 
     //   addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText = "grade", title = "RangerTitle", labelColor = "#ffffff", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP)
@@ -421,7 +388,7 @@ export class GmapComponent implements OnInit {    //extends Map
 
   onMapMouseMove(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
-      this.display = event.latLng.toJSON()
+      this.currentLocation = event.latLng.toJSON()
     }
   }
 

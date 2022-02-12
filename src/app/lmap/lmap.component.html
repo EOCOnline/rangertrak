@@ -1,5 +1,4 @@
-
-<h1>Leaflet Map</h1>
+<h1>{{title}}</h1>
 
 <!--  https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet -->
 
@@ -24,17 +23,64 @@
     <div id="bigLeafletMapId" style="width: 100%; height: 70vh;"></div-->
 
 
-  <div class="lmap-container">
-    <div class="lmap-frame">
-      <div id="lmap"></div>
+<!--div *ngIf="apiLoaded" | async-->
+
+
+
+<div class="lmap-container">
+  <div class="lmap-frame">
+    <div id="lmap"></div>
+
+    <div id="markerDiv" #markerDiv *ngFor="let marker of markers">
     </div>
+
   </div>
+  <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
+  <div>Latitude: <span class="strong">{{currentLocation?.lat | number:'1.4-5'}}</span> Longitude: <span
+      class="strong">{{currentLocation?.lng | number:'1.4-5'}}</span>
+  </div>
+</div>
+
+
+
+
+<!--
+    <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
+      (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="addTrafficLayer()"
+      (mapInitialized)="onMapInitialized($event)">
+
+      <div id="markerDiv" #markerDiv *ngFor="let marker of markers">
+      </div>
+
+      <
+        (mapClick)="openInfoWindow($event)"
+
+          [position]="marker.position"
+          [options]="marker.options"  >
+
+      <map-circle [center]="circleCenter" [radius]="radius"></map-circle>
+
+      <map-info-window>{{ infoContent }}</map-info-window>
+
+    </google-map>
+
+    <- https://angular.io/api/common/DecimalPipe#digitsinfo >
+    <div>Latitude: <span class="strong">{{display?.lat | number:'1.4-5'}}</span>   Longitude: <span class="strong">{{display?.lng | number:'1.4-5'}}</span>
+    </div>
+  </div-->
+<br>
+
+
+
+
+
 
 <details>
   <summary>Instructions</summary>
   <ul>
     <li>This displays All Field Reports for All Rangers by default.</li>
-    <li>FUTURE: IF a subset of Field Reports are selected on the Field Reports page, then ONLY those can be displayed here.</li>
+    <li>FUTURE: IF a subset of Field Reports are selected on the Field Reports page, then ONLY those can be displayed
+      here.</li>
   </ul>>
 </details>
 <br>

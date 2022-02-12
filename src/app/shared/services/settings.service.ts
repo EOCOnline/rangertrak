@@ -51,14 +51,6 @@ export class SettingsService {
     //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
     // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key: environmental values, GitHub vault, or  encryption? https://www.doppler.com/
 
-    // get Version from package.json
-    let packageAsString = JSON.stringify(packageJson)
-    let packageAsJson = JSON.parse(packageAsString)
-    SettingsService.version = packageAsJson.version
-    // REVIEW: following forces garbage collection of package.json, for security? (would happen at end of constructor too)
-    packageAsString = ''
-    packageAsJson = null
-
     // populate SettingsService.Settings
     // BUG: Use subscription/observables instead: so rest of program gets latest values - not just those present right now?
     // Doesn't auto-update settings that are not exposed in the Settings Edit Component
@@ -70,9 +62,9 @@ export class SettingsService {
         if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") > 0) {
           SettingsService.Settings = JSON.parse(localStorageSettings)
           console.log("Initialized App Settings from localstorage")
-          needSettings = false // Warning: Critical dependency: the request of a dependency is an expression
+          needSettings = false
         }
-      } catch (error: any) { // Warning: Critical dependency: the request of a dependency is an expression
+      } catch (error: any) {
         console.log(`localstorage App Settings i.e., ${localStorageSettings} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
         // TODO: Do it!
         // REVIEW:
@@ -80,6 +72,18 @@ export class SettingsService {
       }
     }
     if (needSettings) { SettingsService.ResetDefaults() }
+
+    // REVIEW: Above may come up with an old version #, so do this after the above
+    // package.json has version: https://www.npmjs.com/package/standard-version: npm run release
+    let packageAsString = JSON.stringify(packageJson)
+    let packageAsJson = JSON.parse(packageAsString)
+    //this.version = packageAsJson.version
+    SettingsService.version = packageAsJson.version
+    SettingsService.Settings.version = packageAsJson.version
+    console.log(`Got version: ${packageAsJson.version} `)
+    // REVIEW: following forces garbage collection of package.json, for security? (would happen at end of constructor too)
+    packageAsString = ''
+    packageAsJson = null
 
 
     // populate Field Report Statuses

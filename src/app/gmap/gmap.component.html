@@ -36,12 +36,12 @@
 
     <map-circle [center]="circleCenter" [radius]="radius"></map-circle>
 
-    <map-info-window>{{ infoContent }}</map-info-window>
+    <map-info-window> infoWindowContent could go here</map-info-window>
 
   </google-map>
 
   <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-  <div>Latitude: <span class="strong">{{display?.lat | number:'1.4-5'}}</span>   Longitude: <span class="strong">{{display?.lng | number:'1.4-5'}}</span>
+  <div>Latitude: <span class="strong">{{currentLocation?.lat | number:'1.4-5'}}</span>   Longitude: <span class="strong">{{currentLocation?.lng | number:'1.4-5'}}</span>
   </div>
 </div>
 <br>
@@ -58,6 +58,7 @@
   <!--button (click)="onInfoClick()">Info Window</button-->
   <!--button (click)="addMarker()">Add marker</button-->
 </details>
-<br>
+
+<!--br>
 <hr>
-<div id="map2"></div>
+<div id="map2"></div-->

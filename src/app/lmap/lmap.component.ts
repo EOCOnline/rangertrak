@@ -1,9 +1,12 @@
+import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
+import { DOCUMENT, JsonPipe } from '@angular/common'
+import { HttpClient } from '@angular/common/http';
+
 import "leaflet.markercluster"
 import * as L from 'leaflet'
 
-import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
-import { DOCUMENT, JsonPipe } from '@angular/common'
-import { MarkerService, SettingsService, ShapeService } from '../shared/services'
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
+import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
@@ -63,20 +66,32 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
       //@Inject(DOCUMENT) private document: Document
     ) {  */
 
+  title = 'Leaflet Map'
   lmap: L.Map | undefined
+  //apiLoaded //: Observable<boolean>
+  markers: google.maps.Marker[] = []
+  zoom
+  center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
+  currentLocation = this.center
+  fieldReports?: FieldReportType[]
 
-  constructor() {
+  constructor(private settingsService: SettingsService,
+    private fieldReportService: FieldReportService,
+    private httpClient: HttpClient,
+    @Inject(DOCUMENT) private document: Document) {
     //this.map
+
+    this.fieldReportService = fieldReportService
+    this.zoom = SettingsService.Settings.defZoom
+    this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
+
+    //this.apiLoaded = true
   }
 
   // following NOT declared above, so not called!!!!
   ngOnInit() {
     //https://www.npmjs.com/package/leaflet.markercluster
 
-    let tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
-    });
   }
 
   ngAfterViewInit() {
@@ -97,7 +112,120 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     })
 
     tiles.addTo(this.lmap)
+
+    /* TODO:
+    this.displayAllMarkers()
+        // REVIEW: Doesn't work with NO Markers?
+        console.log(`Setting Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLng}, zoom: ${SettingsService.Settings.defZoom}`)
+        this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })
+        this.gMap.setZoom(SettingsService.Settings.defZoom)
+        this.fitBounds()
+    */
+
   }
+
+  fitBounds() {
+    //let reportBounds = this.fieldReportService.getFieldReportBounds()
+    //var southWest = new google.maps.LatLng(reportBounds, reportBounds.west);
+    //var northEast = new google.maps.LatLng(reportBounds.north,reportBounds.east);
+    //var bounds = new google.maps.LatLngBounds(southWest,northEast);
+    this.fieldReportService.recalcFieldBounds()
+    let bounds = this.fieldReportService.getFieldReportBounds()
+    console.log(`Fitting bounds= :${JSON.stringify(bounds)}`)
+  //  this.gMap?.fitBounds(bounds)
+  }
+
+  onMapMouseMove(event: any) { //google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      this.currentLocation = event.latLng.toJSON()
+    }
+  }
+
+/*
+  addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
+    console.log(`addMarker`)
+
+    if (infoContent == "") {
+      infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}`
+    }
+    if (title == "") {
+      title = infoContent
+    }
+    labelText = "grade"
+    //icon = "rocket"
+    fontSize = "20px"
+
+        //icon = "rocket"
+        animation = google.maps.Animation.DROP
+
+
+    let labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
+    // https://material.angular.io/components/icon/overview
+    //https://developers.google.com/fonts/docs/material_icons
+    //https://fonts.google.com/icons
+    if (latLng) {
+      let dt = new Date();
+      let time = `${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}` // :${Utility.zeroFill(dt.getMilliseconds(), 4)}`
+      * REVIEW:
+       let lat:number = event.latLng.lat  // gets:  Type '() => number' is not assignable to type 'number'.
+       let lng:number = event.latLng.lng
+       lat = Math.round(lat * 1000.0) / 1000.0
+       lng = Math.round(lng * 1000.0) / 1000.0
+       let pos = `lat: ${lat}; long: ${lng} `
+       *
+      let pos = `lat: ${latLng.lat}; long: ${latLng.lng}`
+      //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; long: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
+
+      console.log("Actually adding marker now...")
+      let m = new google.maps.Marker({
+        draggable: true,
+        animation: animation,
+        map: this.gMap,
+        position: latLng,
+        title: title,
+        //icon: icon, //"https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+        label: {
+          // label: this.labels[this.labelIndex++ % this.labels.length],
+          text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+          fontFamily: "Material Icons",
+          color: labelColor,
+
+          fontSize: fontSize,
+        },
+        // label: labels[labelIndex++ % labels.length],
+      })
+      // markers can only be keyboard focusable when they have click listeners
+      // open info window when marker is clicked
+      // marker.addListener("click", () => {
+      //this.infoWindow.setContent(label);
+      //this.infoWindow.open(this.map, marker);
+      // })
+
+      m.addListener("click",   // this.toggleBounce)
+        () => {
+          //this.infowindow.setContent(`${ SpecialMsg } `)
+          //`Manually dropped: ${time} at ${pos} `
+          this.infowindow.setContent(infoContent)
+          this.infowindow.open({
+            // new google.maps.InfoWindow.open({
+            //content: 'How now red cow.',
+            anchor: m,
+            //setPosition: event.latLng,
+            map: this.gMap,
+            // shouldFocus: false,
+          })
+        }
+      )
+      this.markers.push(m)
+    } else {
+      console.log("event.latLng is BAD; can not add marker..")
+    }
+    //this.refreshMarkerDisplay()
+  }
+*/
+
+
 
 
   // https://stackblitz.com/edit/ts-leaflet-markercluster
