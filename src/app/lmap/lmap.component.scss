@@ -20,6 +20,26 @@
   all: revert
 }
 
+
+.map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 30px;
+}
+
+.map-frame {
+  border: 2px solid black;
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+}
+
+
 //.lmap-container {
 // position: absolute;
 // position: relative;
@@ -41,7 +61,7 @@
   height: 300px;
   width : 600px;
 }
-
+/*
 .reset-someOldThingInIE {
   animation                 : none;
   animation-delay           : 0;
@@ -161,7 +181,7 @@
   perspective               : none;
   perspective-origin        : 50% 50%;
   position                  : static;
-  /* May need to alter quotes for different locales (e.g fr) */
+  / May need to alter quotes for different locales (e.g fr) /
   quotes                    : '\201C''\201D''\2018''\2019';
   right                     : auto;
   tab-size                  : 8;
@@ -191,8 +211,9 @@
   width                     : auto;
   word-spacing              : normal;
   z-index                   : auto;
-  /* basic modern patch */
+  / basic modern patch /
   all                       : initial;
   all                       : unset;
 }
+*/
 

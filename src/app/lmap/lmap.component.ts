@@ -2,8 +2,8 @@
 
 //import { Console } from 'console';
 
-import 'leaflet';
-import "leaflet.markercluster";
+//import 'leaflet';
+//import "leaflet.markercluster";
 //import * as L from 'leaflet';
 
 import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
@@ -13,7 +13,10 @@ import { MarkerService, SettingsService, ShapeService } from '../shared/services
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
 
-const L = window['L'];
+//import { Component, OnInit } from '@angular/core';
+import * as L from 'leaflet';
+
+//const L = window['L'];
 
 /*
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
@@ -43,7 +46,6 @@ export const POLSKA_SZER_GEOGR = 51.9874;
 export const POLSKA_DL_GEOGR = 19.0162;
 export const POLSKA_ZOOM = 5;
 
-
 /*export type addressType = {
 title:string;
 num: number
@@ -70,129 +72,145 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
       private settingsService: SettingsService,
       private shapeService: ShapeService
       //@Inject(DOCUMENT) private document: Document
-    ) {
-    }
-  */
+    ) {  */
+
+  lmap: L.Map | undefined
+
+  constructor() {
+    //this.map
+  }
+
+  // following NOT declared above, so not called!!!!
   ngOnInit() {
     //https://www.npmjs.com/package/leaflet.markercluster
 
     let tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 18,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
-});
+      maxZoom: 18,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
+    });
+  }
+
+  ngAfterViewInit() {
+    this.initMap();
+  }
+
+  private initMap1(): void {
+    this.lmap = L.map('map', {
+      center: [39.8282, -98.5795],
+      zoom: 3
+    });
+
+    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      minZoom: 3,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+
+    tiles.addTo(this.lmap);
+  }
+
+  private initMap() {
+    console.log("Init Leaflet Map..........")
+    this.lmap = L.map('map', {
+      center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
+      zoom: 12
+    })
+
+    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      minZoom: 3,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    })
+
+    tiles.addTo(this.lmap)
+  }
 
 
+
+  /*
+   //console.log("ngAfterViewInit..........")
+   this.initMap()
+
+   if (this.lmap) {
+     //this.markerService.makeStationMarkers(this.lmap)
+     this.markerService.makeCapitalCircleMarkers(this.lmap)
+   }
+   // NOTE: An even better approach would be to pre-load the data in a resolver.
+   this.shapeService.getShapeShapes(this.shapeFile).subscribe((shapes: any) => {
+     this.shapes = shapes
+     this.initShapesLayer()
+   });
+ }
 
 
 // https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-leafletjs-map
 // https://developer.what3words.com/tutorial/combining-the-what3words-js-autosuggest-component-with-a-leafletjs-map
 
 
-
-
-
 const map2 = L.map('googleMapsPlaner', {
-  center: [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR],
-  zoom: POLSKA_ZOOM,
-  zoomControl: true, layers: [tiles]
+center: [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR],
+zoom: POLSKA_ZOOM,
+zoomControl: true, layers: [tiles]
 });
 
 const markerIcon =
-  L.icon({
-    iconSize: [25, 41],
-    iconAnchor: [10, 41],
-    popupAnchor: [2, -40],
-    // specify the path here
-    iconUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-shadow.png"
-  })
+L.icon({
+  iconSize: [25, 41],
+  iconAnchor: [10, 41],
+  popupAnchor: [2, -40],
+  // specify the path here
+  iconUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-shadow.png"
+})
 
 
-  const bergen = {lat:60.3948648649804, long:5.321473714945354}
+const bergen = {lat:60.3948648649804, long:5.321473714945354}
 
-    const markerCluster = new L.MarkerClusterGroup();
+  const markerCluster = new L.MarkerClusterGroup();
 
-    let marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR), { title: 'my', icon: markerIcon });
-    markerCluster.addLayer(marker);
+  let marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR), { title: 'my', icon: markerIcon });
+  markerCluster.addLayer(marker);
 
-    marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1), { title: 'my', icon: markerIcon });
-    markerCluster.addLayer(marker);
+  marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1), { title: 'my', icon: markerIcon });
+  markerCluster.addLayer(marker);
 
-    map2.addLayer(markerCluster);
-
-
-    marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR), { title: 'my', icon: markerIcon });
-    markerCluster.addLayer(marker);
-
-    marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1), { title: 'my', icon: markerIcon });
-    markerCluster.addLayer(marker);
-
-    map2.addLayer(markerCluster);
+  map2.addLayer(markerCluster);
 
 
+  marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR), { title: 'my', icon: markerIcon });
+  markerCluster.addLayer(marker);
 
-    /*const addressPoints = [
-      [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR, '1'],
-      [POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1, '1'],
-    ]
+  marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1), { title: 'my', icon: markerIcon });
+  markerCluster.addLayer(marker);
+
+  map2.addLayer(markerCluster);
+
+
+
+  /*const addressPoints = [
+    [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR, '1'],
+    [POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1, '1'],
+  ]
 */
-    //  const markers = L.markerClusterGroup();
+  //  const markers = L.markerClusterGroup();
 
-    /*
+  /*
 
-    for (let i = 0; i < addressPoints.length; i++) {
-      //if (addressPoints[i]) {      }
-      let a = addressPoints[i];
-      let title = a[2];
-      let marker = L.marker(new L.LatLng(a[0], a[1]), {
-        title: title,
-        icon: markerIcon
-      });
-      marker.bindPopup(title);
-      markers.addLayer(marker);
-    }
+  for (let i = 0; i < addressPoints.length; i++) {
+    //if (addressPoints[i]) {      }
+    let a = addressPoints[i];
+    let title = a[2];
+    let marker = L.marker(new L.LatLng(a[0], a[1]), {
+      title: title,
+      icon: markerIcon
+    });
+    marker.bindPopup(title);
+    markers.addLayer(marker);
+  }
 */
-    //map2.addLayer(markers);
+  //map2.addLayer(markers);
 
 
-
-
-
-
-  }
-
-  ngAfterViewInit() {
-    /*
-     //console.log("ngAfterViewInit..........")
-     this.initMap()
-
-     if (this.lmap) {
-       //this.markerService.makeStationMarkers(this.lmap)
-       this.markerService.makeCapitalCircleMarkers(this.lmap)
-     }
-     // NOTE: An even better approach would be to pre-load the data in a resolver.
-     this.shapeService.getShapeShapes(this.shapeFile).subscribe((shapes: any) => {
-       this.shapes = shapes
-       this.initShapesLayer()
-     });
-   }
-
-   private initMap() {
-     //console.log("InitMap..........")
-     this.lmap = L.map('lmap', {
-       center: [SettingsService.Settings.defLat, SettingsService.Settings.defLong],
-       zoom: 12
-     })
-
-     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-       maxZoom: 18,
-       minZoom: 3,
-       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-     })
-
-     tiles.addTo(this.lmap)
-     */
-  }
 
   // Create GeoJSON layer & add to map
   // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
@@ -248,12 +266,17 @@ const markerIcon =
   }
 }
 
+
+
+function ngAfterViewInit() {
+  throw new Error('Function not implemented.');
+}
 /*
 OLD CODE from Ranger 4.2 ===============================================
 
 TODO: Abstract common code to here, unique to calling routine..
 
-function initLeafletMap() {
+ initLeafletMap() {
     // https://leaflet.github.io/Leaflet.markercluster/example/marker-clustering-zoomtobounds.html
     // https://leafletjs.com/examples/layers-control/
     // TODO: This needs to get moved to actual point/marker display...
@@ -297,7 +320,7 @@ function initLeafletMap() {
     //L.tileLayer(mapboxUrl, {maxZoom: 18, attribution: mapboxAttribution,id: 'mapbox.streets'}).addTo(bigMap);
   }
 
-  function initSmallMap() {
+  initSmallMap() {
     smallMap = L.map('smallMapId' ).setView([DEF_LAT, DEF_LONG], 12);
     L.esri.basemapLayer('Streets').addTo(smallMap);
 
@@ -325,11 +348,7 @@ function initLeafletMap() {
     }
   }
 
-
-
-
-
-  function filterLeafletMap() {
+  filterLeafletMap() {
     dbug("filterLeafletMap...");
     /* Sorting:
       let points = [40, 100, 1, 5, 25, 10];
@@ -352,10 +371,4 @@ function initLeafletMap() {
 
       filterLocations(filters);
     }
-
-
-
-
-
-
   */
