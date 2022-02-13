@@ -27,6 +27,7 @@ export class FieldReportService {
   // https://developers.google.com/maps/documentation/javascript/reference/coordinates?hl=en#LatLngBounds
   public bounds = new google.maps.LatLngBounds(new google.maps.LatLng(90, 180), new google.maps.LatLng(-90, -180)) //SW, NE
   public bound: google.maps.LatLngBoundsLiteral = { east: -180, north: -90, south: 90, west: 180 } //e,n,s,w
+  private boundsMargin = 0.0025
 
   constructor(
     private rangerService: RangerService,
@@ -206,25 +207,26 @@ export class FieldReportService {
 
     console.log(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `)
     if (east - west < 0.005) {
-      east += 0.0025
-      west -= 0.0025
+      east += this.boundsMargin
+      west -= this.boundsMargin
       console.log(`recalcFieldBounds BROADENED to E:${east} W:${west} `)
     }
     if (north - south < 0.005) {
-      north += 0.0025
-      south -= 0.0025
+      north += this.boundsMargin
+      south -= this.boundsMargin
       console.log(`recalcFieldBounds BROADENED to N:${north} S:${south} `)
     }
-
-    this.bounds = new google.maps.LatLngBounds(new google.maps.LatLng(south, west), new google.maps.LatLng(north, east)) //SW, NE
     this.bound = { east: east, north: north, south: south, west: west } //e,n,s,w
-    return this.bounds
+    return this.bound
+
+        // BUG: Move out Google specific code...
+        // this.bounds = new google.maps.LatLngBounds(new google.maps.LatLng(south, west), new google.maps.LatLng(north, east)) //SW, NE
   }
 
   updateFieldReportBounds(newFR: FieldReportType) {
     this.bounds.extend(new google.maps.LatLng(newFR.lat, newFR.long))
     this.bound = this.getBoundFromBounds(this.bounds)
-    return this.bounds
+    return this.bound
   }
 
   // TODO: put in coordinates or utility?

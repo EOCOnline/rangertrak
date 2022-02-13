@@ -100,18 +100,21 @@
     <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude:
       <input [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
         type="number" formControlName="latI" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
-        name="latitudeDDI" id="latitudeDDI" size="2" min="-180" max="180" id="enter__Where--LatI">
-
+        name="latI"  size="2" min="-180" max="180" id="enter__Where--LatI">
+        name="latitudeDDI" id="latitudeDDI"
 
       <span *ngIf="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
         class="text-sm text-danger">lat is required
       </span>.
+
+
       <input [class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
         type="number" formControlName="latD" placeholder="LatitudeD" (change)="this.addressCtrlChanged('latD')"
-        name="latitudeDDD" id="latitudeDDD" step="0.001" size="8" min="0" max="99999" id="enter__Where--LatD" tabindex="2">
+        name="latitudeDDD"  step="0.001" size="8" min="0" max="99999" id="enter__Where--LatD" tabindex="2">
 
-      <span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')
-                  && entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
+        id  -- latitudeDDD
+
+        <span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')"
         class="text-sm text-danger">Latitude is required
       </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
 
@@ -143,7 +146,7 @@
         name="latitudeDDD" id="latitudeDDD" step="0.001" size="9" min="0" max="99999" id="enter__Where--LngD" tabindex="4">
 
       <span *ngIf="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')
-                  && entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
+                  && entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')"
         class="text-sm text-danger">Latitude is required
       </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
 
@@ -228,11 +231,12 @@
 
     <h2 class="elegant bordered">What</h2>
 
+
     <div class="input-group bordered">Status:
       <mat-radio-group labelPosition="after" formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid"
         tabindex="7">
-        <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat}}>{{stat}} &nbsp;&nbsp;&nbsp;
+        <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat.status}} class="rButton">{{stat.status}} &nbsp;&nbsp;&nbsp;
         </mat-radio-button>
       </mat-radio-group>
 

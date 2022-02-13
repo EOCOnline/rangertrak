@@ -187,7 +187,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     }
 
     this.fieldReportService = fieldReportService
-    this.fieldReportStatuses = settingsService.getFieldReportStatuses() // TODO: Need to update if user modified settings page: SUBSCRIBE!!
+    this.fieldReportStatuses = settingsService.getFieldReportStatuses() // TODO: Need to update if user modified settings page: SUBSCRIBE!! or do every redisplay??
     this.settings = SettingsService.Settings
 
     // NOTE: workaround for onChange not working...
@@ -248,7 +248,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       lat: [this.settings.defLat, Validators.required], //Validators.minLength(4)
       lng: [this.settings.defLng, Validators.required], //Validators.minLength(4)
       date: [new Date()],
-      status: [this.fieldReportStatuses[this.settings.defRangerStatus]],
+      status: [this.fieldReportStatuses[this.settings.defRangerStatus].status],
       note: ['']
     })
 

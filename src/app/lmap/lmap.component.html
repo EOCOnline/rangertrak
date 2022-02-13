@@ -31,13 +31,12 @@
   <div class="lmap-frame">
     <div id="lmap"></div>
 
-    <div id="markerDiv" #markerDiv *ngFor="let marker of markers">
-    </div>
+    <!--div id="markerDiv" #markerDiv *ngFor="let marker of markers">
+    </div-->
 
   </div>
   <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-  <div>Latitude: <span class="strong">{{currentLocation?.lat | number:'1.4-5'}}</span> Longitude: <span
-      class="strong">{{currentLocation?.lng | number:'1.4-5'}}</span>
+  <div>Latitude: <span class="strong">{{currentLocation?.lat | number:'1.4-5'}}</span> Longitude: <span class="strong">{{currentLocation?.lng | number:'1.4-5'}}</span>
   </div>
 </div>
 

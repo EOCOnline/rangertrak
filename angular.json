@@ -32,7 +32,12 @@
             "assets": [
               "./src/assets/icons/favicon.ico",
               "./src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              {
+                "glob": "**/*",
+                "input": "node_modules/leaflet/dist/images/",
+                "output": "./assets/imgs"
+              }
             ],
             "styles": [
               "./node_modules/leaflet/dist/leaflet.css",

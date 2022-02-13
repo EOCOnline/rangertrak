@@ -7,6 +7,32 @@ with ($primary: #962f10,
 //@use "@material/banner/styles";
 // https://material.io/components/buttons/web#api
 
+/*
+// https://www.concretepage.com/angular-material/angular-material-radio-button#color
+.rButton {
+  border-color: blue;
+  // background-color: rgb(132, 151, 21); // of whole list
+}
+
+   // For outer circle
+   .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+    border-color: rgb(71, 223, 51);
+  }
+
+  // For inner circle
+  //.mat-radio-checked
+  .mat-radio-inner-circle {
+      background-color: rgb(132, 151, 21);
+  }
+
+  ::ng-deep .mat-radio-checked .mat-radio-outer-circle {
+    border-color: rgb(13, 171, 219);
+}
+
+::ng-deep .mat-radio-checked .mat-radio-inner-circle {
+    background-color: rgb(153, 58, 98);
+}
+*/
 
 // https://popper.js.org/docs/v2/tutorial/
 #tooltip {
@@ -76,7 +102,7 @@ h3 {
 }
 
 .bordered {
-  border: 2 px solid red;
+  border: 2 px solid rgb(62, 189, 189);
 }
 
 #addresses {

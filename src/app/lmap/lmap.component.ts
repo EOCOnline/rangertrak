@@ -10,13 +10,11 @@ import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
+// Markers are copied into project via virtue of angular.json: search it for leaflet!!!
 
-//const L = window['L'];
-
-/*
-const iconRetinaUrl = 'assets/marker-icon-2x.png';
-const iconUrl = 'assets/marker-icon.png';
-const shadowUrl = 'assets/marker-shadow.png';
+const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png';
+const iconUrl = 'assets/imgs/marker-icon.png';
+const shadowUrl = 'assets/imgs/marker-shadow.png';
 const iconDefault = L.icon({
   iconRetinaUrl,
   iconUrl,
@@ -26,22 +24,15 @@ const iconDefault = L.icon({
   popupAnchor: [1, -34],
   tooltipAnchor: [16, -28],
   shadowSize: [41, 41]
-})
-
-
+});
 L.Marker.prototype.options.icon = iconDefault;
 
-let tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 18,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
-})
-*/
+export type addressType = {
+  title:string;
+  num: number
+}
 
-
-/*export type addressType = {
-title:string;
-num: number
-}*/
+type LatLng = { lat: number, lng: number }
 
 @Component({
   selector: 'rangertrak-lmap',
@@ -54,44 +45,28 @@ num: number
   providers: [SettingsService]
 })
 export class LmapComponent implements AfterViewInit {  //OnInit,
-  /*
-    lmap: L.Map | undefined
-    shapeFile = '/assets/data/gz_2010_us_040_00_5m.json'
-    private shapes = undefined
 
-    constructor(
-      private markerService: MarkerService,
-      private settingsService: SettingsService,
-      private shapeService: ShapeService
-      //@Inject(DOCUMENT) private document: Document
-    ) {  */
-
+  //const L = window['L'];
   title = 'Leaflet Map'
-  lmap: L.Map | undefined
-  //apiLoaded //: Observable<boolean>
+  lmap?: L.Map
   markers: google.maps.Marker[] = []
   zoom
   center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
   currentLocation = this.center
-  fieldReports?: FieldReportType[]
+  fieldReports: FieldReportType[] = []
 
   constructor(private settingsService: SettingsService,
     private fieldReportService: FieldReportService,
     private httpClient: HttpClient,
     @Inject(DOCUMENT) private document: Document) {
-    //this.map
 
     this.fieldReportService = fieldReportService
     this.zoom = SettingsService.Settings.defZoom
     this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
-
-    //this.apiLoaded = true
   }
 
-  // following NOT declared above, so not called!!!!
-  ngOnInit() {
+  ngOnInit_UNUSED() {
     //https://www.npmjs.com/package/leaflet.markercluster
-
   }
 
   ngAfterViewInit() {
@@ -100,9 +75,10 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
 
   private initMap() {
     console.log("Init Leaflet Map..........")
+
     this.lmap = L.map('lmap', {
       center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
-      zoom: 12
+      zoom: SettingsService.Settings.defZoom
     })
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -112,27 +88,29 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     })
 
     tiles.addTo(this.lmap)
-
-    /* TODO:
     this.displayAllMarkers()
-        // REVIEW: Doesn't work with NO Markers?
-        console.log(`Setting Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLng}, zoom: ${SettingsService.Settings.defZoom}`)
-        this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })
-        this.gMap.setZoom(SettingsService.Settings.defZoom)
-        this.fitBounds()
-    */
-
+    this.fitBounds()
   }
 
   fitBounds() {
-    //let reportBounds = this.fieldReportService.getFieldReportBounds()
-    //var southWest = new google.maps.LatLng(reportBounds, reportBounds.west);
-    //var northEast = new google.maps.LatLng(reportBounds.north,reportBounds.east);
-    //var bounds = new google.maps.LatLngBounds(southWest,northEast);
     this.fieldReportService.recalcFieldBounds()
-    let bounds = this.fieldReportService.getFieldReportBounds()
+    let bound = this.fieldReportService.getFieldReportBound()
+    // { east: east, north: north, south: south, west: west } //e,n,s,w
+
+    //leaflet.map.fitBounds(L.latLngBounds(L.latLng(sw), L.latLng(ne)));
+    this.lmap!.fitBounds(L.latLngBounds(L.latLng(sw), L.latLng(ne)));
+
+
+    L.latLngBounds([latlng1,latlng2])
     console.log(`Fitting bounds= :${JSON.stringify(bounds)}`)
-  //  this.gMap?.fitBounds(bounds)
+    this.lmap?.fitBounds(bounds)
+  }
+
+  displayAllMarkers() {
+    this.fieldReports = this.fieldReportService.getFieldReports()
+    for (let i = 0; i < this.fieldReports.length; i++) {
+      this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].long, this.fieldReports[i].status)
+    }
   }
 
   onMapMouseMove(event: any) { //google.maps.MapMouseEvent) {
@@ -141,89 +119,96 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     }
   }
 
-/*
-  addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
-    console.log(`addMarker`)
-
-    if (infoContent == "") {
-      infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}`
+  addMarker(lat: number, lng: number, status: string = '') {
+    const marker = L.marker([lat, lng])
+    if (this.lmap) {
+      marker.addTo(this.lmap)
     }
-    if (title == "") {
-      title = infoContent
-    }
-    labelText = "grade"
-    //icon = "rocket"
-    fontSize = "20px"
-
-        //icon = "rocket"
-        animation = google.maps.Animation.DROP
-
-
-    let labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
-    // https://material.angular.io/components/icon/overview
-    //https://developers.google.com/fonts/docs/material_icons
-    //https://fonts.google.com/icons
-    if (latLng) {
-      let dt = new Date();
-      let time = `${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}` // :${Utility.zeroFill(dt.getMilliseconds(), 4)}`
-      * REVIEW:
-       let lat:number = event.latLng.lat  // gets:  Type '() => number' is not assignable to type 'number'.
-       let lng:number = event.latLng.lng
-       lat = Math.round(lat * 1000.0) / 1000.0
-       lng = Math.round(lng * 1000.0) / 1000.0
-       let pos = `lat: ${lat}; long: ${lng} `
-       *
-      let pos = `lat: ${latLng.lat}; long: ${latLng.lng}`
-      //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; long: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
-
-      console.log("Actually adding marker now...")
-      let m = new google.maps.Marker({
-        draggable: true,
-        animation: animation,
-        map: this.gMap,
-        position: latLng,
-        title: title,
-        //icon: icon, //"https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
-        label: {
-          // label: this.labels[this.labelIndex++ % this.labels.length],
-          text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
-          fontFamily: "Material Icons",
-          color: labelColor,
-
-          fontSize: fontSize,
-        },
-        // label: labels[labelIndex++ % labels.length],
-      })
-      // markers can only be keyboard focusable when they have click listeners
-      // open info window when marker is clicked
-      // marker.addListener("click", () => {
-      //this.infoWindow.setContent(label);
-      //this.infoWindow.open(this.map, marker);
-      // })
-
-      m.addListener("click",   // this.toggleBounce)
-        () => {
-          //this.infowindow.setContent(`${ SpecialMsg } `)
-          //`Manually dropped: ${time} at ${pos} `
-          this.infowindow.setContent(infoContent)
-          this.infowindow.open({
-            // new google.maps.InfoWindow.open({
-            //content: 'How now red cow.',
-            anchor: m,
-            //setPosition: event.latLng,
-            map: this.gMap,
-            // shouldFocus: false,
-          })
-        }
-      )
-      this.markers.push(m)
-    } else {
-      console.log("event.latLng is BAD; can not add marker..")
-    }
-    //this.refreshMarkerDisplay()
   }
-*/
+
+  /*
+    addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
+      console.log(`addMarker`)
+
+      if (infoContent == "") {
+        infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}`
+      }
+      if (title == "") {
+        title = infoContent
+      }
+      labelText = "grade"
+      //icon = "rocket"
+      fontSize = "20px"
+
+          //icon = "rocket"
+          animation = google.maps.Animation.DROP
+
+
+      let labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
+      // https://material.angular.io/components/icon/overview
+      //https://developers.google.com/fonts/docs/material_icons
+      //https://fonts.google.com/icons
+      if (latLng) {
+        let dt = new Date();
+        let time = `${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}` // :${Utility.zeroFill(dt.getMilliseconds(), 4)}`
+        * REVIEW:
+         let lat:number = event.latLng.lat  // gets:  Type '() => number' is not assignable to type 'number'.
+         let lng:number = event.latLng.lng
+         lat = Math.round(lat * 1000.0) / 1000.0
+         lng = Math.round(lng * 1000.0) / 1000.0
+         let pos = `lat: ${lat}; long: ${lng} `
+         *
+        let pos = `lat: ${latLng.lat}; long: ${latLng.lng}`
+        //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; long: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
+
+        console.log("Actually adding marker now...")
+        let m = new google.maps.Marker({
+          draggable: true,
+          animation: animation,
+          map: this.gMap,
+          position: latLng,
+          title: title,
+          //icon: icon, //"https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+          label: {
+            // label: this.labels[this.labelIndex++ % this.labels.length],
+            text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+            fontFamily: "Material Icons",
+            color: labelColor,
+
+            fontSize: fontSize,
+          },
+          // label: labels[labelIndex++ % labels.length],
+        })
+        // markers can only be keyboard focusable when they have click listeners
+        // open info window when marker is clicked
+        // marker.addListener("click", () => {
+        //this.infoWindow.setContent(label);
+        //this.infoWindow.open(this.map, marker);
+        // })
+
+        m.addListener("click",   // this.toggleBounce)
+          () => {
+            //this.infowindow.setContent(`${ SpecialMsg } `)
+            //`Manually dropped: ${time} at ${pos} `
+            this.infowindow.setContent(infoContent)
+            this.infowindow.open({
+              // new google.maps.InfoWindow.open({
+              //content: 'How now red cow.',
+              anchor: m,
+              //setPosition: event.latLng,
+              map: this.gMap,
+              // shouldFocus: false,
+            })
+          }
+        )
+        this.markers.push(m)
+      } else {
+        console.log("event.latLng is BAD; can not add marker..")
+      }
+      //this.refreshMarkerDisplay()
+    }
+  */
 
 
 
@@ -370,10 +355,6 @@ const bergen = {lat:60.3948648649804, long:5.321473714945354}
 }
 
 
-
-function ngAfterViewInit() {
-  throw new Error('Function not implemented.');
-}
 /*
 OLD CODE from Ranger 4.2 ===============================================
 
