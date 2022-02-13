@@ -138,7 +138,7 @@ export class FieldReportsComponent implements OnInit {
     // { headerName: "Team", field: "team" },
     { headerName: "Address", field: "address", singleClickEdit: true, flex: 50 }, //, maxWidth: 200
     { headerName: "Lat", field: "lat", singleClickEdit: true },
-    { headerName: "Long", field: "long", cellClass: 'number-cell' },
+    { headerName: "Lng", field: "lng", cellClass: 'number-cell' },
     {
       headerName: "Time", headerTooltip: 'Report date',
       valueGetter: this.myDateGetter,
@@ -186,7 +186,10 @@ export class FieldReportsComponent implements OnInit {
 
     if (!this.settings.debugMode) {
       this.displayHide("enter__Fake--id")
+    } else {
+      this.displayShow("enter__Fake--id")
     }
+
     if (this.gridApi) {
       this.gridApi.refreshCells()
     } else {
@@ -299,6 +302,8 @@ export class FieldReportsComponent implements OnInit {
     let e = this.document.getElementById(htmlElementID)
     if (e) {
       e.style.visibility = "hidden";
+    } else {
+      console.warn(`Could not find HTML Element ${e}`)
     }
   }
 
@@ -306,6 +311,8 @@ export class FieldReportsComponent implements OnInit {
     let e = this.document.getElementById(htmlElementID)
     if (e) {
       e.style.visibility = "visible";
+    } else {
+      console.warn(`Could not find HTML Element ${e}`)
     }
   }
 }

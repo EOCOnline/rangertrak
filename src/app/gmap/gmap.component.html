@@ -22,7 +22,7 @@
 <div *ngIf="apiLoaded">
   <!-- | async -->
   <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
-    (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="addTrafficLayer()"
+    (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="addTrafficLayer()" (zoomChanged)="zoomed()"
     (mapInitialized)="onMapInitialized($event)">
 
     <div id="markerDiv" #markerDiv *ngFor="let marker of markers">
@@ -41,7 +41,8 @@
   </google-map>
 
   <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-  <div>Latitude: <span class="strong">{{currentLocation?.lat | number:'1.4-5'}}</span>   Longitude: <span class="strong">{{currentLocation?.lng | number:'1.4-5'}}</span>
+  <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.4-5'}}</span>   Longitude: <span class="strong">{{mouseLatLng?.lng | number:'1.4-5'}}</span>
+    Zoom: <span class="strong">{{zoom}}</span>
   </div>
 </div>
 <br>

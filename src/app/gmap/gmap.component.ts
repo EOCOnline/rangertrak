@@ -69,7 +69,7 @@ export class GmapComponent implements OnInit {    //extends Map
 
   // items for template
   title = 'Google Map'
-  currentLocation?: google.maps.LatLngLiteral;
+  mouseLatLng?: google.maps.LatLngLiteral;
   Vashon = new google.maps.LatLng(47.4471, -122.4627)
   Kaanapali = new google.maps.LatLng(20.9338, -156.7168)
 
@@ -122,7 +122,7 @@ export class GmapComponent implements OnInit {    //extends Map
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
     this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
-    // this.circleCenter: google.maps.LatLngLiteral = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong};
+    // this.circleCenter: google.maps.LatLngLiteral = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng};
     // https://github.com/angular/components/tree/master/src/google-maps
     // this.apiLoaded = httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=${SettingsService.secrets[3].key}`, 'callback')
     this.apiLoaded = true
@@ -259,6 +259,12 @@ export class GmapComponent implements OnInit {    //extends Map
     console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
   }
 
+  zoomed() {
+    if (this.zoom && this.gMap) {
+    this.zoom = this.gMap.getZoom()!
+    }
+  }
+
   addManualMarkerEvent(event: google.maps.MapMouseEvent) {
     if (SettingsService.Settings.allowManualPinDrops) {
       if (event.latLng) {
@@ -299,10 +305,10 @@ export class GmapComponent implements OnInit {    //extends Map
        let lng:number = event.latLng.lng
        lat = Math.round(lat * 1000.0) / 1000.0
        lng = Math.round(lng * 1000.0) / 1000.0
-       let pos = `lat: ${lat}; long: ${lng} `
+       let pos = `lat: ${lat}; lng: ${lng} `
        */
-      let pos = `lat: ${latLng.lat}; long: ${latLng.lng}`
-      //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; long: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
+      let pos = `lat: ${latLng.lat}; lng: ${latLng.lng}`
+      //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; lng: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
 
       console.log("Actually adding marker now...")
       let m = new google.maps.Marker({
@@ -365,8 +371,8 @@ export class GmapComponent implements OnInit {    //extends Map
     console.log(`displayAllMarkers got ${this.fieldReports.length} field reports`)
     for (let i = 0; i < this.fieldReports.length; i++) {
       fr = this.fieldReports[i]
-      latlng = new google.maps.LatLng(fr.lat, fr.long)
-      title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, long ${fr.long} with "${fr.note}".`
+      latlng = new google.maps.LatLng(fr.lat, fr.lng)
+      title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, lng ${fr.lng} with "${fr.note}".`
       //title = infoContent
 
       for (let j = 0; j < fieldReportStatuses.length; j++) {
@@ -388,7 +394,7 @@ export class GmapComponent implements OnInit {    //extends Map
 
   onMapMouseMove(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
-      this.currentLocation = event.latLng.toJSON()
+      this.mouseLatLng= event.latLng.toJSON()
     }
   }
 

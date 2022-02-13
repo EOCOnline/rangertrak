@@ -36,7 +36,8 @@
 
   </div>
   <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-  <div>Latitude: <span class="strong">{{currentLocation?.lat | number:'1.4-5'}}</span> Longitude: <span class="strong">{{currentLocation?.lng | number:'1.4-5'}}</span>
+  <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.4-5'}}</span> Longitude: <span class="strong">{{mouseLatLng?.lng | number:'1.4-5'}}</span>
+    Zoom: <span class="strong">{{zoom}}</span>
   </div>
 </div>
 

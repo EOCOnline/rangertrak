@@ -114,7 +114,7 @@ export class EntryComponent implements OnInit {
     animation: google.maps.Animation.DROP
   }) // i.e., a singleton...
 
-  display?: google.maps.LatLngLiteral
+  mouseLatLng?: google.maps.LatLngLiteral
   vashon = new google.maps.LatLng(47.4471, -122.4627)
 
   zoom = 11
@@ -429,13 +429,20 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
   onMapMouseMove(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
-      this.display = event.latLng.toJSON()
+      this.mouseLatLng = event.latLng.toJSON()
       console.log('moveing()');
     }
     else {
       console.warn('move(): NO event.latLng!!!!!!!!!!!!!');
     }
   }
+
+  zoomed() {
+    if (this.zoom && this.gMap) {
+    this.zoom = this.gMap.getZoom()!
+    }
+  }
+
   //#endregion
 
 

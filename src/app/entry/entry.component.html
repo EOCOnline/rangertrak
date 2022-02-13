@@ -42,13 +42,14 @@
       <h2>Current Location</h2>
 
       <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
-        (mapMousemove)="onMapMouseMove($event)" (mapInitialized)="onMapInitialized($event)"
+        (mapMousemove)="onMapMouseMove($event)" (mapInitialized)="onMapInitialized($event)" (zoomChanged)="zoomed()"
         style="width: 300px; height:300px;">
       </google-map>
 
       <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-      <div>Latitude: <span class="strong">{{display?.lat | number:'1.4-5'}}</span> Longitude: <span
-          class="strong">{{display?.lng | number:'1.4-5'}}</span>
+      <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.4-5'}}</span> Longitude: <span
+          class="strong">{{mouseLatLng?.lng | number:'1.4-5'}}</span>
+          Zoom: <span class="strong">{{zoom}}</span>
       </div>
     </div>
     <br>

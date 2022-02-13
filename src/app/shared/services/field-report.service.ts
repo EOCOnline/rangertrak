@@ -10,7 +10,7 @@ export enum FieldReportSource { Voice, Packet, APRS, Email }
 export type FieldReportType = {
   id: number,
   callsign: string, team: string,
-  address: string, lat: number, long: number,
+  address: string, lat: number, lng: number,
   date: Date,
   status: string, note: string
 }
@@ -133,7 +133,7 @@ export class FieldReportService {
         team: fieldReport.team,
         address: fieldReport.address,
         lat: fieldReport.lat,
-        long: fieldReport.long,
+        lng: fieldReport.lng,
         date: fieldReport.date,
         status: fieldReport.status,
         note: fieldReport.note
@@ -181,50 +181,63 @@ export class FieldReportService {
 
   recalcFieldBounds() {
     console.log(`recalcFieldBounds got ${this.fieldReports.length} field reports`)
+    let north
+    let west
+    let south
+    let east
 
-    let north = this.fieldReports[0].lat
-    let west = this.fieldReports[0].long
-    let south = this.fieldReports[0].lat
-    let east = this.fieldReports[0].long
+    if (this.fieldReports.length) {
+      north = this.fieldReports[0].lat
+      west = this.fieldReports[0].lng
+      south = this.fieldReports[0].lat
+      east = this.fieldReports[0].lng
 
-    // https://www.w3docs.com/snippets/javascript/how-to-find-the-min-max-elements-in-an-array-in-javascript.html
-    // concludes with: "the results show that the standard loop is the fastest"
+      // https://www.w3docs.com/snippets/javascript/how-to-find-the-min-max-elements-in-an-array-in-javascript.html
+      // concludes with: "the results show that the standard loop is the fastest"
 
-    for (let i = 1; i < this.fieldReports.length; i++) {
-      if (this.fieldReports[i].lat > north) {
-        north = this.fieldReports[i].lat
+      for (let i = 1; i < this.fieldReports.length; i++) {
+        if (this.fieldReports[i].lat > north) {
+          north = this.fieldReports[i].lat
+        }
+        if (this.fieldReports[i].lat < south) {
+          south = this.fieldReports[i].lat
+        }
+        if (this.fieldReports[i].lng > east) {
+          east = this.fieldReports[i].lng
+        }
+        if (this.fieldReports[i].lng > west) {
+          west = this.fieldReports[i].lng
+        }
       }
-      if (this.fieldReports[i].lat < south) {
-        south = this.fieldReports[i].lat
-      }
-      if (this.fieldReports[i].long > east) {
-        east = this.fieldReports[i].long
-      }
-      if (this.fieldReports[i].long > west) {
-        west = this.fieldReports[i].long
-      }
+    } else {
+      // no field reports yet! Rely on broadening processing below
+      north = SettingsService.Settings.defLng
+      west = SettingsService.Settings.defLat
+      south = SettingsService.Settings.defLng
+      east = SettingsService.Settings.defLat
     }
 
     console.log(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `)
-    if (east - west < 0.005) {
+    if (east - west < 2*this.boundsMargin) {
       east += this.boundsMargin
       west -= this.boundsMargin
       console.log(`recalcFieldBounds BROADENED to E:${east} W:${west} `)
     }
-    if (north - south < 0.005) {
+    if (north - south < 2*this.boundsMargin) {
       north += this.boundsMargin
       south -= this.boundsMargin
       console.log(`recalcFieldBounds BROADENED to N:${north} S:${south} `)
     }
-    this.bound = { east: east, north: north, south: south, west: west } //e,n,s,w
+
+    this.bound = { east: Math.round(east*10000)/10000, north: Math.round(north*10000)/10000, south: Math.round(south*10000)/10000, west: Math.round(west*10000)/10000 } //e,n,s,w
     return this.bound
 
-        // BUG: Move out Google specific code...
-        // this.bounds = new google.maps.LatLngBounds(new google.maps.LatLng(south, west), new google.maps.LatLng(north, east)) //SW, NE
+    // BUG: Move out Google specific code...
+    // this.bounds = new google.maps.LatLngBounds(new google.maps.LatLng(south, west), new google.maps.LatLng(north, east)) //SW, NE
   }
 
   updateFieldReportBounds(newFR: FieldReportType) {
-    this.bounds.extend(new google.maps.LatLng(newFR.lat, newFR.long))
+    this.bounds.extend(new google.maps.LatLng(newFR.lat, newFR.lng))
     this.bound = this.getBoundFromBounds(this.bounds)
     return this.bound
   }
@@ -301,7 +314,7 @@ comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
         team: teams[Math.floor(Math.random() * teams.length)].name,
         address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
         lat: 45 + Math.floor(Math.random() * 2000) / 1000,
-        long: -121 + Math.floor(Math.random() * 1000) / 1000,
+        lng: -121 + Math.floor(Math.random() * 1000) / 1000,
         date: new Date(Math.floor(msSince1970 - (Math.random() * 25 * 60 * 60 * 1000))), // 0-25 hrs earlier
         status: this.fieldReportStatuses[Math.floor(Math.random() * this.fieldReportStatuses.length)].status,
         note: notes[Math.floor(Math.random() * notes.length)]

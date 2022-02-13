@@ -4,9 +4,12 @@ import { HttpClient } from '@angular/common/http';
 
 import "leaflet.markercluster"
 import * as L from 'leaflet'
+//import { LatLng } from 'leaflet';
 
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
 import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
+import { Context } from 'ag-grid-community';
+
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
@@ -28,7 +31,7 @@ const iconDefault = L.icon({
 L.Marker.prototype.options.icon = iconDefault;
 
 export type addressType = {
-  title:string;
+  title: string;
   num: number
 }
 
@@ -50,10 +53,11 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
   title = 'Leaflet Map'
   lmap?: L.Map
   markers: google.maps.Marker[] = []
-  zoom
+  zoom: number
   center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
-  currentLocation = this.center
+  mouseLatLng = this.center
   fieldReports: FieldReportType[] = []
+  //settings
 
   constructor(private settingsService: SettingsService,
     private fieldReportService: FieldReportService,
@@ -63,6 +67,7 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     this.fieldReportService = fieldReportService
     this.zoom = SettingsService.Settings.defZoom
     this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
+    //this.settings = SettingsService.Settings
   }
 
   ngOnInit_UNUSED() {
@@ -71,6 +76,14 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
 
   ngAfterViewInit() {
     this.initMap();
+
+    /* https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
+    this.markerService.makeCapitalCircleMarkers(this.map);
+    this.shapeService.getStateShapes().subscribe(states => {
+      this.states = states;
+      this.initStatesLayer(); //create a new GeoJSON layer and adds it to the map
+    });
+    */
   }
 
   private initMap() {
@@ -90,41 +103,169 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     tiles.addTo(this.lmap)
     this.displayAllMarkers()
     this.fitBounds()
+
+    this.lmap?.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
+      if (this.zoom && this.lmap) {
+        this.zoom = this.lmap.getZoom()
+      }
+      //this.zoom! = this.lmap?.getZoom()
+    })
+
+    this.lmap?.on('mousemove', (event: L.LeafletMouseEvent) => {
+      this.mouseLatLng = event.latlng
+    })
+
+    this.lmap.on('click', (ev: L.LeafletMouseEvent) => {
+      if (ev.latlng.lat) {
+        console.log(`Click at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`)
+      }
+    })
   }
+
 
   fitBounds() {
     this.fieldReportService.recalcFieldBounds()
-    let bound = this.fieldReportService.getFieldReportBound()
-    // { east: east, north: north, south: south, west: west } //e,n,s,w
+    let bound = this.fieldReportService.getFieldReportBound()  // { east: east, north: north, south: south, west: west } //e,n,s,w
+    console.log(`Fitting bounds= :${JSON.stringify(bound)}`)
 
-    //leaflet.map.fitBounds(L.latLngBounds(L.latLng(sw), L.latLng(ne)));
-    this.lmap!.fitBounds(L.latLngBounds(L.latLng(sw), L.latLng(ne)));
-
-
-    L.latLngBounds([latlng1,latlng2])
-    console.log(`Fitting bounds= :${JSON.stringify(bounds)}`)
-    this.lmap?.fitBounds(bounds)
+    this.lmap?.fitBounds([
+      [bound.east, bound.north],
+      [bound.west, bound.south]
+    ]);
   }
 
   displayAllMarkers() {
     this.fieldReports = this.fieldReportService.getFieldReports()
     for (let i = 0; i < this.fieldReports.length; i++) {
-      this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].long, this.fieldReports[i].status)
+      this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
     }
   }
 
-  onMapMouseMove(event: any) { //google.maps.MapMouseEvent) {
-    if (event.latLng) {
-      this.currentLocation = event.latLng.toJSON()
+  onMapMouseMove(event: L.LeafletEvent) {  // MouseEvent) { //google.maps.MapMouseEvent) {
+    // if (event.lat) {
+    //this.mouseLatLng = { lat: event.lat, lng: event.lng }
+    //}
+  }
+
+  zoomed() {
+    if (this.zoom && this.lmap) {
+      this.zoom = this.lmap.getZoom()
     }
   }
 
   addMarker(lat: number, lng: number, status: string = '') {
-    const marker = L.marker([lat, lng])
-    if (this.lmap) {
+    //console.log(`addMarker at ${lat}. ${lng}, ${status}`)
+    if (!lat || !lng || !this.lmap) {
+      console.error(`bad lat: ${lat} or lng: ${lng} or lmap: ${this.lmap}`)
+    } else {
+      let marker = new L.Marker([lat, lng])
       marker.addTo(this.lmap)
+
+      marker.addEventListener('click', this._markerOnClick);
     }
   }
+
+  _markerOnClick(e: any) {
+    console.warn(`Got Marker Click!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! e= ${JSON.stringify(e)}`)
+  }
+
+  addCircle(lat: number, lng: number, status: string = '') {
+    const circle = new L.CircleMarker([lat, lng], { radius: 20 })
+    if (this.lmap) {
+      circle.addTo(this.lmap)
+    }
+  }
+
+  static scaledRadius(val: number, maxVal: number): number {
+    return 20 * (val / maxVal);
+  }
+
+  // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-marker-service
+  addCircles() {
+    //const maxPop = Math.max(...res.features.map(x => x.properties.population), 0);
+    /*
+     this.httpClient.get(this.capitals).subscribe((res: any) => {
+
+       const maxPop = Math.max(...res.features.map(x => x.properties.population), 0);
+
+       for (const c of res.features) {
+         const lon = c.geometry.coordinates[0];
+         const lat = c.geometry.coordinates[1];
+         const circle = L.circleMarker([lat, lon], {
+           radius: MarkerService.scaledRadius(c.properties.population, maxPop)
+         });
+
+          circle.bindPopup(this.popupService.makeCapitalPopup(c.properties));
+
+         circle.addTo(map);
+       }
+     });
+     */
+  }
+
+  // do this in a service??
+  makeCapitalPopup(data: any): string {
+    return `` +
+      `<div>Capital: ${data.name}</div>` +
+      `<div>State: ${data.state}</div>` +
+      `<div>Population: ${data.population}</div>`
+  }
+
+  private initStatesLayer() {
+    /* https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service Show borders of all the states in the US
+      const stateLayer = L.geoJSON(this.states, {
+        style: (feature) => ({
+          weight: 3,
+          opacity: 0.5,
+          color: '#008f68',
+          fillOpacity: 0.8,
+          fillColor: '#6DB65B'
+        }),
+        onEachFeature: (feature, layer) => (
+        layer.on({
+          mouseover: (e) => (this.highlightFeature(e)),
+          mouseout: (e) => (this.resetFeature(e)),
+        })
+      )
+      });
+
+      this.lmap!.addLayer(stateLayer);
+      */
+  }
+
+  // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
+  private highlightFeature(e: { target: any; }) {
+    const layer = e.target;
+
+    layer.setStyle({
+      weight: 10,
+      opacity: 1.0,
+      color: '#DFA612',
+      fillOpacity: 1.0,
+      fillColor: '#FAE042'
+    });
+  }
+
+  private resetFeature(e: { target: any; }) {
+    const layer = e.target;
+
+    layer.setStyle({
+      weight: 3,
+      opacity: 0.5,
+      color: '#008f68',
+      fillOpacity: 0.8,
+      fillColor: '#6DB65B'
+    });
+  }
+
+  // or on centerChanged
+  logCenter() {
+    console.log(`Map center is at ${JSON.stringify(this.lmap?.getCenter())}`)
+    this.lmap?.on("moveend", () => {
+      console.log(this.lmap?.getCenter().toString());
+    });
+  }
+
 
   /*
     addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
@@ -228,31 +369,31 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
      this.shapes = shapes
      this.initShapesLayer()
    });
- }
+  }
 
 
-// https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-leafletjs-map
-// https://developer.what3words.com/tutorial/combining-the-what3words-js-autosuggest-component-with-a-leafletjs-map
+  // https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-leafletjs-map
+  // https://developer.what3words.com/tutorial/combining-the-what3words-js-autosuggest-component-with-a-leafletjs-map
 
 
-const map2 = L.map('googleMapsPlaner', {
-center: [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR],
-zoom: POLSKA_ZOOM,
-zoomControl: true, layers: [tiles]
-});
+  const map2 = L.map('googleMapsPlaner', {
+  center: [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR],
+  zoom: POLSKA_ZOOM,
+  zoomControl: true, layers: [tiles]
+  });
 
-const markerIcon =
-L.icon({
+  const markerIcon =
+  L.icon({
   iconSize: [25, 41],
   iconAnchor: [10, 41],
   popupAnchor: [2, -40],
   // specify the path here
   iconUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-shadow.png"
-})
+  })
 
 
-const bergen = {lat:60.3948648649804, long:5.321473714945354}
+  const bergen = {lat:60.3948648649804, long:5.321473714945354}
 
   const markerCluster = new L.MarkerClusterGroup();
 
@@ -279,7 +420,7 @@ const bergen = {lat:60.3948648649804, long:5.321473714945354}
     [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR, '1'],
     [POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1, '1'],
   ]
-*/
+  */
   //  const markers = L.markerClusterGroup();
 
   /*
@@ -295,14 +436,14 @@ const bergen = {lat:60.3948648649804, long:5.321473714945354}
     marker.bindPopup(title);
     markers.addLayer(marker);
   }
-*/
+  */
   //map2.addLayer(markers);
 
 
 
   // Create GeoJSON layer & add to map
   // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
-  private initShapesLayer() {
+  initShapesLayer() {
     /*
         const shapeLayer = L.geoJSON(this.shapes, {
           style: (feature) => ({
@@ -355,6 +496,10 @@ const bergen = {lat:60.3948648649804, long:5.321473714945354}
 }
 
 
+
+function initShapesLayer() {
+  throw new Error('Function not implemented.');
+}
 /*
 OLD CODE from Ranger 4.2 ===============================================
 
