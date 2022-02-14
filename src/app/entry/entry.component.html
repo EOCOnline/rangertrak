@@ -7,7 +7,7 @@
 
 
     <h1>Entry Form</h1>
-    <h2 class="elegant">Who</h2>
+    <h2 class="elegant"><mat-label>Who</mat-label></h2>
 
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview
     https://www.wufoo.com/html5/tabindex-attribute/ -->
@@ -49,7 +49,7 @@
       <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
       <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.4-5'}}</span> Longitude: <span
           class="strong">{{mouseLatLng?.lng | number:'1.4-5'}}</span>
-          Zoom: <span class="strong">{{zoom}}</span>
+        Zoom: <span class="strong">{{zoom}}</span>
       </div>
     </div>
     <br>
@@ -86,7 +86,7 @@
     <span class="material-icons-two-tone">info</span-->
 
     <!-- https://popper.js.org/docs/v2/tutorial/ -->
-    <h2 class="elegant">Where&nbsp;&nbsp;<fa-icon [icon]="faInfoCircle" id="button" aria-describedby="tooltip"
+    <h2 class="elegant"><mat-label>Where</mat-label>&nbsp;&nbsp;<fa-icon [icon]="faInfoCircle" id="button" aria-describedby="tooltip"
         title="Click info icon for info!" alt="info icon"></fa-icon><span class="small">(updates map to the right)
         onclick="onWhereInfo()"</span>|<img src="../../assets/icons/information-outline.png"
         title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" /></h2>
@@ -94,15 +94,15 @@
     <div id="tooltip" role="tooltip">
       My tooltip: Instructions for how to enter location into RangerTrak:
       Enter Lat & Lng as decimal values or DMS, OR as an address
-       - which will update/REPLACE the coordinates!
+      - which will update/REPLACE the coordinates!
       <div id="arrow" data-popper-arrow></div>
     </div>
 
     <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude:
       <input [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
         type="number" formControlName="latI" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
-        name="latI"  size="2" min="-180" max="180" id="enter__Where--LatI">
-        name="latitudeDDI" id="latitudeDDI"
+        name="latI" size="2" min="-180" max="180" id="enter__Where--LatI">
+      name="latitudeDDI" id="latitudeDDI"
 
       <span *ngIf="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
         class="text-sm text-danger">lat is required
@@ -111,11 +111,11 @@
 
       <input [class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
         type="number" formControlName="latD" placeholder="LatitudeD" (change)="this.addressCtrlChanged('latD')"
-        name="latitudeDDD"  step="0.001" size="8" min="0" max="99999" id="enter__Where--LatD" tabindex="2">
+        name="latitudeDDD" step="0.001" size="8" min="0" max="99999" id="enter__Where--LatD" tabindex="2">
 
-        id  -- latitudeDDD
+      id -- latitudeDDD
 
-        <span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')"
+      <span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')"
         class="text-sm text-danger">Latitude is required
       </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
 
@@ -131,11 +131,12 @@
         onchange="DMSCoordsChanged()">"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
     </div>
 
-    <div class="input-group">Longitude<!--img src="../../assets/icons/information-outline.png"
+    <div class="input-group">Longitude
+      <!--img src="../../assets/icons/information-outline.png"
         title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" /  size="30"   -->:
       <input [class.border-danger]="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.invalid"
         type="number" formControlName="lngI" placeholder="LongitudeI" (change)="this.addressCtrlChanged('lngI')"
-        name="longitudeDDI" id="longitudeDDI"  min="-90" max="90" id="enter__Where--LngI" tabindex="3">
+        name="longitudeDDI" id="longitudeDDI" min="-90" max="90" id="enter__Where--LngI" tabindex="3">
 
       <!-- onchange="DDCoordsChanged()" -->
       <span *ngIf="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.hasError('required')"
@@ -144,7 +145,8 @@
 
       <input [class.border-danger]="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.invalid"
         type="number" formControlName="lngD" placeholder="LongitudeD" (change)="this.addressCtrlChanged('lngD')"
-        name="latitudeDDD" id="latitudeDDD" step="0.001" size="9" min="0" max="99999" id="enter__Where--LngD" tabindex="4">
+        name="latitudeDDD" id="latitudeDDD" step="0.001" size="9" min="0" max="99999" id="enter__Where--LngD"
+        tabindex="4">
 
       <span *ngIf="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')
                   && entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')"
@@ -212,7 +214,7 @@
     </div-->
 
 
-    <h2 class="elegant">When</h2>
+    <h2 class="elegant"><mat-label>When</mat-label></h2>
     <!-- TODO: Use Time Picker: https://material.io/components/time-pickers#usage
           showSpinners: If true, the spinners above and below input are visible
           showSeconds: If true, it is not possible to select seconds
@@ -223,21 +225,59 @@
     <ngx-mat-timepicker [(ngModel)]="myTimePicker">
         </ngx-mat-timepicker-->
 
-    <div class="input-group">Date:
+    <div class="input-group"><mat-label>Date:</mat-label>
+
+      <!--mat-form-field appearance="fill">
+        <mat-label>Choose a date</mat-label>
+<!   [formControl]="date1"  >
+        <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="picker" [formControl]="date1" >
+
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <br>
+
       <input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
         type="datetime" formControlName="date" placeholder="date" id="enter__When-input" tabindex="6">
+
+
       <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
         class="text-sm text-danger">date is required</div>
+    </div-->
+
+    <mat-form-field>
+      <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" [formControl]="dateControl"
+        [min]="minDate" [max]="maxDate" >
+
+      <mat-datepicker-toggle matSuffix >[for]="picker"</mat-datepicker-toggle>
+
+      <ngx-mat-datetime-picker #picker>
+        <!--
+          [disabled]="disabled"
+
+
+           [showSpinners]="showSpinners"  [hideTime]="hideTime" [showSeconds]="showSeconds" [stepHour]="stepHour"
+        [stepMinute]="stepMinute" [stepSecond]="stepSecond" [touchUi]="touchUi" [color]="color"
+        [enableMeridian]="enableMeridian" [disableMinute]="disableMinute"
+
+          Custom icon or text of Apply icon -->
+        <ng-template>
+          <!-- <mat-icon>star</mat-icon> -->
+          <span>OK</span>
+        </ng-template>
+      </ngx-mat-datetime-picker>
+    </mat-form-field>
     </div>
 
     <h2 class="elegant bordered">What</h2>
 
 
-    <div class="input-group bordered">Status:
+    <div class="input-group bordered"><mat-label>Status:</mat-label>
       <mat-radio-group labelPosition="after" formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid"
         tabindex="7">
-        <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat.status}} class="rButton"><span style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
+        <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat.status}} class="rButton"><span
+            style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
         </mat-radio-button>
       </mat-radio-group>
 

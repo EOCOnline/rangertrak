@@ -19,8 +19,9 @@ export interface RangerType {
   note: string
 }
 
-export enum RangerStatus { '', 'Normal', 'Need Rest', 'REW', 'OnSite', 'Checked-in', 'Checked-out' }  // TODO: Allow changing list & default of statuses in settings?!
+//export enum RangerStatus { '', 'Normal', 'Need Rest', 'REW', 'OnSite', 'Checked-in', 'Checked-out' }  // TODO: Allow changing list & default of statuses in settings?!
 
+//
 
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING
@@ -185,6 +186,7 @@ import { HttpClient } from '@angular/common/http';
   // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
   LoadRangersFromExcel(eventTarget: any) {  // HTMLInputElement event:target
 
+    // TODO: https://h2qutc.github.io/angular-material-components/fileinput
     type AOR = RangerType[]  // array of Rangers
 
     // wire up file reader

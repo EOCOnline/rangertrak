@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FieldReportService, FieldReportType, RangerService, RangerStatus, RangerType, SettingsService, TeamService } from '../shared/services/';
+import { FieldReportService, FieldReportType, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/';
 import { DOCUMENT } from '@angular/common'
 import { csvImport } from './csvImport'
 import { MatSnackBar } from '@angular/material/snack-bar';

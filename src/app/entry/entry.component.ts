@@ -1,6 +1,8 @@
 import { DOCUMENT } from '@angular/common'
 import { Component, Inject, OnInit, ViewChild, isDevMode, Input } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { HttpClient } from '@angular/common/http';
+
 import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MatInputModule } from '@angular/material/input'
 import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker'
@@ -15,6 +17,8 @@ import { FieldReportService, FieldReportStatusType, RangerService, RangerType, S
 //import { addressType } from '../lmap/lmap.component' // BUG:
 import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
 import { LatLng } from 'leaflet';
+import * as dayjs from 'dayjs' // https://day.js.org/docs/en/ or https://github.com/dayjs/luxon/
+
 
 
 import * as P from '@popperjs/core';
@@ -91,7 +95,7 @@ export class IconComponent {
   providers: [RangerService, FieldReportService, SettingsService, TeamService]
 })
 export class EntryComponent implements OnInit {
-
+  @ViewChild('picker') picker: any;
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
 
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
@@ -147,11 +151,42 @@ export class EntryComponent implements OnInit {
   callInfo: HTMLElement | null = null
   alert: any
 
-  //myTimePicker = null
-
   button: HTMLButtonElement | undefined
   tooltip: HTMLHtmlElement | undefined
   popperInstance: any //typeof P.createPopper | undefined
+
+  // --------------- DATE-TIME PICKER -----------------
+  // https://h2qutc.github.io/angular-material-components/datetimepicker
+  public date: dayjs.Dayjs = dayjs()
+  /*public disabled = false;
+  public showSpinners = true;
+  public showSeconds = false;
+  public touchUi = false;
+  public enableMeridian = false;
+  */
+  minDate!: dayjs.Dayjs | null
+  maxDate!: dayjs.Dayjs | null
+  //  public minDate: dayjs.Dayjs;
+  //  public maxDate: dayjs.Dayjs;
+  /*public stepHour = 1;
+  public stepMinute = 1;
+  public stepSecond = 1;
+  public color: ThemePalette = 'primary';
+ */
+  public formGroup = new FormGroup({
+    date: new FormControl(dayjs().utcOffset(), [Validators.required]),
+    date2: new FormControl(null, [Validators.required])
+  })
+
+  public dateControl = new FormControl(dayjs());
+  public dateControlMinMax = new FormControl(dayjs());
+
+
+  //date1 = Date.now()
+  date1 = new FormControl(new Date()) //TODO: Still need to grab the resultduring submit...!
+
+  // hhttps://github.com/h2qutc/angular-material-components
+  // myTimePicker = null
 
 
   /* following causes:  No suitable injection token for parameter 'formBuilder' of class 'EntryComponent'.
@@ -176,6 +211,11 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     // Stackblitz. If you want to provide the icon from a URL, you can use:
     iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
     //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
+
+    // Set the minimum to January 1st 1 years in the past and December 31st (same year) in the future.
+    //const currentYear = new Date().getFullYear();
+    this._setMinDate(10) // no times early than 10 hours ago
+    this._setMaxDate(1)  // no times later than 1 hours from now
 
     this.rangers = rangerService.GetRangers() // TODO: or getActiveRangers?!
 
@@ -286,7 +326,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
         },
       ],
     })
-
+    this.date = dayjs()
     console.log(`EntryForm ngOnInit completed at ${Date()}`)
   }
 
@@ -439,7 +479,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
   zoomed() {
     if (this.zoom && this.gMap) {
-    this.zoom = this.gMap.getZoom()!
+      this.zoom = this.gMap.getZoom()!
     }
   }
 
@@ -660,16 +700,16 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     console.log(`updateCoords with new Coordinates: lat: ${latDD}; latDD: ${latDD.toString()}`);
     console.log(`updateCoords with new Coordinates: lng: ${lngDD}; lngDD: ${lngDD.toString()}`);
 
-    let latitudeDDI  = document.getElementById("enter__Where--LatI") as HTMLInputElement
-    let latitudeDDD  = document.getElementById("enter__Where--LatD") as HTMLInputElement
+    let latitudeDDI = document.getElementById("enter__Where--LatI") as HTMLInputElement
+    let latitudeDDD = document.getElementById("enter__Where--LatD") as HTMLInputElement
     let longitudeDDI = document.getElementById("enter__Where--LngI") as HTMLInputElement
     let longitudeDDD = document.getElementById("enter__Where--LngD") as HTMLInputElement
     console.log(`updateCoords latitudeDDI: ${latitudeDDI}; latitudeDDD: ${latitudeDDD}`);
     console.log(`updateCoords longitudeDDI: ${longitudeDDI}; longitudeDDD: ${longitudeDDD}`);
 
     // TODO: Only display 4-6 positions after decimal
-    latitudeDDI.value =          Math.floor(latDD).toString();
-    latitudeDDD.value = (latDD - Math.floor(latDD)).toString().slice(0,4);
+    latitudeDDI.value = Math.floor(latDD).toString();
+    latitudeDDD.value = (latDD - Math.floor(latDD)).toString().slice(0, 4);
     //(document.getElementById("enter__Where--LngI") as HTMLInputElement).value = lngDD.toString();
     //(document.getElementById("enter__Where--LngD") as HTMLInputElement).value = lngDD.toString();
 
@@ -960,4 +1000,36 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
   onInfoWhere() {
     let s = "for Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds"
   }
+
+  // --------------- DATE-TIME PICKER -----------------
+  toggleMinDate(evt: any) {
+    if (evt.checked) {
+      this._setMinDate();
+    } else {
+      this.minDate = null;
+    }
+  }
+
+  toggleMaxDate(evt: any) {
+    if (evt.checked) {
+      this._setMaxDate();
+    } else {
+      this.maxDate = null;
+    }
+  }
+
+  closePicker() {
+    this.picker.cancel();
+  }
+
+  private _setMinDate(hours:number=10) {
+    const now = dayjs();
+    this.minDate = now.subtract(hours, 'hours');
+  }
+
+  private _setMaxDate(hours:number=10) {
+    const now = dayjs();
+    this.maxDate = now.add(hours, 'hours');
+  }
+
 }

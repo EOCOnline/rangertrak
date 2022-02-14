@@ -1,9 +1,11 @@
 import { DOCUMENT } from '@angular/common'
 import { Component, enableProdMode, Inject, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FieldReportService, RangerService, SettingsService, SettingsType } from '../shared/services/'
 import { AgGridModule } from 'ag-grid-angular'
 import { FieldReportStatusType } from '../shared/services/settings.service';
+import { Color } from '@angular-material-components/color-picker';
+import { ThemePalette } from '@angular/material/core';
 
 @Component({
   selector: 'rangertrak-settings',
@@ -18,6 +20,12 @@ export class SettingsComponent implements OnInit {
   private gridApi: any
   private gridColumnApi: any
   rowData: FieldReportStatusType[] = []
+
+  colorCtr: AbstractControl = new FormControl(new Color(255, 243, 0), [Validators.required])
+  colorCntlDisabled = false
+  touchUi = false
+  public color: ThemePalette = 'primary';
+
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {}// rowSelection: "multiple"}
@@ -71,6 +79,7 @@ export class SettingsComponent implements OnInit {
 
     this.settingsEditorForm = this.getFormArrayFromSettingsArray()
     this.rowData = this.settingsService.getFieldReportStatuses()
+
     console.log("settings component ngInit done at ", Date())
   }
 

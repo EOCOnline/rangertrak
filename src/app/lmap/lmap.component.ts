@@ -165,6 +165,31 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     }
   }
 
+  // TODO: https://stackoverflow.com/questions/30190268/leaflet-how-to-add-click-event-listener-to-popup
+  /*
+  for (var i = 0; i < users.length; i++) {
+    (function (user) {
+        var marker = L.marker([users[i].lat, users[i].lon], {icon: iconOff})
+            .on('mouseover', function() { this.setIcon(iconOn); })
+            .on('mouseout', function() { this.setIcon(iconOff); })
+            .addTo(map);
+
+        var myPopup = L.DomUtil.create('div', 'infoWindow');
+        myPopup.innerHTML = "<div id='info'><p id='title'>" + users[i].title + "</p><p>" + users[i].addr + "</p></div>";
+
+            marker.bindPopup(myPopup);
+
+        $('#info', myPopup).on('click', function() {
+            $("#userTitle").html(users[i].title).html();
+            $("#userAddr").html(users[i].addr).html();
+            $("#userDesc").html(users[i].desc).html();
+
+            $("#userDetails").modal("show");
+        });
+    })(users[i]);
+}
+*/
+
   _markerOnClick(e: any) {
     console.warn(`Got Marker Click!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! e= ${JSON.stringify(e)}`)
   }

@@ -1,9 +1,22 @@
+
+
 // Following from https://material.angular.io/components/autocomplete/examples
 
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
 // Plus imports for other components in your app.
+
+
+/*
+  You can add global styles to this file, and also import other style files
+  Consider www.getBEM.com: Block__Element--Modifier style namess
+*/
+
+@import "ag-grid-community/dist/styles/ag-grid.css";
+@import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
@@ -33,22 +46,6 @@ $theme: mat.define-light-theme((
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include mat.all-component-themes($theme);
-
-
-
-// TODO: https://fonts.google.com/?query=Patrick+Hand, https://fonts.google.com/?query=Neucha,
-// per https://bobrov.dev/angular-popper/ && D:\Projects\RangerTrak\_Components\Popper
-
-
-
-
-/*
-  You can add global styles to this file, and also import other style files
-  Consider www.getBEM.com: Block__Element--Modifier style namess
-*/
-
-@import "ag-grid-community/dist/styles/ag-grid.css";
-@import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

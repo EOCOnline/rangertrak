@@ -16,7 +16,8 @@
     <br>
 
     <div class="input-group">Notes for this group of settings:
-      <textarea formControlName="note" id="" cols="50" rows="1" placeholder="Description of this group of settings"></textarea>
+      <textarea formControlName="note" id="" cols="50" rows="1"
+        placeholder="Description of this group of settings"></textarea>
     </div>
     <br>
 
@@ -53,11 +54,9 @@
     </div>
 
     <div class="input-group">Zoom (3-21):
-      <input
-        [class.border-danger]="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.invalid"
+      <input [class.border-danger]="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.invalid"
         type="number" formControlName="zoom" placeholder=15>
-      <div
-        *ngIf="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.hasError('required')"
+      <div *ngIf="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.hasError('required')"
         class="text-sm text-danger">zoom is required</div>
     </div>
 
@@ -79,26 +78,34 @@
       <div
         *ngIf="settingsEditorForm.get('allowManualPinDrops')?.touched && settingsEditorForm.get('debugMallowManualPinDropsode')?.hasError('required')"
         class="text-sm text-danger">allowManualPinDrops is required</div>
-        Allow Manual Pin Drops on Google & Leaflet Maps (default: false)
+      Allow Manual Pin Drops on Google & Leaflet Maps (default: false)
     </div>
-<br>
+    <br>
 
-    Field Report Statuses: (<span onclick="displayShow()" >Display Color Chart</span>)
-    <div id="settings__ColorChart" display="hidden">
+    Field Report Statuses: (<span onclick="displayShow()">Display Color Chart</span>)
+    <!--div id="settings__ColorChart" display="hidden">
       <img src= '../../assets/imgs/ColorChart.png' title="These 3 letter codes ARE valid colors!, from https://html-color-codes.com/" id ="settings__ColorChart-img"/>
-    </div>
-    <ag-grid-angular
-      class="ag-theme-alpine"
-      (gridReady)="onGridReady($event)"
-      [gridOptions]="gridOptions"
-      [defaultColDef]="defaultColDef"
-      [tooltipShowDelay]=500
-      [rowData]="rowData"
-      [columnDefs]="columnDefs">
+    </div-->
+
+    // https://h2qutc.github.io/angular-material-components/colorpicker
+    <mat-card class="zone zone-value">
+      <div class="row" [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}}</div>
+      <div class="row">RGBA: {{colorCtr.value?.rgba}}</div>
+    </mat-card>
+
+    <mat-card class="zone zone-picker">
+      <mat-form-field>
+        <input matInput [ngxMatColorPicker]="picker"  [disabled]="colorCntlDisabled">[formControl]="colorCtr"
+        <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
+        <ngx-mat-color-picker #picker [touchUi]="touchUi" [color]="color"></ngx-mat-color-picker>
+      </mat-form-field>
+    </mat-card>
+
+    <ag-grid-angular class="ag-theme-alpine" (gridReady)="onGridReady($event)" [gridOptions]="gridOptions"
+      [defaultColDef]="defaultColDef" [tooltipShowDelay]=500 [rowData]="rowData" [columnDefs]="columnDefs">
     </ag-grid-angular>
-    <button (click)="onBtnAddFRStatus()"
-    title="Add a new Field Report Status">Add new
-    row</button> (& then REFRESH PAGE!)
+    <button (click)="onBtnAddFRStatus()" title="Add a new Field Report Status">Add new
+      row</button> (& then REFRESH PAGE!)
     <br>
     <!--h2>Markers</h2>
 
@@ -136,8 +143,13 @@
         class="text-sm text-danger">debug mode is required</div>
       Debug Mode
     </div>
+    future: [ ] enable touch user interface
 
-    <!--div class="input-group">
+    <!--
+      touchUi from https://h2qutc.github.io/angular-material-components/colorpicker
+
+
+      div class="input-group">
       <input
         [class.border-danger]="settingsEditorForm.get('logToPanel')?.touched && settingsEditorForm.get('logToPanel')?.invalid"
         type="checkbox" formControlName="logToPanel" placeholder="logToPanel">

@@ -1,11 +1,13 @@
 import { BehaviorSubject, Observer } from 'rxjs';
 import { Injectable, OnInit } from '@angular/core';
 //import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
-import { RangerService, RangerStatus, SettingsService, FieldReportStatusType, TeamService } from './index';
+import { RangerService, SettingsService, FieldReportStatusType, TeamService } from './index';
 import { LatLng } from 'leaflet';
 import { HttpClient } from '@angular/common/http';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
+
+// TODO: https://h2qutc.github.io/angular-material-components/fileinput
 
 export type FieldReportType = {
   id: number,

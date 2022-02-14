@@ -1,4 +1,4 @@
-import { FieldReportService, FieldReportSource, FieldReportStatusType, FieldReportType, MarkerService, PopupService, RangerService, RangerStatus, RangerType, SettingsService, SettingsType, ShapeService, TeamService, TeamType } from './shared/services/';
+import { FieldReportService, FieldReportSource, FieldReportStatusType, FieldReportType, MarkerService, PopupService, RangerService, RangerType, SettingsService, SettingsType, ShapeService, TeamService, TeamType } from './shared/services/';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AgGridModule } from 'ag-grid-angular';
@@ -19,7 +19,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { LazyModule } from './lazy/lazy.module'
 import { LmapComponent } from './lmap/lmap.component';
 import { LogComponent } from './log/log.component';
-
+import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker'
+import { MAT_COLOR_FORMATS, NgxMatColorPickerModule, NGX_MAT_COLOR_FORMATS } from '@angular-material-components/color-picker'
 import { MDCBanner } from '@material/banner'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { MaterialModule } from './material.module';
@@ -56,14 +57,18 @@ import { environment } from '../environments/environment';
     FontAwesomeModule,
     AgGridModule.withComponents([]),
     //AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
-   // AgmSnazzyInfoWindowModule,
+    // AgmSnazzyInfoWindowModule,
     LazyModule,
-   ServiceWorkerModule.register('ngsw-worker.js', {
-     enabled: environment.production,
-     // Register the ServiceWorker as soon as the app is stable
-     // or after 30 seconds (whichever comes first).
-     registrationStrategy: 'registerWhenStable:30000'
-   })
+    NgxMatColorPickerModule,
+    NgxMatDatetimePickerModule,
+    NgxMatTimepickerModule,
+    NgxMatNativeDateModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
     //, IonicModule.forRoot()
   ],
 
@@ -86,11 +91,14 @@ import { environment } from '../environments/environment';
 
   // Define any required @Injectables. Any sub-components or modules can get the same @Injectable instance via dependency injection.
   // In the case of the AppModule, these @Injectables are application-scoped
-  providers: [TeamService, RangerService, FieldReportService, MarkerService, PopupService, SettingsService, ShapeService,
-    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}],
-    //{provide: MAT_BANNER_DEFAULT_OPTIONS}],
-    // Team, Ranger,
-    // providers: [File, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [
+    TeamService, RangerService, FieldReportService, MarkerService, PopupService, SettingsService, ShapeService,
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } },
+    { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS }
+  ],
+  //{provide: MAT_BANNER_DEFAULT_OPTIONS}],
+  // Team, Ranger,
+  // providers: [File, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
 
   bootstrap: [AppComponent]//,
 
