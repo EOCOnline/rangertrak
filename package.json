@@ -46,6 +46,7 @@
     "firebase": "^9.6.6",
     "leaflet": "^1.7.1",
     "leaflet.markercluster": "^1.5.3",
+    "mat-timepicker": "^5.1.4",
     "rxfire": "^6.0.3",
     "rxjs": "^7.5.4",
     "tslib": "^2.3.1",

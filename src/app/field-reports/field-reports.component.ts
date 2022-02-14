@@ -175,7 +175,6 @@ export class FieldReportsComponent implements OnInit {
   }
 */
 
-
   ngOnInit(): void {
     console.log("Field Report Form ngInit at ", Date.now)
 
@@ -185,8 +184,10 @@ export class FieldReportsComponent implements OnInit {
     this.numFakesForm = this.formBuilder.group({})
 
     if (!this.settings.debugMode) {
-      this.displayHide("enter__Fake--id")
+      console.log("running in non-debug mode")
+      // this.displayHide("enter__Fake--id") // debug mode SHOULD be ON...
     } else {
+      console.log("running in debug mode")
       this.displayShow("enter__Fake--id")
     }
 
@@ -303,7 +304,7 @@ export class FieldReportsComponent implements OnInit {
     if (e) {
       e.style.visibility = "hidden";
     } else {
-      console.warn(`Could not find HTML Element ${e}`)
+      console.warn(`Could not hide HTML Element ${htmlElementID}`)
     }
   }
 
@@ -312,7 +313,7 @@ export class FieldReportsComponent implements OnInit {
     if (e) {
       e.style.visibility = "visible";
     } else {
-      console.warn(`Could not find HTML Element ${e}`)
+      console.warn(`Could not show HTML Element ${htmlElementID}`)
     }
   }
 }

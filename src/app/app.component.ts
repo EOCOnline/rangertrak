@@ -41,7 +41,7 @@ export class AppComponent implements OnInit {
       //this.swUpdate.activateUpdate()
       // TODO: OR????
       // window.location.reload
-      console.log(`Reload page to install next version????`)
+      console.log(`App Updates ARE Available!  Reload page to install next version????`)
       //  } else {
       //    console.log(`Don't update YET...`)
       //  }

@@ -43,7 +43,7 @@ export class SettingsService {
   static version: string
 
   constructor() {
-    console.log("Contructing SettingsService: repeatedly?!--------------") // on page transition between Entry Screen or Google Maps pages ONLY
+    console.log("Contructing SettingsService") // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
 
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
     let secretWorkaround = JSON.stringify(secrets)
@@ -105,7 +105,7 @@ export class SettingsService {
     if ((this.fieldReportStatuses == undefined) || (this.fieldReportStatuses == null) || (this.fieldReportStatuses.length == 0)) {
       this.ResetFieldReportStatusDefaults()
     }
-    console.log("FieldReport Statuses initialized: " + JSON.stringify(this.fieldReportStatuses))
+    console.log("FieldReport Statuses initialized " + (SettingsService.Settings.debugMode? JSON.stringify(this.fieldReportStatuses):""))
 
   }
 

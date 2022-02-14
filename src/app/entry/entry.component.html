@@ -237,7 +237,7 @@
       <mat-radio-group labelPosition="after" formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid"
         tabindex="7">
-        <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat.status}} class="rButton">{{stat.status}} &nbsp;&nbsp;&nbsp;
+        <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat.status}} class="rButton"><span style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
         </mat-radio-button>
       </mat-radio-group>
 
