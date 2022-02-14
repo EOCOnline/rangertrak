@@ -96,6 +96,8 @@ export class IconComponent {
 })
 export class EntryComponent implements OnInit {
   @ViewChild('picker') picker: any; // https://blog.angular-university.io/angular-viewchild/
+  //@Input('for') picker: NgxMatColorPickerComponent; // from projects\color-picker\src\lib\components\color-toggle\color-toggle.component.ts
+
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
 
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
