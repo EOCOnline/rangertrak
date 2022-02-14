@@ -246,13 +246,29 @@
     </div-->
 
     <mat-form-field>
-      <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" [formControl]="dateControl"
+      <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" FormControlName ="date"
         [min]="minDate" [max]="maxDate" >
 
-      <mat-datepicker-toggle matSuffix >[for]="picker"</mat-datepicker-toggle>
+      <mat-datepicker-toggle matSuffix  ></mat-datepicker-toggle>
 
       <ngx-mat-datetime-picker #picker>
         <!--
+          [formControl]="dateControl"
+
+[for]="picker"
+
+
+
+declare (property)
+MatDatepickerToggle<any>.datepicker: MatDatepickerPanel<MatDatepickerControl<any>, any, any>
+Datepicker instance that the button will toggle.
+
+Type 'NgxMatDatetimePicker<any>' is not assignable to type
+'MatDatepickerPanel<MatDatepickerControl<any>, any, any>'.ngtsc(2322)
+
+  entry.component.ts(82, 53): Error occurs in the template of component EntryComponent.
+No quick fixes available
+
           [disabled]="disabled"
 
 
@@ -278,6 +294,7 @@
         tabindex="7">
         <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat.status}} class="rButton"><span
             style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
+            <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
         </mat-radio-button>
       </mat-radio-group>
 

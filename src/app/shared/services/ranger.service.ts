@@ -65,7 +65,7 @@ export class RangerService {
 
   GetRangers() {
     console.log(`GetRangers() returning ${this.rangers.length} Rangers`)
-    this.SortRangersByCallsign()
+    this.SortRangersByCallsign()   // TODO: Getting called too often?
     return this.rangers
   }
 
@@ -81,7 +81,7 @@ export class RangerService {
     //localStorage.setItem("SpecialRangers", JSON.stringify(this.rangers2))
     //console.log("Updated Rangers to " + JSON.stringify(this.rangers))
 
-    this.SortRangersByCallsign()
+    this.SortRangersByCallsign()   // TODO: Getting called too often?
 
 
     // now gets:
@@ -116,7 +116,7 @@ export class RangerService {
     } catch (error: any) {
       console.log(`Unable to parse Rangers from Local Storage. Error: ${error.message}`)
     }
-    this.SortRangersByCallsign()
+    this.SortRangersByCallsign()   // TODO: Getting called too often?
   }
 
   //--------------------------------------------------------------------------
@@ -146,7 +146,7 @@ export class RangerService {
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'rangers') from default-exporting module (only default export is available soon)"
     let rangerWorkaround = JSON.stringify(rangers)
     this.rangers = JSON.parse(rangerWorkaround)
-    this.SortRangersByCallsign()
+    this.SortRangersByCallsign()   // TODO: Getting called too often?
     console.log(`Got ${this.rangers.length} rangers from JSON file.`)
   }
 
@@ -305,6 +305,7 @@ import { HttpClient } from '@angular/common/http';
   }
 
   // this needs be done for the autocomplete control in the enter comonent to work correctly
+    // TODO: Getting called too often?
   SortRangersByCallsign() {
     console.log(`SortRangersByCallsign: ${this.rangers.length} Rangers in array`)
 

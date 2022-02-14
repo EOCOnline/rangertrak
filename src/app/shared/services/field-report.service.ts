@@ -199,16 +199,16 @@ export class FieldReportService {
 
       for (let i = 1; i < this.fieldReports.length; i++) {
         if (this.fieldReports[i].lat > north) {
-          north = this.fieldReports[i].lat
+          north = Math.round(this.fieldReports[i].lat*10000)/10000
         }
         if (this.fieldReports[i].lat < south) {
-          south = this.fieldReports[i].lat
+          south = Math.round(this.fieldReports[i].lat*10000)/10000
         }
         if (this.fieldReports[i].lng > east) {
-          east = this.fieldReports[i].lng
+          east = Math.round(this.fieldReports[i].lng*10000)/10000
         }
         if (this.fieldReports[i].lng > west) {
-          west = this.fieldReports[i].lng
+          west = Math.round(this.fieldReports[i].lng*10000)/10000
         }
       }
     } else {
@@ -231,7 +231,8 @@ export class FieldReportService {
       console.log(`recalcFieldBounds BROADENED to N:${north} S:${south} `)
     }
 
-    this.bound = { east: Math.round(east*10000)/10000, north: Math.round(north*10000)/10000, south: Math.round(south*10000)/10000, west: Math.round(west*10000)/10000 } //e,n,s,w
+    this.bound = { east: east, north: north, south: south, west: west } //e,n,s,w
+    //this.bound = { east: Math.round(east*10000)/10000, north: Math.round(north*10000)/10000, south: Math.round(south*10000)/10000, west: Math.round(west*10000)/10000 } //e,n,s,w
     return this.bound
 
     // BUG: Move out Google specific code...
@@ -244,7 +245,7 @@ export class FieldReportService {
     return this.bound
   }
 
-  // TODO: put in coordinates or utility?
+  // TODO: put in coordinates or utility? This relies on GOOGLE.MAPS!
   getBoundFromBounds(bounds: google.maps.LatLngBounds): google.maps.LatLngBoundsLiteral {
     let NE = new google.maps.LatLng(bounds.getNorthEast())
     let SW = new google.maps.LatLng(bounds.getSouthWest())

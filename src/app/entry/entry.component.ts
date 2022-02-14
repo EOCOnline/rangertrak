@@ -1,11 +1,12 @@
 import { DOCUMENT } from '@angular/common'
-import { Component, Inject, OnInit, ViewChild, isDevMode, Input } from '@angular/core'
+import { Component, Inject, OnInit, ViewChild, isDevMode, Input, NgZone } from '@angular/core'
+import { ThemePalette } from '@angular/material/core';
 import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { HttpClient } from '@angular/common/http';
 
-import { MatDatepickerModule } from '@angular/material/datepicker'
-import { MatInputModule } from '@angular/material/input'
-import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker'
+//import { MatDatepickerModule } from '@angular/material/datepicker'
+//import { MatInputModule } from '@angular/material/input'
+
 import { MatSnackBar } from '@angular/material/snack-bar'
 //import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { Observable, debounceTime, map, startWith, switchMap } from 'rxjs'
@@ -17,14 +18,13 @@ import { FieldReportService, FieldReportStatusType, RangerService, RangerType, S
 //import { addressType } from '../lmap/lmap.component' // BUG:
 import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
 import { LatLng } from 'leaflet';
+
+//import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker' (already in ngModule)
 import * as dayjs from 'dayjs' // https://day.js.org/docs/en/ or https://github.com/dayjs/luxon/
-
-
 
 import * as P from '@popperjs/core';
 //import { createPopper } from '@popperjs/core';
 import type { StrictModifiers } from '@popperjs/core';
-
 
 import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { mdiAccount, mdiInformationOutline } from '@mdi/js';
@@ -95,7 +95,7 @@ export class IconComponent {
   providers: [RangerService, FieldReportService, SettingsService, TeamService]
 })
 export class EntryComponent implements OnInit {
-  @ViewChild('picker') picker: any;
+  @ViewChild('picker') picker: any; // https://blog.angular-university.io/angular-viewchild/
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
 
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
@@ -118,6 +118,7 @@ export class EntryComponent implements OnInit {
     animation: google.maps.Animation.DROP
   }) // i.e., a singleton...
 
+  // TODO: move to abstracted x instead of google.maps
   mouseLatLng?: google.maps.LatLngLiteral
   vashon = new google.maps.LatLng(47.4471, -122.4627)
 
@@ -173,8 +174,10 @@ export class EntryComponent implements OnInit {
   public stepSecond = 1;
   public color: ThemePalette = 'primary';
  */
+
+
   public formGroup = new FormGroup({
-    date: new FormControl(dayjs().utcOffset(), [Validators.required]),
+    date1: new FormControl(dayjs().utcOffset(), [Validators.required]),
     date2: new FormControl(null, [Validators.required])
   })
 
@@ -186,9 +189,6 @@ export class EntryComponent implements OnInit {
   date1 = new FormControl(new Date()) //TODO: Still need to grab the resultduring submit...!
 
   // hhttps://github.com/h2qutc/angular-material-components
-  // myTimePicker = null
-
-
   /* following causes:  No suitable injection token for parameter 'formBuilder' of class 'EntryComponent'.
   Consider using the @Inject decorator to specify an injection token.(-992003)
 entry.component.ts(77, 26): This type does not have a value, so it cannot be used as injection token.
@@ -200,9 +200,9 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     private settingsService: SettingsService,
     // private teamService: TeamService,
     private _snackBar: MatSnackBar,
-
     iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, // for svg mat icons
-
+    private http: HttpClient,
+    private zone: NgZone,
     @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
 
 
@@ -386,9 +386,6 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     // TODO: update #enter__Callsign-upshot
   }
 
-
-  // FUTURE: provider nicer time picker: https://www.freakyjolly.com/angular-material-109-datepicker-timepicker-tutorial/#Only_Show_Timepicker
-
   /*
     https://www.sitepoint.com/css3-animation-javascript-event-handlers/
     https://css-tricks.com/controlling-css-animations-transitions-javascript/
@@ -470,7 +467,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
   onMapMouseMove(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
       this.mouseLatLng = event.latLng.toJSON()
-      console.log('moveing()');
+      //console.log('moving()');
     }
     else {
       console.warn('move(): NO event.latLng!!!!!!!!!!!!!');

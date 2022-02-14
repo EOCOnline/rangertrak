@@ -261,7 +261,7 @@ export class GmapComponent implements OnInit {    //extends Map
 
   zoomed() {
     if (this.zoom && this.gMap) {
-    this.zoom = this.gMap.getZoom()!
+      this.zoom = this.gMap.getZoom()!
     }
   }
 
@@ -275,7 +275,7 @@ export class GmapComponent implements OnInit {    //extends Map
     }
   }
 
-  addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
+  addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "", animation = google.maps.Animation.DROP) {
     console.log(`addMarker`)
 
     if (infoContent == "") {
@@ -285,7 +285,7 @@ export class GmapComponent implements OnInit {    //extends Map
       title = infoContent
     }
     labelText = "grade"
-    //icon = "rocket"
+
     fontSize = "20px"
     /*
         //icon = "rocket"
@@ -317,7 +317,7 @@ export class GmapComponent implements OnInit {    //extends Map
         map: this.gMap,
         position: latLng,
         title: title,
-        //icon: icon, //"https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+        icon: icon,
         label: {
           // label: this.labels[this.labelIndex++ % this.labels.length],
           text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
@@ -362,6 +362,7 @@ export class GmapComponent implements OnInit {    //extends Map
     //let infoContent
     let labelText
     let title
+    let icon
     let labelColor
     let fr: FieldReportType
 
@@ -375,6 +376,28 @@ export class GmapComponent implements OnInit {    //extends Map
       title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, lng ${fr.lng} with "${fr.note}".`
       //title = infoContent
 
+      switch (fr.callsign) {
+        case "W7VMI":
+          //icon = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
+          icon = "http://maps.gstatic.com/mapfiles/ms2/micons/sunny.png"
+          break;
+        case "!Team3":
+          icon = "http://maps.gstatic.com/mapfiles/ms2/micons/blue.png"
+          break;
+        case "!Team2":
+          icon = "http://maps.google.com/mapfiles/kml/paddle/2.png"
+          break;
+        case "!Team1":
+          icon = "http://maps.google.com/mapfiles/kml/paddle/1.png"
+          break;
+        case "KI7SWF":
+          icon = "http://maps.google.com/mapfiles/kml/shapes/capital_big_highlight.png"
+          break;
+        default:
+          icon = ''
+          break;
+      }
+
       for (let j = 0; j < fieldReportStatuses.length; j++) {
         if (fieldReportStatuses[j].status != fr.status) continue
         labelText = fieldReportStatuses[j].icon
@@ -383,7 +406,7 @@ export class GmapComponent implements OnInit {    //extends Map
       }
 
       console.log(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`)
-      this.addMarker(latlng, title, labelText, title, labelColor)
+      this.addMarker(latlng, title, labelText, title, labelColor, "28px", icon)
     }
 
     console.log(`displayAllMarkers added ${this.fieldReports.length} markers`)
@@ -394,7 +417,7 @@ export class GmapComponent implements OnInit {    //extends Map
 
   onMapMouseMove(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
-      this.mouseLatLng= event.latLng.toJSON()
+      this.mouseLatLng = event.latLng.toJSON()
     }
   }
 
