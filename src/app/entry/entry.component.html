@@ -7,7 +7,9 @@
 
 
     <h1>Entry Form</h1>
-    <h2 class="elegant"><mat-label>Who</mat-label></h2>
+    <h2 class="elegant">
+      <mat-label>Who</mat-label>
+    </h2>
 
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview
     https://www.wufoo.com/html5/tabindex-attribute/ -->
@@ -16,7 +18,7 @@
 
       <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
         formControlName="callsign" [matAutocomplete]="auto" (change)="this.CallsignCtrlChanged()"
-        id="enter__Callsign-input" tabindex="1">
+        id="enter__Callsign-input" tabindex="1" data-lpignore="true">
 
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
@@ -86,10 +88,12 @@
     <span class="material-icons-two-tone">info</span-->
 
     <!-- https://popper.js.org/docs/v2/tutorial/ -->
-    <h2 class="elegant"><mat-label>Where</mat-label>&nbsp;&nbsp;<fa-icon [icon]="faInfoCircle" id="button" aria-describedby="tooltip"
+    <h2 class="elegant">
+      <mat-label>Where</mat-label>&nbsp;&nbsp;<fa-icon [icon]="faInfoCircle" id="button" aria-describedby="tooltip"
         title="Click info icon for info!" alt="info icon"></fa-icon><span class="small">(updates map to the right)
         onclick="onWhereInfo()"</span>|<img src="../../assets/icons/information-outline.png"
-        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" /></h2>
+        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" />
+    </h2>
 
     <div id="tooltip" role="tooltip">
       My tooltip: Instructions for how to enter location into RangerTrak:
@@ -214,100 +218,49 @@
     </div-->
 
 
-    <h2 class="elegant"><mat-label>When</mat-label></h2>
-    <!-- TODO: Use Time Picker: https://material.io/components/time-pickers#usage
-          showSpinners: If true, the spinners above and below input are visible
-          showSeconds: If true, it is not possible to select seconds
-          disableMinute: If true, the minute is readonly
-          defaultTime: An array [hour, minute, second] for default time when the date is not yet defined
-    -->
+    <h2 class="elegant">
+      <mat-label>When</mat-label>
+    </h2>
 
-    <!--ngx-mat-timepicker [(ngModel)]="myTimePicker">
-        </ngx-mat-timepicker-->
+    <div class="input-group">
+      <!-- https://stackoverflow.com/questions/64826483/ngxmatdatetimepicker-is-not-assignable-to-type-matdatepickerbase -->
+      <mat-form-field appearance="fill">
+        <mat-label>Report time</mat-label>
+        <input matInput [ngxMatDatetimePicker]="$any(picker)" [min]="minDate" [max]="maxDate" [formControl]="dateCtrl"
+          tabindex="6">
 
-    <div class="input-group"><mat-label>Date:</mat-label>
+        <mat-datepicker-toggle matSuffix [for]="$any(picker)" title="Click me to display the picker">
+        </mat-datepicker-toggle>
 
-<!--  -->
-      <mat-form-field>
-        <mat-label>Choose a datetime</mat-label>
-        <input matInput [matDatepicker]="$any(picker)"/>
-        <mat-datepicker-toggle matSuffix [for]="$any(picker)">></mat-datepicker-toggle>
-        <mat-datepicker type="datetime" #picker></mat-datepicker>
+        <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds" [stepHour]="stepHour"
+          [stepMinute]="stepMinute" [stepSecond]="stepSecond" [touchUi]="touchUi" [color]="color"
+          [enableMeridian]="enableMeridian" [disableMinute]="disableMinute" [hideTime]="hideTime">
+
+          <!-- Custom icon or text of Apply icon -->
+          <ng-template>
+            <!--mat-icon>star</mat-icon-->
+            <span>OK</span>
+          </ng-template>
+        </ngx-mat-datetime-picker>
       </mat-form-field>
-<!-- https://stackoverflow.com/questions/64826483/ngxmatdatetimepicker-is-not-assignable-to-type-matdatepickerbase -->
 
-      <!--mat-form-field appearance="fill">
-        <mat-label>Choose a date</mat-label>
-<!   [formControl]="date1"  >
-        <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="picker" [formControl]="date1" >
-
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-      <br>
-
-      <input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
+      <!--input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
         type="datetime" formControlName="date" placeholder="date" id="enter__When-input" tabindex="6">
-
-
       <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
-        class="text-sm text-danger">date is required</div>
-    </div-->
-
-    <!--mat-form-field>
-      <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" FormControlName ="date"
-        [min]="minDate" [max]="maxDate" >
-
-      <mat-datepicker-toggle matSuffix  ></mat-datepicker-toggle>
-
-      <ngx-mat-datetime-picker #picker-->
-
-        <!--
-          [formControl]="dateControl"
-
-[for]="picker"
-
-
-
-declare (property)
-MatDatepickerToggle<any>.datepicker: MatDatepickerPanel<MatDatepickerControl<any>, any, any>
-Datepicker instance that the button will toggle.
-
-Type 'NgxMatDatetimePicker<any>' is not assignable to type
-'MatDatepickerPanel<MatDatepickerControl<any>, any, any>'.ngtsc(2322)
-
-  entry.component.ts(82, 53): Error occurs in the template of component EntryComponent.
-No quick fixes available
-
-https://github.com/h2qutc/angular-material-components
-https://github.com/h2qutc/ngx-mat-datetime-picker/pull/34/files
-
-          [disabled]="disabled"
-
-
-           [showSpinners]="showSpinners"  [hideTime]="hideTime" [showSeconds]="showSeconds" [stepHour]="stepHour"
-        [stepMinute]="stepMinute" [stepSecond]="stepSecond" [touchUi]="touchUi" [color]="color"
-        [enableMeridian]="enableMeridian" [disableMinute]="disableMinute"
-
-          Custom icon or text of Apply icon -->
-        <!-- ng-template>
-          <<mat-icon>star</mat-icon> >
-          <span>OK</span>
-        </ng-template>
-      </ngx-mat-datetime-picker>
-    </mat-form-field-->
+        class="text-sm text-danger">date is required</div-->
     </div>
 
     <h2 class="elegant bordered">What</h2>
 
 
-    <div class="input-group bordered"><mat-label>Status:</mat-label>
+    <div class="input-group bordered">
+      <mat-label >Status:</mat-label>
       <mat-radio-group labelPosition="after" formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid"
         tabindex="7">
         <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat.status}} class="rButton"><span
-            style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
-            <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
+            style="color:{{stat.color}}" > {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
+          <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
         </mat-radio-button>
       </mat-radio-group>
 

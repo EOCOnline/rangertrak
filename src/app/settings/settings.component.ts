@@ -62,7 +62,6 @@ export class SettingsComponent implements OnInit {
 
     cellStyle: (params: { value: string; }) => {
       return { backgroundColor: params.value}},
-
       //cellRenderer: ColorRenderer,
       cellEditor: ColorEditor,
       cellEditorPopup: true,
@@ -71,13 +70,11 @@ export class SettingsComponent implements OnInit {
   },
     {
       headerName: "Icon", field: "icon",
-
       cellRenderer: MoodRenderer,
       cellEditor: MoodEditor,
       cellEditorPopup: true,
       editable: true,
       width: 300,
-
     } //, minWidth: "25px" }
   ];
 

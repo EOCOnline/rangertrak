@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 //import { MatInputModule } from '@angular/material/input'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
-//import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { Observable, debounceTime, map, startWith, switchMap } from 'rxjs'
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 
@@ -19,7 +19,9 @@ import { FieldReportService, FieldReportStatusType, RangerService, RangerType, S
 import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
 import { LatLng } from 'leaflet';
 
-//import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker' (already in ngModule)
+//import { MatDatepickerModule } from '@matheo/datepicker'; //https://www.npmjs.com/package/@matheo/datepicker
+//import { MatNativeDateModule } from '@matheo/datepicker/core';
+import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker'// (already in ngModule)
 import * as dayjs from 'dayjs' // https://day.js.org/docs/en/ or https://github.com/dayjs/luxon/
 
 import * as P from '@popperjs/core';
@@ -96,8 +98,6 @@ export class IconComponent {
 })
 export class EntryComponent implements OnInit {
   @ViewChild('picker') picker: any; // https://blog.angular-university.io/angular-viewchild/
-  //@Input('for') picker: NgxMatColorPickerComponent; // from projects\color-picker\src\lib\components\color-toggle\color-toggle.component.ts
-
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
 
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
@@ -159,36 +159,49 @@ export class EntryComponent implements OnInit {
   popperInstance: any //typeof P.createPopper | undefined
 
   // --------------- DATE-TIME PICKER -----------------
-  // https://h2qutc.github.io/angular-material-components/datetimepicker
+
+  // https://github.com/angular/components/issues/5648
+  // https://ng-matero.github.io/extensions/components/datetimepicker/overview (nice)
+  // https://vlio20.github.io/angular-datepicker/timeInline (unused)
+  // https://h2qutc.github.io/angular-material-components - IN USE HERE!
   public date: dayjs.Dayjs = dayjs()
-  /*public disabled = false;
+
+
+/*  It looks like you're using the disabled attribute with a reactive form directive.
+ If you set disabled to true when you set up this control in your component class,
+ the disabled attribute will actually be set in the DOM for
+  you. We recommend using this approach to avoid 'changed after checked' errors.
+
+  Example:
+  form = new FormGroup({
+    first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
+    last: new FormControl('Drew', Validators.required)
+  });
+*/
+  public disabled = false;
   public showSpinners = true;
-  public showSeconds = false;
+  public showSeconds = false; // only affects display in picker
   public touchUi = false;
-  public enableMeridian = false;
-  */
+  public enableMeridian = false; // 24 hr clock
+
   minDate!: dayjs.Dayjs | null
   maxDate!: dayjs.Dayjs | null
-  //  public minDate: dayjs.Dayjs;
-  //  public maxDate: dayjs.Dayjs;
-  /*public stepHour = 1;
+  public stepHour = 1;
   public stepMinute = 1;
   public stepSecond = 1;
   public color: ThemePalette = 'primary';
- */
-
-
+  disableMinute = false
+  hideTime = false
+/*
   public formGroup = new FormGroup({
-    date1: new FormControl(dayjs().utcOffset(), [Validators.required]),
+    date1: new FormControl(dayjs(), [Validators.required]), //.utcOffset()
     date2: new FormControl(null, [Validators.required])
   })
 
-  public dateControl = new FormControl(dayjs());
+  public dateControl = new FormControl(dayjs()); // TODO:  vs dateCtrl???? (just shows date, not time?)
   public dateControlMinMax = new FormControl(dayjs());
-
-
-  //date1 = Date.now()
-  date1 = new FormControl(new Date()) //TODO: Still need to grab the resultduring submit...!
+*/
+  dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
 
   // hhttps://github.com/h2qutc/angular-material-components
   /* following causes:  No suitable injection token for parameter 'formBuilder' of class 'EntryComponent'.
@@ -214,8 +227,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
     //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
 
-    // Set the minimum to January 1st 1 years in the past and December 31st (same year) in the future.
-    //const currentYear = new Date().getFullYear();
+    // REVIEW: Min/Max times ignored?!
     this._setMinDate(10) // no times early than 10 hours ago
     this._setMaxDate(1)  // no times later than 1 hours from now
 
@@ -351,7 +363,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       Validators.required,
         //Validators.minLength(4)
       ],
-      date: [new Date()],
+      date: [new Date()],  // TODO: reset dateCtrl instead?!
       status: [this.fieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
       note: ['']
     })
@@ -403,9 +415,10 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     element.style.animation = "";
   }
 
-  // TODO: This also gets called if the Update Location button is clicked!!
   onFormSubmit(formData1: string): void {
-    console.log(`Form submit at ${Date()}`)
+    console.log(`Form submited at date=${this.date} `)
+    //this.date=this.dateCtrl.value // TODO:
+    this.entryDetailsForm.value.date = this.dateCtrl.value
     let formData = JSON.stringify(this.entryDetailsForm.value)
 
     let newReport = this.fieldReportService.addfieldReport(formData)

@@ -74,6 +74,7 @@ export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
       // right
       // this.toggleMood();
       event.stopPropagation();
+      // TODO: this.params.api.stopEditing();????
     }
   }
 }

@@ -294,6 +294,9 @@ export class FieldReportsComponent implements OnInit {
   }
 
   generateFakeFieldReports(num = this.nFakes) {
+    // TODO: compare current with
+    // https://github.com/material-components/material-components-web/tree/master/packages/mdc-slider#discrete-slider
+    // https://material-components.github.io/material-components-web-catalog/#/component/slider
     this.fieldReportService.generateFakeData(num)
     console.log(`Generated ${num} FAKE Field Reports`)
     //window.location.reload() //TODO: OK?!
