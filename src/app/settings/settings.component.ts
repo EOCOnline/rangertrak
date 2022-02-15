@@ -1,11 +1,14 @@
 import { DOCUMENT } from '@angular/common'
 import { Component, enableProdMode, Inject, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FieldReportService, RangerService, SettingsService, SettingsType } from '../shared/services/'
+import { FieldReportService, FieldReportStatusType, RangerService, SettingsService, SettingsType } from '../shared/services/'
 import { AgGridModule } from 'ag-grid-angular'
-import { FieldReportStatusType } from '../shared/services/settings.service';
 import { Color } from '@angular-material-components/color-picker';
 import { ThemePalette } from '@angular/material/core';
+import { ColorEditor } from './color-editor.component';
+import { MoodEditor } from './mood-editor.component';
+import { MoodRenderer } from './mood-renderer.component';
+import { ColDef } from 'ag-grid-community';
 
 @Component({
   selector: 'rangertrak-settings',
@@ -22,6 +25,7 @@ export class SettingsComponent implements OnInit {
   rowData: FieldReportStatusType[] = []
 
   colorCtr: AbstractControl = new FormControl(new Color(255, 243, 0), [Validators.required])
+  //colorCtr: string = new FormControl(new Color(255, 243, 0), [Validators.required])
   colorCntlDisabled = false
   touchUi = false
   public color: ThemePalette = 'primary';
@@ -30,13 +34,13 @@ export class SettingsComponent implements OnInit {
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {}// rowSelection: "multiple"}
 
-  defaultColDef = {
+  defaultColDef: ColDef = {
     flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
     minWidth: 30,
     editable: true,
     resizable: true,
     sortable: true,
-    //filter: true,
+    filter: true,
     //floatingFilter: true
   }
 
@@ -52,8 +56,27 @@ export class SettingsComponent implements OnInit {
         return null
       }
     },
-    { headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code" },
-    { headerName: "Icon", field: "icon" } //, minWidth: "25px" }
+    { headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code",
+
+    cellStyle: (params: { value: string; }) => {
+      return { backgroundColor: params.value}},
+
+      //cellRenderer: ColorRenderer,
+      cellEditor: ColorEditor,
+      cellEditorPopup: true,
+      editable: true,
+      width: 300,
+  },
+    {
+      headerName: "Icon", field: "icon",
+
+      cellRenderer: MoodRenderer,
+      cellEditor: MoodEditor,
+      cellEditorPopup: true,
+      editable: true,
+      width: 300,
+
+    } //, minWidth: "25px" }
   ];
 
 

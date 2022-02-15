@@ -2,6 +2,9 @@ import { FieldReportService, FieldReportSource, FieldReportStatusType, FieldRepo
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AgGridModule } from 'ag-grid-angular';
+import { ColorEditor } from './settings/color-editor.component';
+import { MoodEditor } from './settings/mood-editor.component';
+import { MoodRenderer } from './settings/mood-renderer.component';
 //import { AgmCoreModule } from '@agm/core';
 import { AlertsComponent } from './alerts/alerts.component';
 import { AppComponent } from './app.component';
@@ -55,9 +58,12 @@ import { environment } from '../environments/environment';
     ReactiveFormsModule,
     AppRoutingModule,
     FontAwesomeModule,
-    AgGridModule.withComponents([]),
+    AgGridModule.withComponents([
+      MoodEditor,
+      MoodRenderer,
+    ]),
     //AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
-    // AgmSnazzyInfoWindowModule,
+    // AgmSnazzyInfoWindowModule, // BUG: API_KEY
     LazyModule,
     NgxMatColorPickerModule,
     NgxMatDatetimePickerModule,
@@ -84,6 +90,9 @@ import { environment } from '../environments/environment';
     EntryComponent,
     FieldReportsComponent,
     SettingsComponent,
+    ColorEditor,
+    MoodEditor,
+    MoodRenderer,
     RangersComponent,
     X404Component,
     LogComponent

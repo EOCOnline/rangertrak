@@ -1,0 +1,34 @@
+// https://nikitahl.com/horizontal-rule-css
+
+hr.gradient { // broken...
+    border: none;
+    height: 4px;
+    background-image: linear-gradient (to right, rgba(0, 0, 0, 0), rgb(226, 24, 24), rgba(0, 0, 0, 0));
+}
+
+hr.symbol {
+  border: 4px solid cornflowerblue;
+  border-color: red;
+  //position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+hr.symbol::before {
+  content: 'x:';//{{colorCtr.value.hex}}
+  position: absolute;
+ // margin: -5px;
+  //margin-top: -25px;
+  height: 20px;
+  width: 75px;
+  font-size: 14px;
+  background: white;
+}
+
+hr.box {
+  border: none;
+  height: 0px;
+  box-shadow: 0 1px 6px 1px cornflowerblue;
+}

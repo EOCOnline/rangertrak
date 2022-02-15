@@ -87,15 +87,17 @@
       <img src= '../../assets/imgs/ColorChart.png' title="These 3 letter codes ARE valid colors!, from https://html-color-codes.com/" id ="settings__ColorChart-img"/>
     </div-->
 
-    // https://h2qutc.github.io/angular-material-components/colorpicker
-    <mat-card class="zone zone-value">
+    <!-- https://h2qutc.github.io/angular-material-components/colorpicker-->
+    <mat-card >
       <div class="row" [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}}</div>
       <div class="row">RGBA: {{colorCtr.value?.rgba}}</div>
     </mat-card>
 
+    <!-- [formControlName]="colorCtr" -->
     <mat-card class="zone zone-picker">
       <mat-form-field>
-        <input matInput [ngxMatColorPicker]="picker"  [disabled]="colorCntlDisabled">[formControl]="colorCtr"
+        <input matInput [ngxMatColorPicker]="picker"  [disabled]="colorCntlDisabled" >
+
         <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
         <ngx-mat-color-picker #picker [touchUi]="touchUi" [color]="color"></ngx-mat-color-picker>
       </mat-form-field>
