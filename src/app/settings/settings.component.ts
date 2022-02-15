@@ -3,8 +3,8 @@ import { Component, enableProdMode, Inject, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FieldReportService, FieldReportStatusType, RangerService, SettingsService, SettingsType } from '../shared/services/'
 import { AgGridModule } from 'ag-grid-angular'
-import { Color } from '@angular-material-components/color-picker';
-import { ThemePalette } from '@angular/material/core';
+//import { Color } from '@angular-material-components/color-picker';
+//import { ThemePalette } from '@angular/material/core';
 import { ColorEditor } from './color-editor.component';
 import { MoodEditor } from './mood-editor.component';
 import { MoodRenderer } from './mood-renderer.component';
@@ -24,12 +24,13 @@ export class SettingsComponent implements OnInit {
   private gridColumnApi: any
   rowData: FieldReportStatusType[] = []
 
-  colorCtr: AbstractControl = new FormControl(new Color(255, 243, 0), [Validators.required])
+  /*
+  colorCtr: AbstractControl = new FormControl(new Color(255, 243, 200), [Validators.required])
   //colorCtr: string = new FormControl(new Color(255, 243, 0), [Validators.required])
   colorCntlDisabled = false
   touchUi = false
   public color: ThemePalette = 'primary';
-
+*/
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   gridOptions = {}// rowSelection: "multiple"}
@@ -38,6 +39,7 @@ export class SettingsComponent implements OnInit {
     flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
     minWidth: 30,
     editable: true,
+    singleClickEdit: true,
     resizable: true,
     sortable: true,
     filter: true,

@@ -1,11 +1,20 @@
 <div #container class="color" tabindex="0" (click)="onClick($event)" (mousedown)="onMouseDown($event)"  (keydown)="onKeyDown($event)">
 
   <!-- https://h2qutc.github.io/angular-material-components/colorpicker-->
-    <!-- [formControlName]="colorCtr" -->
+
+  <mat-card >
+     <span [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}} &nbsp;&nbsp; RGBA: {{colorCtr.value?.rgba}}</span>
+     <br>
+     Warning: 1) Cclick the small color palette icon on the right.<br>
+     2) Select your color.<br>
+     3) Click just a bit to to the left of the color palette to <br>
+     'set' the color & dismiss the dialog.
+  </mat-card>
+
   <mat-card>
     <mat-form-field>
-      <input matInput [ngxMatColorPicker]="picker"  [disabled]="colorCntlDisabled" >
-
+      <input matInput [ngxMatColorPicker]="picker" [disabled]="colorCntlDisabled"
+      [formControl]="colorCtr" (click)="onClick($event)" >
       <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
 
       <ngx-mat-color-picker #picker [touchUi]="touchUi" [color]="colorPalette"></ngx-mat-color-picker>
@@ -21,5 +30,4 @@
   </mat-card-->
 
 </div>
-
 

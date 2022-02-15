@@ -17,12 +17,12 @@ export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
   @ViewChild('container', { read: ViewContainerRef })
   public container!: ViewContainerRef;
 
-  colorCtr: AbstractControl = new FormControl(new Color(255, 243, 0), [Validators.required])
-  //colorCtr: string = new FormControl(new Color(255, 243, 0), [Validators.required])
+  //colorCtr: AbstractControl = new FormControl(new Color(255, 243, 0), [Validators.required])
+  colorCtr = new FormControl(new Color(255, 243, 0), [Validators.required])
   colorCntlDisabled = false
   touchUi = false
   public colorPalette: ThemePalette = 'primary';
-  public color: string = 'aqua'
+  public color: string = 'green'
 
   // dont use afterGuiAttached for post gui events - hook into ngAfterViewInit instead for this
   ngAfterViewInit() {
@@ -33,7 +33,7 @@ export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
 
   agInit(params: any): void {
     this.params = params
-    this.setColor('yellow') // default color
+    this.setColor('brown') // default color
   }
 
   getValue(): any {
