@@ -220,12 +220,21 @@
           showSeconds: If true, it is not possible to select seconds
           disableMinute: If true, the minute is readonly
           defaultTime: An array [hour, minute, second] for default time when the date is not yet defined
-         >
+    -->
 
-    <ngx-mat-timepicker [(ngModel)]="myTimePicker">
+    <!--ngx-mat-timepicker [(ngModel)]="myTimePicker">
         </ngx-mat-timepicker-->
 
     <div class="input-group"><mat-label>Date:</mat-label>
+
+<!--  -->
+      <mat-form-field>
+        <mat-label>Choose a datetime</mat-label>
+        <input matInput [matDatepicker]="$any(picker)"/>
+        <mat-datepicker-toggle matSuffix [for]="$any(picker)">></mat-datepicker-toggle>
+        <mat-datepicker type="datetime" #picker></mat-datepicker>
+      </mat-form-field>
+<!-- https://stackoverflow.com/questions/64826483/ngxmatdatetimepicker-is-not-assignable-to-type-matdatepickerbase -->
 
       <!--mat-form-field appearance="fill">
         <mat-label>Choose a date</mat-label>
@@ -245,13 +254,14 @@
         class="text-sm text-danger">date is required</div>
     </div-->
 
-    <mat-form-field>
+    <!--mat-form-field>
       <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" FormControlName ="date"
         [min]="minDate" [max]="maxDate" >
 
       <mat-datepicker-toggle matSuffix  ></mat-datepicker-toggle>
 
-      <ngx-mat-datetime-picker #picker>
+      <ngx-mat-datetime-picker #picker-->
+
         <!--
           [formControl]="dateControl"
 
@@ -269,7 +279,7 @@ Type 'NgxMatDatetimePicker<any>' is not assignable to type
   entry.component.ts(82, 53): Error occurs in the template of component EntryComponent.
 No quick fixes available
 
-
+https://github.com/h2qutc/angular-material-components
 https://github.com/h2qutc/ngx-mat-datetime-picker/pull/34/files
 
           [disabled]="disabled"
@@ -280,12 +290,12 @@ https://github.com/h2qutc/ngx-mat-datetime-picker/pull/34/files
         [enableMeridian]="enableMeridian" [disableMinute]="disableMinute"
 
           Custom icon or text of Apply icon -->
-        <ng-template>
-          <!-- <mat-icon>star</mat-icon> -->
+        <!-- ng-template>
+          <<mat-icon>star</mat-icon> >
           <span>OK</span>
         </ng-template>
       </ngx-mat-datetime-picker>
-    </mat-form-field>
+    </mat-form-field-->
     </div>
 
     <h2 class="elegant bordered">What</h2>
