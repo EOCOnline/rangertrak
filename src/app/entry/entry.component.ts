@@ -35,7 +35,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';// https://material.angular.io/components/icon/examples
 
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
-
+// IDEA: use https://material.angular.io/components/badge/ ???
 
 const THUMBUP_ICON =
   `

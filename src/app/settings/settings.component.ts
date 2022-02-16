@@ -78,7 +78,6 @@ export class SettingsComponent implements OnInit {
     } //, minWidth: "25px" }
   ];
 
-
   constructor(
     private fb: FormBuilder,
     private fieldReportService: FieldReportService,
@@ -214,5 +213,9 @@ export class SettingsComponent implements OnInit {
     if (e) {
       e.style.visibility = "visible";
     }
+  }
+  getPlatform() {
+    // TODO:
+    // https://material.angular.io/cdk/platform/overview
   }
 }

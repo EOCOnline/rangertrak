@@ -1,4 +1,5 @@
 {
+  "documentationForAngular.json": "https://angular.io/guide/workspace-config",
   "$-busted-schema": "@angular/cli/lib/config/schema.json",
   "cli": {
     "analytics": false
