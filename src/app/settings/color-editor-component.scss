@@ -33,3 +33,48 @@ hr.box {
   height: 0px;
   box-shadow: 0 1px 6px 1px cornflowerblue;
 }
+.mat-card {
+  //transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  //display: block;
+  //position: relative;
+  padding: 0px;
+  //border-radius: 4px;
+}
+.mat-form-field-appearance-legacy .mat-form-field-wrapper {
+  padding:0;
+  padding-bottom: 0em;
+}
+.mat-field.form {
+  padding:0;
+  padding-bottom: 0em;
+}
+
+.colorPickerIcon {
+  padding:0;
+
+}
+/*
+mat-form-field, mat-primary, mat-form-field-type-mat-input, mat-form-field-appearance-legacy,
+mat-form-field-can-float, mat-form-field-should-float, mat-form-field-hide-placeholder, ng-pristine, ng-valid, ng-star-inserted, ng-touched {
+  padding:0;
+}
+*/
+#colorTextField {
+  background-color:rgb(241, 198, 141);
+  padding:0 !important;
+}
+
+#colorIconToggleArea {
+  background-color: yellow;
+  padding:0 !important;
+}
+#colorFormField{
+  background-color:rgb(187, 236, 154);
+  padding:0 !important;
+  display:inline-block;
+}
+.mat-form.field.wrapper {
+  border: 3px solid red;
+  padding:0 !important;
+
+}
