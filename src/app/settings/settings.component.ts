@@ -63,7 +63,7 @@ export class SettingsComponent implements OnInit {
     cellStyle: (params: { value: string; }) => {
       return { backgroundColor: params.value}},
       //cellRenderer: ColorRenderer,
-      cellEditor: ColorEditor,
+      cellEditor: ColorEditor, // new ColorEditor(255,0,100)
       cellEditorPopup: true,
       editable: true,
       width: 300,

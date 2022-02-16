@@ -14,7 +14,8 @@
 
   <mat-card>
     <mat-form-field id="colorFormField">
-      <input matInput [ngxMatColorPicker]="picker" [disabled]="colorCntlDisabled"
+      <!-- [disabled]="colorCntlDisabled" causes warning -->
+      <input matInput [ngxMatColorPicker]="picker"
       [formControl]="colorCtr" (click)="onClick($event)" id="colorTextField">
       <ngx-mat-color-toggle matSuffix [for]="picker" id="colorIconToggleArea"></ngx-mat-color-toggle>
 

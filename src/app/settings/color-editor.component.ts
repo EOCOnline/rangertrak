@@ -19,12 +19,25 @@ export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
   public container!: ViewContainerRef;
 
   //colorCtr: AbstractControl = new FormControl(new Color(255, 243, 0), [Validators.required])
-  colorCtr = new FormControl(new Color(198, 0, 255), [Validators.required])
+  //colorCtr = new FormControl(new Color(255, 30, 255), [Validators.required])  // TODO: use existing instead of a default color
+  colorCtr: FormControl
   colorCntlDisabled = false
   touchUi = false
   public colorPalette: ThemePalette = 'primary';
   public color: string = 'green'
+  r:number
+  g:number
+  b:number
+// No suitable injection token for parameter 'r' of class 'ColorEditor'. Consider using the @Inject decorator to specify an injection token.
+  constructor() { //r:number, g:number, b:number
+    // TODO: use existing color (obtained by @inject() ???) instead of an arbitrary default color
+    this.r  = 196
+    this.g  = 0
+    this.b  = 252
 
+    this.colorCtr = new FormControl(new Color(this.r, this.g, this.b), [Validators.required])
+    //console.log(`constructor = ${this.colorCtr.value.hex} from  ${this.color}`)
+  }
   // dont use afterGuiAttached for post gui events - hook into ngAfterViewInit instead for this
   ngAfterViewInit() {
     window.setTimeout(() => {
@@ -57,11 +70,11 @@ color-editor.component.ts:99 oncolorCtrClosed = ff00ff from  fff300
   */
     this.params = params
     console.log(`agInit = ${this.colorCtr.value.hex} from  ${this.color}`)
-    this.setColor('165d6e') // default color
-    this.colorCtr
-    this.colorCtr.setValue("165d6e", {
-       onlySelf  : true
-      })
+    //this.setColor('green') // default color, but causes only one color to be displayed in picker...
+    //this.colorCtr
+    // this.colorCtr.setValue("green", { // 165d6e
+    //   onlySelf  : true
+    //  })
 /*
        emitEvent?: true,
        emitModelToViewChange?: true,
