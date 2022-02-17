@@ -107,7 +107,8 @@ export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
   // Gets called when color picker gets closed
   onColorCtrClosed() {
     console.log(`oncolorCtrClosed = ${this.colorCtr.value.hex} from  ${this.color}`)
-    this.color = `x${this.colorCtr.value.hex} = ${this.colorCtr.value.rgba}`  // pass color on to parent
+    //this.color = `x${this.colorCtr.value.hex} = ${this.colorCtr.value.rgba}`  // pass color on to parent
+    this.color = this.colorCtr.value.hex  // pass color on to parent
     this.params.api.stopEditing() // close smaller inline editor
   }
 

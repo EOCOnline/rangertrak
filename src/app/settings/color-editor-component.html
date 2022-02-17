@@ -13,7 +13,7 @@
   </mat-card-->
 
   <mat-card>
-    <mat-form-field id="colorFormField">
+    <mat-form-field id="colorFormField" appearance="fill">
       <!-- [disabled]="colorCntlDisabled" causes warning -->
       <input matInput [ngxMatColorPicker]="picker"
       [formControl]="colorCtr" (click)="onClick($event)" id="colorTextField">

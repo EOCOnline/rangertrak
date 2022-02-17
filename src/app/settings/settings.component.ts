@@ -16,7 +16,7 @@ import { ColDef } from 'ag-grid-community';
   styleUrls: ['./settings.component.scss'],
   //providers: [SettingsService]
 })
-export class SettingsComponent implements OnInit {
+class SettingsComponent implements OnInit {
   settings: SettingsType
   settingsEditorForm!: FormGroup
 
@@ -33,7 +33,14 @@ export class SettingsComponent implements OnInit {
 */
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
-  gridOptions = {}// rowSelection: "multiple"}
+  // https://www.ag-grid.com/javascript-data-grid/row-styles/#highlighting-rows-and-columns
+  gridOptions = {
+    //suppressRowHoverHighlight: true, // turn OFF row hover, default:on
+    //columnHoverHighlight: true, // turn ON column hover, default: off
+  }// rowSelection: "multiple"}
+
+
+
 
   defaultColDef: ColDef = {
     flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
@@ -58,28 +65,100 @@ export class SettingsComponent implements OnInit {
         return null
       }
     },
-    { headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code",
+    {
+      headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code",
+      cellStyle: (params: { value: string; }) => {
+        //  console.log(`editor returned: ${params.value}`)
+        debugger
+        let newColor = params.value
+        //params.node.data.color = newColor
+        //params.api.rowModel.rowsToDisplay[1].data.color
+        // params.api.rowRenderer.allRowCtrls[1].rowNode.data.color
+        // params.rowIndex = 3
+        // params.value = "6e6970"
+        // params.node.data.color
+        // params.node.data.status = "Objective Update"
+        // params.node.id = 3
+        // TODO: force row redraw with new color...
+        // https://www.ag-grid.com/angular-data-grid/data-update-single-row-cell/#view-refresh
+        // see https://www.ag-grid.com/javascript-data-grid/row-styles/#refresh-of-styles
 
-    cellStyle: (params: { value: string; }) => {
-      return { backgroundColor: params.value}},
+        /*
+        <div comp-id="39" style="transform: translateY(123px); height: 41px;" row-index="3" aria-rowindex="5" class="ag-row-odd ag-row ag-row-level-0 ag-row-position-absolute ag-row-focus ag-row-not-inline-editing" role="row" row-id="3">
+
+        <div comp-id="52" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height" aria-colindex="1" tabindex="-1" col-id="status" role="gridcell" style="left: 0px; width: 239.011px; background-color: aqua;">Objective Update</div>
+
+        <div comp-id="53" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-focus" aria-colindex="2" tabindex="-1" col-id="color" role="gridcell" style="left: 239.011px; width: 359px; background-color: rgb(255, 64, 0);">ff4000</div>
+        </div>
+        */
+
+        //  params => params.api.getValue("result", params.node) < 60,
+
+        /* indices: Array<number> = [1,4,5]; // color these rows
+
+gridOptions.getRowStyle = (params) => { // should use params, not indices in the first braces. Binds the component to this. Can use indices in the function now
+    if (this.indices.includes(params.node.rowIndex)) {
+        return { background: 'red' }
+    }
+}
+*/
+        // https://www.ag-grid.com/javascript-data-grid/row-styles/
+        // https://www.ag-grid.com/angular-data-grid/accessing-data/
+        // https://www.ag-grid.com/angular-data-grid/accessing-data/#example-using-for-each
+        // https://www.ag-grid.com/angular-data-grid/data-update-single-row-cell/
+        // https://www.ag-grid.com/javascript-data-grid/row-selection/
+        // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
+        // https://angular-get-selected-rows.stackblitz.io
+
+        let row = this.getSelectedRowData()
+        //setData
+
+        // iterate through every node in the grid
+        //let rowNode:any //Cannot redeclare block-scoped variable 'rowNode'
+        /*this.gridApi.forEachNode((rowNode: { data: string; }, index: any) => {
+          console.log('node ' + rowNode.data + ' is in the grid');
+        });
+*/
+        //this.getRowNodeId = data => data.id;
+        // get the row node with ID 55
+        //      const rowNode = this.gridApi.getRowNode('55');
+
+        // do something with the row, e.g. select it
+        //    rowNode.setSelected(true);
+        //   let meRow = this.gridApi.getRowNode()
+        //rowNode.setData
+        //const setData = (data: any) //=> void;
+
+        params.value = ("444" + newColor + "kkkk")
+
+        this.gridApi.refreshCells()
+        return { backgroundColor: newColor }
+      },
       //cellRenderer: ColorRenderer,
       cellEditor: ColorEditor, // new ColorEditor(255,0,100)
       cellEditorPopup: true,
       editable: true,
       width: 300,
-  },
-    {
-      headerName: "Icon", field: "icon",
-      cellRenderer: MoodRenderer,
-      cellEditor: MoodEditor,
-      cellEditorPopup: true,
-      editable: true,
-      width: 300,
-    } //, minWidth: "25px" }
+    }
+    //REVIEW: No need for ICONS associated with statuses, is there? They should be associated with Callsign/Team, etc: Or are these the interior icon WITHIN the marker?!
+    /*  {
+        headerName: "Icon", field: "icon",
+        cellRenderer: MoodRenderer,
+        cellEditor: MoodEditor,
+        cellEditorPopup: true,
+        editable: true,
+        width: 300,
+      } //, minWidth: "25px" }
+  */
   ];
+ri = 3.141;
 
   constructor(
     private fb: FormBuilder,
+    /*  No suitable injection token for parameter 'fb' of class 'SettingsComponent'.
+      Consider using the @Inject decorator to specify an injection token.(-992003)
+      settings.component.ts(155, 17): This type does not have a value, so it cannot be used as injection token.
+    */
     private fieldReportService: FieldReportService,
     private rangerService: RangerService,
     private settingsService: SettingsService,
@@ -104,13 +183,21 @@ export class SettingsComponent implements OnInit {
     console.log("settings component ngInit done at ", Date())
   }
 
+  // https://angular-get-selected-rows.stackblitz.io
+  getSelectedRowData() {
+    let selectedNodes = this.gridApi.getSelectedNodes();
+    //let selectedData = selectedNodes.map(node => node.data);
+    //alert(`Selected Nodes:\n${JSON.stringify(selectedData)}`);
+    //      return selectedData;
+  }
+
   onBtnResetDefaults() {
     SettingsService.ResetDefaults()
   }
 
   // TODO: Need different settings stored for gMap, lMap and miniMap
   getFormArrayFromSettingsArray() {
-    //console.log("into getFormArrayFromSettingsArray at ", Date())
+    console.log("into getFormArrayFromSettingsArray at ", Date())
 
     // NOTE: Form array differs some from SettingsType so need to translate back & forth
     return this.fb.group({
@@ -134,6 +221,7 @@ export class SettingsComponent implements OnInit {
       logToPanel: [this.settings.logToPanel], // null or blank for unchecked 'yes'
       logToConsole: [this.settings.logToConsole], // null or blank for unchecked 'check'
     })
+
   }
 
   getSettingsArrayFromFormArray(): SettingsType {
