@@ -6,10 +6,18 @@
   padding: 0px;
   //border-radius: 4px;
 }
-.mat-form-field-appearance-legacy .mat-form-field-wrapper {
+
+/*
+.mat-form-field-appearance-legacy {
   padding:0;
   padding-bottom: 0em;
 }
+
+.mat-form-field-wrapper {
+  padding:0;
+  padding-bottom: 0em;
+}
+
 .mat-field.form {
   padding:0;
   padding-bottom: 0em;
@@ -17,14 +25,21 @@
 
 .colorPickerIcon {
   padding:0;
-
-}
-/*
-mat-form-field, mat-primary, mat-form-field-type-mat-input, mat-form-field-appearance-legacy,
-mat-form-field-can-float, mat-form-field-should-float, mat-form-field-hide-placeholder, ng-pristine, ng-valid, ng-star-inserted, ng-touched {
-  padding:0;
 }
 */
+
+/*
+.ngx-mat-colorpicker-content  {
+  background-color: red;
+  border: 6px dotted red;
+}
+.NgxMatColorToggleComponent {
+  background-color: red;
+  border: 6px dotted red;
+}
+*/
+
+/*
 #colorTextField {
   background-color:rgb(241, 198, 141);
   padding:0 !important;
@@ -42,29 +57,35 @@ mat-form-field-can-float, mat-form-field-should-float, mat-form-field-hide-place
 .mat-form.field.wrapper {
   border: 3px solid red;
   padding:0 !important;
-
 }
+*/
 
+/*
 .NgxMatColorPickerContentComponent {
   background-color: red;
+  border: 3px dotted red;
 }
 
 .NgxMatColorPaletteComponent {
   background-color: green;
+  border: 3px dotted green;
 }
 
 .NgxMatColorCanvasComponent {
   background-color: aqua;
+  border: 3px dotted aqua;
 }
 
 .NgxMatColorCollectionComponent {
   background-color: yellow;
+  border: 3px dotted yellow;
 }
-
+*/
 
 
 
 // https://nikitahl.com/horizontal-rule-css
+/*
 hr.gradient { // broken...
     border: none;
     height: 4px;
@@ -98,3 +119,4 @@ hr.box {
   height: 0px;
   box-shadow: 0 1px 6px 1px cornflowerblue;
 }
+*/
