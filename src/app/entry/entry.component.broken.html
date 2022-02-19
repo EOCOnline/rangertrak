@@ -1,0 +1,369 @@
+<div class="container">
+  <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
+
+    <!--div id="enter__frm-reguritation">
+      <pre>{{ frm.value |json}}</pre>
+    </div-->
+
+
+    <h1>Entry Form</h1>
+    <h2 class="elegant">
+      <mat-label>Who</mat-label>
+    </h2>
+
+    <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview
+    https://www.wufoo.com/html5/tabindex-attribute/ -->
+    <mat-form-field class="enter__Callsign" appearance="fill">
+      <mat-label>CallSign</mat-label>
+
+      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
+        formControlName="callsign" [matAutocomplete]="auto" (change)="this.CallsignCtrlChanged()"
+        id="enter__Callsign-input" tabindex="1" data-lpignore="true">
+
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
+          <!--img class="enter__Callsign-img" aria-hidden [src]="ranger.image" height="40"-->
+          <span>{{ranger.callsign}}</span> |
+          <small> {{ranger.licensee}} | {{ranger.phone}}</small>
+        </mat-option>
+      </mat-autocomplete>
+
+    </mat-form-field>
+    <span id="enter__Callsign-upshot"></span>
+
+    <!-- br>ToDo: [Future: Maybe only enter Team OR Callsign. If team, then ALL TeamMembers get checked in all at once???]  >
+    <div #div1 class="input-group">Team:
+      <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
+        type="text" formControlName="team" placeholder="Team">
+      <div *ngIf="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.hasError('required')"
+        class="text-sm text-danger">Team is required</div>
+    </div -->
+
+
+    <div id="enter__SmallMap">
+      <h2>Current Location</h2>
+
+      <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
+        (mapMousemove)="onMapMouseMove($event)" (mapInitialized)="onMapInitialized($event)" (zoomChanged)="zoomed()"
+        style="width: 300px; height:300px;">
+      </google-map>
+
+      <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
+      <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.4-5'}}</span> Longitude: <span
+          class="strong">{{mouseLatLng?.lng | number:'1.4-5'}}</span>
+        Zoom: <span class="strong">{{zoom}}</span>
+      </div>
+    </div>
+    <br>
+
+    <!--svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
+      <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
+  </svg-->
+    <!-- icons:  https://dev.materialdesignicons.com/getting-started/angular
+      https://iconify.design/
+      https://dev.materialdesignicons.com/getting-started
+      style="width:15px;height:15px"
+      {{mdiAccount}} dddfdd {{mdiIformationOutline}}
+      <fa-icon [icon]="faMapMarkedAlt"></fa-icon>
+    -->
+
+
+    <!-- https://fontawesome.com/v5.15/icons
+<img src="../../assets/icons/information-outline.png"
+    icon path="mdiAccount"></icon>
+  <icon path="mdiInformationOutline"></icon-->
+
+    <!--onchange="DDCoordsChanged()"
+      {{lat | number:'1.4-5'}}
+      {{entryDetailsForm.get(lat) | number:'1.4-5'}}
+
+
+
+      https://material.angular.io/components/icon/examples
+    -->
+    <!--mat-icon aria-hidden="false" aria-label="home icon">home</mat-icon>
+    <mat-icon aria-hidden="false" aria-label="info icon">info</mat-icon>
+    <mat-icon aria-hidden="false" aria-label="info icon">hiking</mat-icon>
+    <mat-icon svgIcon="thumbs-up" aria-hidden="false" aria-label="thumbs up SVG icon"></mat-icon>thumbsup
+    <span class="material-icons-two-tone">info</span-->
+
+    <!-- https://popper.js.org/docs/v2/tutorial/ -->
+    <h2 class="elegant">
+      <mat-label>Where</mat-label>&nbsp;&nbsp;<fa-icon [icon]="faInfoCircle" id="button" aria-describedby="tooltip"
+        title="Click info icon for info!" alt="info icon"></fa-icon><span class="small">(updates map to the right)
+        onclick="onWhereInfo()"</span>|<img src="../../assets/icons/information-outline.png"
+        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" />
+    </h2>
+
+    <div id="tooltip" role="tooltip">
+      My tooltip: Instructions for how to enter location into RangerTrak:
+      Enter Lat & Lng as decimal values or DMS, OR as an address
+      - which will update/REPLACE the coordinates!
+      <div id="arrow" data-popper-arrow></div>
+    </div>
+
+    <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude:
+      <input [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
+        type="number" formControlName="latI" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
+        name="latI" size="2" min="-180" max="180" id="enter__Where--LatI">
+      name="latitudeDDI" id="latitudeDDI"
+
+      <span *ngIf="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
+        class="text-sm text-danger">lat is required
+      </span>.
+
+
+      <input [class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
+        type="number" formControlName="latD" placeholder="LatitudeD" (change)="this.addressCtrlChanged('latD')"
+        name="latitudeDDD" step="0.001" size="8" min="0" max="99999" id="enter__Where--LatD" tabindex="2">
+
+      id -- latitudeDDD
+
+      <span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')"
+        class="text-sm text-danger">Latitude is required
+      </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
+
+
+      <input name="latitudeQ" id="latitudeQ" type="text" value="N" size="1" pattern="'e','E','w','W'" title="E or W"
+        onchange="DMSCoordsChanged()"> <!-- Quadrant -->
+      <input name="latitudeD" id="latitudeD" type="text" value="47" size="2" min="0" max="180"
+        onchange="DMSCoordsChanged()">°
+      <!-- TODO: Use settings.DefLat -->
+      <input name="latitudeM" id="latitudeM" type="text" value="" size="2" min="0" max="59"
+        onchange="DMSCoordsChanged()">'
+      <input name="latitudeS" id="latitudeS" type="text" value="" size="5" min="0" max="59.99"
+        onchange="DMSCoordsChanged()">"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
+    </div>
+
+    <div class="input-group">Longitude
+      <!--img src="../../assets/icons/information-outline.png"
+        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" /  size="30"   -->:
+      <input [class.border-danger]="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.invalid"
+        type="number" formControlName="lngI" placeholder="LongitudeI" (change)="this.addressCtrlChanged('lngI')"
+        name="longitudeDDI" id="longitudeDDI" min="-90" max="90" id="enter__Where--LngI" tabindex="3">
+
+      <!-- onchange="DDCoordsChanged()" -->
+      <span *ngIf="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.hasError('required')"
+        class="text-sm text-danger">longitude is required
+      </span>&nbsp;&nbsp;.
+
+      <input [class.border-danger]="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.invalid"
+        type="number" formControlName="lngD" placeholder="LongitudeD" (change)="this.addressCtrlChanged('lngD')"
+        name="latitudeDDD" id="latitudeDDD" step="0.001" size="9" min="0" max="99999" id="enter__Where--LngD"
+        tabindex="4">
+
+      <span *ngIf="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')
+                  && entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')"
+        class="text-sm text-danger">Latitude is required
+      </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
+
+      <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"
+        onchange="DMSCoordsChanged()">
+      <input name="longitudeD" id="longitudeD" type="text" value="122" size="2" max="180"
+        onchange="DMSCoordsChanged()">°
+      <input name="longitudeM" id="longitudeM" type="text" value="" size="2" min="0" max="59"
+        onchange="DMSCoordsChanged()">'
+      <input name="longitudeS" id="longitudeS" type="text" value="" size="5" min="0" max="59.99"
+        onchange="DMSCoordsChanged()">"
+      <span title="Degrees Minute Seconds">DMS</span>
+    </div>
+
+    Street Address, +Code, or What.3.Words:
+    <input [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
+      type="text" formControlName="address" id="addressCtrl" tabindex="5"
+      title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." size="40"
+      placeholder="Optional Address" (change)="this.addressCtrlChanged('addr')">
+
+    <!-- formControlName="addressCtrl"
+
+      input name="addresses" id="addresses" type="text" size="15" value=""
+      placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
+      onchange="chkAddresses()"> (optional) -->
+    <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
+    <br>
+    <span id="addressLabel" value="">aL</span>&nbsp;&nbsp;
+    <br>
+
+    <span id="pCodeGlobal">pCG</span>
+
+    <!--div
+    *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
+    class="text-sm text-danger">address is required</div  -->
+    <!--/div-->
+    <br>
+
+
+    <!--br-->
+
+    <!--div class="input-group"><span class="strongish">Derived Addresses:</span>
+      <div id="top3wa">&nbsp;&nbsp;&nbsp;Top 3 word address match: </div>
+      <div id="coords">&nbsp;&nbsp;&nbsp;WGS84 Coordinates: </div>
+      <div id="nearest_place">&nbsp;&nbsp;&nbsp;Nearest Place: </div>
+      <div>&nbsp;&nbsp;&nbsp;Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code:
+          8VCWVF22+</span>
+      </div>
+
+      <!- -script type="module"
+        src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.esm.js"></script>
+      <script nomodule
+        src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.js?key=YOUR-API-KEY"></script- ->
+
+      <!- -form id="form" method="GET"- ->
+      <div id="what3words-autosuggest">
+        <!- -what3words-autosuggest- ->
+        &nbsp;&nbsp;&nbsp;what3words-autosuggest: <input type="text" />
+        <!- -/what3words-autosuggest- ->
+      </div>
+      <!- -/form- ->
+    </div-->
+
+
+    <h2 class="elegant">
+      <mat-label>When</mat-label>
+    </h2>
+
+    <div class="input-group">
+      <!-- https://stackoverflow.com/questions/64826483/ngxmatdatetimepicker-is-not-assignable-to-type-matdatepickerbase -->
+      <mat-form-field appearance="fill">
+        <mat-label>Report time</mat-label>
+        <input matInput [ngxMatDatetimePicker]="$any(picker)" [min]="minDate" [max]="maxDate" [formControl]="dateCtrl"
+          tabindex="6">
+
+        <mat-datepicker-toggle matSuffix [for]="$any(picker)" title="Click me to display the picker">
+        </mat-datepicker-toggle>
+
+        <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds" [stepHour]="stepHour"
+          [stepMinute]="stepMinute" [stepSecond]="stepSecond" [touchUi]="touchUi" [color]="color"
+          [enableMeridian]="enableMeridian" [disableMinute]="disableMinute" [hideTime]="hideTime">
+
+          <!-- Custom icon or text of Apply icon -->
+          <ng-template>
+            <!--mat-icon>star</mat-icon-->
+            <span>OK</span>
+          </ng-template>
+        </ngx-mat-datetime-picker>
+      </mat-form-field>
+
+      <!--input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
+        type="datetime" formControlName="date" placeholder="date" id="enter__When-input" tabindex="6">
+      <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
+        class="text-sm text-danger">date is required</div-->
+    </div>
+
+    <h2 class="elegant bordered">What</h2>
+
+
+    <div class="input-group bordered">
+      <mat-label >Status:</mat-label>
+      <mat-radio-group labelPosition="after" formControlName="status"
+        [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid"
+        tabindex="7">
+        <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat.status}} class="rButton"><span
+            style="color:{{stat.color}}" > {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
+          <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
+        </mat-radio-button>
+      </mat-radio-group>
+
+      <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
+        class="text-sm text-danger">Status is required</div>
+      <br><br>
+      <textarea class="input-group enter__What--area" formControlName="note" id="enter__What--area" cols="80" rows="5"
+        placeholder="Enter Any Notes" tabindex="8"></textarea>
+    </div>
+
+
+    <!-- TODO: Add h4> Keywords</h4>
+    <div formArrayName="keywords">
+      <div *ngIf="keywordsControls && keywordsControls.length">
+        <div *ngFor="let keywordControl of keywordsControls; let i = index">
+          <div class="input-group">
+            <input [class.border-danger]="keywordControl.touched && keywordControl.invalid" [formControlName]="i"
+              type="text" placeholder="keyword" />
+            <div *ngIf="keywordControl.touched && keywordControl.hasError('required')" class="text-sm text-danger">
+              keyword Name is required</div>
+          </div>
+          <hr>
+        </div>
+      </div>
+    </div-->
+
+
+    <br>
+    <br>
+    <!--button (click)="onBtnUpdateLocation()">Update location</button> <br-->
+    <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
+    <button (click)="resetForm()" title="Reset all form fields to their defaults" class="eButton"
+      type="button">Reset</button>
+    <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button eButton" type="submit"
+      tabindex="9">Submit</button>
+
+    <span id="enter__Submit-info"></span>
+
+  </form>
+</div>
+
+<!--
+<fieldset>
+      <legend>Where</legend>
+      Street Address, +Code, or What3Words (optional): <input name="addresses" id="addresses" type="text" size="15"
+        value="" placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
+        onchange="chkAddresses()">
+      <placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde">
+      <span id="addressLabel" value=""></span>
+      <span id="pCodeGlobal"></span>
+      <br>
+      Latitude: &nbsp;&nbsp;
+      <input name="latitudeQ" id="latitudeQ" type="text" value="N" size="1" pattern="'e','E','w','W'" title="E or W"
+        onchange="DMSCoordsChanged()"> <!- Quadrant ->
+      <input name="latitudeD" id="latitudeD" type="text" value="47" size="2" min="0" max="180" onchange="DMSCoordsChanged()">°
+      <input name="latitudeM" id="latitudeM" type="text" value="" size="2" min="0" max="59" onchange="DMSCoordsChanged()">'
+      <input name="latitudeS" id="latitudeS" type="text" value="" size="5" min="0" max="59.99" onchange="DMSCoordsChanged()">"
+      &nbsp;&nbsp; or &nbsp;&nbsp;<input name="latitudeDD" id="latitudeDD" type="text" size="7" min="-180" max="180"
+        onchange="DDCoordsChanged()">°
+      <br>
+      Longitude:
+      <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"
+        onchange="DMSCoordsChanged()">
+      <input name="longitudeD" id="longitudeD" type="text" value="122" size="2" max="180" onchange="DMSCoordsChanged()">°
+      <input name="longitudeM" id="longitudeM" type="text" value="" size="2" min="0" max="59" onchange="DMSCoordsChanged()">'
+      <input name="longitudeS" id="longitudeS" type="text" value="" size="5" min="0" max="59.99"
+        onchange="DMSCoordsChanged()">"
+      &nbsp;&nbsp; or &nbsp;&nbsp;<input name="longitudeDD" id="longitudeDD" type="text" size="7" min="-180" max="180"
+        onchange="DDCoordsChanged()">°
+      <br>
+    </fieldset>
+-->
+
+
+
+<!--
+<mat-form-field>
+  <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date & time" [(ngModel)]="myDatePicker">
+
+  <ngx-mat-timepicker [(ngModel)]="myTimePicker">
+  </ngx-mat-timepicker>
+
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+
+  <ngx-mat-datetime-picker #picker></ngx-mat-datetime-picker>
+</mat-form-field>
+
+<  IF Max & Min time desired:
+<mat-form-field>
+<input matInput [ngxMatDatetimePicker]="pickerFrom" placeholder="From date & time" [(ngModel)]="myDatePickerFrom">
+
+<mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+
+<ngx-mat-datetime-picker #pickerFrom [enableMeridian]="true"></ngx-mat-datetime-picker>
+</mat-form-field>
+
+<mat-form-field>
+<input matInput [ngxMatDatetimePicker]="pickerTo" placeholder="To date & time" [(ngModel)]="myDatePickerTo"
+[min]="myDatePickerFrom">
+
+<mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+
+<ngx-mat-datetime-picker #pickerTo [enableMeridian]="true"></ngx-mat-datetime-picker>
+</mat-form-field>
+
+-->
