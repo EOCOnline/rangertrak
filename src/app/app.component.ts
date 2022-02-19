@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
         at AppComponent.ngOnInit (main.js:302:27) */
       //this.swUpdate.activateUpdate()
       // TODO: OR????
-      // window.location.reload
+      // window.location.reload()
       console.log(`App Updates ARE Available!  Reload page to install next version????`)
       //  } else {
       //    console.log(`Don't update YET...`)

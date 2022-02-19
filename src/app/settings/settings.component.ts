@@ -135,7 +135,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
         params.value = ("444" + newColor + "kkkk")
 
-        this.gridApi.refreshCells()
+        //this.gridApi.refreshCells() -- breaks things!
+        this.refreshStatusGrid()
         return { backgroundColor: newColor }
       },
       //cellRenderer: ColorRenderer,
@@ -155,7 +156,6 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       } //, minWidth: "25px" }
   */
   ];
-ri = 3.141;
 
   constructor(
     private fb: FormBuilder,
@@ -256,27 +256,28 @@ ri = 3.141;
     this.gridApi = params.api
     this.gridColumnApi = params.columnApi
 
-    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
+    this.refreshStatusGrid()
+    //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
   }
 
   onFirstDataRendered(params: any) {
-    params.api.sizeColumnsToFit();
-    if (this.gridApi) {
-      this.gridApi.refreshCells()
-    } else {
-      console.log("no this.gridApi yet in onFirstDataRendered()")
-    }
+    this.refreshStatusGrid()
   }
 
   onBtnAddFRStatus() {
     this.rowData.push({ status: 'New Status', color: '', icon: '' })
+    this.refreshStatusGrid()
+    window.location.reload()
+  }
 
+  refreshStatusGrid() {
     if (this.gridApi) {
       this.gridApi.refreshCells()
+      this.gridApi.sizeColumnsToFit();
     } else {
-      console.log("no this.gridApi yet in onFirstDataRendered()")
+      console.log("no this.gridApi yet in refreshStatusGrid()")
     }
-    this.gridApi.sizeColumnsToFit();
+    //window.location.reload()
   }
 
   //TODO: If user edits field report status color, need to update background: refreshCells()????

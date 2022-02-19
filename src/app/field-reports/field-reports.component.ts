@@ -199,7 +199,7 @@ export class FieldReportsComponent implements OnInit {
   }
 
   reloadPage() {
-    window.location.reload
+    window.location.reload()
   }
 
   isValidDate(d: any) {

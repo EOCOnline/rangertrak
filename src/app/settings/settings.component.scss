@@ -3,22 +3,7 @@
 
 ag-grid-angular {
   height: 400px;
-  width: 600px;
-}
-
-#settings__ColorChart {
-  //visibility      : hidden;
-  display         : block;
-  float           : right;
-  width           : 400px; // 30vw;
-  height          : 400px; //10vh;
-  border          : 5px brown;
-  background-color: aliceblue;
-}
-
-#settings__ColorChart-img {
-  width           : 400px; // 30vw;
-  height          : 400px; //10vh;
+  width: 400px;
 }
 
 label {
@@ -46,6 +31,7 @@ h1,h2,h3 {
   width:10em;
 }
 
+/*
 .example-form {
   min-width: 150px;
   max-width: 300px;
@@ -55,6 +41,7 @@ h1,h2,h3 {
 .example-full-width {
   width: 100%;
 }
+*/
 
 .fill-warning {
   background-color:rgb(212, 179, 106) ;
@@ -87,11 +74,11 @@ h1,h2,h3 {
 }
 
 .default {
-  border: 1px solid transparent !important;
+  border: 1px solid transparent;
   padding: 4px;
 }
 
 .selected {
-  border: 1px solid lightgreen !important;
+  border: 1px solid lightgreen;
   padding: 4px;
 }
