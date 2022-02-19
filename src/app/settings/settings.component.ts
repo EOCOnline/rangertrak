@@ -69,7 +69,11 @@ export class SettingsComponent implements OnInit {
       headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code",
       cellStyle: (params: { value: string; }) => {
         //  console.log(`editor returned: ${params.value}`)
-        debugger
+        //debugger
+
+
+
+
         let newColor = params.value
         //params.node.data.color = newColor
         //params.api.rowModel.rowsToDisplay[1].data.color
@@ -110,7 +114,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
         // https://angular-get-selected-rows.stackblitz.io
 
-        let row = this.getSelectedRowData()
+       //let row = this.getSelectedRowData()
         //setData
 
         // iterate through every node in the grid
