@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http';
 
-import "leaflet.markercluster"
+//import "leaflet.markercluster"
 import * as L from 'leaflet'
 //import { LatLng } from 'leaflet';
 
@@ -42,7 +42,7 @@ type LatLng = { lat: number, lng: number }
   templateUrl: './lmap.component.html',
   styleUrls: [
     './lmap.component.scss',
-    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css", // REVIEW: also added to angular.json: needed there?
+    //"../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css", // REVIEW: also added to angular.json: needed there?
     '../../../node_modules/leaflet/dist/leaflet.css', // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)
   ],
   providers: [SettingsService]
@@ -127,10 +127,9 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     this.fieldReportService.recalcFieldBounds()
     let bound = this.fieldReportService.getFieldReportBound()  // { east: east, north: north, south: south, west: west } //e,n,s,w
     console.log(`Fitting bounds= :${JSON.stringify(bound)}`)
-
     this.lmap?.fitBounds([
-      [bound.east, bound.north],
-      [bound.west, bound.south]
+      [bound.south, bound.west ],
+      [bound.north, bound.east]
     ]);
   }
 

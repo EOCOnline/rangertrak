@@ -79,22 +79,36 @@ export class FieldReportService {
     return this.fieldReports
   }
 
+  allFieldReportsToServer_unused() {
+    console.log("Sending all reports to server (via subscription)...");
+
+    // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
+
+    // TODO: replace "add" with"post" or ???
+    this.httpClient.post(`${this.uri}/add`, this.fieldReports)
+      .subscribe(res => console.log('Subscription of all reports to httpClient is Done'));
+
+    console.log("Sent all reports to server (via subscription)...");
+  }
+
+
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
+
   addfieldReport(formData: string): FieldReportType {
     console.log(`FieldReportService: Got new field report: ${formData}`)
 
     let newReport: FieldReportType = JSON.parse(formData)
     newReport.id = this.nextId++
     this.fieldReports.push(newReport)
-
-    this.UpdateFieldReports();
+    this.updateFieldReportBounds(newReport)
+    this.UpdateFieldReports() // put to localStorage & update subscribers
 
     console.log("Sending new report to server (via subscription)...");
 
     // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
-    this.httpClient.post(`${this.uri}/add`, newReport)
-      .subscribe(res => console.log('Subscription of add report to httpClient is Done'));
-
+    //this.httpClient.post(`${this.uri}/add`, newReport).subscribe(res => console.log('Subscription of add report to httpClient is Done'));
+    /* gets VM12981:1          POST http://localhost:4000/products/add net::ERR_CONNECTION_REFUSED
+  core.mjs:6485 ERROR HttpErrorResponse {headers: HttpHeaders, status: 0, statusText: 'Unknown Error', url: 'http://localhost:4000/products/add', ok: false, …}*/
     console.log("Sent new report to server (via subscription)...");
 
     return newReport;
@@ -121,14 +135,14 @@ export class FieldReportService {
   deleteAllFieldReports() {
     this.fieldReports = []
     localStorage.removeItem(this.storageLocalName)
-    // this.nextId = 0 // REVIEW: is this desired???
-
+    this.nextId = 0 // REVIEW: is this desired???
   }
 
+  // rewrite field reports to localStorage & update subscribers
   UpdateFieldReports() {
     localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports));
 
-    this.fieldReportsSubject.next(this.fieldReports.map(
+    this.fieldReportsSubject.next(this.fieldReports.map(  // REVIEW: is this just for 1 new report, or any localstorage updates?
       fieldReport => ({
         id: fieldReport.id,
         callsign: fieldReport.callsign,
@@ -199,33 +213,33 @@ export class FieldReportService {
 
       for (let i = 1; i < this.fieldReports.length; i++) {
         if (this.fieldReports[i].lat > north) {
-          north = Math.round(this.fieldReports[i].lat*10000)/10000
+          north = Math.round(this.fieldReports[i].lat * 10000) / 10000
         }
         if (this.fieldReports[i].lat < south) {
-          south = Math.round(this.fieldReports[i].lat*10000)/10000
+          south = Math.round(this.fieldReports[i].lat * 10000) / 10000
         }
         if (this.fieldReports[i].lng > east) {
-          east = Math.round(this.fieldReports[i].lng*10000)/10000
+          east = Math.round(this.fieldReports[i].lng * 10000) / 10000
         }
         if (this.fieldReports[i].lng > west) {
-          west = Math.round(this.fieldReports[i].lng*10000)/10000
+          west = Math.round(this.fieldReports[i].lng * 10000) / 10000
         }
       }
     } else {
       // no field reports yet! Rely on broadening processing below
-      north = SettingsService.Settings.defLng
-      west = SettingsService.Settings.defLat
-      south = SettingsService.Settings.defLng
-      east = SettingsService.Settings.defLat
+      north = SettingsService.Settings.defLat
+      west = SettingsService.Settings.defLng
+      south = SettingsService.Settings.defLat
+      east = SettingsService.Settings.defLng
     }
 
     console.log(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `)
-    if (east - west < 2*this.boundsMargin) {
+    if (east - west < 2 * this.boundsMargin) {
       east += this.boundsMargin
       west -= this.boundsMargin
       console.log(`recalcFieldBounds BROADENED to E:${east} W:${west} `)
     }
-    if (north - south < 2*this.boundsMargin) {
+    if (north - south < 2 * this.boundsMargin) {
       north += this.boundsMargin
       south -= this.boundsMargin
       console.log(`recalcFieldBounds BROADENED to N:${north} S:${south} `)
@@ -308,7 +322,7 @@ comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
       "Wow", "na", "Can't hear you", "Bounced via tail of a comet!", "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
 
     const msSince1970 = new Date().getTime()
-    console.log(`Generating ${num} FAKE field reports... with base of ${msSince1970}`)
+    console.log(`Adding an additinoal ${num} FAKE field reports... with base of ${msSince1970}`)
 
     for (let i = 0; i < num; i++) {
       this.fieldReports.push({
@@ -316,9 +330,9 @@ comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
         callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
         team: teams[Math.floor(Math.random() * teams.length)].name,
         address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
-        lat: 45 + Math.floor(Math.random() * 2000) / 1000,
-        lng: -121 + Math.floor(Math.random() * 1000) / 1000,
-        date: new Date(Math.floor(msSince1970 - (Math.random() * 25 * 60 * 60 * 1000))), // 0-25 hrs earlier
+        lat: SettingsService.Settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
+        lng: SettingsService.Settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
+        date: new Date(Math.floor(msSince1970 - (Math.random() * 10 * 60 * 60 * 1000))), // 0-10 hrs earlier
         status: this.fieldReportStatuses[Math.floor(Math.random() * this.fieldReportStatuses.length)].status,
         note: notes[Math.floor(Math.random() * notes.length)]
       })

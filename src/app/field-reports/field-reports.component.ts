@@ -176,8 +176,9 @@ export class FieldReportsComponent implements OnInit {
 */
 
   ngOnInit(): void {
-    console.log("Field Report Form ngInit at ", Date.now)
+    console.log("Field Report Form ========== ngInit ==== at ", Date.now)
 
+    // TODO: This doesn't actually get the very latest field Report entries: do it by subuscription instead????
     this.fieldReports = this.fieldReportService.getFieldReports()
     console.log(`Now have ${this.fieldReports.length} Field Reports retrieved from Local Storage and/or fakes generated`)
 
@@ -228,12 +229,13 @@ export class FieldReportsComponent implements OnInit {
     params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
   }
 
-  onFirstDataRendered(params: any) {
-    params.api.sizeColumnsToFit();
+  //onFirstDataRendered(params: any) {
+  refreshGrid() {
     if (this.gridApi) {
       this.gridApi.refreshCells()
+      this.gridApi.sizeColumnsToFit();
     } else {
-      console.log("no this.gridApi yet in onFirstDataRendered()")
+      console.log("no this.gridApi yet in refreshGrid()")
     }
   }
 
@@ -284,12 +286,15 @@ export class FieldReportsComponent implements OnInit {
 
   onBtnClearFieldReports() {
     this.fieldReportService.deleteAllFieldReports()
+    this.reloadPage()
   }
+
+  // Save them to localstorage & update subscribers
   onBtnUpdateFieldReports() {
     this.fieldReportService.UpdateFieldReports()
   }
 
-  onBtnImportFieldReports() {
+  onBtnImportFieldReports_unused() {
     alert(`onBtnImportFieldReports is unimplemented`)
   }
 
@@ -299,7 +304,10 @@ export class FieldReportsComponent implements OnInit {
     // https://material-components.github.io/material-components-web-catalog/#/component/slider
     this.fieldReportService.generateFakeData(num)
     console.log(`Generated ${num} FAKE Field Reports`)
-    //window.location.reload() //TODO: OK?!
+    this.fieldReportService.UpdateFieldReports()
+    this.fieldReports = this.fieldReportService.getFieldReports()
+    this.refreshGrid()
+    this.reloadPage() //TODO: why aren't above enough?!!!
   }
 
   displayHide(htmlElementID: string) {
@@ -320,7 +328,3 @@ export class FieldReportsComponent implements OnInit {
     }
   }
 }
-function floor(arg0: number) {
-  throw new Error('Function not implemented.');
-}
-

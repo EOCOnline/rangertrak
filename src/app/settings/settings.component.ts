@@ -114,7 +114,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
         // https://angular-get-selected-rows.stackblitz.io
 
-       //let row = this.getSelectedRowData()
+        //let row = this.getSelectedRowData()
         //setData
 
         // iterate through every node in the grid
@@ -254,7 +254,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   }
 
   onFirstDataRendered(params: any) {
-   // this.refreshStatusGrid() needed???
+    // this.refreshStatusGrid() needed???
   }
 
   onBtnAddFRStatus() {
@@ -272,6 +272,19 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     }
     //window.location.reload() -- reloads endlessly!
     // TODO: try   getSelectedRowData() & then refresh row color instead - set color by row, vs cell
+    /*
+     async delayedAction() {
+    this.dbug("resetMap");
+    await this.sleep(2000);
+    this.dbug("resetMap has slept");
+    this.filterLeafletMap();
+    this.dbug("resetMap complete");
+  }
+
+  this.util.sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  */
   }
 
   // https://angular-get-selected-rows.stackblitz.io
@@ -282,7 +295,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     //      return selectedData;
   }
 
-  reloadPage() {
+  reloadPage_unused() {
     //REVIEW: Does this zap existing changes elsewhere on the page (used for reseting field statuses..)
     window.location.reload()
   }
