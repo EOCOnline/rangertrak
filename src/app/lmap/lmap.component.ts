@@ -2,9 +2,8 @@ import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http';
 
-//import "leaflet.markercluster"
+import "leaflet.markercluster"  // https://github.com/Leaflet/Leaflet.markercluster
 import * as L from 'leaflet'
-//import { LatLng } from 'leaflet';
 
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
 import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
@@ -13,6 +12,7 @@ import { Context } from 'ag-grid-community';
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
+
 // Markers are copied into project via virtue of angular.json: search it for leaflet!!!
 
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png';
@@ -42,7 +42,8 @@ type LatLng = { lat: number, lng: number }
   templateUrl: './lmap.component.html',
   styleUrls: [
     './lmap.component.scss',
-    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css", // REVIEW: also added to angular.json: needed there?
+    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.css", // REVIEW: also added to angular.json: needed there?
+    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css", // (not needed if you use your own iconCreateFunction instead of the default one)
     '../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)
   ],
   providers: [SettingsService]
