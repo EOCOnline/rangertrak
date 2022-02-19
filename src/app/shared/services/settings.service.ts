@@ -89,11 +89,11 @@ export class SettingsService {
     // populate Field Report Statuses
     let localStorageFieldReportStatuses = localStorage.getItem(SettingsService.localStorageFieldReportStatusName)
     if (localStorageFieldReportStatuses != undefined) { //|| this.fieldReportStatuses.length == 0
-      console.log("Got fieldReportStatuses from LocalStorage, parse 'em")
+      console.log(`Got ${localStorageFieldReportStatuses?.length} fieldReportStatuses from LocalStorage, parse 'em`)
       try {
         if (localStorageFieldReportStatuses != null && localStorageFieldReportStatuses.indexOf("status") > 0) {
           this.fieldReportStatuses = JSON.parse(localStorageFieldReportStatuses)
-          console.log("Initialized fieldreport statuses from localstorage")
+          console.log(`Initialized ${this.fieldReportStatuses.length} fieldreport statuses from localstorage`)
         }
       } catch (error: any) {
         console.error(`localstorage App Settings i.e., ${SettingsService.localStorageFieldReportStatusName} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
@@ -105,7 +105,7 @@ export class SettingsService {
     if ((this.fieldReportStatuses == undefined) || (this.fieldReportStatuses == null) || (this.fieldReportStatuses.length == 0)) {
       this.ResetFieldReportStatusDefaults()
     }
-    console.log("FieldReport Statuses initialized " + (SettingsService.Settings.debugMode? JSON.stringify(this.fieldReportStatuses):""))
+    console.log(`${this.fieldReportStatuses.length} FieldReport Statuses initialized ` + (SettingsService.Settings.debugMode? JSON.stringify(this.fieldReportStatuses):""))
 
   }
 
@@ -137,7 +137,6 @@ export class SettingsService {
 
   // TODO: Use a Map instead: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map#objects_vs._maps
   ResetFieldReportStatusDefaults() {
-    console.log("ResetFieldReportStatusDefaults................................. ")
     this.fieldReportStatuses = [
       { status: 'Normal', color: '', icon: '' },  // Often the default value: see SettingsService.defRangerStatus
       { status: 'Need Rest', color: 'cce', icon: '' },
@@ -146,6 +145,8 @@ export class SettingsService {
       { status: 'Check-in', color: 'grey', icon: '' },
       { status: 'Check-out', color: 'dark-grey', icon: '' }
     ]
+    console.log(`ResetFieldReportStatusDefaults reset to ${this.fieldReportStatuses.length} Statuses`)
+    return this.fieldReportStatuses
   }
 
   static Update(newSettings: SettingsType) {
@@ -154,7 +155,7 @@ export class SettingsService {
     console.log("Updated Application Settings to " + JSON.stringify(newSettings))
   }
 
-  public getFieldReportStatuses() {
+  getFieldReportStatuses() {
     return this.fieldReportStatuses
   }
 

@@ -68,7 +68,7 @@
         *ngIf="settingsEditorForm.get('plusCode')?.touched && settingsEditorForm.get('plusCode')?.hasError('required')"
         class="text-sm text-danger">plusCode is required</div>
     </div>
-
+    <br>
     <h2>Field Reports</h2>
 
     <div class="input-group">Markers
@@ -82,7 +82,7 @@
     </div>
     <br>
 
-    Field Report Statuses:
+    Field Report Statuses: (Renaming a status here will not rename existing field report statuses)
     <!--div id="settings__ColorChart" display="hidden">
       <img src= '../../assets/imgs/ColorChart.png' title="These 3 letter codes ARE valid colors!, from https://html-color-codes.com/" id ="settings__ColorChart-img"/>
     </div-->
@@ -107,7 +107,8 @@
       [defaultColDef]="defaultColDef" [tooltipShowDelay]=500 [rowData]="rowData" [columnDefs]="columnDefs">
     </ag-grid-angular>
     <button (click)="onBtnAddFRStatus()" title="Add a new Field Report Status">Add new
-      row</button>
+      row</button> &nbsp;&nbsp;&nbsp;
+      <button (click)="this.refreshStatusGrid()" title="Refresh Report Statuses">Refresh Statuses Grid</button>
     <br>
     <!--h2>Markers</h2>
 
@@ -145,8 +146,9 @@
         class="text-sm text-danger">debug mode is required</div>
       Debug Mode
     </div>
-    future: [ ] enable touch user interface
 
+
+    <!-- TODO: future: [ ] enable touch user interface<br>-->
     <!--
       touchUi from https://h2qutc.github.io/angular-material-components/colorpicker
 
@@ -171,9 +173,7 @@
       Log to Browser Console
     </div -->
 
-
-
-    <!--h2>Teams</h2>
+   <!--h2>Teams</h2>
     <details>
       <summary>Team Details</summary>
       <ul>
@@ -201,9 +201,10 @@
       <! -- <div>TODO: <button (click)="setQuickFilter()">Filter Teams</button></div> ->
     </div-->
 
+    <br>
 
     Save above settings (to local storage):
-    <button [disabled]="settingsEditorForm.invalid" style="margin-top: 40px;" type="submit">Save</button>
+    <button [disabled]="settingsEditorForm.invalid" type="submit">Save</button>
     <!-- REVIEW: Other pages only reflect these changes if refreshed!!! -->
 
     <br>

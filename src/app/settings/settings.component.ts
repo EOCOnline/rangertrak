@@ -187,16 +187,9 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     console.log("settings component ngInit done at ", Date())
   }
 
-  // https://angular-get-selected-rows.stackblitz.io
-  getSelectedRowData() {
-    let selectedNodes = this.gridApi.getSelectedNodes();
-    //let selectedData = selectedNodes.map(node => node.data);
-    //alert(`Selected Nodes:\n${JSON.stringify(selectedData)}`);
-    //      return selectedData;
-  }
-
   onBtnResetDefaults() {
-    SettingsService.ResetDefaults()
+    SettingsService.ResetDefaults() // need to refresh page?!
+    this.rowData = this.settingsService.ResetFieldReportStatusDefaults()
   }
 
   // TODO: Need different settings stored for gMap, lMap and miniMap
@@ -261,7 +254,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   }
 
   onFirstDataRendered(params: any) {
-    this.refreshStatusGrid()
+   // this.refreshStatusGrid() needed???
   }
 
   onBtnAddFRStatus() {
@@ -277,7 +270,21 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     } else {
       console.log("no this.gridApi yet in refreshStatusGrid()")
     }
-    //window.location.reload()
+    //window.location.reload() -- reloads endlessly!
+    // TODO: try   getSelectedRowData() & then refresh row color instead - set color by row, vs cell
+  }
+
+  // https://angular-get-selected-rows.stackblitz.io
+  getSelectedRowData() {
+    let selectedNodes = this.gridApi.getSelectedNodes();
+    //let selectedData = selectedNodes.map(node => node.data);
+    //alert(`Selected Nodes:\n${JSON.stringify(selectedData)}`);
+    //      return selectedData;
+  }
+
+  reloadPage() {
+    //REVIEW: Does this zap existing changes elsewhere on the page (used for reseting field statuses..)
+    window.location.reload()
   }
 
   //TODO: If user edits field report status color, need to update background: refreshCells()????
@@ -292,6 +299,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     // TODO: Set this up as an observable, or Components that have ALREADY pulled down the values won't refresh them!!!!
     // TODO: If Debug disabled then call:
     //enableProdMode()
+    window.location.reload()
   }
 
   displayHide(htmlElementID: string) {
