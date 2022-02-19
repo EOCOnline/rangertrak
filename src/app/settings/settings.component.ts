@@ -16,7 +16,7 @@ import { ColDef } from 'ag-grid-community';
   styleUrls: ['./settings.component.scss'],
   //providers: [SettingsService]
 })
-class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit {
   settings: SettingsType
   settingsEditorForm!: FormGroup
 
