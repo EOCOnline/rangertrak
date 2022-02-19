@@ -35,7 +35,7 @@ export type addressType = {
   num: number
 }
 
-type LatLng = { lat: number, lng: number }
+//type LatLng = { lat: number, lng: number }
 
 @Component({
   selector: 'rangertrak-lmap',
