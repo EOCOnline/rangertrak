@@ -42,8 +42,8 @@ type LatLng = { lat: number, lng: number }
   templateUrl: './lmap.component.html',
   styleUrls: [
     './lmap.component.scss',
-    //"../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css", // REVIEW: also added to angular.json: needed there?
-    '../../../node_modules/leaflet/dist/leaflet.css', // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)
+    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css", // REVIEW: also added to angular.json: needed there?
+    '../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)
   ],
   providers: [SettingsService]
 })
