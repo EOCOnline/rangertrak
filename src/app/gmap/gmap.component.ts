@@ -7,8 +7,8 @@ import { DOCUMENT, JsonPipe } from '@angular/common';
 import { ComponentFixture } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
-
-//import { MarkerClusterer } from "@google-maps/markerclusterer";
+// TODO: https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer - Angular components doesn't encapulate options functionality: identical clones only: ugg.
+//import * as  MarkerClusterer from "@googlemaps/markerclusterer";
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
 import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
 //import { LatLng, latLng } from 'leaflet';
@@ -23,7 +23,7 @@ import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
   https://github.com/angular-material-extensions/google-maps-autocomplete
 
    https://developers.google.com/maps/documentation/javascript/using-typescript
- TODO: https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
+
  https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md
  TODO: Allow geocoding: https://rapidapi.com/blog/google-maps-api-react/
 
@@ -100,6 +100,10 @@ export class GmapComponent implements OnInit {    //extends Map
 
   // Google MapMarker only wraps google.maps.LatLngLiteral (positions) - NOT google.maps.Marker: styles, behaviors, etc
   markers: google.maps.Marker[] = []
+  markerCluster!: MarkerClusterer;
+  markerPositions: google.maps.LatLngLiteral[]
+  markerClustererImagePath =
+        'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
   // markerOptions = { draggable: false }
   // label = 'RangerTrak Label'
 
@@ -122,6 +126,24 @@ export class GmapComponent implements OnInit {    //extends Map
     this.fieldReportService = fieldReportService
     this.zoom = SettingsService.Settings.defZoom
     this.zoomDisplay = SettingsService.Settings.defZoom
+
+// https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
+    this.markerPositions = [];
+
+
+
+        // https://github.com/googlemaps/js-markerclusterer
+/*    // use default algorithm and renderer
+    this.markerCluster = new MarkerClusterer({
+      map: this.gMap,
+      markers: this.markers,
+      // algorithm?: Algorithm,
+      // renderer?: Renderer,
+      // onClusterClick?: onClusterClickHandler,
+    })
+*/
+
+
     // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
@@ -168,13 +190,26 @@ export class GmapComponent implements OnInit {    //extends Map
 
     this.displayAllMarkers()
     // REVIEW: Doesn't work with NO Markers?
+
+/*
+        // https://github.com/googlemaps/js-markerclusterer
+    // use default algorithm and renderer
+    const markerCluster = new MarkerClusterer({
+      map: this.gMap,
+      markers: this.markers,
+      // algorithm?: Algorithm,
+      // renderer?: Renderer,
+      // onClusterClick?: onClusterClickHandler,
+    })
+*/
+
     console.log(`Setting G map Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLng}, zoom: ${SettingsService.Settings.defZoom}`)
     this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })
     this.gMap.setZoom(SettingsService.Settings.defZoom)
     this.fitBounds() // typically obviates the above set Center/Zoom
 
 
-    const OVERVIEW_DIFFERENCE = 5
+    const OVERVIEW_DIFFERENCE = 6
     const OVERVIEW_MIN_ZOOM = 5
     const OVERVIEW_MAX_ZOOM = 16
     // https://developers.google.com/maps/documentation/javascript/examples/inset-map
@@ -275,8 +310,7 @@ export class GmapComponent implements OnInit {    //extends Map
       title = infoContent
     }
     labelText = "grade"
-
-    fontSize = "20px"
+    fontSize = "16px"
     /*
         //icon = "rocket"
         animation = google.maps.Animation.DROP
@@ -304,7 +338,7 @@ export class GmapComponent implements OnInit {    //extends Map
       let m = new google.maps.Marker({
         draggable: true,
         animation: animation,
-        map: this.gMap,
+       // map: this.gMap,
         position: latLng,
         title: title,
         icon: icon,
@@ -340,7 +374,9 @@ export class GmapComponent implements OnInit {    //extends Map
           })
         }
       )
-      this.markers.push(m)
+      this.markerPositions.push(latLng.toJSON());
+
+      //this.markers.push(m)
     } else {
       console.log("event.latLng is BAD; can not add marker..")
     }

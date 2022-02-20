@@ -25,10 +25,12 @@
     (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="addTrafficLayer()" (zoomChanged)="zoomed()"
     (mapInitialized)="onMapInitialized($event)" (mapMouseover)="zoomed()">
 
-    <div id="markerDiv" #markerDiv *ngFor="let marker of markers">
+    <!--map-marker-clusterer [imagePath]="markerClustererImagePath">
+      <map-marker *ngFor="let markerPosition of markerPositions"
+                  [position]="markerPosition"></map-marker>
+    </map-marker-clusterer-->
 
-
-    </div>
+    <div id="markerDiv" #markerDiv *ngFor="let marker of markers"></div>
 
     <!--
       (mapClick)="openInfoWindow($event)"
