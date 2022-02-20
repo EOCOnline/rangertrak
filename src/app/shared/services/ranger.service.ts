@@ -280,7 +280,7 @@ import { HttpClient } from '@angular/common/http';
     if (formData != "") {
       newRanger = JSON.parse(formData)
     } else {
-      newRanger = {callsign: "AAA_New_Tactical", licensee: "AAA_New_Name",        // licenseKey: number
+      newRanger = {callsign: "!!AAA_New_Tactical", licensee: "AAA_New_Name",        // licenseKey: number
         image: "  ", phone: "206-463-0000", address: "St, Vashon, WA 98070", team: "", icon: "", status: "", note: `Manually added at ${formatDate(Date.now(), 'short', "en-US")}.` //https://angular.io/guide/i18n-common-locale-id
       }
     }

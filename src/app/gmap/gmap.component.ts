@@ -11,7 +11,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 //import { MarkerClusterer } from "@google-maps/markerclusterer";
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
 import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
-//import { LatLng } from 'leaflet';
+//import { LatLng, latLng } from 'leaflet';
 
 /*
   https://developers.google.com/maps/support/
@@ -39,9 +39,9 @@ GoogleMapsModule exports three components that we can use:
 
 declare const google: any
 
-const kaanapali: google.maps.LatLngLiteral = { lat: 20.9338, lng: -156.7168 }
-const kahanaRidge: google.maps.LatLngLiteral = { lat: 20.973375, lng: -156.664915 }
-const vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
+// const kaanapali: google.maps.LatLngLiteral = { lat: 20.9338, lng: -156.7168 }
+// const kahanaRidge: google.maps.LatLngLiteral = { lat: 20.973375, lng: -156.664915 }
+// const vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
 let marker: google.maps.Marker
 
@@ -70,16 +70,19 @@ export class GmapComponent implements OnInit {    //extends Map
   // items for template
   title = 'Google Map'
   mouseLatLng?: google.maps.LatLngLiteral;
-  Vashon = new google.maps.LatLng(47.4471, -122.4627)
-  Kaanapali = new google.maps.LatLng(20.9338, -156.7168)
+  //Vashon = new google.maps.LatLng(47.4471, -122.4627)
+  //Kaanapali = new google.maps.LatLng(20.9338, -156.7168)
 
   // google.maps.Map is NOT the same as GoogleMap...
   gMap?: google.maps.Map
-
+  overviewGMap?: google.maps.Map
+  overviewMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
+  // overviewGMapOptions: google.maps.MapOptions
   // items for <google-map>
-  zoom
+  zoom // actual zoom level of main map
+  zoomDisplay // what's displayed below main map
   center: google.maps.LatLngLiteral
-  options: google.maps.MapOptions = {
+  mapOptions: google.maps.MapOptions = {
     zoomControl: true,
     scrollwheel: true,
     disableDoubleClickZoom: true,
@@ -118,6 +121,7 @@ export class GmapComponent implements OnInit {    //extends Map
 
     this.fieldReportService = fieldReportService
     this.zoom = SettingsService.Settings.defZoom
+    this.zoomDisplay = SettingsService.Settings.defZoom
     // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
@@ -144,19 +148,17 @@ export class GmapComponent implements OnInit {    //extends Map
 
   ngOnInit(): void {
     console.log('into ngOnInit()')
-    // https://developers.google.com/maps/documentation/geolocation/overview
+
+    // https://developers.google.com/maps/documentation/geolocation/overview Works - if you want map zoomed on user's device...
+    /*
     navigator.geolocation.getCurrentPosition((position) => {
       this.center = {
         lat: position.coords.latitude,
         lng: position.coords.longitude
       }
     })
-    // https://github.com/angular/components/tree/master/src/google-maps
-    /* if (this.map == null) {
-       console.log("This.map is null")
-     } else {
-       console.log(`this.map zoom =${this.map.getZoom()}`)
-     }*/
+    */
+
     // gMap is still null...
   }
 
@@ -164,96 +166,83 @@ export class GmapComponent implements OnInit {    //extends Map
     console.log(`onMapInitialized()`)
     this.gMap = mappy
 
-    /*
-    if (this.gMap == null) {
-      console.log("onMapInitialized(): This.gMap is null")
-    } else {
-      console.log(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`)
-    }
-*/
-
-    //  this.initZoomControl(this.gMap) gets...
-    /* BUG:
-    core.mjs:6461 ERROR TypeError: Cannot set properties of null (setting 'onclick')
-      at GmapComponent.initZoomControl (gmap.component.ts:197:72)
-      at GmapComponent.onMapInitialized (gmap.component.ts:177:10)
-      at GmapComponent_div_26_Template_google_map_mapInitialized_1_listener (gmap.component.html:25:23)
-      at executeListenerWithErrorHandling (core.mjs:14952:1)
-      at Object.wrapListenerIn_markDirtyAndPreventDefault [as next] (core.mjs:14990:1)
-      at Object.next (Subscriber.js:110:1)
-      at SafeSubscriber._next (Subscriber.js:60:1)
-      at SafeSubscriber.next (Subscriber.js:31:1)
-      at Subject.js:31:1
-      at errorContext (errorContext.js:19:1)
-      */
     this.displayAllMarkers()
     // REVIEW: Doesn't work with NO Markers?
-    console.log(`Setting Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLng}, zoom: ${SettingsService.Settings.defZoom}`)
+    console.log(`Setting G map Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLng}, zoom: ${SettingsService.Settings.defZoom}`)
     this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })
     this.gMap.setZoom(SettingsService.Settings.defZoom)
-    this.fitBounds()
+    this.fitBounds() // typically obviates the above set Center/Zoom
+
+
+    const OVERVIEW_DIFFERENCE = 5
+    const OVERVIEW_MIN_ZOOM = 5
+    const OVERVIEW_MAX_ZOOM = 16
+    // https://developers.google.com/maps/documentation/javascript/examples/inset-map
+    // instantiate the overview map without controls
+    this.overviewGMap = new google.maps.Map(
+      document.getElementById("overview") as HTMLElement,
+      {
+        ...this.mapOptions,
+        disableDefaultUI: true,
+        gestureHandling: "none",
+        zoomControl: false,
+        mapTypeId: 'terrain', // 'roadmap' https://developers.google.com/maps/documentation/javascript/maptypes
+      }
+    );
+
+    this.overviewGMap!.addListener("click", () => {
+      let mapId = this.overviewMapType.cur++ % 4
+      this.overviewGMap!.setMapTypeId(this.overviewMapType.types.type[mapId])
+      console.log(`Overview map set to ${this.overviewMapType.types.type[mapId]}`)
+    })
+
+    // const infowindow = new google.maps.InfoWindow({
+    //   content: "Mouse location...",
+    //   position: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng },
+    // })
+    //infowindow.open(this.overviewGMap);
+
+    this.overviewGMap!.addListener("mousemove", ($event: any) => { // TODO: Only do while mouse is over map for efficiency?!
+      if (this.zoomDisplay && this.overviewGMap) {
+        this.zoomDisplay = this.overviewGMap.getZoom()!
+      }
+      if ($event.latLng) {
+        this.mouseLatLng = $event.latLng.toJSON()
+      }
+      //console.log(`Overview map at ${JSON.stringify(this.mouseLatLng)}`)
+      //infowindow.setContent(`${JSON.stringify(latlng)}`)
+    })
+
+    this.gMap!.addListener("bounds_changed", () => {
+      this.overviewGMap!.setCenter(this.gMap!.getCenter()!);
+      this.overviewGMap!.setZoom(
+        this.clamp(
+          this.gMap!.getZoom()! - OVERVIEW_DIFFERENCE,
+          OVERVIEW_MIN_ZOOM,
+          OVERVIEW_MAX_ZOOM
+        )
+      );
+    })
+  }
+
+  clamp(num: number, min: number, max: number) {
+    return Math.min(Math.max(num, min), max)
   }
 
   fitBounds() {
-    //let reportBounds = this.fieldReportService.getFieldReportBounds()
-    //var southWest = new google.maps.LatLng(reportBounds, reportBounds.west);
-    //var northEast = new google.maps.LatLng(reportBounds.north,reportBounds.east);
-    //var bounds = new google.maps.LatLngBounds(southWest,northEast);
     this.fieldReportService.recalcFieldBounds()
-    let bounds = this.fieldReportService.getFieldReportBounds()
-    console.log(`Fitting bounds= :${JSON.stringify(bounds)}`)
-    this.gMap?.fitBounds(bounds)
+    let bound = this.fieldReportService.getFieldReportBound()
+    //console.log(`Fitting bounds= :${JSON.stringify(bound)}`)
+    this.gMap?.fitBounds({ south: bound.south, west: bound.west, north: bound.north, east: bound.east }) //SW, NE)
   }
 
   // -----------------------------------------------------------
   // Buttons
-  // TODO: Use mouse wheel to control zoom? Unused currently...
   // consider: https://developers.google.com/maps/documentation/javascript/examples/control-custom-state
   // https://developers.google.com/maps/documentation/javascript/examples/split-map-panes
-  // https://developers.google.com/maps/documentation/javascript/examples/inset-map
 
-  /*
-  // from https://developers.google.com/maps/documentation/javascript/examples/control-replacement
-  initZoomControl(map: google.maps.Map) {
-    console.log('starting initZoomControl()');
-    // TODO: Doesn't work...
 
-    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
-      document.querySelector(".zoom-control") as HTMLElement
-    );
 
-    (document.querySelector(".zoom-control-in") as HTMLElement).onclick =
-      function () {
-        map.setZoom(map.getZoom()! + 1);
-      };
-
-    (document.querySelector(".zoom-control-out") as HTMLElement).onclick =
-      function () {
-        map.setZoom(map.getZoom()! - 1);
-      };
-  }
-
-  initZoomControl2() {
-    if (this.gMap) {
-      console.log('try initZoomControl()')
-      this.initZoomControl(this.gMap)
-    } else {
-      console.log('gMap is null, so no initZoomControl()')
-    }
-  }
-
-  zoomIn() {
-    if (this.options.maxZoom != null) {
-      if (this.zoom < this.options.maxZoom) this.zoom++
-    }
-  }
-
-  zoomOut() {
-    if (this.options.minZoom != null) {
-      if (this.zoom > this.options.minZoom) this.zoom--
-    }
-  }
-*/
   // or on centerChanged
   logCenter() {
     console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
@@ -262,6 +251,7 @@ export class GmapComponent implements OnInit {    //extends Map
   zoomed() {
     if (this.zoom && this.gMap) {
       this.zoom = this.gMap.getZoom()!
+      this.zoomDisplay = this.gMap.getZoom()!
     }
   }
 

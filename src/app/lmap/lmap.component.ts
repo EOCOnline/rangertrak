@@ -1,21 +1,32 @@
 import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-
+/*
 import * as LMC from "leaflet.markercluster"  // https://github.com/Leaflet/Leaflet.markercluster
 //import {} from LeafletMarkerClusterModule
 //import { LeafletMarkerClusterModule } from 'leaflet.markercluster' //https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
 // https://stackblitz.com/edit/typescript-leaflet-marker-cluster   MarkerClusterGroup
 // better: https://blog.mestwin.net/leaflet-angular-marker-clustering/
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import {icon, latLng, marker} from 'leaflet';
-import * as L from 'leaflet'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css' // also in angular.json
+import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
 
+//import {icon, latLng, marker} from 'leaflet';
+//import * as L from 'leaflet'
+import * as L from 'leaflet';
+import 'leaflet.markercluster';
+https://stackoverflow.com/questions/58847492/error-typeerror-a-markerclustergroup-is-not-a-function
+
+another guess would be that the timing in production is different than on develop. your initMarkers gets called via ngOnChanges but that might be to early. The map or the cluster might not be initialized yet. Try to call initMarkers within markerClusterReady or mapReady
+*/
+
+import * as L from 'leaflet';
+//import { Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
+import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
+import 'leaflet.markercluster';
 
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services'
-import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
+import { CodeArea, OpenLocationCode, Utility } from '../shared/'
 import { Context } from 'ag-grid-community'
-
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°

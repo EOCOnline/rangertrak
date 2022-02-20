@@ -151,6 +151,9 @@ export class RangersComponent implements OnInit {
   onBtnAddRanger(formData?:string) {
     console.log("Adding new ranger")
     this.rangerService.AddRanger()
+    this.rangerService.UpdateLocalStorage()
+    this.refreshGrid()
+    this.reloadPage()
   }
 
   onBtnDeleteRanger(callsign: string) {
@@ -316,7 +319,20 @@ export class RangersComponent implements OnInit {
 
   //--------------------------------------------------------------------------
   onBtnReloadPage() {
+    this.reloadPage()
+  }
+
+  reloadPage() {
     window.location.reload()
+  }
+
+  refreshGrid() {
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+      this.gridApi.sizeColumnsToFit();
+    } else {
+      console.log("no this.gridApi yet in refreshGrid()")
+    }
   }
 
   //--------------------------------------------------------------------------
@@ -368,7 +384,8 @@ export class RangersComponent implements OnInit {
     if (this.getConfirmation('REALLY delete all Rangers in LocalStorage, vs. edit the Ranger grid & Update the values in Local Storage?')) {
       console.log("Removing all rangers from local storage...")
       this.rangerService.deleteAllRangers()
-      window.location.reload()
+      this.refreshGrid()
+      this.reloadPage()
     }
   }
 

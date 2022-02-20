@@ -79,7 +79,7 @@
   <br>
   <button (click)="onBtnAddRanger()"
     title="Add a new Ranger, or a new CERT, or a new Team Tactical sign: they're considered identically">Add new
-    tactical sign</button> (& then REFRESH PAGE!)
+    tactical sign</button>
   <br>
   <br>
   <details>
@@ -90,8 +90,8 @@
       <li>BEST: Use the "Add Vashon Rangers" button to import all known HAM Radio licensees. <p>This list of potential
           Rangers was taken from the FCC Database Feb 3, 2022. <br>
           It has been significantly reformatted and your edits may alter it further.<br>
-          Contact John with a better list if desired... Then REFRESH PAGE!</li>
-      <li>Add new rangers (or other tactical signs such as Team Names/CERTs) into the grid. Then REFRESH PAGE!</li>
+          Contact John with a better list if desired... </li>
+      <li>Add new rangers (or other tactical signs such as Team Names/CERTs) into the grid.</li>
     </ol>
     <hr>
 
@@ -104,11 +104,11 @@
     <button (click)="onBtnUpdateLocalStorage()" style="margin-bottom: 5px"
       title="Preserve the edits above to the Rangers stored on this browser">Save Rangers</button><br>
 
-    Delete ALL Rangers from Local Storage (then refresh page):
+    Delete ALL Rangers from Local Storage:
     <button (click)="onBtnDeleteRangers()">Delete Rangers</button><br>
 
     <div id="rangers__Fake">
-      Add Vashon rangers to any existing rangers (then REFRESH page!):
+      Add the large list of Vashon rangers to any existing rangers:
       <button (click)="loadVashonRangers()" type="button" id="enter__Fake--button">Add Vashon Rangers</button>
       <!--button (click)="onBtnReloadPage()" type="button">Reload Page</button-->
     </div>

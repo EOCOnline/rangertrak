@@ -12,3 +12,38 @@
 .strong {
   font-weight: bold;
 }
+
+/* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      //  #gMap {
+      //   height: 100%;
+      // }
+
+      /* Optional: Makes the sample page fill the window. */
+      // html,
+      // body {
+      //   height: 100%;
+      //   margin: 0;
+      //   padding: 0;
+      // }
+
+      #container,
+      #gmap {
+        height: 100%;
+        width: 100%;
+      }
+
+      #gMap {
+        position: relative;
+      }
+
+      #overview {
+        //position: absolute;
+        position: relative;
+        float: right;
+        left: 0px;
+        height: 175px;
+        width: 175px;
+        bottom: 0px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }

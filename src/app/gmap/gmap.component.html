@@ -19,13 +19,15 @@
 </details>
 <br>
 
-<div *ngIf="apiLoaded">
+<div *ngIf="apiLoaded" id="container">
   <!-- | async -->
-  <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
+  <google-map id="gMap" width="100%" [center]="center" [zoom]="zoom" [options]="mapOptions"
     (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="addTrafficLayer()" (zoomChanged)="zoomed()"
-    (mapInitialized)="onMapInitialized($event)">
+    (mapInitialized)="onMapInitialized($event)" (mapMouseover)="zoomed()">
 
     <div id="markerDiv" #markerDiv *ngFor="let marker of markers">
+
+
     </div>
 
     <!--
@@ -36,13 +38,18 @@
 
     <map-circle [center]="circleCenter" [radius]="radius"></map-circle>
 
-    <map-info-window> infoWindowContent could go here</map-info-window>
+
+    <div id="overview">
+      <map-info-window> infoWindowContent could go here</map-info-window>
+      <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.5-5'}}</span>   Longitude: <span class="strong">{{mouseLatLng?.lng | number:'1.5-5'}}</span>
+      </div>
+    </div>
 
   </google-map>
 
   <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-  <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.4-5'}}</span>   Longitude: <span class="strong">{{mouseLatLng?.lng | number:'1.4-5'}}</span>
-    Zoom: <span class="strong">{{zoom}}</span>
+  <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.5-5'}}</span>   Longitude: <span class="strong">{{mouseLatLng?.lng | number:'1.5-5'}}</span>
+    Zoom: <span class="strong">{{zoomDisplay}}</span>
   </div>
 </div>
 <br>
@@ -59,7 +66,3 @@
   <!--button (click)="onInfoClick()">Info Window</button-->
   <!--button (click)="addMarker()">Add marker</button-->
 </details>
-
-<!--br>
-<hr>
-<div id="map2"></div-->
