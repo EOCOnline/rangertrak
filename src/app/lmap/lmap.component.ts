@@ -1,13 +1,20 @@
 import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
 import { DOCUMENT, JsonPipe } from '@angular/common'
-import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http'
 
-import "leaflet.markercluster"  // https://github.com/Leaflet/Leaflet.markercluster
+import * as LMC from "leaflet.markercluster"  // https://github.com/Leaflet/Leaflet.markercluster
+//import {} from LeafletMarkerClusterModule
+//import { LeafletMarkerClusterModule } from 'leaflet.markercluster' //https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
+// https://stackblitz.com/edit/typescript-leaflet-marker-cluster   MarkerClusterGroup
+// better: https://blog.mestwin.net/leaflet-angular-marker-clustering/
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import {icon, latLng, marker} from 'leaflet';
 import * as L from 'leaflet'
 
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
+
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services'
 import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
-import { Context } from 'ag-grid-community';
+import { Context } from 'ag-grid-community'
 
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
@@ -15,9 +22,9 @@ import { Context } from 'ag-grid-community';
 
 // Markers are copied into project via virtue of angular.json: search it for leaflet!!!
 
-const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png';
-const iconUrl = 'assets/imgs/marker-icon.png';
-const shadowUrl = 'assets/imgs/marker-shadow.png';
+const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
+const iconUrl = 'assets/imgs/marker-icon.png'
+const shadowUrl = 'assets/imgs/marker-shadow.png'
 const iconDefault = L.icon({
   iconRetinaUrl,
   iconUrl,
@@ -27,7 +34,12 @@ const iconDefault = L.icon({
   popupAnchor: [1, -34],
   tooltipAnchor: [16, -28],
   shadowSize: [41, 41]
-});
+})
+const markerIcon = L.icon({
+  iconSize: [20, 25],
+  iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png'
+})
 L.Marker.prototype.options.icon = iconDefault;
 
 export type addressType = {
@@ -48,17 +60,24 @@ export type addressType = {
   ],
   providers: [SettingsService]
 })
-export class LmapComponent implements AfterViewInit {  //OnInit,
+export class LmapComponent implements OnInit, AfterViewInit {
 
   //const L = window['L'];
   title = 'Leaflet Map'
   lmap?: L.Map
-  markers: google.maps.Marker[] = []
+  //markers = L.markerClusterGroup()// google.maps.Marker[] = []  // TODO: google?!
+  //markers: MarkerClusterGroup
   zoom: number
   center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
   mouseLatLng = this.center
   fieldReports: FieldReportType[] = []
   //settings
+  mymarkers = L.markerClusterGroup()
+  mapOptions=""
+
+
+  markerClusterGroup: L.MarkerClusterGroup//  the MarkerClusterGroup class extends the FeatureGroup so it has all of the handy methods like clearLayers() or removeLayers()
+  markerClusterData = []
 
   constructor(private settingsService: SettingsService,
     private fieldReportService: FieldReportService,
@@ -69,15 +88,19 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     this.zoom = SettingsService.Settings.defZoom
     this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
     //this.settings = SettingsService.Settings
+
+    this.markerClusterGroup = L.markerClusterGroup({removeOutsideVisibleBounds: true});
   }
 
-  ngOnInit_UNUSED() {
+  ngOnInit() {
     //https://www.npmjs.com/package/leaflet.markercluster
+    //https://blog.mestwin.net/leaflet-angular-marker-clustering/
+    //this.markerClusterGroup = L.markerClusterGroup({removeOutsideVisibleBounds: true});
   }
 
   ngAfterViewInit() {
     this.initMap();
-
+    this.mymarkers = L.markerClusterGroup()
     /* https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
     this.markerService.makeCapitalCircleMarkers(this.map);
     this.shapeService.getStateShapes().subscribe(states => {
@@ -85,6 +108,9 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
       this.initStatesLayer(); //create a new GeoJSON layer and adds it to the map
     });
     */
+  }
+  onMapReady(ev:any) {
+    console.log(`Leaflet OnMapReady`)
   }
 
   private initMap() {
@@ -123,45 +149,135 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
     })
   }
 
+  /*initMap2() {
+    let tile2 = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
+      }),
+      latlng = L.latLng(SettingsService.Settings.defLat, SettingsService.Settings.defLng)
 
-  fitBounds() {
+    let map = L.map('map', {
+      center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
+      zoom: SettingsService.Settings.defZoom,
+      layers: [tile2]
+    });
+
+    let mymarkers = L.markerClusterGroup();
+
+    for (let i = 0; i < this.fieldReports.length; i++) {
+      let title = `${this.fieldReports[i].callsign} at ${this.fieldReports[i].date} with ${this.fieldReports[i].status}`
+      let marker = L.marker(new L.LatLng(this.fieldReports[i].lat, this.fieldReports[i].lng), { title: title })
+      // = L.marker(new L.LatLng(a[0], a[1]), { title: title });
+      marker.bindPopup(title)
+      mymarkers.addLayer(marker);
+    }
+
+    map.addLayer(mymarkers);
+  }*/
+
+
+  private fitBounds() {
     this.fieldReportService.recalcFieldBounds()
     let bound = this.fieldReportService.getFieldReportBound()  // { east: east, north: north, south: south, west: west } //e,n,s,w
     console.log(`Fitting bounds= :${JSON.stringify(bound)}`)
     this.lmap?.fitBounds([
-      [bound.south, bound.west ],
+      [bound.south, bound.west],
       [bound.north, bound.east]
     ]);
   }
 
-  displayAllMarkers() {
+  private displayAllMarkers() {
+    for (let i = 0; i < this.fieldReports.length; i++) {
+      let title = `${this.fieldReports[i].callsign} at ${this.fieldReports[i].date} with ${this.fieldReports[i].status}`
+      let marker = L.marker(new L.LatLng(this.fieldReports[i].lat, this.fieldReports[i].lng), { title: title })
+      marker.bindPopup(title)
+      this.mymarkers.addLayer(marker);
+    }
+
+    this.lmap?.addLayer(this.mymarkers);
+  }
+
+  private displayAllMarkers_NoCluster() {
     this.fieldReports = this.fieldReportService.getFieldReports()
     for (let i = 0; i < this.fieldReports.length; i++) {
       this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
     }
   }
 
-  onMapMouseMove(event: L.LeafletEvent) {  // MouseEvent) { //google.maps.MapMouseEvent) {
+  private onMapMouseMove(event: L.LeafletEvent) {  // MouseEvent) { //google.maps.MapMouseEvent) {
     // if (event.lat) {
     //this.mouseLatLng = { lat: event.lat, lng: event.lng }
     //}
   }
 
-  zoomed() {
+  private zoomed() {
     if (this.zoom && this.lmap) {
       this.zoom = this.lmap.getZoom()
     }
   }
 
-  addMarker(lat: number, lng: number, status: string = '') {
+  // https://blog.mestwin.net/leaflet-angular-marker-clustering/
+    private getDefaultIcon() {
+      return icon({
+        iconSize: [25, 41],
+        iconAnchor: [13, 41],
+        iconUrl: './../../assets/icons/marker-icon.png'
+      })
+    }
+
+    private createMarker() {
+      const mapIcon = this.getDefaultIcon();
+      // const coordinates = latLng([this.mapPoint.latitude, this.mapPoint.longitude]);
+      // this.lastLayer = marker(coordinates).setIcon(mapIcon);
+      // this.markerClusterGroup.addLayer(this.lastLayer)
+    }
+
+    private addLayersToMap() {
+      this.markerClusterGroup.addTo(this.lmap!);
+    }
+
+
+  private addMarker(lat: number, lng: number, status: string = '') {
     //console.log(`addMarker at ${lat}. ${lng}, ${status}`)
+
+    iconDefault
+
+
     if (!lat || !lng || !this.lmap) {
       console.error(`bad lat: ${lat} or lng: ${lng} or lmap: ${this.lmap}`)
     } else {
-      let marker = new L.Marker([lat, lng])
-      marker.addTo(this.lmap)
+      let _marker = new L.Marker([lat, lng], {
+        icon: iconDefault
+      })
+      /*
+      https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
 
-      marker.addEventListener('click', this._markerOnClick);
+        _marker.bindPopup(city);
+        _marker.on('popupopen', function() {
+          console.log('open popup');
+        });
+        _marker.on('popupclose', function() {
+          console.log('close popup');
+        });
+        _marker.on('mouseout', function() {
+          console.log('close popup with mouseout');
+          _map.closePopup();
+        });
+        console.log(_map.getZoom());
+        if (_map.getZoom() > 15 && _map.hasLayer(_marker)) {
+          _map.closePopup();
+          console.log('zoom > 15 close popup');
+        }
+      */
+
+        //markerCluster.addLayer(_mar);
+      //}
+      //_map.addLayer(markerCluster);
+
+
+      _marker.addTo(this.lmap)
+
+      _marker.addEventListener('click', this._markerOnClick);
     }
   }
 
@@ -190,23 +306,23 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
 }
 */
 
-  _markerOnClick(e: any) {
+private  _markerOnClick(e: any) {
     console.warn(`Got Marker Click!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! e= ${JSON.stringify(e)}`)
   }
 
-  addCircle(lat: number, lng: number, status: string = '') {
+  private addCircle(lat: number, lng: number, status: string = '') {
     const circle = new L.CircleMarker([lat, lng], { radius: 20 })
     if (this.lmap) {
       circle.addTo(this.lmap)
     }
   }
 
-  static scaledRadius(val: number, maxVal: number): number {
+  private static scaledRadius(val: number, maxVal: number): number {
     return 20 * (val / maxVal);
   }
 
   // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-marker-service
-  addCircles() {
+  private addCircles() {
     //const maxPop = Math.max(...res.features.map(x => x.properties.population), 0);
     /*
      this.httpClient.get(this.capitals).subscribe((res: any) => {
@@ -229,7 +345,7 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
   }
 
   // do this in a service??
-  makeCapitalPopup(data: any): string {
+  private  makeCapitalPopup(data: any): string {
     return `` +
       `<div>Capital: ${data.name}</div>` +
       `<div>State: ${data.state}</div>` +
@@ -284,7 +400,7 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
   }
 
   // or on centerChanged
-  logCenter() {
+  private logCenter() {
     console.log(`Map center is at ${JSON.stringify(this.lmap?.getCenter())}`)
     this.lmap?.on("moveend", () => {
       console.log(this.lmap?.getCenter().toString());

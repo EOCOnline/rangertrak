@@ -29,16 +29,23 @@
 
 <div class="lmap-container">
   <div class="lmap-frame">
-    <div id="lmap"></div>
+    <div id="lmap" leaflet (leafletMapReady)="onMapReady($event)">
+      <!-- from https://blog.mestwin.net/leaflet-angular-marker-clustering/
+    [leafletOptions]="mapOptions"
+      Can't bind to 'leafletOptions' since it isn't a known property of 'div' [leafletMarkerCluster]="markerClusterData"
+    -->
+    </div>
+  </div>
 
-    <!--div id="markerDiv" #markerDiv *ngFor="let marker of markers">
+  <!--div id="markerDiv" #markerDiv *ngFor="let marker of markers">
     </div-->
 
-  </div>
-  <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-  <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.4-5'}}</span> Longitude: <span class="strong">{{mouseLatLng?.lng | number:'1.4-5'}}</span>
-    Zoom: <span class="strong">{{zoom}}</span>
-  </div>
+</div>
+
+<!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
+<div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.4-5'}}</span> Longitude: <span
+    class="strong">{{mouseLatLng?.lng | number:'1.4-5'}}</span>
+  Zoom: <span class="strong">{{zoom}}</span>
 </div>
 
 
