@@ -7,13 +7,22 @@ import { DOCUMENT, JsonPipe } from '@angular/common';
 import { ComponentFixture } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
-// TODO: https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer - Angular components doesn't encapulate options functionality: identical clones only: ugg.
-//import * as  MarkerClusterer from "@googlemaps/markerclusterer";
+
+//import { MarkerClusterer } from "@googlemaps/markerclusterer"
+
+import * as GMC from "@googlemaps/markerclusterer"; // Current!
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
 import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
 //import { LatLng, latLng } from 'leaflet';
 
 /*
+
+https://github.com/googlemaps/js-markerclusterer - current!
+
+ https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer - Angular components doesn't encapulate options functionality: identical clones only: ugg.
+MarkerClustererPlus Library - also old
+
+
   https://developers.google.com/maps/support/
   https://angular-maps.com/
   https://github.com/atmist/snazzy-info-window#html-structure
@@ -82,6 +91,8 @@ export class GmapComponent implements OnInit {    //extends Map
   zoom // actual zoom level of main map
   zoomDisplay // what's displayed below main map
   center: google.maps.LatLngLiteral
+  trafficLayer = new google.maps.TrafficLayer()
+  trafficLayerVisible = 0
   mapOptions: google.maps.MapOptions = {
     zoomControl: true,
     scrollwheel: true,
@@ -100,10 +111,10 @@ export class GmapComponent implements OnInit {    //extends Map
 
   // Google MapMarker only wraps google.maps.LatLngLiteral (positions) - NOT google.maps.Marker: styles, behaviors, etc
   markers: google.maps.Marker[] = []
-  markerCluster!: MarkerClusterer;
-  markerPositions: google.maps.LatLngLiteral[]
+  markerCluster!: GMC.MarkerClusterer
+  // markerPositions: google.maps.LatLngLiteral[] angular brain-dead wrapper
   markerClustererImagePath =
-        'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
+    'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
   // markerOptions = { draggable: false }
   // label = 'RangerTrak Label'
 
@@ -127,24 +138,23 @@ export class GmapComponent implements OnInit {    //extends Map
     this.zoom = SettingsService.Settings.defZoom
     this.zoomDisplay = SettingsService.Settings.defZoom
 
-// https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
-    this.markerPositions = [];
+    // https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
+    // this.markerPositions = []; evil angular wrapper
 
 
 
-        // https://github.com/googlemaps/js-markerclusterer
-/*    // use default algorithm and renderer
-    this.markerCluster = new MarkerClusterer({
-      map: this.gMap,
-      markers: this.markers,
-      // algorithm?: Algorithm,
-      // renderer?: Renderer,
-      // onClusterClick?: onClusterClickHandler,
-    })
+    // https://github.com/googlemaps/js-markerclusterer
+    // use default algorithm and renderer
+    /*
+
+    constructor MarkerClusterer(map: google.maps.Map, markers?: google.maps.Marker[] | undefined, options?: MarkerClustererOptions | undefined): MarkerClusterer
+Class for clustering markers on a Google Map.
+
+See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.markerclusterer.html
+
 */
 
-
-    // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
+       // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
     this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
@@ -191,17 +201,16 @@ export class GmapComponent implements OnInit {    //extends Map
     this.displayAllMarkers()
     // REVIEW: Doesn't work with NO Markers?
 
-/*
-        // https://github.com/googlemaps/js-markerclusterer
+
+    // https://github.com/googlemaps/js-markerclusterer
     // use default algorithm and renderer
-    const markerCluster = new MarkerClusterer({
+    this.markerCluster = new GMC.MarkerClusterer({
       map: this.gMap,
       markers: this.markers,
       // algorithm?: Algorithm,
       // renderer?: Renderer,
       // onClusterClick?: onClusterClickHandler,
     })
-*/
 
     console.log(`Setting G map Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLng}, zoom: ${SettingsService.Settings.defZoom}`)
     this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })
@@ -276,8 +285,6 @@ export class GmapComponent implements OnInit {    //extends Map
   // consider: https://developers.google.com/maps/documentation/javascript/examples/control-custom-state
   // https://developers.google.com/maps/documentation/javascript/examples/split-map-panes
 
-
-
   // or on centerChanged
   logCenter() {
     console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
@@ -338,7 +345,7 @@ export class GmapComponent implements OnInit {    //extends Map
       let m = new google.maps.Marker({
         draggable: true,
         animation: animation,
-       // map: this.gMap,
+        // map: this.gMap,
         position: latLng,
         title: title,
         icon: icon,
@@ -369,14 +376,14 @@ export class GmapComponent implements OnInit {    //extends Map
             //content: 'How now red cow.',
             anchor: m,
             //setPosition: event.latLng,
-            map: this.gMap,
+            //map: this.gMap,
             // shouldFocus: false,
           })
         }
       )
-      this.markerPositions.push(latLng.toJSON());
+      //this.markerPositions.push(latLng.toJSON()); evil angular wrapper
 
-      //this.markers.push(m)
+      this.markers.push(m)
     } else {
       console.log("event.latLng is BAD; can not add marker..")
     }
@@ -447,52 +454,22 @@ export class GmapComponent implements OnInit {    //extends Map
     }
   }
 
-  addTrafficLayer() {
-    /*
-      MapTypes:
-      roadmap - displays the default road map view. This is the default map type.
-      satellite - displays Google Earth satellite images.
-      hybrid - displays a mixture of normal and satellite views.
-      terrain - displays a physical map based on terrain information.
-    */
-    console.log(`addTrafficLayer(): this.map: ${this.map} `)
-    console.log(`addTrafficLayer(): this.map.center: ${this.map.center} `)
-    const trafficLayer = new google.maps.TrafficLayer();
-    trafficLayer.setMap(this.gMap);
-
-    // https://developers.google.com/maps/documentation/javascript/maptypes
+  toggleTrafficLayer() {
+    this.trafficLayer.setMap(
+      (this.trafficLayerVisible ^= 1) ? this.gMap : null ) // trafficLayerVisible toggles between 0 & 1
     // map.setTilt(45);
+    console.log(`TrafficLayer made ${this.trafficLayerVisible ? 'visible' : 'hidden'}`)
   }
-
-
-  // ---------------------------------------------------------------------------------------------------
-  // Google PlusCodes: Open Location Code
-  // https://github.com/tspoke/typescript-open-location-code
-  // https://github.com/google/open-location-code
-
-
-
-
 }
-
 
 /*
-
-
-markerDragEnd(m: marker, $event: google.maps.MouseEvent) {
-  console.log('dragEnd', m, $event);
-  this.latitude = $event.latLng.lat();
-  this.longitude = $event.latLng.lng();
-  this.getAddress(this.latitude, this.longitude);
-}
   markerDragEnd2($event: google.maps.MouseEvent) {
     console.log($event);
     this.lat = $event.coords.lat;
     this.lng = $event.coords.lng;
-    this.getAddress(this.latitude, this.longitude);
+    this.getAddress(this.latitude, this.longitude);  // TODO: Get/display Street address?!
   }
   */
-    // TODO: Add a marker clusterer to manage the markers.
-    // new MarkerClusterer({ markers, map });
+
 
 

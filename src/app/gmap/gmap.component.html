@@ -15,6 +15,7 @@
     <li>Click or hover over marker to display coordinates and callsign</li>
     <li>Right-click on Map (not Satellite view) to display traffic layer</li>
     <li>Upper Left Map/Satellite control allows viewing Terrain or Labels as desired</li>
+    <li>Click on the overlay map (at the lower right) to switch between the 4 amps types: roadmap, terrain, satellite & hybrid</li>
   </ul>
 </details>
 <br>
@@ -22,7 +23,7 @@
 <div *ngIf="apiLoaded" id="container">
   <!-- | async -->
   <google-map id="gMap" width="100%" [center]="center" [zoom]="zoom" [options]="mapOptions"
-    (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="addTrafficLayer()" (zoomChanged)="zoomed()"
+    (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="toggleTrafficLayer()" (zoomChanged)="zoomed()"
     (mapInitialized)="onMapInitialized($event)" (mapMouseover)="zoomed()">
 
     <!--map-marker-clusterer [imagePath]="markerClustererImagePath">
