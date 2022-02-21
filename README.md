@@ -16,6 +16,7 @@ There are a number of ways to geocode a latitude & longitude. See https://en.wik
  - Auto-lookup of Ham Radio operators by callsign
  - Google or Leaflet/ESRI maps
  - Rangers can be in Teams; both are easily edited/sorted/filters
+ - Documented using [https://compodoc.app/guides/jsdoc-tags.html]Compodoc
 
 ## Future Roadmap
 - To work with out flaws!
