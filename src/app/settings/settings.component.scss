@@ -82,3 +82,28 @@ h1,h2,h3 {
   border: 1px solid lightgreen;
   padding: 4px;
 }
+
+#SettingsBody {
+  //display: inline-block;
+  //background-image: './src/assets/imgs/AlpineMarmot.png' !important;
+  //height: 650 px;
+  color: black;
+  //background-image: linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(8, 8, 8, 0.5)), url("../../assets/imgs/20220205_112741.jpg") ;
+  background-image: linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(221, 213, 213, 0.5)), url("../../assets/imgs/20220205_112750.jpg") ;
+  //color: black;
+  //background-image: url("../../../assets/imgs/AlpineMarmot.png") ;
+  //background-size: 100%;
+  //background-size: contain;
+  background-size: cover;
+}
+
+// https://dev.to/nazanin_ashrafi/how-to-darken-an-image-with-css-4f5h
+/*
+filter: brightness(30%);
+  opacity: 0.5;
+  ul {
+    background-color: black;
+    }
+*/
+// https://developer.mozilla.org/en-US/docs/Web/CSS/background-image
+//https://rapidapi.com/guides/css-painting-api

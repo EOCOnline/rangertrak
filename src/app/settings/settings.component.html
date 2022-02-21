@@ -1,4 +1,4 @@
-<div class="container">
+<div id="SettingsBody" class="container" > <!-- [ngStyle]="{backgroundImage:'./src/assets/imgs/20220205_112741.jpg'}" -->
   <form [formGroup]="settingsEditorForm" (ngSubmit)="onFormSubmit()">
 
     <h1>Application Defaults</h1>
@@ -217,7 +217,7 @@
       <h2>Font Explorium</h2>
       <ul style="font-size: large;">
         <li *ngFor="let font of fonts">
-          {{font}}: <span style="font-family: {{font}};">{{getPangram()}}</span>
+          {{font}}: <span style="font-family: {{font}};">{{pangram}}</span>
         </li>
       </ul>
 

@@ -162,6 +162,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     "How vexingly quick daft zebras jump!",
     "The five boxing wizards jump quickly.",
     "Jackdaws love my big sphinx of quartz."]
+    pangram
 
   constructor(
     private fb: FormBuilder,
@@ -173,7 +174,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     private rangerService: RangerService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
-
+    this.pangram=this.getPangram()
     //this.settings = settingService()
     this.settings = SettingsService.Settings // only using static functions/values from the service...
     console.log('Application Settings set to static values. But not initialized???')
