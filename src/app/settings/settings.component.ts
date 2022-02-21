@@ -154,7 +154,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   */
   ];
   fonts = ["'Open Sans'", "Montserrat", "Roboto", "'Playfair Display'", "Lato", "Merriweather", "Helvetica", "Lora", "'PT Serif'", "Spectral", "'Times New Roman'", "'Akaya Telivigala'",
-  "'Open Sans Condensed'", "'Saira Extra Condensed'", "Boogaloo", "Anton", "'Faster One'"]  //, "'Material Icons'"]  all loaded in Index.html
+  "'Open Sans Condensed'", "'Saira Extra Condensed'", "Boogaloo", "Anton", "'Faster One'", "'Arima Madurai'"]  //, "'Material Icons'"]  all loaded in Index.html
   // https://en.wikipedia.org/wiki/Pangram
   pangrams = ["Pack my box with five dozen liquor jugs",
     "The quick brown fox jumps over the lazy dog",

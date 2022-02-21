@@ -312,7 +312,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       this.displayHide("enter__frm-reguritation")
     }
 
-    // On Location/Address Change subscriptions
+    // On Location/Address Change subscriptions  // TODO: USE THESE!!!
     if (this.entryDetailsForm) {
       // this.addressCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
       this.entryDetailsForm.get("lat")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
@@ -475,8 +475,8 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
     // TODO: FitBounds to new point, not to DefLat & Deflng  -- do it on addMarker?
     // this.gMap?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
-    this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }))
-    //this.gMap?.setZoom(10) no effect
+    //this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })) // zooms to max!
+    this.gMap?.setZoom(17) // no effect
   }
 
   onMapMouseMove(event: google.maps.MapMouseEvent) {
