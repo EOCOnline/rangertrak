@@ -81,9 +81,12 @@ export class LmapComponent implements OnInit, AfterViewInit {
   //const L = window['L'];
   title = 'Leaflet Map'
   lmap?: L.Map
+  overviewLMap?: L.Map
+  overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } } // TODO: Leaflet's version?
   //markers = L.markerClusterGroup()// google.maps.Marker[] = []  // TODO: google?!
   //markers: MarkerClusterGroup
-  zoom: number
+  zoom // actual zoom level of main map
+  zoomDisplay // what's displayed below main map
   center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
   mouseLatLng = this.center
   fieldReports: FieldReportType[] = []
@@ -102,6 +105,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
 
     this.fieldReportService = fieldReportService
     this.zoom = SettingsService.Settings.defZoom
+    this.zoomDisplay = SettingsService.Settings.defZoom
     this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
     //this.settings = SettingsService.Settings
 
@@ -118,20 +122,20 @@ export class LmapComponent implements OnInit, AfterViewInit {
     this.initMap();
     this.mymarkers = L.markerClusterGroup()
 
+    /*
+        // https://github.com/Leaflet/Leaflet.markercluster#defaults
+        var markers3 = L.markerClusterGroup({
+          spiderfyOnMaxZoom: false,
+          showCoverageOnHover: false,
+          zoomToBoundsOnClick: false
+        })
 
-    // https://github.com/Leaflet/Leaflet.markercluster#defaults
-    var markers3 = L.markerClusterGroup({
-      spiderfyOnMaxZoom: false,
-      showCoverageOnHover: false,
-      zoomToBoundsOnClick: false
-    })
-
-    var markers4 = L.markerClusterGroup({
-      iconCreateFunction: function (cluster) {
-        return L.divIcon({ html: '<b>' + cluster.getChildCount() + '</b>' });
-      }
-    });
-
+        var markers4 = L.markerClusterGroup({
+          iconCreateFunction: function (cluster) {
+            return L.divIcon({ html: '<b>' + cluster.getChildCount() + '</b>' });
+          }
+        });
+    */
 
     /* https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
     this.markerService.makeCapitalCircleMarkers(this.map);
@@ -164,21 +168,79 @@ export class LmapComponent implements OnInit, AfterViewInit {
     this.fitBounds()
 
     this.lmap?.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
-      if (this.zoom && this.lmap) {
+      if (this.zoomDisplay && this.lmap) {
         this.zoom = this.lmap.getZoom()
+        this.zoomDisplay = this.lmap.getZoom()
+
       }
       //this.zoom! = this.lmap?.getZoom()
     })
 
-    this.lmap?.on('mousemove', (event: L.LeafletMouseEvent) => {
-      this.mouseLatLng = event.latlng
-    })
-
     this.lmap.on('click', (ev: L.LeafletMouseEvent) => {
+      // TODO: If enabled, drop a marker there...
       if (ev.latlng.lat) {
         console.log(`Click at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`)
       }
     })
+
+
+    const OVERVIEW_DIFFERENCE = 6
+    const OVERVIEW_MIN_ZOOM = 5
+    const OVERVIEW_MAX_ZOOM = 16
+    // https://developers.google.com/maps/documentation/javascript/examples/inset-map
+    // instantiate the overview map without controls
+    // https://leafletjs.com/reference.html#map-example
+    this.overviewLMap = L.map('overview', {
+      center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
+      zoom: SettingsService.Settings.defZoom,
+      zoomControl: false,
+      keyboard: false,
+      scrollWheelZoom: false,
+    })
+
+    const overviewTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: OVERVIEW_MAX_ZOOM,
+      minZoom: OVERVIEW_MIN_ZOOM,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    })
+
+    overviewTiles.addTo(this.overviewLMap)
+
+    // TODO:
+    /*this.overviewLMap!.addListener("click", () => {
+      let mapId = this.overviewMapType.cur++ % 4
+      this.overviewLMap!.setMapTypeId(this.overviewMapType.types.type[mapId])
+      console.log(`Overview map set to ${this.overviewMapType.types.type[mapId]}`)
+    })*/
+
+    // const infowindow = new google.maps.InfoWindow({
+    //   content: "Mouse location...",
+    //   position: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng },
+    // })
+    //infowindow.open(this.overviewLMap);
+
+    this.overviewLMap?.on('mousemove', ($event: L.LeafletMouseEvent) => { // TODO: Only do while mouse is over map for efficiency?!
+      if (this.zoomDisplay && this.overviewLMap) {
+        this.zoomDisplay = this.overviewLMap.getZoom()!
+      }
+      if ($event.latlng) {
+        this.mouseLatLng = $event.latlng //.toJSON()
+      }
+      //console.log(`Overview map at ${JSON.stringify(this.mouseLatLng)}`)
+      //infowindow.setContent(`${JSON.stringify(latlng)}`)
+    })
+
+    this.overviewLMap!.on("bounds_changed", () => {
+      this.overviewLMap!.setView(this.lmap!.getCenter()!, this.clamp(
+        this.lmap!.getZoom()! - OVERVIEW_DIFFERENCE,
+        OVERVIEW_MIN_ZOOM,
+        OVERVIEW_MAX_ZOOM
+      ))}
+    )
+  }
+
+  clamp(num: number, min: number, max: number) {
+    return Math.min(Math.max(num, min), max)
   }
 
   /*initMap2() {
@@ -246,7 +308,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
 
   private onMapMouseMove_Unused(event: L.LeafletEvent) {  // MouseEvent) { //google.maps.MapMouseEvent) {
     console.log(`onMapMouseMove: ${JSON.stringify(event)}`)
-     //if (event.type. .lat) {
+    //if (event.type. .lat) {
     //this.mouseLatLng = { lat: event.lat, lng: event.lng }
     //}
   }
