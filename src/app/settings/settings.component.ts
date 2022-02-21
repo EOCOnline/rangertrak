@@ -69,10 +69,7 @@ export class SettingsComponent implements OnInit {
       headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code",
       cellStyle: (params: { value: string; }) => {
         //  console.log(`editor returned: ${params.value}`)
-        //debugger
-
-
-
+        // TODO: typically the colorPicker only should stay up while hovered over...we have to click away because????
 
         let newColor = params.value
         //params.node.data.color = newColor
@@ -156,6 +153,15 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       } //, minWidth: "25px" }
   */
   ];
+  fonts = ["'Open Sans'", "Montserrat", "Roboto", "'Playfair Display'", "Lato", "Merriweather", "Helvetica", "Lora", "'PT Serif'", "Spectral", "'Times New Roman'", "'Akaya Telivigala'"] //, "'Material Icons'"]
+  // https://en.wikipedia.org/wiki/Pangram
+  pangrams = ["Pack my box with five dozen liquor jugs",
+    "The quick brown fox jumps over the lazy dog",
+    "Glib jocks quiz nymph to vex dwarf.",
+    "Sphinx of black quartz, judge my vow.",
+    "How vexingly quick daft zebras jump!",
+    "The five boxing wizards jump quickly.",
+    "Jackdaws love my big sphinx of quartz."]
 
   constructor(
     private fb: FormBuilder,
@@ -331,5 +337,9 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   getPlatform() {
     // TODO:
     // https://material.angular.io/cdk/platform/overview
+  }
+
+  getPangram() {
+    return this.pangrams[Math.floor(Math.random() * this.pangrams.length)]
   }
 }

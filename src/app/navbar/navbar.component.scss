@@ -9,18 +9,20 @@
     background: rgb(145, 195, 204);
     color: white;
     border-radius: 3px;
-    padding: 1em;
-
-    font-family: sans-serif;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    font-family:'Akaya Telivigala', sans-serif;
+    font-size: 1.2em;
   }
   .main-nav > ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
     display: flex;
-    flex: 3;
+    flex: 8;
   }
   .main-nav li {
+    font-style: un;
     margin-right: 2em;
   }
   .main-nav > form {
@@ -37,12 +39,15 @@
     border-radius: 1em;
     color: orangered;
     padding: 0 1em;
-    margin-left: .3em;
+    margin-left: .1em;
   }
   .main-nav a {
     margin-left: 10px;
     margin-right: 10px;
+    text-decoration:none;
+    vertical-align: middle;
   }
+  // TODO: Doesn't collapse into a hamburger!!!
  @media screen and (max-width: 575px) {
    .main-nav {
      flex-direction: column;

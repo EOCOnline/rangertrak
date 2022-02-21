@@ -307,7 +307,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     }
   }
 
-  addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "", animation = google.maps.Animation.DROP) {
+  addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP) {
     console.log(`addMarker`)
 
     if (infoContent == "") {

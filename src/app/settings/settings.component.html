@@ -108,7 +108,7 @@
     </ag-grid-angular>
     <button (click)="onBtnAddFRStatus()" title="Add a new Field Report Status">Add new
       row</button> &nbsp;&nbsp;&nbsp;
-      <button (click)="this.refreshStatusGrid()" title="Refresh Report Statuses">Refresh Statuses Grid</button>
+    <button (click)="this.refreshStatusGrid()" title="Refresh Report Statuses">Refresh Statuses Grid</button>
     <br>
     <!--h2>Markers</h2>
 
@@ -173,7 +173,7 @@
       Log to Browser Console
     </div -->
 
-   <!--h2>Teams</h2>
+    <!--h2>Teams</h2>
     <details>
       <summary>Team Details</summary>
       <ul>
@@ -213,12 +213,19 @@
     <details>
       <summary><span class="big">Advanced Options</span></summary>
       <button (click)="onBtnResetDefaults()">Reset All these Settings to Default values</button><br>
+      <br>
+      <h2>Font Explorium</h2>
+      <ul style="font-size: large;">
+        <li *ngFor="let font of fonts">
+          {{font}}: <span style="font-family: {{font}};">{{getPangram()}}</span>
+        </li>
+      </ul>
+
     </details>
 
-  </form>
-</div>
 
-<!--hr>
+
+    <!--hr>
 <div class="card">
   <div class="card-header">
       <h5>Reactive Forms with PrimeNg Table</h5>
