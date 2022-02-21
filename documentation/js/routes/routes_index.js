@@ -1,0 +1,1 @@
+var ROUTES_INDEX = {"name":"<root>","kind":"module","className":"AppModule","children":[{"name":"routes","filename":"src/app/app-routing.module.ts","module":"AppRoutingModule","kind":"module"},{"name":"routes","filename":"src/app/lazy/lazy-routing.module.ts","module":"LazyRoutingModule","children":[{"path":"","component":"AboutComponent"}],"kind":"module"}]}

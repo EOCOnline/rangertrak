@@ -1,0 +1,1162 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li
+  >
+  AlertsComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/alerts/alerts.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+    </p>
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>rangertrak-alerts</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./alerts.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./alerts.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#alertBanner" >alertBanner</a>
+                            </li>
+                            <li>
+                                <a href="#emoji" >emoji</a>
+                            </li>
+                            <li>
+                                <a href="#isAlertHidden" >isAlertHidden</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#Banner" >Banner</a>
+                            </li>
+                            <li>
+                                <a href="#dbug" >dbug</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onBtnCloseAlert" >onBtnCloseAlert</a>
+                            </li>
+                            <li>
+                                <a href="#onBtnCloseBottomAlert" >onBtnCloseBottomAlert</a>
+                            </li>
+                            <li>
+                                <a href="#OpenSnackBar" >OpenSnackBar</a>
+                            </li>
+                            <li>
+                                <a href="#zeroFill" >zeroFill</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(_snackBar: MatSnackBar, document: Document)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/alerts/alerts.component.ts:18</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>_snackBar</td>
+                                                  
+                                                        <td>
+                                                                    <code>MatSnackBar</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>document</td>
+                                                  
+                                                        <td>
+                                                                    <code>Document</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Banner"></a>
+                    <span class="name">
+                        <span ><b>Banner</b></span>
+                        <a href="#Banner"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>Banner(msg: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, action1: string | undefined, action2: string | undefined)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">src/app/alerts/alerts.component.ts:35</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>msg</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>action1</td>
+                                    <td>
+                                            <code>string | undefined</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&#x27;Close&#x27;</code>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>action2</td>
+                                    <td>
+                                            <code>string | undefined</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&quot;Close&quot;</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dbug"></a>
+                    <span class="name">
+                        <span ><b>dbug</b></span>
+                        <a href="#dbug"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>dbug(msg: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, alerts: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">src/app/alerts/alerts.component.ts:79</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>msg</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>alerts</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">src/app/alerts/alerts.component.ts:26</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onBtnCloseAlert"></a>
+                    <span class="name">
+                        <span ><b>onBtnCloseAlert</b></span>
+                        <a href="#onBtnCloseAlert"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onBtnCloseAlert()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">src/app/alerts/alerts.component.ts:70</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onBtnCloseBottomAlert"></a>
+                    <span class="name">
+                        <span ><b>onBtnCloseBottomAlert</b></span>
+                        <a href="#onBtnCloseBottomAlert"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onBtnCloseBottomAlert()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="74"
+                            class="link-to-prism">src/app/alerts/alerts.component.ts:74</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="OpenSnackBar"></a>
+                    <span class="name">
+                        <span ><b>OpenSnackBar</b></span>
+                        <a href="#OpenSnackBar"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>OpenSnackBar(message: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, action: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, duration: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="66"
+                            class="link-to-prism">src/app/alerts/alerts.component.ts:66</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>message</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>action</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>duration</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>0</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zeroFill"></a>
+                    <span class="name">
+                        <span ><b>zeroFill</b></span>
+                        <a href="#zeroFill"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>zeroFill(integ: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, lngth: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">src/app/alerts/alerts.component.ts:95</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>integ</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>lngth</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="alertBanner"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>alertBanner</b></span>
+                        <a href="#alertBanner"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>HTMLElement | null</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>null</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/alerts/alerts.component.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="emoji"></a>
+                    <span class="name">
+                        <span ><b>emoji</b></span>
+                        <a href="#emoji"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;emoji_people&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/alerts/alerts.component.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isAlertHidden"></a>
+                    <span class="name">
+                        <span ><b>isAlertHidden</b></span>
+                        <a href="#isAlertHidden"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/alerts/alerts.component.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DOCUMENT } from &#x27;@angular/common&#x27;;
+import { Component, Inject, OnInit } from &#x27;@angular/core&#x27;;
+import { MatSnackBar } from &#x27;@angular/material/snack-bar&#x27;
+import { NavigationEnd } from &#x27;@angular/router&#x27;;
+
+//import { MatFormFieldModule } from &#x27;@angular/material/form-field&#x27;;
+import { MDCBanner } from &#x27;@material/banner&#x27;;
+
+@Component({
+  selector: &#x27;rangertrak-alerts&#x27;,
+  templateUrl: &#x27;./alerts.component.html&#x27;,
+  styleUrls: [&#x27;./alerts.component.scss&#x27;]
+})
+export class AlertsComponent implements OnInit {
+
+  isAlertHidden: boolean
+  private alertBanner: HTMLElement | null &#x3D; null
+  emoji &#x3D; &#x27;emoji_people&#x27;
+
+  constructor(
+    private _snackBar: MatSnackBar,
+    @Inject(DOCUMENT) private document: Document) {
+    this.isAlertHidden &#x3D; true;
+  }
+
+  ngOnInit(): void {
+    console.log(&#x27;AlertComponent.ngInit&#x27;)
+
+    this.alertBanner &#x3D; this.document.querySelector(&#x27;.mdc-banner&#x27;)
+    if (this.alertBanner &#x3D;&#x3D; null) {
+      console.log(&quot;Alerts:ngInit() couldn&#x27;t find alert Banner!&quot;)
+    }
+  }
+
+  Banner(msg: string, action1: string|undefined &#x3D; &#x27;Close&#x27;, action2: string|undefined &#x3D; &quot;Close&quot;) {
+    // https://material.io/components/banners#usage  //@use &quot;@material/banner/styles&quot;;
+
+    //console.log(&#x60;BANNER Called with ${msg}&#x60;)
+
+    /*if (emoj !&#x3D; null) {
+      this.emoji &#x3D; emoj // REVIEW: Change to emoji is permanent, not temporary: OK?
+    }*/
+
+    if (this.alertBanner &#x3D;&#x3D; null) {
+      console.log(&#x27;REVIEW: AlertComponent.Banner() called BEFORE AlertComponent.ngInit!&#x27;)
+      this.alertBanner &#x3D; this.document.querySelector(&#x27;.mdc-banner&#x27;)
+    }
+
+    if (this.alertBanner !&#x3D; null) {
+      const banner &#x3D; new MDCBanner(this.alertBanner)
+      banner.open()
+      banner.setText(msg)
+      banner.setPrimaryActionText(action1)
+      banner.setSecondaryActionText(action2)
+      //banner.layout()
+      console.log(&#x60;BANNER displayed with ${msg}&#x60;)
+    } else {
+      console.log(&quot;Could not locate alertBanner !!!!&quot;)
+    }
+    //this.openSnackBar(&#x60;No Rangers found. Please enter them into the grid and then use the Update button,  or provide a Rangers.JSON file to import from or FUTUREE: Import them from an Excel file.&#x60;, &#x60;Nota Bene&#x60;, 1000)
+    //  this.openSnackBar(&#x60;Imported &quot;${this.rangers.length}&quot; rangers.&#x60;, &#x60;Nota Bene&#x60;, 2000)
+
+  }
+
+  // https://v5.material.angular.io/components/snack-bar/overview
+  OpenSnackBar(message: string, action: string, duration &#x3D; 0) {
+    this._snackBar.open(message, action, { duration: duration, verticalPosition: &#x27;top&#x27; })
+  }
+
+  onBtnCloseAlert() {
+    console.log(&#x60;onBtnCloseAlert() called&#x60;)
+  }
+
+  onBtnCloseBottomAlert() {
+    console.log(&#x60;onBtnCloseBottomAlert() called&#x60;)
+    this.isAlertHidden &#x3D; true;
+  }
+
+  dbug(msg: string, alerts: boolean) {
+    var dt &#x3D; new Date();
+    var dbugLog &#x3D; document.getElementById(&quot;dbugLog&quot;)
+    var time &#x3D; this.zeroFill(dt.getHours(), 2) + &quot;:&quot; + this.zeroFill(dt.getMinutes(), 2) + &quot;:&quot; + this.zeroFill(dt.getSeconds(), 2) + &quot;:&quot; + this.zeroFill(dt.getMilliseconds(), 4);
+    if (dbugLog) {
+      var dbugMsg &#x3D; time + &quot;-  &amp;nbsp;&amp;nbsp;&quot; + msg + &quot;&lt;br&gt;&quot; + dbugLog.innerHTML;
+      dbugLog.innerHTML &#x3D; dbugMsg;
+    }
+    // TODO: Only if settings say to do this!
+    // console.log(&quot;Ranger Track: &quot; + dbugMsg); // Convert dbugLog from HTML to plain text...
+    if (alerts &#x3D;&#x3D; true) {
+      //document.getElementById(&#x27;#alerts&#x27;).html(&quot;&lt;strong&gt;Alert!&lt;/strong&gt; &quot;+time + &quot;-  &amp;nbsp;&amp;nbsp;&quot; + msg);
+      //document.getElementById(&#x27;#alerts&#x27;).fadeIn().delay(2500).fadeOut();
+    }
+  }
+
+  zeroFill(integ: number, lngth: number) {
+    var strg &#x3D; integ.toString();
+    while (strg.length &lt; lngth)
+      strg &#x3D; &quot;0&quot; + strg;
+    return strg;
+  }
+
+}
+
+
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;!-- Only 1 banner at a time... --&gt;
+&lt;!-- https://material.io/components/banners/web#banners --&gt;
+&lt;div class&#x3D;&quot;mdc-banner mdc-banner--centered mdc-banner--mobile-stacked&quot; role&#x3D;&quot;banner&quot;&gt;
+  &lt;div class&#x3D;&quot;mdc-banner__fixed&quot;&gt;
+    &lt;div class&#x3D;&quot;mdc-banner__content&quot; role&#x3D;&quot;alertdialog&quot; aria-live&#x3D;&quot;assertive&quot;&gt;
+      &lt;div class&#x3D;&quot;mdc-banner__graphic-text-wrapper&quot;&gt;
+
+        &lt;!-- https://fonts.google.com/icons?selected&#x3D;Material+Icons --&gt;
+        &lt;div class&#x3D;&quot;mdc-banner__graphic&quot; role&#x3D;&quot;img&quot; alt&#x3D;&quot;&quot;&gt;&lt;i class&#x3D;&quot;material-icons mdc-banner__icon&quot;&gt;{{emoji}}&lt;/i&gt;
+        &lt;/div&gt;
+        &lt;div class&#x3D;&quot;mdc-banner__text&quot;&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class&#x3D;&quot;mdc-banner__actions&quot;&gt;
+
+        &lt;button type&#x3D;&quot;button&quot;
+          class&#x3D;&quot;mdc-button mdc-banner__secondary-action mdc-button--icon-leading mdc-button--raised&quot;&gt;
+          &lt;div class&#x3D;&quot;mdc-button__ripple&quot;&gt;&lt;/div&gt;
+          &lt;i class&#x3D;&quot;material-icons mdc-button__icon&quot; aria-hidden&#x3D;&quot;true&quot;&gt;done&lt;/i&gt;
+          &lt;span class&#x3D;&quot;mdc-button__label&quot;&gt;Ignore&lt;/span&gt;
+        &lt;/button&gt;
+
+        &lt;a href&#x3D;&quot;/rangers#advanced&quot; title&#x3D;&quot;Click to go there now&quot;&gt;
+          &lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;mdc-button mdc-banner__primary-action mdc-button--icon-leading&quot;&gt;
+            &lt;div class&#x3D;&quot;mdc-button__ripple&quot;&gt;&lt;/div&gt;
+            &lt;i class&#x3D;&quot;material-icons mdc-button__icon&quot; aria-hidden&#x3D;&quot;true&quot;&gt;build&lt;/i&gt;
+            &lt;span class&#x3D;&quot;mdc-button__label&quot;&gt;Go to Rangers Page&lt;/span&gt;
+          &lt;/button&gt;
+        &lt;/a&gt;
+
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+
+&lt;div [hidden]&#x3D;&quot;isAlertHidden&quot;&gt;
+  &lt;mat-card style&#x3D;&quot;background-color: rgb(241, 201, 125);&quot;&gt;
+    &lt;mat-card-subtitle&gt;Welcome to RangerTrak! Updates and alerts will appear here.&lt;/mat-card-subtitle&gt;
+
+    &lt;div style&#x3D;&quot;font-size: x-small; text-align: right;&quot;&gt;
+      &lt;a href&#x3D;&quot;https://jasonwatmore.com/post/2020/07/16/angular-10-alert-notifications-example&quot;
+        target&#x3D;&quot;_blank&quot;&gt;https://jasonwatmore.com/post/2020/07/16/angular-10-alert-notifications-example&lt;/a&gt; &amp;
+      &lt;a href&#x3D;&quot;https://material.angular.io/components/snack-bar/overview&quot;
+        target&#x3D;&quot;_blank&quot;&gt;https://material.angular.io/components/snack-bar/overview&lt;/a&gt;&lt;br&gt;
+      &lt;a href&#x3D;&quot;https://https://www.tutsmake.com/angular-11-toaster-notification-example/&quot;
+        target&#x3D;&quot;_blank&quot;&gt;https://www.tutsmake.com/angular-11-toaster-notification-example/&lt;/a&gt;&lt;br&gt;
+      &lt;a href&#x3D;&quot;https://www.w3schools.com/bootstrap4/bootstrap_alerts.asp&quot;
+        target&#x3D;&quot;_blank&quot;&gt;https://www.w3schools.com/bootstrap4/bootstrap_alerts.asp&lt;/a&gt;&lt;br&gt;
+    &lt;/div&gt;
+    &lt;mat-card-actions&gt;
+
+      &lt;button (click)&#x3D;&quot;onBtnCloseBottomAlert()&quot; class&#x3D;&quot;Alerts__Close&quot;&gt;Close&lt;/button&gt;
+      &lt;!--button mat-raised-button color&#x3D;&quot;accent&quot;&gt;X&lt;/button--&gt;
+      &lt;!--    https://material.angular.io/components/icon/overview
+          https://material.angular.io/components/button-toggle/overview
+          https://developers.google.com/fonts/docs/material_icons   --&gt;
+      &lt;!--span class&#x3D;&quot;mat-icon&quot; aria-hidden&#x3D;&quot;false&quot; aria-label&#x3D;&quot;Error icon&quot;&gt;X Icon&lt;/span--&gt;
+
+    &lt;/mat-card-actions&gt;
+  &lt;/mat-card&gt;
+
+  &lt;div class&#x3D;&quot;alert alert-success&quot;&gt;
+    &lt;strong&gt;Requires Bootstrap4!&lt;/strong&gt; You should &lt;a href&#x3D;&quot;#&quot; class&#x3D;&quot;alert-link&quot;&gt;read this message&lt;/a&gt;.
+  &lt;/div&gt;
+
+  &lt;hr&gt;
+&lt;/div&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>./alerts.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@use &quot;@material/theme&quot;
+with (
+  //$level: 0,
+  //$color: green,
+  $primary: #962f10,
+  $on-primary: #442C2E
+);
+@use &quot;@material/button&quot;;
+//@use &quot;@material/button/styles&quot;;
+@use &quot;@material/banner&quot;;
+@use &quot;@material/banner/styles&quot;;
+// https://material.io/components/buttons/web#api
+
+.Alerts__Close {
+  margin-bottom: 10px;  // as requested by Lighthouse...
+  min-height: 50px;
+}
+
+.mdc-banner {
+  //  @include fill-color(yellow);
+  @include banner.fill-color(rgb(226, 226, 136));
+  //@include banner.divider-color(aqua);
+  @include banner.max-width(90%);
+
+  //@include banner.  .level(0);
+  //border       : 1px red solid;
+  //margin-left: -1em;
+  //width: 70em;
+  //height: 15%;
+  //margin-left: -150px;
+  //padding      : -30px;
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><!-- Only 1 banner at a time... --><!-- https://material.io/components/banners/web#banners --><div class="mdc-banner mdc-banner--centered mdc-banner--mobile-stacked" role="banner">  <div class="mdc-banner__fixed">    <div class="mdc-banner__content" role="alertdialog" aria-live="assertive">      <div class="mdc-banner__graphic-text-wrapper">        <!-- https://fonts.google.com/icons?selected=Material+Icons -->        <div class="mdc-banner__graphic" role="img" alt=""><i class="material-icons mdc-banner__icon">{{emoji}}</i>        </div>        <div class="mdc-banner__text">        </div>      </div>      <div class="mdc-banner__actions">        <button type="button"          class="mdc-button mdc-banner__secondary-action mdc-button--icon-leading mdc-button--raised">          <div class="mdc-button__ripple"></div>          <i class="material-icons mdc-button__icon" aria-hidden="true">done</i>          <span class="mdc-button__label">Ignore</span>        </button>        <a href="/rangers#advanced" title="Click to go there now">          <button type="button" class="mdc-button mdc-banner__primary-action mdc-button--icon-leading">            <div class="mdc-button__ripple"></div>            <i class="material-icons mdc-button__icon" aria-hidden="true">build</i>            <span class="mdc-button__label">Go to Rangers Page</span>          </button>        </a>      </div>    </div>  </div></div><div [hidden]="isAlertHidden">  <mat-card style="background-color: rgb(241, 201, 125);">    <mat-card-subtitle>Welcome to RangerTrak! Updates and alerts will appear here.</mat-card-subtitle>    <div style="font-size: x-small; text-align: right;">      <a href="https://jasonwatmore.com/post/2020/07/16/angular-10-alert-notifications-example"        target="_blank">https://jasonwatmore.com/post/2020/07/16/angular-10-alert-notifications-example</a> &      <a href="https://material.angular.io/components/snack-bar/overview"        target="_blank">https://material.angular.io/components/snack-bar/overview</a><br>      <a href="https://https://www.tutsmake.com/angular-11-toaster-notification-example/"        target="_blank">https://www.tutsmake.com/angular-11-toaster-notification-example/</a><br>      <a href="https://www.w3schools.com/bootstrap4/bootstrap_alerts.asp"        target="_blank">https://www.w3schools.com/bootstrap4/bootstrap_alerts.asp</a><br>    </div>    <mat-card-actions>      <button (click)="onBtnCloseBottomAlert()" class="Alerts__Close">Close</button>      <!--button mat-raised-button color="accent">X</button-->      <!--    https://material.angular.io/components/icon/overview          https://material.angular.io/components/button-toggle/overview          https://developers.google.com/fonts/docs/material_icons   -->      <!--span class="mat-icon" aria-hidden="false" aria-label="Error icon">X Icon</span-->    </mat-card-actions>  </mat-card>  <div class="alert alert-success">    <strong>Requires Bootstrap4!</strong> You should <a href="#" class="alert-link">read this message</a>.  </div>  <hr></div></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'GmapComponent', 'selector': 'rangertrak-gmap'},{'name': 'IconComponent', 'selector': 'icon'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'AlertsComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'AlertsComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+	   <link rel="stylesheet" href="./styles/style.css">
+        <link rel="stylesheet" href="./styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="./" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content getting-started">
+                   <div class="content-data">
+
+<h1 id="rangertrak">Rangertrak</h1>
+<p>This application aids tracking &amp; mapping CERT, ACS, other teams, rangers &amp; individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. They can radio in their locations - in a variety of formats, and be centrally tracked..</p>
+<p>Track &amp; map search &amp; rescue members reporting in verbally, without internet or cell access</p>
+<p>This is a disconnected browser based app for tracking &amp; mapping CERT, ACS, other teams, rangers &amp; individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. They can radio in their locations - using a variety of location codes, and be centrally tracked.</p>
+<p>There are a number of ways to geocode a latitude &amp; longitude. See <a href="https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems">https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems</a> for a list.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>Progressive Web App (PWA) this should be able to function (in the future, possibly with some degredation) even if the person using this is offline.</li>
+<li>Versions after 0.0.10 are generated with Angular, so will run on most modern web browsers, regardless of device/form factor</li>
+<li>Open Source: free &amp; available to enhance</li>
+<li>Supports recording locatinos as: lat/long, or What3Words, Google +Codes, or physical Street Addresses</li>
+<li>Auto-lookup of Ham Radio operators by callsign</li>
+<li>Google or Leaflet/ESRI maps</li>
+<li>Rangers can be in Teams; both are easily edited/sorted/filters</li>
+</ul>
+<h2 id="future-roadmap">Future Roadmap</h2>
+<ul>
+<li>To work with out flaws!</li>
+<li>Save and reload data to local files</li>
+<li>improved docs: screenshots and architectural diagrams</li>
+<li><ul>
+<li>consider <a href="https://github.com/EventEmitter2/EventEmitter2">https://github.com/EventEmitter2/EventEmitter2</a> for multi-threaded msgs with service workers</li>
+</ul>
+</li>
+</ul>
+<h2 id="items-still-requiring-online-access">Items (still) requiring online access</h2>
+<ul>
+<li>GeoCoding an address</li>
+<li>All maps (for now)</li>
+<li>3Word functionality (for now)</li>
+</ul>
+<h2 id="to-run">To Run</h2>
+<ul>
+<li>(Future:) Simply visit <a href="https://www.RangerTrak.org">https://www.RangerTrak.org</a> once and the 2nd time you visit you will be given an option to &#39;install/download&#39; the web page/application. That should put an icon on your homescreen or desktop that you can thereafter access without Internet access!</li>
+</ul>
+<h2 id="to-build-and-test">To Build and Test</h2>
+<ul>
+<li><p>Grab a local copy of Github.com/eocOnline/Rangertrak</p>
+</li>
+<li><p>Install NodeJS and NPM</p>
+</li>
+<li><p>cd RangerTrak</p>
+</li>
+<li><p>npm install</p>
+</li>
+<li><p>ng serve -o</p>
+</li>
+<li><p>or Run <code>ng serve</code> for a dev server. Navigate to <code>http://localhost:4200/</code>. The app will automatically reload if you change any of the source files.</p>
+</li>
+</ul>
+<h2 id="running-unit-tests">Running unit tests</h2>
+<ul>
+<li>Run <code>ng test</code> to execute the unit tests via <a href="https://karma-runner.github.io">Karma</a>.</li>
+</ul>
+<h2 id="running-end-to-end-tests">Running end-to-end tests</h2>
+<p>Run <code>ng e2e</code> to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.</p>
+<h2 id="architecture">Architecture</h2>
+<img src="./src/docs/PlantUML-Class Diagram.png" alt="PlantUML-Class Diagram" style="height:300px; width:100%; align:right;"/>
+![This architecural diagram is unimplemented yet]( .\src\docs\RangerTrak.png "Future architectural diagram")
+
+<h2 id="further-help">Further help</h2>
+<p>To get more help on the Angular CLI use <code>ng help</code> or go check out the <a href="https://angular.io/cli">Angular CLI Overview and Command Reference</a> page.</p>
+<h2 id="eoconline">eoc.online</h2>
+<p>eoc.online provides free tools for Emergency Operations Centers and emergency services. For more information and to report issues please visit <a href="http://eoc.online">http://eoc.online</a>.</p>
+<p>©2022 eoc.online, under the MIT License</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 0;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'getting-started';
+            var COMPODOC_CURRENT_PAGE_URL = 'index.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="./js/libs/custom-elements.min.js"></script>
+       <script src="./js/libs/lit-html.js"></script>
+
+       <script src="./js/menu-wc.js" defer></script>
+       <script nomodule src="./js/menu-wc_es5.js" defer></script>
+
+       <script src="./js/libs/bootstrap-native.js"></script>
+
+       <script src="./js/libs/es6-shim.min.js"></script>
+       <script src="./js/libs/EventDispatcher.js"></script>
+       <script src="./js/libs/promise.min.js"></script>
+       <script src="./js/libs/zepto.min.js"></script>
+
+       <script src="./js/compodoc.js"></script>
+
+       <script src="./js/tabs.js"></script>
+       <script src="./js/menu.js"></script>
+       <script src="./js/libs/clipboard.min.js"></script>
+       <script src="./js/libs/prism.js"></script>
+       <script src="./js/sourceCode.js"></script>
+          <script src="./js/search/search.js"></script>
+          <script src="./js/search/lunr.min.js"></script>
+          <script src="./js/search/search-lunr.js"></script>
+          <script src="./js/search/search_index.js"></script>
+       <script src="./js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

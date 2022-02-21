@@ -1,0 +1,458 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Classes</li>
+  <li >PlusCode</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/shared/plus-code.ts</code>
+        </p>
+
+
+
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#chkPCodes" >chkPCodes</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+
+
+            <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="chkPCodes"></a>
+                    <span class="name">
+                        <span ><b>chkPCodes</b></span>
+                        <a href="#chkPCodes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>chkPCodes()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">src/app/shared/plus-code.ts:9</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {  CodeArea, OpenLocationCode as PC, GoogleGeocode } from &#x27;../shared/&#x27;
+
+// Or use Open-Location-code.tx instead???
+export class PlusCode {
+
+
+
+  chkPCodes() {
+    // https://developer.what3words.com/tutorial/ux-guidelines
+    // https://developer.what3words.com/tutorial/javascript
+    // https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-google-map
+
+    // #region +Code doc
+    // https://plus.codes/developers
+    // https://github.com/google/open-location-code/wiki
+    /*
+       Plus Codes refer to variable-sized rectangles - NOT a point! (The regions do have center points however.)
+
+       Only 20 characters are valid: &quot;23456789CFGHJMPQRVWX&quot;
+
+       Global RegEx: /(^|\s)([23456789C][23456789CFGHJMPQRV][23456789CFGHJMPQRVWX]{6}\+[23456789CFGHJMPQRVWX]{2,3})(\s|$)/?i
+       This extracts (in capturing group 2) a global code at the start or end of a string, or enclosed with spaces, but not in the middle of a string.
+
+       Local RegEx: /(^|\s)([23456789CFGHJMPQRVWX]{4,6}\+[23456789CFGHJMPQRVWX]{2,3})(\s|$)/?i
+
+       If the query matches, and the user has not entered any other text, then another location must be used to recover the original code. If you are displaying a map to the user, then use the current map center, pass it to the recoverNearest() method to get a global code, and then decode it as above.
+
+       If there is no map, you can use the device location. If you have no map and cannot determine the device location, a local code is not sufficient and you should display a message back to the user asking them to provide a town or city name or the full global code.
+
+       * * *
+
+       Open Location Codes are encodings of WGS84 latitude and longitude coordinates in degrees. Decoding a code returns an area, not a point. The area of a code depends on the length (longer codes are more precise with smaller areas). A two-digit code has height and width[height_width] of 20 degrees, and with each pair of digits added to the code, both height and width are divided by 20.
+
+       The first digit of the code identifies the row (latitude), and the second digit the column (longitude). Subsequent steps divide that area into a 20 x 20 grid, and use one digit to identify the row and another to identify the column.
+
+       If the query matches, and the user has not entered any other text, then another location must be used to recover the original code. If you are displaying a map to the user, then use the current map center, pass it to the recoverNearest() method to get a global code, and then decode it as above.
+
+       globalPCode &#x3D; encode(latDD,longDD);  // Need locality/focus (within half a degree latitude and half a degree longitude, or ideally 1/4 degree, 25km at equator) pt to get local +code.
+
+       The shorten() method in the OLC library may remove 2, 4, 6 or even 8 characters, depending on how close the reference location is. Although all of these are valid, we recommend only removing the first 4 characters, so that plus codes have a consistent appearance.
+    */
+    // #endregion
+
+    //
+    let pCode &#x3D; document.getElementById(&quot;addresses&quot;)!.innerText //value;
+    console.log(&quot;chkPCodes got &#x27;&quot; + pCode + &quot;&#x27;&quot;);
+    if (pCode.length) {
+
+      let result &#x3D; this.getLatLngAndAddressFromPlaceID(pCode)
+      if (result.position) {
+        document.getElementById(&quot;addressLabel&quot;)!.innerHTML &#x3D; result.address
+        document.getElementById(&quot;lat&quot;)!.innerHTML &#x3D; result.position.lat
+        document.getElementById(&quot;long&quot;)!.innerHTML &#x3D; result.position.long
+      }
+
+
+            if (PC.isValid(pCode)) {
+              if (PC.isShort) {
+                pCode &#x3D; PC.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.recoverNearest
+              }
+
+              // Following needs a full (Global) code
+              let coord &#x3D; this.decode(pCode); //OpenLocationCode.decode
+              console.log(&quot;chkPCodes got &quot; + pCode + &quot;; returned: lat&#x3D;&quot; + coord.latitudeCenter + &#x27;, long&#x3D;&#x27; + coord.longitudeCenter);
+
+              this.updateCoords(coord.latitudeCenter, coord.longitudeCenter);
+            }
+
+      else {
+        document.getElementById(&quot;addressLabel&quot;)!.innerHTML &#x3D; &quot; is &lt;strong style&#x3D;&#x27;color: darkorange;&#x27;&gt;Invalid &lt;/strong&gt; Try: &quot;;
+        document.getElementById(&quot;pCodeGlobal&quot;)!.innerHTML &#x3D; SettingsService.Settings.defPlusCode;
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// https://github.com/tspoke/typescript-open-location-code
+// https://github.com/google/open-location-code
+
+/*
+
+From 4.2:
+
+&lt;!-- is defaultPlusCode or suggested 3 words even needed??? --&gt;
+                Plus Code&lt;input id&#x3D;&quot;defPlusCode&quot; value&#x3D;&quot;&quot; hidden&gt;
+
+// Set focus for 3 words, PlusCodes and center of displayed big map
+  var DEF_LAT &#x3D; 47.4472;
+  var DEF_LONG &#x3D; -122.4627;  // Vashon EOC!
+  var DEF_PCODE &#x3D; &#x27;CGWP+VV&#x27;; // &#x27;84VVCGWP+VW&#x27;is in the middle of the Pacific Ocean!!!; // or &quot;CGWP+VX Vashon, Washington&quot; &#x3D; 47.447187,-122.462688
+  var defPCodeLabel &#x3D; &quot; for Vashon, WA locale; Full code: &quot;;
+  // Set form default
+
+document.getElementById(&quot;defPlusCode&quot;).value &#x3D; DEF_PCODE;
+//$(&quot;#defPlusCode&quot;).value &#x3D; DEF_PCODE;
+
+DEF_PCODE &#x3D; document.getElementById(&quot;defPlusCode&quot;).value;
+
+
+
+function  updateCoords(latDD, lngDD) {
+    dbug(&quot;New Coordinates: lat:&quot; + latDD + &quot;; lng:&quot; + lngDD);
+
+    document.getElementById(&quot;latitudeDD&quot;).value &#x3D; latDD;
+    document.getElementById(&quot;longitudeDD&quot;).value &#x3D; lngDD;
+
+    latDMS &#x3D; DDToDMS(latDD, false);
+    document.getElementById(&quot;latitudeQ&quot;).value &#x3D; latDMS.dir;
+    document.getElementById(&quot;latitudeD&quot;).value &#x3D; latDMS.deg;
+    document.getElementById(&quot;latitudeM&quot;).value &#x3D; latDMS.min;
+    document.getElementById(&quot;latitudeS&quot;).value &#x3D; latDMS.sec;
+
+    lngDMS &#x3D; DDToDMS(lngDD, true);
+    document.getElementById(&quot;longitudeQ&quot;).value &#x3D; lngDMS.dir;
+    document.getElementById(&quot;longitudeD&quot;).value &#x3D; lngDMS.deg;
+    document.getElementById(&quot;longitudeM&quot;).value &#x3D; lngDMS.min;
+    document.getElementById(&quot;longitudeS&quot;).value &#x3D; lngDMS.sec;
+
+    var pCode &#x3D; encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
+    dbug(&quot;updateCoords: Encode returned PlusCode: &quot; + pCode);
+    var fullCode;
+    if (pCode.length!&#x3D;0) {
+
+      if (isValid(pCode)) {
+        if (pCode.isShort) {
+          // Recover the full code from a short code:
+          fullCode &#x3D; recoverNearest(pCode, DEF_LAT, DEF_LONG); //OpenLocationCode.recoverNearest
+        } else {
+          fullCode &#x3D; pCode;
+          dbug(&quot;Shorten +Codes, Global:&quot; + fullCode + &quot;, Lat:&quot; + DEF_LAT + &quot;; Long:&quot;+ DEF_LONG);
+          // Attempt to trim the first characters from a code; may return same value...
+          pCode &#x3D; shorten(fullCode, DEF_LAT, DEF_LONG); //OpenLocationCode.shorten
+        }
+        dbug(&quot;New PlusCodes: &quot; + pCode + &quot;; Global: &quot; + fullCode);
+        //document.getElementById(&quot;addresses&quot;).value &#x3D; pCode;
+        //document.getElementById(&quot;addressLabel&quot;).innerHTML &#x3D; defPCodeLabel;
+        document.getElementById(&quot;pCodeGlobal&quot;).innerHTML &#x3D; &quot; &amp;nbsp;&amp;nbsp; +Code: &quot; + fullCode;
+      } else {
+        dbug(&quot;Invalid +PlusCode: &quot; + pCode);
+        document.getElementById(&quot;pCodeGlobal&quot;).innerHTML &#x3D; &quot; &amp;nbsp;&amp;nbsp; Unable to get +Code&quot;
+        //document.getElementById(&quot;addressLabel&quot;).innerHTML &#x3D; &quot;  is &lt;strong style&#x3D;&#x27;color: darkorange;&#x27;&gt;Invalid &lt;/strong&gt; Try: &quot;;
+      }
+    }
+
+    //ToDO: Update 3 words too!
+   if (initialized) displaySmallMap(latDD, lngDD);
+ }
+
+*/
+
+
+
+function PlusCode2() {
+  // #region +Code doc
+  // https://plus.codes/developers
+  // https://github.com/google/open-location-code/wiki
+  /*
+     Plus Codes refer to variable-sized rectangles - NOT a point! (The regions do have center points however.)
+
+     Only 20 characters are valid: &quot;23456789CFGHJMPQRVWX&quot;
+
+     Global RegEx: /(^|\s)([23456789C][23456789CFGHJMPQRV][23456789CFGHJMPQRVWX]{6}\+[23456789CFGHJMPQRVWX]{2,3})(\s|$)/?i
+     This extracts (in capturing group 2) a global code at the start or end of a string, or enclosed with spaces, but not in the middle of a string.
+
+     Local RegEx: /(^|\s)([23456789CFGHJMPQRVWX]{4,6}\+[23456789CFGHJMPQRVWX]{2,3})(\s|$)/?i
+
+     If the query matches, and the user has not entered any other text, then another location must be used to recover the original code. If you are displaying a map to the user, then use the current map center, pass it to the recoverNearest() method to get a global code, and then decode it as above.
+
+     If there is no map, you can use the device location. If you have no map and cannot determine the device location, a local code is not sufficient and you should display a message back to the user asking them to provide a town or city name or the full global code.
+
+     * * *
+
+     Open Location Codes are encodings of WGS84 latitude and longitude coordinates in degrees. Decoding a code returns an area, not a point. The area of a code depends on the length (longer codes are more precise with smaller areas). A two-digit code has height and width[height_width] of 20 degrees, and with each pair of digits added to the code, both height and width are divided by 20.
+
+     The first digit of the code identifies the row (latitude), and the second digit the column (longitude). Subsequent steps divide that area into a 20 x 20 grid, and use one digit to identify the row and another to identify the column.
+
+     If the query matches, and the user has not entered any other text, then another location must be used to recover the original code. If you are displaying a map to the user, then use the current map center, pass it to the recoverNearest() method to get a global code, and then decode it as above.
+
+     globalPCode &#x3D; encode(latDD,longDD)  // Need locality/focus (within half a degree latitude and half a degree longitude, or ideally 1/4 degree, 25km at equator) pt to get local +code.
+
+     The shorten() method in the OLC library may remove 2, 4, 6 or even 8 characters, depending on how close the reference location is. Although all of these are valid, we recommend only removing the first 4 characters, so that plus codes have a consistent appearance.
+  */
+  // #endregion
+
+
+  //
+  let pCode &#x3D; document.getElementById(&quot;addresses&quot;)!.innerHTML
+  //MAIN.dbug(&quot;chkPCodes got &#x27;&quot; + pCode + &quot;&#x27;&quot;)
+  if (pCode.length !&#x3D; 0) {
+      if (isValid(pCode)) {
+          if (pCode.isShort) {
+              pCode &#x3D; recoverNearest(pCode, DEF_LAT, DEF_LONG) //OpenLocationCode.recoverNearest
+          }
+
+          // Following needs a full (Global) code
+          let coord &#x3D; decode(pCode) //OpenLocationCode.decode
+          MAIN.dbug(&quot;chkPCodes got &quot; + pCode + &quot; returned: lat&#x3D;&quot; + coord.latitudeCenter + &#x27;, long&#x3D;&#x27; + coord.longitudeCenter)
+
+          updateCoords(coord.latitudeCenter, coord.longitudeCenter)
+      } else {
+          document.getElementById(&quot;addressLabel&quot;).innerHTML &#x3D; &quot; is &lt;strong style&#x3D;&#x27;color: darkorange&#x27;&gt;Invalid &lt;/strong&gt; Try: &quot;
+          document.getElementById(&quot;pCodeGlobal&quot;).innerHTML &#x3D; DEF_PCODE
+      }
+  }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'PlusCode.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

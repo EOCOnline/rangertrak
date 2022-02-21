@@ -1,0 +1,2292 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li
+  >
+  SettingsComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/settings/settings.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+    </p>
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>rangertrak-settings</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./settings.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./settings.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#columnDefs" >columnDefs</a>
+                            </li>
+                            <li>
+                                <a href="#defaultColDef" >defaultColDef</a>
+                            </li>
+                            <li>
+                                <a href="#fonts" >fonts</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#gridApi" >gridApi</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#gridColumnApi" >gridColumnApi</a>
+                            </li>
+                            <li>
+                                <a href="#gridOptions" >gridOptions</a>
+                            </li>
+                            <li>
+                                <a href="#onGridReady" >onGridReady</a>
+                            </li>
+                            <li>
+                                <a href="#pangram" >pangram</a>
+                            </li>
+                            <li>
+                                <a href="#pangrams" >pangrams</a>
+                            </li>
+                            <li>
+                                <a href="#rowData" >rowData</a>
+                            </li>
+                            <li>
+                                <a href="#settings" >settings</a>
+                            </li>
+                            <li>
+                                <a href="#settingsEditorForm" >settingsEditorForm</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#displayHide" >displayHide</a>
+                            </li>
+                            <li>
+                                <a href="#displayShow" >displayShow</a>
+                            </li>
+                            <li>
+                                <a href="#getFormArrayFromSettingsArray" >getFormArrayFromSettingsArray</a>
+                            </li>
+                            <li>
+                                <a href="#getPangram" >getPangram</a>
+                            </li>
+                            <li>
+                                <a href="#getPlatform" >getPlatform</a>
+                            </li>
+                            <li>
+                                <a href="#getSelectedRowData" >getSelectedRowData</a>
+                            </li>
+                            <li>
+                                <a href="#getSettingsArrayFromFormArray" >getSettingsArrayFromFormArray</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onBtnAddFRStatus" >onBtnAddFRStatus</a>
+                            </li>
+                            <li>
+                                <a href="#onBtnResetDefaults" >onBtnResetDefaults</a>
+                            </li>
+                            <li>
+                                <a href="#onFirstDataRendered" >onFirstDataRendered</a>
+                            </li>
+                            <li>
+                                <a href="#onFormSubmit" >onFormSubmit</a>
+                            </li>
+                            <li>
+                                <a href="#refreshStatusGrid" >refreshStatusGrid</a>
+                            </li>
+                            <li>
+                                <a href="#reloadPage_unused" >reloadPage_unused</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(fb: <a href="https://angular.io/api/forms/FormBuilder" target="_blank">FormBuilder</a>, fieldReportService: <a href="../injectables/FieldReportService.html" target="_self">FieldReportService</a>, rangerService: <a href="../injectables/RangerService.html" target="_self">RangerService</a>, settingsService: <a href="../injectables/SettingsService.html" target="_self">SettingsService</a>, document: Document)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="166" class="link-to-prism">src/app/settings/settings.component.ts:166</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>fb</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/forms/FormBuilder" target="_blank" >FormBuilder</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>fieldReportService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FieldReportService.html" target="_self" >FieldReportService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>rangerService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/RangerService.html" target="_self" >RangerService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>settingsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SettingsService.html" target="_self" >SettingsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>document</td>
+                                                  
+                                                        <td>
+                                                                    <code>Document</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayHide"></a>
+                    <span class="name">
+                        <span ><b>displayHide</b></span>
+                        <a href="#displayHide"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>displayHide(htmlElementID: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="326"
+                            class="link-to-prism">src/app/settings/settings.component.ts:326</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>htmlElementID</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayShow"></a>
+                    <span class="name">
+                        <span ><b>displayShow</b></span>
+                        <a href="#displayShow"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>displayShow(htmlElementID: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="333"
+                            class="link-to-prism">src/app/settings/settings.component.ts:333</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>htmlElementID</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&#x27;settings__ColorChart-img&#x27;</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFormArrayFromSettingsArray"></a>
+                    <span class="name">
+                        <span ><b>getFormArrayFromSettingsArray</b></span>
+                        <a href="#getFormArrayFromSettingsArray"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getFormArrayFromSettingsArray()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="204"
+                            class="link-to-prism">src/app/settings/settings.component.ts:204</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getPangram"></a>
+                    <span class="name">
+                        <span ><b>getPangram</b></span>
+                        <a href="#getPangram"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getPangram()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="344"
+                            class="link-to-prism">src/app/settings/settings.component.ts:344</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getPlatform"></a>
+                    <span class="name">
+                        <span ><b>getPlatform</b></span>
+                        <a href="#getPlatform"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getPlatform()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="339"
+                            class="link-to-prism">src/app/settings/settings.component.ts:339</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSelectedRowData"></a>
+                    <span class="name">
+                        <span ><b>getSelectedRowData</b></span>
+                        <a href="#getSelectedRowData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getSelectedRowData()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="299"
+                            class="link-to-prism">src/app/settings/settings.component.ts:299</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSettingsArrayFromFormArray"></a>
+                    <span class="name">
+                        <span ><b>getSettingsArrayFromFormArray</b></span>
+                        <a href="#getSettingsArrayFromFormArray"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getSettingsArrayFromFormArray()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="232"
+                            class="link-to-prism">src/app/settings/settings.component.ts:232</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#SettingsType" target="_self" >SettingsType</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="184"
+                            class="link-to-prism">src/app/settings/settings.component.ts:184</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onBtnAddFRStatus"></a>
+                    <span class="name">
+                        <span ><b>onBtnAddFRStatus</b></span>
+                        <a href="#onBtnAddFRStatus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onBtnAddFRStatus()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="268"
+                            class="link-to-prism">src/app/settings/settings.component.ts:268</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onBtnResetDefaults"></a>
+                    <span class="name">
+                        <span ><b>onBtnResetDefaults</b></span>
+                        <a href="#onBtnResetDefaults"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onBtnResetDefaults()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="198"
+                            class="link-to-prism">src/app/settings/settings.component.ts:198</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onFirstDataRendered"></a>
+                    <span class="name">
+                        <span ><b>onFirstDataRendered</b></span>
+                        <a href="#onFirstDataRendered"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onFirstDataRendered(params: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="264"
+                            class="link-to-prism">src/app/settings/settings.component.ts:264</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onFormSubmit"></a>
+                    <span class="name">
+                        <span ><b>onFormSubmit</b></span>
+                        <a href="#onFormSubmit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onFormSubmit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="312"
+                            class="link-to-prism">src/app/settings/settings.component.ts:312</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="refreshStatusGrid"></a>
+                    <span class="name">
+                        <span ><b>refreshStatusGrid</b></span>
+                        <a href="#refreshStatusGrid"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>refreshStatusGrid()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="274"
+                            class="link-to-prism">src/app/settings/settings.component.ts:274</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="reloadPage_unused"></a>
+                    <span class="name">
+                        <span ><b>reloadPage_unused</b></span>
+                        <a href="#reloadPage_unused"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>reloadPage_unused()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="306"
+                            class="link-to-prism">src/app/settings/settings.component.ts:306</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="columnDefs"></a>
+                    <span class="name">
+                        <span ><b>columnDefs</b></span>
+                        <a href="#columnDefs"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+    {
+      headerName: &quot;Status&quot;, field: &quot;status&quot;, flex: 50,
+      cellStyle: (params: { value: string; }) &#x3D;&gt; {
+        for (let i &#x3D; 0; i &lt; this.rowData.length; i++) {
+          if (params.value &#x3D;&#x3D;&#x3D; this.rowData[i].status) {
+            return { backgroundColor: this.rowData[i].color }
+          }
+        }
+        return null
+      }
+    },
+    {
+      headerName: &quot;Color&quot;, field: &quot;color&quot;, tooltipField: &quot;enter a color name or 3 letter code&quot;,
+      cellStyle: (params: { value: string; }) &#x3D;&gt; {
+        //  console.log(&#x60;editor returned: ${params.value}&#x60;)
+        // TODO: typically the colorPicker only should stay up while hovered over...we have to click away because????
+
+        let newColor &#x3D; params.value
+        //params.node.data.color &#x3D; newColor
+        //params.api.rowModel.rowsToDisplay[1].data.color
+        // params.api.rowRenderer.allRowCtrls[1].rowNode.data.color
+        // params.rowIndex &#x3D; 3
+        // params.value &#x3D; &quot;6e6970&quot;
+        // params.node.data.color
+        // params.node.data.status &#x3D; &quot;Objective Update&quot;
+        // params.node.id &#x3D; 3
+        // TODO: force row redraw with new color...
+        // https://www.ag-grid.com/angular-data-grid/data-update-single-row-cell/#view-refresh
+        // see https://www.ag-grid.com/javascript-data-grid/row-styles/#refresh-of-styles
+
+        /*
+        &lt;div comp-id&#x3D;&quot;39&quot; style&#x3D;&quot;transform: translateY(123px); height: 41px;&quot; row-index&#x3D;&quot;3&quot; aria-rowindex&#x3D;&quot;5&quot; class&#x3D;&quot;ag-row-odd ag-row ag-row-level-0 ag-row-position-absolute ag-row-focus ag-row-not-inline-editing&quot; role&#x3D;&quot;row&quot; row-id&#x3D;&quot;3&quot;&gt;
+
+        &lt;div comp-id&#x3D;&quot;52&quot; class&#x3D;&quot;ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height&quot; aria-colindex&#x3D;&quot;1&quot; tabindex&#x3D;&quot;-1&quot; col-id&#x3D;&quot;status&quot; role&#x3D;&quot;gridcell&quot; style&#x3D;&quot;left: 0px; width: 239.011px; background-color: aqua;&quot;&gt;Objective Update&lt;/div&gt;
+
+        &lt;div comp-id&#x3D;&quot;53&quot; class&#x3D;&quot;ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-focus&quot; aria-colindex&#x3D;&quot;2&quot; tabindex&#x3D;&quot;-1&quot; col-id&#x3D;&quot;color&quot; role&#x3D;&quot;gridcell&quot; style&#x3D;&quot;left: 239.011px; width: 359px; background-color: rgb(255, 64, 0);&quot;&gt;ff4000&lt;/div&gt;
+        &lt;/div&gt;
+        */
+
+        //  params &#x3D;&gt; params.api.getValue(&quot;result&quot;, params.node) &lt; 60,
+
+        /* indices: Array&lt;number&gt; &#x3D; [1,4,5]; // color these rows
+
+gridOptions.getRowStyle &#x3D; (params) &#x3D;&gt; { // should use params, not indices in the first braces. Binds the component to this. Can use indices in the function now
+    if (this.indices.includes(params.node.rowIndex)) {
+        return { background: &#x27;red&#x27; }
+    }
+}
+*/
+        // https://www.ag-grid.com/javascript-data-grid/row-styles/
+        // https://www.ag-grid.com/angular-data-grid/accessing-data/
+        // https://www.ag-grid.com/angular-data-grid/accessing-data/#example-using-for-each
+        // https://www.ag-grid.com/angular-data-grid/data-update-single-row-cell/
+        // https://www.ag-grid.com/javascript-data-grid/row-selection/
+        // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
+        // https://angular-get-selected-rows.stackblitz.io
+
+        //let row &#x3D; this.getSelectedRowData()
+        //setData
+
+        // iterate through every node in the grid
+        //let rowNode:any //Cannot redeclare block-scoped variable &#x27;rowNode&#x27;
+        /*this.gridApi.forEachNode((rowNode: { data: string; }, index: any) &#x3D;&gt; {
+          console.log(&#x27;node &#x27; + rowNode.data + &#x27; is in the grid&#x27;);
+        });
+*/
+        //this.getRowNodeId &#x3D; data &#x3D;&gt; data.id;
+        // get the row node with ID 55
+        //      const rowNode &#x3D; this.gridApi.getRowNode(&#x27;55&#x27;);
+
+        // do something with the row, e.g. select it
+        //    rowNode.setSelected(true);
+        //   let meRow &#x3D; this.gridApi.getRowNode()
+        //rowNode.setData
+        //const setData &#x3D; (data: any) //&#x3D;&gt; void;
+
+        //params.value &#x3D; (&quot;444&quot; + newColor + &quot;kkkk&quot;)
+
+        //this.gridApi.refreshCells() -- breaks things!
+        this.refreshStatusGrid()
+        return { backgroundColor: newColor }
+      },
+      //cellRenderer: ColorRenderer,
+      cellEditor: ColorEditor, // new ColorEditor(255,0,100)
+      cellEditorPopup: true,
+      editable: true,
+      width: 300,
+    }
+    //REVIEW: No need for ICONS associated with statuses, is there? They should be associated with Callsign/Team, etc: Or are these the interior icon WITHIN the marker?!
+    /*  {
+        headerName: &quot;Icon&quot;, field: &quot;icon&quot;,
+        cellRenderer: MoodRenderer,
+        cellEditor: MoodEditor,
+        cellEditorPopup: true,
+        editable: true,
+        width: 300,
+      } //, minWidth: &quot;25px&quot; }
+  */
+  ]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">src/app/settings/settings.component.ts:56</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="defaultColDef"></a>
+                    <span class="name">
+                        <span ><b>defaultColDef</b></span>
+                        <a href="#defaultColDef"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ColDef</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
+    minWidth: 30,
+    editable: true,
+    singleClickEdit: true,
+    resizable: true,
+    sortable: true,
+    filter: true,
+    //floatingFilter: true
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/settings/settings.component.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fonts"></a>
+                    <span class="name">
+                        <span ><b>fonts</b></span>
+                        <a href="#fonts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[&quot;&#x27;Open Sans&#x27;&quot;, &quot;Montserrat&quot;, &quot;Roboto&quot;, &quot;&#x27;Playfair Display&#x27;&quot;, &quot;Lato&quot;, &quot;Merriweather&quot;, &quot;Helvetica&quot;, &quot;Lora&quot;, &quot;&#x27;PT Serif&#x27;&quot;, &quot;Spectral&quot;, &quot;&#x27;Times New Roman&#x27;&quot;, &quot;&#x27;Akaya Telivigala&#x27;&quot;,
+  &quot;&#x27;Open Sans Condensed&#x27;&quot;, &quot;&#x27;Saira Extra Condensed&#x27;&quot;, &quot;Boogaloo&quot;, &quot;Anton&quot;, &quot;&#x27;Faster One&#x27;&quot;, &quot;&#x27;Arima Madurai&#x27;&quot;]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="156" class="link-to-prism">src/app/settings/settings.component.ts:156</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="gridApi"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>gridApi</b></span>
+                        <a href="#gridApi"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/settings/settings.component.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="gridColumnApi"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>gridColumnApi</b></span>
+                        <a href="#gridColumnApi"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/settings/settings.component.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="gridOptions"></a>
+                    <span class="name">
+                        <span ><b>gridOptions</b></span>
+                        <a href="#gridOptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    //suppressRowHoverHighlight: true, // turn OFF row hover, default:on
+    //columnHoverHighlight: true, // turn ON column hover, default: off
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/app/settings/settings.component.ts:37</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onGridReady"></a>
+                    <span class="name">
+                        <span ><b>onGridReady</b></span>
+                        <a href="#onGridReady"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; {...}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="254" class="link-to-prism">src/app/settings/settings.component.ts:254</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pangram"></a>
+                    <span class="name">
+                        <span ><b>pangram</b></span>
+                        <a href="#pangram"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="166" class="link-to-prism">src/app/settings/settings.component.ts:166</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pangrams"></a>
+                    <span class="name">
+                        <span ><b>pangrams</b></span>
+                        <a href="#pangrams"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[&quot;Pack my box with five dozen liquor jugs&quot;,
+    &quot;The quick brown fox jumps over the lazy dog&quot;,
+    &quot;Glib jocks quiz nymph to vex dwarf.&quot;,
+    &quot;Sphinx of black quartz, judge my vow.&quot;,
+    &quot;How vexingly quick daft zebras jump!&quot;,
+    &quot;The five boxing wizards jump quickly.&quot;,
+    &quot;Jackdaws love my big sphinx of quartz.&quot;]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="159" class="link-to-prism">src/app/settings/settings.component.ts:159</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="rowData"></a>
+                    <span class="name">
+                        <span ><b>rowData</b></span>
+                        <a href="#rowData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#FieldReportStatusType" target="_self" >FieldReportStatusType[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/settings/settings.component.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settings"></a>
+                    <span class="name">
+                        <span ><b>settings</b></span>
+                        <a href="#settings"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#SettingsType" target="_self" >SettingsType</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/app/settings/settings.component.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settingsEditorForm"></a>
+                    <span class="name">
+                        <span ><b>settingsEditorForm</b></span>
+                        <a href="#settingsEditorForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://angular.io/api/forms/FormGroup" target="_blank" >FormGroup</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/app/settings/settings.component.ts:21</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DOCUMENT } from &#x27;@angular/common&#x27;
+import { Component, enableProdMode, Inject, OnInit } from &#x27;@angular/core&#x27;;
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from &#x27;@angular/forms&#x27;;
+import { FieldReportService, FieldReportStatusType, RangerService, SettingsService, SettingsType } from &#x27;../shared/services/&#x27;
+import { AgGridModule } from &#x27;ag-grid-angular&#x27;
+//import { Color } from &#x27;@angular-material-components/color-picker&#x27;;
+//import { ThemePalette } from &#x27;@angular/material/core&#x27;;
+import { ColorEditor } from &#x27;./color-editor.component&#x27;;
+import { MoodEditor } from &#x27;./mood-editor.component&#x27;;
+import { MoodRenderer } from &#x27;./mood-renderer.component&#x27;;
+import { ColDef } from &#x27;ag-grid-community&#x27;;
+
+@Component({
+  selector: &#x27;rangertrak-settings&#x27;,
+  templateUrl: &#x27;./settings.component.html&#x27;,
+  styleUrls: [&#x27;./settings.component.scss&#x27;],
+  //providers: [SettingsService]
+})
+export class SettingsComponent implements OnInit {
+  settings: SettingsType
+  settingsEditorForm!: FormGroup
+
+  private gridApi: any
+  private gridColumnApi: any
+  rowData: FieldReportStatusType[] &#x3D; []
+
+  /*
+  colorCtr: AbstractControl &#x3D; new FormControl(new Color(255, 243, 200), [Validators.required])
+  //colorCtr: string &#x3D; new FormControl(new Color(255, 243, 0), [Validators.required])
+  colorCntlDisabled &#x3D; false
+  touchUi &#x3D; false
+  public color: ThemePalette &#x3D; &#x27;primary&#x27;;
+*/
+
+  // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
+  // https://www.ag-grid.com/javascript-data-grid/row-styles/#highlighting-rows-and-columns
+  gridOptions &#x3D; {
+    //suppressRowHoverHighlight: true, // turn OFF row hover, default:on
+    //columnHoverHighlight: true, // turn ON column hover, default: off
+  }// rowSelection: &quot;multiple&quot;}
+
+
+
+
+  defaultColDef: ColDef &#x3D; {
+    flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
+    minWidth: 30,
+    editable: true,
+    singleClickEdit: true,
+    resizable: true,
+    sortable: true,
+    filter: true,
+    //floatingFilter: true
+  }
+
+  columnDefs &#x3D; [
+    {
+      headerName: &quot;Status&quot;, field: &quot;status&quot;, flex: 50,
+      cellStyle: (params: { value: string; }) &#x3D;&gt; {
+        for (let i &#x3D; 0; i &lt; this.rowData.length; i++) {
+          if (params.value &#x3D;&#x3D;&#x3D; this.rowData[i].status) {
+            return { backgroundColor: this.rowData[i].color }
+          }
+        }
+        return null
+      }
+    },
+    {
+      headerName: &quot;Color&quot;, field: &quot;color&quot;, tooltipField: &quot;enter a color name or 3 letter code&quot;,
+      cellStyle: (params: { value: string; }) &#x3D;&gt; {
+        //  console.log(&#x60;editor returned: ${params.value}&#x60;)
+        // TODO: typically the colorPicker only should stay up while hovered over...we have to click away because????
+
+        let newColor &#x3D; params.value
+        //params.node.data.color &#x3D; newColor
+        //params.api.rowModel.rowsToDisplay[1].data.color
+        // params.api.rowRenderer.allRowCtrls[1].rowNode.data.color
+        // params.rowIndex &#x3D; 3
+        // params.value &#x3D; &quot;6e6970&quot;
+        // params.node.data.color
+        // params.node.data.status &#x3D; &quot;Objective Update&quot;
+        // params.node.id &#x3D; 3
+        // TODO: force row redraw with new color...
+        // https://www.ag-grid.com/angular-data-grid/data-update-single-row-cell/#view-refresh
+        // see https://www.ag-grid.com/javascript-data-grid/row-styles/#refresh-of-styles
+
+        /*
+        &lt;div comp-id&#x3D;&quot;39&quot; style&#x3D;&quot;transform: translateY(123px); height: 41px;&quot; row-index&#x3D;&quot;3&quot; aria-rowindex&#x3D;&quot;5&quot; class&#x3D;&quot;ag-row-odd ag-row ag-row-level-0 ag-row-position-absolute ag-row-focus ag-row-not-inline-editing&quot; role&#x3D;&quot;row&quot; row-id&#x3D;&quot;3&quot;&gt;
+
+        &lt;div comp-id&#x3D;&quot;52&quot; class&#x3D;&quot;ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height&quot; aria-colindex&#x3D;&quot;1&quot; tabindex&#x3D;&quot;-1&quot; col-id&#x3D;&quot;status&quot; role&#x3D;&quot;gridcell&quot; style&#x3D;&quot;left: 0px; width: 239.011px; background-color: aqua;&quot;&gt;Objective Update&lt;/div&gt;
+
+        &lt;div comp-id&#x3D;&quot;53&quot; class&#x3D;&quot;ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-focus&quot; aria-colindex&#x3D;&quot;2&quot; tabindex&#x3D;&quot;-1&quot; col-id&#x3D;&quot;color&quot; role&#x3D;&quot;gridcell&quot; style&#x3D;&quot;left: 239.011px; width: 359px; background-color: rgb(255, 64, 0);&quot;&gt;ff4000&lt;/div&gt;
+        &lt;/div&gt;
+        */
+
+        //  params &#x3D;&gt; params.api.getValue(&quot;result&quot;, params.node) &lt; 60,
+
+        /* indices: Array&lt;number&gt; &#x3D; [1,4,5]; // color these rows
+
+gridOptions.getRowStyle &#x3D; (params) &#x3D;&gt; { // should use params, not indices in the first braces. Binds the component to this. Can use indices in the function now
+    if (this.indices.includes(params.node.rowIndex)) {
+        return { background: &#x27;red&#x27; }
+    }
+}
+*/
+        // https://www.ag-grid.com/javascript-data-grid/row-styles/
+        // https://www.ag-grid.com/angular-data-grid/accessing-data/
+        // https://www.ag-grid.com/angular-data-grid/accessing-data/#example-using-for-each
+        // https://www.ag-grid.com/angular-data-grid/data-update-single-row-cell/
+        // https://www.ag-grid.com/javascript-data-grid/row-selection/
+        // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
+        // https://angular-get-selected-rows.stackblitz.io
+
+        //let row &#x3D; this.getSelectedRowData()
+        //setData
+
+        // iterate through every node in the grid
+        //let rowNode:any //Cannot redeclare block-scoped variable &#x27;rowNode&#x27;
+        /*this.gridApi.forEachNode((rowNode: { data: string; }, index: any) &#x3D;&gt; {
+          console.log(&#x27;node &#x27; + rowNode.data + &#x27; is in the grid&#x27;);
+        });
+*/
+        //this.getRowNodeId &#x3D; data &#x3D;&gt; data.id;
+        // get the row node with ID 55
+        //      const rowNode &#x3D; this.gridApi.getRowNode(&#x27;55&#x27;);
+
+        // do something with the row, e.g. select it
+        //    rowNode.setSelected(true);
+        //   let meRow &#x3D; this.gridApi.getRowNode()
+        //rowNode.setData
+        //const setData &#x3D; (data: any) //&#x3D;&gt; void;
+
+        //params.value &#x3D; (&quot;444&quot; + newColor + &quot;kkkk&quot;)
+
+        //this.gridApi.refreshCells() -- breaks things!
+        this.refreshStatusGrid()
+        return { backgroundColor: newColor }
+      },
+      //cellRenderer: ColorRenderer,
+      cellEditor: ColorEditor, // new ColorEditor(255,0,100)
+      cellEditorPopup: true,
+      editable: true,
+      width: 300,
+    }
+    //REVIEW: No need for ICONS associated with statuses, is there? They should be associated with Callsign/Team, etc: Or are these the interior icon WITHIN the marker?!
+    /*  {
+        headerName: &quot;Icon&quot;, field: &quot;icon&quot;,
+        cellRenderer: MoodRenderer,
+        cellEditor: MoodEditor,
+        cellEditorPopup: true,
+        editable: true,
+        width: 300,
+      } //, minWidth: &quot;25px&quot; }
+  */
+  ];
+  fonts &#x3D; [&quot;&#x27;Open Sans&#x27;&quot;, &quot;Montserrat&quot;, &quot;Roboto&quot;, &quot;&#x27;Playfair Display&#x27;&quot;, &quot;Lato&quot;, &quot;Merriweather&quot;, &quot;Helvetica&quot;, &quot;Lora&quot;, &quot;&#x27;PT Serif&#x27;&quot;, &quot;Spectral&quot;, &quot;&#x27;Times New Roman&#x27;&quot;, &quot;&#x27;Akaya Telivigala&#x27;&quot;,
+  &quot;&#x27;Open Sans Condensed&#x27;&quot;, &quot;&#x27;Saira Extra Condensed&#x27;&quot;, &quot;Boogaloo&quot;, &quot;Anton&quot;, &quot;&#x27;Faster One&#x27;&quot;, &quot;&#x27;Arima Madurai&#x27;&quot;]  //, &quot;&#x27;Material Icons&#x27;&quot;]  all loaded in Index.html
+  // https://en.wikipedia.org/wiki/Pangram
+  pangrams &#x3D; [&quot;Pack my box with five dozen liquor jugs&quot;,
+    &quot;The quick brown fox jumps over the lazy dog&quot;,
+    &quot;Glib jocks quiz nymph to vex dwarf.&quot;,
+    &quot;Sphinx of black quartz, judge my vow.&quot;,
+    &quot;How vexingly quick daft zebras jump!&quot;,
+    &quot;The five boxing wizards jump quickly.&quot;,
+    &quot;Jackdaws love my big sphinx of quartz.&quot;]
+    pangram
+
+  constructor(
+    private fb: FormBuilder,
+    /*  No suitable injection token for parameter &#x27;fb&#x27; of class &#x27;SettingsComponent&#x27;.
+      Consider using the @Inject decorator to specify an injection token.(-992003)
+      settings.component.ts(155, 17): This type does not have a value, so it cannot be used as injection token.
+    */
+    private fieldReportService: FieldReportService,
+    private rangerService: RangerService,
+    private settingsService: SettingsService,
+    @Inject(DOCUMENT) private document: Document) {
+    this.pangram&#x3D;this.getPangram()
+    //this.settings &#x3D; settingService()
+    this.settings &#x3D; SettingsService.Settings // only using static functions/values from the service...
+    console.log(&#x27;Application Settings set to static values. But not initialized???&#x27;)
+  }
+
+  ngOnInit(): void {
+    if (this.settings &#x3D;&#x3D; undefined) {
+      console.log(&#x27;WARN: Application Settings need to be initialized.&#x27;)
+      // TODO: SettingsService.ResetDefaults()
+    } else {
+      console.log(&#x60;SettingsComponent: Application: ${this.settings.application} -- Version: ${this.settings.version}&#x60;)
+    }
+
+    this.settingsEditorForm &#x3D; this.getFormArrayFromSettingsArray()
+    this.rowData &#x3D; this.settingsService.getFieldReportStatuses()
+
+    console.log(&quot;settings component ngInit done at &quot;, Date())
+  }
+
+  onBtnResetDefaults() {
+    SettingsService.ResetDefaults() // need to refresh page?!
+    this.rowData &#x3D; this.settingsService.ResetFieldReportStatusDefaults()
+  }
+
+  // TODO: Need different settings stored for gMap, lMap and miniMap
+  getFormArrayFromSettingsArray() {
+    console.log(&quot;into getFormArrayFromSettingsArray at &quot;, Date())
+
+    // NOTE: Form array differs some from SettingsType so need to translate back &amp; forth
+    return this.fb.group({
+      application: [this.settings.application], // not shown for editing
+      version: [this.settings.version], // not shown for editing
+      id: [this.settings.id],
+      name: [this.settings.name],
+      note: [this.settings.note],
+      latitude: [this.settings.defLat, Validators.required],
+      longitude: [this.settings.defLng, Validators.required],
+
+      zoom: [this.settings.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation
+
+      plusCode: [this.settings.defPlusCode],
+      w3wLocale: [this.settings.w3wLocale],
+      markerSize: [this.settings.markerSize],
+      markerShape: [this.settings.markerShape, Validators.required],
+      defRangerStatus: [this.settings.defRangerStatus],
+      allowManualPinDrops: [this.settings.allowManualPinDrops],
+      debugMode: [this.settings.debugMode],
+      logToPanel: [this.settings.logToPanel], // null or blank for unchecked &#x27;yes&#x27;
+      logToConsole: [this.settings.logToConsole], // null or blank for unchecked &#x27;check&#x27;
+    })
+
+  }
+
+  getSettingsArrayFromFormArray(): SettingsType {
+    return {
+      application: this.settingsEditorForm.value.application as string,
+      version: this.settingsEditorForm.value.version as string,
+      id: this.settingsEditorForm.value.id as number,
+      name: this.settingsEditorForm.value.name as string,
+      note: this.settingsEditorForm.value.note as string,
+      defLat: this.settingsEditorForm.value.latitude as number,
+      defLng: this.settingsEditorForm.value.longitude as number,
+      defZoom: this.settingsEditorForm.value.zoom as number,
+      defPlusCode: this.settingsEditorForm.value.plusCode as string,
+      w3wLocale: this.settingsEditorForm.value.w3wLocale as string,
+      markerSize: this.settingsEditorForm.value.markerSize as number,
+      markerShape: this.settingsEditorForm.value.markerShape as number,
+      defRangerStatus: this.settingsEditorForm.value.defRangerStatus as number,
+      allowManualPinDrops: this.settingsEditorForm.value.allowManualPinDrops as boolean,
+      debugMode: this.settingsEditorForm.value.debugMode as boolean,
+      logToPanel: this.settingsEditorForm.value.logToPanel as boolean,
+      logToConsole: this.settingsEditorForm.value.logToConsole as boolean,
+    }
+  }
+
+  onGridReady &#x3D; (params: any) &#x3D;&gt; {
+    console.log(&quot;Settings Form onGridReady&quot;)
+
+    this.gridApi &#x3D; params.api
+    this.gridColumnApi &#x3D; params.columnApi
+
+    this.refreshStatusGrid()
+    //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
+  }
+
+  onFirstDataRendered(params: any) {
+    // this.refreshStatusGrid() needed???
+  }
+
+  onBtnAddFRStatus() {
+    this.rowData.push({ status: &#x27;New Status&#x27;, color: &#x27;&#x27;, icon: &#x27;&#x27; })
+    this.refreshStatusGrid()
+    window.location.reload()
+  }
+
+  refreshStatusGrid() {
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+      this.gridApi.sizeColumnsToFit();
+    } else {
+      console.log(&quot;no this.gridApi yet in refreshStatusGrid()&quot;)
+    }
+    //window.location.reload() -- reloads endlessly!
+    // TODO: try   getSelectedRowData() &amp; then refresh row color instead - set color by row, vs cell
+    /*
+     async delayedAction() {
+    this.dbug(&quot;resetMap&quot;);
+    await this.sleep(2000);
+    this.dbug(&quot;resetMap has slept&quot;);
+    this.filterLeafletMap();
+    this.dbug(&quot;resetMap complete&quot;);
+  }
+
+  this.util.sleep(ms: number) {
+    return new Promise(resolve &#x3D;&gt; setTimeout(resolve, ms));
+  }
+  */
+  }
+
+  // https://angular-get-selected-rows.stackblitz.io
+  getSelectedRowData() {
+    let selectedNodes &#x3D; this.gridApi.getSelectedNodes();
+    //let selectedData &#x3D; selectedNodes.map(node &#x3D;&gt; node.data);
+    //alert(&#x60;Selected Nodes:\n${JSON.stringify(selectedData)}&#x60;);
+    //      return selectedData;
+  }
+
+  reloadPage_unused() {
+    //REVIEW: Does this zap existing changes elsewhere on the page (used for reseting field statuses..)
+    window.location.reload()
+  }
+
+  //TODO: If user edits field report status color, need to update background: refreshCells()????
+  onFormSubmit(): void {
+    console.log(&quot;Update Application Settings...&quot;)
+    let newSettings: SettingsType &#x3D; this.getSettingsArrayFromFormArray()
+    SettingsService.Update(newSettings)
+
+    console.log(&#x60;Update FieldReportStatuses... ${JSON.stringify(this.rowData)}&#x60;)
+    this.settingsService.updateFieldReportStatus(this.rowData)
+
+    // TODO: Set this up as an observable, or Components that have ALREADY pulled down the values won&#x27;t refresh them!!!!
+    // TODO: If Debug disabled then call:
+    //enableProdMode()
+    window.location.reload()
+  }
+
+  displayHide(htmlElementID: string) {
+    let e &#x3D; this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility &#x3D; &quot;hidden&quot;;
+    }
+  }
+
+  displayShow(htmlElementID: string &#x3D; &#x27;settings__ColorChart-img&#x27;) {
+    let e &#x3D; this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility &#x3D; &quot;visible&quot;;
+    }
+  }
+  getPlatform() {
+    // TODO:
+    // https://material.angular.io/cdk/platform/overview
+  }
+
+  getPangram() {
+    return this.pangrams[Math.floor(Math.random() * this.pangrams.length)]
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div id&#x3D;&quot;SettingsBody&quot; class&#x3D;&quot;container&quot; &gt; &lt;!-- [ngStyle]&#x3D;&quot;{backgroundImage:&#x27;./src/assets/imgs/20220205_112741.jpg&#x27;}&quot; --&gt;
+  &lt;form [formGroup]&#x3D;&quot;settingsEditorForm&quot; (ngSubmit)&#x3D;&quot;onFormSubmit()&quot;&gt;
+
+    &lt;h1&gt;Application Defaults&lt;/h1&gt;
+
+    &lt;details&gt;
+      &lt;summary&gt;Instructions&lt;/summary&gt;
+      &lt;ul&gt;
+        &lt;li&gt;Any saved settings are restored from the browser&#x27;s local storage.&lt;/li&gt;
+        &lt;li&gt;If nothing has been saved, or the user selects &quot;Reset all values&quot;, then hardcoded values are used.&lt;/li&gt;
+        &lt;li&gt;Settings are NOT shared with other browsers, whether on this device or others.&lt;/li&gt;
+        &lt;li&gt;Browser local storage contents are viewable using a browser&#x27;s developer tools: F12&lt;/li&gt;
+        &lt;li&gt;Change font size using CTRL+mouse wheel or your browser&#x27;s view size settings.&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/details&gt;
+    &lt;br&gt;
+
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;Notes for this group of settings:
+      &lt;textarea formControlName&#x3D;&quot;note&quot; id&#x3D;&quot;&quot; cols&#x3D;&quot;50&quot; rows&#x3D;&quot;1&quot;
+        placeholder&#x3D;&quot;Description of this group of settings&quot;&gt;&lt;/textarea&gt;
+    &lt;/div&gt;
+    &lt;br&gt;
+
+    &lt;h2&gt;Entry Form Defaults&lt;/h2&gt;
+    &lt;!--legend&gt;Default &lt;/legend--&gt;
+    &lt;details&gt;
+      &lt;summary&gt;Location Guidance&lt;/summary&gt;
+      &lt;ul&gt;
+        &lt;li&gt;This sets initial (default) values for lat &amp; long in the entry form.&lt;/li&gt;
+        &lt;li&gt;What3Words uses this to set the focus, prioritizing suggested
+          results (for incorrect words) by proximity to this point.&lt;/li&gt;
+        &lt;li&gt;PlusCodes uses this for converting short to full/global codes.&lt;/li&gt;
+        &lt;li&gt;Maps do not use this. They are auto-centered on the bounding
+          coordinates centroid of all points entered and the map is then
+          zoomed to show all points.&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/details&gt;
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;Latitude:
+      &lt;input
+        [class.border-danger]&#x3D;&quot;settingsEditorForm.get(&#x27;latitude&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;latitude&#x27;)?.invalid&quot;
+        type&#x3D;&quot;number&quot; formControlName&#x3D;&quot;latitude&quot; placeholder&#x3D;47.5&gt;
+      &lt;div
+        *ngIf&#x3D;&quot;settingsEditorForm.get(&#x27;latitude&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;latitude&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+        class&#x3D;&quot;text-sm text-danger&quot;&gt;latitude is required&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;Longitude:
+      &lt;input
+        [class.border-danger]&#x3D;&quot;settingsEditorForm.get(&#x27;longitude&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;longitude&#x27;)?.invalid&quot;
+        type&#x3D;&quot;number&quot; formControlName&#x3D;&quot;longitude&quot; placeholder&#x3D;-122.5&gt;
+      &lt;div
+        *ngIf&#x3D;&quot;settingsEditorForm.get(&#x27;longitude&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;longitude&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+        class&#x3D;&quot;text-sm text-danger&quot;&gt;longitude is required&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;Zoom (3-21):
+      &lt;input [class.border-danger]&#x3D;&quot;settingsEditorForm.get(&#x27;zoom&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;zoom&#x27;)?.invalid&quot;
+        type&#x3D;&quot;number&quot; formControlName&#x3D;&quot;zoom&quot; placeholder&#x3D;15&gt;
+      &lt;div *ngIf&#x3D;&quot;settingsEditorForm.get(&#x27;zoom&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;zoom&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+        class&#x3D;&quot;text-sm text-danger&quot;&gt;zoom is required&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;Plus Code:
+      &lt;input
+        [class.border-danger]&#x3D;&quot;settingsEditorForm.get(&#x27;plusCode&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;plusCode&#x27;)?.invalid&quot;
+        type&#x3D;&quot;text&quot; formControlName&#x3D;&quot;plusCode&quot; placeholder&#x3D;&quot;84VVCGWP+VW&quot;&gt;
+      &lt;div
+        *ngIf&#x3D;&quot;settingsEditorForm.get(&#x27;plusCode&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;plusCode&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+        class&#x3D;&quot;text-sm text-danger&quot;&gt;plusCode is required&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;br&gt;
+    &lt;h2&gt;Field Reports&lt;/h2&gt;
+
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;Markers
+      &lt;input
+        [class.border-danger]&#x3D;&quot;settingsEditorForm.get(&#x27;allowManualPinDrops&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;allowManualPinDrops&#x27;)?.invalid&quot;
+        type&#x3D;&quot;checkbox&quot; formControlName&#x3D;&quot;allowManualPinDrops&quot; placeholder&#x3D;&quot;allowManualPinDrops&quot;&gt;
+      &lt;div
+        *ngIf&#x3D;&quot;settingsEditorForm.get(&#x27;allowManualPinDrops&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;debugMallowManualPinDropsode&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+        class&#x3D;&quot;text-sm text-danger&quot;&gt;allowManualPinDrops is required&lt;/div&gt;
+      Allow Manual Pin Drops on Google &amp; Leaflet Maps (default: false)
+    &lt;/div&gt;
+    &lt;br&gt;
+
+    Field Report Statuses: (Renaming a status here will not rename existing field report statuses)
+    &lt;!--div id&#x3D;&quot;settings__ColorChart&quot; display&#x3D;&quot;hidden&quot;&gt;
+      &lt;img src&#x3D; &#x27;../../assets/imgs/ColorChart.png&#x27; title&#x3D;&quot;These 3 letter codes ARE valid colors!, from https://html-color-codes.com/&quot; id &#x3D;&quot;settings__ColorChart-img&quot;/&gt;
+    &lt;/div--&gt;
+
+    &lt;!-- https://h2qutc.github.io/angular-material-components/colorpicker&gt;
+    &lt;mat-card &gt;
+      &lt;div class&#x3D;&quot;row&quot; [style.background-color]&#x3D;&quot;colorCtr.value?.rgba&quot;&gt;HEX: {{colorCtr.value?.hex}}&lt;/div&gt;
+      &lt;div class&#x3D;&quot;row&quot;&gt;RGBA: {{colorCtr.value?.rgba}}&lt;/div&gt;
+    &lt;/mat-card&gt;
+
+    &lt; [formControlName]&#x3D;&quot;colorCtr&quot; &gt;
+    &lt;mat-card class&#x3D;&quot;zone zone-picker&quot;&gt;
+      &lt;mat-form-field&gt;
+        &lt;input matInput [ngxMatColorPicker]&#x3D;&quot;picker&quot;  [disabled]&#x3D;&quot;colorCntlDisabled&quot; &gt;
+
+        &lt;ngx-mat-color-toggle matSuffix [for]&#x3D;&quot;picker&quot;&gt;&lt;/ngx-mat-color-toggle&gt;
+        &lt;ngx-mat-color-picker #picker [touchUi]&#x3D;&quot;touchUi&quot; [color]&#x3D;&quot;color&quot;&gt;&lt;/ngx-mat-color-picker&gt;
+      &lt;/mat-form-field&gt;
+    &lt;/mat-card--&gt;
+
+    &lt;ag-grid-angular class&#x3D;&quot;ag-theme-alpine&quot; (gridReady)&#x3D;&quot;onGridReady($event)&quot; [gridOptions]&#x3D;&quot;gridOptions&quot;
+      [defaultColDef]&#x3D;&quot;defaultColDef&quot; [tooltipShowDelay]&#x3D;500 [rowData]&#x3D;&quot;rowData&quot; [columnDefs]&#x3D;&quot;columnDefs&quot;&gt;
+    &lt;/ag-grid-angular&gt;
+    &lt;button (click)&#x3D;&quot;onBtnAddFRStatus()&quot; title&#x3D;&quot;Add a new Field Report Status&quot;&gt;Add new
+      row&lt;/button&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;
+    &lt;button (click)&#x3D;&quot;this.refreshStatusGrid()&quot; title&#x3D;&quot;Refresh Report Statuses&quot;&gt;Refresh Statuses Grid&lt;/button&gt;
+    &lt;br&gt;
+    &lt;!--h2&gt;Markers&lt;/h2&gt;
+
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;Marker Shape:
+      &lt;select formControlName&#x3D;&quot;markerShape&quot; class&#x3D;&quot;wideField&quot;&gt;
+        &lt;! -- [class.border-danger]&#x3D;&quot;settingsEditorForm.get(&#x27;markerShape&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;markerShape&#x27;)?.invalid&quot; -- &gt;
+        &lt;! --option [va xx lue]&#x3D;&quot;&#x27;&#x27;&quot;&gt;Select markerShape&lt;/option&gt;
+        &lt;option [va xx lue]&#x3D;&quot;shape.shapeId&quot; id&#x3D;&quot;shapeOptions&quot; *ngFor&#x3D;&quot;let shape of shapes&quot;&gt;{{sha  pe.sha  s eName}}&lt;/option-- &gt;
+        &lt;option [value]&#x3D;&quot;shape&quot; id&#x3D;&quot;shapeOptions&quot; *ngFor&#x3D;&quot;let shape of shapes&quot;&gt;{{shape}}&lt;/option&gt;
+      &lt;/select&gt;
+      &lt;div
+        *ngIf&#x3D;&quot;settingsEditorForm.get(&#x27;markerShape&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;markerShape&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+        class&#x3D;&quot;text-sm text-danger&quot;&gt;markerShape is required&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;Marker Size:
+      &lt;input
+        [class.border-danger]&#x3D;&quot;settingsEditorForm.get(&#x27;markerSize&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;markerSize&#x27;)?.invalid&quot;
+        type&#x3D;&quot;number&quot; formControlName&#x3D;&quot;markerSize&quot; placeholder&#x3D;&quot;5&quot;&gt;
+      &lt;div
+        *ngIf&#x3D;&quot;settingsEditorForm.get(&#x27;markerSize&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;markerSize&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+        class&#x3D;&quot;text-sm text-danger&quot;&gt;markerSize is required&lt;/div&gt;
+    &lt;/div--&gt;
+
+
+    &lt;br&gt;
+    &lt;h2&gt;Debug&lt;/h2&gt;
+
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;
+      &lt;input
+        [class.border-danger]&#x3D;&quot;settingsEditorForm.get(&#x27;debugMode&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;debugMode&#x27;)?.invalid&quot;
+        type&#x3D;&quot;checkbox&quot; formControlName&#x3D;&quot;debugMode&quot; placeholder&#x3D;&quot;debugMode&quot;&gt;
+      &lt;div
+        *ngIf&#x3D;&quot;settingsEditorForm.get(&#x27;debugMode&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;debugMode&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+        class&#x3D;&quot;text-sm text-danger&quot;&gt;debug mode is required&lt;/div&gt;
+      Debug Mode
+    &lt;/div&gt;
+
+
+    &lt;!-- TODO: future: [ ] enable touch user interface&lt;br&gt;--&gt;
+    &lt;!--
+      touchUi from https://h2qutc.github.io/angular-material-components/colorpicker
+
+
+      div class&#x3D;&quot;input-group&quot;&gt;
+      &lt;input
+        [class.border-danger]&#x3D;&quot;settingsEditorForm.get(&#x27;logToPanel&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;logToPanel&#x27;)?.invalid&quot;
+        type&#x3D;&quot;checkbox&quot; formControlName&#x3D;&quot;logToPanel&quot; placeholder&#x3D;&quot;logToPanel&quot;&gt;
+      &lt;div
+        *ngIf&#x3D;&quot;settingsEditorForm.get(&#x27;logToPanel&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;logToPanel&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+        class&#x3D;&quot;text-sm text-danger&quot;&gt;logToPanel is required&lt;/div&gt;
+      Log to Panel
+    &lt;/div&gt;
+
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;
+      &lt;input
+        [class.border-danger]&#x3D;&quot;settingsEditorForm.get(&#x27;logToConsole&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;logToConsole&#x27;)?.invalid&quot;
+        type&#x3D;&quot;checkbox&quot; formControlName&#x3D;&quot;logToConsole&quot; placeholder&#x3D;&quot;logToConsole&quot;&gt;
+      &lt;div
+        *ngIf&#x3D;&quot;settingsEditorForm.get(&#x27;logToConsole&#x27;)?.touched &amp;&amp; settingsEditorForm.get(&#x27;logToConsole&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+        class&#x3D;&quot;text-sm text-danger&quot;&gt;logToConsole is required&lt;/div&gt;
+      Log to Browser Console
+    &lt;/div --&gt;
+
+    &lt;!--h2&gt;Teams&lt;/h2&gt;
+    &lt;details&gt;
+      &lt;summary&gt;Team Details&lt;/summary&gt;
+      &lt;ul&gt;
+        &lt;li&gt;If Shape &#x3D; &#x27;Marker&#x27;, then display the icon&lt;/li&gt;
+        &lt;li&gt;If Shape &#x3D; &#x27;Circle&#x27;, then display circles using color &amp; fillColor&lt;/li&gt;
+        &lt;li&gt;Notes are ignored. They are displayed below for your optional use, if desired&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/details--&gt;
+
+    &lt;!-- https://www.ag-grid.com/angular-data-grid/grid-interface/
+    &lt;div id&#x3D;&quot;teamgrid&quot;&gt;
+      &lt;ag-grid-angular #teamGrid rowAnimation pagination paginationAutoPageSize style&#x3D;&quot;width: 100%; height: 400px;&quot;
+        class&#x3D;&quot;ag-theme-alpine&quot; [rowData]&#x3D;&quot;teams&quot; [columnDefs]&#x3D;&quot;columns&quot; [defaultColDef]&#x3D;&quot;{
+            flex: 1,
+            minWidth: 60,
+            editable: true,
+            resizable: true
+          }&quot; (gridReady)&#x3D;&quot;onGridReady($event)&quot;&gt;
+      &lt;/ag-grid-angular&gt;
+      &lt;br /&gt;
+      &lt;button (click)&#x3D;&quot;onBtPrinterFriendly()&quot;&gt;Printer Friendly Layout&lt;/button&gt;
+      &lt;button (click)&#x3D;&quot;onBtNormal()&quot;&gt;Normal Layout&lt;/button&gt;
+      &lt;! -- &lt;div&gt;&lt;button (click)&#x3D;&quot;addTeamRow()&quot;&gt;Add a new (blank) Team&lt;/button&gt;&lt;/div&gt; -&gt;
+      &lt;div&gt;TODO: &lt;button (click)&#x3D;&quot;exportDataAsCsv()&quot;&gt;Export Team Grid&lt;/button&gt;&lt;/div&gt;
+      &lt;! -- &lt;div&gt;TODO: &lt;button (click)&#x3D;&quot;setQuickFilter()&quot;&gt;Filter Teams&lt;/button&gt;&lt;/div&gt; -&gt;
+    &lt;/div--&gt;
+
+    &lt;br&gt;
+
+    Save above settings (to local storage):
+    &lt;button [disabled]&#x3D;&quot;settingsEditorForm.invalid&quot; type&#x3D;&quot;submit&quot;&gt;Save&lt;/button&gt;
+    &lt;!-- REVIEW: Other pages only reflect these changes if refreshed!!! --&gt;
+
+    &lt;br&gt;
+    &lt;br&gt;
+
+    &lt;details&gt;
+      &lt;summary&gt;&lt;span class&#x3D;&quot;big&quot;&gt;Advanced Options&lt;/span&gt;&lt;/summary&gt;
+      &lt;button (click)&#x3D;&quot;onBtnResetDefaults()&quot;&gt;Reset All these Settings to Default values&lt;/button&gt;&lt;br&gt;
+      &lt;br&gt;
+      &lt;h2&gt;&lt;a href&#x3D;&quot;https://fonts.google.com/share?selection.family&#x3D;Open+Sans%7CMontserrat%7CRoboto%7CPlayfair+Display%7CLato%7CMerriweather%7CHelvetica%7CLora%7CPT+Serif%7CSpectral%7CTimes+New+Roman%7CAkaya+Telivigala%7COpen+Sans+Condensed%7CSaira+Extra+Condensed%7CBoogaloo%7CAnton%7CFaster+One%7CArima+Madurai&quot; target&#x3D;&quot;_blank&quot;&gt;Font Explorium&lt;/a&gt;&lt;/h2&gt;
+      &lt;ul style&#x3D;&quot;font-size: large;&quot;&gt;
+        &lt;li *ngFor&#x3D;&quot;let font of fonts&quot;&gt;
+          {{font}}: &lt;span style&#x3D;&quot;font-family: {{font}};&quot;&gt;{{pangram}}&lt;/span&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+
+    &lt;/details&gt;
+
+
+
+    &lt;!--hr&gt;
+&lt;div class&#x3D;&quot;card&quot;&gt;
+  &lt;div class&#x3D;&quot;card-header&quot;&gt;
+      &lt;h5&gt;Reactive Forms with PrimeNg Table&lt;/h5&gt;
+  &lt;/div&gt;
+  &lt;div class&#x3D;&quot;card-body&quot;&gt;
+      &lt;form [formGroup]&#x3D;&quot;employeeForm&quot;&gt;
+          &lt;p-table [value]&#x3D;&quot;tableRowArray.controls&quot; [responsive]&#x3D;&quot;true&quot;&gt;
+              &lt;ng-template pTemplate&#x3D;&quot;header&quot;&gt;
+                  &lt;tr&gt;
+                      &lt;ng-container *ngFor&#x3D;&quot;let col of columns&quot;&gt;
+                          &lt;td&gt;{{col}}&lt;/td&gt;
+                      &lt;/ng-container&gt;
+                  &lt;/tr&gt;
+              &lt;/ng-template&gt;
+              &lt;ng-template pTemplate&#x3D;&quot;body&quot; let-rowData let-rowIndex&#x3D;&quot;rowIndex&quot;&gt;
+                  &lt;ng-container formArrayName&#x3D;&quot;tableRowArray&quot;&gt;
+                      &lt;tr [formGroupName]&#x3D;&quot;rowIndex&quot;&gt;
+                          &lt;td&gt;
+                              &lt;input type&#x3D;&quot;text&quot; class&#x3D;&quot;form-control form-control-sm&quot; formControlName&#x3D;&quot;name&quot; /&gt;
+                              &lt;div class&#x3D;&quot;text-danger&quot; *ngIf&#x3D;&quot;rowData.get(&#x27;name&#x27;).errors &amp;&amp; (rowData.get(&#x27;name&#x27;).dirty || rowData.get(&#x27;name&#x27;).touched)&quot;&gt;
+                                  &lt;div *ngIf&#x3D;&quot;rowData.get(&#x27;name&#x27;).errors?.required&quot;&gt;Name is Required&lt;/div&gt;
+                              &lt;/div&gt;
+                          &lt;/td&gt;
+                          &lt;td&gt;
+                              &lt;input type&#x3D;&quot;text&quot; class&#x3D;&quot;form-control form-control-sm&quot; formControlName&#x3D;&quot;address&quot; /&gt;
+                              &lt;div class&#x3D;&quot;text-danger&quot; *ngIf&#x3D;&quot;rowData.get(&#x27;address&#x27;).errors &amp;&amp; (rowData.get(&#x27;address&#x27;).dirty || rowData.get(&#x27;address&#x27;).touched)&quot;&gt;
+                                  &lt;div *ngIf&#x3D;&quot;rowData.get(&#x27;address&#x27;).errors?.required&quot;&gt;Address is Required&lt;/div&gt;
+                              &lt;/div&gt;
+                          &lt;/td&gt;
+                          &lt;td&gt;
+                              &lt;input type&#x3D;&quot;text&quot; class&#x3D;&quot;form-control form-control-sm&quot; formControlName&#x3D;&quot;salary&quot; /&gt;
+                              &lt;div class&#x3D;&quot;text-danger&quot; *ngIf&#x3D;&quot;rowData.get(&#x27;salary&#x27;).errors &amp;&amp; (rowData.get(&#x27;salary&#x27;).dirty || rowData.get(&#x27;salary&#x27;).touched)&quot;&gt;
+                                  &lt;div *ngIf&#x3D;&quot;rowData.get(&#x27;salary&#x27;).errors?.required&quot;&gt;Salary is Required&lt;/div&gt;
+                                  &lt;div *ngIf&#x3D;&quot;rowData.get(&#x27;salary&#x27;).errors?.pattern&quot;&gt;Number Only, max 6 digits with max 2 decimals&lt;/div&gt;
+                              &lt;/div&gt;
+                          &lt;/td&gt;
+                          &lt;td&gt;
+                              &lt;div class&#x3D;&quot;form-check&quot;&gt;
+                                  &lt;input type&#x3D;&quot;checkbox&quot; class&#x3D;&quot;form-check-input&quot; formControlName&#x3D;&quot;isActive&quot; /&gt;
+                                  &lt;label class&#x3D;&quot;form-check-label&quot;&gt;&lt;/label&gt;
+                              &lt;/div&gt;
+                          &lt;/td&gt;
+                          &lt;td&gt;
+                              &lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;btn btn-default&quot; title&#x3D;&quot;Delete&quot; (click)&#x3D;&quot;onDeleteRow(rowIndex)&quot;&gt;
+                                  &lt;i class&#x3D;&quot;fa fa-trash-o&quot; aria-hidden&#x3D;&quot;true&quot;&gt;&lt;/i&gt;
+                              &lt;/button&gt;
+                          &lt;/td&gt;
+                      &lt;/tr&gt;
+                  &lt;/ng-container&gt;
+              &lt;/ng-template&gt;
+          &lt;/p-table&gt;
+      &lt;/form&gt;
+  &lt;/div&gt;
+  &lt;div class&#x3D;&quot;card-footer&quot;&gt;
+      &lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;btn btn-primary btn-sm pull-left&quot; (click)&#x3D;&quot;addNewRow()&quot;&gt;Add Row&lt;/button&gt;
+      &lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;btn btn-success btn-sm pull-right&quot; title&#x3D;&quot;Save&quot;&gt;Save&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div--&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>./settings.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &quot;ag-grid-community/dist/styles/ag-grid.css&quot;;
+@import &quot;ag-grid-community/dist/styles/ag-theme-balham.css&quot;;
+
+ag-grid-angular {
+  height: 400px;
+  width: 400px;
+}
+
+label {
+  font-weight: bold;
+  padding-bottom: .5rem;
+  padding-top: 1rem;
+  display: inline-block;
+}
+
+button {
+  max-width: 300px;
+}
+
+.big {
+  font-size: large;
+  font-weight: bold;
+}
+
+h1,h2,h3 {
+  margin-top: 10px;
+  margin-bottom: 1px;
+}
+
+.wideField {
+  width:10em;
+}
+
+/*
+.example-form {
+  min-width: 150px;
+  max-width: 300px;
+  width: 100%;
+}
+
+.example-full-width {
+  width: 100%;
+}
+*/
+
+.fill-warning {
+  background-color:rgb(212, 179, 106) ;
+}
+
+.text-warning {
+  color: rgb(175, 75, 35); ;
+}
+
+.border-warning {
+  border-color: orange;
+  border-style: groove;
+}
+
+#teamgrid1 {
+  background-color: rgb(215, 241, 143);
+  /*display: inline-block;*/
+  height: 40em;
+  width: 40em;
+}
+
+.mood {
+  border-radius: 15px;
+  border: 1px solid grey;
+  background: #e6e6e6;
+  padding: 15px;
+  text-align: center;
+  display: inline-block;
+  outline: none;
+}
+
+.default {
+  border: 1px solid transparent;
+  padding: 4px;
+}
+
+.selected {
+  border: 1px solid lightgreen;
+  padding: 4px;
+}
+
+#SettingsBody {
+  //display: inline-block;
+  //background-image: &#x27;./src/assets/imgs/AlpineMarmot.png&#x27; !important;
+  //height: 650 px;
+  color: black;
+  //background-image: linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(8, 8, 8, 0.5)), url(&quot;../../assets/imgs/20220205_112741.jpg&quot;) ;
+  background-image: linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(221, 213, 213, 0.5)), url(&quot;../../assets/imgs/20220205_112750.jpg&quot;) ;
+  //color: black;
+  //background-image: url(&quot;../../../assets/imgs/AlpineMarmot.png&quot;) ;
+  //background-size: 100%;
+  //background-size: contain;
+  background-size: cover;
+}
+
+// https://dev.to/nazanin_ashrafi/how-to-darken-an-image-with-css-4f5h
+/*
+filter: brightness(30%);
+  opacity: 0.5;
+  ul {
+    background-color: black;
+    }
+*/
+// https://developer.mozilla.org/en-US/docs/Web/CSS/background-image
+//https://rapidapi.com/guides/css-painting-api
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div id="SettingsBody" class="container" > <!-- [ngStyle]="{backgroundImage:\'./src/assets/imgs/20220205_112741.jpg\'}" -->  <form [formGroup]="settingsEditorForm" (ngSubmit)="onFormSubmit()">    <h1>Application Defaults</h1>    <details>      <summary>Instructions</summary>      <ul>        <li>Any saved settings are restored from the browser\'s local storage.</li>        <li>If nothing has been saved, or the user selects "Reset all values", then hardcoded values are used.</li>        <li>Settings are NOT shared with other browsers, whether on this device or others.</li>        <li>Browser local storage contents are viewable using a browser\'s developer tools: F12</li>        <li>Change font size using CTRL+mouse wheel or your browser\'s view size settings.</li>      </ul>    </details>    <br>    <div class="input-group">Notes for this group of settings:      <textarea formControlName="note" id="" cols="50" rows="1"        placeholder="Description of this group of settings"></textarea>    </div>    <br>    <h2>Entry Form Defaults</h2>    <!--legend>Default </legend-->    <details>      <summary>Location Guidance</summary>      <ul>        <li>This sets initial (default) values for lat & long in the entry form.</li>        <li>What3Words uses this to set the focus, prioritizing suggested          results (for incorrect words) by proximity to this point.</li>        <li>PlusCodes uses this for converting short to full/global codes.</li>        <li>Maps do not use this. They are auto-centered on the bounding          coordinates centroid of all points entered and the map is then          zoomed to show all points.</li>      </ul>    </details>    <div class="input-group">Latitude:      <input        [class.border-danger]="settingsEditorForm.get(\'latitude\')?.touched && settingsEditorForm.get(\'latitude\')?.invalid"        type="number" formControlName="latitude" placeholder=47.5>      <div        *ngIf="settingsEditorForm.get(\'latitude\')?.touched && settingsEditorForm.get(\'latitude\')?.hasError(\'required\')"        class="text-sm text-danger">latitude is required</div>    </div>    <div class="input-group">Longitude:      <input        [class.border-danger]="settingsEditorForm.get(\'longitude\')?.touched && settingsEditorForm.get(\'longitude\')?.invalid"        type="number" formControlName="longitude" placeholder=-122.5>      <div        *ngIf="settingsEditorForm.get(\'longitude\')?.touched && settingsEditorForm.get(\'longitude\')?.hasError(\'required\')"        class="text-sm text-danger">longitude is required</div>    </div>    <div class="input-group">Zoom (3-21):      <input [class.border-danger]="settingsEditorForm.get(\'zoom\')?.touched && settingsEditorForm.get(\'zoom\')?.invalid"        type="number" formControlName="zoom" placeholder=15>      <div *ngIf="settingsEditorForm.get(\'zoom\')?.touched && settingsEditorForm.get(\'zoom\')?.hasError(\'required\')"        class="text-sm text-danger">zoom is required</div>    </div>    <div class="input-group">Plus Code:      <input        [class.border-danger]="settingsEditorForm.get(\'plusCode\')?.touched && settingsEditorForm.get(\'plusCode\')?.invalid"        type="text" formControlName="plusCode" placeholder="84VVCGWP+VW">      <div        *ngIf="settingsEditorForm.get(\'plusCode\')?.touched && settingsEditorForm.get(\'plusCode\')?.hasError(\'required\')"        class="text-sm text-danger">plusCode is required</div>    </div>    <br>    <h2>Field Reports</h2>    <div class="input-group">Markers      <input        [class.border-danger]="settingsEditorForm.get(\'allowManualPinDrops\')?.touched && settingsEditorForm.get(\'allowManualPinDrops\')?.invalid"        type="checkbox" formControlName="allowManualPinDrops" placeholder="allowManualPinDrops">      <div        *ngIf="settingsEditorForm.get(\'allowManualPinDrops\')?.touched && settingsEditorForm.get(\'debugMallowManualPinDropsode\')?.hasError(\'required\')"        class="text-sm text-danger">allowManualPinDrops is required</div>      Allow Manual Pin Drops on Google & Leaflet Maps (default: false)    </div>    <br>    Field Report Statuses: (Renaming a status here will not rename existing field report statuses)    <!--div id="settings__ColorChart" display="hidden">      <img src= \'../../assets/imgs/ColorChart.png\' title="These 3 letter codes ARE valid colors!, from https://html-color-codes.com/" id ="settings__ColorChart-img"/>    </div-->    <!-- https://h2qutc.github.io/angular-material-components/colorpicker>    <mat-card >      <div class="row" [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}}</div>      <div class="row">RGBA: {{colorCtr.value?.rgba}}</div>    </mat-card>    < [formControlName]="colorCtr" >    <mat-card class="zone zone-picker">      <mat-form-field>        <input matInput [ngxMatColorPicker]="picker"  [disabled]="colorCntlDisabled" >        <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>        <ngx-mat-color-picker #picker [touchUi]="touchUi" [color]="color"></ngx-mat-color-picker>      </mat-form-field>    </mat-card-->    <ag-grid-angular class="ag-theme-alpine" (gridReady)="onGridReady($event)" [gridOptions]="gridOptions"      [defaultColDef]="defaultColDef" [tooltipShowDelay]=500 [rowData]="rowData" [columnDefs]="columnDefs">    </ag-grid-angular>    <button (click)="onBtnAddFRStatus()" title="Add a new Field Report Status">Add new      row</button> &nbsp;&nbsp;&nbsp;    <button (click)="this.refreshStatusGrid()" title="Refresh Report Statuses">Refresh Statuses Grid</button>    <br>    <!--h2>Markers</h2>    <div class="input-group">Marker Shape:      <select formControlName="markerShape" class="wideField">        <! -- [class.border-danger]="settingsEditorForm.get(\'markerShape\')?.touched && settingsEditorForm.get(\'markerShape\')?.invalid" -- >        <! --option [va xx lue]="\'\'">Select markerShape</option>        <option [va xx lue]="shape.shapeId" id="shapeOptions" *ngFor="let shape of shapes">{{sha  pe.sha  s eName}}</option-- >        <option [value]="shape" id="shapeOptions" *ngFor="let shape of shapes">{{shape}}</option>      </select>      <div        *ngIf="settingsEditorForm.get(\'markerShape\')?.touched && settingsEditorForm.get(\'markerShape\')?.hasError(\'required\')"        class="text-sm text-danger">markerShape is required</div>    </div>    <div class="input-group">Marker Size:      <input        [class.border-danger]="settingsEditorForm.get(\'markerSize\')?.touched && settingsEditorForm.get(\'markerSize\')?.invalid"        type="number" formControlName="markerSize" placeholder="5">      <div        *ngIf="settingsEditorForm.get(\'markerSize\')?.touched && settingsEditorForm.get(\'markerSize\')?.hasError(\'required\')"        class="text-sm text-danger">markerSize is required</div>    </div-->    <br>    <h2>Debug</h2>    <div class="input-group">      <input        [class.border-danger]="settingsEditorForm.get(\'debugMode\')?.touched && settingsEditorForm.get(\'debugMode\')?.invalid"        type="checkbox" formControlName="debugMode" placeholder="debugMode">      <div        *ngIf="settingsEditorForm.get(\'debugMode\')?.touched && settingsEditorForm.get(\'debugMode\')?.hasError(\'required\')"        class="text-sm text-danger">debug mode is required</div>      Debug Mode    </div>    <!-- TODO: future: [ ] enable touch user interface<br>-->    <!--      touchUi from https://h2qutc.github.io/angular-material-components/colorpicker      div class="input-group">      <input        [class.border-danger]="settingsEditorForm.get(\'logToPanel\')?.touched && settingsEditorForm.get(\'logToPanel\')?.invalid"        type="checkbox" formControlName="logToPanel" placeholder="logToPanel">      <div        *ngIf="settingsEditorForm.get(\'logToPanel\')?.touched && settingsEditorForm.get(\'logToPanel\')?.hasError(\'required\')"        class="text-sm text-danger">logToPanel is required</div>      Log to Panel    </div>    <div class="input-group">      <input        [class.border-danger]="settingsEditorForm.get(\'logToConsole\')?.touched && settingsEditorForm.get(\'logToConsole\')?.invalid"        type="checkbox" formControlName="logToConsole" placeholder="logToConsole">      <div        *ngIf="settingsEditorForm.get(\'logToConsole\')?.touched && settingsEditorForm.get(\'logToConsole\')?.hasError(\'required\')"        class="text-sm text-danger">logToConsole is required</div>      Log to Browser Console    </div -->    <!--h2>Teams</h2>    <details>      <summary>Team Details</summary>      <ul>        <li>If Shape = \'Marker\', then display the icon</li>        <li>If Shape = \'Circle\', then display circles using color & fillColor</li>        <li>Notes are ignored. They are displayed below for your optional use, if desired</li>      </ul>    </details-->    <!-- https://www.ag-grid.com/angular-data-grid/grid-interface/    <div id="teamgrid">      <ag-grid-angular #teamGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 400px;"        class="ag-theme-alpine" [rowData]="teams" [columnDefs]="columns" [defaultColDef]="{            flex: 1,            minWidth: 60,            editable: true,            resizable: true          }" (gridReady)="onGridReady($event)">      </ag-grid-angular>      <br />      <button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>      <button (click)="onBtNormal()">Normal Layout</button>      <! -- <div><button (click)="addTeamRow()">Add a new (blank) Team</button></div> ->      <div>TODO: <button (click)="exportDataAsCsv()">Export Team Grid</button></div>      <! -- <div>TODO: <button (click)="setQuickFilter()">Filter Teams</button></div> ->    </div-->    <br>    Save above settings (to local storage):    <button [disabled]="settingsEditorForm.invalid" type="submit">Save</button>    <!-- REVIEW: Other pages only reflect these changes if refreshed!!! -->    <br>    <br>    <details>      <summary><span class="big">Advanced Options</span></summary>      <button (click)="onBtnResetDefaults()">Reset All these Settings to Default values</button><br>      <br>      <h2><a href="https://fonts.google.com/share?selection.family=Open+Sans%7CMontserrat%7CRoboto%7CPlayfair+Display%7CLato%7CMerriweather%7CHelvetica%7CLora%7CPT+Serif%7CSpectral%7CTimes+New+Roman%7CAkaya+Telivigala%7COpen+Sans+Condensed%7CSaira+Extra+Condensed%7CBoogaloo%7CAnton%7CFaster+One%7CArima+Madurai" target="_blank">Font Explorium</a></h2>      <ul style="font-size: large;">        <li *ngFor="let font of fonts">          {{font}}: <span style="font-family: {{font}};">{{pangram}}</span>        </li>      </ul>    </details>    <!--hr><div class="card">  <div class="card-header">      <h5>Reactive Forms with PrimeNg Table</h5>  </div>  <div class="card-body">      <form [formGroup]="employeeForm">          <p-table [value]="tableRowArray.controls" [responsive]="true">              <ng-template pTemplate="header">                  <tr>                      <ng-container *ngFor="let col of columns">                          <td>{{col}}</td>                      </ng-container>                  </tr>              </ng-template>              <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">                  <ng-container formArrayName="tableRowArray">                      <tr [formGroupName]="rowIndex">                          <td>                              <input type="text" class="form-control form-control-sm" formControlName="name" />                              <div class="text-danger" *ngIf="rowData.get(\'name\').errors && (rowData.get(\'name\').dirty || rowData.get(\'name\').touched)">                                  <div *ngIf="rowData.get(\'name\').errors?.required">Name is Required</div>                              </div>                          </td>                          <td>                              <input type="text" class="form-control form-control-sm" formControlName="address" />                              <div class="text-danger" *ngIf="rowData.get(\'address\').errors && (rowData.get(\'address\').dirty || rowData.get(\'address\').touched)">                                  <div *ngIf="rowData.get(\'address\').errors?.required">Address is Required</div>                              </div>                          </td>                          <td>                              <input type="text" class="form-control form-control-sm" formControlName="salary" />                              <div class="text-danger" *ngIf="rowData.get(\'salary\').errors && (rowData.get(\'salary\').dirty || rowData.get(\'salary\').touched)">                                  <div *ngIf="rowData.get(\'salary\').errors?.required">Salary is Required</div>                                  <div *ngIf="rowData.get(\'salary\').errors?.pattern">Number Only, max 6 digits with max 2 decimals</div>                              </div>                          </td>                          <td>                              <div class="form-check">                                  <input type="checkbox" class="form-check-input" formControlName="isActive" />                                  <label class="form-check-label"></label>                              </div>                          </td>                          <td>                              <button type="button" class="btn btn-default" title="Delete" (click)="onDeleteRow(rowIndex)">                                  <i class="fa fa-trash-o" aria-hidden="true"></i>                              </button>                          </td>                      </tr>                  </ng-container>              </ng-template>          </p-table>      </form>  </div>  <div class="card-footer">      <button type="button" class="btn btn-primary btn-sm pull-left" (click)="addNewRow()">Add Row</button>      <button type="button" class="btn btn-success btn-sm pull-right" title="Save">Save</button>  </div></div--></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'GmapComponent', 'selector': 'rangertrak-gmap'},{'name': 'IconComponent', 'selector': 'icon'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'SettingsComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'SettingsComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

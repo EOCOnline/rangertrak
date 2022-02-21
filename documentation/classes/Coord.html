@@ -1,0 +1,405 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Classes</li>
+  <li >Coord</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/shared/coordinate.ts</code>
+        </p>
+
+
+
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#coord" >coord</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(coord: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="86" class="link-to-prism">src/app/shared/coordinate.ts:86</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>coord</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="coord"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>coord</b></span>
+                        <a href="#coord"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="87" class="link-to-prism">src/app/shared/coordinate.ts:87</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export enum DirEnum {
+  E &#x3D; &#x27;East&#x27;,
+  W &#x3D; &#x27;West&#x27;,
+  N &#x3D; &#x27;North&#x27;,
+  S &#x3D; &#x27;South&#x27;
+}
+export type DirType &#x3D; &#x27;E&#x27; | &#x27;W&#x27; | &#x27;N&#x27; | &#x27;S&#x27;
+
+class Point {
+  constructor(private _age: number,
+    private _firstName: string,
+    private _lastName: string) {
+  }
+
+  public get age() {
+    return this._age;
+  }
+
+  public set age(theAge: number) {
+    if (theAge &lt;&#x3D; 0 || theAge &gt;&#x3D; 200) {
+      throw new Error(&#x27;The age is invalid&#x27;);
+    }
+    this._age &#x3D; theAge;
+  }
+
+  public get FullName(): string {
+    return &#x60;${this._firstName} ${this._lastName}&#x60;;
+  }
+
+  public set fullName(name: string) {
+    let parts &#x3D; name.split(&#x27; &#x27;);
+    if (parts.length !&#x3D; 2) {
+      throw new Error(&#x27;Invalid name format: first last&#x27;);
+    }
+    this._firstName &#x3D; parts[0];
+    this._lastName &#x3D; parts[1];
+  }
+}
+
+export class Coordinate {
+  constructor(private _lat: number, private _long: number) {
+    if (_lat &lt; -180 || _lat &gt; 180)
+      throw new Error(&#x27;latatude is over 180 or under -180 degrees.&#x27;)
+    if (_long &lt; -180 || _long &gt; 180)
+      throw new Error(&#x27;longitude is over 180 or under -180 degrees.&#x27;)
+    //this.lat &#x3D; lat;
+    //this.long &#x3D; long;
+  }
+
+  toString(): string {
+    return &quot;lat: &quot; + this._lat +
+      &quot;; long: &quot; + this._long
+  }
+
+  public get Point() {
+    return (this._lat, this._long);
+  }
+
+  //toDMS(ptDD: PointDD) {  }
+
+  // Save to disk or ...
+  serialize(name: string) {
+    ;
+  }
+
+  load(name: string) {
+    ;
+  }
+}
+
+// REVIEW: Duplicate of one in Utility class...
+export function strToLatLng(str: string) {
+  const latlngStr &#x3D; str.split(&quot;,&quot;, 2);
+  return new google.maps.LatLng(parseFloat(latlngStr[0]), parseFloat(latlngStr[1]))
+}
+
+// Coord is a lat or lng in decimal degrees
+class Coord {
+  constructor(public coord: number) {
+    try {
+      // TODO: Could map larger/smaller values using modulus
+      // coord &#x3D; coord % 360.0
+      if (isNaN(coord)) throw &quot;Coordinate is not a number&quot;
+      if (coord &lt; -180) throw &quot;Coordinate under -180 degrees.&quot;
+      if (coord &gt; 180) throw &quot;Coordinate over 180 degrees.&quot;
+      // MAIN.dbug(&quot;Coordinate passed range check...&quot;)
+    }
+    catch (err: unknown) {
+      // MAIN.dbug(&quot;Bad Coordinate at Coord(): &quot; + err.message)
+    }
+  }
+  // Get object {deg:, min:, sec:, dir:}
+  // sec truncated to two digits (e.g. 3.14)
+  // dir returns S or N if lng &#x3D; false (for latitudes)
+  // dir returns E or W if lng (longitude) &#x3D; true
+  // N.B.: may not work for angles between -1° and 0°
+  // from www.stackoverflow.com/questions/5786025
+  /*
+  ToDMS(lng: boolean): CoordDMS {
+    return new CoordDMS(
+      this.coord &lt; 0 ? lng ? Direction.W : Direction.S : lng ? Direction.E : Direction.N,
+      0 | (this.coord &lt; 0 ? this.coord &#x3D; -this.coord : this.coord),
+      0 | this.coord % 1 * 60,
+      (0 | this.coord * 60 % 1 * 6000) / 100
+    )
+  }
+  //ToNumber(): number {
+  //    return this.coord
+  //}
+
+  */
+}
+
+// Get object {deg:, min:, sec:, dir:}
+// sec truncated to two digits (e.g. 3.14)
+// dir returns S or N if lng &#x3D; false (for latitudes)
+// dir returns E or W if lng (longitude) &#x3D; true
+// N.B.: may not work for angles between -1° and 0°
+// from www.stackoverflow.com/questions/5786025
+export function DDToDMS(D: number, lng: boolean &#x3D; false) {
+  /*
+  if (!D) {
+      // MAIN.dbug(&quot;Invalid number received for Decimal Degrees!&quot;)
+      return Number.NaN
+  }
+  */
+  /*
+    // MAIN.dbug(&quot;DDtoDMS: D&#x3D;&quot; + D + &quot; lng&#x3D;&quot; + lng)
+    let dirr &#x3D; D&lt;0?lng?&#x27;W&#x27;:&#x27;S&#x27;:lng?&#x27;E&#x27;:&#x27;N&#x27;
+    let degg &#x3D; 0|(D&lt;0?D&#x3D;-D:D)
+    let minn &#x3D; 0|D%1*60
+    let secc &#x3D; (0|D*60%1*6000)/100
+    // MAIN.dbug(&quot;DDtoDMS: dir&#x3D;&quot; + dirr + &quot; deg&#x3D;&quot; + degg + &quot; min&quot; + minn + &quot; sec&#x3D;&quot; + secc)
+  */
+  return {
+    deg: 0 | (D &lt; 0 ? D &#x3D; -D : D),
+    min: 0 | D % 1 * 60,
+    sec: (0 | D * 60 % 1 * 6000) / 100,
+    dir: D &lt; 0 ? lng ? &#x27;W&#x27; : &#x27;S&#x27; : lng ? &#x27;E&#x27; : &#x27;N&#x27;
+  }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'Coord.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

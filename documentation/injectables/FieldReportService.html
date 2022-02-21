@@ -1,0 +1,2328 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Injectables</li>
+  <li >FieldReportService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/shared/services/field-report.service.ts</code>
+        </p>
+
+
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#bound" >bound</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#bounds" >bounds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#boundsMargin" >boundsMargin</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#fieldReports" >fieldReports</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#fieldReportsSubject" >fieldReportsSubject</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#fieldReportStatuses" >fieldReportStatuses</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#nextId" >nextId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#storageLocalName" >storageLocalName</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#uri" >uri</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#addfieldReport" >addfieldReport</a>
+                            </li>
+                            <li>
+                                <a href="#allFieldReportsToServer_unused" >allFieldReportsToServer_unused</a>
+                            </li>
+                            <li>
+                                <a href="#deleteAllFieldReports" >deleteAllFieldReports</a>
+                            </li>
+                            <li>
+                                <a href="#deleteFieldReport" >deleteFieldReport</a>
+                            </li>
+                            <li>
+                                <a href="#filterFieldReportsByDate" >filterFieldReportsByDate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#findIndex" >findIndex</a>
+                            </li>
+                            <li>
+                                <a href="#generateFakeData" >generateFakeData</a>
+                            </li>
+                            <li>
+                                <a href="#getBoundFromBounds" >getBoundFromBounds</a>
+                            </li>
+                            <li>
+                                <a href="#getFieldReport" >getFieldReport</a>
+                            </li>
+                            <li>
+                                <a href="#getFieldReportBound" >getFieldReportBound</a>
+                            </li>
+                            <li>
+                                <a href="#getFieldReportBounds" >getFieldReportBounds</a>
+                            </li>
+                            <li>
+                                <a href="#getFieldReports" >getFieldReports</a>
+                            </li>
+                            <li>
+                                <a href="#recalcFieldBounds" >recalcFieldBounds</a>
+                            </li>
+                            <li>
+                                <a href="#sortFieldReportsByCallsign" >sortFieldReportsByCallsign</a>
+                            </li>
+                            <li>
+                                <a href="#sortFieldReportsByDate" >sortFieldReportsByDate</a>
+                            </li>
+                            <li>
+                                <a href="#sortFieldReportsByTeam" >sortFieldReportsByTeam</a>
+                            </li>
+                            <li>
+                                <a href="#subscribe" >subscribe</a>
+                            </li>
+                            <li>
+                                <a href="#updateFieldReport" >updateFieldReport</a>
+                            </li>
+                            <li>
+                                <a href="#updateFieldReportBounds" >updateFieldReportBounds</a>
+                            </li>
+                            <li>
+                                <a href="#UpdateFieldReports" >UpdateFieldReports</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(rangerService: <a href="../injectables/RangerService.html" target="_self">RangerService</a>, teamService: <a href="../injectables/TeamService.html" target="_self">TeamService</a>, settingService: <a href="../injectables/SettingsService.html" target="_self">SettingsService</a>, httpClient: <a href="https://angular.io/api/common/http/HttpClient" target="_blank">HttpClient</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/shared/services/field-report.service.ts:32</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>rangerService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/RangerService.html" target="_self" >RangerService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>teamService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/TeamService.html" target="_self" >TeamService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>settingService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SettingsService.html" target="_self" >SettingsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>httpClient</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/common/http/HttpClient" target="_blank" >HttpClient</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addfieldReport"></a>
+                    <span class="name">
+                        <span ><b>addfieldReport</b></span>
+                        <a href="#addfieldReport"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>addfieldReport(formData: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="97"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:97</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>formData</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#FieldReportType" target="_self" >FieldReportType</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="allFieldReportsToServer_unused"></a>
+                    <span class="name">
+                        <span ><b>allFieldReportsToServer_unused</b></span>
+                        <a href="#allFieldReportsToServer_unused"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>allFieldReportsToServer_unused()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="82"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:82</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteAllFieldReports"></a>
+                    <span class="name">
+                        <span ><b>deleteAllFieldReports</b></span>
+                        <a href="#deleteAllFieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteAllFieldReports()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="135"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:135</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteFieldReport"></a>
+                    <span class="name">
+                        <span ><b>deleteFieldReport</b></span>
+                        <a href="#deleteFieldReport"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteFieldReport(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="128"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:128</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterFieldReportsByDate"></a>
+                    <span class="name">
+                        <span ><b>filterFieldReportsByDate</b></span>
+                        <a href="#filterFieldReportsByDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>filterFieldReportsByDate(beg: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, end: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="280"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:280</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>beg</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>end</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findIndex"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>findIndex</b></span>
+                        <a href="#findIndex"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findIndex(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="160"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:160</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="generateFakeData"></a>
+                    <span class="name">
+                        <span ><b>generateFakeData</b></span>
+                        <a href="#generateFakeData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>generateFakeData(num: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="313"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:313</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>num</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>15</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getBoundFromBounds"></a>
+                    <span class="name">
+                        <span ><b>getBoundFromBounds</b></span>
+                        <a href="#getBoundFromBounds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getBoundFromBounds(bounds: <a href="../anys/google.html" target="_self">google.maps.LatLngBounds</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="263"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:263</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>bounds</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.LatLngBounds</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.LatLngBoundsLiteral</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFieldReport"></a>
+                    <span class="name">
+                        <span ><b>getFieldReport</b></span>
+                        <a href="#getFieldReport"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getFieldReport(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="117"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:117</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFieldReportBound"></a>
+                    <span class="name">
+                        <span ><b>getFieldReportBound</b></span>
+                        <a href="#getFieldReportBound"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getFieldReportBound()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="194"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:194</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.LatLngBoundsLiteral</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFieldReportBounds"></a>
+                    <span class="name">
+                        <span ><b>getFieldReportBounds</b></span>
+                        <a href="#getFieldReportBounds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getFieldReportBounds()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="190"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:190</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFieldReports"></a>
+                    <span class="name">
+                        <span ><b>getFieldReports</b></span>
+                        <a href="#getFieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getFieldReports()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:78</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>{}</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="recalcFieldBounds"></a>
+                    <span class="name">
+                        <span ><b>recalcFieldBounds</b></span>
+                        <a href="#recalcFieldBounds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>recalcFieldBounds()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="198"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:198</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.LatLngBoundsLiteral</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sortFieldReportsByCallsign"></a>
+                    <span class="name">
+                        <span ><b>sortFieldReportsByCallsign</b></span>
+                        <a href="#sortFieldReportsByCallsign"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>sortFieldReportsByCallsign()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="170"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:170</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sortFieldReportsByDate"></a>
+                    <span class="name">
+                        <span ><b>sortFieldReportsByDate</b></span>
+                        <a href="#sortFieldReportsByDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>sortFieldReportsByDate()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="181"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:181</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sortFieldReportsByTeam"></a>
+                    <span class="name">
+                        <span ><b>sortFieldReportsByTeam</b></span>
+                        <a href="#sortFieldReportsByTeam"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>sortFieldReportsByTeam()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="272"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:272</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="subscribe"></a>
+                    <span class="name">
+                        <span ><b>subscribe</b></span>
+                        <a href="#subscribe"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>subscribe(observer: <a href="../undefineds/FieldReportType.html" target="_self">Observer&lt;FieldReportType[]&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="74"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:74</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>observer</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#FieldReportType" target="_self" >Observer&lt;FieldReportType[]&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateFieldReport"></a>
+                    <span class="name">
+                        <span ><b>updateFieldReport</b></span>
+                        <a href="#updateFieldReport"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>updateFieldReport(report: <a href="../undefineds/FieldReportType.html" target="_self">FieldReportType</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:122</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>report</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#FieldReportType" target="_self" >FieldReportType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateFieldReportBounds"></a>
+                    <span class="name">
+                        <span ><b>updateFieldReportBounds</b></span>
+                        <a href="#updateFieldReportBounds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>updateFieldReportBounds(newFR: <a href="../undefineds/FieldReportType.html" target="_self">FieldReportType</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="256"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:256</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>newFR</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#FieldReportType" target="_self" >FieldReportType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.LatLngBoundsLiteral</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="UpdateFieldReports"></a>
+                    <span class="name">
+                        <span ><b>UpdateFieldReports</b></span>
+                        <a href="#UpdateFieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>UpdateFieldReports()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="142"
+                            class="link-to-prism">src/app/shared/services/field-report.service.ts:142</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="bound"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>bound</b></span>
+                        <a href="#bound"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.LatLngBoundsLiteral</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{ east: -180, north: -90, south: 90, west: 180 }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/shared/services/field-report.service.ts:31</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="bounds"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>bounds</b></span>
+                        <a href="#bounds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new google.maps.LatLngBounds(new google.maps.LatLng(90, 180), new google.maps.LatLng(-90, -180))</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/app/shared/services/field-report.service.ts:30</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="boundsMargin"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>boundsMargin</b></span>
+                        <a href="#boundsMargin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0.0025</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/shared/services/field-report.service.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fieldReports"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>fieldReports</b></span>
+                        <a href="#fieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#FieldReportType" target="_self" >FieldReportType[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/shared/services/field-report.service.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fieldReportsSubject"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>fieldReportsSubject</b></span>
+                        <a href="#fieldReportsSubject"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new BehaviorSubject&lt;FieldReportType[]&gt;([])</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/shared/services/field-report.service.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fieldReportStatuses"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>fieldReportStatuses</b></span>
+                        <a href="#fieldReportStatuses"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#FieldReportStatusType" target="_self" >FieldReportStatusType[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/shared/services/field-report.service.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="nextId"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>nextId</b></span>
+                        <a href="#nextId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/shared/services/field-report.service.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="storageLocalName"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>storageLocalName</b></span>
+                        <a href="#storageLocalName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;fieldReports&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/shared/services/field-report.service.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="uri"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>uri</b></span>
+                        <a href="#uri"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;http://localhost:4000/products&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/shared/services/field-report.service.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BehaviorSubject, Observer } from &#x27;rxjs&#x27;;
+import { Injectable, OnInit } from &#x27;@angular/core&#x27;;
+//import { JSONSchema, LocalStorage, StorageMap } from &#x27;@ngx-pwa/local-storage&#x27;;
+import { RangerService, SettingsService, FieldReportStatusType, TeamService } from &#x27;./index&#x27;;
+import { LatLng } from &#x27;leaflet&#x27;;
+import { HttpClient } from &#x27;@angular/common/http&#x27;;
+
+export enum FieldReportSource { Voice, Packet, APRS, Email }
+
+// TODO: https://h2qutc.github.io/angular-material-components/fileinput
+
+export type FieldReportType &#x3D; {
+  id: number,
+  callsign: string, team: string,
+  address: string, lat: number, lng: number,
+  date: Date,
+  status: string, note: string
+}
+
+@Injectable({ providedIn: &#x27;root&#x27; })
+export class FieldReportService {
+
+  private uri &#x3D; &#x27;http://localhost:4000/products&#x27;
+  private fieldReports: FieldReportType[] &#x3D; []
+  private fieldReportStatuses: FieldReportStatusType[] &#x3D; []
+  private storageLocalName &#x3D; &#x27;fieldReports&#x27;
+  private nextId &#x3D; 0
+  private fieldReportsSubject &#x3D; new BehaviorSubject&lt;FieldReportType[]&gt;([]);  // REVIEW: Necessary?
+  // https://developers.google.com/maps/documentation/javascript/reference/coordinates?hl&#x3D;en#LatLngBounds
+  public bounds &#x3D; new google.maps.LatLngBounds(new google.maps.LatLng(90, 180), new google.maps.LatLng(-90, -180)) //SW, NE
+  public bound: google.maps.LatLngBoundsLiteral &#x3D; { east: -180, north: -90, south: 90, west: 180 } //e,n,s,w
+  private boundsMargin &#x3D; 0.0025
+
+  constructor(
+    private rangerService: RangerService,
+    private teamService: TeamService,
+    private settingService: SettingsService,
+    private httpClient: HttpClient) {
+
+    console.log(&quot;Contructing FieldReportService: once or repeatedly?!--------------&quot;) // XXX
+    console.log(&#x60;FieldReport length&#x3D; ${this.fieldReports.length}&#x60;) // XXX
+
+    let localStorageFieldReports &#x3D; localStorage.getItem(this.storageLocalName)
+    /* this.fieldReports &#x3D; []
+    if (temp !&#x3D; null) {
+      this.fieldReports &#x3D; JSON.parse(temp) || []
+    }   */
+
+    this.fieldReportStatuses &#x3D; this.settingService.getFieldReportStatuses()
+
+    // XXX (localStorageFieldReports !&#x3D; null)&#x3D; true
+    this.fieldReports &#x3D; ((localStorageFieldReports !&#x3D; null) &amp;&amp; (localStorageFieldReports.indexOf(&quot;licensee&quot;) &lt;&#x3D; 0))
+      ? JSON.parse(localStorageFieldReports) : []   //TODO: clean up
+    //this.fieldReports &#x3D; []
+    //debugger
+    //console.log(&#x60;this.fieldReports.length&#x3D;${this.fieldReports.length}; (localStorageFieldReports !&#x3D; null)&#x3D; ${localStorageFieldReports !&#x3D; null}&#x60;)
+
+    console.log(&#x60;FieldReport from localstorage length&#x3D; ${this.fieldReports.length}&#x60;) // XXX
+
+
+    if ((localStorageFieldReports !&#x3D; null)) {
+      let ugg &#x3D; JSON.parse(localStorageFieldReports)
+      //console.log(&#x60;JSON.parse(localStorageFieldReports) ${ugg}&#x60;)
+    }
+    if (this.fieldReports.length &gt; 0) {
+      for (const fieldReport of this.fieldReports) {
+        if (fieldReport.id &gt;&#x3D; this.nextId) this.nextId &#x3D; fieldReport.id + 1
+      }
+      this.UpdateFieldReports()
+      this.recalcFieldBounds()
+    }
+  }
+
+  subscribe(observer: Observer&lt;FieldReportType[]&gt;) {
+    this.fieldReportsSubject.subscribe(observer);
+  }
+
+  getFieldReports() {
+    return this.fieldReports
+  }
+
+  allFieldReportsToServer_unused() {
+    console.log(&quot;Sending all reports to server (via subscription)...&quot;);
+
+    // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
+
+    // TODO: replace &quot;add&quot; with&quot;post&quot; or ???
+    this.httpClient.post(&#x60;${this.uri}/add&#x60;, this.fieldReports)
+      .subscribe(res &#x3D;&gt; console.log(&#x27;Subscription of all reports to httpClient is Done&#x27;));
+
+    console.log(&quot;Sent all reports to server (via subscription)...&quot;);
+  }
+
+
+  // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
+
+  addfieldReport(formData: string): FieldReportType {
+    console.log(&#x60;FieldReportService: Got new field report: ${formData}&#x60;)
+
+    let newReport: FieldReportType &#x3D; JSON.parse(formData)
+    newReport.id &#x3D; this.nextId++
+    this.fieldReports.push(newReport)
+    this.updateFieldReportBounds(newReport)
+    this.UpdateFieldReports() // put to localStorage &amp; update subscribers
+
+    console.log(&quot;Sending new report to server (via subscription)...&quot;);
+
+    // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
+    //this.httpClient.post(&#x60;${this.uri}/add&#x60;, newReport).subscribe(res &#x3D;&gt; console.log(&#x27;Subscription of add report to httpClient is Done&#x27;));
+    /* gets VM12981:1          POST http://localhost:4000/products/add net::ERR_CONNECTION_REFUSED
+  core.mjs:6485 ERROR HttpErrorResponse {headers: HttpHeaders, status: 0, statusText: &#x27;Unknown Error&#x27;, url: &#x27;http://localhost:4000/products/add&#x27;, ok: false, …}*/
+    console.log(&quot;Sent new report to server (via subscription)...&quot;);
+
+    return newReport;
+  }
+
+  getFieldReport(id: number) {
+    const index &#x3D; this.findIndex(id);
+    return this.fieldReports[index];
+  }
+
+  updateFieldReport(report: FieldReportType) {
+    const index &#x3D; this.findIndex(report.id);
+    this.fieldReports[index] &#x3D; report;
+    this.UpdateFieldReports();
+  }
+
+  deleteFieldReport(id: number) {
+    const index &#x3D; this.findIndex(id);
+    this.fieldReports.splice(index, 1);
+    this.UpdateFieldReports();
+    // this.nextId-- // REVIEW: is this desired???
+  }
+
+  deleteAllFieldReports() {
+    this.fieldReports &#x3D; []
+    localStorage.removeItem(this.storageLocalName)
+    this.nextId &#x3D; 0 // REVIEW: is this desired???
+  }
+
+  // rewrite field reports to localStorage &amp; update subscribers
+  UpdateFieldReports() {
+    localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports));
+
+    this.fieldReportsSubject.next(this.fieldReports.map(  // REVIEW: is this just for 1 new report, or any localstorage updates?
+      fieldReport &#x3D;&gt; ({
+        id: fieldReport.id,
+        callsign: fieldReport.callsign,
+        team: fieldReport.team,
+        address: fieldReport.address,
+        lat: fieldReport.lat,
+        lng: fieldReport.lng,
+        date: fieldReport.date,
+        status: fieldReport.status,
+        note: fieldReport.note
+      })
+    ))
+  }
+
+  private findIndex(id: number): number {
+    for (let i &#x3D; 0; i &lt; this.fieldReports.length; i++) {
+      if (this.fieldReports[i].id &#x3D;&#x3D;&#x3D; id) {
+        return i
+      }
+    }
+    throw new Error(&#x60;FieldReport with id ${id} was not found!&#x60;)
+    // return -1
+  }
+
+  sortFieldReportsByCallsign() {
+    return this.fieldReports.sort((n1, n2) &#x3D;&gt; {
+      if (n1.callsign &gt; n2.callsign) { return 1 }
+      if (n1.callsign &lt; n2.callsign) { return -1 }
+      return 0;
+    })
+
+    // let sorted &#x3D; this.fieldReports.sort((a, b) &#x3D;&gt; a.callsign &gt; b.callsign ? 1 : -1)
+    // console.log(&quot;SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!&quot;)
+  }
+
+  sortFieldReportsByDate() {
+    return this.fieldReports.sort((n1, n2) &#x3D;&gt; {
+      if (n1.date &gt; n2.date) { return 1 }
+      if (n1.date &lt; n2.date) { return -1 }
+      return 0;
+    })
+  }
+
+  // ------------------ BOUNDS ---------------------------
+  getFieldReportBounds() {
+    return this.bounds
+  }
+
+  getFieldReportBound() {
+    return this.bound
+  }
+
+  recalcFieldBounds() {
+    console.log(&#x60;recalcFieldBounds got ${this.fieldReports.length} field reports&#x60;)
+    let north
+    let west
+    let south
+    let east
+
+    if (this.fieldReports.length) {
+      north &#x3D; this.fieldReports[0].lat
+      west &#x3D; this.fieldReports[0].lng
+      south &#x3D; this.fieldReports[0].lat
+      east &#x3D; this.fieldReports[0].lng
+
+      // https://www.w3docs.com/snippets/javascript/how-to-find-the-min-max-elements-in-an-array-in-javascript.html
+      // concludes with: &quot;the results show that the standard loop is the fastest&quot;
+
+      for (let i &#x3D; 1; i &lt; this.fieldReports.length; i++) {
+        if (this.fieldReports[i].lat &gt; north) {
+          north &#x3D; Math.round(this.fieldReports[i].lat * 10000) / 10000
+        }
+        if (this.fieldReports[i].lat &lt; south) {
+          south &#x3D; Math.round(this.fieldReports[i].lat * 10000) / 10000
+        }
+        if (this.fieldReports[i].lng &gt; east) {
+          east &#x3D; Math.round(this.fieldReports[i].lng * 10000) / 10000
+        }
+        if (this.fieldReports[i].lng &gt; west) {
+          west &#x3D; Math.round(this.fieldReports[i].lng * 10000) / 10000
+        }
+      }
+    } else {
+      // no field reports yet! Rely on broadening processing below
+      north &#x3D; SettingsService.Settings.defLat
+      west &#x3D; SettingsService.Settings.defLng
+      south &#x3D; SettingsService.Settings.defLat
+      east &#x3D; SettingsService.Settings.defLng
+    }
+
+    console.log(&#x60;recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} &#x60;)
+    if (east - west &lt; 2 * this.boundsMargin) {
+      east +&#x3D; this.boundsMargin
+      west -&#x3D; this.boundsMargin
+      console.log(&#x60;recalcFieldBounds BROADENED to E:${east} W:${west} &#x60;)
+    }
+    if (north - south &lt; 2 * this.boundsMargin) {
+      north +&#x3D; this.boundsMargin
+      south -&#x3D; this.boundsMargin
+      console.log(&#x60;recalcFieldBounds BROADENED to N:${north} S:${south} &#x60;)
+    }
+
+    this.bound &#x3D; { east: east, north: north, south: south, west: west } //e,n,s,w
+    //this.bound &#x3D; { east: Math.round(east*10000)/10000, north: Math.round(north*10000)/10000, south: Math.round(south*10000)/10000, west: Math.round(west*10000)/10000 } //e,n,s,w
+    return this.bound
+
+    // BUG: Move out Google specific code...
+    // this.bounds &#x3D; new google.maps.LatLngBounds(new google.maps.LatLng(south, west), new google.maps.LatLng(north, east)) //SW, NE
+  }
+
+  updateFieldReportBounds(newFR: FieldReportType) {
+    this.bounds.extend(new google.maps.LatLng(newFR.lat, newFR.lng))
+    this.bound &#x3D; this.getBoundFromBounds(this.bounds)
+    return this.bound
+  }
+
+  // TODO: put in coordinates or utility? This relies on GOOGLE.MAPS!
+  getBoundFromBounds(bounds: google.maps.LatLngBounds): google.maps.LatLngBoundsLiteral {
+    let NE &#x3D; new google.maps.LatLng(bounds.getNorthEast())
+    let SW &#x3D; new google.maps.LatLng(bounds.getSouthWest())
+    return { east: NE.lng(), north: NE.lat(), south: SW.lat(), west: SW.lng() }
+  }
+
+
+  // --------------------------------------------------------
+
+  sortFieldReportsByTeam() {
+    return this.fieldReports.sort((n1, n2) &#x3D;&gt; {
+      if (n1.team &gt; n2.team) { return 1 }
+      if (n1.team &lt; n2.team) { return -1 }
+      return 0;
+    })
+  }
+
+  filterFieldReportsByDate(beg: Date, end: Date) { // Date(0) &#x3D; January 1, 1970, 00:00:00 Universal Time (UTC)
+    const minDate &#x3D; new Date(0)
+    const maxDate &#x3D; new Date(2999, 0)
+    beg &#x3D; beg &lt; minDate ? beg : minDate
+    end &#x3D; (end &lt; maxDate) ? end : maxDate
+
+    return this.fieldReports.filter((report) &#x3D;&gt; (report.date &gt;&#x3D; beg &amp;&amp; report.date &lt;&#x3D; end))
+  }
+
+  /*
+const filterParams &#x3D; {
+comparator: (filterLocalDateAtMidnight: any, cellValue: any) &#x3D;&gt; {
+  const dateAsString &#x3D; cellValue;
+  const dateParts &#x3D; dateAsString.split(&#x27;/&#x27;);
+  const cellDate &#x3D; new Date(
+    Number(dateParts[2]),
+    Number(dateParts[1]) - 1,
+    Number(dateParts[0])
+  );
+  if (filterLocalDateAtMidnight.getTime() &#x3D;&#x3D;&#x3D; cellDate.getTime()) {
+    return 0;
+  }
+  if (cellDate &lt; filterLocalDateAtMidnight) {
+    return -1;
+  }
+  //if (cellDate &gt; filterLocalDateAtMidnight) {
+  return 1;
+  //}
+},
+}
+*/
+
+
+  generateFakeData(num: number &#x3D; 15) {
+    let teams &#x3D; this.teamService.getTeams()
+    let rangers &#x3D; this.rangerService.GetRangers()
+    if (rangers &#x3D;&#x3D; null || rangers.length &lt; 1) {
+      alert(&quot;No Rangers! Please add some 1st.&quot;)
+      return
+    }
+    const streets &#x3D; [&quot;Ave&quot;, &quot;St.&quot;, &quot;Pl.&quot;, &quot;Court&quot;, &quot;Circle&quot;]
+    const notes &#x3D; [&quot;Reports beautiful sunrise&quot;, &quot;Roudy Kids&quot;, &quot;Approaching Neighborhood CERT&quot;, &quot;Confused &amp; dazed in the sun&quot;,
+      &quot;Wow&quot;, &quot;na&quot;, &quot;Can&#x27;t hear you&quot;, &quot;Bounced via tail of a comet!&quot;, &quot;Need confidential meeting: HIPAA&quot;, &quot;Getting overrun by racoons&quot;]
+
+    const msSince1970 &#x3D; new Date().getTime()
+    console.log(&#x60;Adding an additinoal ${num} FAKE field reports... with base of ${msSince1970}&#x60;)
+
+    for (let i &#x3D; 0; i &lt; num; i++) {
+      this.fieldReports.push({
+        id: this.nextId++,
+        callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
+        team: teams[Math.floor(Math.random() * teams.length)].name,
+        address: (Math.floor(Math.random() * 10000)) + &quot; SW &quot; + streets[(Math.floor(Math.random() * streets.length))],
+        lat: SettingsService.Settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
+        lng: SettingsService.Settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
+        date: new Date(Math.floor(msSince1970 - (Math.random() * 10 * 60 * 60 * 1000))), // 0-10 hrs earlier
+        status: this.fieldReportStatuses[Math.floor(Math.random() * this.fieldReportStatuses.length)].status,
+        note: notes[Math.floor(Math.random() * notes.length)]
+      })
+    }
+    this.recalcFieldBounds()
+  }
+
+}
+
+// Example: read JSON file. https://ag-grid.com/angular-data-grid/column-definitions/#example-column-definition
+/*
+  onGridReady(params) {
+    this.gridApi &#x3D; params.api;
+    this.gridColumnApi &#x3D; params.columnApi;
+
+    this.http
+      .get(&#x27;https://www.ag-grid.com/example-assets/olympic-winners.json&#x27;)
+      .subscribe((data) &#x3D;&gt; params.api.setRowData(data));
+  }
+  */
+
+
+
+/*  OLD CODE FROM 4.2 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
+
+function filterLocations(filters) {
+
+  // clear any previous markers
+  clearLeafletMarkers();
+  clearGoogMarkers();
+  clearEsriMarkers();
+
+  // Track min/max marker bounds
+  var arrayOfLatLngs &#x3D; [];
+  var _this &#x3D; this;
+  var minLat&#x3D;Infinity, minLng&#x3D;Infinity, maxLat&#x3D;-Infinity, maxLng&#x3D;-Infinity;
+
+  // setup a marker group
+  // TODO: Move to map provider layer...
+  var markers &#x3D; L.markerClusterGroup();
+  markers.clearLayers();
+  //mapLeafletMarkers;
+
+
+  if (teamLocations) {
+  for (var i &#x3D; 0; i &lt; teamLocations.length; i++) {
+    //dbug(&quot;Displaying marker &quot;+i);
+    // https://leafletjs.com/reference-1.4.0.html#marker
+    var llat &#x3D; teamLocations[i].Latitude;
+    var llong &#x3D; teamLocations[i].Longitude;
+
+    /* Alternatives:
+      // function myArrayMax(arr) {  return Math.max.apply(null, arr);   }
+      // or by another index/object
+      // var cars &#x3D; [  {type:&quot;Volvo&quot;, year:2016},   {type:&quot;Saab&quot;, year:2001} ];   cars.sort(function(a, b){return a.year - b.year});
+      // for string properties:
+      // cars.sort(function(a, b){ var x &#x3D; a.type.toLowerCase();  var y &#x3D; b.type.toLowerCase();  if (x &lt; y) {return -1;}  if (x &gt; y) {return 1;}  return 0; });
+
+      // new filtered array:
+      // BUT: 11% slower: https://jsperf.com/array-filter-performance
+      // var numbers &#x3D; [45, 4, 9, 16, 25]; var over18 &#x3D; numbers.filter(myFunction);  function myFunction(value, index, array) {  return value &gt; 18;  }
+
+      https://stackoverflow.com/questions/10557486
+      https://api.jquery.com/jQuery.grep/
+    * /
+
+    if (filters!&#x3D;null) {
+      // Process Filters...
+      //dbug(&quot;Filters Received&quot;);
+
+      //Filter Team?
+      //dbug(&quot;Team[&quot;+i+&quot;]&#x3D;&quot;+teamLocations[i].Team);
+      if (filters.Team.length!&#x3D;0 &amp;&amp; (teamLocations[i].Team!&#x3D;filters.Team)) {
+        dbug(&quot;#### Filtered out Team: [&quot;+i+&quot;]&#x3D;&quot;+teamLocations[i].Team);
+        continue;
+      }
+
+      // Filter CallSign?
+      //dbug(&quot;Call[&quot;+i+&quot;]&#x3D;&quot;+teamLocations[i].CallSign);
+      if (filters.CallSign.length!&#x3D;0 &amp;&amp; (teamLocations[i].CallSign!&#x3D;filters.CallSign)) {
+        dbug(&quot;#### Filtered out CallSign: [&quot;+i+&quot;]&#x3D;&quot;+teamLocations[i].CallSign);
+        continue;
+      }
+
+      // Filter based on time?
+      //dbug(&quot;Time[&quot;+i+&quot;]  &#x3D;  &quot;+teamLocations[i].Date);
+      //dbug(&quot;BaseTime&#x3D;&quot;+filters.BaseTime+&quot;; minutes&#x3D;&quot;+filters.Minutes);
+      //dbug(&quot;Minutes&#x3D;&quot;+Date.parse(teamLocations[i].Date)/60000.0);
+
+      //dbug(&quot;Time Diff&#x3D;&quot;+Math.abs(Date.parse(teamLocations[i].Date) - Date.parse(filters.BaseTime))/60000.0+&quot;&lt;br&gt;&lt;br&gt;&quot;);
+
+      // Milliseconds/minute &#x3D; 60+1000
+      if (filters.Minutes!&#x3D;0 &amp;&amp; filters.BaseTime.length!&#x3D;0 &amp;&amp;
+      (Math.abs(Date.parse(teamLocations[i].Date) - Date.parse(filters.BaseTime)) &gt;&#x3D; filters.Minutes*60000.0) ) {
+        dbug(&quot;#### Filtered out Time: [&quot;+i+&quot;]&#x3D;&quot;+teamLocations[i].CallSign);
+        continue;
+      }
+    }
+
+    minLat &#x3D; Math.min(minLat,llat);
+    minLng &#x3D; Math.min(minLng,llong);
+    maxLat &#x3D; Math.max(maxLat,llat);
+    maxLng &#x3D; Math.max(maxLng,llong);
+
+    // setup the bounds
+    arrayOfLatLngs.push([llat,llong]);
+
+    // dbug(&quot;Coords&#x3D;&#x27;&quot; + llat + &quot;, &quot; + llong + &quot;&#x27;&quot;);
+    // dbug(&quot;Map bounds reset to: [&quot;+minLat+&quot;,&quot;+minLng+&quot;], [&quot;+maxLat+&quot;,&quot;+maxLng+&quot;]&quot;);
+
+    var color &#x3D; defTeamColor;
+    var shape &#x3D; defTeamShape;
+    var fillColor &#x3D; defTeamFillColor;
+    var fillOpacity &#x3D; defTeamOpacity;
+
+    var numTeams &#x3D; teams.length;
+    var teamsIndex;
+
+    var team &#x3D; teamLocations[i].Team;
+    // dbug(&quot;teamLocations[&quot;+i+&quot;]&#x3D;&quot;+team);
+
+    for (teamsIndex&#x3D;0; teamsIndex&lt;numTeams; teamsIndex++) {
+      // dbug(&quot;filterLocations: teams[&quot;+teamsIndex+&quot;].value&#x3D;&#x27;&quot;+teams[teamsIndex].value+&quot;&#x27; &#x3D;&#x3D; team&#x3D;&#x27;&quot;+team+&quot;&#x27;&quot;);
+      if (teams[teamsIndex].value &#x3D;&#x3D; team) {
+        color &#x3D; teams[teamsIndex].color; //TODO: if !empty // BUGBUG: Likely assumes every team has values in the teams array. Unlikely, hah!
+        fillColor &#x3D; teams[teamsIndex].fillColor;
+        //fillOpacity &#x3D; teams[teamIndex].fillOpacity;
+        shape &#x3D; teams[teamsIndex].shape;
+        // dbug(&quot;filterLocations: Teams index&#x3D;&quot;+teamsIndex + &quot;; color:&quot;+color+&quot;; fillColor:&quot;+fillColor+&quot;; fillOpacity:&quot;+fillOpacity+&quot;; shape:&quot;+shape);
+        break;
+      }
+    }
+
+
+
+
+    displayLeafletMarkers();
+    displayGoogMarkers();
+    displayEsriMarkers();
+
+
+
+    var newMarker;
+
+    switch(shape) {
+      case &quot;Marker&quot;:
+        // https://leafletjs.com/reference-1.4.0.html#icon
+
+        var myIcon &#x3D; L.icon({
+              iconUrl: (iconDir+teams[teamsIndex].icon),
+              iconSize: [32, 37],
+              iconAnchor: [20, 20],
+              popupAnchor: [-5, -5],
+              //shadowUrl: &#x27;my-icon-shadow.png&#x27;,
+              //shadowSize: [68, 95],
+              //shadowAnchor: [22, 94]
+          });
+
+        newMarker &#x3D; L.marker([llat, llong], {icon: myIcon}
+            // , title: teamLocations[i].CallSign + &quot;&lt;br&gt;&quot; + teamLocations[i].Date
+            )
+            .bindPopup(
+              teamLocations[i].CallSign + &quot; - &quot; + teamLocations[i].Licensee + &quot;&lt;br&gt;&quot;
+              + teamLocations[i].Date.replace(&quot;T&quot;, &quot; &quot;) + &quot;&lt;br&gt;&quot;
+              + teamLocations[i].FieldReports );
+        //dbug(&quot;Created Marker. icon&#x3D;&quot; + iconDir + teams[teamsIndex].icon + &quot;; &quot; );
+        break;
+
+      case &quot;Circle&quot;:
+      default:
+        newMarker &#x3D; L.circle([llat, llong], CIRCLE_SIZE, {
+            color: color,
+            fillColor: fillColor,
+            fillOpacity: fillOpacity,
+          }, title&#x3D;&quot;&quot;).bindPopup(
+              teamLocations[i].CallSign + &quot; - &quot; + teamLocations[i].Licensee + &quot;&lt;br&gt;&quot;
+              + teamLocations[i].Date.replace(&quot;T&quot;, &quot; &quot;) + &quot;&lt;br&gt;&quot;
+              + teamLocations[i].FieldReports
+            );
+
+
+      // FieldReport: You may run into issues with the popups closing when you mouse onto the popup itself,
+      // so you might need to adjust the popup anchor in (see popup settings) to show your popups a
+      // bit farther away from marker itself so it doesn&#x27;t disappear too easily.
+      // http://gis.stackexchange.com/questions/31951/ddg#95795
+
+      /*
+        // sample code for having all popups open if users hovers over any point...
+        var markers &#x3D; getAllMarkers(); // up to you to implement, say it returns an Array&lt;L.Marker&gt;
+        for (var i &#x3D; 0; i &lt; markers.length; i++) {
+            var currentMarker &#x3D; markers[i];
+            currentMarker.on(&#x27;mouseover&#x27;, currentMarker.openPopup.bind(currentMarker));
+        }
+      * /
+      //dbug(&quot;Created Circle!&quot;);
+      //Done with this row, get next
+      break;
+    }
+
+    newMarker.on(&#x27;mouseover&#x27;, function (e) { this.openPopup();  });
+    newMarker.on(&#x27;mouseout&#x27; , function (e) { this.closePopup(); });
+
+    // marker.bindPopup(View(event));
+    // add marker
+    markers.addLayer(newMarker);
+  } // Done adding this row to the map
+
+  // https://stackoverflow.com/questions/14106687/how-do-i-change-the-default-cursor-in-leaflet-maps
+  bigMap.on(&#x27;click&#x27;, onMapClick);
+  $(&#x27;.leaflet-container&#x27;).css(&#x27;cursor&#x27;,&#x27;crosshair&#x27;); // reset cursor with &#x27;&#x27;!
+
+  // Display coordinates if map is clicked
+  var popup &#x3D; L.popup();
+
+  function onMapClick(e) {
+    popup
+      .setLatLng(e.latlng)
+      .setContent(e.latlng.toString())
+      .openOn(bigMap);
+  }
+
+  // add the group to the map
+  // for more see https://github.com/Leaflet/Leaflet.markercluster
+  //markerCluster needs maxzoom
+  bigMap.addLayer(markers);
+
+  //markers.on(&#x27;clusterclick&#x27;, function (a) {
+  //// markers.zoomToBounds({padding: [20, 20]});
+  //});
+
+  /*markers.on(&#x27;clusterclick&#x27;, function (a) {
+    a.layer.zoomToBounds();
+  });
+  * /
+
+  var bounds &#x3D; new L.LatLngBounds(arrayOfLatLngs);
+  bigMap.fitBounds(bounds);
+  bigMap.invalidateSize();
+
+// TODO: Zoom in to closest view that shows all points:
+// https://leafletjs.com/reference-1.4.0.html#map-methods-for-modifying-map-state
+// dbug(&quot;Set map bounds to: [&quot;+minLat+&quot;,&quot;+minLng+&quot;], [&quot;+maxLat+&quot;,&quot;+maxLng+&quot;]&quot;);
+// bigMap.fitBounds(L.latLngBounds([minLat,minLng], [maxLat,maxLng]));
+// bigMap.fitBounds([minLat,minLng], [maxLat,maxLng]);
+
+// bigMap.updateSize();
+//bigMap.invalidateSize(true);
+// GridLayer.redraw()
+// bigMap._onResize();
+  }
+
+
+
+  export class AppComponent {
+    ST: {a:string, b:any}[] &#x3D; [
+      {
+        a: &#x27;Bobby&#x27;,
+        b: &#x27;USA&#x27;
+      },
+    ];
+  }
+  */
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'FieldReportService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

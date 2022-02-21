@@ -1,0 +1,1335 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li
+  >
+  IconComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/entry/entry.component.ts</code>
+</p>
+
+
+
+
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>icon</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">template</td>
+                <td class="col-md-9"><pre class="line-numbers"><code class="language-html">&lt;svg version&#x3D;&quot;1.1&quot; viewBox&#x3D;&quot;0 0 24 24&quot; style&#x3D;&quot;display:inline-block;width:1.5rem&quot;&gt;
+    &lt;path [attr.d]&#x3D;&quot;data&quot; d&#x3D;&quot;M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z&quot; /&gt;
+&lt;/svg&gt;
+</code></pre></td>
+            </tr>
+
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#path" >path</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+
+    <section>
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="path"></a>
+                        <b>path</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z&#x27;</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="86" class="link-to-prism">src/app/entry/entry.component.ts:86</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DOCUMENT } from &#x27;@angular/common&#x27;
+import { Component, Inject, OnInit, ViewChild, isDevMode, Input, NgZone } from &#x27;@angular/core&#x27;
+import { ThemePalette } from &#x27;@angular/material/core&#x27;;
+import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from &#x27;@angular/forms&#x27;
+import { HttpClient } from &#x27;@angular/common/http&#x27;;
+
+//import { MatDatepickerModule } from &#x27;@angular/material/datepicker&#x27;
+//import { MatInputModule } from &#x27;@angular/material/input&#x27;
+
+import { MatSnackBar } from &#x27;@angular/material/snack-bar&#x27;
+import { BrowserAnimationsModule } from &#x27;@angular/platform-browser/animations&#x27;
+import { Observable, debounceTime, map, startWith, switchMap } from &#x27;rxjs&#x27;
+import { MapInfoWindow, MapMarker, GoogleMap } from &#x27;@angular/google-maps&#x27;
+
+import { AlertsComponent } from &#x27;../alerts/alerts.component&#x27;
+import { FieldReportService, FieldReportStatusType, RangerService, RangerType, SettingsService, TeamService } from &#x27;../shared/services/&#x27;
+
+//import { addressType } from &#x27;../lmap/lmap.component&#x27; // BUG:
+import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from &#x27;../shared/&#x27; // BUG: , What3Words
+import { LatLng } from &#x27;leaflet&#x27;;
+
+//import { MatDatepickerModule } from &#x27;@matheo/datepicker&#x27;; //https://www.npmjs.com/package/@matheo/datepicker
+//import { MatNativeDateModule } from &#x27;@matheo/datepicker/core&#x27;;
+import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from &#x27;@angular-material-components/datetime-picker&#x27;// (already in ngModule)
+import * as dayjs from &#x27;dayjs&#x27; // https://day.js.org/docs/en/ or https://github.com/dayjs/luxon/
+
+import * as P from &#x27;@popperjs/core&#x27;;
+//import { createPopper } from &#x27;@popperjs/core&#x27;;
+import type { StrictModifiers } from &#x27;@popperjs/core&#x27;;
+
+import { faMapMarkedAlt, faInfoCircle } from &#x27;@fortawesome/free-solid-svg-icons&#x27;;
+import { mdiAccount, mdiInformationOutline } from &#x27;@mdi/js&#x27;;
+//import { lookupCollections, locate } from &#x27;@iconify/json&#x27;; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
+import { DomSanitizer } from &#x27;@angular/platform-browser&#x27;;
+import { MatIconRegistry } from &#x27;@angular/material/icon&#x27;;// https://material.angular.io/components/icon/examples
+
+const Vashon: google.maps.LatLngLiteral &#x3D; { lat: 47.4471, lng: -122.4627 }
+// IDEA: use https://material.angular.io/components/badge/ ???
+
+const THUMBUP_ICON &#x3D;
+  &#x60;
+  &lt;svg xmlns&#x3D;&quot;http://www.w3.org/2000/svg&quot; width&#x3D;&quot;24px&quot; height&#x3D;&quot;24px&quot;&gt;
+    &lt;path d&#x3D;&quot;M0 0h24v24H0z&quot; fill&#x3D;&quot;none&quot;/&gt;
+    &lt;path d&#x3D;&quot;M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.&#x60; +
+  &#x60;44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5&#x60; +
+  &#x60;1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z&quot;/&gt;
+  &lt;/svg&gt;
+&#x60;
+
+// https://popper.js.org/docs/v2/constructors/
+type Placement &#x3D;
+  | &#x27;auto&#x27;
+  | &#x27;auto-start&#x27;
+  | &#x27;auto-end&#x27;
+  | &#x27;top&#x27;
+  | &#x27;top-start&#x27;
+  | &#x27;top-end&#x27;
+  | &#x27;bottom&#x27;
+  | &#x27;bottom-start&#x27;
+  | &#x27;bottom-end&#x27;
+  | &#x27;right&#x27;
+  | &#x27;right-start&#x27;
+  | &#x27;right-end&#x27;
+  | &#x27;left&#x27;
+  | &#x27;left-start&#x27;
+  | &#x27;left-end&#x27;;
+type Strategy &#x3D; &#x27;absolute&#x27; | &#x27;fixed&#x27;;
+/*type Options &#x3D; {|
+  placement: Placement, // &quot;bottom&quot;
+  modifiers: Array&lt;$Shape&lt;Modifier&lt;any&gt;&gt;&gt;, // []
+  strategy: PositioningStrategy, // &quot;absolute&quot;,
+  onFirstUpdate?: ($Shape&lt;State&gt;) &#x3D;&gt; void, // undefined
+|};*/
+
+
+
+@Component({
+  selector: &#x27;icon&#x27;,
+  template: &#x60;
+    &lt;svg version&#x3D;&quot;1.1&quot; viewBox&#x3D;&quot;0 0 24 24&quot; style&#x3D;&quot;display:inline-block;width:1.5rem&quot;&gt;
+        &lt;path [attr.d]&#x3D;&quot;data&quot; d&#x3D;&quot;M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z&quot; /&gt;
+    &lt;/svg&gt;
+  &#x60;
+})
+export class IconComponent {
+  @Input(&#x27;path&#x27;) data: string &#x3D; &#x27;M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z&#x27;;
+}
+
+
+
+
+
+@Component({
+  selector: &#x27;rangertrak-entry&#x27;,
+  templateUrl: &#x27;./entry.component.html&#x27;,
+  styleUrls: [&#x27;./entry.component.scss&#x27;],
+  providers: [RangerService, FieldReportService, SettingsService, TeamService]
+})
+export class EntryComponent implements OnInit {
+  @ViewChild(&#x27;picker&#x27;) picker: any; // https://blog.angular-university.io/angular-viewchild/
+  @Input(&#x27;path&#x27;) data: string &#x3D; &#x27;M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z&#x27;;
+
+  //createPopper&lt;StrictModifiers&gt;(referenceElement, popperElement, options)
+
+  faMapMarkedAlt &#x3D; faMapMarkedAlt
+  faInfoCircle &#x3D; faInfoCircle
+  mdiAccount: string &#x3D; mdiAccount
+  mdiInformationOutline: string &#x3D; mdiInformationOutline
+
+
+  // ------------------ MAP STUFF  ------------------
+  // imports this.map as a GoogleMap which is the Angular wrapper around a google.maps.Map...
+  @ViewChild(GoogleMap, { static: false }) map!: GoogleMap // even needed?
+  // google.maps.Map is NOT the same as GoogleMap...
+  gMap?: google.maps.Map
+  //map2?: google.maps.Map // unused
+
+  onlyMarker &#x3D; new google.maps.Marker({
+    draggable: false,
+    animation: google.maps.Animation.DROP
+  }) // i.e., a singleton...
+
+  // TODO: move to abstracted x instead of google.maps
+  mouseLatLng?: google.maps.LatLngLiteral
+  vashon &#x3D; new google.maps.LatLng(47.4471, -122.4627)
+
+  zoom &#x3D; 11
+  center: google.maps.LatLngLiteral &#x3D; Vashon
+  options: google.maps.MapOptions &#x3D; {
+    zoomControl: true,
+    scrollwheel: true,
+    disableDoubleClickZoom: true,
+    mapTypeId: &#x27;hybrid&#x27;,
+    maxZoom: 21,
+    minZoom: 7,
+    draggableCursor: &#x27;crosshair&#x27;, // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
+    //heading: 90,
+  }
+  geocoder &#x3D; new GoogleGeocode
+  //w3w &#x3D; new What3Words
+
+  // --------------- ENTRY FORM -----------------
+  // creating controls in a component class, provides immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
+  callsignCtrl &#x3D; new FormControl()
+  addressCtrl &#x3D; new FormControl()  // TODO: No formControlName&#x3D;&quot;addressCtrl&quot;!!!!
+  filteredRangers: Observable&lt;RangerType[]&gt;
+  rangers: RangerType[] &#x3D; []
+  fieldReportStatuses: FieldReportStatusType[] &#x3D; []
+  settings
+  entryDetailsForm!: FormGroup
+  //w3w &#x3D; new What3Words()
+
+  submitInfo: HTMLElement | null &#x3D; null
+  callInfo: HTMLElement | null &#x3D; null
+  alert: any
+
+  button: HTMLButtonElement | undefined
+  tooltip: HTMLHtmlElement | undefined
+  popperInstance: any //typeof P.createPopper | undefined
+
+  // --------------- DATE-TIME PICKER -----------------
+
+  // https://github.com/angular/components/issues/5648
+  // https://ng-matero.github.io/extensions/components/datetimepicker/overview (nice)
+  // https://vlio20.github.io/angular-datepicker/timeInline (unused)
+  // https://h2qutc.github.io/angular-material-components - IN USE HERE!
+  public date: dayjs.Dayjs &#x3D; dayjs()
+
+
+/*  It looks like you&#x27;re using the disabled attribute with a reactive form directive.
+ If you set disabled to true when you set up this control in your component class,
+ the disabled attribute will actually be set in the DOM for
+  you. We recommend using this approach to avoid &#x27;changed after checked&#x27; errors.
+
+  Example:
+  form &#x3D; new FormGroup({
+    first: new FormControl({value: &#x27;Nancy&#x27;, disabled: true}, Validators.required),
+    last: new FormControl(&#x27;Drew&#x27;, Validators.required)
+  });
+*/
+  public disabled &#x3D; false;
+  public showSpinners &#x3D; true;
+  public showSeconds &#x3D; false; // only affects display in picker
+  public touchUi &#x3D; false;
+  public enableMeridian &#x3D; false; // 24 hr clock
+
+  minDate!: dayjs.Dayjs | null
+  maxDate!: dayjs.Dayjs | null
+  public stepHour &#x3D; 1;
+  public stepMinute &#x3D; 1;
+  public stepSecond &#x3D; 1;
+  public color: ThemePalette &#x3D; &#x27;primary&#x27;;
+  disableMinute &#x3D; false
+  hideTime &#x3D; false
+/*
+  public formGroup &#x3D; new FormGroup({
+    date1: new FormControl(dayjs(), [Validators.required]), //.utcOffset()
+    date2: new FormControl(null, [Validators.required])
+  })
+
+  public dateControl &#x3D; new FormControl(dayjs()); // TODO:  vs dateCtrl???? (just shows date, not time?)
+  public dateControlMinMax &#x3D; new FormControl(dayjs());
+*/
+  dateCtrl &#x3D; new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
+
+  // hhttps://github.com/h2qutc/angular-material-components
+  /* following causes:  No suitable injection token for parameter &#x27;formBuilder&#x27; of class &#x27;EntryComponent&#x27;.
+  Consider using the @Inject decorator to specify an injection token.(-992003)
+entry.component.ts(77, 26): This type does not have a value, so it cannot be used as injection token.
+*/
+  constructor(
+    private formBuilder: FormBuilder,
+    private rangerService: RangerService,
+    private fieldReportService: FieldReportService,
+    private settingsService: SettingsService,
+    // private teamService: TeamService,
+    private _snackBar: MatSnackBar,
+    iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, // for svg mat icons
+    private http: HttpClient,
+    private zone: NgZone,
+    @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
+
+
+    // https://fonts.google.com/icons &amp;&amp; https://material.angular.io/components/icon
+    // Note that we provide the icon here as a string literal here due to a limitation in
+    // Stackblitz. If you want to provide the icon from a URL, you can use:
+    iconRegistry.addSvgIcon(&#x27;thumbs-up&#x27;, sanitizer.bypassSecurityTrustResourceUrl(&#x27;icon.svg&#x27;))
+    //iconRegistry.addSvgIconLiteral(&#x27;thumbs-up&#x27;, sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
+
+    // REVIEW: Min/Max times ignored?!
+    this._setMinDate(10) // no times early than 10 hours ago
+    this._setMaxDate(1)  // no times later than 1 hours from now
+
+    this.rangers &#x3D; rangerService.GetRangers() // TODO: or getActiveRangers?!
+
+    this.alert &#x3D; new AlertsComponent(this._snackBar, this.document)// TODO: Use Alert Service to avoid passing along doc &amp; snackbar properties!!!!
+    if (this.rangers.length &lt; 1) {
+      this.alert.Banner(&#x27;Welcome! First load your rangers - at the bottom of the Rangers page.&#x27;, &#x27;Go to Rangers page&#x27;, &#x27;Ignore&#x27;)
+      //this.alert.OpenSnackBar(&#x60;No Rangers exist. Please go to Advance section at bottom of Ranger page!&#x60;, &#x60;No Rangers yet exist.&#x60;, 2000)
+      //TODO: Force navigation to /Rangers?
+    }
+
+    this.fieldReportService &#x3D; fieldReportService
+    this.fieldReportStatuses &#x3D; settingsService.getFieldReportStatuses() // TODO: Need to update if user modified settings page: SUBSCRIBE!! or do every redisplay??
+    this.settings &#x3D; SettingsService.Settings
+
+    // NOTE: workaround for onChange not working...
+    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall &#x3D;&gt; this.CallsignChanged(newCall))
+    // TODO: NOt working yet...
+    console.log(&#x60;addressCtrl.valueChanges&#x60;)
+    // TODO: No formControlName&#x3D;&quot;addressCtrl&quot;!!!!
+    this.addressCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newAddr &#x3D;&gt; this.addressCtrlChanged2(newAddr))
+
+    // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
+    this.filteredRangers &#x3D; this.callsignCtrl.valueChanges.pipe(
+      startWith(&#x27;&#x27;),
+      map(callsign &#x3D;&gt; (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+    )
+    console.log(&#x60;constructor: ranger ${(this.filteredRangers)}&#x60;) //JSON.stringify
+
+    // OLD:  map(ranger &#x3D;&gt; (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
+    // NEW: map(callsign &#x3D;&gt; (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+  }
+
+
+  //https://www.c-sharpcorner.com/article/formbuilder-service-in-angular/
+  //change the setTimeout statement by replacing setValue to patchValue.
+  // setTimeout(() &#x3D;&gt; this.registrationForm.patchValue(this.sampleData), 5000);
+  //Now you can skip giving any field control value from the sampleData object. It will not throw error and set the values that are available.
+
+
+  private _filterRangers(value: string): RangerType[] {
+    console.log(&#x60;_filterRangers  value changed: ${value}&#x60;)
+
+    const filterValue &#x3D; value.toLowerCase()
+    this.entryDetailsForm.value.callsign &#x3D; filterValue
+    return this.rangers.filter((ranger1) &#x3D;&gt; ranger1.callsign.toLowerCase().includes(filterValue))
+    /* NEW:
+      this.entryDetailsForm.value.callsign &#x3D; filterValue
+      return this.rangers.filter((ranger1) &#x3D;&gt; ranger1.callsign.toLowerCase().includes(filterValue))
+    */
+    /* OLD:
+      this.entryDetailsForm.controls[&#x27;ranger&#x27;].setValue(filterValue) // TODO: MAT input field not automatically set into entryForm
+      return this.rangers.filter(ranger &#x3D;&gt; ranger.callsign.toLowerCase().includes(filterValue));
+    */
+  }
+
+  ngOnInit(): void {
+    console.log(&#x60;EntryForm test started at ${Date()} with development mode ${isDevMode() ? &quot;&quot; : &quot;NOT &quot;}enabled&#x60;)
+    console.log(&quot;EntryComponent - ngOnInit - Use settings to fill form&quot;)
+
+    // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
+    // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
+
+    console.log(&#x60;Running ${this.settings.application} version ${this.settings.version}&#x60;)
+
+    this.entryDetailsForm &#x3D; this.formBuilder.group({
+      id: -1,
+      callsign: [&#x27;&#x27;],
+      team: [&#x27;T1&#x27;],
+      address: [&#x27;&#x27;],  // &#x27; , Vashon, WA 98070&#x27; ?
+      lat: [this.settings.defLat, Validators.required], //Validators.minLength(4)
+      lng: [this.settings.defLng, Validators.required], //Validators.minLength(4)
+      date: [new Date()],
+      status: [this.fieldReportStatuses[this.settings.defRangerStatus].status],
+      note: [&#x27;&#x27;]
+    })
+
+    this.submitInfo &#x3D; this.document.getElementById(&quot;enter__Submit-info&quot;)
+
+    if (!this.settings.debugMode) {
+      this.displayHide(&quot;enter__frm-reguritation&quot;)
+    }
+
+    // On Location/Address Change subscriptions  // TODO: USE THESE!!!
+    if (this.entryDetailsForm) {
+      // this.addressCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newAddr &#x3D;&gt; this.addressCtrlChanged2(newAddr))
+      this.entryDetailsForm.get(&quot;lat&quot;)?.valueChanges.pipe(debounceTime(700)).subscribe(x &#x3D;&gt; {
+        console.log(&#x27;########  latitude value changed: &#x27; + x)
+      })
+      this.entryDetailsForm.get(&quot;lng&quot;)?.valueChanges.pipe(debounceTime(700)).subscribe(x &#x3D;&gt; {
+        console.log(&#x27;##########  longitude value changed: &#x27; + x)
+      })
+      this.entryDetailsForm.get(&quot;address&quot;)?.valueChanges.pipe(debounceTime(700)).subscribe(x &#x3D;&gt; {
+        console.log(&#x27;#######  address value changed: &#x27; + x)
+      })
+    }
+    //this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall &#x3D;&gt; this.CallsignChanged(newCall))
+
+    this.button &#x3D; document.querySelector(&#x27;#button&#x27;) as HTMLButtonElement
+    this.tooltip &#x3D; document.querySelector(&#x27;#tooltip&#x27;) as HTMLHtmlElement
+    // https://popper.js.org/docs/v2/constructors/
+    this.popperInstance &#x3D; P.createPopper(this.button, this.tooltip, {
+      modifiers: [
+        {
+          name: &#x27;offset&#x27;,
+          options: {
+            offset: [0, 8],
+          },
+        },
+      ],
+    })
+    this.date &#x3D; dayjs()
+    console.log(&#x60;EntryForm ngOnInit completed at ${Date()}&#x60;)
+  }
+
+  // this.myReactiveForm.reset(this.myReactiveForm.value)
+  // https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
+  // https://stackoverflow.com/a/54048660
+  resetForm() {
+    console.log(&quot;Resetting form...&quot;)
+
+    this.entryDetailsForm &#x3D; this.formBuilder.group({
+      id: -2,
+      callsign: [&#x27;&#x27;],
+      team: [&#x27;T0&#x27;],
+      address: [&#x27;&#x27;], // &#x27; , Vashon, WA 98070&#x27; ?
+      lat: [this.settings.defLat,
+      Validators.required,
+        //Validators.minLength(4)
+      ],
+      lng: [this.settings.defLng,
+      Validators.required,
+        //Validators.minLength(4)
+      ],
+      date: [new Date()],  // TODO: reset dateCtrl instead?!
+      status: [this.fieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list &amp; default of statuses in settings?!
+      note: [&#x27;&#x27;]
+    })
+    // Allow getting new OnCha ngeUpdates - or use the subscription?!
+    this.entryDetailsForm.markAsPristine();
+    this.entryDetailsForm.markAsUntouched();
+  }
+
+
+  // TODO: NOt working yet...
+  CallsignChanged(callsign: string) { // Just serves timer for input field - post interaction
+    console.log(&#x60;EntryForm CallsignChanged()&#x60;)
+
+    this.callInfo &#x3D; this.document.getElementById(&quot;enter__Callsign-upshot&quot;)
+    if (this.callInfo) {
+      console.log(&#x60;EntryForm CallsignChanged looking for ${callsign}&#x60;)
+      //let ranger &#x3D; this.rangers[this.findIndex(callsign)]
+      let ranger &#x3D; this.rangerService.getRanger(callsign)  // REVIEW is this.rangers here &amp; service in sync?
+      this.callInfo.innerHTML &#x3D; &#x60;&lt;span&gt;${ranger.callsign} &lt;/span&gt; | &lt;small&gt; ${ranger.licensee} | ${ranger.phone}&lt;/small &gt; &#x60;
+      //&lt; img class&#x3D; &quot;enter__Callsign-img&quot; aria-hidden src &#x3D; &quot;${ranger.image}&quot; height &#x3D; &quot;50&quot; &gt;
+    } else {
+      console.log(&#x60;EntryForm CallsignChanged did not find enter__Callsign-upshot&#x60;)
+    }
+  }
+
+  CallsignCtrlChanged() { // NOTE: NEVER CALLED (my error, maybe does now..)!!!, so use workaround above...
+    return
+    let callSign: string &#x3D; (this.document.getElementById(&quot;enter__Callsign-input&quot;) as HTMLInputElement).value
+    if (callSign) {
+      console.log(&#x60;CallsignCtrlChanged() call&#x3D; ${callSign} at ${Date.now}&#x60;)
+      this.CallsignChanged(callSign)
+    }
+
+    // TODO: update #enter__Callsign-upshot
+  }
+
+  /*
+    https://www.sitepoint.com/css3-animation-javascript-event-handlers/
+    https://css-tricks.com/controlling-css-animations-transitions-javascript/
+    https://www.smashingmagazine.com/2013/04/css3-transitions-thank-god-specification/#a2
+    https://stackoverflow.com/questions/6268508/restart-animation-in-css3-any-better-way-than-removing-the-element
+    https://css-tricks.com/restart-css-animation/
+    https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+  */
+  reset_animation(element: HTMLElement) {
+    console.log(&#x60;Fade Animation reset&#x60;)
+    element.style.animation &#x3D; &#x27;none&#x27;;
+    element.offsetHeight; // trigger reflow
+    element.style.animation &#x3D; &quot;&quot;;
+  }
+
+  onFormSubmit(formData1: string): void {
+    console.log(&#x60;Form submited at date&#x3D;${this.date} &#x60;)
+    //this.date&#x3D;this.dateCtrl.value // TODO:
+    this.entryDetailsForm.value.date &#x3D; this.dateCtrl.value
+    let formData &#x3D; JSON.stringify(this.entryDetailsForm.value)
+
+    let newReport &#x3D; this.fieldReportService.addfieldReport(formData)
+    console.log(&#x60;Report id # ${newReport.id} has been added.&#x60;)
+    console.log(&quot;formData:  &quot; + formData)
+    //console.log(&quot;formData1: &quot; + JSON.stringify(formData1))
+
+    if (this.submitInfo) {
+      // Display fading confirmation to right of Submit button
+      this.submitInfo.innerText &#x3D; &#x60;Entry id # ${newReport.id} Saved. ${formData}&#x60;
+      this.reset_animation(this.submitInfo)
+    }
+    else {
+      console.log(&quot;NO this.submitInfo ID FOUND!!!&quot;)
+    }
+    this.alert.OpenSnackBar(&#x60;Entry id # ${newReport.id} Saved: ${formData}&#x60;, &#x60;Entry id # ${newReport.id}&#x60;, 2000)
+
+    //this.entryDetailsForm.reset() // std reset just blanks values, doesn&#x27;t initialize them...
+    this.resetForm()
+  }
+
+
+
+  /*
+  FUTURE: Allow entry of keywords
+  get keywordsControls(): any {
+  return (&lt;FormArray&gt;this.entryDetailsForm.get(&#x27;keywords&#x27;)).controls
+  }   */
+
+
+  // ------------------------------------------------------------------------
+  // Map stuff below
+  //#region
+
+  onMapInitialized(newMapReference: google.maps.Map) {
+    console.log(&#x60;onMapInitialized()&#x60;)
+    this.gMap &#x3D; newMapReference
+    /*
+        if (this.gMap &#x3D;&#x3D; null) {
+          console.log(&quot;onMapInitialized(): This.gMap is null&quot;)
+        } else {
+          console.log(&#x60;onMapInitialized(): this.gMap zoom &#x3D;${this.gMap.getZoom()}&#x60;)
+        }
+        */
+    this.updateOverviewMap()
+    console.log(&#x60;onMapInitialized done&#x60;)
+  }
+
+  updateOverviewMap() {
+    console.log(&#x60;updateOverviewMap&#x60;)
+
+    //let latlng &#x3D; new google.maps.LatLng(SettingsService.Settings.defLat, SettingsService.Settings.deflng)
+    //let latlngL &#x3D; {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.deflng}
+
+    // TODO: FitBounds to new point, not to DefLat &amp; Deflng  -- do it on addMarker?
+    // this.gMap?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
+    //this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })) // zooms to max!
+    this.gMap?.setZoom(17) // no effect
+  }
+
+  onMapMouseMove(event: google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      this.mouseLatLng &#x3D; event.latLng.toJSON()
+      //console.log(&#x27;moving()&#x27;);
+    }
+    else {
+      console.warn(&#x27;move(): NO event.latLng!!!!!!!!!!!!!&#x27;);
+    }
+  }
+
+  zoomed() {
+    if (this.zoom &amp;&amp; this.gMap) {
+      this.zoom &#x3D; this.gMap.getZoom()!
+    }
+  }
+
+  //#endregion
+
+
+
+  //----------------------------------------------------------------------------------------
+  // Address stuff : Move to service/utility for us by big maps? Also future is to chg miniMap out with Leaflet map (for offline use)
+  // #region
+
+  // https://developers.google.com/maps/documentation/javascript/places
+  // https://developer.what3words.com/tutorial/javascript
+  // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
+  // https://askinglot.com/what-is-dirty-and-touched-in-angular
+  // https://findanyanswer.com/what-is-dirty-in-angular
+  // https://angular.io/guide/form-validation
+  // https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
+  addressCtrlChanged2(newAddr: string) {
+    // TODO: No formControlName&#x3D;&quot;addressCtrl&quot;!!!!
+    console.log(&#x60;addressCtrlChanged2: ${newAddr} &#x60;)
+
+  }
+
+  UpdateLocation(loc: google.maps.LatLngLiteral, title: string &#x3D; &quot;&quot;) {
+    console.log(&quot;updateLocation() running&quot;)
+    //this.entryDetailsForm.get([&#x27;&#x27;, &#x27;name&#x27;])
+    //this.entryDetailsForm.controls[&#x27;derivedAddress&#x27;].setValue(&#x27;New Derived Address&#x27;)
+    let addr &#x3D; this.document.getElementById(&quot;derivedAddress&quot;)
+    if (addr) { addr.innerHTML &#x3D; &quot;New What3Words goes here!&quot; } // TODO: move to another routine...
+
+    if (title &#x3D;&#x3D; &quot;&quot;) {
+      title &#x3D; &#x60;${Date.now} at lat ${loc.lat}, lng ${loc.lng}.&#x60;
+    }
+
+    this.displayMarker(loc, title)
+  }
+
+  displayMarker(pos: google.maps.LatLngLiteral, title &#x3D; &#x27;Latest Location&#x27;) {
+    console.log(&#x60;displayMarker at ${pos}, title: ${title}&#x60;)
+
+    // Review: will this overwrite/remove any previous marker?
+    if (this.gMap) {
+      this.onlyMarker.setMap(this.gMap)
+    } else {
+      console.warn(&#x27;gMap NOT set in displayMarker!!!!&#x27;)
+    }
+    this.onlyMarker.setPosition(pos)
+    this.onlyMarker.setTitle(title)
+    this.gMap?.setCenter(pos)
+
+    /* label: {
+       // label: this.labels[this.labelIndex++ % this.labels.length],
+       text: &quot;grade&quot;, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+       fontFamily: &quot;Material Icons&quot;,
+       color: &quot;#ffffff&quot;,
+       fontSize: &quot;18px&quot;,
+     },
+     */
+  }
+
+  /*
+     addrInfo: HTMLElement | null &#x3D; null
+
+     AddressChanged(addr: string) { // Just serves timer for input field - post interaction
+       this.addrInfo &#x3D; this.document.getElementById(&quot;enter__Where--Address-upshot&quot;)
+       if (this.addrInfo) {
+         console.log(&#x60;EntryForm AdressChanged looking for ${ address }&#x60;)
+         //let ranger &#x3D; this.rangers[this.findIndex(callsign)];
+         this.addrInfo.innerHTML &#x3D; &#x60;addrInfo goes here&#x60;
+         //&lt;img class&#x3D;&quot;enter__Address-img&quot; aria-hidden
+         // src&#x3D;&quot;${ranger.image}&quot; height&#x3D;&quot;50&quot;&gt;
+         // &lt;span&gt;${ranger.callsign}&lt;/span&gt; | &lt;small&gt; ${ranger.licensee} | ${ranger.phone}&lt;/small&gt;&#x60;
+       }
+     }
+   */
+
+  // TODO: How to subscribe to the valueChanges observable?
+  //  listen for changes in the form&#x27;s value in the *template* using AsyncPipe or in the *component class* w/ subscribe() method
+
+  // https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
+  // https://angular.io/api/common/AsyncPipe
+  // this.document.getElementById(&quot;enter__Where--Lat&quot;)?.onchange
+
+  // https://angular.io/api/forms/AbstractControl
+  // https://angular.io/api/forms/NgControlStatus ARE CSS Classes.
+  // https://angular.io/api/forms
+  // https://www.danvega.dev/blog/2017/06/07/angular-forms-clear-input-field/
+
+
+  /*
+  https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
+
+  this.reactiveForm.get(&quot;firstname&quot;).valueChanges.subscribe(selectedValue &#x3D;&gt; {
+  console.log(&#x27;firstname value changed&#x27;)
+  console.log(selectedValue)
+  console.log(this.reactiveForm.get(&quot;firstname&quot;).value)
+  console.log(this.reactiveForm.value)    //shows the old first name
+
+  setTimeout(() &#x3D;&gt; {
+    console.log(this.reactiveForm.value)   //shows the latest first name
+  })
+
+  For Example, the following code will result in the ValueChanges of the firstname. but not of its parent (i.e. top-level form)
+
+  this.reactiveForm.get(&quot;firstname&quot;).setValue(&quot;&quot;, { onlySelf: true });
+
+  You can use the onlySelf: true with the setValue, patchValue, markAsUntouched, markAsDirty, markAsPristine, markAsPending, disable, enable, and updateValueAndValidity methods
+  })
+  */
+
+  addressCtrlChanged(what: string) {
+    console.log(&#x60;addressCtrlChanged&#x60;)
+    // TODO: No formControlName&#x3D;&quot;addressCtrl&quot;!!!!
+
+    // this.form.markAsPristine();
+    // this.form.markAsUntouched();
+    if (this.entryDetailsForm.get(&#x27;address&#x27;)?.touched) {
+      console.log(&#x27;address WAS touched&#x27;)
+      //this.entryDetailsForm.get(&#x27;address&#x27;)?.markAsUntouched
+    }
+    if (this.entryDetailsForm.get(&#x27;address&#x27;)?.dirty) {
+      console.log(&#x27;address WAS dirty&#x27;)
+      //this.entryDetailsForm.get(&#x27;address&#x27;)?.markAsPristine
+    }
+
+    switch (what) {
+      case &#x27;addr&#x27;:
+
+        this.chkAddresses()
+        // if new PlaceId(??? or plus code or ???), then call:
+        // TODO: this.geocoder.getLatLngAndAddressFromPlaceID( PlaceID)
+
+        // https://developer.what3words.com/tutorial/javascript-autosuggest-component-v4
+        // https://developer.what3words.com/tutorial/combining-the-what3words-js-autosuggest-component-with-a-google-map
+        // https://developer.what3words.com/tutorial/javascript
+        // https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-google-map
+
+
+        // Get new lat-lng
+
+        break;
+      case &#x27;lat&#x27;:
+      case &#x27;lng&#x27;:
+
+        let llat &#x3D; Number((this.document.getElementById(&quot;enter__Where--Lat&quot;) as HTMLInputElement).value)
+        let llng &#x3D; Number((this.document.getElementById(&quot;enter__Where--Lng&quot;) as HTMLInputElement).value)
+        //this.document.getElementById(&quot;enter__Where--lng&quot;)?.innerText
+        //this.document.getElementById(&quot;enter__Where--lng&quot;)?.innerText
+        let ll &#x3D; new google.maps.LatLng(llat, llng)
+        let newAddress &#x3D; this.geocoder.getAddressFromLatLng(ll)
+        console.log(&#x60;addressCtrlChanged new ll: ${JSON.stringify(ll)}; addr: ${newAddress}&#x60;)
+
+        this.updateCoords(llat, llng)
+
+        let addrLabel &#x3D; this.document.getElementById(&quot;addressLabel&quot;) // as HTMLLabelElement
+        if (addrLabel) {
+          addrLabel.innerText &#x3D; newAddress
+          //addrLabel.markAsPristine()
+          //addrLabel. .markAsUntouched()
+        }
+        this.UpdateLocation({ lat: llat, lng: llng }, &#x60;Time: ${Date.now} at Lat: ${llat}, Lng: ${llng}, street: ${newAddress}&#x60;)
+        break;
+      default:
+        console.log(&#x60;UNEXPECTED ${what} received in AddressCtrlChanged()&#x60;)
+        break;
+    }
+    console.log(&#x27;addressCtrlChanged done&#x27;) // TODO: No formControlName&#x3D;&quot;addressCtrl&quot;!!!!
+  }
+
+  chkAddresses() {
+
+    /* if JSON.stringify(addr): gets
+    TypeError: Converting circular structure to JSON
+        --&gt; starting at object with constructor &#x27;TView&#x27;
+        |     property &#x27;blueprint&#x27; -&gt; object with constructor &#x27;LViewBlueprint&#x27;
+        --- index 1 closes the circle
+        at JSON.stringify (&lt;anonymous&gt;)
+        at EntryComponent.chkAddresses (entry.component.ts:465:47)
+        at EntryComponent.addressCtrlChanged (entry.component.ts:424:14)
+        */
+
+
+
+    let tWords // &#x3D; document.getElementById(&quot;addresses&quot;)!.innerText // as HTMLInputElement).value
+    let addr &#x3D; document.getElementById(&quot;addressCtrl&quot;) as HTMLInputElement// ?.innerText
+    console.log(&#x60;Looking into address: ${addr}&#x60;)
+    if (addr &#x3D;&#x3D; null)
+      return
+    //debugger
+    let addrText &#x3D; addr.value;
+    console.log(&#x60;Got some kind of address: ${addrText}&#x60;)
+    if (addrText.length) {
+      if (addrText.includes(&quot;+&quot;)) {
+        console.log(&quot;Got PCode: &quot; + addrText)
+        this.chkPCodes(addrText)
+      } else {
+        tWords &#x3D; addrText.split(&quot;.&quot;)
+        if (tWords.length &#x3D;&#x3D; 3) {
+          console.log(&quot;Got What 3 Words: &quot; + addrText)
+          this.chk3Words(addrText)
+        } else {
+          let result &#x3D; this.chkStreetAddress(addrText)
+          let addrLabel &#x3D; document.getElementById(&quot;addressLabel&quot;) as HTMLLabelElement
+          if (result.position) {
+            addrLabel.innerText
+              &#x3D; &#x60;STREET ADDRESS: Formatted address: ${result.address}; Google PlaceID: ${result.placeId}; Position: ${result.position}; partial_match: ${result.partial_match}; placeId: ${result.placeId}; plus_code: ${result.plus_code}&#x60;
+          } else {
+            addrLabel.innerText &#x3D; &#x60;STREET ADDRESS: unable to geocode. ${result.address}&#x60;
+          }
+        }
+      }
+    }
+  }
+
+
+  updateCoords(latDD: number, lngDD: number) {
+    console.log(&#x60;updateCoords with new Coordinates: lat: ${latDD}; latDD: ${latDD.toString()}&#x60;);
+    console.log(&#x60;updateCoords with new Coordinates: lng: ${lngDD}; lngDD: ${lngDD.toString()}&#x60;);
+
+    let latitudeDDI &#x3D; document.getElementById(&quot;enter__Where--LatI&quot;) as HTMLInputElement
+    let latitudeDDD &#x3D; document.getElementById(&quot;enter__Where--LatD&quot;) as HTMLInputElement
+    let longitudeDDI &#x3D; document.getElementById(&quot;enter__Where--LngI&quot;) as HTMLInputElement
+    let longitudeDDD &#x3D; document.getElementById(&quot;enter__Where--LngD&quot;) as HTMLInputElement
+    console.log(&#x60;updateCoords latitudeDDI: ${latitudeDDI}; latitudeDDD: ${latitudeDDD}&#x60;);
+    console.log(&#x60;updateCoords longitudeDDI: ${longitudeDDI}; longitudeDDD: ${longitudeDDD}&#x60;);
+
+    // TODO: Only display 4-6 positions after decimal
+    latitudeDDI.value &#x3D; Math.floor(latDD).toString();
+    latitudeDDD.value &#x3D; (latDD - Math.floor(latDD)).toString().slice(0, 4);
+    //(document.getElementById(&quot;enter__Where--LngI&quot;) as HTMLInputElement).value &#x3D; lngDD.toString();
+    //(document.getElementById(&quot;enter__Where--LngD&quot;) as HTMLInputElement).value &#x3D; lngDD.toString();
+
+    let latDMS &#x3D; DDToDMS(latDD, false);
+    (document.getElementById(&quot;latitudeQ&quot;) as HTMLInputElement).value &#x3D; latDMS.dir;
+    (document.getElementById(&quot;latitudeD&quot;) as HTMLInputElement).value &#x3D; latDMS.deg.toString();
+    (document.getElementById(&quot;latitudeM&quot;) as HTMLInputElement).value &#x3D; latDMS.min.toString();
+    (document.getElementById(&quot;latitudeS&quot;) as HTMLInputElement).value &#x3D; latDMS.sec.toString();
+
+    let lngDMS &#x3D; DDToDMS(lngDD, true);
+    (document.getElementById(&quot;longitudeQ&quot;) as HTMLInputElement).value &#x3D; lngDMS.dir.toString();
+    (document.getElementById(&quot;longitudeD&quot;) as HTMLInputElement).value &#x3D; lngDMS.deg.toString();
+    (document.getElementById(&quot;longitudeM&quot;) as HTMLInputElement).value &#x3D; lngDMS.min.toString();
+    (document.getElementById(&quot;longitudeS&quot;) as HTMLInputElement).value &#x3D; lngDMS.sec.toString();
+
+    let pCode &#x3D; OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
+    console.log(&quot;updateCoords: Encode returned PlusCode: &quot; + pCode)
+    let fullCode
+    if (pCode.length !&#x3D; 0) {
+
+      if (OpenLocationCode.isValid(pCode)) {
+        if (OpenLocationCode.isShort(pCode)) {
+          // Recover the full code from a short code:
+          fullCode &#x3D; OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
+        } else {
+          fullCode &#x3D; pCode;
+          console.log(&quot;Shorten +Codes, Global:&quot; + fullCode + &quot;, Lat:&quot; + SettingsService.Settings.defLat + &quot;; lng:&quot; + SettingsService.Settings.defLng);
+          // Attempt to trim the first characters from a code; may return same innerText...
+          pCode &#x3D; OpenLocationCode.shorten(fullCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
+        }
+        console.log(&quot;New PlusCodes: &quot; + pCode + &quot;; Global: &quot; + fullCode);
+        //(document.getElementById(&quot;addresses&quot;) as HTMLInputElement).value &#x3D; pCode;
+        //document.getElementById(&quot;addressLabel&quot;).innerHTML &#x3D; defPCodeLabel; // as HTMLLabelElement
+        (document.getElementById(&quot;pCodeGlobal&quot;) as HTMLLabelElement).innerHTML &#x3D; &quot; &amp;nbsp;&amp;nbsp; +Code: &quot; + fullCode;
+      } else {
+        console.log(&quot;Invalid +PlusCode: &quot; + pCode);
+        document.getElementById(&quot;pCodeGlobal&quot;)!.innerHTML &#x3D; &quot; &amp;nbsp;&amp;nbsp; Unable to get +Code&quot;
+        //document.getElementById(&quot;addressLabel&quot;).innerHTML &#x3D; &quot;  is &lt;strong style&#x3D;&#x27;color: darkorange;&#x27;&gt;Invalid &lt;/strong&gt; Try: &quot;; // as HTMLLabelElement
+      }
+    }
+
+    //this.addressCtrlChanged(&#x27;lat&#x27;) // HACK: to display marker
+    this.UpdateLocation({ lat: latDD, lng: lngDD })
+    //ToDO: Update 3 words too!
+    //if (initialized) this.displaySmallMap(latDD, lngDD);
+  }
+
+  chkPCodes(pCode: string) {
+    // REVIEW: Duplicate of code above...
+    //let pCode &#x3D; document.getElementById(&quot;addresses&quot;)!.innerText //value;
+    console.log(&quot;chkPCodes got &#x27;&quot; + pCode + &quot;&#x27;&quot;);
+    if (pCode.length) {
+
+      let result &#x3D; this.geocoder.getLatLngAndAddressFromPlaceID(pCode)
+      console.log(&#x60;chkPCode of ${pCode} got result:${JSON.stringify(result)}&#x60;);
+
+      if (result.position) {
+        (document.getElementById(&quot;addressLabel&quot;) as HTMLLabelElement).innerText &#x3D; result.address;
+        (document.getElementById(&quot;enter__Where--Lat&quot;) as HTMLInputElement).value &#x3D; &quot;result.position.lat&quot;;
+        // BUG: position has type of never????!!!!
+        (document.getElementById(&quot;lng&quot;) as HTMLInputElement).value &#x3D; &quot;JSON.stringify(result.position)&quot;;
+      }
+      else {
+        console.log(&#x60;chkPCode of ${pCode} got NULL result!!!&#x60;);
+      }
+
+
+      if (OpenLocationCode.isValid(pCode)) {
+        if (OpenLocationCode.isShort(pCode)) {
+          pCode &#x3D; OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
+        }
+
+        // Following needs a full (Global) code
+        let coord &#x3D; OpenLocationCode.decode(pCode)
+        console.log(&quot;chkPCodes got &quot; + pCode + &quot;; returned: lat&#x3D;&quot; + coord.latitudeCenter + &#x27;, lng&#x3D;&#x27; + coord.longitudeCenter);
+
+        this.updateCoords(coord.latitudeCenter, coord.longitudeCenter);
+      }
+
+      else {
+        document.getElementById(&quot;addressLabel&quot;)!.innerHTML &#x3D; &quot; is &lt;strong style&#x3D;&#x27;color: darkorange;&#x27;&gt;Invalid &lt;/strong&gt; Try: &quot; + SettingsService.Settings.defPlusCode
+        //document.getElementById(&quot;pCodeGlobal&quot;)!.innerHTML &#x3D; SettingsService.Settings.defPlusCode
+      }
+    }
+  }
+
+  // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
+  chk3Words(tWords: string) {
+    /*let settings &#x3D; {
+      &quot;async&quot;: true,
+      &quot;crossDomain&quot;: true,
+      &quot;url&quot;: &quot;https://api.what3words.com/v3/autosuggest?key&#x3D;0M5I8UPF&amp;input&#x3D;index.home.r&amp;n-results&#x3D;5&amp;focus&#x3D;51.521251%2C-0.203586&amp;clip-to-country&#x3D;BE%2CGB&quot;,
+      &quot;method&quot;: &quot;GET&quot;,
+      &quot;headers&quot;: {}
+    }
+
+    $.ajax(settings).done(function (response) {
+      console.log(&quot;ddd&#x3D;&quot; +response);
+    });
+    */
+
+    // No 3 word results outside these values allowed!!
+    // south_lat &lt;&#x3D; north_lat &amp; west_lng &lt;&#x3D; east_lng
+    let south_lat &#x3D; 46.0;
+    let north_lat &#x3D; 49.0;
+    let west_lng &#x3D; -124.0;
+    let east_lng &#x3D; -120.0;
+    let errMsg &#x3D; &quot;&quot;;
+
+    // let tWords &#x3D; document.getElementById(&quot;addresses&quot;)!.innerText;// as HTMLInputElement).value
+    console.log(&#x27;chk3Words - &#x27; + tWords);
+    if (tWords.length) {
+      // soemthing entered...
+      console.log(&quot;3Words&#x3D;&#x27;&quot; + tWords + &quot;&#x27;&quot;);
+      //this.w3w.w3wAuto(tWords)
+      /* BUG:
+          this.w3w.w3wAuto.autosuggest(tWords, {
+            nFocusResults: 1,
+            //clipTo####: [&quot;US&quot;],
+            cliptoboundingbox: { south_lat, west_lng, north_lat, east_lng }, // Clip prevents ANY values outside region
+            focus: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.deflng }, // Focus prioritizes words closer to this point
+            nResults: 1
+          })
+            .then((response: { suggestions: { words: any }[] }) &#x3D;&gt; {
+              const verifiedWords &#x3D; response.suggestions[0].words;
+              console.log(&quot;Verified Words&#x3D;&#x27;&quot; + verifiedWords + &quot;&#x27;&quot;);
+              if (tWords !&#x3D; verifiedWords) {
+                document.getElementById(&quot;addressLabel&quot;)!.textContent &#x3D; &quot; Verified as: &quot; + verifiedWords; // as HTMLLabelElement
+              } else {
+                document.getElementById(&quot;addressLabel&quot;)!.textContent &#x3D; &quot; Verified.&quot;;
+              }
+              // this.w3w.GetLatlngFrom3Words(verifiedWords)
+              this.w3w.convertToCoordinates(verifiedWords).then((response: { coordinates: { lat: any; lng: any }; nearestPlace: string }) &#x3D;&gt; {
+                //async call HAS returned!
+                this.updateCoords(response.coordinates.lat, response.coordinates.lng);
+                // NOTE: Not saving nearest place: too vague to be of value
+                document.getElementById(&quot;addressLabel&quot;)!.textContent +&#x3D; &quot;; Near: &quot; + response.nearestPlace; // as HTMLLabelElement
+              });
+            })
+            .catch(function (error: { code: string; message: string }) {
+              errMsg &#x3D; &quot;[code]&#x3D;&quot; + error.code + &quot;; [message]&#x3D;&quot; + error.message + &quot;.&quot;;
+              */
+
+      // TODO: this.updateCoords(lat,lng)
+      errMsg &#x3D; &quot;&quot;
+      console.log(&quot;Unable to verify 3 words entered: &quot; + errMsg);
+      document.getElementById(&quot;addressLabel&quot;)!.textContent &#x3D; &quot;*** Not able to verify 3 words! ***&quot;; // as HTMLLabelElement
+      //})
+    }
+    // async call not returned yet
+  }
+  //#endregion
+
+
+  chkStreetAddress(addrText: string) {
+    //https://developers.google.com/maps/documentation/geocoding/requests-geocoding
+    console.log(&quot;Got street address to check: &quot; + addrText)
+    // Type &#x27;GeocoderResult&#x27; must have a &#x27;[Symbol.iterator]()&#x27; method that returns an iterator.
+    //let result:google.maps.GeocoderResult &#x3D; this.geocoder.isValidAddress(addrText)
+    return this.geocoder.isValidAddress(addrText)
+    // TODO: this.updateCoords(lat,lng)
+
+  }
+
+
+  // ---------------- MISC HELPERS -----------------------------
+  displayHide(htmlElementID: string) {
+    let e &#x3D; this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility &#x3D; &quot;hidden&quot;;
+    }
+  }
+
+  displayShow(htmlElementID: string) {
+    let e &#x3D; this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility &#x3D; &quot;visible&quot;;
+    }
+  }
+
+  // --------------------------- POPPER ---------------------------
+
+
+  // https://popper.js.org/docs/v2/tutorial/
+  // TODO: https://popper.js.org/
+  // https://popper.js.org/docs/v2/
+
+  show() {
+    if (this.tooltip) {
+      this.tooltip.setAttribute(&#x27;data-show&#x27;, &#x27;&#x27;);
+    }
+
+    // Enable the event listeners
+    this.popperInstance.setOptions((options: { modifiers: any }) &#x3D;&gt; ({
+      ...options,
+      modifiers: [
+        ...options.modifiers,
+        { name: &#x27;eventListeners&#x27;, enabled: true },
+      ],
+    }))
+
+    // update the tooltip position
+    if (this.popperInstance) {
+      //this.popperInstance.update();
+    }
+  }
+
+  hide() {
+    if (this.tooltip) {
+      this.tooltip.removeAttribute(&#x27;data-show&#x27;)
+    }
+
+    // Disable the event listeners
+    this.popperInstance.setOptions((options: { modifiers: any }) &#x3D;&gt; ({
+      ...options,
+      modifiers: [
+        ...options.modifiers,
+        { name: &#x27;eventListeners&#x27;, enabled: false },
+      ],
+    }))
+  }
+
+  myPop() {  // TODO: Not supposed to be hidden in a routine...
+    const showEvents &#x3D; [&#x27;mouseenter&#x27;, &#x27;focus&#x27;]
+    const hideEvents &#x3D; [&#x27;mouseleave&#x27;, &#x27;blur&#x27;]
+
+    showEvents.forEach((event) &#x3D;&gt; {
+      if (this.button) {
+        this.button.addEventListener(event, this.show)
+      }
+    })
+
+    hideEvents.forEach((event) &#x3D;&gt; {
+      if (this.button) {
+        this.button.addEventListener(event, this.hide);
+      }
+    })
+  }
+
+
+
+
+
+  // https://bobrov.dev/angular-popper/
+  // https://sergeygultyayev.medium.com/use-popper-js-in-angular-projects-7b34f18da1c
+  // https://github.com/gultyaev/angular-popper-example
+
+  // The hint to display
+  //  @Input() target!: HTMLElement
+  // Its positioning (check docs for available options)
+  //  @Input() placement?: string;
+  // Optional hint target if you desire using other element than
+  // specified one
+  //  @Input() appPopper?: HTMLElement;
+
+  // The popper instance
+  /*
+  popper: popper;
+  private readonly defaultConfig: PopperOptions &#x3D; {
+    placement: &#x27;top&#x27;,
+    removeOnDestroy: true
+  };
+  constructor(private readonly el: ElementRef) {}
+  ngOnInit(): void {
+    // An element to position the hint relative to
+    const reference &#x3D; this.appPopper ? this.appPopper : this.el.nativeElement;
+    this.popper &#x3D; new Popper(reference, this.target, this.defaultConfig);
+  }
+  ngOnDestroy(): void {
+    if (!this.popper) {
+      return;
+    }
+
+    this.popper.destroy();
+  }
+
+
+
+    popcorn &#x3D; this.document.querySelector(&#x27;#popcorn&#x27;) as HTMLAnchorElement // BUG:
+    tooltip &#x3D; this.document.querySelector(&#x27;#tooltip&#x27;) as HTMLAnchorElement
+
+    createPopper(popcorn: HTMLAnchorElement, tooltip: HTMLAnchorElement, {
+      //   placement: &#x27;top-end&#x27;,
+    }) {
+
+    }
+  */
+  onInfoWhere() {
+    let s &#x3D; &quot;for Enter the latittude either in degrees decmal or as Degrees Minutes &amp; Seconds&quot;
+  }
+
+  // --------------- DATE-TIME PICKER -----------------
+  toggleMinDate(evt: any) {
+    if (evt.checked) {
+      this._setMinDate();
+    } else {
+      this.minDate &#x3D; null;
+    }
+  }
+
+  toggleMaxDate(evt: any) {
+    if (evt.checked) {
+      this._setMaxDate();
+    } else {
+      this.maxDate &#x3D; null;
+    }
+  }
+
+  closePicker() {
+    this.picker.cancel();
+  }
+
+  private _setMinDate(hours:number&#x3D;10) {
+    const now &#x3D; dayjs();
+    this.minDate &#x3D; now.subtract(hours, &#x27;hours&#x27;);
+  }
+
+  private _setMaxDate(hours:number&#x3D;10) {
+    const now &#x3D; dayjs();
+    this.maxDate &#x3D; now.add(hours, &#x27;hours&#x27;);
+  }
+
+}
+</code></pre>
+    </div>
+
+
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">    <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" /></svg></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'GmapComponent', 'selector': 'rangertrak-gmap'},{'name': 'IconComponent', 'selector': 'icon'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'IconComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'IconComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

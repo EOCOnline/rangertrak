@@ -1,0 +1,3932 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li
+  >
+  LmapComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/lmap/lmap.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+                    <code><a href="https://angular.io/api/core/AfterViewInit" target="_blank" >AfterViewInit</a></code>
+    </p>
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">providers</td>
+                <td class="col-md-9">
+                                <code><a href="../injectables/SettingsService.html" target="_self" >SettingsService</a></code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>rangertrak-lmap</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./lmap.component.scss,<br>../../../node_modules/leaflet.markercluster/dist/MarkerCluster.css,<br>../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css,<br>../../../node_modules/leaflet/dist/leaflet.css</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./lmap.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#center" >center</a>
+                            </li>
+                            <li>
+                                <a href="#fieldReports" >fieldReports</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
+                                <a href="#lmap" >lmap</a>
+                            </li>
+                            <li>
+                                <a href="#mapOptions" >mapOptions</a>
+                            </li>
+                            <li>
+                                <a href="#markerClusterData" >markerClusterData</a>
+                            </li>
+                            <li>
+                                <a href="#markerClusterGroup" >markerClusterGroup</a>
+                            </li>
+                            <li>
+                                <a href="#mouseLatLng" >mouseLatLng</a>
+                            </li>
+                            <li>
+                                <a href="#mymarkers" >mymarkers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
+                                <a href="#overviewLMap" >overviewLMap</a>
+                            </li>
+                            <li>
+                                <a href="#overviewLMapType" >overviewLMapType</a>
+                            </li>
+                            <li>
+                                <a href="#title" >title</a>
+                            </li>
+                            <li>
+                                <a href="#zoom" >zoom</a>
+                            </li>
+                            <li>
+                                <a href="#zoomDisplay" >zoomDisplay</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_markerOnClick" >_markerOnClick</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#addCircle_unused" >addCircle_unused</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#addCircles" >addCircles</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#addLayersToMap" >addLayersToMap</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#addMarker" >addMarker</a>
+                            </li>
+                            <li>
+                                <a href="#clamp" >clamp</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#createMarker" >createMarker</a>
+                            </li>
+                            <li>
+                                <a href="#displayAllMarkers" >displayAllMarkers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#displayAllMarkers_NoCluster_Unused" >displayAllMarkers_NoCluster_Unused</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#fitBounds" >fitBounds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getDefaultIcon" >getDefaultIcon</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#highlightFeature" >highlightFeature</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#initMap" >initMap</a>
+                            </li>
+                            <li>
+                                <a href="#initShapesLayer" >initShapesLayer</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#initStatesLayer" >initStatesLayer</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#logCenter" >logCenter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#makeCapitalPopup" >makeCapitalPopup</a>
+                            </li>
+                            <li>
+                                <a href="#ngAfterViewInit" >ngAfterViewInit</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#onMapMouseMove_Unused" >onMapMouseMove_Unused</a>
+                            </li>
+                            <li>
+                                <a href="#onMapReady" >onMapReady</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#resetFeature" >resetFeature</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Static</span>
+                                <a href="#scaledRadius_unused" >scaledRadius_unused</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#zoomed_unused" >zoomed_unused</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(settingsService: <a href="../injectables/SettingsService.html" target="_self">SettingsService</a>, fieldReportService: <a href="../injectables/FieldReportService.html" target="_self">FieldReportService</a>, httpClient: <a href="https://angular.io/api/common/http/HttpClient" target="_blank">HttpClient</a>, document: Document)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="99" class="link-to-prism">src/app/lmap/lmap.component.ts:99</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>settingsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SettingsService.html" target="_self" >SettingsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>fieldReportService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FieldReportService.html" target="_self" >FieldReportService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>httpClient</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/common/http/HttpClient" target="_blank" >HttpClient</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>document</td>
+                                                  
+                                                        <td>
+                                                                    <code>Document</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_markerOnClick"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>_markerOnClick</b></span>
+                        <a href="#_markerOnClick"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_markerOnClick(e: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="412"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:412</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>e</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addCircle_unused"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>addCircle_unused</b></span>
+                        <a href="#addCircle_unused"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addCircle_unused(lat: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, lng: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, status: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="423"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:423</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>lat</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>lng</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>status</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&#x27;&#x27;</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addCircles"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>addCircles</b></span>
+                        <a href="#addCircles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addCircles()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="435"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:435</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addLayersToMap"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>addLayersToMap</b></span>
+                        <a href="#addLayersToMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addLayersToMap()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="338"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:338</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addMarker"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>addMarker</b></span>
+                        <a href="#addMarker"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addMarker(lat: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, lng: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, status: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="343"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:343</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>lat</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>lng</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>status</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&#x27;&#x27;</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="clamp"></a>
+                    <span class="name">
+                        <span ><b>clamp</b></span>
+                        <a href="#clamp"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>clamp(num: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, min: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, max: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="242"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:242</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>num</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>min</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>max</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createMarker"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>createMarker</b></span>
+                        <a href="#createMarker"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createMarker()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="331"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:331</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayAllMarkers"></a>
+                    <span class="name">
+                        <span ><b>displayAllMarkers</b></span>
+                        <a href="#displayAllMarkers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>displayAllMarkers()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="283"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:283</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayAllMarkers_NoCluster_Unused"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>displayAllMarkers_NoCluster_Unused</b></span>
+                        <a href="#displayAllMarkers_NoCluster_Unused"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>displayAllMarkers_NoCluster_Unused()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="302"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:302</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fitBounds"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>fitBounds</b></span>
+                        <a href="#fitBounds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fitBounds()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="273"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:273</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getDefaultIcon"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>getDefaultIcon</b></span>
+                        <a href="#getDefaultIcon"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getDefaultIcon()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="323"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:323</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="highlightFeature"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>highlightFeature</b></span>
+                        <a href="#highlightFeature"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>highlightFeature(e: literal type)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="488"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:488</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>e</td>
+                                    <td>
+                                            <code>literal type</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initMap"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>initMap</b></span>
+                        <a href="#initMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>initMap()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="152"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:152</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initShapesLayer"></a>
+                    <span class="name">
+                        <span ><b>initShapesLayer</b></span>
+                        <a href="#initShapesLayer"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>initShapesLayer()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="697"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:697</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initStatesLayer"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>initStatesLayer</b></span>
+                        <a href="#initStatesLayer"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>initStatesLayer()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="465"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:465</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logCenter"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>logCenter</b></span>
+                        <a href="#logCenter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>logCenter()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="513"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:513</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="makeCapitalPopup"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>makeCapitalPopup</b></span>
+                        <a href="#makeCapitalPopup"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>makeCapitalPopup(data: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="458"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:458</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>data</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngAfterViewInit"></a>
+                    <span class="name">
+                        <span ><b>ngAfterViewInit</b></span>
+                        <a href="#ngAfterViewInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngAfterViewInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="121"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:121</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="115"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:115</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onMapMouseMove_Unused"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>onMapMouseMove_Unused</b></span>
+                        <a href="#onMapMouseMove_Unused"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onMapMouseMove_Unused(event: L.LeafletEvent)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="309"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:309</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+                                    <td>
+                                            <code>L.LeafletEvent</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onMapReady"></a>
+                    <span class="name">
+                        <span ><b>onMapReady</b></span>
+                        <a href="#onMapReady"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onMapReady(ev: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="148"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:148</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ev</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resetFeature"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>resetFeature</b></span>
+                        <a href="#resetFeature"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>resetFeature(e: literal type)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="500"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:500</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>e</td>
+                                    <td>
+                                            <code>literal type</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="scaledRadius_unused"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Static</span>
+                        <span ><b>scaledRadius_unused</b></span>
+                        <a href="#scaledRadius_unused"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>scaledRadius_unused(val: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, maxVal: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="430"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:430</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>val</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>maxVal</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoomed_unused"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>zoomed_unused</b></span>
+                        <a href="#zoomed_unused"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>zoomed_unused()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="316"
+                            class="link-to-prism">src/app/lmap/lmap.component.ts:316</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="center"></a>
+                    <span class="name">
+                        <span ><b>center</b></span>
+                        <a href="#center"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="90" class="link-to-prism">src/app/lmap/lmap.component.ts:90</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fieldReports"></a>
+                    <span class="name">
+                        <span ><b>fieldReports</b></span>
+                        <a href="#fieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#FieldReportType" target="_self" >FieldReportType[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="92" class="link-to-prism">src/app/lmap/lmap.component.ts:92</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="lmap"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>lmap</b></span>
+                        <a href="#lmap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Map.html" target="_self" >L.Map</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="83" class="link-to-prism">src/app/lmap/lmap.component.ts:83</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapOptions"></a>
+                    <span class="name">
+                        <span ><b>mapOptions</b></span>
+                        <a href="#mapOptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&quot;&quot;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="95" class="link-to-prism">src/app/lmap/lmap.component.ts:95</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="markerClusterData"></a>
+                    <span class="name">
+                        <span ><b>markerClusterData</b></span>
+                        <a href="#markerClusterData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="99" class="link-to-prism">src/app/lmap/lmap.component.ts:99</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="markerClusterGroup"></a>
+                    <span class="name">
+                        <span ><b>markerClusterGroup</b></span>
+                        <a href="#markerClusterGroup"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>L.MarkerClusterGroup</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="98" class="link-to-prism">src/app/lmap/lmap.component.ts:98</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mouseLatLng"></a>
+                    <span class="name">
+                        <span ><b>mouseLatLng</b></span>
+                        <a href="#mouseLatLng"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>this.center</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">src/app/lmap/lmap.component.ts:91</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mymarkers"></a>
+                    <span class="name">
+                        <span ><b>mymarkers</b></span>
+                        <a href="#mymarkers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>L.markerClusterGroup()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="94" class="link-to-prism">src/app/lmap/lmap.component.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="overviewLMap"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>overviewLMap</b></span>
+                        <a href="#overviewLMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Map.html" target="_self" >L.Map</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">src/app/lmap/lmap.component.ts:84</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="overviewLMapType"></a>
+                    <span class="name">
+                        <span ><b>overviewLMapType</b></span>
+                        <a href="#overviewLMapType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{ cur: 0, types: { type: [&#x27;roadmap&#x27;, &#x27;terrain&#x27;, &#x27;satellite&#x27;, &#x27;hybrid&#x27;,] } }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="85" class="link-to-prism">src/app/lmap/lmap.component.ts:85</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="title"></a>
+                    <span class="name">
+                        <span ><b>title</b></span>
+                        <a href="#title"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;Leaflet Map&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="82" class="link-to-prism">src/app/lmap/lmap.component.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoom"></a>
+                    <span class="name">
+                        <span ><b>zoom</b></span>
+                        <a href="#zoom"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">src/app/lmap/lmap.component.ts:88</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoomDisplay"></a>
+                    <span class="name">
+                        <span ><b>zoomDisplay</b></span>
+                        <a href="#zoomDisplay"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="89" class="link-to-prism">src/app/lmap/lmap.component.ts:89</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from &#x27;@angular/core&#x27;
+import { DOCUMENT, JsonPipe } from &#x27;@angular/common&#x27;
+import { HttpClient } from &#x27;@angular/common/http&#x27;
+/*
+import * as LMC from &quot;leaflet.markercluster&quot;  // https://github.com/Leaflet/Leaflet.markercluster
+//import {} from LeafletMarkerClusterModule
+//import { LeafletMarkerClusterModule } from &#x27;leaflet.markercluster&#x27; //https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
+// https://stackblitz.com/edit/typescript-leaflet-marker-cluster   MarkerClusterGroup
+// better: https://blog.mestwin.net/leaflet-angular-marker-clustering/
+//import &#x27;leaflet.markercluster/dist/MarkerCluster.Default.css&#x27; // also in angular.json
+import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds } from &#x27;leaflet&#x27;;
+// MarkerClusterGroup, MarkerClusterGroupOptions
+//import {icon, latLng, marker} from &#x27;leaflet&#x27;;
+//import * as L from &#x27;leaflet&#x27;
+import * as L from &#x27;leaflet&#x27;;
+import &#x27;leaflet.markercluster&#x27;;
+https://stackoverflow.com/questions/58847492/error-typeerror-a-markerclustergroup-is-not-a-function
+
+another guess would be that the timing in production is different than on develop. your initMarkers gets called via ngOnChanges but that might be to early. The map or the cluster might not be initialized yet. Try to call initMarkers within markerClusterReady or mapReady
+*/
+
+
+import * as L from &#x27;leaflet&#x27;;
+//import { Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from &#x27;leaflet&#x27;;
+import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from &#x27;leaflet&#x27;;
+import &#x27;leaflet.markercluster&#x27;;
+
+
+
+
+
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from &#x27;../shared/services&#x27;
+import { CodeArea, OpenLocationCode, Utility } from &#x27;../shared/&#x27;
+import { Context } from &#x27;ag-grid-community&#x27;
+
+// https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
+// °°°°
+
+// Markers are copied into project via virtue of angular.json: search it for leaflet!!!
+
+const iconRetinaUrl &#x3D; &#x27;assets/imgs/marker-icon-2x.png&#x27;
+const iconUrl &#x3D; &#x27;assets/imgs/marker-icon.png&#x27;
+const shadowUrl &#x3D; &#x27;assets/imgs/marker-shadow.png&#x27;
+const iconDefault &#x3D; L.icon({
+  iconRetinaUrl,
+  iconUrl,
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41]
+})
+const markerIcon &#x3D; L.icon({
+  iconSize: [20, 25],
+  iconUrl: &#x27;https://unpkg.com/leaflet/dist/images/marker-icon.png&#x27;,
+  shadowUrl: &#x27;https://unpkg.com/leaflet/dist/images/marker-shadow.png&#x27;
+})
+L.Marker.prototype.options.icon &#x3D; iconDefault;
+
+export type addressType &#x3D; {
+  title: string;
+  num: number
+}
+
+//type LatLng &#x3D; { lat: number, lng: number }
+
+@Component({
+  selector: &#x27;rangertrak-lmap&#x27;,
+  templateUrl: &#x27;./lmap.component.html&#x27;,
+  styleUrls: [
+    &#x27;./lmap.component.scss&#x27;,
+    &quot;../../../node_modules/leaflet.markercluster/dist/MarkerCluster.css&quot;, // REVIEW: also added to angular.json: needed there?
+    &quot;../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css&quot;, // (not needed if you use your own iconCreateFunction instead of the default one)
+    &#x27;../../../node_modules/leaflet/dist/leaflet.css&#x27; // only seems to work when embedded in angula.json &amp; Here! (chgs there REQUIRE restart!)
+  ],
+  providers: [SettingsService]
+})
+export class LmapComponent implements OnInit, AfterViewInit {
+
+  //const L &#x3D; window[&#x27;L&#x27;];
+  title &#x3D; &#x27;Leaflet Map&#x27;
+  lmap?: L.Map
+  overviewLMap?: L.Map
+  overviewLMapType &#x3D; { cur: 0, types: { type: [&#x27;roadmap&#x27;, &#x27;terrain&#x27;, &#x27;satellite&#x27;, &#x27;hybrid&#x27;,] } } // TODO: Leaflet&#x27;s version?
+  //markers &#x3D; L.markerClusterGroup()// google.maps.Marker[] &#x3D; []  // TODO: google?!
+  //markers: MarkerClusterGroup
+  zoom // actual zoom level of main map
+  zoomDisplay // what&#x27;s displayed below main map
+  center &#x3D; { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
+  mouseLatLng &#x3D; this.center
+  fieldReports: FieldReportType[] &#x3D; []
+  //settings
+  mymarkers &#x3D; L.markerClusterGroup()
+  mapOptions &#x3D; &quot;&quot;
+
+
+  markerClusterGroup: L.MarkerClusterGroup//  the MarkerClusterGroup class extends the FeatureGroup so it has all of the handy methods like clearLayers() or removeLayers()
+  markerClusterData &#x3D; []
+
+  constructor(private settingsService: SettingsService,
+    private fieldReportService: FieldReportService,
+    private httpClient: HttpClient,
+    @Inject(DOCUMENT) private document: Document) {
+
+    this.fieldReportService &#x3D; fieldReportService
+    this.zoom &#x3D; SettingsService.Settings.defZoom
+    this.zoomDisplay &#x3D; SettingsService.Settings.defZoom
+    this.center &#x3D; { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
+    //this.settings &#x3D; SettingsService.Settings
+
+    this.markerClusterGroup &#x3D; L.markerClusterGroup({ removeOutsideVisibleBounds: true });
+  }
+
+  ngOnInit() {
+    //https://www.npmjs.com/package/leaflet.markercluster
+    //https://blog.mestwin.net/leaflet-angular-marker-clustering/
+    //this.markerClusterGroup &#x3D; L.markerClusterGroup({removeOutsideVisibleBounds: true});
+  }
+
+  ngAfterViewInit() {
+    this.initMap();
+    this.mymarkers &#x3D; L.markerClusterGroup()
+
+    /*
+        // https://github.com/Leaflet/Leaflet.markercluster#defaults
+        var markers3 &#x3D; L.markerClusterGroup({
+          spiderfyOnMaxZoom: false,
+          showCoverageOnHover: false,
+          zoomToBoundsOnClick: false
+        })
+
+        var markers4 &#x3D; L.markerClusterGroup({
+          iconCreateFunction: function (cluster) {
+            return L.divIcon({ html: &#x27;&lt;b&gt;&#x27; + cluster.getChildCount() + &#x27;&lt;/b&gt;&#x27; });
+          }
+        });
+    */
+
+    /* https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
+    this.markerService.makeCapitalCircleMarkers(this.map);
+    this.shapeService.getStateShapes().subscribe(states &#x3D;&gt; {
+      this.states &#x3D; states;
+      this.initStatesLayer(); //create a new GeoJSON layer and adds it to the map
+    });
+    */
+  }
+  onMapReady(ev: any) {
+    console.log(&#x60;Leaflet OnMapReady&#x60;)
+  }
+
+  private initMap() {
+    console.log(&quot;Init Leaflet Map..........&quot;)
+
+    this.lmap &#x3D; L.map(&#x27;lmap&#x27;, {
+      center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
+      zoom: SettingsService.Settings.defZoom
+    })
+
+    const tiles &#x3D; L.tileLayer(&#x27;https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&#x27;, {
+      maxZoom: 21,
+      minZoom: 3,
+      attribution: &#x27;&amp;copy; &lt;a href&#x3D;&quot;http://www.openstreetmap.org/copyright&quot;&gt;OpenStreetMap&lt;/a&gt;&#x27;
+    })
+
+    tiles.addTo(this.lmap)
+    this.displayAllMarkers()
+    this.fitBounds()
+
+    this.lmap?.on(&#x27;zoomend&#x27;, (ev: L.LeafletEvent) &#x3D;&gt; { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
+      if (this.zoomDisplay &amp;&amp; this.lmap) {
+        this.zoom &#x3D; this.lmap.getZoom()
+        this.zoomDisplay &#x3D; this.lmap.getZoom()
+
+      }
+      //this.zoom! &#x3D; this.lmap?.getZoom()
+    })
+
+    this.lmap.on(&#x27;click&#x27;, (ev: L.LeafletMouseEvent) &#x3D;&gt; {
+      // TODO: If enabled, drop a marker there...
+      if (ev.latlng.lat) {
+        console.log(&#x60;Click at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}&#x60;)
+      }
+    })
+
+
+    const OVERVIEW_DIFFERENCE &#x3D; 6
+    const OVERVIEW_MIN_ZOOM &#x3D; 5
+    const OVERVIEW_MAX_ZOOM &#x3D; 16
+    // https://developers.google.com/maps/documentation/javascript/examples/inset-map
+    // instantiate the overview map without controls
+    // https://leafletjs.com/reference.html#map-example
+    this.overviewLMap &#x3D; L.map(&#x27;overview&#x27;, {
+      center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
+      zoom: SettingsService.Settings.defZoom,
+      zoomControl: false,
+      keyboard: false,
+      scrollWheelZoom: false,
+    })
+
+    const overviewTiles &#x3D; L.tileLayer(&#x27;https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&#x27;, {
+      maxZoom: OVERVIEW_MAX_ZOOM,
+      minZoom: OVERVIEW_MIN_ZOOM,
+      attribution: &#x27;&amp;copy; &lt;a href&#x3D;&quot;http://www.openstreetmap.org/copyright&quot;&gt;OpenStreetMap&lt;/a&gt;&#x27;
+    })
+
+    overviewTiles.addTo(this.overviewLMap)
+
+    // TODO:
+    /*this.overviewLMap!.addListener(&quot;click&quot;, () &#x3D;&gt; {
+      let mapId &#x3D; this.overviewMapType.cur++ % 4
+      this.overviewLMap!.setMapTypeId(this.overviewMapType.types.type[mapId])
+      console.log(&#x60;Overview map set to ${this.overviewMapType.types.type[mapId]}&#x60;)
+    })*/
+
+    // const infowindow &#x3D; new google.maps.InfoWindow({
+    //   content: &quot;Mouse location...&quot;,
+    //   position: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng },
+    // })
+    //infowindow.open(this.overviewLMap);
+
+    this.overviewLMap?.on(&#x27;mousemove&#x27;, ($event: L.LeafletMouseEvent) &#x3D;&gt; { // TODO: Only do while mouse is over map for efficiency?!
+      if (this.zoomDisplay &amp;&amp; this.overviewLMap) {
+        this.zoomDisplay &#x3D; this.overviewLMap.getZoom()!
+      }
+      if ($event.latlng) {
+        this.mouseLatLng &#x3D; $event.latlng //.toJSON()
+      }
+      //console.log(&#x60;Overview map at ${JSON.stringify(this.mouseLatLng)}&#x60;)
+      //infowindow.setContent(&#x60;${JSON.stringify(latlng)}&#x60;)
+    })
+
+    this.overviewLMap!.on(&quot;bounds_changed&quot;, () &#x3D;&gt; {
+      this.overviewLMap!.setView(this.lmap!.getCenter()!, this.clamp(
+        this.lmap!.getZoom()! - OVERVIEW_DIFFERENCE,
+        OVERVIEW_MIN_ZOOM,
+        OVERVIEW_MAX_ZOOM
+      ))}
+    )
+  }
+
+  clamp(num: number, min: number, max: number) {
+    return Math.min(Math.max(num, min), max)
+  }
+
+  /*initMap2() {
+    let tile2 &#x3D; L.tileLayer(&#x27;https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&#x27;, {
+        maxZoom: 18,
+        attribution: &#x27;&amp;copy; &lt;a href&#x3D;&quot;https://www.openstreetmap.org/copyright&quot;&gt;OpenStreetMap&lt;/a&gt; contributors, Points &amp;copy 2012 LINZ&#x27;
+      }),
+      latlng &#x3D; L.latLng(SettingsService.Settings.defLat, SettingsService.Settings.defLng)
+
+    let map &#x3D; L.map(&#x27;map&#x27;, {
+      center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
+      zoom: SettingsService.Settings.defZoom,
+      layers: [tile2]
+    });
+
+    let mymarkers &#x3D; L.markerClusterGroup();
+
+    for (let i &#x3D; 0; i &lt; this.fieldReports.length; i++) {
+      let title &#x3D; &#x60;${this.fieldReports[i].callsign} at ${this.fieldReports[i].date} with ${this.fieldReports[i].status}&#x60;
+      let marker &#x3D; L.marker(new L.LatLng(this.fieldReports[i].lat, this.fieldReports[i].lng), { title: title })
+      // &#x3D; L.marker(new L.LatLng(a[0], a[1]), { title: title });
+      marker.bindPopup(title)
+      mymarkers.addLayer(marker);
+    }
+
+    map.addLayer(mymarkers);
+  }*/
+
+
+  private fitBounds() {
+    this.fieldReportService.recalcFieldBounds()
+    let bound &#x3D; this.fieldReportService.getFieldReportBound()  // { east: east, north: north, south: south, west: west } //e,n,s,w
+    console.log(&#x60;Fitting bounds&#x3D; :${JSON.stringify(bound)}&#x60;)
+    this.lmap?.fitBounds([
+      [bound.south, bound.west],
+      [bound.north, bound.east]
+    ]);
+  }
+
+  displayAllMarkers() {
+    this.fieldReports &#x3D; this.fieldReportService.getFieldReports() // REVIEW: wipes out any not previously saved...
+    console.log(&#x60;displayAllMarkers: all ${this.fieldReports.length} of &#x27;em&#x60;)
+
+    for (let i &#x3D; 0; i &lt; this.fieldReports.length; i++) {
+      let title &#x3D; &#x60;${this.fieldReports[i].callsign} at ${this.fieldReports[i].date} with ${this.fieldReports[i].status}&#x60;
+      let marker &#x3D; L.marker(new L.LatLng(this.fieldReports[i].lat, this.fieldReports[i].lng), { title: title })
+      marker.bindPopup(title)
+      this.mymarkers.addLayer(marker);
+    }
+
+    this.lmap?.addLayer(this.mymarkers);
+    //console.log(&#x60;displayAllMarkers: created ${this.mymarkers.getChildCount()} of &#x27;em&#x60;) //this.mymarkers.getChildCount is not a function
+
+    // to refresh markers that have changed:
+    // https://github.com/Leaflet/Leaflet.markercluster#refreshing-the-clusters-icon
+  }
+
+
+  private displayAllMarkers_NoCluster_Unused() {
+    this.fieldReports &#x3D; this.fieldReportService.getFieldReports() // REVIEW: wipes out any not previously saved...
+    for (let i &#x3D; 0; i &lt; this.fieldReports.length; i++) {
+      this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
+    }
+  }
+
+  private onMapMouseMove_Unused(event: L.LeafletEvent) {  // MouseEvent) { //google.maps.MapMouseEvent) {
+    console.log(&#x60;onMapMouseMove: ${JSON.stringify(event)}&#x60;)
+    //if (event.type. .lat) {
+    //this.mouseLatLng &#x3D; { lat: event.lat, lng: event.lng }
+    //}
+  }
+
+  private zoomed_unused() {
+    if (this.zoom &amp;&amp; this.lmap) {
+      this.zoom &#x3D; this.lmap.getZoom()
+    }
+  }
+
+  // https://blog.mestwin.net/leaflet-angular-marker-clustering/
+  private getDefaultIcon() {
+    return icon({
+      iconSize: [25, 41],
+      iconAnchor: [13, 41],
+      iconUrl: &#x27;./../../assets/icons/marker-icon.png&#x27;
+    })
+  }
+
+  private createMarker() {
+    const mapIcon &#x3D; this.getDefaultIcon();
+    // const coordinates &#x3D; latLng([this.mapPoint.latitude, this.mapPoint.longitude]);
+    // this.lastLayer &#x3D; marker(coordinates).setIcon(mapIcon);
+    // this.markerClusterGroup.addLayer(this.lastLayer)
+  }
+
+  private addLayersToMap() {
+    this.markerClusterGroup.addTo(this.lmap!);
+  }
+
+
+  private addMarker(lat: number, lng: number, status: string &#x3D; &#x27;&#x27;) {
+    //console.log(&#x60;addMarker at ${lat}. ${lng}, ${status}&#x60;)
+
+    iconDefault
+
+
+    if (!lat || !lng || !this.lmap) {
+      console.error(&#x60;bad lat: ${lat} or lng: ${lng} or lmap: ${this.lmap}&#x60;)
+    } else {
+      let _marker &#x3D; new L.Marker([lat, lng], {
+        icon: iconDefault
+      })
+      /*
+      https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
+
+        _marker.bindPopup(city);
+        _marker.on(&#x27;popupopen&#x27;, function() {
+          console.log(&#x27;open popup&#x27;);
+        });
+        _marker.on(&#x27;popupclose&#x27;, function() {
+          console.log(&#x27;close popup&#x27;);
+        });
+        _marker.on(&#x27;mouseout&#x27;, function() {
+          console.log(&#x27;close popup with mouseout&#x27;);
+          _map.closePopup();
+        });
+        console.log(_map.getZoom());
+        if (_map.getZoom() &gt; 15 &amp;&amp; _map.hasLayer(_marker)) {
+          _map.closePopup();
+          console.log(&#x27;zoom &gt; 15 close popup&#x27;);
+        }
+      */
+
+      //markerCluster.addLayer(_mar);
+      //}
+      //_map.addLayer(markerCluster);
+
+
+      _marker.addTo(this.lmap)
+
+      _marker.addEventListener(&#x27;click&#x27;, this._markerOnClick);
+    }
+  }
+
+  // TODO: https://stackoverflow.com/questions/30190268/leaflet-how-to-add-click-event-listener-to-popup
+  /*
+  for (var i &#x3D; 0; i &lt; users.length; i++) {
+    (function (user) {
+        var marker &#x3D; L.marker([users[i].lat, users[i].lon], {icon: iconOff})
+            .on(&#x27;mouseover&#x27;, function() { this.setIcon(iconOn); })
+            .on(&#x27;mouseout&#x27;, function() { this.setIcon(iconOff); })
+            .addTo(map);
+
+        var myPopup &#x3D; L.DomUtil.create(&#x27;div&#x27;, &#x27;infoWindow&#x27;);
+        myPopup.innerHTML &#x3D; &quot;&lt;div id&#x3D;&#x27;info&#x27;&gt;&lt;p id&#x3D;&#x27;title&#x27;&gt;&quot; + users[i].title + &quot;&lt;/p&gt;&lt;p&gt;&quot; + users[i].addr + &quot;&lt;/p&gt;&lt;/div&gt;&quot;;
+
+            marker.bindPopup(myPopup);
+
+        $(&#x27;#info&#x27;, myPopup).on(&#x27;click&#x27;, function() {
+            $(&quot;#userTitle&quot;).html(users[i].title).html();
+            $(&quot;#userAddr&quot;).html(users[i].addr).html();
+            $(&quot;#userDesc&quot;).html(users[i].desc).html();
+
+            $(&quot;#userDetails&quot;).modal(&quot;show&quot;);
+        });
+    })(users[i]);
+}
+*/
+
+  private _markerOnClick(e: any) {
+    console.warn(&#x60;Got Marker Click!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! e&#x3D; ${JSON.stringify(e)}&#x60;)
+  }
+
+  /* some error on map clicking
+  733786.png:1          GET https://c.tile.openstreetmap.org/21/335179/733786.png 400
+Image (async)
+createTile @ leaflet-src.js:11702
+733787.png:1          GET https://a.tile.openstreetmap.org/21/335179/733787.png 400
+*/
+
+  private addCircle_unused(lat: number, lng: number, status: string &#x3D; &#x27;&#x27;) {
+    const circle &#x3D; new L.CircleMarker([lat, lng], { radius: 20 })
+    if (this.lmap) {
+      circle.addTo(this.lmap)
+    }
+  }
+
+  private static scaledRadius_unused(val: number, maxVal: number): number {
+    return 20 * (val / maxVal);
+  }
+
+  // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-marker-service
+  private addCircles() {
+    //const maxPop &#x3D; Math.max(...res.features.map(x &#x3D;&gt; x.properties.population), 0);
+    /*
+     this.httpClient.get(this.capitals).subscribe((res: any) &#x3D;&gt; {
+
+       const maxPop &#x3D; Math.max(...res.features.map(x &#x3D;&gt; x.properties.population), 0);
+
+       for (const c of res.features) {
+         const lon &#x3D; c.geometry.coordinates[0];
+         const lat &#x3D; c.geometry.coordinates[1];
+         const circle &#x3D; L.circleMarker([lat, lon], {
+           radius: MarkerService.scaledRadius(c.properties.population, maxPop)
+         });
+
+          circle.bindPopup(this.popupService.makeCapitalPopup(c.properties));
+
+         circle.addTo(map);
+       }
+     });
+     */
+  }
+
+  // do this in a service??
+  private makeCapitalPopup(data: any): string {
+    return &#x60;&#x60; +
+      &#x60;&lt;div&gt;Capital: ${data.name}&lt;/div&gt;&#x60; +
+      &#x60;&lt;div&gt;State: ${data.state}&lt;/div&gt;&#x60; +
+      &#x60;&lt;div&gt;Population: ${data.population}&lt;/div&gt;&#x60;
+  }
+
+  private initStatesLayer() {
+    /* https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service Show borders of all the states in the US
+      const stateLayer &#x3D; L.geoJSON(this.states, {
+        style: (feature) &#x3D;&gt; ({
+          weight: 3,
+          opacity: 0.5,
+          color: &#x27;#008f68&#x27;,
+          fillOpacity: 0.8,
+          fillColor: &#x27;#6DB65B&#x27;
+        }),
+        onEachFeature: (feature, layer) &#x3D;&gt; (
+        layer.on({
+          mouseover: (e) &#x3D;&gt; (this.highlightFeature(e)),
+          mouseout: (e) &#x3D;&gt; (this.resetFeature(e)),
+        })
+      )
+      });
+
+      this.lmap!.addLayer(stateLayer);
+      */
+  }
+
+  // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
+  private highlightFeature(e: { target: any; }) {
+    const layer &#x3D; e.target;
+
+    layer.setStyle({
+      weight: 10,
+      opacity: 1.0,
+      color: &#x27;#DFA612&#x27;,
+      fillOpacity: 1.0,
+      fillColor: &#x27;#FAE042&#x27;
+    });
+  }
+
+  private resetFeature(e: { target: any; }) {
+    const layer &#x3D; e.target;
+
+    layer.setStyle({
+      weight: 3,
+      opacity: 0.5,
+      color: &#x27;#008f68&#x27;,
+      fillOpacity: 0.8,
+      fillColor: &#x27;#6DB65B&#x27;
+    });
+  }
+
+  // or on centerChanged
+  private logCenter() {
+    console.log(&#x60;Map center is at ${JSON.stringify(this.lmap?.getCenter())}&#x60;)
+    this.lmap?.on(&quot;moveend&quot;, () &#x3D;&gt; {
+      console.log(this.lmap?.getCenter().toString());
+    });
+  }
+
+
+  /*
+    addMarker(latLng: google.maps.LatLng, infoContent &#x3D; &quot;&quot;, labelText &#x3D; &quot;grade&quot;, title &#x3D; &quot;&quot;, labelColor &#x3D; &quot;aqua&quot;, fontSize &#x3D; &quot;18px&quot;, icon &#x3D; &quot;rocket&quot;, animation &#x3D; google.maps.Animation.DROP) {
+      console.log(&#x60;addMarker&#x60;)
+
+      if (infoContent &#x3D;&#x3D; &quot;&quot;) {
+        infoContent &#x3D; &#x60;Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}&#x60;
+      }
+      if (title &#x3D;&#x3D; &quot;&quot;) {
+        title &#x3D; infoContent
+      }
+      labelText &#x3D; &quot;grade&quot;
+      //icon &#x3D; &quot;rocket&quot;
+      fontSize &#x3D; &quot;20px&quot;
+
+          //icon &#x3D; &quot;rocket&quot;
+          animation &#x3D; google.maps.Animation.DROP
+
+
+      let labels &#x3D; &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;;
+      // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
+      // https://material.angular.io/components/icon/overview
+      //https://developers.google.com/fonts/docs/material_icons
+      //https://fonts.google.com/icons
+      if (latLng) {
+        let dt &#x3D; new Date();
+        let time &#x3D; &#x60;${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}&#x60; // :${Utility.zeroFill(dt.getMilliseconds(), 4)}&#x60;
+        * REVIEW:
+         let lat:number &#x3D; event.latLng.lat  // gets:  Type &#x27;() &#x3D;&gt; number&#x27; is not assignable to type &#x27;number&#x27;.
+         let lng:number &#x3D; event.latLng.lng
+         lat &#x3D; Math.round(lat * 1000.0) / 1000.0
+         lng &#x3D; Math.round(lng * 1000.0) / 1000.0
+         let pos &#x3D; &#x60;lat: ${lat}; long: ${lng} &#x60;
+         *
+        let pos &#x3D; &#x60;lat: ${latLng.lat}; long: ${latLng.lng}&#x60;
+        //let pos &#x3D; &#x60;lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; long: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } &#x60;
+
+        console.log(&quot;Actually adding marker now...&quot;)
+        let m &#x3D; new google.maps.Marker({
+          draggable: true,
+          animation: animation,
+          map: this.gMap,
+          position: latLng,
+          title: title,
+          //icon: icon, //&quot;https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png&quot;,
+          label: {
+            // label: this.labels[this.labelIndex++ % this.labels.length],
+            text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+            fontFamily: &quot;Material Icons&quot;,
+            color: labelColor,
+
+            fontSize: fontSize,
+          },
+          // label: labels[labelIndex++ % labels.length],
+        })
+        // markers can only be keyboard focusable when they have click listeners
+        // open info window when marker is clicked
+        // marker.addListener(&quot;click&quot;, () &#x3D;&gt; {
+        //this.infoWindow.setContent(label);
+        //this.infoWindow.open(this.map, marker);
+        // })
+
+        m.addListener(&quot;click&quot;,   // this.toggleBounce)
+          () &#x3D;&gt; {
+            //this.infowindow.setContent(&#x60;${ SpecialMsg } &#x60;)
+            //&#x60;Manually dropped: ${time} at ${pos} &#x60;
+            this.infowindow.setContent(infoContent)
+            this.infowindow.open({
+              // new google.maps.InfoWindow.open({
+              //content: &#x27;How now red cow.&#x27;,
+              anchor: m,
+              //setPosition: event.latLng,
+              map: this.gMap,
+              // shouldFocus: false,
+            })
+          }
+        )
+        this.markers.push(m)
+      } else {
+        console.log(&quot;event.latLng is BAD; can not add marker..&quot;)
+      }
+      //this.refreshMarkerDisplay()
+    }
+  */
+
+
+
+
+  // https://stackblitz.com/edit/ts-leaflet-markercluster
+
+  /*
+   //console.log(&quot;ngAfterViewInit..........&quot;)
+   this.initMap()
+
+   if (this.lmap) {
+     //this.markerService.makeStationMarkers(this.lmap)
+     this.markerService.makeCapitalCircleMarkers(this.lmap)
+   }
+   // NOTE: An even better approach would be to pre-load the data in a resolver.
+   this.shapeService.getShapeShapes(this.shapeFile).subscribe((shapes: any) &#x3D;&gt; {
+     this.shapes &#x3D; shapes
+     this.initShapesLayer()
+   });
+  }
+
+
+  // https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-leafletjs-map
+  // https://developer.what3words.com/tutorial/combining-the-what3words-js-autosuggest-component-with-a-leafletjs-map
+
+
+  const map2 &#x3D; L.map(&#x27;googleMapsPlaner&#x27;, {
+  center: [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR],
+  zoom: POLSKA_ZOOM,
+  zoomControl: true, layers: [tiles]
+  });
+
+  const markerIcon &#x3D;
+  L.icon({
+  iconSize: [25, 41],
+  iconAnchor: [10, 41],
+  popupAnchor: [2, -40],
+  // specify the path here
+  iconUrl: &quot;https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png&quot;,
+  shadowUrl: &quot;https://unpkg.com/leaflet@1.4.0/dist/images/marker-shadow.png&quot;
+  })
+
+
+  const bergen &#x3D; {lat:60.3948648649804, long:5.321473714945354}
+
+  const markerCluster &#x3D; new L.MarkerClusterGroup();
+
+  let marker &#x3D; L.marker(new L.LatLng(POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR), { title: &#x27;my&#x27;, icon: markerIcon });
+  markerCluster.addLayer(marker);
+
+  marker &#x3D; L.marker(new L.LatLng(POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1), { title: &#x27;my&#x27;, icon: markerIcon });
+  markerCluster.addLayer(marker);
+
+  map2.addLayer(markerCluster);
+
+
+  marker &#x3D; L.marker(new L.LatLng(POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR), { title: &#x27;my&#x27;, icon: markerIcon });
+  markerCluster.addLayer(marker);
+
+  marker &#x3D; L.marker(new L.LatLng(POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1), { title: &#x27;my&#x27;, icon: markerIcon });
+  markerCluster.addLayer(marker);
+
+  map2.addLayer(markerCluster);
+
+
+
+  /*const addressPoints &#x3D; [
+    [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR, &#x27;1&#x27;],
+    [POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1, &#x27;1&#x27;],
+  ]
+  */
+  //  const markers &#x3D; L.markerClusterGroup();
+
+  /*
+
+  for (let i &#x3D; 0; i &lt; addressPoints.length; i++) {
+    //if (addressPoints[i]) {      }
+    let a &#x3D; addressPoints[i];
+    let title &#x3D; a[2];
+    let marker &#x3D; L.marker(new L.LatLng(a[0], a[1]), {
+      title: title,
+      icon: markerIcon
+    });
+    marker.bindPopup(title);
+    markers.addLayer(marker);
+  }
+  */
+  //map2.addLayer(markers);
+
+
+
+  // Create GeoJSON layer &amp; add to map
+  // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
+  initShapesLayer() {
+    /*
+        const shapeLayer &#x3D; L.geoJSON(this.shapes, {
+          style: (feature) &#x3D;&gt; ({
+            weight: 3,
+            opacity: 0.5,
+            color: &#x27;#008f68&#x27;,
+            fillOpacity: 0.8,
+            fillColor: &#x27;#6DB65B&#x27;
+          }),
+          onEachFeature: (feature, layer) &#x3D;&gt; (
+            layer.on({
+              mouseover: (e) &#x3D;&gt; (this.highlightFeature(e)),
+              mouseout: (e) &#x3D;&gt; (this.resetFeature(e)),
+            })
+          )
+        });
+
+        if (this.lmap) {
+          this.lmap.addLayer(shapeLayer);
+        }
+        shapeLayer.bringToBack();
+      }
+
+      //  attach mouseover &amp; mouseout events to interact with each of the (state) shapes
+      private highlightFeature(e: L.LeafletMouseEvent) {
+        const layer &#x3D; e.target;
+
+        layer.setStyle({
+          weight: 10,
+          opacity: 1.0,
+          color: &#x27;#DFA612&#x27;,
+          fillOpacity: 1.0,
+          fillColor: &#x27;#FAE042&#x27;
+        });
+      }
+
+      private resetFeature(e: L.LeafletMouseEvent) {
+        const layer &#x3D; e.target;
+
+        layer.setStyle({
+          weight: 3,
+          opacity: 0.5,
+          color: &#x27;#008f68&#x27;,
+          fillOpacity: 0.8,
+          fillColor: &#x27;#6DB65B&#x27;
+        });
+      }
+      */
+  }
+}
+
+
+
+function initShapesLayer() {
+  throw new Error(&#x27;Function not implemented.&#x27;);
+}
+/*
+OLD CODE from Ranger 4.2 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
+
+TODO: Abstract common code to here, unique to calling routine..
+
+ initLeafletMap() {
+    // https://leaflet.github.io/Leaflet.markercluster/example/marker-clustering-zoomtobounds.html
+    // https://leafletjs.com/examples/layers-control/
+    // TODO: This needs to get moved to actual point/marker display...
+    let //p1 &#x3D; L.marker([DEF_LAT, DEF_LONG]).bindPopup(&#x27;Person 1 - John&#x27;),
+        //p2 &#x3D; L.marker([DEF_LAT-.1, DEF_LONG-.02]).bindPopup(&#x27;Person 2 - Fred&#x27;),
+        //p3 &#x3D; L.marker([DEF_LAT+.02, DEF_LONG+.01]).bindPopup(&#x27;Person 3 - Sally&#x27;),
+        //p4 &#x3D; L.marker([DEF_LAT+.01, DEF_LONG+.02]).bindPopup(&#x27;Person 4 - Bucky&#x27;),
+        //p5 &#x3D; L.marker([DEF_LAT, DEF_LONG]).bindPopup(&#x27;Person 5 - maryAnne&#x27;),
+        //p6 &#x3D; L.marker([DEF_LAT-.13, DEF_LONG-.025]).bindPopup(&#x27;Person 6 - Cathy&#x27;),
+        //p7 &#x3D; L.marker([DEF_LAT+.022, DEF_LONG+.014]).bindPopup(&#x27;Person 7 - Michael&#x27;),
+        p8 &#x3D; L.marker([DEF_LAT+.011, DEF_LONG+.022]).bindPopup(&#x27;Person 8 - Olivia&#x27;);
+
+    //Instead of adding them directly to the map, you can do the following, using the LayerGroup class:
+    let Team1 &#x3D; L.layerGroup([p8]); //, p2, p3, p4]);
+    let Team2 &#x3D; L.layerGroup([p8]); //, p6, p7, p8]);
+
+    let grayscale &#x3D; L.tileLayer(mapboxUrl, {id: &#x27;mapId1&#x27;, attribution: mapboxAttribution});
+    let streets   &#x3D; L.tileLayer(mapboxUrl, {id: &#x27;mapId2&#x27;, attribution: mapboxAttribution});
+    let mstreets  &#x3D; L.tileLayer(mapboxUrl, {maxZoom: 16, attribution: mapboxAttribution, id: &#x27;mapbox.streets&#x27;})
+    let estreets &#x3D; L.esri.basemapLayer(&#x27;Streets&#x27;);
+
+    //https://leafletjs.com/reference-1.4.0.html#control-layers
+    let baseMaps &#x3D; {
+      //&quot;&lt;span style&#x3D;&#x27;color: gray&#x27;&gt;Grayscale&lt;/span&gt;&quot;: grayscale,    // grayscale may no longer exist??
+      //&quot;Streets&quot;: streets
+    };
+    let overlayMaps &#x3D; {
+      &quot;Team1&quot;: Team1,
+      &quot;Team2&quot;: Team2
+    };
+
+    bigMap   &#x3D; L.map(&#x27;bigLeafletMapId&#x27;, {maxZoom: 20,
+      layers: [estreets] // actual layers on map   //, Team1, Team2
+    });
+    bigMap.setView([DEF_LAT, DEF_LONG], 8);
+
+
+    // Add the layer widget to the map, requires maxzoom?
+    L.control.layers(baseMaps, overlayMaps).addTo(bigMap);
+
+    //L.tileLayer(mapboxUrl, {maxZoom: 18, attribution: mapboxAttribution,id: &#x27;mapbox.streets&#x27;}).addTo(bigMap);
+  }
+
+  initSmallMap() {
+    smallMap &#x3D; L.map(&#x27;smallMapId&#x27; ).setView([DEF_LAT, DEF_LONG], 12);
+    L.esri.basemapLayer(&#x27;Streets&#x27;).addTo(smallMap);
+
+    /*
+    L.tileLayer(mapboxUrl, {
+      maxZoom: 18,
+      attribution: mapboxAttribution,
+      id: &#x27;mapbox.streets&#x27;
+    }).addTo(smallMap);
+    *  /
+    smallMap.setView([DEF_LAT,DEF_LONG], 12);
+
+    smallMap.on(&#x27;click&#x27;, onSmallMapClick);
+    // TODO: There are now 2 leaflet containers. OK?
+    $(&#x27;.leaflet-container&#x27;).css(&#x27;cursor&#x27;,&#x27;crosshair&#x27;); // reset cursor with &#x27;&#x27;!
+
+    // Display coordinates if map is clicked
+    let popup2 &#x3D; L.popup();
+
+    function onSmallMapClick(e) {
+      popup2
+        .setLatLng(e.latlng)
+        .setContent(e.latlng.toString())
+        .openOn(smallMap);
+    }
+  }
+
+  filterLeafletMap() {
+    dbug(&quot;filterLeafletMap...&quot;);
+    /* Sorting:
+      let points &#x3D; [40, 100, 1, 5, 25, 10];
+      points.sort(function(a, b){return a - b});
+    * /
+      let team &#x3D; document.getElementById(&quot;teamFilterId&quot;).value;
+      let call &#x3D; document.getElementById(&quot;callFilterId&quot;).value;
+      let filters &#x3D; {
+        Team: document.getElementById(&quot;teamFilterId&quot;).value,
+        CallSign: document.getElementById(&quot;callFilterId&quot;).value,
+        Minutes: document.getElementById(&quot;minuteFilterId&quot;).value,
+        BaseTime: document.getElementById(&quot;baseTimeFilterId&quot;).value
+      };
+
+      dbug(&quot;Filtering on: &quot;
+        + filters.Team + &quot; AND &quot;
+        + filters.CallSign + &quot; AND &quot;
+        + filters.Minutes + &quot; AND &quot;
+        + filters.BaseTime);
+
+      filterLocations(filters);
+    }
+  */
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;h1&gt;{{title}}&lt;/h1&gt;
+
+&lt;!--  https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet --&gt;
+
+&lt;!-- div id&#x3D;&quot;mapLeafletPanel&quot; onactivate&#x3D;&quot;resetMap()&quot;&gt;
+  &lt;p&gt;Click zooms to cluster&#x27;s bounds or shows coordinates, scroll wheel zooms &amp; drag mouse to move.&lt;/p&gt;
+  &lt;form id&#x3D;&quot;mapLeafletEntry&quot;&gt;
+    &lt;fieldset&gt;&lt;legend&gt;Filter&lt;/legend&gt;
+      &lt;div Title&#x3D;&quot;Only entries matching ALL the following filters will be displayed.&quot;&gt;
+        Team: &lt;input id&#x3D;&quot;teamFilterId&quot; value&#x3D;&quot;&quot; size&#x3D;&quot;8&quot; autofocus&gt;
+        AND  Callsign: &lt;input id&#x3D;&quot;callFilterId&quot; size&#x3D;&quot;8&quot; value&#x3D;&quot;&quot;&gt;
+        AND  Within &lt;input id&#x3D;&quot;minuteFilterId&quot; size&#x3D;&quot;5&quot; value&#x3D;&quot;0&quot;&gt;
+        Minutes of &lt;input id&#x3D;&quot;baseTimeFilterId&quot; size&#x3D;&quot;15&quot; value&#x3D;&quot;&quot;&gt;
+      &lt;/div&gt;
+    &lt;/fieldset&gt;
+    &lt;!- -  input id&#x3D;&quot;submitButton&quot; type&#x3D;&quot;button&quot; value&#x3D;&quot;Filter Map&quot; onclick&#x3D;&quot;filterLeafletMap()&quot;;&gt;
+    &lt;strong&gt;← Click this button to recenter map &amp; zoom to markers!&lt;/strong&gt;
+    &lt;!-input type&#x3D;&quot;reset&quot; value&#x3D;&quot;Reset Map&quot; onclick&#x3D;&quot;resetMapForm()&quot;-&gt;
+    &lt;/form&gt;
+
+    &lt;br&gt;
+
+    &lt;div id&#x3D;&quot;bigLeafletMapId&quot; style&#x3D;&quot;width: 100%; height: 70vh;&quot;&gt;&lt;/div--&gt;
+
+
+&lt;!--div *ngIf&#x3D;&quot;apiLoaded&quot; | async--&gt;
+
+
+
+&lt;div class&#x3D;&quot;lmap-container&quot;&gt;
+  &lt;div class&#x3D;&quot;lmap-frame&quot;&gt;
+    &lt;div id&#x3D;&quot;lmap&quot; leaflet (leafletMapReady)&#x3D;&quot;onMapReady($event)&quot;&gt;
+      &lt;!-- from https://blog.mestwin.net/leaflet-angular-marker-clustering/
+    [leafletOptions]&#x3D;&quot;mapOptions&quot;
+      Can&#x27;t bind to &#x27;leafletOptions&#x27; since it isn&#x27;t a known property of &#x27;div&#x27; [leafletMarkerCluster]&#x3D;&quot;markerClusterData&quot;
+    --&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+    &lt;!--div id&#x3D;&quot;markerDiv&quot; #markerDiv *ngFor&#x3D;&quot;let marker of markers&quot;&gt;
+    &lt;/div--&gt;
+
+&lt;/div&gt;
+&lt;div id&#x3D;&quot;overview&quot; id&#x3D;&quot;overview&quot; overview&gt;&lt;/div&gt;
+
+&lt;!-- https://angular.io/api/common/DecimalPipe#digitsinfo --&gt;
+&lt;div&gt;Latitude: &lt;span class&#x3D;&quot;strong&quot;&gt;{{mouseLatLng?.lat | number:&#x27;1.4-5&#x27;}}&lt;/span&gt; Longitude: &lt;span
+    class&#x3D;&quot;strong&quot;&gt;{{mouseLatLng?.lng | number:&#x27;1.4-5&#x27;}}&lt;/span&gt;
+  Zoom: &lt;span class&#x3D;&quot;strong&quot;&gt;{{zoom}}&lt;/span&gt;
+&lt;/div&gt;
+
+
+
+
+&lt;!--
+    &lt;google-map id&#x3D;&quot;map&quot; width&#x3D;&quot;100%&quot; [center]&#x3D;&quot;center&quot; [zoom]&#x3D;&quot;zoom&quot; [options]&#x3D;&quot;options&quot;
+      (mapClick)&#x3D;&quot;addManualMarkerEvent($event)&quot; (mapMousemove)&#x3D;&quot;onMapMouseMove($event)&quot; (mapRightclick)&#x3D;&quot;addTrafficLayer()&quot;
+      (mapInitialized)&#x3D;&quot;onMapInitialized($event)&quot;&gt;
+
+      &lt;div id&#x3D;&quot;markerDiv&quot; #markerDiv *ngFor&#x3D;&quot;let marker of markers&quot;&gt;
+      &lt;/div&gt;
+
+      &lt;
+        (mapClick)&#x3D;&quot;openInfoWindow($event)&quot;
+
+          [position]&#x3D;&quot;marker.position&quot;
+          [options]&#x3D;&quot;marker.options&quot;  &gt;
+
+      &lt;map-circle [center]&#x3D;&quot;circleCenter&quot; [radius]&#x3D;&quot;radius&quot;&gt;&lt;/map-circle&gt;
+
+      &lt;map-info-window&gt;{{ infoContent }}&lt;/map-info-window&gt;
+
+    &lt;/google-map&gt;
+
+    &lt;- https://angular.io/api/common/DecimalPipe#digitsinfo &gt;
+    &lt;div&gt;Latitude: &lt;span class&#x3D;&quot;strong&quot;&gt;{{display?.lat | number:&#x27;1.4-5&#x27;}}&lt;/span&gt;   Longitude: &lt;span class&#x3D;&quot;strong&quot;&gt;{{display?.lng | number:&#x27;1.4-5&#x27;}}&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div--&gt;
+&lt;br&gt;
+
+&lt;details&gt;
+  &lt;summary&gt;Instructions&lt;/summary&gt;
+  &lt;ul&gt;
+    &lt;li&gt;This displays All Field Reports for All Rangers by default.&lt;/li&gt;
+    &lt;li&gt;FUTURE: IF a subset of Field Reports are selected on the Field Reports page, then ONLY those can be displayed
+      here.&lt;/li&gt;
+  &lt;/ul&gt;&gt;
+&lt;/details&gt;
+&lt;br&gt;
+&lt;h2&gt;Future functionality&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Allow sorting/filtering: by time, callsign, team, etc.&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>./lmap.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">.lmap-container {
+  position     : block;
+  // position: relative;
+  top          : 0;
+  left         : 0;
+  right        : 0;
+  bottom       : 0;
+  margin       : 5vw; //120px;
+  margin-top   : 5px;
+  margin-bottom: 5px;
+}
+
+.lmap-frame {
+  border: 2px solid black;
+  height: 60vh; //100%;
+}
+
+#lmap {
+  height: 60vh; //100%;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+#overview {
+  //position: absolute;
+  position: relative;
+  float: right;
+  left: 0px;
+  height: 175px;
+  width: 175px;
+  bottom: 0px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+</code></pre>
+                <p class="comment">
+                    <code>../../../node_modules/leaflet.markercluster/dist/MarkerCluster.css</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">.leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow {
+	-webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.3s ease-in;
+	-moz-transition: -moz-transform 0.3s ease-out, opacity 0.3s ease-in;
+	-o-transition: -o-transform 0.3s ease-out, opacity 0.3s ease-in;
+	transition: transform 0.3s ease-out, opacity 0.3s ease-in;
+}
+
+.leaflet-cluster-spider-leg {
+	/* stroke-dashoffset (duration and function) should match with leaflet-marker-icon transform in order to track it exactly */
+	-webkit-transition: -webkit-stroke-dashoffset 0.3s ease-out, -webkit-stroke-opacity 0.3s ease-in;
+	-moz-transition: -moz-stroke-dashoffset 0.3s ease-out, -moz-stroke-opacity 0.3s ease-in;
+	-o-transition: -o-stroke-dashoffset 0.3s ease-out, -o-stroke-opacity 0.3s ease-in;
+	transition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;
+}
+</code></pre>
+                <p class="comment">
+                    <code>../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">.marker-cluster-small {
+	background-color: rgba(181, 226, 140, 0.6);
+	}
+.marker-cluster-small div {
+	background-color: rgba(110, 204, 57, 0.6);
+	}
+
+.marker-cluster-medium {
+	background-color: rgba(241, 211, 87, 0.6);
+	}
+.marker-cluster-medium div {
+	background-color: rgba(240, 194, 12, 0.6);
+	}
+
+.marker-cluster-large {
+	background-color: rgba(253, 156, 115, 0.6);
+	}
+.marker-cluster-large div {
+	background-color: rgba(241, 128, 23, 0.6);
+	}
+
+	/* IE 6-8 fallback colors */
+.leaflet-oldie .marker-cluster-small {
+	background-color: rgb(181, 226, 140);
+	}
+.leaflet-oldie .marker-cluster-small div {
+	background-color: rgb(110, 204, 57);
+	}
+
+.leaflet-oldie .marker-cluster-medium {
+	background-color: rgb(241, 211, 87);
+	}
+.leaflet-oldie .marker-cluster-medium div {
+	background-color: rgb(240, 194, 12);
+	}
+
+.leaflet-oldie .marker-cluster-large {
+	background-color: rgb(253, 156, 115);
+	}
+.leaflet-oldie .marker-cluster-large div {
+	background-color: rgb(241, 128, 23);
+}
+
+.marker-cluster {
+	background-clip: padding-box;
+	border-radius: 20px;
+	}
+.marker-cluster div {
+	width: 30px;
+	height: 30px;
+	margin-left: 5px;
+	margin-top: 5px;
+
+	text-align: center;
+	border-radius: 15px;
+	font: 12px &quot;Helvetica Neue&quot;, Arial, Helvetica, sans-serif;
+	}
+.marker-cluster span {
+	line-height: 30px;
+	}</code></pre>
+                <p class="comment">
+                    <code>../../../node_modules/leaflet/dist/leaflet.css</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane &gt; svg,
+.leaflet-pane &gt; canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers &quot;stretching&quot; when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg,
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn&#x27;t support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id&#x3D;888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn&#x27;t have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-tile {
+	will-change: opacity;
+	}
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	will-change: transform;
+	}
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker &amp; overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane &gt; svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane &gt; svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn&#x27;t have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline: 0;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-container a.leaflet-active {
+	outline: 2px solid orange;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font: 12px/1.5 &quot;Helvetica Neue&quot;, Arial, Helvetica, sans-serif;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a,
+.leaflet-bar a:hover {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px &#x27;Lucida Console&#x27;, Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: url(images/layers.png);
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: url(images/layers-2x.png);
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path {
+	background-image: url(images/marker-icon.png);
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.7);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover {
+	text-decoration: underline;
+	}
+.leaflet-container .leaflet-control-attribution,
+.leaflet-container .leaflet-control-scale {
+	font-size: 11px;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	font-size: 11px;
+	white-space: nowrap;
+	overflow: hidden;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+
+	background: #fff;
+	background: rgba(255, 255, 255, 0.5);
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 19px;
+	line-height: 1.4;
+	}
+.leaflet-popup-content p {
+	margin: 18px 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 4px 4px 0 0;
+	border: none;
+	text-align: center;
+	width: 18px;
+	height: 14px;
+	font: 16px/14px Tahoma, Verdana, sans-serif;
+	color: #c3c3c3;
+	text-decoration: none;
+	font-weight: bold;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover {
+	color: #999;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	border-bottom: 1px solid #ddd;
+	border-top: 1px solid #ddd;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: &quot;progid:DXImageTransform.Microsoft.Matrix(M11&#x3D;0.70710678, M12&#x3D;0.70710678, M21&#x3D;-0.70710678, M22&#x3D;0.70710678)&quot;;
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11&#x3D;0.70710678, M12&#x3D;0.70710678, M21&#x3D;-0.70710678, M22&#x3D;0.70710678);
+	}
+.leaflet-oldie .leaflet-popup-tip-container {
+	margin-top: -1px;
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-clickable {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: &quot;&quot;;
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><h1>{{title}}</h1><!--  https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet --><!-- div id="mapLeafletPanel" onactivate="resetMap()">  <p>Click zooms to cluster\'s bounds or shows coordinates, scroll wheel zooms & drag mouse to move.</p>  <form id="mapLeafletEntry">    <fieldset><legend>Filter</legend>      <div Title="Only entries matching ALL the following filters will be displayed.">        Team: <input id="teamFilterId" value="" size="8" autofocus>        AND  Callsign: <input id="callFilterId" size="8" value="">        AND  Within <input id="minuteFilterId" size="5" value="0">        Minutes of <input id="baseTimeFilterId" size="15" value="">      </div>    </fieldset>    <!- -  input id="submitButton" type="button" value="Filter Map" onclick="filterLeafletMap()";>    <strong>← Click this button to recenter map & zoom to markers!</strong>    <!-input type="reset" value="Reset Map" onclick="resetMapForm()"->    </form>    <br>    <div id="bigLeafletMapId" style="width: 100%; height: 70vh;"></div--><!--div *ngIf="apiLoaded" | async--><div class="lmap-container">  <div class="lmap-frame">    <div id="lmap" leaflet (leafletMapReady)="onMapReady($event)">      <!-- from https://blog.mestwin.net/leaflet-angular-marker-clustering/    [leafletOptions]="mapOptions"      Can\'t bind to \'leafletOptions\' since it isn\'t a known property of \'div\' [leafletMarkerCluster]="markerClusterData"    -->    </div>  </div>    <!--div id="markerDiv" #markerDiv *ngFor="let marker of markers">    </div--></div><div id="overview" id="overview" overview></div><!-- https://angular.io/api/common/DecimalPipe#digitsinfo --><div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:\'1.4-5\'}}</span> Longitude: <span    class="strong">{{mouseLatLng?.lng | number:\'1.4-5\'}}</span>  Zoom: <span class="strong">{{zoom}}</span></div><!--    <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"      (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="addTrafficLayer()"      (mapInitialized)="onMapInitialized($event)">      <div id="markerDiv" #markerDiv *ngFor="let marker of markers">      </div>      <        (mapClick)="openInfoWindow($event)"          [position]="marker.position"          [options]="marker.options"  >      <map-circle [center]="circleCenter" [radius]="radius"></map-circle>      <map-info-window>{{ infoContent }}</map-info-window>    </google-map>    <- https://angular.io/api/common/DecimalPipe#digitsinfo >    <div>Latitude: <span class="strong">{{display?.lat | number:\'1.4-5\'}}</span>   Longitude: <span class="strong">{{display?.lng | number:\'1.4-5\'}}</span>    </div>  </div--><br><details>  <summary>Instructions</summary>  <ul>    <li>This displays All Field Reports for All Rangers by default.</li>    <li>FUTURE: IF a subset of Field Reports are selected on the Field Reports page, then ONLY those can be displayed      here.</li>  </ul>></details><br><h2>Future functionality</h2><ul>  <li>Allow sorting/filtering: by time, callsign, team, etc.</li></ul></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'GmapComponent', 'selector': 'rangertrak-gmap'},{'name': 'IconComponent', 'selector': 'icon'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'LmapComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'LmapComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
