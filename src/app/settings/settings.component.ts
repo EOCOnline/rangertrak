@@ -130,7 +130,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         //rowNode.setData
         //const setData = (data: any) //=> void;
 
-        params.value = ("444" + newColor + "kkkk")
+        //params.value = ("444" + newColor + "kkkk")
 
         //this.gridApi.refreshCells() -- breaks things!
         this.refreshStatusGrid()
@@ -153,7 +153,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       } //, minWidth: "25px" }
   */
   ];
-  fonts = ["'Open Sans'", "Montserrat", "Roboto", "'Playfair Display'", "Lato", "Merriweather", "Helvetica", "Lora", "'PT Serif'", "Spectral", "'Times New Roman'", "'Akaya Telivigala'"] //, "'Material Icons'"]
+  fonts = ["'Open Sans'", "Montserrat", "Roboto", "'Playfair Display'", "Lato", "Merriweather", "Helvetica", "Lora", "'PT Serif'", "Spectral", "'Times New Roman'", "'Akaya Telivigala'",
+  "'Open Sans Condensed'", "'Saira Extra Condensed'", "Boogaloo", "Anton", "'Faster One'"]  //, "'Material Icons'"]  all loaded in Index.html
   // https://en.wikipedia.org/wiki/Pangram
   pangrams = ["Pack my box with five dozen liquor jugs",
     "The quick brown fox jumps over the lazy dog",
