@@ -1,8 +1,8 @@
 import { Component, Inject, Pipe, PipeTransform, OnInit } from '@angular/core';
-import { FieldReportService, FieldReportType, FieldReportStatusType, RangerService, SettingsService, TeamService } from '../shared/services';
-
 import { DOCUMENT, formatDate } from '@angular/common'
 import { FormBuilder, FormGroup } from '@angular/forms';
+
+import { FieldReportService, FieldReportType, FieldReportStatusType, RangerService, SettingsService, TeamService } from '../shared/services';
 
 @Pipe({ name: 'myUnusedPipe' })
 export class myUnusedPipe implements PipeTransform {
@@ -56,6 +56,7 @@ export class FieldReportsComponent implements OnInit {
   nFakes = 10
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
+  // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
   gridOptions = {
     // PROPERTIES
     rowSelection: "multiple",
@@ -231,13 +232,21 @@ export class FieldReportsComponent implements OnInit {
 
   //onFirstDataRendered(params: any) {
   refreshGrid() {
-    if (this.gridApi) {
+    //if (this.gridApi) {
       this.gridApi.refreshCells()
       this.gridApi.sizeColumnsToFit();
-    } else {
-      console.log("no this.gridApi yet in refreshGrid()")
-    }
+    //} else {
+      //console.log("no this.gridApi yet in refreshGrid()")
+    //}
   }
+
+  onBtnGetSelectedRowData() {
+    let selectedNodes = this.gridApi.getSelectedNodes();
+    let selectedData = selectedNodes.map((node: { data: any; }) => node.data);
+    console.log(`onBtnGetSelectedRowData obtained ${selectedNodes.length} selected row:\n${JSON.stringify(selectedData)}`);
+    return selectedData;
+  }
+
 
   // following from https://ag-grid.com/javascript-data-grid/csv-export/
   getValue(inputSelector: string) {
@@ -263,7 +272,7 @@ export class FieldReportsComponent implements OnInit {
     let dt = new Date()
     return {
       columnSeparator: this.getValue('columnSeparator'),
-      fileName: `FieldReportsExport.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,  // REVIEW: ONLY month is zero based, requires +1?!
+      fileName: `FieldReportsExport.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,
     }
   }
 
