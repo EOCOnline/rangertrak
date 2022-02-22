@@ -64,7 +64,8 @@ import { environment } from '../environments/environment';
       MoodEditor,
       MoodRenderer,
     ]),
-    //AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
+    // https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method: singleton
+    // AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
     // AgmSnazzyInfoWindowModule, // BUG: API_KEY
     LazyModule,
     NgxMatColorPickerModule,

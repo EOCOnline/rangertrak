@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core'
+import { Component, ComponentFactoryResolver, Inject, OnInit } from '@angular/core'
 //import { Event } from '@angular/animations'
 //import { File } from '@ionic-native/file/ngx';
 
@@ -12,9 +12,9 @@ import { Utility } from "../shared"
   styleUrls: ['./log.component.scss'] //, 'home.page.scss']
 })
 export class LogComponent { //implements OnInit
+  // If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
 
-  log = this.document.getElementById("log")
-
+  logpanel = this.document.getElementById("log")
 
   //constructor(public file: File) { }
   constructor(
@@ -29,20 +29,27 @@ export class LogComponent { //implements OnInit
   }
 
   // log event in the console
-  logEvent(msg: string) {
-    if (this.log === null) { throw ("unable to find log...") }
+  log(msg: string, klass:string='log') {
+    if (this.logpanel === null) { throw ("unable to find log...") }
+    if (klass!="log" && klass!="warn" && klass!="err") { // classes found in the scss file
+      console.warn (`log got unknown class: ${klass}`)
+      klass="log"
+    }
     let dt = new Date()
     let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
-    this.log.textContent += time + "-  &nbsp;&nbsp;" + msg + "\n"
-    var ot = this.log.scrollHeight - this.log.clientHeight
-    if (ot > 0) this.log.scrollTop = ot
+
+    this.logpanel.innerHTML += `<span class="${klass}">${time} -   ${msg}</span> \n`
+    //this.log.textContent += time + "-  &nbsp;&nbsp;" + msg + "\n"
+
+    let ot = this.logpanel.scrollHeight - this.logpanel.clientHeight
+    if (ot > 0) this.logpanel.scrollTop = ot
   }
 
   dbug_unused(msg: string, alerts = false) {
     let dt = new Date()
     let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
-    let dbugLog = time + "-  &nbsp;&nbsp;" + msg + "<br>" + this.log?.innerHTML
-    this.log!.innerHTML = dbugLog
+    let dbugLog = time + "-  &nbsp;&nbsp;" + msg + "<br>" + this.logpanel?.innerHTML
+    this.logpanel!.innerHTML = dbugLog
     // TODO: Only if settings say to do this!
     // console.log("RangerTrak: " + dbugLog); // Convert dbugLog from HTML to plain text...
     if (alerts == true) {

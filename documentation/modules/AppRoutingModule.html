@@ -120,7 +120,7 @@ const routes: Routes &#x3D; [
   // Page not found route
   { path: &#x27;**&#x27;, component: X404Component }
 ];
-
+<!-- https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method -->
 @NgModule({
   imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],  // lazy loads ASAP!
   exports: [RouterModule]
