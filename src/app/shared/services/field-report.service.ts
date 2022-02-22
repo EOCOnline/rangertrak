@@ -22,6 +22,7 @@ export class FieldReportService {
 
   private uri = 'http://localhost:4000/products'
   private fieldReports: FieldReportType[] = []
+  private selectedFieldReports: FieldReportType[] = []
   private fieldReportStatuses: FieldReportStatusType[] = []
   private storageLocalName = 'fieldReports'
   private nextId = 0
@@ -30,6 +31,8 @@ export class FieldReportService {
   public bounds = new google.maps.LatLngBounds(new google.maps.LatLng(90, 180), new google.maps.LatLng(-90, -180)) //SW, NE
   public bound: google.maps.LatLngBoundsLiteral = { east: -180, north: -90, south: 90, west: 180 } //e,n,s,w
   private boundsMargin = 0.0025
+  public selectedBounds = new google.maps.LatLngBounds(new google.maps.LatLng(90, 180), new google.maps.LatLng(-90, -180)) //SW, NE
+  public selectedBound: google.maps.LatLngBoundsLiteral = { east: -180, north: -90, south: 90, west: 180 } //e,n,s,w
 
   constructor(
     private rangerService: RangerService,
@@ -119,6 +122,15 @@ export class FieldReportService {
     return this.fieldReports[index];
   }
 
+  setSelectedFieldReports(selection: FieldReportType[]) {
+    this.selectedFieldReports = selection
+    // TODO: Update seperate bounds
+  }
+
+  getSelectedFieldReports() {
+    return this.selectedFieldReports
+  }
+
   updateFieldReport(report: FieldReportType) {
     const index = this.findIndex(report.id);
     this.fieldReports[index] = report;
@@ -167,7 +179,7 @@ export class FieldReportService {
     // return -1
   }
 
-  sortFieldReportsByCallsign() {
+  sortFieldReportsByCallsign_unused() {
     return this.fieldReports.sort((n1, n2) => {
       if (n1.callsign > n2.callsign) { return 1 }
       if (n1.callsign < n2.callsign) { return -1 }
@@ -178,7 +190,7 @@ export class FieldReportService {
     // console.log("SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!")
   }
 
-  sortFieldReportsByDate() {
+  sortFieldReportsByDate_unused() {
     return this.fieldReports.sort((n1, n2) => {
       if (n1.date > n2.date) { return 1 }
       if (n1.date < n2.date) { return -1 }
@@ -269,7 +281,7 @@ export class FieldReportService {
 
   // --------------------------------------------------------
 
-  sortFieldReportsByTeam() {
+  sortFieldReportsByTeam_unused() {
     return this.fieldReports.sort((n1, n2) => {
       if (n1.team > n2.team) { return 1 }
       if (n1.team < n2.team) { return -1 }
@@ -277,7 +289,7 @@ export class FieldReportService {
     })
   }
 
-  filterFieldReportsByDate(beg: Date, end: Date) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
+  filterFieldReportsByDate_unused(beg: Date, end: Date) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
     const minDate = new Date(0)
     const maxDate = new Date(2999, 0)
     beg = beg < minDate ? beg : minDate

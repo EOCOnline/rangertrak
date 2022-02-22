@@ -37,6 +37,7 @@
     "@googlemaps/markerclusterer": "^1.0.24",
     "@material/banner": "^13.0.0",
     "@material/slider": "^13.0.0",
+    "@material/switch": "^13.0.0",
     "@mdi/js": "^6.5.95",
     "@ngx-pwa/local-storage": "^13.0.2",
     "@popperjs/core": "^2.11.2",

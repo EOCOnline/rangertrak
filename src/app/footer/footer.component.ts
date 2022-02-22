@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { SettingsService } from '../shared/services/'
 
+/**
+ * Footer component
+ */
 @Component({
   selector: 'rangertrak-footer',
   templateUrl: './footer.component.html',

@@ -1,44 +1,24 @@
 /// <reference types="@types/google.maps" />
-
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
-import { MatIconModule } from '@angular/material/icon'
+import { MatIconModule, SafeResourceUrlWithIconOptions } from '@angular/material/icon'
 import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone } from '@angular/core';
 import { DOCUMENT, JsonPipe } from '@angular/common';
 import { ComponentFixture } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, Observable, of } from 'rxjs';
-
-//import { MarkerClusterer } from "@googlemaps/markerclusterer"
-
+//import { catchError, map, Observable, of } from 'rxjs';
 import * as GMC from "@googlemaps/markerclusterer"; // Current!
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
 import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
-//import { LatLng, latLng } from 'leaflet';
+import { MDCSwitch } from '@material/switch';
 
 /*
-
-https://github.com/googlemaps/js-markerclusterer - current!
-
- https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer - Angular components doesn't encapulate options functionality: identical clones only: ugg.
-MarkerClustererPlus Library - also old
-
-
   https://developers.google.com/maps/support/
   https://angular-maps.com/
   https://github.com/atmist/snazzy-info-window#html-structure
   https://angular-maps.com/api-docs/agm-core/interfaces/lazymapsapiloaderconfigliteral
-  https://stackblitz.com/edit/angular-google-maps-demo
-  https://github.com/googlemaps/js-markerclusterer
-  https://github.com/angular-material-extensions/google-maps-autocomplete
-
-   https://developers.google.com/maps/documentation/javascript/using-typescript
-
  https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md
  TODO: Allow geocoding: https://rapidapi.com/blog/google-maps-api-react/
-
- https://timdeschryver.dev/blog/google-maps-as-an-angular-component
  Option doc: https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions
-
 
 GoogleMapsModule exports three components that we can use:
 - GoogleMap: this is the wrapper around Google Maps, available via the google-map selector
@@ -47,13 +27,10 @@ GoogleMapsModule exports three components that we can use:
 */
 
 declare const google: any
-
-// const kaanapali: google.maps.LatLngLiteral = { lat: 20.9338, lng: -156.7168 }
-// const kahanaRidge: google.maps.LatLngLiteral = { lat: 20.973375, lng: -156.664915 }
-// const vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
-
 let marker: google.maps.Marker
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'rangertrak-gmap',
   templateUrl: './gmap.component.html',
@@ -93,6 +70,7 @@ export class GmapComponent implements OnInit {    //extends Map
   center: google.maps.LatLngLiteral
   trafficLayer = new google.maps.TrafficLayer()
   trafficLayerVisible = 0
+  usingSelectedFieldReports = false
   mapOptions: google.maps.MapOptions = {
     zoomControl: true,
     scrollwheel: true,
@@ -123,10 +101,13 @@ export class GmapComponent implements OnInit {    //extends Map
   apiLoaded //: Observable<boolean>
 
   // next 2 even used?
-  circleCenter: google.maps.LatLngLiteral = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }  // this.Vashon// kahanaRidge
+  circleCenter: google.maps.LatLngLiteral = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
   radius = 10;
 
-  fieldReports?: FieldReportType[]
+  fieldReports: FieldReportType[] = []
+  //selectedFieldReports: FieldReportType[] = []
+  filterSwitch: MDCSwitch | null = null
+  filterButton: HTMLButtonElement | null = null
 
   constructor(
     private settingsService: SettingsService,
@@ -154,7 +135,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
 
 */
 
-       // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
+    // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
     this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
@@ -182,28 +163,30 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     console.log('into ngOnInit()')
 
     // https://developers.google.com/maps/documentation/geolocation/overview Works - if you want map zoomed on user's device...
-    /*
-    navigator.geolocation.getCurrentPosition((position) => {
-      this.center = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      }
-    })
-    */
+    // navigator.geolocation.getCurrentPosition((position) => {
+    //   this.center = {
+    //     lat: position.coords.latitude,
+    //     lng: position.coords.longitude
+    //   }
+    // })
 
     // gMap is still null...
+
+    this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
+    if (!this.filterButton) { throw ("Could not find gMap Selection button!") }
+
+    this.filterSwitch = new MDCSwitch(this.filterButton)
+    if (!this.filterSwitch) throw ("Could not find gMap Selection Switch!")
   }
 
   onMapInitialized(mappy: google.maps.Map) {
     console.log(`onMapInitialized()`)
     this.gMap = mappy
 
-    this.displayAllMarkers()
-    // REVIEW: Doesn't work with NO Markers?
-
+    this.getAndDisplayFieldReports() // REVIEW: Works with NO Markers?
 
     // https://github.com/googlemaps/js-markerclusterer
-    // use default algorithm and renderer
+    // https://newbedev.com/google-markerclusterer-decluster-markers-below-a-certain-zoom-level
     this.markerCluster = new GMC.MarkerClusterer({
       map: this.gMap,
       markers: this.markers,
@@ -217,12 +200,10 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     this.gMap.setZoom(SettingsService.Settings.defZoom)
     this.fitBounds() // typically obviates the above set Center/Zoom
 
-
+    // Overview map: https://developers.google.com/maps/documentation/javascript/examples/inset-map
     const OVERVIEW_DIFFERENCE = 6
     const OVERVIEW_MIN_ZOOM = 5
     const OVERVIEW_MAX_ZOOM = 16
-    // https://developers.google.com/maps/documentation/javascript/examples/inset-map
-    // instantiate the overview map without controls
     this.overviewGMap = new google.maps.Map(
       document.getElementById("overview") as HTMLElement,
       {
@@ -230,21 +211,16 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
         disableDefaultUI: true,
         gestureHandling: "none",
         zoomControl: false,
-        mapTypeId: 'terrain', // 'roadmap' https://developers.google.com/maps/documentation/javascript/maptypes
+        mapTypeId: 'terrain',
       }
     );
 
+    // cycle through map types when map is clicked
     this.overviewGMap!.addListener("click", () => {
       let mapId = this.overviewMapType.cur++ % 4
       this.overviewGMap!.setMapTypeId(this.overviewMapType.types.type[mapId])
       console.log(`Overview map set to ${this.overviewMapType.types.type[mapId]}`)
     })
-
-    // const infowindow = new google.maps.InfoWindow({
-    //   content: "Mouse location...",
-    //   position: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng },
-    // })
-    //infowindow.open(this.overviewGMap);
 
     this.overviewGMap!.addListener("mousemove", ($event: any) => { // TODO: Only do while mouse is over map for efficiency?!
       if (this.zoomDisplay && this.overviewGMap) {
@@ -267,11 +243,23 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
         )
       );
     })
+
+    // const infowindow = new google.maps.InfoWindow({
+    //   content: "Mouse location...",
+    //   position: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng },
+    // })
+    //infowindow.open(this.overviewGMap);
+
   }
 
   clamp(num: number, min: number, max: number) {
     return Math.min(Math.max(num, min), max)
   }
+
+  /**
+   * Fit map bounds to all field reports (above a minimum size)
+   *
+   */
 
   fitBounds() {
     this.fieldReportService.recalcFieldBounds()
@@ -280,22 +268,38 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     this.gMap?.fitBounds({ south: bound.south, west: bound.west, north: bound.north, east: bound.east }) //SW, NE)
   }
 
-  // -----------------------------------------------------------
-  // Buttons
-  // consider: https://developers.google.com/maps/documentation/javascript/examples/control-custom-state
-  // https://developers.google.com/maps/documentation/javascript/examples/split-map-panes
+  /*
+  https://github.com/googlemaps/js-markerclusterer - current!
+https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer - Angular components doesn't encapulate options functionality: identical clones only: ugg.
+MarkerClustererPlus Library - also old
+    refreshMap() {
+      let data
+      if (this.markerCluster) {
+        this.markerCluster.clearMarkers();
+      }
+      var markers = [];
 
-  // or on centerChanged
-  logCenter() {
-    console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
-  }
+      var markerImage = new google.maps.MarkerImage(imageUrl,
+        new google.maps.Size(24, 32));
 
-  zoomed() {
-    if (this.zoom && this.gMap) {
-      this.zoom = this.gMap.getZoom()!
-      this.zoomDisplay = this.gMap.getZoom()!
+      for (var i = 0; i < data.photos.length; ++i) {
+        markers.push(new marker());
+      }
+      var zoom = parseInt(document.getElementById('zoom').value, 10);
+      var size = parseInt(document.getElementById('size').value, 10);
+      var style = parseInt(document.getElementById('style').value, 10);
+      zoom = zoom === -1 ? null : zoom;
+      size = size === -1 ? null : size;
+      style = style === -1 ? null : style;
+
+      markerClusterer = new MarkerClusterer(map, markers, {
+        maxZoom: zoom,
+        gridSize: size,
+        styles: styles[style],
+        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+      });
     }
-  }
+  */
 
   addManualMarkerEvent(event: google.maps.MapMouseEvent) {
     if (SettingsService.Settings.allowManualPinDrops) {
@@ -305,6 +309,83 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
         console.log(`addMarker FAILED`)
       }
     }
+  }
+
+  getAndDisplayFieldReports() {
+    if (!this.filterSwitch || !this.filterSwitch.selected) {
+      this.fieldReports = this.fieldReportService.getFieldReports()
+      console.log(`Displaying ALL ${this.fieldReports.length} field Reports`)
+
+    } else {
+      this.fieldReports = this.fieldReportService.getSelectedFieldReports()
+      console.log(`Displaying ${this.fieldReports.length} SELECTED field Reports`)
+    }
+    this.displayAllMarkers()
+    // this.markerCluster.clearMarkers()
+    // this.markerCluster.addMarkers(this.markers)
+
+    // TODO: Duplicate code as in InitMap: move to a new routine...
+    /*this.markerCluster = new GMC.MarkerClusterer({
+      map: this.gMap,
+      markers: this.markers,
+      // algorithm?: Algorithm,
+      // renderer?: Renderer,
+      // onClusterClick?: onClusterClickHandler,
+    })*/
+  }
+
+  displayAllMarkers() {
+    let latlng
+    //let infoContent
+    let labelText
+    let title
+    let icon
+    let labelColor
+    let fr: FieldReportType
+
+    let fieldReportStatuses: FieldReportStatusType[] = this.settingsService.getFieldReportStatuses()
+    // REVIEW: Might this mess with existing fr's?
+    console.log(`displayAllMarkers got ${this.fieldReports.length} field reports`)
+    for (let i = 0; i < this.fieldReports.length; i++) {
+      fr = this.fieldReports[i]
+      latlng = new google.maps.LatLng(fr.lat, fr.lng)
+      title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, lng ${fr.lng} with "${fr.note}".`
+      //title = infoContent
+
+      switch (fr.callsign) {
+        case "W7VMI":
+          //icon = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
+          icon = "http://maps.gstatic.com/mapfiles/ms2/micons/sunny.png"
+          break;
+        case "!Team3":
+          icon = "http://maps.gstatic.com/mapfiles/ms2/micons/blue.png"
+          break;
+        case "!Team2":
+          icon = "http://maps.google.com/mapfiles/kml/paddle/2.png"
+          break;
+        case "!Team1":
+          icon = "http://maps.google.com/mapfiles/kml/paddle/1.png"
+          break;
+        case "KI7SWF":
+          icon = "http://maps.google.com/mapfiles/kml/shapes/capital_big_highlight.png"
+          break;
+        default:
+          icon = ''
+          break;
+      }
+
+      for (let j = 0; j < fieldReportStatuses.length; j++) {
+        if (fieldReportStatuses[j].status != fr.status) continue
+        labelText = fieldReportStatuses[j].icon
+        labelColor = fieldReportStatuses[j].color
+        break
+      }
+
+      console.log(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`)
+      this.addMarker(latlng, title, labelText, title, labelColor, "28px", icon,)
+    }
+
+    console.log(`displayAllMarkers added ${this.fieldReports.length} markers`)
   }
 
   addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP) {
@@ -390,86 +471,33 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     //this.refreshMarkerDisplay()
   }
 
-  displayAllMarkers() {
-    let latlng
-    //let infoContent
-    let labelText
-    let title
-    let icon
-    let labelColor
-    let fr: FieldReportType
-
-    let fieldReportStatuses: FieldReportStatusType[] = this.settingsService.getFieldReportStatuses()
-    // REVIEW: Might this mess with existing fr's?
-    this.fieldReports = this.fieldReportService.getFieldReports()
-    console.log(`displayAllMarkers got ${this.fieldReports.length} field reports`)
-    for (let i = 0; i < this.fieldReports.length; i++) {
-      fr = this.fieldReports[i]
-      latlng = new google.maps.LatLng(fr.lat, fr.lng)
-      title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, lng ${fr.lng} with "${fr.note}".`
-      //title = infoContent
-
-      switch (fr.callsign) {
-        case "W7VMI":
-          //icon = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
-          icon = "http://maps.gstatic.com/mapfiles/ms2/micons/sunny.png"
-          break;
-        case "!Team3":
-          icon = "http://maps.gstatic.com/mapfiles/ms2/micons/blue.png"
-          break;
-        case "!Team2":
-          icon = "http://maps.google.com/mapfiles/kml/paddle/2.png"
-          break;
-        case "!Team1":
-          icon = "http://maps.google.com/mapfiles/kml/paddle/1.png"
-          break;
-        case "KI7SWF":
-          icon = "http://maps.google.com/mapfiles/kml/shapes/capital_big_highlight.png"
-          break;
-        default:
-          icon = ''
-          break;
-      }
-
-      for (let j = 0; j < fieldReportStatuses.length; j++) {
-        if (fieldReportStatuses[j].status != fr.status) continue
-        labelText = fieldReportStatuses[j].icon
-        labelColor = fieldReportStatuses[j].color
-        break
-      }
-
-      console.log(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`)
-      this.addMarker(latlng, title, labelText, title, labelColor, "28px", icon)
-    }
-
-    console.log(`displayAllMarkers added ${this.fieldReports.length} markers`)
-
-    //   addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText = "grade", title = "RangerTitle", labelColor = "#ffffff", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP)
-    // addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText= "grade", title="RangerTitle", labelColor = "#ffffff", fontSize="18px", icon = "rocket", animation= google.maps.Animation.DROP) {
-  }
-
   onMapMouseMove(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
       this.mouseLatLng = event.latLng.toJSON()
     }
   }
 
+  // -----------------------------------------------------------
+  // Buttons
+  // consider: https://developers.google.com/maps/documentation/javascript/examples/control-custom-state
+  // https://developers.google.com/maps/documentation/javascript/examples/split-map-panes
+
+  // or on centerChanged
+  logCenter() {
+    console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
+  }
+
+  zoomed() {
+    if (this.zoom && this.gMap) {
+      this.zoom = this.gMap.getZoom()!
+      this.zoomDisplay = this.gMap.getZoom()!
+    }
+  }
+
   toggleTrafficLayer() {
     this.trafficLayer.setMap(
-      (this.trafficLayerVisible ^= 1) ? this.gMap : null ) // trafficLayerVisible toggles between 0 & 1
+      (this.trafficLayerVisible ^= 1) ? this.gMap : null) // toggle trafficLayerVisible to 0 or 1
     // map.setTilt(45);
     console.log(`TrafficLayer made ${this.trafficLayerVisible ? 'visible' : 'hidden'}`)
   }
 }
-
-/*
-  markerDragEnd2($event: google.maps.MouseEvent) {
-    console.log($event);
-    this.lat = $event.coords.lat;
-    this.lng = $event.coords.lng;
-    this.getAddress(this.latitude, this.longitude);  // TODO: Get/display Street address?!
-  }
-  */
-
-
-

@@ -71,8 +71,9 @@ export class FieldReportsComponent implements OnInit {
 
   defaultColDef = {
     flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
-    minWidth: 100,
+    minWidth: 80,
     editable: true,
+    //singleClickEdit: true,
     resizable: true,
     sortable: true,
     filter: true,
@@ -133,23 +134,29 @@ export class FieldReportsComponent implements OnInit {
     return (`${hours}:${minutes}:${seconds}`)
   }
 
+  rounder = (params: { data: FieldReportType }) => {
+    let val = Math.round(params.data.lat * 10000) / 10000.0
+    //console.warn (`${params.data.lat} got rounded to ${val}`)
+    return val
+  }
+
   columnDefs = [
-    { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!' }, // TODO:
-    { headerName: "CallSign", field: "callsign", tooltipField: "team" },
+    { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1 }, // TODO:
+    { headerName: "CallSign", field: "callsign", tooltipField: "team", flex: 2 },
     // { headerName: "Team", field: "team" },
-    { headerName: "Address", field: "address", singleClickEdit: true, flex: 50 }, //, maxWidth: 200
-    { headerName: "Lat", field: "lat", singleClickEdit: true },
-    { headerName: "Lng", field: "lng", cellClass: 'number-cell' },
+    { headerName: "Address", field: "address", singleClickEdit: true, flex: 30 }, //, maxWidth: 200
     {
-      headerName: "Time", headerTooltip: 'Report date',
-      valueGetter: this.myDateGetter,
+      headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
+      valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.lat * 10000) / 10000.0 }
     },
     {
-      headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report',
-      valueGetter: this.myMinuteGetter,
+      headerName: "Lng", field: "lng", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
+      valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.lng * 10000) / 10000.0 },
     },
+    { headerName: "Time", headerTooltip: 'Report date', valueGetter: this.myDateGetter, flex: 2 },
+    { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, flex: 2 },
     {
-      headerName: "Status", field: "status", flex: 50,
+      headerName: "Status", field: "status", flex: 5,
       cellStyle: (params: { value: string; }) => {
         //this.fieldReportStatuses.forEach(function(value) { (params.value === value.status) ? { backgroundColor: value.color }  : return(null) }
         for (let i = 0; i < this.fieldReportStatuses.length; i++) {
@@ -233,18 +240,18 @@ export class FieldReportsComponent implements OnInit {
   //onFirstDataRendered(params: any) {
   refreshGrid() {
     //if (this.gridApi) {
-      this.gridApi.refreshCells()
-      this.gridApi.sizeColumnsToFit();
+    this.gridApi.refreshCells()
+    this.gridApi.sizeColumnsToFit();
     //} else {
-      //console.log("no this.gridApi yet in refreshGrid()")
+    //console.log("no this.gridApi yet in refreshGrid()")
     //}
   }
 
-  onBtnGetSelectedRowData() {
+  onBtnSetSelectedRowData() {
     let selectedNodes = this.gridApi.getSelectedNodes();
-    let selectedData = selectedNodes.map((node: { data: any; }) => node.data);
-    console.log(`onBtnGetSelectedRowData obtained ${selectedNodes.length} selected row:\n${JSON.stringify(selectedData)}`);
-    return selectedData;
+    let selectedData = selectedNodes.map((node: { data: FieldReportType; }) => node.data);
+    // console.log(`onBtnGetSelectedRowData obtained ${selectedNodes.length} selected rows:\n${JSON.stringify(selectedData)}`);
+    this.fieldReportService.setSelectedFieldReports(selectedData)
   }
 
 

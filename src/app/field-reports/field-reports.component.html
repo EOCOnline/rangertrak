@@ -54,9 +54,9 @@
   </div>
   <!--button (click)="this.gridApi.deselectAll()">Clear Selection</button-->
   <!--div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div-->
-  <div>Use page refresh to force an update of field reports: <button (click)="reloadPage()">Reload Page</button></div>
+  <div>[To be removed - should happen automatically] Force field reports update: <button (click)="reloadPage()">Reload Page</button></div>
 
-  <button (click)="onBtnGetSelectedRowData()">Get Selected Rows</button>
+  [To be removed - should happen automatically] Record selected rows (for mapping): <button (click)="onBtnSetSelectedRowData()">Note Row Selection</button>
 
   <br>
   <details>
@@ -64,7 +64,7 @@
       <span class="big" id="Advanced">Advanced</span>
     </summary>
 
-    <button (click)="onBtnUpdateFieldReports()">Save above Field Reports to local storage</button><br>
+    [To be removed - should happen automatically] Save above Field Reports (to local storage)<button (click)="onBtnUpdateFieldReports()">Save Reports</button><br>
     <button (click)="onBtnClearFieldReports()">Delete ALL Field Reportgs from local storage</button><br>
     <!--button (click)="onBtnImportFieldReports_unused()">FUTURE: Import Field Reportgs from CSV file</button><br-->
 
