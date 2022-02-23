@@ -167,17 +167,17 @@ export class EntryComponent implements OnInit {
   public date: dayjs.Dayjs = dayjs()
 
 
-/*  It looks like you're using the disabled attribute with a reactive form directive.
- If you set disabled to true when you set up this control in your component class,
- the disabled attribute will actually be set in the DOM for
-  you. We recommend using this approach to avoid 'changed after checked' errors.
+  /*  It looks like you're using the disabled attribute with a reactive form directive.
+   If you set disabled to true when you set up this control in your component class,
+   the disabled attribute will actually be set in the DOM for
+    you. We recommend using this approach to avoid 'changed after checked' errors.
 
-  Example:
-  form = new FormGroup({
-    first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
-    last: new FormControl('Drew', Validators.required)
-  });
-*/
+    Example:
+    form = new FormGroup({
+      first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
+      last: new FormControl('Drew', Validators.required)
+    });
+  */
   public disabled = false;
   public showSpinners = true;
   public showSeconds = false; // only affects display in picker
@@ -192,15 +192,15 @@ export class EntryComponent implements OnInit {
   public color: ThemePalette = 'primary';
   disableMinute = false
   hideTime = false
-/*
-  public formGroup = new FormGroup({
-    date1: new FormControl(dayjs(), [Validators.required]), //.utcOffset()
-    date2: new FormControl(null, [Validators.required])
-  })
+  /*
+    public formGroup = new FormGroup({
+      date1: new FormControl(dayjs(), [Validators.required]), //.utcOffset()
+      date2: new FormControl(null, [Validators.required])
+    })
 
-  public dateControl = new FormControl(dayjs()); // TODO:  vs dateCtrl???? (just shows date, not time?)
-  public dateControlMinMax = new FormControl(dayjs());
-*/
+    public dateControl = new FormControl(dayjs()); // TODO:  vs dateCtrl???? (just shows date, not time?)
+    public dateControlMinMax = new FormControl(dayjs());
+  */
   dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
 
   // hhttps://github.com/h2qutc/angular-material-components
@@ -298,9 +298,13 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       id: -1,
       callsign: [''],
       team: ['T1'],
-      address: [''],  // ' , Vashon, WA 98070' ?
-      lat: [this.settings.defLat, Validators.required], //Validators.minLength(4)
-      lng: [this.settings.defLng, Validators.required], //Validators.minLength(4)
+      location: this.formBuilder.group({ // create nested formgroup to pass to child
+        /*#Type 'AbstractControl | null' is not assignable to type 'FormGroup'.
+  Type 'null' is not assignable to type 'FormGroup'.ngtsc(2322) */
+        address: [''],  // ' , Vashon, WA 98070' ?
+        lat: [this.settings.defLat, Validators.required], //Validators.minLength(4)
+        lng: [this.settings.defLng, Validators.required], //Validators.minLength(4)
+      }),
       date: [new Date()],
       status: [this.fieldReportStatuses[this.settings.defRangerStatus].status],
       note: ['']
@@ -1039,12 +1043,12 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     this.picker.cancel();
   }
 
-  private _setMinDate(hours:number=10) {
+  private _setMinDate(hours: number = 10) {
     const now = dayjs();
     this.minDate = now.subtract(hours, 'hours');
   }
 
-  private _setMaxDate(hours:number=10) {
+  private _setMaxDate(hours: number = 10) {
     const now = dayjs();
     this.maxDate = now.add(hours, 'hours');
   }

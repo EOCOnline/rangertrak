@@ -37,6 +37,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { X404Component } from './x404/x404.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { LocationComponent } from './entry/location.component';
 
 // from ionic-app.module.ts
 //import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
@@ -100,7 +101,8 @@ import { environment } from '../environments/environment';
     MoodRenderer,
     RangersComponent,
     X404Component,
-    LogComponent
+    LogComponent,
+    LocationComponent
   ],
 
   // Define any required @Injectables. Any sub-components or modules can get the same @Injectable instance via dependency injection.
