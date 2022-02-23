@@ -1,15 +1,15 @@
 /// <reference types="@types/google.maps" />
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 import { MatIconModule, SafeResourceUrlWithIconOptions } from '@angular/material/icon'
-import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone } from '@angular/core';
-import { DOCUMENT, JsonPipe } from '@angular/common';
-import { ComponentFixture } from '@angular/core/testing';
-import { HttpClient } from '@angular/common/http';
-//import { catchError, map, Observable, of } from 'rxjs';
-import * as GMC from "@googlemaps/markerclusterer"; // Current!
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
+import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone } from '@angular/core'
+import { DOCUMENT, JsonPipe } from '@angular/common'
+import { ComponentFixture } from '@angular/core/testing'
+import { HttpClient } from '@angular/common/http'
+//import { catchError, map, Observable, of } from 'rxjs'
+import * as GMC from "@googlemaps/markerclusterer"
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services'
 import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
-import { MDCSwitch } from '@material/switch';
+import { MDCSwitch } from '@material/switch'
 
 /*
   https://developers.google.com/maps/support/

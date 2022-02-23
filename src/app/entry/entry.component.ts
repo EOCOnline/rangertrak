@@ -636,7 +636,11 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
         break;
       case 'lat':
+      case 'latI':
+      case 'latD':
       case 'lng':
+      case 'lngI':
+      case 'lngD':
 
         let llat = Number((this.document.getElementById("enter__Where--Lat") as HTMLInputElement).value)
         let llng = Number((this.document.getElementById("enter__Where--Lng") as HTMLInputElement).value)

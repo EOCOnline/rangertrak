@@ -103,25 +103,34 @@
     </div>
 
     <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude:
-      <input [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
-        type="number" formControlName="latI" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
+      <!--  [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
+      formControlName="latI"
+    -->
+      <input
+        type="number" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
         name="latI" size="2" min="-180" max="180" id="enter__Where--LatI">
+
       name="latitudeDDI" id="latitudeDDI"
 
-      <span *ngIf="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
+      <!--span *ngIf="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
         class="text-sm text-danger">lat is required
-      </span>.
 
 
-      <input [class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
-        type="number" formControlName="latD" placeholder="LatitudeD" (change)="this.addressCtrlChanged('latD')"
+[class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
+formControlName="lat3D"
+(change)="this.addressCtrlChanged('latD')"
+      </span-->.
+
+
+      <input
+        type="number"  placeholder="LatitudeD"
         name="latitudeDDD" step="0.001" size="8" min="0" max="99999" id="enter__Where--LatD" tabindex="2">
 
       id -- latitudeDDD
 
-      <span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')"
+      <!--span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')"
         class="text-sm text-danger">Latitude is required
-      </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
+      </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
 
 
       <input name="latitudeQ" id="latitudeQ" type="text" value="N" size="1" pattern="'e','E','w','W'" title="E or W"
@@ -135,27 +144,35 @@
         onchange="DMSCoordsChanged()">"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
     </div>
 
+
+
+
     <div class="input-group">Longitude
       <!--img src="../../assets/icons/information-outline.png"
-        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" /  size="30"   -->:
-      <input [class.border-danger]="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.invalid"
-        type="number" formControlName="lngI" placeholder="LongitudeI" (change)="this.addressCtrlChanged('lngI')"
+        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" /  size="30"
+      [class.border-danger]="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.invalid"
+
+      -->:
+      <input
+        type="number"  placeholder="LongitudeI" (change)="this.addressCtrlChanged('lngI')"
         name="longitudeDDI" id="longitudeDDI" min="-90" max="90" id="enter__Where--LngI" tabindex="3">
 
       <!-- onchange="DDCoordsChanged()" -->
-      <span *ngIf="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.hasError('required')"
+      <!--span *ngIf="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.hasError('required')"
         class="text-sm text-danger">longitude is required
-      </span>&nbsp;&nbsp;.
+formControlName="lngD"
+        [class.border-danger]="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.invalid"
+      </span-->&nbsp;&nbsp;.
 
-      <input [class.border-danger]="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.invalid"
-        type="number" formControlName="lngD" placeholder="LongitudeD" (change)="this.addressCtrlChanged('lngD')"
+      <input
+        type="number" placeholder="LongitudeD" (change)="this.addressCtrlChanged('lngD')"
         name="latitudeDDD" id="latitudeDDD" step="0.001" size="9" min="0" max="99999" id="enter__Where--LngD"
         tabindex="4">
 
-      <span *ngIf="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')
+      <!--span *ngIf="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')
                   && entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')"
         class="text-sm text-danger">Latitude is required
-      </span>° <span title="Decimal Degrees">DD</span> or&nbsp;
+      </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
 
       <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"
         onchange="DMSCoordsChanged()">
@@ -254,12 +271,12 @@
 
 
     <div class="input-group bordered">
-      <mat-label >Status:</mat-label>
+      <mat-label>Status:</mat-label>
       <mat-radio-group labelPosition="after" formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid"
         tabindex="7">
         <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat.status}} class="rButton"><span
-            style="color:{{stat.color}}" > {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
+            style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
           <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
         </mat-radio-button>
       </mat-radio-group>
