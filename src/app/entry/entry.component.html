@@ -87,8 +87,40 @@
     <mat-icon svgIcon="thumbs-up" aria-hidden="false" aria-label="thumbs up SVG icon"></mat-icon>thumbsup
     <span class="material-icons-two-tone">info</span-->
 
-      <rangertrak-location [location]="entryDetailsForm.get('location')"></rangertrak-location>
 
+
+    <div formGroupName="location">
+      <div>
+        <label>address</label>
+        <input type="text" formControlName="address">
+        <div *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
+          class="text-sm text-danger">bad address</div>
+      </div>
+
+
+      <rangertrak-location [group]="entryDetailsForm.get('location')"></rangertrak-location>
+      <rangertrak-location [location]="entryDetailsForm.get('location')"></rangertrak-location>
+      <rangertrak-location [locationForm]="entryDetailsForm.get('location')"></rangertrak-location>
+
+
+      <div>
+        <label>lat</label>
+        <input type="number" formControlName="lat">
+        <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
+          class="text-sm text-danger">bad lat</div>
+      </div>
+
+      <div>
+        <label>langt</label>
+        <input type="number" formControlName="lng">
+        <div *ngIf="entryDetailsForm.get('lng')?.touched && entryDetailsForm.get('lng')?.hasError('required')"
+          class="text-sm text-danger">bad lng</div>
+      </div>
+
+    </div>
+
+
+    
 
     <h2 class="elegant">
       <mat-label>When</mat-label>
@@ -99,7 +131,9 @@
       <mat-form-field appearance="fill">
         <mat-label>Report time</mat-label>
         <input matInput [ngxMatDatetimePicker]="$any(picker)" [min]="minDate" [max]="maxDate" [formControl]="dateCtrl"
-          tabindex="6">
+          formControlName="date"
+          [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
+          type="datetime" placeholder="date" id="enter__When-input" tabindex="6">
 
         <mat-datepicker-toggle matSuffix [for]="$any(picker)" title="Click me to display the picker">
         </mat-datepicker-toggle>
@@ -114,12 +148,10 @@
             <span>OK</span>
           </ng-template>
         </ngx-mat-datetime-picker>
-      </mat-form-field>
 
-      <!--input [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
-        type="datetime" formControlName="date" placeholder="date" id="enter__When-input" tabindex="6">
-      <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
-        class="text-sm text-danger">date is required</div-->
+        <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
+          class="text-sm text-danger">date is required</div>
+      </mat-form-field>
     </div>
 
     <h2 class="elegant bordered">What</h2>
@@ -166,10 +198,17 @@
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
     <button (click)="resetForm()" title="Reset all form fields to their defaults" class="eButton"
       type="button">Reset</button>
+
     <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button eButton" type="submit"
       tabindex="9">Submit</button>
 
     <span id="enter__Submit-info"></span>
+
+    <div class="margin-20">
+      <div>entryForm details:-</div>
+      <pre>Is entryForm valid?: <br>{{entryDetailsForm.valid | json}}</pre>
+      <pre>form value: <br>{{entryDetailsForm.value | json}}</pre>
+    </div>
 
   </form>
 </div>

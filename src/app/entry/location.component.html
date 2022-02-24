@@ -1,14 +1,33 @@
+<div [formGroup]="locationForm">
 
- <div [formGroup]="location">
-  <input formControlName="address">
+  <div class="form-group col-xs-6">
+    <label>Address</label>
+    <input type="text" class="form-control" formControlName="address">
+    <!--small [hidden]="locationForm.controls.address.valid" class="text-danger">
+        Street is required
+    </small-->
+  </div>
+
+  <div class="form-group col-xs-6">
+    <label>lat</label>
+    <input type="number" class="form-control" formControlName="lat">
+  </div>
+
+  <div class="form-group col-xs-6">
+    <label>lng</label>
+    <input type="number" class="form-control" formControlName="lng">
+  </div>
+
+  <!--input formControlName="address">
   <input formControlName="lat">
-  <input formControlName="lng">
+  <input formControlName="lng"-->
+
 </div>
 
 
 
- <!-- https://popper.js.org/docs/v2/tutorial/ -->
- <h2 class="elegant">
+<!-- https://popper.js.org/docs/v2/tutorial/ -->
+<h2 class="elegant">
   <mat-label>Where</mat-label>&nbsp;&nbsp;<fa-icon [icon]="faInfoCircle" id="button" aria-describedby="tooltip"
     title="Click info icon for info!" alt="info icon"></fa-icon><span class="small">(updates map to the right)
     onclick="onWhereInfo()"</span>|<img src="../../assets/icons/information-outline.png"
@@ -26,9 +45,8 @@
   <!--  [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
   formControlName="latI"
 -->
-  <input
-    type="number" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')"
-    name="latI" size="2" min="-180" max="180" id="enter__Where--LatI">
+  <input type="number" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')" name="latI" size="2"
+    min="-180" max="180" id="enter__Where--LatI">
 
   name="latitudeDDI" id="latitudeDDI"
 
@@ -42,9 +60,8 @@ formControlName="lat3D"
   </span-->.
 
 
-  <input
-    type="number"  placeholder="LatitudeD"
-    name="latitudeDDD" step="0.001" size="8" min="0" max="99999" id="enter__Where--LatD" tabindex="2">
+  <input type="number" placeholder="LatitudeD" name="latitudeDDD" step="0.001" size="8" min="0" max="99999"
+    id="enter__Where--LatD" tabindex="2">
 
   id -- latitudeDDD
 
@@ -58,8 +75,7 @@ formControlName="lat3D"
   <input name="latitudeD" id="latitudeD" type="text" value="47" size="2" min="0" max="180"
     onchange="DMSCoordsChanged()">°
   <!-- TODO: Use settings.DefLat -->
-  <input name="latitudeM" id="latitudeM" type="text" value="" size="2" min="0" max="59"
-    onchange="DMSCoordsChanged()">'
+  <input name="latitudeM" id="latitudeM" type="text" value="" size="2" min="0" max="59" onchange="DMSCoordsChanged()">'
   <input name="latitudeS" id="latitudeS" type="text" value="" size="5" min="0" max="59.99"
     onchange="DMSCoordsChanged()">"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
 </div>
@@ -73,9 +89,8 @@ formControlName="lat3D"
   [class.border-danger]="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.invalid"
 
   -->:
-  <input
-    type="number"  placeholder="LongitudeI" (change)="this.addressCtrlChanged('lngI')"
-    name="longitudeDDI" id="longitudeDDI" min="-90" max="90" id="enter__Where--LngI" tabindex="3">
+  <input type="number" placeholder="LongitudeI" (change)="this.addressCtrlChanged('lngI')" name="longitudeDDI"
+    id="longitudeDDI" min="-90" max="90" id="enter__Where--LngI" tabindex="3">
 
   <!-- onchange="DDCoordsChanged()" -->
   <!--span *ngIf="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.hasError('required')"
@@ -84,10 +99,8 @@ formControlName="lngD"
     [class.border-danger]="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.invalid"
   </span-->&nbsp;&nbsp;.
 
-  <input
-    type="number" placeholder="LongitudeD" (change)="this.addressCtrlChanged('lngD')"
-    name="latitudeDDD" id="latitudeDDD" step="0.001" size="9" min="0" max="99999" id="enter__Where--LngD"
-    tabindex="4">
+  <input type="number" placeholder="LongitudeD" (change)="this.addressCtrlChanged('lngD')" name="latitudeDDD"
+    id="latitudeDDD" step="0.001" size="9" min="0" max="99999" id="enter__Where--LngD" tabindex="4">
 
   <!--span *ngIf="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')
               && entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')"
@@ -96,8 +109,7 @@ formControlName="lngD"
 
   <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"
     onchange="DMSCoordsChanged()">
-  <input name="longitudeD" id="longitudeD" type="text" value="122" size="2" max="180"
-    onchange="DMSCoordsChanged()">°
+  <input name="longitudeD" id="longitudeD" type="text" value="122" size="2" max="180" onchange="DMSCoordsChanged()">°
   <input name="longitudeM" id="longitudeM" type="text" value="" size="2" min="0" max="59"
     onchange="DMSCoordsChanged()">'
   <input name="longitudeS" id="longitudeS" type="text" value="" size="5" min="0" max="59.99"
