@@ -139,7 +139,7 @@ export class EntryComponent implements OnInit {
   // control creation in a component class = immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
   public entryDetailsForm!: FormGroup
   callsignCtrl = new FormControl()
-  addressCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
+  // addressCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
   fieldReportStatuses: FieldReportStatusType[] = []
@@ -265,7 +265,11 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       id: -1,
       callsign: [''],
       team: ['T1'],
-      location: this._formBuilder.group(),
+      location: this._formBuilder.group({
+        lat: 0,
+        lng: 0,
+        address: ''
+      }),
       date: [new Date()],
       status: [this.fieldReportStatuses[this.settings.defRangerStatus].status],
       note: ['']
@@ -362,22 +366,23 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     // add location to the list
     const control = this.entryDetailsForm.controls['location'] as FormControl
     const locationCtrl = this.initLocation()
-    control.add(locationCtrl) // https://plnkr.co/edit/clTbNP7MHBbBbrUp20vr?preview
+    //control.add(locationCtrl) // https://plnkr.co/edit/clTbNP7MHBbBbrUp20vr?preview
+    // 'add' does not exist on FormControl
 
     // subscribe to individual address value changes
     locationCtrl.valueChanges.subscribe(x => {
-       console.log(`addLocation got notification of locatino value changes ${x}`);
+      console.log(`addLocation got notification of location value changes ${x}`);
     })
 
-/*
-    { // create nested formgroup to pass to child
-      / #Type 'AbstractControl | null' is not assignable to type 'FormGroup'.
-      Type 'null' is not assignable to type 'FormGroup'.ngtsc(2322) /
-      address: [''],  // ' , Vashon, WA 98070' ?
-        lat: [this.settings.defLat, [Validators.required, Validators.minLength(4)]],
-        lng: [this.settings.defLng, Validators.required], //Validators.minLength(4)
-    }
-*/
+    /*
+        { // create nested formgroup to pass to child
+          / #Type 'AbstractControl | null' is not assignable to type 'FormGroup'.
+          Type 'null' is not assignable to type 'FormGroup'.ngtsc(2322) /
+          address: [''],  // ' , Vashon, WA 98070' ?
+            lat: [this.settings.defLat, [Validators.required, Validators.minLength(4)]],
+            lng: [this.settings.defLng, Validators.required], //Validators.minLength(4)
+        }
+    */
 
     //control.push(this.initAddress()); // TODO: not an array, so...
   }

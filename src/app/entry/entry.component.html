@@ -97,8 +97,16 @@
           class="text-sm text-danger">bad address</div>
       </div>
 
+<!-- from Majd Asab in Medium.com...
+   [(ngModel)]="extLocation"
+ name="extLocationVal"
+ #validations=""ngModel"
+-->
+      <rangertrak-location [group]="entryDetailsForm.get('location')">
+    </rangertrak-location>
+      <!-- (property) LocationComponent.group: FormGroup | null
+Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
 
-      <rangertrak-location [group]="entryDetailsForm.get('location')"></rangertrak-location>
       <rangertrak-location [location]="entryDetailsForm.get('location')"></rangertrak-location>
       <rangertrak-location [locationForm]="entryDetailsForm.get('location')"></rangertrak-location>
 
@@ -120,7 +128,7 @@
     </div>
 
 
-    
+
 
     <h2 class="elegant">
       <mat-label>When</mat-label>
