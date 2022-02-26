@@ -97,7 +97,7 @@ export class IconComponent {
 export class EntryComponent implements OnInit {
   @ViewChild('picker') picker: any; // https://blog.angular-university.io/angular-viewchild/
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z'; // dupl of that above
-
+  myForm!: FormGroup
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
 
   faMapMarkedAlt = faMapMarkedAlt
@@ -260,6 +260,17 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
 
     console.log(`Running ${this.settings.application} version ${this.settings.version}`)
+
+
+    /* this.myForm = this._formBuilder.group({
+       name: [''],
+       loc2: <FormGroup>this._formBuilder.group({
+         street: [''],
+         zip: ['']
+       }) as FormGroup
+     })
+ */
+
 
     this.entryDetailsForm = this._formBuilder.group({
       id: -1,

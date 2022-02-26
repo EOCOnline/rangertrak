@@ -154,6 +154,7 @@ export class FieldReportService {
   UpdateFieldReports() {
     localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports));
 
+    // TODO: more widely implement use of this - rather than just getting before maps/grids are inited...
     this.fieldReportsSubject.next(this.fieldReports.map(  // REVIEW: is this just for 1 new report, or any localstorage updates?
       fieldReport => ({
         id: fieldReport.id,

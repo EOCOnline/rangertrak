@@ -182,7 +182,11 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   onMapInitialized(mappy: google.maps.Map) {
     console.log(`onMapInitialized()`)
     this.gMap = mappy
-
+    /* TODO: Emit update for subscribers: instead of always reloading at init stage...
+        this.fieldReports = this.fieldReportService.getFieldReports().valueChanges.subscribe(x => {
+          console.log(`Subscription to location got: ${x}`);
+        })
+        */
     this.getAndDisplayFieldReports() // REVIEW: Works with NO Markers?
 
     // https://github.com/googlemaps/js-markerclusterer

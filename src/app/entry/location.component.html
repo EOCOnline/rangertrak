@@ -1,14 +1,16 @@
 
-<div [formGroup]="location">
+<!--div [formGroup]="location">
   <label>lat: </label>
     <input formControlName="lat"><br>
   <label>lng: </label>
     <input formControlName="lng">
-  </div>
+    <label>address: </label>
+    <input formControlName="address">
+  </div-->
 
 
 
-<div [formGroup]="locationForm">
+<div [formGroup]="location">
 
   <div class="form-group col-xs-6">
     <label>Address</label>
@@ -52,7 +54,7 @@
 </div>
 
 <div class="input-group">&nbsp;&nbsp;&nbsp;Latitude:
-  <!--  [class.border-danger]="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.invalid"
+  <!--  [class.border-danger]="location.get('latI')?.touched && location.get('latI')?.invalid"
   formControlName="latI"
 -->
   <input type="number" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')" name="latI" size="2"
@@ -60,11 +62,11 @@
 
   name="latitudeDDI" id="latitudeDDI"
 
-  <!--span *ngIf="entryDetailsForm.get('latI')?.touched && entryDetailsForm.get('latI')?.hasError('required')"
+  <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
     class="text-sm text-danger">lat is required
 
 
-[class.border-danger]="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.invalid"
+[class.border-danger]="location.get('latD')?.touched && location.get('latD')?.invalid"
 formControlName="lat3D"
 (change)="this.addressCtrlChanged('latD')"
   </span-->.
@@ -75,7 +77,7 @@ formControlName="lat3D"
 
   id -- latitudeDDD
 
-  <!--span *ngIf="entryDetailsForm.get('latD')?.touched && entryDetailsForm.get('latD')?.hasError('required')"
+  <!--span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
     class="text-sm text-danger">Latitude is required
   </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
 
@@ -96,24 +98,24 @@ formControlName="lat3D"
 <div class="input-group">Longitude
   <!--img src="../../assets/icons/information-outline.png"
     title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" /  size="30"
-  [class.border-danger]="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.invalid"
+  [class.border-danger]="location.get('lngI')?.touched && location.get('lngI')?.invalid"
 
   -->:
   <input type="number" placeholder="LongitudeI" (change)="this.addressCtrlChanged('lngI')" name="longitudeDDI"
     id="longitudeDDI" min="-90" max="90" id="enter__Where--LngI" tabindex="3">
 
   <!-- onchange="DDCoordsChanged()" -->
-  <!--span *ngIf="entryDetailsForm.get('lngI')?.touched && entryDetailsForm.get('lngI')?.hasError('required')"
+  <!--span *ngIf="location.get('lngI')?.touched && location.get('lngI')?.hasError('required')"
     class="text-sm text-danger">longitude is required
 formControlName="lngD"
-    [class.border-danger]="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.invalid"
+    [class.border-danger]="location.get('lngD')?.touched && location.get('lngD')?.invalid"
   </span-->&nbsp;&nbsp;.
 
   <input type="number" placeholder="LongitudeD" (change)="this.addressCtrlChanged('lngD')" name="latitudeDDD"
     id="latitudeDDD" step="0.001" size="9" min="0" max="99999" id="enter__Where--LngD" tabindex="4">
 
-  <!--span *ngIf="entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')
-              && entryDetailsForm.get('lngD')?.touched && entryDetailsForm.get('lngD')?.hasError('required')"
+  <!--span *ngIf="location.get('lngD')?.touched && location.get('lngD')?.hasError('required')
+              && location.get('lngD')?.touched && location.get('lngD')?.hasError('required')"
     class="text-sm text-danger">Latitude is required
   </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
 
@@ -128,7 +130,7 @@ formControlName="lngD"
 </div>
 
 Street Address, +Code, or What.3.Words:
-<input [class.border-danger]="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.invalid"
+<input [class.border-danger]="location.get('address')?.touched && location.get('address')?.invalid"
   type="text" formControlName="address" id="addressCtrl" tabindex="5"
   title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." size="40"
   placeholder="Optional Address" (change)="this.addressCtrlChanged('addr')">
@@ -146,7 +148,7 @@ Street Address, +Code, or What.3.Words:
 <span id="pCodeGlobal">pCG</span>
 
 <!--div
-*ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
+*ngIf="location.get('address')?.touched && location.get('address')?.hasError('required')"
 class="text-sm text-danger">address is required</div  -->
 <!--/div-->
 <br>

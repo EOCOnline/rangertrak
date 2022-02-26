@@ -38,6 +38,7 @@ import { X404Component } from './x404/x404.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { LocationComponent } from './entry/location.component';
+//import { loc2Component } from './entry/loc2.component';
 
 // from ionic-app.module.ts
 //import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
@@ -70,8 +71,8 @@ import { LocationComponent } from './entry/location.component';
     // AgmSnazzyInfoWindowModule, // BUG: API_KEY
     LazyModule,
     NgxMatColorPickerModule,
-   // MatNativeDateModule,
-   // MatDatepickerModule,
+    // MatNativeDateModule,
+    // MatDatepickerModule,
     NgxMatDatetimePickerModule,
     NgxMatTimepickerModule,
     NgxMatNativeDateModule,
@@ -103,6 +104,7 @@ import { LocationComponent } from './entry/location.component';
     X404Component,
     LogComponent,
     LocationComponent
+    //,     loc2Component
   ],
 
   // Define any required @Injectables. Any sub-components or modules can get the same @Injectable instance via dependency injection.
