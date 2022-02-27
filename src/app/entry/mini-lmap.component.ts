@@ -5,7 +5,8 @@ import * as L from 'leaflet';
 import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
 //import 'leaflet.markercluster';
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services'
-
+import { openDB, deleteDB, wrap, unwrap } from 'idb';
+import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
 const iconUrl = 'assets/imgs/marker-icon.png'

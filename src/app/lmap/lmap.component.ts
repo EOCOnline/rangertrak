@@ -24,7 +24,8 @@ import * as L from 'leaflet';
 //import { Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
 import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
 import 'leaflet.markercluster';
-
+import { openDB, deleteDB, wrap, unwrap } from 'idb';
+import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 
 
 
