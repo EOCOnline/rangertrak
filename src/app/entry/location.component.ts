@@ -97,6 +97,8 @@ export class LocationComponent implements OnInit {
 
   geocoder = new GoogleGeocode
 
+  //w3w = new What3Words()
+
   constructor(
     private settingsService: SettingsService,
     iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, // for svg mat icons

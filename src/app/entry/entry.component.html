@@ -1,23 +1,26 @@
-<h3>Nested FormGroup</h3>
-
 <!--form [formGroup]="myForm">
 	<label>Name: </label>
     <input formControlName="name" />
     <app-child [loc2 as FormGroup="myForm.get('loc2')"></app-child>
 </form-->
 
-<pre>Form Values: {{frm.value | json}}</pre>
+<!--pre>Form Values: {{frm.value | json}}</pre>
 
-<hr>
-
+<hr-->
 
 <div class="container">
-  <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
-
+  <form
+    #frm="ngForm"
+    [formGroup]="entryDetailsForm"
+    (ngSubmit)="onFormSubmit(frm.value)"
+    class="enter__form"
+  >
     <!--div id="enter__frm-reguritation">
       <pre>{{ frm.value |json}}</pre>
     </div-->
 
+    <rangertrak-mini-lmap>LMAP HERE</rangertrak-mini-lmap>
+    <!--rangertrak-mini-gmap>gmAP HERE</rangertrak-mini-gmap-->
 
     <h1>Entry Form</h1>
     <h2 class="elegant">
@@ -29,18 +32,30 @@
     <mat-form-field class="enter__Callsign" appearance="fill">
       <mat-label>CallSign</mat-label>
 
-      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
-        formControlName="callsign" [matAutocomplete]="auto" (change)="this.CallsignCtrlChanged()"
-        id="enter__Callsign-input" tabindex="1" data-lpignore="true">
+      <input
+        matInput
+        [formControl]="callsignCtrl"
+        type="text"
+        placeholder="Pick one"
+        aria-label="Callsigns"
+        formControlName="callsign"
+        [matAutocomplete]="auto"
+        (change)="this.CallsignCtrlChanged()"
+        id="enter__Callsign-input"
+        tabindex="1"
+        data-lpignore="true"
+      />
 
       <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
+        <mat-option
+          *ngFor="let ranger of filteredRangers | async"
+          [value]="ranger.callsign"
+        >
           <!--img class="enter__Callsign-img" aria-hidden [src]="ranger.image" height="40"-->
           <span>{{ranger.callsign}}</span> |
           <small> {{ranger.licensee}} | {{ranger.phone}}</small>
         </mat-option>
       </mat-autocomplete>
-
     </mat-form-field>
     <span id="enter__Callsign-upshot"></span>
 
@@ -52,22 +67,7 @@
         class="text-sm text-danger">Team is required</div>
     </div -->
 
-
-    <div id="enter__SmallMap">
-      <h2>Current Location</h2>
-
-      <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
-        (mapMousemove)="onMapMouseMove($event)" (mapInitialized)="onMapInitialized($event)" (zoomChanged)="zoomed()"
-        style="width: 300px; height:300px;">
-      </google-map>
-
-      <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-      <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.4-5'}}</span> Longitude: <span
-          class="strong">{{mouseLatLng?.lng | number:'1.4-5'}}</span>
-        Zoom: <span class="strong">{{zoom}}</span>
-      </div>
-    </div>
-    <br>
+    <br />
 
     <!--svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
       <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
@@ -79,7 +79,6 @@
       {{mdiAccount}} dddfdd {{mdiIformationOutline}}
       <fa-icon [icon]="faMapMarkedAlt"></fa-icon>
     -->
-
 
     <!-- https://fontawesome.com/v5.15/icons
 <img src="../../assets/icons/information-outline.png"
@@ -100,8 +99,6 @@
     <mat-icon svgIcon="thumbs-up" aria-hidden="false" aria-label="thumbs up SVG icon"></mat-icon>thumbsup
     <span class="material-icons-two-tone">info</span-->
 
-
-
     <div formGroupName="location">
       <!--div>
         <label>address</label>
@@ -110,13 +107,13 @@
           class="text-sm text-danger">bad address</div>
       </div-->
 
-<!-- from Majd Asab in Medium.com...
+      <!-- from Majd Asab in Medium.com...
    [(ngModel)]="extLocation"
  name="extLocationVal"
  #validations=""ngModel"
 -->
 
-<!--
+      <!--
 
   Error: Uncaught (in promise): InvalidCharacterError: Failed to execute 'setAttribute' on 'Element': '[location' is not a valid attribute name.
 Error: Failed to execute 'setAttribute' on 'Element': '[location' is not a valid attribute name.
@@ -129,7 +126,6 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
 
       <!--rangertrak-location [location]="entryDetailsForm.get('location')"></rangertrak-location-->
       <!--rangertrak-location [locationForm]="entryDetailsForm.get('location')"></rangertrak-location-->
-
 
       <!--div>
         <label>lat</label>
@@ -144,11 +140,7 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
         <div *ngIf="entryDetailsForm.get('lng')?.touched && entryDetailsForm.get('lng')?.hasError('required')"
           class="text-sm text-danger">bad lng</div>
       </div-->
-
     </div>
-
-
-
 
     <h2 class="elegant">
       <mat-label>When</mat-label>
@@ -158,18 +150,40 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
       <!-- https://stackoverflow.com/questions/64826483/ngxmatdatetimepicker-is-not-assignable-to-type-matdatepickerbase -->
       <mat-form-field appearance="fill">
         <mat-label>Report time</mat-label>
-        <input matInput [ngxMatDatetimePicker]="$any(picker)" [min]="minDate" [max]="maxDate" [formControl]="dateCtrl"
+        <input
+          matInput
+          [ngxMatDatetimePicker]="$any(datePicker)"
+          [min]="minDate"
+          [max]="maxDate"
+          [formControl]="dateCtrl"
           formControlName="date"
           [class.border-danger]="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.invalid"
-          type="datetime" placeholder="date" id="enter__When-input" tabindex="6">
+          type="datetime"
+          placeholder="date"
+          id="enter__When-input"
+          tabindex="6"
+        />
 
-        <mat-datepicker-toggle matSuffix [for]="$any(picker)" title="Click me to display the picker">
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="$any(datePicker)"
+          title="Click me to display the picker"
+        >
         </mat-datepicker-toggle>
 
-        <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds" [stepHour]="stepHour"
-          [stepMinute]="stepMinute" [stepSecond]="stepSecond" [touchUi]="touchUi" [color]="color"
-          [enableMeridian]="enableMeridian" [disableMinute]="disableMinute" [hideTime]="hideTime">
-
+        <ngx-mat-datetime-picker
+          #datePicker
+          [showSpinners]="showSpinners"
+          [showSeconds]="showSeconds"
+          [stepHour]="stepHour"
+          [stepMinute]="stepMinute"
+          [stepSecond]="stepSecond"
+          [touchUi]="touchUi"
+          [color]="color"
+          [enableMeridian]="enableMeridian"
+          [disableMinute]="disableMinute"
+          [hideTime]="hideTime"
+        >
           <!-- Custom icon or text of Apply icon -->
           <ng-template>
             <!--mat-icon>star</mat-icon-->
@@ -177,32 +191,51 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
           </ng-template>
         </ngx-mat-datetime-picker>
 
-        <div *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
-          class="text-sm text-danger">date is required</div>
+        <div
+          *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
+          class="text-sm text-danger"
+        >
+          date is required
+        </div>
       </mat-form-field>
     </div>
 
     <h2 class="elegant bordered">What</h2>
 
-
     <div class="input-group bordered">
       <mat-label>Status:</mat-label>
-      <mat-radio-group labelPosition="after" formControlName="status"
+      <mat-radio-group
+        labelPosition="after"
+        formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid"
-        tabindex="7">
-        <mat-radio-button *ngFor="let stat of fieldReportStatuses" value={{stat.status}} class="rButton"><span
-            style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
+        tabindex="7"
+      >
+        <mat-radio-button
+          *ngFor="let stat of fieldReportStatuses"
+          value="{{stat.status}}"
+          class="rButton"
+          ><span style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
           <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
         </mat-radio-button>
       </mat-radio-group>
 
-      <div *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
-        class="text-sm text-danger">Status is required</div>
-      <br><br>
-      <textarea class="input-group enter__What--area" formControlName="note" id="enter__What--area" cols="80" rows="5"
-        placeholder="Enter Any Notes" tabindex="8"></textarea>
+      <div
+        *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
+        class="text-sm text-danger"
+      >
+        Status is required
+      </div>
+      <br /><br />
+      <textarea
+        class="input-group enter__What--area"
+        formControlName="note"
+        id="enter__What--area"
+        cols="80"
+        rows="5"
+        placeholder="Enter Any Notes"
+        tabindex="8"
+      ></textarea>
     </div>
-
 
     <!-- TODO: Add h4> Keywords</h4>
     <div formArrayName="keywords">
@@ -219,16 +252,22 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
       </div>
     </div-->
 
-
-    <br>
-    <br>
+    <br />
+    <br />
     <!--button (click)="onBtnUpdateLocation()">Update location</button> <br-->
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
-    <button (click)="resetForm()" title="Reset all form fields to their defaults" class="eButton"
-      type="button">Reset</button>
+    <button
+      (click)="resetForm()"
+      title="Reset all form fields to their defaults"
+      class="eButton"
+      type="button"
+    >
+      Reset
+    </button>
 
-    <button [disabled]="entryDetailsForm.invalid" class="enter__Submit-button eButton" type="submit"
-      tabindex="9">Submit</button>
+    <button class="enter__Submit-button eButton" type="submit" tabindex="9">
+      Submit [disabled]="entryDetailsForm.invalid"
+    </button>
 
     <span id="enter__Submit-info"></span>
 
@@ -237,7 +276,6 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
       <pre>Is entryForm valid?: <br>{{entryDetailsForm.valid | json}}</pre>
       <pre>form value: <br>{{entryDetailsForm.value | json}}</pre>
     </div>
-
   </form>
 </div>
 
@@ -273,18 +311,16 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
     </fieldset>
 -->
 
-
-
 <!--
 <mat-form-field>
-  <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date & time" [(ngModel)]="myDatePicker">
+  <input matInput [ngxMatDatetimePicker]="datePicker" placeholder="Choose a date & time" [(ngModel)]="myDatePicker">
 
   <ngx-mat-timepicker [(ngModel)]="myTimePicker">
   </ngx-mat-timepicker>
 
-  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
 
-  <ngx-mat-datetime-picker #picker></ngx-mat-datetime-picker>
+  <ngx-mat-datetime-picker #datePicker></ngx-mat-datetime-picker>
 </mat-form-field>
 
 <  IF Max & Min time desired:

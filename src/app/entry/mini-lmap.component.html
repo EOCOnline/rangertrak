@@ -1,0 +1,13 @@
+<div class="lmap-container">
+  <h2>Current Location</h2>
+  <div class="lmap-frame">
+    <div id="lmap" (leafletMapReady)="onMapReady($event)"></div>
+  </div>
+
+  <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
+  <div>
+    Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.4-5'}}</span> Longitude:
+    <span class="strong">{{mouseLatLng?.lng | number:'1.4-5'}}</span> Zoom:
+    <span class="strong">{{zoom}}</span>
+  </div>
+</div>

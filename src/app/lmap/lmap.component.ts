@@ -235,7 +235,8 @@ export class LmapComponent implements OnInit, AfterViewInit {
         this.lmap!.getZoom()! - OVERVIEW_DIFFERENCE,
         OVERVIEW_MIN_ZOOM,
         OVERVIEW_MAX_ZOOM
-      ))}
+      ))
+    }
     )
   }
 
@@ -343,7 +344,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
   private addMarker(lat: number, lng: number, status: string = '') {
     //console.log(`addMarker at ${lat}. ${lng}, ${status}`)
 
-    iconDefault
+    //iconDefault
 
 
     if (!lat || !lng || !this.lmap) {

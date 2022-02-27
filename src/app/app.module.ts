@@ -38,6 +38,8 @@ import { X404Component } from './x404/x404.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { LocationComponent } from './entry/location.component';
+import { MiniGMapComponent } from './entry/mini-gmap.component';
+import { MiniLMapComponent } from './entry/mini-lmap.component';
 //import { loc2Component } from './entry/loc2.component';
 
 // from ionic-app.module.ts
@@ -103,7 +105,9 @@ import { LocationComponent } from './entry/location.component';
     RangersComponent,
     X404Component,
     LogComponent,
-    LocationComponent
+    LocationComponent,
+    MiniGMapComponent,
+    MiniLMapComponent
     //,     loc2Component
   ],
 

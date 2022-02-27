@@ -17,7 +17,7 @@
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[html]": {
-        "editor.defaultFormatter": "HookyQR.beautify"
+        "editor.defaultFormatter": "numso.prettier-standard-vscode"
     },
     "explorer.openEditors.visible": 0,
     "files.trimTrailingWhitespace": true,

@@ -48,12 +48,15 @@ with ($primary: #962f10,
 #tooltip[data-popper-placement^='top']>#arrow {
   bottom: -4px;
 }
+
 #tooltip[data-popper-placement^='bottom']>#arrow {
   top: -4px;
 }
+
 #tooltip[data-popper-placement^='left']>#arrow {
   right: -4px;
 }
+
 #tooltip[data-popper-placement^='right']>#arrow {
   left: -4px;
 }
@@ -80,19 +83,6 @@ with ($primary: #962f10,
   transform : rotate(45deg);
 }
 
-//.map-container {
-  //height: 200px !important;
-  // "some" map-container is setting height to 500px. How to reseet/overrule?
-//}
-
-#enter__SmallMap {
-  display         : block;
-  float           : right;
-  width           : 30vw; // 30vw;
-  height          : 10vh; //200px !important; //
-  border          : 5px brown;
-  background-color: aliceblue;
-}
 
 h1,
 h2,
@@ -131,24 +121,12 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-//#latitudeDDI,
-//#longitudeDDI {
-//  width: 60//px;
-//}
 
-// #latitudeDDD,
-// #longitudeDDD {
-//   width: 180px;
-// }
 
 .small {
   font-size: 12px;
 }
 
-// #enter__Lat,
-// #enter__Lng {
-//   width: 80px;
-// }
 
 #enter__When-input {
   width: 400px;
@@ -185,7 +163,7 @@ input[type=number] {
   margin-right  : 8px;
 }
 
-[dir='rtl'] .enter__Callsign-imgimg {
+[dir='rtl'] .enter__Callsign-img {
   margin-right: 0;
   margin-left : 8px;
 }
@@ -195,7 +173,7 @@ input[type=number] {
   font-size: small;
 }
 
-#enter__frm-reguritation {
+#enter__frm-reguritation2 {
   margin-right    : 35vw;
   display         : block;
   float           : right;
@@ -211,7 +189,9 @@ input[type=number] {
 }
 
 .enter__What--area {
-  border              : 1px dotted rgb(52, 28, 192);
+  border: 1px dotted rgb(52, 28, 192);
+
+  background-color    : #F0F0F0;
   //text-orientation: upright;
   //text-transform: capitalize;
   //float             : left;

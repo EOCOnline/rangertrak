@@ -1,0 +1,22 @@
+@use "@material/theme"
+with ($primary: #962f10,
+  $on-primary: #442C2E);
+@use "@material/button";
+@use "@material/button/styles";
+@use "@material/banner";
+
+//#latitudeDDI,
+//#longitudeDDI {
+//  width: 60//px;
+//}
+
+// #latitudeDDD,
+// #longitudeDDD {
+//   width: 180px;
+// }
+
+
+// #enter__Lat,
+// #enter__Lng {
+//   width: 80px;
+// }

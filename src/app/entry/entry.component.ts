@@ -10,14 +10,11 @@ import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { Observable, debounceTime, map, startWith, switchMap } from 'rxjs'
-import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 import { FieldReport } from './location.interface'
 import { AlertsComponent } from '../alerts/alerts.component'
 import { FieldReportService, FieldReportStatusType, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
 
-//import { addressType } from '../lmap/lmap.component' // BUG:
-import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
-import { LatLng } from 'leaflet';
+
 
 //import { MatDatepickerModule } from '@matheo/datepicker'; //https://www.npmjs.com/package/@matheo/datepicker
 //import { MatNativeDateModule } from '@matheo/datepicker/core';
@@ -34,7 +31,7 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';// https://material.angular.io/components/icon/examples
 
-const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
+
 // IDEA: use https://material.angular.io/components/badge/ ???
 
 const THUMBUP_ICON =
@@ -95,10 +92,11 @@ export class IconComponent {
   providers: [RangerService, FieldReportService, SettingsService, TeamService]
 })
 export class EntryComponent implements OnInit {
-  @ViewChild('picker') picker: any; // https://blog.angular-university.io/angular-viewchild/
+  @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z'; // dupl of that above
   myForm!: FormGroup
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
+  location!: FormGroup
 
   faMapMarkedAlt = faMapMarkedAlt
   faInfoCircle = faInfoCircle
@@ -106,34 +104,6 @@ export class EntryComponent implements OnInit {
   mdiInformationOutline: string = mdiInformationOutline
 
 
-  // ------------------ MAP STUFF  ------------------
-  // imports this.map as a GoogleMap which is the Angular wrapper around a google.maps.Map...
-  //@ViewChild(GoogleMap, { static: false }) map!: GoogleMap // even needed?
-  // google.maps.Map is NOT the same as GoogleMap - but does refer to the same underlying map...
-  gMap?: google.maps.Map
-
-  onlyMarker = new google.maps.Marker({
-    draggable: false,
-    animation: google.maps.Animation.DROP
-  }) // i.e., a singleton...
-
-  // TODO: move to abstracted x instead of google.maps
-  mouseLatLng?: google.maps.LatLngLiteral
-  vashon = new google.maps.LatLng(47.4471, -122.4627)
-
-  zoom = 11
-  center: google.maps.LatLngLiteral = Vashon
-  options: google.maps.MapOptions = {
-    zoomControl: true,
-    scrollwheel: true,
-    disableDoubleClickZoom: true,
-    mapTypeId: 'hybrid',
-    maxZoom: 21,
-    minZoom: 7,
-    draggableCursor: 'crosshair', // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
-    //heading: 90,
-  }
-  geocoder = new GoogleGeocode
 
   // --------------- ENTRY FORM -----------------
   // control creation in a component class = immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
@@ -144,8 +114,6 @@ export class EntryComponent implements OnInit {
   rangers: RangerType[] = []
   fieldReportStatuses: FieldReportStatusType[] = []
   settings
-
-  //w3w = new What3Words()
 
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
@@ -177,7 +145,7 @@ export class EntryComponent implements OnInit {
   */
   public disabled = false;
   public showSpinners = true;
-  public showSeconds = false; // only affects display in picker
+  public showSeconds = false; // only affects display in timePicker
   public touchUi = false;
   public enableMeridian = false; // 24 hr clock
 
@@ -191,7 +159,7 @@ export class EntryComponent implements OnInit {
   hideTime = false
   dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
 
-  // hhttps://github.com/h2qutc/angular-material-components
+  // https://github.com/h2qutc/angular-material-components
   /* following causes:  No suitable injection token for parameter '_formBuilder' of class 'EntryComponent'.
   Consider using the @Inject decorator to specify an injection token.(-992003)
 entry.component.ts(77, 26): This type does not have a value, so it cannot be used as injection token.
@@ -274,6 +242,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
  */
 
     /* i.e., entryDetailsForm probably constructed at wrong time?!
+    Move the component creation to ngOnInit hook
     error can show up when you are working with ViewChild, and execute code in AfterViewInit.
     https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
     the binding expression changes after being checked by Angular during the change detection cycle
@@ -289,17 +258,18 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       id: -1,
       callsign: [''],
       team: ['T1'],
-      location: this._formBuilder.group({
+      location: this.initLocation()
+      /*this._formBuilder.group({
         lat: 0,
         lng: 0,
         address: ''
-      }),
+      })*/,
       date: [new Date()],
       status: [this.fieldReportStatuses[this.settings.defRangerStatus].status],
       note: ['']
     })
 
-    this.addLocation()
+    //this.addLocation()
 
     // subscribe to addresses value changes
     this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
@@ -359,9 +329,10 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
     this.entryDetailsForm = this._formBuilder.group({
       id: -2,
-      callsign: [''],  // REVIEW: [] doesn't mean an ARRAY does it?!
+      callsign: [''],
       team: ['T0'],
-      location: {
+      location: this.initLocation()
+      /*{
         address: [''], // ' , Vashon, WA 98070' ?
         lat: [this.settings.defLat,
         Validators.required,
@@ -371,7 +342,8 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
         Validators.required,
           //Validators.minLength(4)
         ],
-      },
+      }*/
+      ,
       date: [new Date()],  // TODO: reset dateCtrl instead?!
       status: [this.fieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
       note: ['']
@@ -383,42 +355,12 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
   initLocation() {
     // initialize our location
-    return this._formBuilder.group({
+    this.location = this._formBuilder.group({
       address: ['', Validators.required],
       lat: [this.settings.defLat],
       lng: [this.settings.defLng]
     });
-  }
-
-  addLocation() {
-    // add location to the list
-    const control = this.entryDetailsForm.controls['location'] as FormControl
-    const locationCtrl = this.initLocation()
-    //control.add(locationCtrl) // https://plnkr.co/edit/clTbNP7MHBbBbrUp20vr?preview
-    // 'add' does not exist on FormControl
-
-    // subscribe to individual address value changes
-    locationCtrl.valueChanges.subscribe(x => {
-      console.log(`addLocation got notification of location value changes ${x}`);
-    })
-
-    /*
-        { // create nested formgroup to pass to child
-          / #Type 'AbstractControl | null' is not assignable to type 'FormGroup'.
-          Type 'null' is not assignable to type 'FormGroup'.ngtsc(2322) /
-          address: [''],  // ' , Vashon, WA 98070' ?
-            lat: [this.settings.defLat, [Validators.required, Validators.minLength(4)]],
-            lng: [this.settings.defLng, Validators.required], //Validators.minLength(4)
-        }
-    */
-
-    //control.push(this.initAddress()); // TODO: not an array, so...
-  }
-
-  removeLocation() {
-    // remove location from the list (but we don't have a list..)
-    const control = this.entryDetailsForm.controls['location'];
-    //control. .remove; // TODO: not an array, so...
+    return this.location
   }
 
 
@@ -465,10 +407,10 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     element.style.animation = "";
   }
 
-  save(model: FieldReport) {
-    // call API to save FieldReport
-    console.log(model);
-  }
+  // save(model: FieldReport) {
+  // call API to save FieldReport
+  // console.log(model);
+  //}
 
   onFormSubmit(formData1: string): void {
     console.log(`Form submited at date=${this.date} `)
@@ -504,80 +446,6 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }   */
 
 
-  // ------------------------------------------------------------------------
-  // Map stuff below
-  //#region
-
-  onMapInitialized(newMapReference: google.maps.Map) {
-    console.log(`onMapInitialized()`)
-    this.gMap = newMapReference
-    /*
-        if (this.gMap == null) {
-          console.log("onMapInitialized(): This.gMap is null")
-        } else {
-          console.log(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`)
-        }
-        */
-    this.updateOverviewMap()
-    console.log(`onMapInitialized done`)
-  }
-
-  updateOverviewMap() {
-    console.log(`updateOverviewMap`)
-
-    //let latlng = new google.maps.LatLng(SettingsService.Settings.defLat, SettingsService.Settings.deflng)
-    //let latlngL = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.deflng}
-
-    // TODO: FitBounds to new point, not to DefLat & Deflng  -- do it on addMarker?
-    // this.gMap?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
-    //this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })) // zooms to max!
-    this.gMap?.setZoom(17) // no effect
-  }
-
-  onMapMouseMove(event: google.maps.MapMouseEvent) {
-    if (event.latLng) {
-      this.mouseLatLng = event.latLng.toJSON()
-      //console.log('moving()');
-    }
-    else {
-      console.warn('move(): NO event.latLng!!!!!!!!!!!!!');
-    }
-  }
-
-  zoomed() {
-    if (this.zoom && this.gMap) {
-      this.zoom = this.gMap.getZoom()!
-    }
-  }
-  // TODO: chg miniMap out with Leaflet map (for offline use)
-  //#endregion
-
-
-
-
-
-  displayMarker(pos: google.maps.LatLngLiteral, title = 'Latest Location') {
-    console.log(`displayMarker at ${pos}, title: ${title}`)
-
-    // Review: will this overwrite/remove any previous marker?
-    if (this.gMap) {
-      this.onlyMarker.setMap(this.gMap)
-    } else {
-      console.warn('gMap NOT set in displayMarker!!!!')
-    }
-    this.onlyMarker.setPosition(pos)
-    this.onlyMarker.setTitle(title)
-    this.gMap?.setCenter(pos)
-
-    /* label: {
-       // label: this.labels[this.labelIndex++ % this.labels.length],
-       text: "grade", // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
-       fontFamily: "Material Icons",
-       color: "#ffffff",
-       fontSize: "18px",
-     },
-     */
-  }
 
 
 
@@ -616,7 +484,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   closePicker() {
-    this.picker.cancel();
+    this.timePicker.cancel();
   }
 
   private _setMinDate(hours: number = 10) {

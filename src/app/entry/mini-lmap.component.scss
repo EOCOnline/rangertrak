@@ -1,0 +1,23 @@
+.lmap-container {
+  display         : block;
+  float           : right;
+  width           : 35vw; // 30vw;
+  height          : 40vh; //200px !important; //
+  border          : 5px brown;
+  background-color: #F0F0F0;
+  margin-right    : 10px;
+}
+
+.lmap-frame {
+  border  : 2px solid black;
+  //height: 20vh; //100%;
+  width   : 100%;
+}
+
+#lmap {
+  height: 40vh; //100%;
+}
+
+.strong {
+  font-weight: bold;
+}
