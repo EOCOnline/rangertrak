@@ -1,13 +1,3 @@
-<!--form [formGroup]="myForm">
-	<label>Name: </label>
-    <input formControlName="name" />
-    <app-child [loc2 as FormGroup="myForm.get('loc2')"></app-child>
-</form-->
-
-<!--pre>Form Values: {{frm.value | json}}</pre>
-
-<hr-->
-
 <div class="container">
   <form
     #frm="ngForm"
@@ -15,10 +5,6 @@
     (ngSubmit)="onFormSubmit(frm.value)"
     class="enter__form"
   >
-    <!--div id="enter__frm-reguritation">
-      <pre>{{ frm.value |json}}</pre>
-    </div-->
-
     <rangertrak-mini-lmap>LMAP HERE</rangertrak-mini-lmap>
     <!--rangertrak-mini-gmap>gmAP HERE</rangertrak-mini-gmap-->
 
@@ -119,6 +105,9 @@
 Error: Failed to execute 'setAttribute' on 'Element': '[location' is not a valid attribute name.
 location as FormGroup does compile, but above run-time error...
 -->
+
+      <rangertrak-location #NeuvoLocation></rangertrak-location>
+
       <!--rangertrak-location [location as FormGroup]="entryDetailsForm.get('location')"></rangertrak-location-->
       <!--rangertrak-location [group]="entryDetailsForm.get('location')"></rangertrak-location-->
       <!-- (property) LocationComponent.group: FormGroup | null
@@ -161,6 +150,7 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
           type="datetime"
           placeholder="date"
           id="enter__When-input"
+          data-lpignore="true"
           tabindex="6"
         />
 
@@ -311,34 +301,6 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
     </fieldset>
 -->
 
-<!--
-<mat-form-field>
-  <input matInput [ngxMatDatetimePicker]="datePicker" placeholder="Choose a date & time" [(ngModel)]="myDatePicker">
-
-  <ngx-mat-timepicker [(ngModel)]="myTimePicker">
-  </ngx-mat-timepicker>
-
-  <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
-
-  <ngx-mat-datetime-picker #datePicker></ngx-mat-datetime-picker>
-</mat-form-field>
-
-<  IF Max & Min time desired:
-<mat-form-field>
-<input matInput [ngxMatDatetimePicker]="pickerFrom" placeholder="From date & time" [(ngModel)]="myDatePickerFrom">
-
-<mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
-
-<ngx-mat-datetime-picker #pickerFrom [enableMeridian]="true"></ngx-mat-datetime-picker>
-</mat-form-field>
-
-<mat-form-field>
-<input matInput [ngxMatDatetimePicker]="pickerTo" placeholder="To date & time" [(ngModel)]="myDatePickerTo"
-[min]="myDatePickerFrom">
-
-<mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
-
-<ngx-mat-datetime-picker #pickerTo [enableMeridian]="true"></ngx-mat-datetime-picker>
-</mat-form-field>
-
--->
+<!--div id="enter__frm-reguritation">
+      <pre>{{ frm.value |json}}</pre>
+    </div-->

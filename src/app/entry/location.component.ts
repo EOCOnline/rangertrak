@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
 
@@ -91,9 +91,9 @@ export class LocationComponent implements OnInit {
   mdiAccount: string = mdiAccount
   mdiInformationOutline: string = mdiInformationOutline
 
-  button: HTMLButtonElement | undefined
-  tooltip: HTMLHtmlElement | undefined
-  popperInstance: any //typeof P.createPopper | undefined
+  // button: HTMLButtonElement | undefined
+  //tooltip: HTMLHtmlElement | undefined
+  //popperInstance: any //typeof P.createPopper | undefined
 
   geocoder = new GoogleGeocode
 
@@ -101,14 +101,25 @@ export class LocationComponent implements OnInit {
 
   constructor(
     private settingsService: SettingsService,
+    private _formBuilder: FormBuilder,
     iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, // for svg mat icons
     @Inject(DOCUMENT) private document: Document) {
 
     console.log("LocationComponent - constructor")
 
+
+    // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
+    this.location = this._formBuilder.group({
+      address: ['', Validators.required],
+      lat: [SettingsService.Settings.defLat],
+      lng: [SettingsService.Settings.defLng]
+    });
+
+    /*
     this.location = new FormGroup({
+      lat: new FormControl({ type="number" })
       a: new FormControl({ b: [''] })
-    })
+    }) */
 
     let myForm_unused = new FormGroup({
       first: new FormControl({ value: 'Nancy', disabled: true }, Validators.required),
@@ -117,15 +128,18 @@ export class LocationComponent implements OnInit {
 
 
     // TODO: NOt working yet...
-    //console.log(`addressCtrl.valueChanges`)
+    console.log(`addressCtrl.valueChanges`)
     // TODO: No formControlName="addressCtrl"!!!!
-    this.location.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
+    // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
+    //this.location.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
 
     // https://fonts.google.com/icons && https://material.angular.io/components/icon
     // Note that we provide the icon here as a string literal here due to a limitation in
     // Stackblitz. If you want to provide the icon from a URL, you can use:
     iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
     //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
+    console.log("LocationComponent - out of constructor")
+
   }
 
   ngOnInit(): void {
@@ -143,23 +157,27 @@ export class LocationComponent implements OnInit {
       this.location.get("address")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         console.log('#######  address value changed: ' + x)
       })
-
-      this.button = document.querySelector('#button') as HTMLButtonElement
-      this.tooltip = document.querySelector('#tooltip') as HTMLHtmlElement
-      // https://popper.js.org/docs/v2/constructors/
-      this.popperInstance = P.createPopper(this.button, this.tooltip, {
-        modifiers: [
-          {
-            name: 'offset',
-            options: {
-              offset: [0, 8],
-            },
-          },
-        ],
-      })
-
+      /*
+            this.button = document.querySelector('#button') as HTMLButtonElement
+            this.tooltip = document.querySelector('#tooltip') as HTMLHtmlElement
+            // https://popper.js.org/docs/v2/constructors/
+            this.popperInstance = P.createPopper(this.button, this.tooltip, {
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, 8],
+                  },
+                },
+              ],
+            })
+      */
     }
+    this.updateCoords(SettingsService.Settings.defLat, SettingsService.Settings.defLng)
+    console.log("LocationComponent - out of ngOnInit")
   }
+
+
 
   // resetForm(){}
 
@@ -176,6 +194,7 @@ export class LocationComponent implements OnInit {
   // https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
   addressCtrlChanged2(newAddr: string) {
     // TODO: No formControlName="addressCtrl"!!!!
+    console.log(`addressCtrlChanged2 `)
     console.log(`addressCtrlChanged2: ${newAddr} `)
 
   }
@@ -253,14 +272,14 @@ export class LocationComponent implements OnInit {
 
     // this.form.markAsPristine();
     // this.form.markAsUntouched();
-    if (this.location.get('address')?.touched) {
-      console.log('address WAS touched')
-      //this.location.get('address')?.markAsUntouched
-    }
-    if (this.location.get('address')?.dirty) {
-      console.log('address WAS dirty')
-      //this.location.get('address')?.markAsPristine
-    }
+    // if (this.location.get('address')?.touched) {
+    //   console.log('address WAS touched')
+    //   //this.location.get('address')?.markAsUntouched
+    // }
+    // if (this.location.get('address')?.dirty) {
+    //   console.log('address WAS dirty')
+    //   //this.location.get('address')?.markAsPristine
+    // }
 
     switch (what) {
       case 'addr':
@@ -285,22 +304,24 @@ export class LocationComponent implements OnInit {
       case 'lngI':
       case 'lngD':
 
-        let llat = Number((this.document.getElementById("enter__Where--Lat") as HTMLInputElement).value)
-        let llng = Number((this.document.getElementById("enter__Where--Lng") as HTMLInputElement).value)
-        //this.document.getElementById("enter__Where--lng")?.innerText
-        //this.document.getElementById("enter__Where--lng")?.innerText
-        let ll = new google.maps.LatLng(llat, llng)
+
+        let llat = Number((this.document.getElementById("enter__Where--LatI") as HTMLInputElement).value)
+          + Number((this.document.getElementById("enter__Where--LatD") as HTMLInputElement).value) / 100
+        let llng = Number((this.document.getElementById("enter__Where--LngI") as HTMLInputElement).value)
+          + Number((this.document.getElementById("enter__Where--LngI") as HTMLInputElement).value) / 100
+        let ll = new google.maps.LatLng(llat, llng) // Move from Google to Leaflet!
         let newAddress = this.geocoder.getAddressFromLatLng(ll)  // TODO: Disable!!
         console.log(`addressCtrlChanged new ll: ${JSON.stringify(ll)}; addr: ${newAddress}`)
 
         this.updateCoords(llat, llng)
-
-        let addrLabel = this.document.getElementById("addressLabel") // as HTMLLabelElement
-        if (addrLabel) {
-          addrLabel.innerText = newAddress
-          //addrLabel.markAsPristine()
-          //addrLabel. .markAsUntouched()
-        }
+        /*
+                let addrLabel = this.document.getElementById("addressLabel") // as HTMLLabelElement
+                if (addrLabel) {
+                  addrLabel.innerText = newAddress
+                  //addrLabel.markAsPristine()
+                  //addrLabel. .markAsUntouched()
+                }
+                */
         this.UpdateLocation({ lat: llat, lng: llng }, `Time: ${Date.now} at Lat: ${llat}, Lng: ${llng}, street: ${newAddress}`)
         break;
       default:
@@ -311,6 +332,7 @@ export class LocationComponent implements OnInit {
   }
 
   chkAddresses() {
+    console.log("LocationComponent - chkAddresses")
 
     /* if JSON.stringify(addr): gets
     TypeError: Converting circular structure to JSON
@@ -344,46 +366,53 @@ export class LocationComponent implements OnInit {
         } else {
           let result = this.chkStreetAddress(addrText)
           let addrLabel = document.getElementById("addressLabel") as HTMLLabelElement
+          /*
           if (result.position) {
             addrLabel.innerText
               = `STREET ADDRESS: Formatted address: ${result.address}; Google PlaceID: ${result.placeId}; Position: ${result.position}; partial_match: ${result.partial_match}; placeId: ${result.placeId}; plus_code: ${result.plus_code}`
           } else {
             addrLabel.innerText = `STREET ADDRESS: unable to geocode. ${result.address}`
           }
+          */
         }
       }
     }
   }
 
+  setCtrl(ctrlName: string, value: number | string) {
+    let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
+    if (!ctrl) {
+      console.warn(`setCtrl(): Could not find element: ${ctrlName}`)
+    } else {
+      ctrl.value = value.toString()
+      //console.log(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`)
+    }
+  }
 
   updateCoords(latDD: number, lngDD: number) {
-    console.log(`updateCoords with new Coordinates: lat: ${latDD}; latDD: ${latDD.toString()}`);
-    console.log(`updateCoords with new Coordinates: lng: ${lngDD}; lngDD: ${lngDD.toString()}`);
+    console.log(`updateCoords with new Coordinates: lat: ${latDD}, lng: ${lngDD}`);
 
-    let latitudeDDI = document.getElementById("enter__Where--LatI") as HTMLInputElement
-    let latitudeDDD = document.getElementById("enter__Where--LatD") as HTMLInputElement
-    let longitudeDDI = document.getElementById("enter__Where--LngI") as HTMLInputElement
-    let longitudeDDD = document.getElementById("enter__Where--LngD") as HTMLInputElement
-    console.log(`updateCoords latitudeDDI: ${latitudeDDI}; latitudeDDD: ${latitudeDDD}`);
-    console.log(`updateCoords longitudeDDI: ${longitudeDDI}; longitudeDDD: ${longitudeDDD}`);
+    let latI = Math.floor(latDD)
+    let lngI = Math.floor(lngDD)
+    let latD = Math.round((latDD - latI) * 10000)
+    let lngD = Math.round((lngDD - lngI) * 10000)
 
-    // TODO: Only display 4-6 positions after decimal
-    latitudeDDI.value = Math.floor(latDD).toString();
-    latitudeDDD.value = (latDD - Math.floor(latDD)).toString().slice(0, 4);
-    //(document.getElementById("enter__Where--LngI") as HTMLInputElement).value = lngDD.toString();
-    //(document.getElementById("enter__Where--LngD") as HTMLInputElement).value = lngDD.toString();
+    this.setCtrl("enter__Where--LatI", latI)
+    this.setCtrl("enter__Where--LatD", latD)
+    this.setCtrl("enter__Where--LngI", lngI)
+    this.setCtrl("enter__Where--LngD", lngD)
 
     let latDMS = DDToDMS(latDD, false);
-    (document.getElementById("latitudeQ") as HTMLInputElement).value = latDMS.dir;
-    (document.getElementById("latitudeD") as HTMLInputElement).value = latDMS.deg.toString();
-    (document.getElementById("latitudeM") as HTMLInputElement).value = latDMS.min.toString();
-    (document.getElementById("latitudeS") as HTMLInputElement).value = latDMS.sec.toString();
+    this.setCtrl("latitudeQ", latDMS.dir)
+    this.setCtrl("latitudeD", latDMS.deg)
+    this.setCtrl("latitudeM", latDMS.min)
+    this.setCtrl("latitudeS", latDMS.sec)
 
     let lngDMS = DDToDMS(lngDD, true);
-    (document.getElementById("longitudeQ") as HTMLInputElement).value = lngDMS.dir.toString();
-    (document.getElementById("longitudeD") as HTMLInputElement).value = lngDMS.deg.toString();
-    (document.getElementById("longitudeM") as HTMLInputElement).value = lngDMS.min.toString();
-    (document.getElementById("longitudeS") as HTMLInputElement).value = lngDMS.sec.toString();
+    this.setCtrl("longitudeQ", lngDMS.dir)
+    this.setCtrl("longitudeD", lngDMS.deg)
+    this.setCtrl("longitudeM", lngDMS.min)
+    this.setCtrl("longitudeS", lngDMS.sec)
 
     let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
     console.log("updateCoords: Encode returned PlusCode: " + pCode)
@@ -409,6 +438,8 @@ export class LocationComponent implements OnInit {
         document.getElementById("pCodeGlobal")!.innerHTML = " &nbsp;&nbsp; Unable to get +Code"
         //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
       }
+
+      // TODO: EMIT AN EVENT!!!!
     }
 
     //this.addressCtrlChanged('lat') // HACK: to display marker
@@ -427,7 +458,7 @@ export class LocationComponent implements OnInit {
       console.log(`chkPCode of ${pCode} got result:${JSON.stringify(result)}`);
 
       if (result.position) {
-        (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
+        //    (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
         (document.getElementById("enter__Where--Lat") as HTMLInputElement).value = "result.position.lat";
         // BUG: position has type of never????!!!!
         (document.getElementById("lng") as HTMLInputElement).value = "JSON.stringify(result.position)";
@@ -450,7 +481,7 @@ export class LocationComponent implements OnInit {
       }
 
       else {
-        document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: " + SettingsService.Settings.defPlusCode
+        //    document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: " + SettingsService.Settings.defPlusCode
         //document.getElementById("pCodeGlobal")!.innerHTML = SettingsService.Settings.defPlusCode
       }
     }
@@ -458,6 +489,7 @@ export class LocationComponent implements OnInit {
 
   // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
   chk3Words(tWords: string) {
+    console.log("LocationComponent - chk3Words")
     /*let settings = {
       "async": true,
       "crossDomain": true,
@@ -529,72 +561,70 @@ export class LocationComponent implements OnInit {
     console.log("Got street address to check: " + addrText)
     // Type 'GeocoderResult' must have a '[Symbol.iterator]()' method that returns an iterator.
     //let result:google.maps.GeocoderResult = this.geocoder.isValidAddress(addrText)
-    return this.geocoder.isValidAddress(addrText)
+    //  return this.geocoder.isValidAddress(addrText)
     // TODO: this.updateCoords(lat,lng)
 
   }
 
   // --------------------------- POPPER ---------------------------
+  /*
+    // https://popper.js.org/docs/v2/tutorial/
+    // TODO: https://popper.js.org/
+    // https://popper.js.org/docs/v2/
 
-  // https://popper.js.org/docs/v2/tutorial/
-  // TODO: https://popper.js.org/
-  // https://popper.js.org/docs/v2/
-
-  show() {
-    if (this.tooltip) {
-      this.tooltip.setAttribute('data-show', '');
-    }
-
-    // Enable the event listeners
-    this.popperInstance.setOptions((options: { modifiers: any }) => ({
-      ...options,
-      modifiers: [
-        ...options.modifiers,
-        { name: 'eventListeners', enabled: true },
-      ],
-    }))
-
-    // update the tooltip position
-    if (this.popperInstance) {
-      //this.popperInstance.update();
-    }
-  }
-
-  hide() {
-    if (this.tooltip) {
-      this.tooltip.removeAttribute('data-show')
-    }
-
-    // Disable the event listeners
-    this.popperInstance.setOptions((options: { modifiers: any }) => ({
-      ...options,
-      modifiers: [
-        ...options.modifiers,
-        { name: 'eventListeners', enabled: false },
-      ],
-    }))
-  }
-
-  myPop() {  // TODO: Not supposed to be hidden in a routine...
-    const showEvents = ['mouseenter', 'focus']
-    const hideEvents = ['mouseleave', 'blur']
-
-    showEvents.forEach((event) => {
-      if (this.button) {
-        this.button.addEventListener(event, this.show)
+    show() {
+      if (this.tooltip) {
+        this.tooltip.setAttribute('data-show', '');
       }
-    })
 
-    hideEvents.forEach((event) => {
-      if (this.button) {
-        this.button.addEventListener(event, this.hide);
+      // Enable the event listeners
+      this.popperInstance.setOptions((options: { modifiers: any }) => ({
+        ...options,
+        modifiers: [
+          ...options.modifiers,
+          { name: 'eventListeners', enabled: true },
+        ],
+      }))
+
+      // update the tooltip position
+      if (this.popperInstance) {
+        //this.popperInstance.update();
       }
-    })
-  }
+    }
 
+    hide() {
+      if (this.tooltip) {
+        this.tooltip.removeAttribute('data-show')
+      }
 
+      // Disable the event listeners
+      this.popperInstance.setOptions((options: { modifiers: any }) => ({
+        ...options,
+        modifiers: [
+          ...options.modifiers,
+          { name: 'eventListeners', enabled: false },
+        ],
+      }))
+    }
 
+    myPop() {  // TODO: Not supposed to be hidden in a routine...
+      const showEvents = ['mouseenter', 'focus']
+      const hideEvents = ['mouseleave', 'blur']
 
+      showEvents.forEach((event) => {
+        if (this.button) {
+          this.button.addEventListener(event, this.show)
+        }
+      })
+
+      hideEvents.forEach((event) => {
+        if (this.button) {
+          this.button.addEventListener(event, this.hide);
+        }
+      })
+
+}
+ */
 
   // https://bobrov.dev/angular-popper/
   // https://sergeygultyayev.medium.com/use-popper-js-in-angular-projects-7b34f18da1c
@@ -629,21 +659,17 @@ export class LocationComponent implements OnInit {
     this.popper.destroy();
   }
 
-
-
     popcorn = this.document.querySelector('#popcorn') as HTMLAnchorElement // BUG:
     tooltip = this.document.querySelector('#tooltip') as HTMLAnchorElement
 
     createPopper(popcorn: HTMLAnchorElement, tooltip: HTMLAnchorElement, {
       //   placement: 'top-end',
     }) {
-
     }
   */
   onInfoWhere() {
+    console.log("LocationComponent - onInfoWhere")
     let s = "for Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds"
   }
-
-
 
 }

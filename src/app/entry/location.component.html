@@ -1,4 +1,3 @@
-
 <!--div [formGroup]="location">
   <label>lat: </label>
     <input formControlName="lat"><br>
@@ -8,59 +7,65 @@
     <input formControlName="address">
   </div-->
 
-
-
-<div [formGroup]="location">
-
-  <div class="form-group col-xs-6">
-    <label>Address</label>
-    <input type="text" class="form-control" formControlName="address">
-    <!--small [hidden]="locationForm.controls.address.valid" class="text-danger">
-        Street is required
-    </small-->
-  </div>
-
-  <div class="form-group col-xs-6">
-    <label>lat</label>
-    <input type="number" class="form-control" formControlName="lat">
-  </div>
-
-  <div class="form-group col-xs-6">
-    <label>lng</label>
-    <input type="number" class="form-control" formControlName="lng">
-  </div>
-
-  <!--input formControlName="address">
-  <input formControlName="lat">
-  <input formControlName="lng"-->
-
-</div>
-
-
-
 <!-- https://popper.js.org/docs/v2/tutorial/ -->
 <h2 class="elegant">
-  <mat-label>Where</mat-label>&nbsp;&nbsp;<fa-icon [icon]="faInfoCircle" id="button" aria-describedby="tooltip"
-    title="Click info icon for info!" alt="info icon"></fa-icon><span class="small">(updates map to the right)
-    onclick="onWhereInfo()"</span>|<img src="../../assets/icons/information-outline.png"
-    title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" />
+  <mat-label>Where</mat-label>&nbsp;&nbsp;<fa-icon
+    [icon]="faInfoCircle"
+    id="button"
+    aria-describedby="tooltip"
+    title="Click info icon for info!"
+    alt="info icon"
+  ></fa-icon
+  ><span class="small">(updates map to the right)</span>|<img
+    src="../../assets/icons/information-outline.png"
+    title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds"
+    alt="info icon"
+  />
 </h2>
+<!--  TODO: onclick="onWhereInfo() -->
 
-<div id="tooltip" role="tooltip">
-  My tooltip: Instructions for how to enter location into RangerTrak:
-  Enter Lat & Lng as decimal values or DMS, OR as an address
-  - which will update/REPLACE the coordinates!
+<!--div id="tooltip" role="tooltip">
+  My tooltip: Instructions for how to enter location into RangerTrak: Enter Lat & Lng as
+  decimal values or DMS, OR as an address - which will update/REPLACE the coordinates!
   <div id="arrow" data-popper-arrow></div>
-</div>
+</div-->
 
-<div class="input-group">&nbsp;&nbsp;&nbsp;Latitude:
+<div class="input-group" [formGroup]="location">
+  &nbsp;&nbsp;&nbsp;&nbsp;Latitude:
   <!--  [class.border-danger]="location.get('latI')?.touched && location.get('latI')?.invalid"
   formControlName="latI"
--->
-  <input type="number" placeholder="LatitudeI" (change)="this.addressCtrlChanged('latI')" name="latI" size="2"
-    min="-180" max="180" id="enter__Where--LatI">
 
-  name="latitudeDDI" id="latitudeDDI"
+
+Error: formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
+      directive and pass it an existing FormGroup instance (you can create one in your class).
+
+    Example:
+
+
+  <div [formGroup]="myGroup">
+    <input formControlName="firstName">
+  </div>
+
+  In your class:
+
+  this.myGroup = new FormGroup({
+      firstName: new FormControl()
+  });
+
+
+-->
+  <input
+    type="number"
+    placeholder="LatitudeI"
+    (change)="this.addressCtrlChanged('latI')"
+    name="latI"
+    size="2"
+    min="-180"
+    max="180"
+    id="enter__Where--LatI"
+  />
+
+  <!-- TODO: name="latitudeDDI" id="latitudeDDI" -->
 
   <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
     class="text-sm text-danger">lat is required
@@ -71,38 +76,90 @@ formControlName="lat3D"
 (change)="this.addressCtrlChanged('latD')"
   </span-->.
 
+  <input
+    type="number"
+    placeholder="LatitudeD"
+    name="latitudeDDD"
+    step="0.001"
+    size="8"
+    min="0"
+    max="99999"
+    id="enter__Where--LatD"
+    tabindex="2"
+  />
 
-  <input type="number" placeholder="LatitudeD" name="latitudeDDD" step="0.001" size="8" min="0" max="99999"
-    id="enter__Where--LatD" tabindex="2">
-
-  id -- latitudeDDD
+  <!-- TODO: id -- latitudeDDD -->
 
   <!--span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
     class="text-sm text-danger">Latitude is required
   </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
 
-
-  <input name="latitudeQ" id="latitudeQ" type="text" value="N" size="1" pattern="'e','E','w','W'" title="E or W"
-    onchange="DMSCoordsChanged()"> <!-- Quadrant -->
-  <input name="latitudeD" id="latitudeD" type="text" value="47" size="2" min="0" max="180"
-    onchange="DMSCoordsChanged()">°
+  <input
+    name="latitudeQ"
+    id="latitudeQ"
+    type="text"
+    size="1"
+    pattern="'e','E','w','W'"
+    title="E or W"
+    onchange="DMSCoordsChanged()"
+  />
+  <!-- Quadrant -->
+  <!-- BUG: Initialize els3ewhere!
+  value="47"
+value=""
+value=""
+   value="W"
+       value="122"
+           value="N"
+  -->
+  <input
+    name="latitudeD"
+    id="latitudeD"
+    type="text"
+    size="2"
+    min="0"
+    max="180"
+    onchange="DMSCoordsChanged()"
+  />°
   <!-- TODO: Use settings.DefLat -->
-  <input name="latitudeM" id="latitudeM" type="text" value="" size="2" min="0" max="59" onchange="DMSCoordsChanged()">'
-  <input name="latitudeS" id="latitudeS" type="text" value="" size="5" min="0" max="59.99"
-    onchange="DMSCoordsChanged()">"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
+  <input
+    name="latitudeM"
+    id="latitudeM"
+    type="text"
+    size="2"
+    min="0"
+    max="59"
+    onchange="DMSCoordsChanged()"
+  />'
+  <input
+    name="latitudeS"
+    id="latitudeS"
+    type="text"
+    size="5"
+    min="0"
+    max="59.99"
+    onchange="DMSCoordsChanged()"
+  />"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
 </div>
 
-
-
-
-<div class="input-group">Longitude
+<div class="input-group">
+  Longitude
   <!--img src="../../assets/icons/information-outline.png"
     title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" /  size="30"
   [class.border-danger]="location.get('lngI')?.touched && location.get('lngI')?.invalid"
 
   -->:
-  <input type="number" placeholder="LongitudeI" (change)="this.addressCtrlChanged('lngI')" name="longitudeDDI"
-    id="longitudeDDI" min="-90" max="90" id="enter__Where--LngI" tabindex="3">
+  <input
+    type="number"
+    placeholder="LongitudeI"
+    (change)="this.addressCtrlChanged('lngI')"
+    name="longitudeDDI"
+    id="longitudeDDI"
+    min="-90"
+    max="90"
+    id="enter__Where--LngI"
+    tabindex="3"
+  />
 
   <!-- onchange="DDCoordsChanged()" -->
   <!--span *ngIf="location.get('lngI')?.touched && location.get('lngI')?.hasError('required')"
@@ -111,29 +168,77 @@ formControlName="lngD"
     [class.border-danger]="location.get('lngD')?.touched && location.get('lngD')?.invalid"
   </span-->&nbsp;&nbsp;.
 
-  <input type="number" placeholder="LongitudeD" (change)="this.addressCtrlChanged('lngD')" name="latitudeDDD"
-    id="latitudeDDD" step="0.001" size="9" min="0" max="99999" id="enter__Where--LngD" tabindex="4">
+  <input
+    type="number"
+    placeholder="LongitudeD"
+    (change)="this.addressCtrlChanged('lngD')"
+    name="latitudeDDD"
+    id="latitudeDDD"
+    step="0.001"
+    size="9"
+    min="0"
+    max="99999"
+    id="enter__Where--LngD"
+    tabindex="4"
+  />
 
   <!--span *ngIf="location.get('lngD')?.touched && location.get('lngD')?.hasError('required')
               && location.get('lngD')?.touched && location.get('lngD')?.hasError('required')"
     class="text-sm text-danger">Latitude is required
   </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
 
-  <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"
-    onchange="DMSCoordsChanged()">
-  <input name="longitudeD" id="longitudeD" type="text" value="122" size="2" max="180" onchange="DMSCoordsChanged()">°
-  <input name="longitudeM" id="longitudeM" type="text" value="" size="2" min="0" max="59"
-    onchange="DMSCoordsChanged()">'
-  <input name="longitudeS" id="longitudeS" type="text" value="" size="5" min="0" max="59.99"
-    onchange="DMSCoordsChanged()">"
+  <input
+    name="longitudeQ"
+    id="longitudeQ"
+    type="text"
+    size="1"
+    pattern="'n','N','s','S'"
+    title="N or S"
+    onchange="DMSCoordsChanged()"
+  />
+  <input
+    name="longitudeD"
+    id="longitudeD"
+    type="text"
+    size="2"
+    max="180"
+    onchange="DMSCoordsChanged()"
+  />°
+  <input
+    name="longitudeM"
+    id="longitudeM"
+    type="text"
+    size="2"
+    min="0"
+    max="59"
+    onchange="DMSCoordsChanged()"
+  />'
+  <input
+    name="longitudeS"
+    id="longitudeS"
+    type="text"
+    size="5"
+    min="0"
+    max="59.99"
+    onchange="DMSCoordsChanged()"
+  />"
   <span title="Degrees Minute Seconds">DMS</span>
 </div>
 
 Street Address, +Code, or What.3.Words:
-<input [class.border-danger]="location.get('address')?.touched && location.get('address')?.invalid"
-  type="text" formControlName="address" id="addressCtrl" tabindex="5"
-  title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." size="40"
-  placeholder="Optional Address" (change)="this.addressCtrlChanged('addr')">
+<!-- [class.border-danger]="location.get('address')?.touched && location.get('address')?.invalid" -->
+<input
+  type="text"
+  formControlName="address"
+  address
+  id="addressCtrl"
+  tabindex="5"
+  title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
+  size="40"
+  placeholder="Optional Address"
+  data-lpignore="true"
+  (change)="this.addressCtrlChanged('addr')"
+/>
 
 <!-- formControlName="addressCtrl"
 
@@ -141,9 +246,9 @@ Street Address, +Code, or What.3.Words:
   placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
   onchange="chkAddresses()"> (optional) -->
 <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
-<br>
+<br />
 <span id="addressLabel" value="">aL</span>&nbsp;&nbsp;
-<br>
+<br />
 
 <span id="pCodeGlobal">pCG</span>
 
@@ -151,8 +256,7 @@ Street Address, +Code, or What.3.Words:
 *ngIf="location.get('address')?.touched && location.get('address')?.hasError('required')"
 class="text-sm text-danger">address is required</div  -->
 <!--/div-->
-<br>
-
+<br />
 
 <!--br-->
 
@@ -176,4 +280,28 @@ class="text-sm text-danger">address is required</div  -->
     <!- -/what3words-autosuggest- ->
   </div>
   <!- -/form- ->
+</div-->
+
+<!--div [formGroup]="location">
+  <div class="form-group col-xs-6">
+    <label>Address</label>
+    <input type="text" class="form-control" formControlName="address" />
+    <!-small [hidden]="locationForm.controls.address.valid" class="text-danger">
+        Street is required
+    </small->
+  </div>
+
+  <div class="form-group col-xs-6">
+    <label>lat</label>
+    <input type="number" class="form-control" formControlName="lat" />
+  </div>
+
+  <div class="form-group col-xs-6">
+    <label>lng</label>
+    <input type="number" class="form-control" formControlName="lng" />
+  </div>
+
+  <!-input formControlName="address">
+  <input formControlName="lat">
+  <input formControlName="lng"->
 </div-->
