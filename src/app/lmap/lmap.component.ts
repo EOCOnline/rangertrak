@@ -8,7 +8,7 @@ import * as LMC from "leaflet.markercluster"  // https://github.com/Leaflet/Leaf
 // https://stackblitz.com/edit/typescript-leaflet-marker-cluster   MarkerClusterGroup
 // better: https://blog.mestwin.net/leaflet-angular-marker-clustering/
 //import 'leaflet.markercluster/dist/MarkerCluster.Default.css' // also in angular.json
-import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds } from 'leaflet';
+import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, LatLng } from 'leaflet';
 // MarkerClusterGroup, MarkerClusterGroupOptions
 //import {icon, latLng, marker} from 'leaflet';
 //import * as L from 'leaflet'
@@ -26,9 +26,6 @@ import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, M
 import 'leaflet.markercluster';
 import { openDB, deleteDB, wrap, unwrap } from 'idb';
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
-
-
-
 
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services'
 import { CodeArea, OpenLocationCode, Utility } from '../shared/'
@@ -287,13 +284,20 @@ export class LmapComponent implements OnInit, AfterViewInit {
     console.log(`displayAllMarkers: all ${this.fieldReports.length} of 'em`)
 
     for (let i = 0; i < this.fieldReports.length; i++) {
-      let title = `${this.fieldReports[i].callsign} at ${this.fieldReports[i].date} with ${this.fieldReports[i].status}`
-      let marker = L.marker(new L.LatLng(this.fieldReports[i].lat, this.fieldReports[i].lng), { title: title })
-      marker.bindPopup(title)
-      this.mymarkers.addLayer(marker);
+      if (this.fieldReports[i].lat && this.fieldReports[i].lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
+        let title = `${this.fieldReports[i].callsign} at ${this.fieldReports[i].date} with ${this.fieldReports[i].status}`
+        console.log(`displayAllMarkers: ${i}: ${JSON.stringify(this.fieldReports[i])}`)
+
+        let marker = L.marker(new L.LatLng(this.fieldReports[i].lat, this.fieldReports[i].lng), { title: title })
+        marker.bindPopup(title)
+        this.mymarkers.addLayer(marker);
+      } else {
+        console.warn(`displayAllMarkers: skipping report # ${this.fieldReports[i].id}; bad lat/lng: ${i}: ${JSON.stringify(this.fieldReports[i])}`)
+      }
     }
 
     this.lmap?.addLayer(this.mymarkers);
+
     //console.log(`displayAllMarkers: created ${this.mymarkers.getChildCount()} of 'em`) //this.mymarkers.getChildCount is not a function
 
     // to refresh markers that have changed:
