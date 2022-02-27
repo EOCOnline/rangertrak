@@ -252,6 +252,8 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
   // setTimeout(() => this.registrationForm.patchValue(this.sampleData), 5000);
   //Now you can skip giving any field control value from the sampleData object. It will not throw error and set the values that are available.
 
+
+
   ngOnInit(): void {
     console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode() ? "" : "NOT "}enabled`)
     console.log("EntryComponent - ngOnInit - Use settings to fill form")
@@ -271,6 +273,17 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
      })
  */
 
+    /* i.e., entryDetailsForm probably constructed at wrong time?!
+    error can show up when you are working with ViewChild, and execute code in AfterViewInit.
+    https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
+    the binding expression changes after being checked by Angular during the change detection cycle
+
+Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'null'. Current value: '{
+ "id": -1,
+ "callsign": "",
+ "team": "T1",
+ [...]
+ */
 
     this.entryDetailsForm = this._formBuilder.group({
       id: -1,
@@ -301,19 +314,23 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))
 
-    this.button = document.querySelector('#button') as HTMLButtonElement
-    this.tooltip = document.querySelector('#tooltip') as HTMLHtmlElement
+    // These elements got moved to <rangertrak-location> element!
+    //this.button = document.querySelector('#button') as HTMLButtonElement
+    //this.tooltip = document.querySelector('#tooltip') as HTMLHtmlElement
+
     // https://popper.js.org/docs/v2/constructors/
-    this.popperInstance = P.createPopper(this.button, this.tooltip, {
-      modifiers: [
-        {
-          name: 'offset',
-          options: {
-            offset: [0, 8],
-          },
-        },
-      ],
-    })
+    // Popper: Invalid reference or popper argument provided. They must be either a DOM element or virtual element.
+    // this.popperInstance = P.createPopper(this.button, this.tooltip)
+    /* , {
+       modifiers: [
+         {
+           name: 'offset',
+           options: {
+             offset: [0, 8],
+           },
+         },
+       ],
+     }) */
     this.date = dayjs()
     console.log(`EntryForm ngOnInit completed at ${Date()}`)
   }
