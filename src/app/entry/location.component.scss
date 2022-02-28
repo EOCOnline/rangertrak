@@ -5,20 +5,42 @@ with ($primary: #962f10,
 @use "@material/button/styles";
 @use "@material/banner";
 
-//#latitudeDDI,
-//#longitudeDDI {
-//  width: 60//px;
-//}
 
-// #latitudeDDD,
-// #longitudeDDD {
-//   width: 180px;
-// }
+#enter__Where--latI,
+#enter__Where--lngI {
+  width: 50px;
+}
 
-// #enter__Lat,
-// #enter__Lng {
-//   width: 80px;
-// }
+#enter__Where--latF,
+#enter__Where--lngF {
+  width: 40px;
+}
+
+#enter__Where--latQ,
+#enter__Where--lngQ {
+  width: 15px;
+}
+
+#enter__Where--latD,
+#enter__Where--lngD {
+  width: 15px;
+}
+
+#enter__Where--latM,
+#enter__Where--lngM {
+  width: 15px;
+}
+
+#enter__Where--latS,
+#enter__Where--lngS {
+  width: 40px;
+}
+
+#enter__Where--address {
+  width: 120px;
+}
+
+
 
 // https://www.codingtag.com/remove-arrows-from-input-type-number
 // to hide spinners

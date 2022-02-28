@@ -99,6 +99,22 @@ export class LocationComponent implements OnInit {
 
   //w3w = new What3Words()
 
+  lat: number
+  lng: number
+  latI = 0
+  lngI = 0
+  latF = 0
+  lngF = 0
+  latQ = "N"
+  lngQ = "E"
+  latD = 0
+  lngD = 0
+  latM = 0
+  lngM = 0
+  latS = 0
+  lngS = 0
+  address = ""
+
   constructor(
     private settingsService: SettingsService,
     private _formBuilder: FormBuilder,
@@ -107,23 +123,15 @@ export class LocationComponent implements OnInit {
 
     console.log("LocationComponent - constructor")
 
+    this.lat = SettingsService.Settings.defLat
+    this.lng = SettingsService.Settings.defLng
+    this.updateCoords(this.lat, this.lng)
 
     // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
     this.location = this._formBuilder.group({
       address: ['', Validators.required],
       lat: [SettingsService.Settings.defLat],
       lng: [SettingsService.Settings.defLng]
-    });
-
-    /*
-    this.location = new FormGroup({
-      lat: new FormControl({ type="number" })
-      a: new FormControl({ b: [''] })
-    }) */
-
-    let myForm_unused = new FormGroup({
-      first: new FormControl({ value: 'Nancy', disabled: true }, Validators.required),
-      last: new FormControl('Drew', Validators.required)
     });
 
 
@@ -386,27 +394,39 @@ export class LocationComponent implements OnInit {
   updateCoords(latDD: number, lngDD: number) {
     console.log(`updateCoords with new Coordinates: lat: ${latDD}, lng: ${lngDD}`);
 
-    let latI = Math.floor(latDD)
-    let lngI = Math.floor(lngDD)
-    let latD = Math.round((latDD - latI) * 10000)
-    let lngD = Math.round((lngDD - lngI) * 10000)
+    this.lat = latDD
+    this.lng = lngDD
 
-    this.setCtrl("enter__Where--LatI", latI)
-    this.setCtrl("enter__Where--LatD", latD)
-    this.setCtrl("enter__Where--LngI", lngI)
-    this.setCtrl("enter__Where--LngD", lngD)
+    this.latI = Math.floor(latDD)
+    this.lngI = Math.floor(lngDD)
+    this.latF = Math.round((latDD - this.latI) * 10000)
+    this.lngF = Math.round((lngDD - this.lngI) * 10000)
+    // this.setCtrl("enter__Where--LatI", this.latI)
+    // this.setCtrl("enter__Where--LatD", this.latF)
+    // this.setCtrl("enter__Where--LngI", this.lngI)
+    // this.setCtrl("enter__Where--LngD", this.lngF)
 
     let latDMS = DDToDMS(latDD, false);
-    this.setCtrl("latitudeQ", latDMS.dir)
-    this.setCtrl("latitudeD", latDMS.deg)
-    this.setCtrl("latitudeM", latDMS.min)
-    this.setCtrl("latitudeS", latDMS.sec)
+    this.latQ = latDMS.dir
+    this.latD = latDMS.deg
+    this.latM = latDMS.min
+    this.latS = latDMS.sec
+    // this.setCtrl("latitudeQ", latDMS.dir)
+    // this.setCtrl("latitudeD", latDMS.deg)
+    // this.setCtrl("latitudeM", latDMS.min)
+    // this.setCtrl("latitudeS", latDMS.sec)
 
     let lngDMS = DDToDMS(lngDD, true);
-    this.setCtrl("longitudeQ", lngDMS.dir)
-    this.setCtrl("longitudeD", lngDMS.deg)
-    this.setCtrl("longitudeM", lngDMS.min)
-    this.setCtrl("longitudeS", lngDMS.sec)
+    this.lngQ = lngDMS.dir
+    this.lngD = lngDMS.deg
+    this.lngM = lngDMS.min
+    this.lngS = lngDMS.sec
+    // this.setCtrl("longitudeQ", lngDMS.dir)
+    // this.setCtrl("longitudeD", lngDMS.deg)
+    // this.setCtrl("longitudeM", lngDMS.min)
+    // this.setCtrl("longitudeS", lngDMS.sec)
+
+    // TODO: this.address =""
 
     let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
     console.log("updateCoords: Encode returned PlusCode: " + pCode)
