@@ -1,13 +1,9 @@
 import { BehaviorSubject, Observable, Observer, of } from 'rxjs';
 import { Injectable, OnInit } from '@angular/core';
-//import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 import { RangerService, SettingsService, FieldReportStatusType, TeamService } from './index';
-import { LatLng } from 'leaflet';
 import { HttpClient } from '@angular/common/http';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
-
-// TODO: https://h2qutc.github.io/angular-material-components/fileinput
 
 export type FieldReportType = {
   id: number,
@@ -60,7 +56,6 @@ export class FieldReportService {
 
     console.log(`FieldReport from localstorage length= ${this.fieldReports.length}`) // XXX
 
-
     if ((localStorageFieldReports != null)) {
       let ugg = JSON.parse(localStorageFieldReports)
       //console.log(`JSON.parse(localStorageFieldReports) ${ugg}`)
@@ -95,8 +90,26 @@ export class FieldReportService {
     return of(this.fieldReports)
   }
 
-  getFieldReports_old() {
-    return this.fieldReports
+  // rewrite field reports to localStorage & update subscribers
+  UpdateFieldReports() {
+    localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports));
+
+    console.log(`Note: field report updates. Next available to subscribers...`)
+    // TODO: more widely implement use of this - rather than just getting before maps/grids are inited...
+    // Need to use FROM, not ON!
+    this.fieldReportsSubject.next(this.fieldReports.map(  // REVIEW: is this just for 1 new report, or any localstorage updates?
+      fieldReport => ({
+        id: fieldReport.id,
+        callsign: fieldReport.callsign,
+        team: fieldReport.team,
+        address: fieldReport.address,
+        lat: fieldReport.lat,
+        lng: fieldReport.lng,
+        date: fieldReport.date,
+        status: fieldReport.status,
+        note: fieldReport.note
+      })
+    ))
   }
 
   allFieldReportsToServer_unused() {
@@ -110,7 +123,6 @@ export class FieldReportService {
 
     console.log("Sent all reports to server (via subscription)...");
   }
-
 
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
 
@@ -126,7 +138,6 @@ export class FieldReportService {
     console.log("TODO: send new report to server (via subscription)...");
     // Ang Dev w/ TS , pg 145
 
-
     // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
     //this.httpClient.post(`${this.uri}/add`, newReport).subscribe(res => console.log('Subscription of add report to httpClient is Done'));
     /* gets VM12981:1          POST http://localhost:4000/products/add net::ERR_CONNECTION_REFUSED
@@ -136,9 +147,9 @@ export class FieldReportService {
     return newReport;
   }
 
-  getFieldReport(id: number) {
-    const index = this.findIndex(id);
-    return this.fieldReports[index];
+
+  getFieldReports_old() {
+    return this.fieldReports
   }
 
   setSelectedFieldReports(selection: FieldReportType[]) {
@@ -148,6 +159,12 @@ export class FieldReportService {
 
   getSelectedFieldReports() {
     return this.selectedFieldReports
+  }
+
+
+  getFieldReport(id: number) {
+    const index = this.findIndex(id);
+    return this.fieldReports[index];
   }
 
   updateFieldReport(report: FieldReportType) {
@@ -167,26 +184,6 @@ export class FieldReportService {
     this.fieldReports = []
     localStorage.removeItem(this.storageLocalName)
     this.nextId = 0 // REVIEW: is this desired???
-  }
-
-  // rewrite field reports to localStorage & update subscribers
-  UpdateFieldReports() {
-    localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports));
-
-    // TODO: more widely implement use of this - rather than just getting before maps/grids are inited...
-    this.fieldReportsSubject.next(this.fieldReports.map(  // REVIEW: is this just for 1 new report, or any localstorage updates?
-      fieldReport => ({
-        id: fieldReport.id,
-        callsign: fieldReport.callsign,
-        team: fieldReport.team,
-        address: fieldReport.address,
-        lat: fieldReport.lat,
-        lng: fieldReport.lng,
-        date: fieldReport.date,
-        status: fieldReport.status,
-        note: fieldReport.note
-      })
-    ))
   }
 
   private findIndex(id: number): number {
@@ -374,6 +371,7 @@ comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
 
 }
 
+// TODO: https://h2qutc.github.io/angular-material-components/, then fileinput
 // Example: read JSON file. https://ag-grid.com/angular-data-grid/column-definitions/#example-column-definition
 /*
   onGridReady(params) {

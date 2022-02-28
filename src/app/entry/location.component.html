@@ -52,7 +52,7 @@ Error: formControlName must be used with a parent formGroup directive.  You'll w
       firstName: new FormControl()
   });
 
-
+size="2"
 -->
   <input
     type="number"
@@ -60,10 +60,13 @@ Error: formControlName must be used with a parent formGroup directive.  You'll w
     (change)="this.addressCtrlChanged('latI')"
     name="latI"
     latI
-    size="2"
+    [style.width.px]="20"
     min="-180"
     max="180"
     id="enter__Where--LatI"
+    {{llat
+    |
+    number:1.0-0}}
   />
 
   <!-- TODO: name="latitudeDDI" id="latitudeDDI" -->
@@ -82,9 +85,10 @@ formControlName="lat3D"
     placeholder="LatitudeD"
     name="latitudeDDD"
     step="0.001"
-    size="8"
+    [style.width.px]="30"
     min="0"
     max="99999"
+    step="100"
     id="enter__Where--LatD"
     tabindex="2"
   />
@@ -92,14 +96,13 @@ formControlName="lat3D"
   <!-- TODO: id -- latitudeDDD -->
 
   <!--span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
-    class="text-sm text-danger">Latitude is required
+    class="text-sm text-danger">Latitude is required size="1"
   </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
 
   <input
     name="latitudeQ"
     id="latitudeQ"
     type="text"
-    size="1"
     pattern="'e','E','w','W'"
     title="E or W"
     onchange="DMSCoordsChanged()"
