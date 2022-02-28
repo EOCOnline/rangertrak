@@ -30,6 +30,7 @@ import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services'
 import { CodeArea, OpenLocationCode, Utility } from '../shared/'
 import { Context } from 'ag-grid-community'
+import { Observable } from 'rxjs';
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
@@ -87,6 +88,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
   zoomDisplay // what's displayed below main map
   center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
   mouseLatLng = this.center
+  fieldReports$!: Observable<FieldReportType[]>
   fieldReports: FieldReportType[] = []
   //settings
   mymarkers = L.markerClusterGroup()
@@ -111,6 +113,28 @@ export class LmapComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+
+    const fieldReportsObservable = this.fieldReportService.getFieldReports();
+    fieldReportsObservable.subscribe((fieldReportData: FieldReportType[]) => {
+      this.fieldReports = fieldReportData
+    })
+    // Remember, Observables producing the values Asynchronously. Observables are the lazy collections of multiple
+    // values or streams over time. It is like a subscription to the newsletter, if you keep that subscription open, you will get the new one every once and a while.
+    // The sender decides when you get it, but all you have to do is to wait until it comes straight into your inbox.
+
+    this.fieldReports$ = this.fieldReportService.subscribeToFieldReports() // Only returns an empty observable! - no data. pg 146 (Ang Dev for TS)
+    // asyns pipe in the template actually pulls it over TouchEvent[Symbol]..
+
+    // https://appdividend.com/2022/02/03/angular-observables/
+    /*this.fieldReports$.subscribe(
+      x => console.log('Observer got a next value: ' + x),
+      err => console.error('Observer got an error: ' + err),
+      () => console.log('Observer got a complete notification')
+    )*/
+
+    console.log(`Now have ${this.fieldReports.length} Field Reports retrieved from Local Storage and/or fakes generated`)
+
+
     //https://www.npmjs.com/package/leaflet.markercluster
     //https://blog.mestwin.net/leaflet-angular-marker-clustering/
     //this.markerClusterGroup = L.markerClusterGroup({removeOutsideVisibleBounds: true});
@@ -306,7 +330,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
 
 
   private displayAllMarkers_NoCluster_Unused() {
-    this.fieldReports = this.fieldReportService.getFieldReports() // REVIEW: wipes out any not previously saved...
+    //this.fieldReports$ = this.fieldReportService.getFieldReports() // REVIEW: wipes out any not previously saved...
     for (let i = 0; i < this.fieldReports.length; i++) {
       this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
     }

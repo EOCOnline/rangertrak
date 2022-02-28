@@ -148,7 +148,7 @@ export class LocationComponent implements OnInit {
     // On Location/Address Change subscriptions  // TODO: USE THESE!!!
     if (this.location) {
       // this.addressCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
-      this.location.get("lat")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      this.location.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         console.log('########  latitude value changed: ' + x)
       })
       this.location.get("lng")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
@@ -192,14 +192,8 @@ export class LocationComponent implements OnInit {
   // https://findanyanswer.com/what-is-dirty-in-angular
   // https://angular.io/guide/form-validation
   // https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
-  addressCtrlChanged2(newAddr: string) {
-    // TODO: No formControlName="addressCtrl"!!!!
-    console.log(`addressCtrlChanged2 `)
-    console.log(`addressCtrlChanged2: ${newAddr} `)
 
-  }
-
-  UpdateLocation(loc: google.maps.LatLngLiteral, title: string = "") {
+  UpdateLocation(loc: google.maps.LatLngLiteral, title: string = "") {  // TODO: Remove google ref
     console.log("updateLocation() running")
     //this.location.get(['', 'name'])
     //this.location.controls['derivedAddress'].setValue('New Derived Address')
@@ -545,7 +539,7 @@ export class LocationComponent implements OnInit {
               errMsg = "[code]=" + error.code + "; [message]=" + error.message + ".";
               */
 
-      // TODO: this.updateCoords(lat,lng)
+      // TODO:       this.updateCoords(lat,lng)
       errMsg = ""
       console.log("Unable to verify 3 words entered: " + errMsg);
       document.getElementById("addressLabel")!.textContent = "*** Not able to verify 3 words! ***"; // as HTMLLabelElement

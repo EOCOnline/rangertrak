@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observer } from 'rxjs';
+import { BehaviorSubject, Observable, Observer, of } from 'rxjs';
 import { Injectable, OnInit } from '@angular/core';
 //import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 import { RangerService, SettingsService, FieldReportStatusType, TeamService } from './index';
@@ -73,17 +73,34 @@ export class FieldReportService {
       this.recalcFieldBounds()
     }
   }
-
-  subscribe(observer: Observer<FieldReportType[]>) {
-    this.fieldReportsSubject.subscribe(observer);
+  // In simple terms, here fieldReportObservable are publishing our primary data array that is fieldReports.
+  // So if any entity needs to get the values out of observable, then it first needs to
+  // subscribe that observable and then fieldReportObservable starts to publish the values,
+  // and then subscriber get the values.
+  // TODO: remove next routine - unless the 1 second delay is good...
+  public getFieldReports(): any {
+    const fieldReportsObservable = new Observable(observer => {
+      setTimeout(() => {
+        observer.next(this.fieldReports);
+      }, 1000);
+    })
+    return fieldReportsObservable
   }
 
-  getFieldReports() {
+  subscribe(observer: Observer<FieldReportType[]>) {
+    this.fieldReportsSubject.subscribe(observer)
+  }
+
+  subscribeToFieldReports(): Observable<FieldReportType[]> {
+    return of(this.fieldReports)
+  }
+
+  getFieldReports_old() {
     return this.fieldReports
   }
 
   allFieldReportsToServer_unused() {
-    console.log("Sending all reports to server (via subscription)...");
+    console.log("Sending all reports to server (via subscription)...")
 
     // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
 
@@ -106,13 +123,15 @@ export class FieldReportService {
     this.updateFieldReportBounds(newReport)
     this.UpdateFieldReports() // put to localStorage & update subscribers
 
-    console.log("Sending new report to server (via subscription)...");
+    console.log("TODO: send new report to server (via subscription)...");
+    // Ang Dev w/ TS , pg 145
+
 
     // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
     //this.httpClient.post(`${this.uri}/add`, newReport).subscribe(res => console.log('Subscription of add report to httpClient is Done'));
     /* gets VM12981:1          POST http://localhost:4000/products/add net::ERR_CONNECTION_REFUSED
   core.mjs:6485 ERROR HttpErrorResponse {headers: HttpHeaders, status: 0, statusText: 'Unknown Error', url: 'http://localhost:4000/products/add', ok: false, …}*/
-    console.log("Sent new report to server (via subscription)...");
+    //console.log("Sent new report to server (via subscription)...");
 
     return newReport;
   }

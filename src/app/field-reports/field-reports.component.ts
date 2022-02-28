@@ -3,6 +3,7 @@ import { DOCUMENT, formatDate } from '@angular/common'
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { FieldReportService, FieldReportType, FieldReportStatusType, RangerService, SettingsService, TeamService } from '../shared/services';
+import { Observable } from 'rxjs';
 
 @Pipe({ name: 'myUnusedPipe' })
 export class myUnusedPipe implements PipeTransform {
@@ -24,7 +25,7 @@ onGridReady(params) {
       .get(
         "https://raw.githubusercontent.com/ag-grid/ag-grid/master/grid-packages/ag-grid-docs/src/olympicWinnersSmall.json"
       )
-      .subscribe((data: any[]) => {
+      .((data: any[]) => {
         data.length = 10;
         data = data.map((row, index) => {
           return { ...row, id: index + 1 };
@@ -42,7 +43,7 @@ onGridReady(params) {
 })
 export class FieldReportsComponent implements OnInit {
 
-  fieldReports: FieldReportType[] = []
+  fieldReports$!: Observable<FieldReportType[]>
   fieldReportStatuses: FieldReportStatusType[] = []
   private settings
 
@@ -186,9 +187,17 @@ export class FieldReportsComponent implements OnInit {
   ngOnInit(): void {
     console.log("Field Report Form ========== ngInit ==== at ", Date.now)
 
-    // TODO: This doesn't actually get the very latest field Report entries: do it by subuscription instead????
-    this.fieldReports = this.fieldReportService.getFieldReports()
-    console.log(`Now have ${this.fieldReports.length} Field Reports retrieved from Local Storage and/or fakes generated`)
+    this.fieldReports$ = this.fieldReportService.subscribeToFieldReports() // Only returns an empty observable! - no data. pg 146 (Ang Dev for TS)
+    // asyns pipe in the template actually pulls it over TouchEvent[Symbol]..
+
+    // https://appdividend.com/2022/02/03/angular-observables/
+    /*this.fieldReports$.subscribe(
+      x => console.log('Observer got a next value: ' + x),
+      err => console.error('Observer got an error: ' + err),
+      () => console.log('Observer got a complete notification')
+    )*/
+
+    //console.log(`Now have ${this.fieldReports$.length} Field Reports retrieved from Local Storage and/or fakes generated`)
 
     this.numFakesForm = this.formBuilder.group({})
 
@@ -321,7 +330,7 @@ export class FieldReportsComponent implements OnInit {
     this.fieldReportService.generateFakeData(num)
     console.log(`Generated ${num} FAKE Field Reports`)
     this.fieldReportService.UpdateFieldReports()
-    this.fieldReports = this.fieldReportService.getFieldReports()
+    //this.fieldReports$ = this.fieldReportService.subscribeToFieldReports()
     this.refreshGrid()
     this.reloadPage() //TODO: why aren't above enough?!!!
   }
@@ -342,5 +351,9 @@ export class FieldReportsComponent implements OnInit {
     } else {
       console.warn(`Could not show HTML Element ${htmlElementID}`)
     }
+  }
+
+  ngOnDestroy() {
+    //this.subscription.unsubscribe();
   }
 }

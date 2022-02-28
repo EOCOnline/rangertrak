@@ -3,21 +3,31 @@
 <details>
   <summary class="big">Tips</summary>
   <ul>
-    <li style="color: red">If recent reports do NOT show up, refresh page or switch to another view & back: Let me know what works!!!</li>
-    <li>All fields are editable. (Address & Lat are 'single click', others are 'double click. What do you like?!)</li>
+    <li style="color: red">
+      If recent reports do NOT show up, refresh page or switch to another view & back: Let
+      me know what works!!!
+    </li>
+    <li>
+      All fields are editable. (Address & Lat are 'single click', others are 'double
+      click. What do you like?!)
+    </li>
     <li>ONCE SAVED (to local storage) the edited data can be exported to a CSV file.</li>
-    <li><span style="color:red;">Edits HAVE to be
-      MANUALLY saved by selecting the "Save Data" button in the Advanced section below.</span> </li>
+    <li>
+      <span style="color:red;"
+        >Edits HAVE to be MANUALLY saved by selecting the "Save Data" button in the
+        Advanced section below.</span
+      >
+    </li>
     <li>Click on a column heading to sort by that field.</li>
     <li>Click & Drag on a column heading to move columns</li>
     <li>Move column seperators to resize columns</li>
-    <li>Hovering over a cell (e.g., any callsign) can show additional information. </li>
+    <li>Hovering over a cell (e.g., any callsign) can show additional information.</li>
     <li>Icons at the top right of each column allows filtering on the value</li>
     <li>Save data grid to CSV file. Comma seperated works best for Excel importing.</li>
     <li>FUTURE: Import from Excel.</li>
   </ul>
 </details>
-<br>
+<br />
 
 <!--details>
   <summary>Future functionality</summary>
@@ -28,9 +38,20 @@
 <br-->
 
 <div id="reportsgrid">
-  <ag-grid-angular #reportsGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 600px;"
-    (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="fieldReports"
-    [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [tooltipShowDelay]=500>
+  <ag-grid-angular
+    #reportsGrid
+    rowAnimation
+    pagination
+    paginationAutoPageSize
+    style="width: 100%; height: 600px;"
+    (gridReady)="onGridReady($event)"
+    [gridOptions]="gridOptions"
+    class="ag-theme-alpine"
+    [rowData]="fieldReports$ | async"
+    [columnDefs]="columnDefs"
+    [defaultColDef]="defaultColDef"
+    [tooltipShowDelay]="500"
+  >
     <!--
       (firstDataRendered)="onFirstDataRendered($event)"
       (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1
@@ -46,7 +67,7 @@
 
   <div>
     <button (click)="onBtnExport()">Export Field Reports</button> with column separator of
-      <select (change) ="onSeperatorChange()" id="columnSeparator">
+    <select (change)="onSeperatorChange()" id="columnSeparator">
       <option value="none">comma (,)</option>
       <option value="tab">tab</option>
       <option value="|">bar (|)</option>
@@ -54,41 +75,64 @@
   </div>
   <!--button (click)="this.gridApi.deselectAll()">Clear Selection</button-->
   <!--div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div-->
-  <div>[To be removed - should happen automatically] Force field reports update: <button (click)="reloadPage()">Reload Page</button></div>
+  <div>
+    [To be removed - should happen automatically] Force field reports update:
+    <button (click)="reloadPage()">Reload Page</button>
+  </div>
 
-  [To be removed - should happen automatically] Record selected rows (for mapping): <button (click)="onBtnSetSelectedRowData()">Note Row Selection</button>
+  [To be removed - should happen automatically] Record selected rows (for mapping):
+  <button (click)="onBtnSetSelectedRowData()">Note Row Selection</button>
 
-  <br>
+  <br />
   <details>
     <summary>
       <span class="big" id="Advanced">Advanced</span>
     </summary>
 
-    [To be removed - should happen automatically] Save above Field Reports (to local storage)<button (click)="onBtnUpdateFieldReports()">Save Reports</button><br>
-    <button (click)="onBtnClearFieldReports()">Delete ALL Field Reportgs from local storage</button><br>
+    [To be removed - should happen automatically] Save above Field Reports (to local
+    storage)<button (click)="onBtnUpdateFieldReports()">Save Reports</button><br />
+    <button (click)="onBtnClearFieldReports()">
+      Delete ALL Field Reportgs from local storage</button
+    ><br />
     <!--button (click)="onBtnImportFieldReports_unused()">FUTURE: Import Field Reportgs from CSV file</button><br-->
 
-    <br><br>
+    <br /><br />
 
     <!-- https://material.angular.io/components/slider/overview -->
     <!-- ngModel cannot be used to register form controls with a parent formGroup directive -->
     <div [formGroup]="numFakesForm" id="enter__Fake--id">
       <section class="enter__Fake">
-
         <mat-form-field class="enter__Fake--numfield" appearance="fill">
           <mat-label># Fakes</mat-label>
-          <input matInput type="number" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}" />
+          <input
+            matInput
+            type="number"
+            [(ngModel)]="nFakes"
+            [ngModelOptions]="{standalone: true}"
+          />
         </mat-form-field>
 
-        <mat-slider id="enter__Fake--slider" thumbLabel tickInterval="10" step="5" min="0" max="100"
-          aria-label="# Fake Field Reports" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"></mat-slider>
+        <mat-slider
+          id="enter__Fake--slider"
+          thumbLabel
+          tickInterval="10"
+          step="5"
+          min="0"
+          max="100"
+          aria-label="# Fake Field Reports"
+          [(ngModel)]="nFakes"
+          [ngModelOptions]="{standalone: true}"
+        ></mat-slider>
 
-        <button (click)="generateFakeFieldReports()" type="button" id="enter__Fake--button">Add another
-          {{nFakes}} FAKE Field Reports</button>
+        <button
+          (click)="generateFakeFieldReports()"
+          type="button"
+          id="enter__Fake--button"
+        >
+          Add another {{nFakes}} FAKE Field Reports
+        </button>
         <!--For Now: Click on rangers page, then back to this page to refresh view... -->
       </section>
     </div>
-
   </details>
-
 </div>

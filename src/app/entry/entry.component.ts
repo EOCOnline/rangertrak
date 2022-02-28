@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { Observable, debounceTime, map, startWith, switchMap } from 'rxjs'
+import { Observable, debounceTime, map, startWith, switchMap, subscribeOn } from 'rxjs'
 import { FieldReport } from './location.interface'
 import { AlertsComponent } from '../alerts/alerts.component'
 import { FieldReportService, FieldReportStatusType, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
@@ -203,7 +203,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))
 
 
-    // https://material.angular.io/components/autocomplete/examples#autocomplete-overview
+    // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff
     this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
       startWith(''),
       map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
@@ -353,14 +353,28 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     this.entryDetailsForm.markAsUntouched();
   }
 
-  initLocation() {
-    // initialize our location
+  initLocation() { // TODO: Shouldn't this be in location.component.ts?!
+
     this.location = this._formBuilder.group({
-      address: ['', Validators.required],
+      address: [''], //, Validators.required],
       lat: [this.settings.defLat],
       lng: [this.settings.defLng]
-    });
+    })
+
+    this.location.valueChanges.pipe(debounceTime(500)).subscribe(location => this.locationChanged(location))
+    let addr = this.location.get("address")
+    if (addr) {
+      addr.valueChanges.pipe(debounceTime(500)).subscribe(location => this.locationChanged(location))
+      console.log("Made reservations!")
+    } else {
+      console.warn("could NOT Make reservations")
+    }
+    this.location.valueChanges.pipe(debounceTime(500)).subscribe(location => this.locationChanged(location))
     return this.location
+  }
+
+  locationChanged(loc: FormGroup) {
+    console.log(`value changed ###########################`)
   }
 
 
