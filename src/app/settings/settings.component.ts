@@ -154,7 +154,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   */
   ];
   fonts = ["'Open Sans'", "Montserrat", "Roboto", "'Playfair Display'", "Lato", "Merriweather", "Helvetica", "Lora", "'PT Serif'", "Spectral", "'Times New Roman'", "'Akaya Telivigala'",
-  "'Open Sans Condensed'", "'Saira Extra Condensed'", "Boogaloo", "Anton", "'Faster One'", "'Arima Madurai'"]  //, "'Material Icons'"]  all loaded in Index.html
+    "'Open Sans Condensed'", "'Saira Extra Condensed'", "Boogaloo", "Anton", "'Faster One'", "'Arima Madurai'"]  //, "'Material Icons'"]  all loaded in Index.html
   // https://en.wikipedia.org/wiki/Pangram
   pangrams = ["Pack my box with five dozen liquor jugs",
     "The quick brown fox jumps over the lazy dog",
@@ -163,7 +163,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     "How vexingly quick daft zebras jump!",
     "The five boxing wizards jump quickly.",
     "Jackdaws love my big sphinx of quartz."]
-    pangram
+  pangram
 
   constructor(
     private fb: FormBuilder,
@@ -175,7 +175,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     private rangerService: RangerService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
-    this.pangram=this.getPangram()
+    this.pangram = this.getPangram()
     //this.settings = settingService()
     this.settings = SettingsService.Settings // only using static functions/values from the service...
     console.log('Application Settings set to static values. But not initialized???')
@@ -283,7 +283,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     /*
      async delayedAction() {
     this.dbug("resetMap");
-    await this.sleep(2000);
+    await this.sleep(2000);  // use delay(2000) instead
     this.dbug("resetMap has slept");
     this.filterLeafletMap();
     this.dbug("resetMap complete");

@@ -1,7 +1,9 @@
-
+import { delay } from 'rxjs/operators';
 export class Utility {
 
   static sleep(ms: number) {
+    // TODO try delay instead...
+    // delay(ms)
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 

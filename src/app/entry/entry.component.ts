@@ -164,6 +164,9 @@ export class EntryComponent implements OnInit {
   Consider using the @Inject decorator to specify an injection token.(-992003)
 entry.component.ts(77, 26): This type does not have a value, so it cannot be used as injection token.
 */
+
+  // TODO: Consider for tracking ValueChanges: https://angular.io/guide/observables-in-angular#reactive-forms
+
   constructor(
     private _formBuilder: FormBuilder,
     private rangerService: RangerService,
@@ -287,6 +290,8 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     // These elements got moved to <rangertrak-location> element!
     //this.button = document.querySelector('#button') as HTMLButtonElement
     //this.tooltip = document.querySelector('#tooltip') as HTMLHtmlElement
+
+    // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
 
     // https://popper.js.org/docs/v2/constructors/
     // Popper: Invalid reference or popper argument provided. They must be either a DOM element or virtual element.

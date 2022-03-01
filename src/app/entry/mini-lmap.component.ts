@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
 import { DOCUMENT, JsonPipe } from '@angular/common'
+import { fromEvent } from 'rxjs';
 import * as L from 'leaflet';
 //import { Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
 import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
@@ -93,8 +94,27 @@ export class MiniLMapComponent implements AfterViewInit {
       //this.zoom! = this.lmap?.getZoom()
     })
 
-    this.lmap.on('mousemove', (ev: L.LeafletMouseEvent) => {
-      this.mouseLatLng = ev.latlng
+
+    // TODO: Use an Observable, from https://angular.io/guide/rx-library#observable-creation-functions
+    const lmap = document.getElementById('lmap')!
+
+    // Create an Observable that will publish mouse movements
+    const mouseMoves = fromEvent<MouseEvent>(lmap, 'mousemove')
+
+    // Subscribe to start listening for mouse-move events
+    const subscription = mouseMoves.subscribe(evt => {
+      // Log coords of mouse movements
+      console.log(`Coords: ${evt.clientX} X ${evt.clientY}`)
+
+      // When the mouse is over the upper-left of the screen,
+      // unsubscribe to stop listening for mouse movements
+      if (evt.clientX < 40 && evt.clientY < 40) {
+        subscription.unsubscribe()
+      }
+    })
+
+    this.lmap.on('mousemove', (evt: L.LeafletMouseEvent) => {
+      this.mouseLatLng = evt.latlng
     })
   }
 

@@ -22,7 +22,8 @@ export class FieldReportService {
   private fieldReportStatuses: FieldReportStatusType[] = []
   private storageLocalName = 'fieldReports'
   private nextId = 0
-  private fieldReportsSubject = new BehaviorSubject<FieldReportType[]>([]);  // REVIEW: Necessary?
+  private fieldReportsSubject = new BehaviorSubject<FieldReportType[]>([])
+
   // https://developers.google.com/maps/documentation/javascript/reference/coordinates?hl=en#LatLngBounds
   public bounds = new google.maps.LatLngBounds(new google.maps.LatLng(90, 180), new google.maps.LatLng(-90, -180)) //SW, NE
   public bound: google.maps.LatLngBoundsLiteral = { east: -180, north: -90, south: 90, west: 180 } //e,n,s,w
@@ -30,36 +31,32 @@ export class FieldReportService {
   public selectedBounds = new google.maps.LatLngBounds(new google.maps.LatLng(90, 180), new google.maps.LatLng(-90, -180)) //SW, NE
   public selectedBound: google.maps.LatLngBoundsLiteral = { east: -180, north: -90, south: 90, west: 180 } //e,n,s,w
 
+
   constructor(
     private rangerService: RangerService,
     private teamService: TeamService,
     private settingService: SettingsService,
     private httpClient: HttpClient) {
 
-    console.log("Contructing FieldReportService: once or repeatedly?!--------------") // XXX
-    console.log(`FieldReport length= ${this.fieldReports.length}`) // XXX
+    console.log("Contructing FieldReportService: once or repeatedly?!--------------")
 
     let localStorageFieldReports = localStorage.getItem(this.storageLocalName)
-    /* this.fieldReports = []
-    if (temp != null) {
-      this.fieldReports = JSON.parse(temp) || []
-    }   */
-
     this.fieldReportStatuses = this.settingService.getFieldReportStatuses()
 
-    // XXX (localStorageFieldReports != null)= true
+    // access using:
+    this.fieldReportsSubject.subscribe(
+      myFieldReports => { console.log(myFieldReports) }
+    )
+    // this.fieldReportsSubject.unsubscribe
+
     this.fieldReports = ((localStorageFieldReports != null) && (localStorageFieldReports.indexOf("licensee") <= 0))
       ? JSON.parse(localStorageFieldReports) : []   //TODO: clean up
-    //this.fieldReports = []
-    //debugger
-    //console.log(`this.fieldReports.length=${this.fieldReports.length}; (localStorageFieldReports != null)= ${localStorageFieldReports != null}`)
-
-    console.log(`FieldReport from localstorage length= ${this.fieldReports.length}`) // XXX
-
+    console.log(`Got ${this.fieldReports.length} Field Reports from localstorage`)
     if ((localStorageFieldReports != null)) {
       let ugg = JSON.parse(localStorageFieldReports)
       //console.log(`JSON.parse(localStorageFieldReports) ${ugg}`)
     }
+    // Calc nextId (only used by unused routines?!)
     if (this.fieldReports.length > 0) {
       for (const fieldReport of this.fieldReports) {
         if (fieldReport.id >= this.nextId) this.nextId = fieldReport.id + 1
@@ -68,6 +65,7 @@ export class FieldReportService {
       this.recalcFieldBounds()
     }
   }
+
   // In simple terms, here fieldReportObservable are publishing our primary data array that is fieldReports.
   // So if any entity needs to get the values out of observable, then it first needs to
   // subscribe that observable and then fieldReportObservable starts to publish the values,
@@ -146,7 +144,7 @@ export class FieldReportService {
 
     return newReport;
   }
-
+  // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
 
   getFieldReports_old() {
     return this.fieldReports
