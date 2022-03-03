@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { debounceTime } from 'rxjs';
+import { debounceTime, fromEvent, Observable } from 'rxjs';
 import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
 
 import * as P from '@popperjs/core';
@@ -65,9 +65,12 @@ type Strategy = 'absolute' | 'fixed';
   `
 })
 export class IconComponent2 {
-  @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
-}
+  // #region Properties (1)
 
+  @Input('path') public data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
+
+  // #endregion Properties (1)
+}
 
 @Component({
   //moduleId: module.id,
@@ -75,57 +78,106 @@ export class IconComponent2 {
   templateUrl: './location.component.html',
   styleUrls: ['./location.component.scss']
 })
-export class LocationComponent implements OnInit {
+export class LocationComponent implements OnInit, AfterViewInit {
+  // #region Properties (33)
+
+  // Grab reference to location portion of parent's entry form
+  @Input() public locationFrmGrp: FormGroup // input from entry.component.ts
+
+  /*
+  LocationComponent - out of ngOnInit
+core.mjs:6485 ERROR Error: formControlName must be used with a
+parent formGroup directive.  You'll want to add a formGroup
+directive and pass it an existing FormGroup instance
+(you can create one in your class).
+    Example:
+  <div [formGroup]="myGroup">
+    <input formControlName="firstName">
+  </div>
+  In your class:
+  this.myGroup = new FormGroup({
+      firstName: new FormControl()
+  });
+    at controlParentException (forms.mjs:1474:12)
+    at FormControlName._checkParentType (forms.mjs:5906:23)
+
+    at refreshComponent (core.mjs:10655:1)
+defaultErrorLogger @ core.mjs:6485
+
+mini-lmap.component.ts:70 Init Leaflet minimap..........
+*/
   //@Input('location') location: FormGroup;
   //@Input('group') location: FormGroup;
-  @Input() location: FormGroup;
+
 
   //@Input() location: FormGroup// | null = null //location: FormGroup;
   // public locationForm!: FormGroup
   //  public location2: FormGroup
   //locationCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
   //@Input() group: FormGroup;
-  //createPopper<StrictModifiers>(referenceElement, popperElement, options)
-  faMapMarkedAlt = faMapMarkedAlt
-  faInfoCircle = faInfoCircle
-  mdiAccount: string = mdiAccount
-  mdiInformationOutline: string = mdiInformationOutline
 
+  public address = ""
+  // Grab reference to #elements in template (vs. getElementById)
+  @ViewChild('latI') elLatI: any
+  @ViewChild('latF') elLatF!: HTMLInputElement
+
+  @ViewChild('latQ') elLatQ!: HTMLInputElement
+  @ViewChild('latD') elLatD!: HTMLInputElement
+  @ViewChild('latM') elLatM!: HTMLInputElement
+  @ViewChild('latS') elLatS!: HTMLInputElement
+
+  @ViewChild('lngF') elLngF!: HTMLInputElement
+  @ViewChild('lngI') elLngI!: HTMLInputElement
+
+  @ViewChild('lngQ') elLngQ!: HTMLInputElement
+  @ViewChild('lngD') elLngD!: HTMLInputElement
+  @ViewChild('lngM') elLngM!: HTMLInputElement
+  @ViewChild('lngS') elLngS!: HTMLInputElement
+
+  public geocoder = new GoogleGeocode
+  //w3w = new What3Words()
+
+  public lat: number // Deg Decimal
+  public latI = 0 // Integer portion
+  public latF = 0 // Float portion
+  public latQ = "N" // Quadrant
+  public latD = 0 // Degrees
+  public latM = 0 // Minutes
+  public latS = 0 // Seconds
+
+  public lng: number
+  public lngI = 0
+  public lngD = 0
+  public lngF = 0
+  public lngM = 0
+  public lngQ = "E"
+  public lngS = 0
+
+
+  //createPopper<StrictModifiers>(referenceElement, popperElement, options)
   // button: HTMLButtonElement | undefined
   //tooltip: HTMLHtmlElement | undefined
   //popperInstance: any //typeof P.createPopper | undefined
 
-  geocoder = new GoogleGeocode
+  public faInfoCircle = faInfoCircle
+  public faMapMarkedAlt = faMapMarkedAlt
+  public mdiAccount: string = mdiAccount
+  public mdiInformationOutline: string = mdiInformationOutline
 
-  //w3w = new What3Words()
+  // #endregion Properties (33)
 
-  lat: number
-  lng: number
-  latI = 0
-  lngI = 0
-  latF = 0
-  lngF = 0
-  latQ = "N"
-  lngQ = "E"
-  latD = 0
-  lngD = 0
-  latM = 0
-  lngM = 0
-  latS = 0
-  lngS = 0
-  address = ""
+  // #region Constructors (1)
 
   constructor(
     private settingsService: SettingsService,
     private _formBuilder: FormBuilder,
     iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, // for svg mat icons
     @Inject(DOCUMENT) private document: Document) {
-
     console.log("LocationComponent - constructor")
 
     this.lat = SettingsService.Settings.defLat
     this.lng = SettingsService.Settings.defLng
-    this.updateCoords(this.lat, this.lng)
+    this.newLocation(this.lat, this.lng)
 
     // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
     this.location = this._formBuilder.group({
@@ -134,38 +186,24 @@ export class LocationComponent implements OnInit {
       lng: [SettingsService.Settings.defLng]
     });
 
-
-    // TODO: NOt working yet...
-    console.log(`addressCtrl.valueChanges`)
-    // TODO: No formControlName="addressCtrl"!!!!
-    // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
-    //this.location.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
-
     // https://fonts.google.com/icons && https://material.angular.io/components/icon
     // Note that we provide the icon here as a string literal here due to a limitation in
     // Stackblitz. If you want to provide the icon from a URL, you can use:
     iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
     //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
     console.log("LocationComponent - out of constructor")
-
   }
 
-  ngOnInit(): void {
+  // #endregion Constructors (1)
+
+  // #region Public Methods (11)
+
+  public ngOnInit(): void {
     console.log("LocationComponent - ngOnInit")
 
-    // On Location/Address Change subscriptions  // TODO: USE THESE!!!
-    if (this.location) {
-      // this.addressCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
-      this.location.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        console.log('########  latitude value changed: ' + x)
-      })
-      this.location.get("lng")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        console.log('##########  longitude value changed: ' + x)
-      })
-      this.location.get("address")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        console.log('#######  address value changed: ' + x)
-      })
-      /*
+    this.newLocation(SettingsService.Settings.defLat, SettingsService.Settings.defLng)
+
+    /*
             this.button = document.querySelector('#button') as HTMLButtonElement
             this.tooltip = document.querySelector('#tooltip') as HTMLHtmlElement
             // https://popper.js.org/docs/v2/constructors/
@@ -180,95 +218,136 @@ export class LocationComponent implements OnInit {
               ],
             })
       */
-    }
-    this.updateCoords(SettingsService.Settings.defLat, SettingsService.Settings.defLng)
+
     console.log("LocationComponent - out of ngOnInit")
   }
 
+  public ngAfterViewInit() {
+    //let keyup$ = Observable.fromEvent(this.elLatI.nativeElement, 'keyup')
 
+    // On Location/Address Change subscriptions  // TODO: USE THESE!!!
+    if (this.location) {
+      this.location.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+        console.log('########  latitude value changed: ' + x)
+      })
+      this.location.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+        console.log('########## lat float value changed: ' + x)
+      })
+      this.location.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+        console.log('#######  lng Float value changed: ' + x)
+      })
 
-  // resetForm(){}
-
-  //----------------------------------------------------------------------------------------
-  // Address stuff : Move to service/utility for use by big maps?
-  // #region
-
-  // https://developers.google.com/maps/documentation/javascript/places
-  // https://developer.what3words.com/tutorial/javascript
-  // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
-  // https://askinglot.com/what-is-dirty-and-touched-in-angular
-  // https://findanyanswer.com/what-is-dirty-in-angular
-  // https://angular.io/guide/form-validation
-  // https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
-
-  UpdateLocation(loc: google.maps.LatLngLiteral, title: string = "") {  // TODO: Remove google ref
-    console.log("updateLocation() running")
-    //this.location.get(['', 'name'])
-    //this.location.controls['derivedAddress'].setValue('New Derived Address')
-    let addr = this.document.getElementById("derivedAddress")
-    if (addr) { addr.innerHTML = "New What3Words goes here!" } // TODO: move to another routine...
-
-    if (title == "") {
-      title = `${Date.now} at lat ${loc.lat}, lng ${loc.lng}.`
+      // TODO: NOt working yet...
+      console.log(`addressCtrl.valueChanges`)
+      // TODO: No formControlName="addressCtrl"!!!!
+      // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
+      //this.location.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
     }
-
-    //BUG: UPDATE MAP!  Need to emit 'new location'!
-    // this.displayMarker(loc, title)
-
   }
 
-  /*
-      addrInfo: HTMLElement | null = null
 
-      AddressChanged(addr: string) { // Just serves timer for input field - post interaction
-        this.addrInfo = this.document.getElementById("enter__Where--Address-upshot")
-        if (this.addrInfo) {
-          console.log(`EntryForm AdressChanged looking for ${ address }`)
-          //let ranger = this.rangers[this.findIndex(callsign)];
-          this.addrInfo.innerHTML = `addrInfo goes here`
-          //<img class="enter__Address-img" aria-hidden
-          // src="${ranger.image}" height="50">
-          // <span>${ranger.callsign}</span> | <small> ${ranger.licensee} | ${ranger.phone}</small>`
-        }
-      }
+
+
+
+  public newLocation(latDD: number, lngDD: number) {
+    console.log(`updateCoords with new Coordinates: lat: ${latDD}, lng: ${lngDD}`);
+
+    this.lat = latDD
+    this.lng = lngDD
+
+    this.latI = Math.floor(latDD)
+    // {{latI}} shows [object HTMLInputElement]
+    this.lngI = Math.floor(lngDD)
+    //this.elLatI.innerText = this.latI.toString()  // BUG: .value fails or
+    //     Uncaught (in promise): TypeError: Cannot set properties of undefined (setting 'innerText')
+    // TypeError: Cannot set properties of undefined (setting 'innerText')
+    //     at LocationComponent.newLocation (location.component.ts:237:5)
+
+
+    this.latF = Math.round((latDD - this.latI) * 10000)
+    this.lngF = Math.round((lngDD - this.lngI) * 10000)
+    // this.setCtrl("enter__Where--LatI", this.latI)
+    // this.setCtrl("enter__Where--LatD", this.latF)
+    // this.setCtrl("enter__Where--LngI", this.lngI)
+    // this.setCtrl("enter__Where--LngD", this.lngF)
+
+    let latDMS = DDToDMS(latDD, false);
+    this.latQ = latDMS.dir
+    this.latD = latDMS.deg
+    this.latM = latDMS.min
+    this.latS = latDMS.sec
+    // this.setCtrl("latitudeQ", latDMS.dir)
+    // this.setCtrl("latitudeD", latDMS.deg)
+    // this.setCtrl("latitudeM", latDMS.min)
+    // this.setCtrl("latitudeS", latDMS.sec)
+
+    let lngDMS = DDToDMS(lngDD, true);
+    this.lngQ = lngDMS.dir
+    this.lngD = lngDMS.deg
+    this.lngM = lngDMS.min
+    this.lngS = lngDMS.sec
+    // this.setCtrl("longitudeQ", lngDMS.dir)
+    // this.setCtrl("longitudeD", lngDMS.deg)
+    // this.setCtrl("longitudeM", lngDMS.min)
+    // this.setCtrl("longitudeS", lngDMS.sec)
+
+    // TODO: this.address =""
+    /*
+        let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
+        console.log("updateCoords: Encode returned PlusCode: " + pCode)
+        let fullCode
+        if (pCode.length != 0) {
+          if (OpenLocationCode.isValid(pCode)) {
+            if (OpenLocationCode.isShort(pCode)) {
+              // Recover the full code from a short code:
+              fullCode = OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
+            } else {
+              fullCode = pCode;
+              console.log("Shorten +Codes, Global:" + fullCode + ", Lat:" + SettingsService.Settings.defLat + "; lng:" + SettingsService.Settings.defLng);
+              // Attempt to trim the first characters from a code; may return same innerText...
+              pCode = OpenLocationCode.shorten(fullCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
+            }
+            console.log("New PlusCodes: " + pCode + "; Global: " + fullCode);
+            //(document.getElementById("addresses") as HTMLInputElement).value = pCode;
+            //document.getElementById("addressLabel").innerHTML = defPCodeLabel; // as HTMLLabelElement
+            (document.getElementById("pCodeGlobal") as HTMLLabelElement).innerHTML = " &nbsp;&nbsp; +Code: " + fullCode;
+          } else {
+            console.log("Invalid +PlusCode: " + pCode);
+            document.getElementById("pCodeGlobal")!.innerHTML = " &nbsp;&nbsp; Unable to get +Code"
+            //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
+          }
     */
+    // TODO: EMIT AN EVENT!!!!
+  }
 
-  // TODO: How to subscribe to the valueChanges observable?
-  //  listen for changes in the form's value in the *template* using AsyncPipe or in the *component class* w/ subscribe() method
-
-  // https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
-  // https://angular.io/api/common/AsyncPipe
-  // this.document.getElementById("enter__Where--Lat")?.onchange
-
-  // https://angular.io/api/forms/AbstractControl
-  // https://angular.io/api/forms/NgControlStatus ARE CSS Classes.
-  // https://angular.io/api/forms
-  // https://www.danvega.dev/blog/2017/06/07/angular-forms-clear-input-field/
+  public setCtrl_unused(ctrlName: string, value: number | string) {
+    console.log(`setCtrl()`)
+    let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
+    if (!ctrl) {
+      console.warn(`setCtrl(): Could not find element: ${ctrlName}`)
+    } else {
+      ctrl.value = value.toString()
+      //console.log(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`)
+    }
+  }
 
 
   /*
-  https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
+    //this.addressCtrlChanged('lat') // HACK: to display marker
+    this.UpdateLocation_unused ({ lat: latDD, lng: lngDD }) {
+    //ToDO: Update 3 words too!
+    //if (initialized) this.displaySmallMap(latDD, lngDD);
+    }
+*/
 
-  this.reactiveForm.get("firstname").valueChanges.subscribe(selectedValue => {
-  console.log('firstname value changed')
-  console.log(selectedValue)
-  console.log(this.reactiveForm.get("firstname").value)
-  console.log(this.reactiveForm.value)    //shows the old first name
 
-  setTimeout(() => {
-    console.log(this.reactiveForm.value)   //shows the latest first name
-  })
 
-  For Example, the following code will result in the ValueChanges of the firstname. but not of its parent (i.e. top-level form)
 
-  this.reactiveForm.get("firstname").setValue("", { onlySelf: true });
 
-  You can use the onlySelf: true with the setValue, patchValue, markAsUntouched, markAsDirty, markAsPristine, markAsPending, disable, enable, and updateValueAndValidity methods
-  })
-  */
+
 
   // TODO: https://github.com/angular-material-extensions/google-maps-autocomplete
-  addressCtrlChanged(what: string) {
+  public addressCtrlChanged(what: string) {
     console.log(`addressCtrlChanged`)
     // TODO: No formControlName="addressCtrl"!!!!
 
@@ -295,7 +374,6 @@ export class LocationComponent implements OnInit {
         // https://developer.what3words.com/tutorial/javascript
         // https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-google-map
 
-
         // Get new lat-lng
 
         break;
@@ -306,7 +384,6 @@ export class LocationComponent implements OnInit {
       case 'lngI':
       case 'lngD':
 
-
         let llat = Number((this.document.getElementById("enter__Where--LatI") as HTMLInputElement).value)
           + Number((this.document.getElementById("enter__Where--LatD") as HTMLInputElement).value) / 100
         let llng = Number((this.document.getElementById("enter__Where--LngI") as HTMLInputElement).value)
@@ -315,7 +392,7 @@ export class LocationComponent implements OnInit {
         let newAddress = this.geocoder.getAddressFromLatLng(ll)  // TODO: Disable!!
         console.log(`addressCtrlChanged new ll: ${JSON.stringify(ll)}; addr: ${newAddress}`)
 
-        this.updateCoords(llat, llng)
+        this.newLocation(llat, llng)
         /*
                 let addrLabel = this.document.getElementById("addressLabel") // as HTMLLabelElement
                 if (addrLabel) {
@@ -324,7 +401,7 @@ export class LocationComponent implements OnInit {
                   //addrLabel. .markAsUntouched()
                 }
                 */
-        this.UpdateLocation({ lat: llat, lng: llng }, `Time: ${Date.now} at Lat: ${llat}, Lng: ${llng}, street: ${newAddress}`)
+        this.newMarker({ lat: llat, lng: llng }, `Time: ${Date.now} at Lat: ${llat}, Lng: ${llng}, street: ${newAddress}`)
         break;
       default:
         console.log(`UNEXPECTED ${what} received in AddressCtrlChanged()`)
@@ -333,7 +410,8 @@ export class LocationComponent implements OnInit {
     console.log('addressCtrlChanged done') // TODO: No formControlName="addressCtrl"!!!!
   }
 
-  chkAddresses() {
+
+  public chkAddresses() {
     console.log("LocationComponent - chkAddresses")
 
     /* if JSON.stringify(addr): gets
@@ -345,8 +423,6 @@ export class LocationComponent implements OnInit {
         at EntryComponent.chkAddresses (entry.component.ts:465:47)
         at EntryComponent.addressCtrlChanged (entry.component.ts:424:14)
         */
-
-
 
     let tWords // = document.getElementById("addresses")!.innerText // as HTMLInputElement).value
     let addr = document.getElementById("addressCtrl") as HTMLInputElement// ?.innerText
@@ -381,128 +457,77 @@ export class LocationComponent implements OnInit {
     }
   }
 
-  setCtrl(ctrlName: string, value: number | string) {
-    let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
-    if (!ctrl) {
-      console.warn(`setCtrl(): Could not find element: ${ctrlName}`)
-    } else {
-      ctrl.value = value.toString()
-      //console.log(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`)
-    }
-  }
+  // resetForm(){}
 
-  updateCoords(latDD: number, lngDD: number) {
-    console.log(`updateCoords with new Coordinates: lat: ${latDD}, lng: ${lngDD}`);
+  //----------------------------------------------------------------------------------------
+  // Address stuff : Move to service/utility for use by big maps?
+  // #region
 
-    this.lat = latDD
-    this.lng = lngDD
+  // https://developers.google.com/maps/documentation/javascript/places
+  // https://developer.what3words.com/tutorial/javascript
+  // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
+  // https://askinglot.com/what-is-dirty-and-touched-in-angular
+  // https://findanyanswer.com/what-is-dirty-in-angular
+  // https://angular.io/guide/form-validation
+  // https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
 
-    this.latI = Math.floor(latDD)
-    this.lngI = Math.floor(lngDD)
-    this.latF = Math.round((latDD - this.latI) * 10000)
-    this.lngF = Math.round((lngDD - this.lngI) * 10000)
-    // this.setCtrl("enter__Where--LatI", this.latI)
-    // this.setCtrl("enter__Where--LatD", this.latF)
-    // this.setCtrl("enter__Where--LngI", this.lngI)
-    // this.setCtrl("enter__Where--LngD", this.lngF)
+  public newMarker(loc: google.maps.LatLngLiteral, title: string = "") {  // TODO: Remove google ref
+    console.log("updateLocation() running")
 
-    let latDMS = DDToDMS(latDD, false);
-    this.latQ = latDMS.dir
-    this.latD = latDMS.deg
-    this.latM = latDMS.min
-    this.latS = latDMS.sec
-    // this.setCtrl("latitudeQ", latDMS.dir)
-    // this.setCtrl("latitudeD", latDMS.deg)
-    // this.setCtrl("latitudeM", latDMS.min)
-    // this.setCtrl("latitudeS", latDMS.sec)
+    let addr = this.document.getElementById("derivedAddress")
+    // ERROR: if (addr) { addr.innerHTML = "New What3Words goes here!" } // TODO: move to another routine...
+    //this.document.getElementById("enter__Where--Address-upshot").value = this.address
 
-    let lngDMS = DDToDMS(lngDD, true);
-    this.lngQ = lngDMS.dir
-    this.lngD = lngDMS.deg
-    this.lngM = lngDMS.min
-    this.lngS = lngDMS.sec
-    // this.setCtrl("longitudeQ", lngDMS.dir)
-    // this.setCtrl("longitudeD", lngDMS.deg)
-    // this.setCtrl("longitudeM", lngDMS.min)
-    // this.setCtrl("longitudeS", lngDMS.sec)
 
-    // TODO: this.address =""
-
-    let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
-    console.log("updateCoords: Encode returned PlusCode: " + pCode)
-    let fullCode
-    if (pCode.length != 0) {
-
-      if (OpenLocationCode.isValid(pCode)) {
-        if (OpenLocationCode.isShort(pCode)) {
-          // Recover the full code from a short code:
-          fullCode = OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
-        } else {
-          fullCode = pCode;
-          console.log("Shorten +Codes, Global:" + fullCode + ", Lat:" + SettingsService.Settings.defLat + "; lng:" + SettingsService.Settings.defLng);
-          // Attempt to trim the first characters from a code; may return same innerText...
-          pCode = OpenLocationCode.shorten(fullCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
-        }
-        console.log("New PlusCodes: " + pCode + "; Global: " + fullCode);
-        //(document.getElementById("addresses") as HTMLInputElement).value = pCode;
-        //document.getElementById("addressLabel").innerHTML = defPCodeLabel; // as HTMLLabelElement
-        (document.getElementById("pCodeGlobal") as HTMLLabelElement).innerHTML = " &nbsp;&nbsp; +Code: " + fullCode;
-      } else {
-        console.log("Invalid +PlusCode: " + pCode);
-        document.getElementById("pCodeGlobal")!.innerHTML = " &nbsp;&nbsp; Unable to get +Code"
-        //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
-      }
-
-      // TODO: EMIT AN EVENT!!!!
+    if (title == "") {
+      title = `${Date.now} at lat ${loc.lat}, lng ${loc.lng}.`
     }
 
-    //this.addressCtrlChanged('lat') // HACK: to display marker
-    this.UpdateLocation({ lat: latDD, lng: lngDD })
-    //ToDO: Update 3 words too!
-    //if (initialized) this.displaySmallMap(latDD, lngDD);
+    //BUG: UPDATE MAP!  Need to emit 'new location'!
+
+    console.error(`New Location ${loc} titled ${title}: Emit me to map`)
+    // this.displayMarker(loc, title)
   }
 
-  chkPCodes(pCode: string) {
-    // REVIEW: Duplicate of code above...
-    //let pCode = document.getElementById("addresses")!.innerText //value;
-    console.log("chkPCodes got '" + pCode + "'");
-    if (pCode.length) {
-
-      let result = this.geocoder.getLatLngAndAddressFromPlaceID(pCode)
-      console.log(`chkPCode of ${pCode} got result:${JSON.stringify(result)}`);
-
-      if (result.position) {
-        //    (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
-        (document.getElementById("enter__Where--Lat") as HTMLInputElement).value = "result.position.lat";
-        // BUG: position has type of never????!!!!
-        (document.getElementById("lng") as HTMLInputElement).value = "JSON.stringify(result.position)";
-      }
-      else {
-        console.log(`chkPCode of ${pCode} got NULL result!!!`);
-      }
 
 
-      if (OpenLocationCode.isValid(pCode)) {
-        if (OpenLocationCode.isShort(pCode)) {
-          pCode = OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
-        }
+  // TODO: How to subscribe to the valueChanges observable?
+  //  listen for changes in the form's value in the *template* using AsyncPipe or in the *component class* w/ subscribe() method
 
-        // Following needs a full (Global) code
-        let coord = OpenLocationCode.decode(pCode)
-        console.log("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', lng=' + coord.longitudeCenter);
+  // https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
+  // https://angular.io/api/common/AsyncPipe
+  // this.document.getElementById("enter__Where--Lat")?.onchange
 
-        this.updateCoords(coord.latitudeCenter, coord.longitudeCenter);
-      }
+  // https://angular.io/api/forms/AbstractControl
+  // https://angular.io/api/forms/NgControlStatus ARE CSS Classes.
+  // https://angular.io/api/forms
+  // https://www.danvega.dev/blog/2017/06/07/angular-forms-clear-input-field/
 
-      else {
-        //    document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: " + SettingsService.Settings.defPlusCode
-        //document.getElementById("pCodeGlobal")!.innerHTML = SettingsService.Settings.defPlusCode
-      }
-    }
-  }
+  /*
+  https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
+
+  this.reactiveForm.get("firstname").valueChanges.subscribe(selectedValue => {
+  console.log('firstname value changed')
+  console.log(selectedValue)
+  console.log(this.reactiveForm.get("firstname").value)
+  console.log(this.reactiveForm.value)    //shows the old first name
+
+  setTimeout(() => {
+    console.log(this.reactiveForm.value)   //shows the latest first name
+  })
+
+  For Example, the following code will result in the ValueChanges of the firstname. but not of its parent (i.e. top-level form)
+
+  this.reactiveForm.get("firstname").setValue("", { onlySelf: true });
+
+  You can use the onlySelf: true with the setValue, patchValue, markAsUntouched, markAsDirty, markAsPristine, markAsPending, disable, enable, and updateValueAndValidity methods
+  })
+  */
+
+
 
   // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
-  chk3Words(tWords: string) {
+  public chk3Words(tWords: string) {
     console.log("LocationComponent - chk3Words")
     /*let settings = {
       "async": true,
@@ -567,18 +592,55 @@ export class LocationComponent implements OnInit {
     }
     // async call not returned yet
   }
-  //#endregion
 
 
-  chkStreetAddress(addrText: string) {
+  public chkPCodes(pCode: string) {
+    // REVIEW: Duplicate of code above...
+    //let pCode = document.getElementById("addresses")!.innerText //value;
+    console.log("chkPCodes got '" + pCode + "'");
+    if (pCode.length) {
+      let result = this.geocoder.getLatLngAndAddressFromPlaceID(pCode)
+      console.log(`chkPCode of ${pCode} got result:${JSON.stringify(result)}`);
+
+      if (result.position) {
+        //    (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
+        (document.getElementById("enter__Where--Lat") as HTMLInputElement).value = "result.position.lat";
+        // BUG: position has type of never????!!!!
+        (document.getElementById("lng") as HTMLInputElement).value = "JSON.stringify(result.position)";
+      }
+      else {
+        console.log(`chkPCode of ${pCode} got NULL result!!!`);
+      }
+
+      if (OpenLocationCode.isValid(pCode)) {
+        if (OpenLocationCode.isShort(pCode)) {
+          pCode = OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
+        }
+
+        // Following needs a full (Global) code
+        let coord = OpenLocationCode.decode(pCode)
+        console.log("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', lng=' + coord.longitudeCenter);
+
+        this.newLocation(coord.latitudeCenter, coord.longitudeCenter);
+      }
+
+      else {
+        //    document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: " + SettingsService.Settings.defPlusCode
+        //document.getElementById("pCodeGlobal")!.innerHTML = SettingsService.Settings.defPlusCode
+      }
+    }
+  }
+
+  public chkStreetAddress(addrText: string) {
     //https://developers.google.com/maps/documentation/geocoding/requests-geocoding
     console.log("Got street address to check: " + addrText)
     // Type 'GeocoderResult' must have a '[Symbol.iterator]()' method that returns an iterator.
     //let result:google.maps.GeocoderResult = this.geocoder.isValidAddress(addrText)
     //  return this.geocoder.isValidAddress(addrText)
     // TODO: this.updateCoords(lat,lng)
-
   }
+
+
 
   // --------------------------- POPPER ---------------------------
   /*
@@ -636,7 +698,6 @@ export class LocationComponent implements OnInit {
           this.button.addEventListener(event, this.hide);
         }
       })
-
 }
  */
 
@@ -681,9 +742,11 @@ export class LocationComponent implements OnInit {
     }) {
     }
   */
-  onInfoWhere() {
+  public onInfoWhere() {
     console.log("LocationComponent - onInfoWhere")
     let s = "for Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds"
   }
 
+
+  // #endregion Public Methods (11)
 }

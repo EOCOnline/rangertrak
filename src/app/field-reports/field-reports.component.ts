@@ -43,10 +43,13 @@ onGridReady(params) {
 })
 export class FieldReportsComponent implements OnInit {
 
+  fieldReports: FieldReportType[] = []
   fieldReports$!: Observable<FieldReportType[]>
   fieldReportStatuses: FieldReportStatusType[] = []
+  fieldReportStatuses$!: Observable<FieldReportStatusType[]>
   private settings
 
+  columnDefs
   private gridApi: any
   private gridColumnApi
   now: Date
@@ -95,8 +98,109 @@ export class FieldReportsComponent implements OnInit {
 
     this.settings = SettingsService
     this.fieldReportStatuses = settingsService.getFieldReportStatuses() // TODO: Only obtained at construction, won't reflect an update from the settings page??? : SUBSCRIBE!!
+    //this.fieldReportStatuses$.next(this.fieldReportStatuses)
+
+    this.columnDefs = [
+      { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1 }, // TODO:
+      { headerName: "CallSign", field: "callsign", tooltipField: "team", flex: 2 },
+      // { headerName: "Team", field: "team" },
+      { headerName: "Address", field: "address", singleClickEdit: true, flex: 30 }, //, maxWidth: 200
+      {
+        headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
+        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.lat * 10000) / 10000.0 }
+      },
+      {
+        headerName: "Lng", field: "lng", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
+        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.lng * 10000) / 10000.0 },
+      },
+      { headerName: "Time", headerTooltip: 'Report date', valueGetter: this.myDateGetter, flex: 2 },
+      { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, flex: 2 },
+      {
+        headerName: "Status", field: "status", flex: 5,
+        cellStyle: (params: { value: string; }) => {
+          //this.fieldReportStatuses.forEach(function(value) { (params.value === value.status) ? { backgroundColor: value.color }  : return(null) }
+          for (let i = 0; i < this.fieldReportStatuses.length; i++) {
+            if (params.value === this.fieldReportStatuses[i].status) {
+              return { backgroundColor: this.fieldReportStatuses[i].color }
+            }
+          }
+          return null
+        }
+        //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
+      },
+      { headerName: "Note", field: "note", flex: 50 }, //, maxWidth: 300
+    ];
   }
 
+  //https://blog.ag-grid.com/conditional-formatting-for-cells-in-ag-grid/
+  /* cellClassRules = (params: { data: FieldReportType }) => {
+    if (params.data.status == 'Urgent') {
+      return "cell-pass" // see stylesheet for this
+    }
+    if (params.data.status == 'Check-in') {
+      return "cell-pass" // see stylesheet for this
+    }
+    return(``)
+  }
+*/
+
+  ngOnInit(): void {
+    console.log("Field Report Form ========== ngInit ==== at ", Date.now)
+
+    this.fieldReports$ = this.fieldReportService.subscribeToFieldReports() // Only returns an empty observable! - no data. pg 146 (Ang Dev for TS)
+    // asyns pipe in the template actually pulls it over TouchEvent[Symbol]..
+
+    // https://appdividend.com/2022/02/03/angular-observables/
+    /*this.fieldReports$.subscribe(
+      x => console.log('Observer got a next value: ' + x),
+      err => console.error('Observer got an error: ' + err),
+      () => console.log('Observer got a complete notification')
+    )*/
+
+    //console.log(`Now have ${this.fieldReports$.length} Field Reports retrieved from Local Storage and/or fakes generated`)
+
+
+
+
+    this.numFakesForm = this.formBuilder.group({})
+
+    if (!this.settings.debugMode) {
+      console.log("running in non-debug mode")
+      // this.displayHide("enter__Fake--id") // debug mode SHOULD be ON...
+    } else {
+      console.log("running in debug mode")
+      this.displayShow("enter__Fake--id")
+    }
+
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+    } else {
+      console.log("no this.gridApi yet in ngOnInit()")
+    }
+  }
+
+  onGridReady = (params: any) => {
+    console.log("Field Report Form onGridReady")
+
+    this.gridApi = params.api
+    this.gridColumnApi = params.columnApi
+
+    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
+  }
+
+  //onFirstDataRendered(params: any) {
+  refreshGrid() {
+    //if (this.gridApi) {
+    this.gridApi.refreshCells()
+    this.gridApi.sizeColumnsToFit();
+    //} else {
+    //console.log("no this.gridApi yet in refreshGrid()")
+    //}
+  }
+
+  reloadPage() {
+    window.location.reload()
+  }
 
   myDateGetter = (params: { data: FieldReportType }) => {
     const weekday = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
@@ -141,85 +245,6 @@ export class FieldReportsComponent implements OnInit {
     return val
   }
 
-  columnDefs = [
-    { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1 }, // TODO:
-    { headerName: "CallSign", field: "callsign", tooltipField: "team", flex: 2 },
-    // { headerName: "Team", field: "team" },
-    { headerName: "Address", field: "address", singleClickEdit: true, flex: 30 }, //, maxWidth: 200
-    {
-      headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
-      valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.lat * 10000) / 10000.0 }
-    },
-    {
-      headerName: "Lng", field: "lng", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
-      valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.lng * 10000) / 10000.0 },
-    },
-    { headerName: "Time", headerTooltip: 'Report date', valueGetter: this.myDateGetter, flex: 2 },
-    { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, flex: 2 },
-    {
-      headerName: "Status", field: "status", flex: 5,
-      cellStyle: (params: { value: string; }) => {
-        //this.fieldReportStatuses.forEach(function(value) { (params.value === value.status) ? { backgroundColor: value.color }  : return(null) }
-        for (let i = 0; i < this.fieldReportStatuses.length; i++) {
-          if (params.value === this.fieldReportStatuses[i].status) {
-            return { backgroundColor: this.fieldReportStatuses[i].color }
-          }
-        }
-        return null
-      }
-      //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
-    },
-    { headerName: "Note", field: "note", flex: 50 }, //, maxWidth: 300
-  ];
-
-  //https://blog.ag-grid.com/conditional-formatting-for-cells-in-ag-grid/
-  /* cellClassRules = (params: { data: FieldReportType }) => {
-    if (params.data.status == 'Urgent') {
-      return "cell-pass" // see stylesheet for this
-    }
-    if (params.data.status == 'Check-in') {
-      return "cell-pass" // see stylesheet for this
-    }
-    return(``)
-  }
-*/
-
-  ngOnInit(): void {
-    console.log("Field Report Form ========== ngInit ==== at ", Date.now)
-
-    this.fieldReports$ = this.fieldReportService.subscribeToFieldReports() // Only returns an empty observable! - no data. pg 146 (Ang Dev for TS)
-    // asyns pipe in the template actually pulls it over TouchEvent[Symbol]..
-
-    // https://appdividend.com/2022/02/03/angular-observables/
-    /*this.fieldReports$.subscribe(
-      x => console.log('Observer got a next value: ' + x),
-      err => console.error('Observer got an error: ' + err),
-      () => console.log('Observer got a complete notification')
-    )*/
-
-    //console.log(`Now have ${this.fieldReports$.length} Field Reports retrieved from Local Storage and/or fakes generated`)
-
-    this.numFakesForm = this.formBuilder.group({})
-
-    if (!this.settings.debugMode) {
-      console.log("running in non-debug mode")
-      // this.displayHide("enter__Fake--id") // debug mode SHOULD be ON...
-    } else {
-      console.log("running in debug mode")
-      this.displayShow("enter__Fake--id")
-    }
-
-    if (this.gridApi) {
-      this.gridApi.refreshCells()
-    } else {
-      console.log("no this.gridApi yet in ngOnInit()")
-    }
-  }
-
-  reloadPage() {
-    window.location.reload()
-  }
-
   isValidDate(d: any) {
     return d instanceof Date //&& !isNaN(d);
     /*
@@ -237,24 +262,6 @@ export class FieldReportsComponent implements OnInit {
 
   // filteredReports:FieldReportType[] = this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000)) //FUTURE:
 
-  onGridReady = (params: any) => {
-    console.log("Field Report Form onGridReady")
-
-    this.gridApi = params.api
-    this.gridColumnApi = params.columnApi
-
-    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
-  }
-
-  //onFirstDataRendered(params: any) {
-  refreshGrid() {
-    //if (this.gridApi) {
-    this.gridApi.refreshCells()
-    this.gridApi.sizeColumnsToFit();
-    //} else {
-    //console.log("no this.gridApi yet in refreshGrid()")
-    //}
-  }
 
   onBtnSetSelectedRowData() {
     let selectedNodes = this.gridApi.getSelectedNodes();
@@ -338,7 +345,7 @@ export class FieldReportsComponent implements OnInit {
   displayHide(htmlElementID: string) {
     let e = this.document.getElementById(htmlElementID)
     if (e) {
-      e.style.visibility = "hidden";
+      e.style.visibility = "hidden"
     } else {
       console.warn(`Could not hide HTML Element ${htmlElementID}`)
     }

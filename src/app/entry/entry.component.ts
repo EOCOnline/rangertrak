@@ -96,7 +96,7 @@ export class EntryComponent implements OnInit {
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z'; // dupl of that above
   myForm!: FormGroup
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
-  location!: FormGroup
+  locationFrmGrp!: FormGroup
 
   faMapMarkedAlt = faMapMarkedAlt
   faInfoCircle = faInfoCircle
@@ -261,7 +261,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       id: -1,
       callsign: [''],
       team: ['T1'],
-      location: this.initLocation()
+      locationFrmGrp: this.initLocation()
       /*this._formBuilder.group({
         lat: 0,
         lng: 0,
@@ -275,8 +275,8 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     //this.addLocation()
 
     // subscribe to addresses value changes
-    this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
-      console.log(`Subscription to location got: ${x}`);
+    this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
+      console.log(`Subscription to locationFrmGrp got: ${x}`);
     })
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
@@ -308,6 +308,26 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
      }) */
     this.date = dayjs()
     console.log(`EntryForm ngOnInit completed at ${Date()}`)
+  }
+
+  initLocation() { // TODO: Shouldn't this be in location.component.ts?!
+
+    this.locationFrmGrp = this._formBuilder.group({
+      address: [''], //, Validators.required],
+      lat: [this.settings.defLat],
+      lng: [this.settings.defLng]
+    })
+
+    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged(locationFrmGrp))
+    let addr = this.locationFrmGrp.get("address")
+    if (addr) {
+      addr.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged(locationFrmGrp))
+      console.log("Made reservations!")
+    } else {
+      console.warn("could NOT Make reservations")
+    }
+    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged(locationFrmGrp))
+    return this.locationFrmGrp
   }
 
   private _filterRangers(value: string): RangerType[] {
@@ -356,26 +376,6 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     // Allow getting new OnChangeUpdates - or use the subscription?!
     this.entryDetailsForm.markAsPristine();
     this.entryDetailsForm.markAsUntouched();
-  }
-
-  initLocation() { // TODO: Shouldn't this be in location.component.ts?!
-
-    this.location = this._formBuilder.group({
-      address: [''], //, Validators.required],
-      lat: [this.settings.defLat],
-      lng: [this.settings.defLng]
-    })
-
-    this.location.valueChanges.pipe(debounceTime(500)).subscribe(location => this.locationChanged(location))
-    let addr = this.location.get("address")
-    if (addr) {
-      addr.valueChanges.pipe(debounceTime(500)).subscribe(location => this.locationChanged(location))
-      console.log("Made reservations!")
-    } else {
-      console.warn("could NOT Make reservations")
-    }
-    this.location.valueChanges.pipe(debounceTime(500)).subscribe(location => this.locationChanged(location))
-    return this.location
   }
 
   locationChanged(loc: FormGroup) {

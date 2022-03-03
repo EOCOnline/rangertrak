@@ -20,7 +20,7 @@
   <div id="arrow" data-popper-arrow></div>
 </div-->
 
-<div class="input-group" [formGroup]="location">
+<div class="input-group" [formGroup]="locationFrmGrp">
   &nbsp;&nbsp;&nbsp;&nbsp;Latitude:
 
   <!--
@@ -44,12 +44,33 @@
     |
     number:1.0-0}}
        latI
--->
+       <!-- formControlName="lat": MUST be element in Location Form Group!
+
+      formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
+      directive and pass it an existing FormGroup instance (you can create one in your class).
+
+    Example:
+
+
+  <div [formGroup]="myGroup">
+    <input formControlName="firstName">
+  </div>
+
+  In your class:
+
+  this.myGroup = new FormGroup({
+      firstName: new FormControl()
+  });
+    at controlParentException (forms.mjs:1474:12)
+
+      -->
+  -->
   <input
-    type="number"
-    placeholder="LatitudeI"
-    formControlName="latI"
+    #latI
     name="latI"
+    type="number"
+    formControlName="lat"
+    placeholder="LatitudeI"
     min="-180"
     max="180"
     id="enter__Where--latI"
@@ -68,6 +89,7 @@ formControlName="lat3D"
   </span-->.
 
   <input
+    #latD
     type="number"
     placeholder="LatitudeD"
     name="latitudeDDD"
@@ -78,21 +100,22 @@ formControlName="lat3D"
     step="100"
     id="enter__Where--latF"
     tabindex="2"
-    {{latF}}
   />
 
-  <!--span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
+  <!--
+       {{latF}}  {{latQ}}
+    span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
     class="text-sm text-danger">Latitude is required size="1"
   </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
 
   <input
+    #latQ
     name="latitudeQ"
     id="enter__Where--latQ"
     type="text"
     pattern="'e','E','w','W'"
     title="E or W"
     onchange="DMSCoordsChanged()"
-    {{latQ}}
   />
   <!-- Quadrant -->
   <!-- BUG: Initialize els3ewhere!
@@ -104,32 +127,32 @@ value=""
            value="N"
   -->
   <input
+    #latD
     name="latD"
     id="enter__Where--latD"
     type="text"
     min="0"
     max="180"
     onchange="DMSCoordsChanged()"
-    {{latD}}
   />°
-  <!-- TODO: Use settings.DefLat     size="2"  size="5" -->
+  <!-- TODO: Use settings.DefLat     size="2"  size="5"   {{latD}}  {{latM}} {{latS}}  -->
   <input
+    #latM
     name="latM"
     id="enter__Where--latM"
     type="text"
     min="0"
     max="59"
     onchange="DMSCoordsChanged()"
-    {{latM}}
   />'
   <input
-    name="latitudeS"
+    #latS
+    name="latS"
     id="enter__Where--latS"
     type="text"
     min="0"
     max="59.99"
     onchange="DMSCoordsChanged()"
-    {{latS}}
   />"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
 </div>
 
@@ -141,19 +164,21 @@ value=""
 
   -->:
   <input
+    #lngI
     type="number"
     placeholder="LongitudeI"
     (change)="this.addressCtrlChanged('lngI')"
-    name="longitudeDDI"
+    name="lngI"
     id="longitudeDDI"
     min="-90"
     max="90"
     id="enter__Where--lngI"
     tabindex="3"
-    {{lngI}}
   />
 
-  <!-- onchange="DDCoordsChanged()" -->
+  <!-- onchange="DDCoordsChanged()"
+    {{lngI}}  {{lngF}}   {{lngQ}}
+  -->
   <!--span *ngIf="location.get('lngI')?.touched && location.get('lngI')?.hasError('required')"
     class="text-sm text-danger">longitude is required
 formControlName="lngD"
@@ -161,6 +186,7 @@ formControlName="lngD"
   </span-->&nbsp;&nbsp;.
 
   <input
+    #lngF
     type="number"
     placeholder="LongitudeD"
     (change)="this.addressCtrlChanged('lngD')"
@@ -170,7 +196,6 @@ formControlName="lngD"
     max="99999"
     id="enter__Where--lngF"
     tabindex="4"
-    {{lngF}}
   />
 
   <!--span *ngIf="location.get('lngD')?.touched && location.get('lngD')?.hasError('required')
@@ -179,13 +204,13 @@ formControlName="lngD"
   </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
 
   <input
+    #lngQ
     name="longitudeQ"
     id="enter__Where--lngQ"
     type="text"
     pattern="'n','N','s','S'"
     title="N or S"
     onchange="DMSCoordsChanged()"
-    {{lngQ}}
   />
   <input
     name="longitudeD"
@@ -193,7 +218,6 @@ formControlName="lngD"
     type="text"
     max="180"
     onchange="DMSCoordsChanged()"
-    {{lngD}}
   />°
   <input
     name="longitudeM"
@@ -202,7 +226,6 @@ formControlName="lngD"
     min="0"
     max="59"
     onchange="DMSCoordsChanged()"
-    {{lngM}}
   />'
   <input
     name="longitudeS"
@@ -211,13 +234,15 @@ formControlName="lngD"
     min="0"
     max="59.99"
     onchange="DMSCoordsChanged()"
-    {{lngS}}
   />"
   <span title="Degrees Minute Seconds">DMS</span>
 </div>
 
 Street Address, +Code, or What.3.Words:
-<!-- [class.border-danger]="location.get('address')?.touched && location.get('address')?.invalid" -->
+<!--
+     {{lngD}} {{lngM}}    {{lngS}}
+
+  [class.border-danger]="location.get('address')?.touched && location.get('address')?.invalid" -->
 <input
   type="text"
   formControlName="address"
@@ -228,10 +253,10 @@ Street Address, +Code, or What.3.Words:
   placeholder="Optional Address"
   data-lpignore="true"
   (change)="this.addressCtrlChanged('addr')"
-  {{address}}
 />
 
-<!-- formControlName="addressCtrl"
+<!--   {{address}}
+  formControlName="addressCtrl"
 
   input name="addresses" id="addresses" type="text" size="15" value=""
   placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
