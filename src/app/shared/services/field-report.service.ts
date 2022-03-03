@@ -16,7 +16,7 @@ export type FieldReportType = {
 @Injectable({ providedIn: 'root' })
 export class FieldReportService {
 
-  private uri = 'http://localhost:4000/products'
+  private serverUri = 'http://localhost:4000/products'
   private fieldReports: FieldReportType[] = []
   private selectedFieldReports: FieldReportType[] = []
   private fieldReportStatuses: FieldReportStatusType[] = []
@@ -116,7 +116,7 @@ export class FieldReportService {
     // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
 
     // TODO: replace "add" with"post" or ???
-    this.httpClient.post(`${this.uri}/add`, this.fieldReports)
+    this.httpClient.post(`${this.serverUri}/add`, this.fieldReports)
       .subscribe(res => console.log('Subscription of all reports to httpClient is Done'));
 
     console.log("Sent all reports to server (via subscription)...");
@@ -137,7 +137,7 @@ export class FieldReportService {
     // Ang Dev w/ TS , pg 145
 
     // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
-    //this.httpClient.post(`${this.uri}/add`, newReport).subscribe(res => console.log('Subscription of add report to httpClient is Done'));
+    //this.httpClient.post(`${this.serverUri}/add`, newReport).subscribe(res => console.log('Subscription of add report to httpClient is Done'));
     /* gets VM12981:1          POST http://localhost:4000/products/add net::ERR_CONNECTION_REFUSED
   core.mjs:6485 ERROR HttpErrorResponse {headers: HttpHeaders, status: 0, statusText: 'Unknown Error', url: 'http://localhost:4000/products/add', ok: false, …}*/
     //console.log("Sent new report to server (via subscription)...");
