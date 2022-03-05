@@ -51,12 +51,14 @@ export class MiniLMapComponent implements AfterViewInit {
 
   constructor(
     @Inject(DOCUMENT) private document: Document) {
+    console.log("Leaflet constructor() ..........")
     this.zoom = SettingsService.Settings.defZoom
     this.zoomDisplay = SettingsService.Settings.defZoom
     this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
   }
 
   ngAfterViewInit() {
+    console.log("Leaflet ngAfterViewInit() ..........")
     this.initMap();
     //this.mymarkers = L.markerClusterGroup()
     // TODO: How & Where to subscribe for location updates?!
@@ -67,7 +69,7 @@ export class MiniLMapComponent implements AfterViewInit {
   }
 
   private initMap() {
-    console.log("Init Leaflet minimap..........")
+    console.log("Leaflet initMap() ..........")
 
     this.lmap = L.map('lmap', {
       center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],

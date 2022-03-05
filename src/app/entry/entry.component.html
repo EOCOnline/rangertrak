@@ -85,7 +85,7 @@
     <mat-icon svgIcon="thumbs-up" aria-hidden="false" aria-label="thumbs up SVG icon"></mat-icon>thumbsup
     <span class="material-icons-two-tone">info</span-->
 
-    <div formGroupName="location">
+    <div formGroupName="locationFrmGrp">
       <!--div>
         <label>address</label>
         <input type="text" formControlName="address">
@@ -255,8 +255,13 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
       Reset
     </button>
 
-    <button class="enter__Submit-button eButton" type="submit" tabindex="9">
-      Submit [disabled]="entryDetailsForm.invalid"
+    <button
+      class="enter__Submit-button eButton"
+      [disabled]="entryDetailsForm.invalid"
+      type="submit"
+      tabindex="9"
+    >
+      Submit
     </button>
 
     <span id="enter__Submit-info"></span>

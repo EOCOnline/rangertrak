@@ -19,6 +19,7 @@ import { SettingsService } from '../shared/services';
 https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
 https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-driven-forms-in-angular-2
 https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
+ICONS: see pg 164, Ang Dev w/ TS
 */
 
 const THUMBUP_ICON =
@@ -118,6 +119,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
   public address = ""
   // Grab reference to #elements in template (vs. getElementById)
+  // TODO: Remove all these! Per bottom pg 137, go to [FormControl]="nameToUse"
   @ViewChild('latI') elLatI: any
   @ViewChild('latF') elLatF!: HTMLInputElement
 
@@ -178,9 +180,9 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     this.lat = SettingsService.Settings.defLat
     this.lng = SettingsService.Settings.defLng
     this.newLocation(this.lat, this.lng)
-
+    debugger
     // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
-    this.location = this._formBuilder.group({
+    this.locationFrmGrp = this._formBuilder.group({
       address: ['', Validators.required],
       lat: [SettingsService.Settings.defLat],
       lng: [SettingsService.Settings.defLng]
@@ -226,14 +228,14 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     //let keyup$ = Observable.fromEvent(this.elLatI.nativeElement, 'keyup')
 
     // On Location/Address Change subscriptions  // TODO: USE THESE!!!
-    if (this.location) {
-      this.location.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+    if (this.locationFrmGrp) {
+      this.locationFrmGrp.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         console.log('########  latitude value changed: ' + x)
       })
-      this.location.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         console.log('########## lat float value changed: ' + x)
       })
-      this.location.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         console.log('#######  lng Float value changed: ' + x)
       })
 
@@ -241,7 +243,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       console.log(`addressCtrl.valueChanges`)
       // TODO: No formControlName="addressCtrl"!!!!
       // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
-      //this.location.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
+      //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
     }
   }
 
@@ -264,6 +266,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     //     at LocationComponent.newLocation (location.component.ts:237:5)
 
 
+    //this.latF = (latDD - this.latI).toFixed(4)
     this.latF = Math.round((latDD - this.latI) * 10000)
     this.lngF = Math.round((lngDD - this.lngI) * 10000)
     // this.setCtrl("enter__Where--LatI", this.latI)
@@ -353,11 +356,11 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
     // this.form.markAsPristine();
     // this.form.markAsUntouched();
-    // if (this.location.get('address')?.touched) {
+    // if (this.locationFrmGrp.get('address')?.touched) {
     //   console.log('address WAS touched')
-    //   //this.location.get('address')?.markAsUntouched
+    //   //this.locationFrmGrp.get('address')?.markAsUntouched
     // }
-    // if (this.location.get('address')?.dirty) {
+    // if (this.locationFrmGrp.get('address')?.dirty) {
     //   console.log('address WAS dirty')
     //   //this.location.get('address')?.markAsPristine
     // }
