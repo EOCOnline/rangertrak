@@ -1,6 +1,6 @@
 import { Component, Inject, Pipe, PipeTransform, OnInit } from '@angular/core';
 import { DOCUMENT, formatDate } from '@angular/common'
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms'
 
 import { FieldReportService, FieldReportType, FieldReportStatusType, RangerService, SettingsService, TeamService } from '../shared/services';
 import { Observable } from 'rxjs';

@@ -2,7 +2,7 @@ import { BehaviorSubject, Observable, Observer, of } from 'rxjs';
 import { Injectable, OnInit } from '@angular/core';
 import { RangerService, SettingsService, FieldReportStatusType, TeamService } from './index';
 import { HttpClient } from '@angular/common/http';
-
+import { LatLng } from 'leaflet';
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
 export type FieldReportType = {

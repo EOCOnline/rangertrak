@@ -148,7 +148,7 @@ export class RangersComponent implements OnInit {
 
   //--------------------------------------------------------------------------
 
-  onBtnAddRanger(formData?:string) {
+  onBtnAddRanger(formData?: string) {
     console.log("Adding new ranger")
     this.rangerService.AddRanger()
     this.rangerService.UpdateLocalStorage()
@@ -173,6 +173,7 @@ export class RangersComponent implements OnInit {
 
   //--------------------------------------------------------------------------
   onBtnImportJson(e: any): void { // PointerEvent ?!
+    // https://developers.google.com/maps/documentation/javascript/importing_data
     console.log(`onBtnImportJson() ------------`)
     // TODO: Move to RangerService...
     let Logo: string
@@ -367,7 +368,7 @@ export class RangersComponent implements OnInit {
     let dt = new Date()
     return {
       columnSeparator: this.getSeperatorValue('columnSeparator'),
-      fileName: `RangersExport.${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`, // ONLY month is zero based!
+      fileName: `RangersExport.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`, // ONLY month is zero based!
     }
   }
 
