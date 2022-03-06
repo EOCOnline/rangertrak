@@ -1,11 +1,15 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, ComponentFactoryResolver, Inject, OnInit } from '@angular/core'
-//import { Event } from '@angular/animations'
-//import { File } from '@ionic-native/file/ngx';
-
-import { SettingsService } from "../shared/services"
+import { Component, Inject } from '@angular/core'
+import { Subscription, switchMap } from 'rxjs';
+import { MatCheckboxModule } from '@angular/material/checkbox'
 import { Utility } from "../shared"
 
+import { LogType, LogService, LogLevel, SettingsService } from '../shared/services/';
+
+/**
+ * Keep the Log Panel pane synchronized with comments
+ *
+ */
 @Component({
   selector: 'rangertrak-log',
   templateUrl: './log.component.html', //'home.page.html'
@@ -14,47 +18,76 @@ import { Utility } from "../shared"
 export class LogComponent { //implements OnInit
   // If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
 
-  logpanel = this.document.getElementById("log")
+  logPanel: HTMLElement | null
+  logSubscription: Subscription
+  eventInfo = ''
 
-  //constructor(public file: File) { }
+  // https://material.angular.io/components/checkbox
+  verbose = false
+  info = true
+  warn = true
+  error = true
+
+
   constructor(
+    private logService: LogService,
     @Inject(DOCUMENT) private document: Document) {
+    this.logSubscription = logService.getLogObserver().subscribe({
+      next: (log) => {
+        console.log(log)
+        this.gotNewLog(log)
+      },
+      error: (e) => logService.error('Log subscripotion got:' + e, 'Log Component'),
+      complete: () => logService.info('Log Subscription complete', 'Log Component')
+    })
 
+    this.logPanel = this.document.getElementById("log")
+    if (this.logPanel === null) { throw ("unable to find log panel...") }
   }
-  // src/app/log/log.component.ts:23:22 - error NG2003: No suitable injection token for parameter 'file' of class 'LogComponent'.
-  // Consider using the @Inject decorator to specify an injection token.
 
+  /**
+   * Create heading for Log Panel
+   */
   ngOnInit(): void {
-
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
   }
+  /**
+   *
+   * @param v
+   */
+  gotNewLog(log: LogType[]) {
+    if (this.logPanel === null) { throw ("unable to find log panel...") }
 
-  // log event in the console
-  log(msg: string, klass:string='log') {
-    if (this.logpanel === null) { throw ("unable to find log...") }
-    if (klass!="log" && klass!="warn" && klass!="err") { // classes found in the scss file
-      console.warn (`log got unknown class: ${klass}`)
-      klass="log"
-    }
-    let dt = new Date()
-    let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
+    log.forEach(entry => {
+      let time = Utility.zeroFill(entry.date.getHours(), 2) + ":" + Utility.zeroFill(entry.date.getMinutes(), 2) + ":" + Utility.zeroFill(entry.date.getSeconds(), 2) + ":" + Utility.zeroFill(entry.date.getMilliseconds(), 4)
+      switch (entry.level) {
+        case LogLevel.Verbose:
+          if (this.verbose) {
+            this.logPanel!.innerHTML += `<span class="${entry.level}">${time} - ${entry.source}:  ${entry.msg}</span> \n`
+          }
+          break;
 
-    this.logpanel.innerHTML += `<span class="${klass}">${time} -   ${msg}</span> \n`
-    //this.log.textContent += time + "-  &nbsp;&nbsp;" + msg + "\n"
+        case LogLevel.Info:
+          if (this.info) {
+            this.logPanel!.innerHTML += `<span class="${entry.level}">${time} - ${entry.source}:  ${entry.msg}</span> \n`
+          }
+          break;
 
-    let ot = this.logpanel.scrollHeight - this.logpanel.clientHeight
-    if (ot > 0) this.logpanel.scrollTop = ot
-  }
+        case LogLevel.Warn:
+          if (this.warn) {
+            this.logPanel!.innerHTML += `<span class="${entry.level}">${time} - ${entry.source}:  ${entry.msg}</span> \n`
+          }
+          break;
 
-  dbug_unused(msg: string, alerts = false) {
-    let dt = new Date()
-    let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
-    let dbugLog = time + "-  &nbsp;&nbsp;" + msg + "<br>" + this.logpanel?.innerHTML
-    this.logpanel!.innerHTML = dbugLog
-    // TODO: Only if settings say to do this!
-    // console.log("RangerTrak: " + dbugLog); // Convert dbugLog from HTML to plain text...
-    if (alerts == true) {
-      alert("<strong>Alert!</strong> " + time + "-  &nbsp;&nbsp;" + msg);
-      //$('#alerts').fadeIn().delay(2500).fadeOut();
-    }
+        case LogLevel.Error:
+          if (this.error) {
+            this.logPanel!.innerHTML += `<span class="${entry.level}">${time} - ${entry.source}:  ${entry.msg}</span> \n`
+          }
+          break;
+      }
+    })
+
+    let ot = this.logPanel.scrollHeight - this.logPanel.clientHeight
+    if (ot > 0) this.logPanel.scrollTop = ot
   }
 }

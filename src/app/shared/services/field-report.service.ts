@@ -1,8 +1,10 @@
 import { BehaviorSubject, Observable, Observer, of } from 'rxjs'
-import { Injectable, OnInit } from '@angular/core'
+import { Injectable, OnInit, Pipe, PipeTransform } from '@angular/core'
 import { RangerService, SettingsService, FieldReportStatusType, TeamService } from './index'
 import { HttpClient } from '@angular/common/http'
 import * as L from 'leaflet'
+import { LatLngBounds } from 'leaflet';
+import { LogLevel, LogService } from './log.service';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
@@ -24,12 +26,11 @@ export type FieldReportType = {
  * ?It does NOT include Rangers or Settings  // Review!
  */
 export type FieldReportsType = {  // OK to export to CSV/Excel?!
-  version: number,  // TODO: Should be in Settings?
+  version: string,  // TODO: Should be in Settings?
   date: Date,
   event: string,  // TODO: Should be in Settings?
   operationPeriod: string,  // TODO: Should be in Settings?
-  bound: google.maps.LatLngBoundsLiteral,
-  bounds: L.Bounds,
+  bounds: LatLngBounds,
   numReport: number,
   maxId: number,
   filter: string, // All reports or not? Guard to ensure a subset never gets writen to localstorage?
@@ -37,6 +38,7 @@ export type FieldReportsType = {  // OK to export to CSV/Excel?!
   fieldReportStatuses: FieldReportStatusType[],  // TODO: Should be in Settings?
   fieldReports: FieldReportType[]
 }
+
 
 @Injectable({ providedIn: 'root' })
 export class FieldReportService {
@@ -53,35 +55,46 @@ export class FieldReportService {
   private nextId = 0
   private serverUri = 'http://localhost:4000/products'
 
-  // https://developers.google.com/maps/documentation/javascript/reference/coordinates?hl=en#LatLngBounds
-  // TODO: Remove google.maps!
-  public bounds = new google.maps.LatLngBounds(new google.maps.LatLng(90, 180), new google.maps.LatLng(-90, -180)) //SW, NE
-  //public bounds = new L.Bounds(new L.LatLng(90, 180), new L.LatLng(-90, -180)) //SW, NE
-
-  public bound: google.maps.LatLngBoundsLiteral = { east: -180, north: -90, south: 90, west: 180 } //e,n,s,w
-  public selectedBounds = new google.maps.LatLngBounds(new google.maps.LatLng(90, 180), new google.maps.LatLng(-90, -180)) //SW, NE
-  public selectedBound: google.maps.LatLngBoundsLiteral = { east: -180, north: -90, south: 90, west: 180 } //e,n,s,w
+  private bounds = new LatLngBounds([90, 180], [-90, -180]) //SW, NE
+  private selectedBounds = new LatLngBounds([90, 180], [-90, -180]) //SW, NE
   private boundsMargin = 0.0025
 
   constructor(
     private rangerService: RangerService,
     private teamService: TeamService,
     private settingService: SettingsService,
+    private log: LogService,
     private httpClient: HttpClient) {
 
-    console.log("Contructing FieldReportService: once or repeatedly?!--------------")
+    log.verbose("Contructing FieldReportService: once or repeatedly?!--------------", "FieldReportService")
 
-    //this.fieldReports =
     let localStorageFieldReports = localStorage.getItem(this.storageLocalName)
 
-
-    this.fieldReports = ((localStorageFieldReports != null) && (localStorageFieldReports.indexOf("licensee") <= 0))
-      ? JSON.parse(localStorageFieldReports) : null   //TODO: clean up
-    console.log(`Got ${this.fieldReports.length} Field Reports from localstorage`)
-    if ((localStorageFieldReports != null)) {
-      let ugg = JSON.parse(localStorageFieldReports)
-      //console.log(`JSON.parse(localStorageFieldReports) ${ugg}`)
+    if (localStorageFieldReports == null) {
+      log.warn(`No Field Reports found in Local Storage. Will rebuild from defaults.`)
+      this.initFieldReports()
+    } else if (localStorageFieldReports.indexOf("version") <= 0) {
+      log.error(`Field Reports in Local Storage appear corrupted & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`)
+      localStorage.setItem(this.storageLocalName + '-BAD', localStorageFieldReports)
+      this.initFieldReports()
     }
+
+
+    this.fieldReports = ((localStorageFieldReports != null) && (localStorageFieldReports.indexOf("version") <= 0))
+      ? JSON.parse(localStorageFieldReports) : null   //TODO: clean up
+    if (this.fieldReports) {
+
+      log.warn(`No Field Reports found in Local Storage (or were corrupted). Will rebuild from defaults.`)
+      //
+      this.initFieldReports()
+    }
+
+    this.log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event}, op period ${this.fieldReports.operationPeriod} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`)
+
+    // if ((localStorageFieldReports != null)) {
+    //   let ugg = JSON.parse(localStorageFieldReports)
+    //this.log.info(`JSON.parse(localStorageFieldReports) ${ugg}`)
+    // }
 
     this.fieldReportStatuses = this.settingService.getFieldReportStatuses()
     // Calc nextId (only used by unused routines?!)
@@ -92,6 +105,26 @@ export class FieldReportService {
       this.recalcFieldBounds()
       this.updateFieldReports()
     }
+  }
+
+  /**
+   * Set default/initial FieldReports
+   */
+  initFieldReports() {
+    this.fieldReports = {
+      version: '0.34',  // TODO: Should be in Settings?
+      date: new Date,
+      event: 'ACS Exercise #1',  // TODO: Should be in Settings?
+      operationPeriod: 'OpPeriod1',  // TODO: Should be in Settings?
+      bounds: this.bounds,
+      numReport: 0,
+      maxId: 0,
+      filter: '', // All reports or not? Guard to ensure a subset never gets writen to localstorage?
+      //rangers: RangerType
+      fieldReportStatuses: this.settingService.fieldReportStatuses,  // TODO: Should be in Settings?
+      fieldReports: []
+    }
+    return this.fieldReports
   }
 
   /**
@@ -139,11 +172,12 @@ export class FieldReportService {
 
   // rewrite field reports to localStorage & notifies observers
   updateFieldReports() {
-    localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReportArray));
+    localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReportArray))
 
-    console.log(`New field reports are available to observers...`)
-    this.fieldReportsSubject.next(this.fieldReportArray)
-    this.getFieldReportBoundsSubject.next(this.fieldReportBounds)  // TODO: Also include bounds as additional field?
+    this.log.verbose(`New field reports are available to observers...`)
+    this.fieldReportsSubject.next(this.fieldReports)
+
+    /*
     // TODO: Whats the difference of above & below?!
     this.fieldReportsSubject.next(this.fieldReportArray.map(  // REVIEW: is this just for 1 new report, or any localstorage updates?
       fieldReport => ({
@@ -158,24 +192,12 @@ export class FieldReportService {
         note: fieldReport.note
       })
     ))
+    */
   }
 
-  allFieldReportsToServer_unused() {
-    console.log("Sending all reports to server (via subscription)...")
-
-    // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
-
-    // TODO: replace "add" with"post" or ???
-    this.httpClient.post(`${this.serverUri}/add`, this.fieldReportArray)
-      .subscribe(res => console.log('Subscription of all reports to httpClient is Done'));
-
-    console.log("Sent all reports to server (via subscription)...");
-  }
-
-  // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
 
   addfieldReport(formData: string): FieldReportType {
-    console.log(`FieldReportService: Got new field report: ${formData}`)
+    this.log.info(`FieldReportService: Got new field report: ${formData}`)
 
     let newReport: FieldReportType = JSON.parse(formData)
     newReport.id = this.nextId++
@@ -183,22 +205,18 @@ export class FieldReportService {
     this.updateFieldReportBounds(newReport)
     this.updateFieldReports() // put to localStorage & update subscribers
 
-    console.log("TODO: send new report to server (via subscription)...");
+    this.log.verbose("TODO: send new report to server (via subscription)...");
     // Ang Dev w/ TS , pg 145
 
     // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
-    //this.httpClient.post(`${this.serverUri}/add`, newReport).subscribe(res => console.log('Subscription of add report to httpClient is Done'));
+    //this.httpClient.post(`${this.serverUri}/add`, newReport).subscribe(res => this.log.info('Subscription of add report to httpClient is Done'));
     /* gets VM12981:1          POST http://localhost:4000/products/add net::ERR_CONNECTION_REFUSED
   core.mjs:6485 ERROR HttpErrorResponse {headers: HttpHeaders, status: 0, statusText: 'Unknown Error', url: 'http://localhost:4000/products/add', ok: false, …}*/
-    //console.log("Sent new report to server (via subscription)...");
+    //this.log.verbose("Sent new report to server (via subscription)...");
 
     return newReport;
   }
   // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
-
-  getFieldReports_old() {
-    return this.fieldReportArray
-  }
 
   setSelectedFieldReports(selection: FieldReportType[]) {
     this.selectedFieldReportArray = selection
@@ -209,61 +227,20 @@ export class FieldReportService {
     return this.selectedFieldReportArray
   }
 
-
-  getFieldReport(id: number) {
-    const index = this.findIndex(id);
-    return this.fieldReportArray[index];
-  }
-
-  updateFieldReport(report: FieldReportType) {
-    const index = this.findIndex(report.id);
-    this.fieldReportArray[index] = report;
-    this.updateFieldReports();
-  }
-
-  deleteFieldReport(id: number) {
-    const index = this.findIndex(id);
-    this.fieldReportArray.splice(index, 1);
-    this.updateFieldReports();
-    // this.nextId-- // REVIEW: is this desired???
-  }
-
   deleteAllFieldReports() {
     this.fieldReportArray = []
     localStorage.removeItem(this.storageLocalName)
     this.nextId = 0 // REVIEW: is this desired???
   }
 
-  private findIndex(id: number): number {
-    for (let i = 0; i < this.fieldReportArray.length; i++) {
-      if (this.fieldReportArray[i].id === id) {
-        return i
-      }
-    }
-    throw new Error(`FieldReport with id ${id} was not found!`)
-    // return -1
-  }
-
-  sortFieldReportsByCallsign_unused() {
-    return this.fieldReportArray.sort((n1, n2) => {
-      if (n1.callsign > n2.callsign) { return 1 }
-      if (n1.callsign < n2.callsign) { return -1 }
-      return 0;
-    })
-
-    // let sorted = this.fieldReports.sort((a, b) => a.callsign > b.callsign ? 1 : -1)
-    // console.log("SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!")
-  }
-
-  sortFieldReportsByDate_unused() {
-    return this.fieldReportArray.sort((n1, n2) => {
-      if (n1.date > n2.date) { return 1 }
-      if (n1.date < n2.date) { return -1 }
-      return 0;
-    })
-  }
 
   // ------------------ BOUNDS ---------------------------
+
+  boundsToBound(bounds: LatLngBounds) {
+    return { east: bounds.getEast(), north: bounds.getNorth(), south: bounds.getSouth(), west: bounds.getWest() }
+  }
+
+  /*
   getFieldReportBounds() {
     return this.bounds
   }
@@ -271,9 +248,9 @@ export class FieldReportService {
   getFieldReportBound() {
     return this.bound
   }
-
+*/
   recalcFieldBounds() {
-    console.log(`recalcFieldBounds got ${this.fieldReportArray.length} field reports`)
+    this.log.verbose(`recalcFieldBounds got ${this.fieldReportArray.length} field reports`)
     let north
     let west
     let south
@@ -310,82 +287,40 @@ export class FieldReportService {
       east = SettingsService.Settings.defLng
     }
 
-    console.log(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `)
+    this.log.info(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `)
     if (east - west < 2 * this.boundsMargin) {
       east += this.boundsMargin
       west -= this.boundsMargin
-      console.log(`recalcFieldBounds BROADENED to E:${east} W:${west} `)
+      this.log.info(`recalcFieldBounds BROADENED to E:${east} W:${west} `)
     }
     if (north - south < 2 * this.boundsMargin) {
       north += this.boundsMargin
       south -= this.boundsMargin
-      console.log(`recalcFieldBounds BROADENED to N:${north} S:${south} `)
+      this.log.info(`recalcFieldBounds BROADENED to N:${north} S:${south} `)
     }
 
-    this.bound = { east: east, north: north, south: south, west: west } //e,n,s,w
+
+    this.bounds = new LatLngBounds([south, west], [north, east]) //SW, NE
+    //this.bound = { east: east, north: north, south: south, west: west } //e,n,s,w
     //this.bound = { east: Math.round(east*10000)/10000, north: Math.round(north*10000)/10000, south: Math.round(south*10000)/10000, west: Math.round(west*10000)/10000 } //e,n,s,w
     return this.bound
 
-    // BUG: Move out Google specific code...
-    // this.bounds = new google.maps.LatLngBounds(new google.maps.LatLng(south, west), new google.maps.LatLng(north, east)) //SW, NE
+
   }
 
-  updateFieldReportBounds(newFR: FieldReportType) {
-    this.bounds.extend(new google.maps.LatLng(newFR.lat, newFR.lng))
-    this.bound = this.getBoundFromBounds(this.bounds)
+  private updateFieldReportBounds(newFR: FieldReportType) {
+    this.bounds.extend([newFR.lat, newFR.lng])
+    //this.bound = this.getBoundFromBounds(this.bounds)
+    // BUG: Need to reissue fieldReports to subscribers!
     return this.bound
   }
 
   // TODO: put in coordinates or utility? This relies on GOOGLE.MAPS!
-  getBoundFromBounds(bounds: google.maps.LatLngBounds): google.maps.LatLngBoundsLiteral {
+  /*getBoundFromBounds(bounds: google.maps.LatLngBounds): google.maps.LatLngBoundsLiteral {
     let NE = new google.maps.LatLng(bounds.getNorthEast())
     let SW = new google.maps.LatLng(bounds.getSouthWest())
     return { east: NE.lng(), north: NE.lat(), south: SW.lat(), west: SW.lng() }
-  }
-
-
-  // --------------------------------------------------------
-
-  sortFieldReportsByTeam_unused() {
-    return this.fieldReportArray.sort((n1, n2) => {
-      if (n1.team > n2.team) { return 1 }
-      if (n1.team < n2.team) { return -1 }
-      return 0;
-    })
-  }
-
-  filterFieldReportsByDate_unused(beg: Date, end: Date) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
-    const minDate = new Date(0)
-    const maxDate = new Date(2999, 0)
-    beg = beg < minDate ? beg : minDate
-    end = (end < maxDate) ? end : maxDate
-
-    return this.fieldReportArray.filter((report) => (report.date >= beg && report.date <= end))
-  }
-
-  /*
-const filterParams = {
-comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
-  const dateAsString = cellValue;
-  const dateParts = dateAsString.split('/');
-  const cellDate = new Date(
-    Number(dateParts[2]),
-    Number(dateParts[1]) - 1,
-    Number(dateParts[0])
-  );
-  if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
-    return 0;
-  }
-  if (cellDate < filterLocalDateAtMidnight) {
-    return -1;
-  }
-  //if (cellDate > filterLocalDateAtMidnight) {
-  return 1;
-  //}
-},
-}
-*/
-
+  }*/
 
   generateFakeData(num: number = 15) {
     let teams = this.teamService.getTeams()
@@ -399,7 +334,7 @@ comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
       "Wow", "na", "Can't hear you", "Bounced via tail of a comet!", "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
 
     const msSince1970 = new Date().getTime()
-    console.log(`Adding an additinoal ${num} FAKE field reports... with base of ${msSince1970}`)
+    this.log.info(`Adding an additional ${num} FAKE field reports... with base of ${msSince1970}`)
 
     for (let i = 0; i < num; i++) {
       this.fieldReportArray.push({
@@ -417,259 +352,83 @@ comparator: (filterLocalDateAtMidnight: any, cellValue: any) => {
     this.recalcFieldBounds()
   }
 
+  // ---------------------------------  UNUSED -------------------------------------------------------
+
+  allFieldReportsToServer_unused() {
+    this.log.verbose("Sending all reports to server (via subscription)...")
+
+    // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
+
+    // TODO: replace "add" with"post" or ???
+    this.httpClient.post(`${this.serverUri}/add`, this.fieldReportArray)
+      .subscribe(res => this.log.verbose('Subscription of all reports to httpClient is Done'));
+
+    this.log.verbose("Sent all reports to server (via subscription)...");
+  }
+
+  // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
+
+  getFieldReport(id: number) {
+    const index = this.findIndex(id);
+    return this.fieldReportArray[index];
+  }
+
+  updateFieldReport_unused(report: FieldReportType) {
+    const index = this.findIndex(report.id);
+    this.fieldReportArray[index] = report;
+    this.updateFieldReports();
+  }
+
+  deleteFieldReport(id: number) {
+    const index = this.findIndex(id);
+    this.fieldReportArray.splice(index, 1);
+    this.updateFieldReports();
+    // this.nextId-- // REVIEW: is this desired???
+  }
+
+  private findIndex(id: number): number {
+    for (let i = 0; i < this.fieldReportArray.length; i++) {
+      if (this.fieldReportArray[i].id === id) {
+        return i
+      }
+    }
+    throw new Error(`FieldReport with id ${id} was not found!`)
+    // return -1
+  }
+
+  sortFieldReportsByCallsign_unused() {
+    return this.fieldReportArray.sort((n1, n2) => {
+      if (n1.callsign > n2.callsign) { return 1 }
+      if (n1.callsign < n2.callsign) { return -1 }
+      return 0;
+    })
+
+    // let sorted = this.fieldReports.sort((a, b) => a.callsign > b.callsign ? 1 : -1)
+    // this.log.verbose("SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!")
+  }
+
+  sortFieldReportsByDate_unused() {
+    return this.fieldReportArray.sort((n1, n2) => {
+      if (n1.date > n2.date) { return 1 }
+      if (n1.date < n2.date) { return -1 }
+      return 0;
+    })
+  }
+
+  sortFieldReportsByTeam_unused() {
+    return this.fieldReportArray.sort((n1, n2) => {
+      if (n1.team > n2.team) { return 1 }
+      if (n1.team < n2.team) { return -1 }
+      return 0;
+    })
+  }
+
+  filterFieldReportsByDate_unused(beg: Date, end: Date) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
+    const minDate = new Date(0)
+    const maxDate = new Date(2999, 0)
+    beg = beg < minDate ? beg : minDate
+    end = (end < maxDate) ? end : maxDate
+
+    return this.fieldReportArray.filter((report) => (report.date >= beg && report.date <= end))
+  }
 }
-
-// TODO: https://h2qutc.github.io/angular-material-components/, then fileinput
-// Example: read JSON file. https://ag-grid.com/angular-data-grid/column-definitions/#example-column-definition
-/*
-  onGridReady(params) {
-    this.gridApi = params.api;
-    this.gridColumnApi = params.columnApi;
-
-    this.http
-      .get('https://www.ag-grid.com/example-assets/olympic-winners.json')
-      .subscribe((data) => params.api.setRowData(data));
-  }
-  */
-
-
-
-/*  OLD CODE FROM 4.2 ====================================================================
-
-function filterLocations(filters) {
-
-  // clear any previous markers
-  clearLeafletMarkers();
-  clearGoogMarkers();
-  clearEsriMarkers();
-
-  // Track min/max marker bounds
-  var arrayOfLatLngs = [];
-  var _this = this;
-  var minLat=Infinity, minLng=Infinity, maxLat=-Infinity, maxLng=-Infinity;
-
-  // setup a marker group
-  // TODO: Move to map provider layer...
-  var markers = L.markerClusterGroup();
-  markers.clearLayers();
-  //mapLeafletMarkers;
-
-
-  if (teamLocations) {
-  for (var i = 0; i < teamLocations.length; i++) {
-    //dbug("Displaying marker "+i);
-    // https://leafletjs.com/reference-1.4.0.html#marker
-    var llat = teamLocations[i].Latitude;
-    var llong = teamLocations[i].Longitude;
-
-    /* Alternatives:
-      // function myArrayMax(arr) {  return Math.max.apply(null, arr);   }
-      // or by another index/object
-      // var cars = [  {type:"Volvo", year:2016},   {type:"Saab", year:2001} ];   cars.sort(function(a, b){return a.year - b.year});
-      // for string properties:
-      // cars.sort(function(a, b){ var x = a.type.toLowerCase();  var y = b.type.toLowerCase();  if (x < y) {return -1;}  if (x > y) {return 1;}  return 0; });
-
-      // new filtered array:
-      // BUT: 11% slower: https://jsperf.com/array-filter-performance
-      // var numbers = [45, 4, 9, 16, 25]; var over18 = numbers.filter(myFunction);  function myFunction(value, index, array) {  return value > 18;  }
-
-      https://stackoverflow.com/questions/10557486
-      https://api.jquery.com/jQuery.grep/
-    * /
-
-    if (filters!=null) {
-      // Process Filters...
-      //dbug("Filters Received");
-
-      //Filter Team?
-      //dbug("Team["+i+"]="+teamLocations[i].Team);
-      if (filters.Team.length!=0 && (teamLocations[i].Team!=filters.Team)) {
-        dbug("#### Filtered out Team: ["+i+"]="+teamLocations[i].Team);
-        continue;
-      }
-
-      // Filter CallSign?
-      //dbug("Call["+i+"]="+teamLocations[i].CallSign);
-      if (filters.CallSign.length!=0 && (teamLocations[i].CallSign!=filters.CallSign)) {
-        dbug("#### Filtered out CallSign: ["+i+"]="+teamLocations[i].CallSign);
-        continue;
-      }
-
-      // Filter based on time?
-      //dbug("Time["+i+"]  =  "+teamLocations[i].Date);
-      //dbug("BaseTime="+filters.BaseTime+"; minutes="+filters.Minutes);
-      //dbug("Minutes="+Date.parse(teamLocations[i].Date)/60000.0);
-
-      //dbug("Time Diff="+Math.abs(Date.parse(teamLocations[i].Date) - Date.parse(filters.BaseTime))/60000.0+"<br><br>");
-
-      // Milliseconds/minute = 60+1000
-      if (filters.Minutes!=0 && filters.BaseTime.length!=0 &&
-      (Math.abs(Date.parse(teamLocations[i].Date) - Date.parse(filters.BaseTime)) >= filters.Minutes*60000.0) ) {
-        dbug("#### Filtered out Time: ["+i+"]="+teamLocations[i].CallSign);
-        continue;
-      }
-    }
-
-    minLat = Math.min(minLat,llat);
-    minLng = Math.min(minLng,llong);
-    maxLat = Math.max(maxLat,llat);
-    maxLng = Math.max(maxLng,llong);
-
-    // setup the bounds
-    arrayOfLatLngs.push([llat,llong]);
-
-    // dbug("Coords='" + llat + ", " + llong + "'");
-    // dbug("Map bounds reset to: ["+minLat+","+minLng+"], ["+maxLat+","+maxLng+"]");
-
-    var color = defTeamColor;
-    var shape = defTeamShape;
-    var fillColor = defTeamFillColor;
-    var fillOpacity = defTeamOpacity;
-
-    var numTeams = teams.length;
-    var teamsIndex;
-
-    var team = teamLocations[i].Team;
-    // dbug("teamLocations["+i+"]="+team);
-
-    for (teamsIndex=0; teamsIndex<numTeams; teamsIndex++) {
-      // dbug("filterLocations: teams["+teamsIndex+"].value='"+teams[teamsIndex].value+"' == team='"+team+"'");
-      if (teams[teamsIndex].value == team) {
-        color = teams[teamsIndex].color; //TODO: if !empty // BUGBUG: Likely assumes every team has values in the teams array. Unlikely, hah!
-        fillColor = teams[teamsIndex].fillColor;
-        //fillOpacity = teams[teamIndex].fillOpacity;
-        shape = teams[teamsIndex].shape;
-        // dbug("filterLocations: Teams index="+teamsIndex + "; color:"+color+"; fillColor:"+fillColor+"; fillOpacity:"+fillOpacity+"; shape:"+shape);
-        break;
-      }
-    }
-
-
-
-
-    displayLeafletMarkers();
-    displayGoogMarkers();
-    displayEsriMarkers();
-
-
-
-    var newMarker;
-
-    switch(shape) {
-      case "Marker":
-        // https://leafletjs.com/reference-1.4.0.html#icon
-
-        var myIcon = L.icon({
-              iconUrl: (iconDir+teams[teamsIndex].icon),
-              iconSize: [32, 37],
-              iconAnchor: [20, 20],
-              popupAnchor: [-5, -5],
-              //shadowUrl: 'my-icon-shadow.png',
-              //shadowSize: [68, 95],
-              //shadowAnchor: [22, 94]
-          });
-
-        newMarker = L.marker([llat, llong], {icon: myIcon}
-            // , title: teamLocations[i].CallSign + "<br>" + teamLocations[i].Date
-            )
-            .bindPopup(
-              teamLocations[i].CallSign + " - " + teamLocations[i].Licensee + "<br>"
-              + teamLocations[i].Date.replace("T", " ") + "<br>"
-              + teamLocations[i].FieldReports );
-        //dbug("Created Marker. icon=" + iconDir + teams[teamsIndex].icon + "; " );
-        break;
-
-      case "Circle":
-      default:
-        newMarker = L.circle([llat, llong], CIRCLE_SIZE, {
-            color: color,
-            fillColor: fillColor,
-            fillOpacity: fillOpacity,
-          }, title="").bindPopup(
-              teamLocations[i].CallSign + " - " + teamLocations[i].Licensee + "<br>"
-              + teamLocations[i].Date.replace("T", " ") + "<br>"
-              + teamLocations[i].FieldReports
-            );
-
-
-      // FieldReport: You may run into issues with the popups closing when you mouse onto the popup itself,
-      // so you might need to adjust the popup anchor in (see popup settings) to show your popups a
-      // bit farther away from marker itself so it doesn't disappear too easily.
-      // http://gis.stackexchange.com/questions/31951/ddg#95795
-
-      /*
-        // sample code for having all popups open if users hovers over any point...
-        var markers = getAllMarkers(); // up to you to implement, say it returns an Array<L.Marker>
-        for (var i = 0; i < markers.length; i++) {
-            var currentMarker = markers[i];
-            currentMarker.on('mouseover', currentMarker.openPopup.bind(currentMarker));
-        }
-      * /
-      //dbug("Created Circle!");
-      //Done with this row, get next
-      break;
-    }
-
-    newMarker.on('mouseover', function (e) { this.openPopup();  });
-    newMarker.on('mouseout' , function (e) { this.closePopup(); });
-
-    // marker.bindPopup(View(event));
-    // add marker
-    markers.addLayer(newMarker);
-  } // Done adding this row to the map
-
-  // https://stackoverflow.com/questions/14106687/how-do-i-change-the-default-cursor-in-leaflet-maps
-  bigMap.on('click', onMapClick);
-  $('.leaflet-container').css('cursor','crosshair'); // reset cursor with ''!
-
-  // Display coordinates if map is clicked
-  var popup = L.popup();
-
-  function onMapClick(e) {
-    popup
-      .setLatLng(e.latlng)
-      .setContent(e.latlng.toString())
-      .openOn(bigMap);
-  }
-
-  // add the group to the map
-  // for more see https://github.com/Leaflet/Leaflet.markercluster
-  //markerCluster needs maxzoom
-  bigMap.addLayer(markers);
-
-  //markers.on('clusterclick', function (a) {
-  //// markers.zoomToBounds({padding: [20, 20]});
-  //});
-
-  /*markers.on('clusterclick', function (a) {
-    a.layer.zoomToBounds();
-  });
-  * /
-
-  var bounds = new L.LatLngBounds(arrayOfLatLngs);
-  bigMap.fitBounds(bounds);
-  bigMap.invalidateSize();
-
-// TODO: Zoom in to closest view that shows all points:
-// https://leafletjs.com/reference-1.4.0.html#map-methods-for-modifying-map-state
-// dbug("Set map bounds to: ["+minLat+","+minLng+"], ["+maxLat+","+maxLng+"]");
-// bigMap.fitBounds(L.latLngBounds([minLat,minLng], [maxLat,maxLng]));
-// bigMap.fitBounds([minLat,minLng], [maxLat,maxLng]);
-
-// bigMap.updateSize();
-//bigMap.invalidateSize(true);
-// GridLayer.redraw()
-// bigMap._onResize();
-  }
-
-
-
-  export class AppComponent {
-    ST: {a:string, b:any}[] = [
-      {
-        a: 'Bobby',
-        b: 'USA'
-      },
-    ];
-  }
-  */

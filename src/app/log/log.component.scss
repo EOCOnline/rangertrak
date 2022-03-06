@@ -1,43 +1,41 @@
-body
-{
-	font-family: arial, helvetica, freesans, sans-serif;
-	font-size: 100%;
-	color: #333;
-	background-color: #ddd;
+body {
+  font-family     : arial, helvetica, freesans, sans-serif;
+  font-size       : 100%;
+  color           : #333;
+  background-color: #ddd;
 }
 
-h1
-{
-	font-size: 1.5em;
-	font-weight: normal;
-	margin: 0;
+h1 {
+  font-size  : 1.5em;
+  font-weight: normal;
+  margin     : 0;
 }
 
-pre
-{
-	height: 80vh;
-	font-family: monospace;
-	font-size: 1em;
-	padding: 2px 5px;
-	color: rgb(57, 34, 161);
-	background-color: rgb(226, 238, 156);
-	border: 1px solid #030;
-	border-radius: 4px;
-	overflow: auto;
+pre {
+  height          : 80vh;
+  font-family     : monospace;
+  font-size       : 1em;
+  padding         : 2px 5px;
+  color           : rgb(57, 34, 161);
+  background-color: rgb(226, 238, 156);
+  border          : 1px solid #030;
+  border-radius   : 4px;
+  overflow        : auto;
 }
 
-button {
-  margin-right: 8px;
+.verbose {
+  color: rgb(66, 65, 65);
 }
 
-.log {
-  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+.info {
+  //font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  color: black;
 }
 
 .warn {
-  color: brown;
+  color: orange;
 }
 
-.err {
+.error {
   color: red
 }
