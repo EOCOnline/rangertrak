@@ -4,7 +4,7 @@ import { RangerService, SettingsService, FieldReportStatusType, TeamService } fr
 import { HttpClient } from '@angular/common/http'
 import * as L from 'leaflet'
 import { LatLngBounds } from 'leaflet';
-import { LogLevel, LogService } from './log.service';
+import { LogService } from './log.service';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
@@ -36,27 +36,19 @@ export type FieldReportsType = {  // OK to export to CSV/Excel?!
   filter: string, // All reports or not? Guard to ensure a subset never gets writen to localstorage?
   //rangers: RangerType
   fieldReportStatuses: FieldReportStatusType[],  // TODO: Should be in Settings?
-  fieldReports: FieldReportType[]
+  fieldReportArray: FieldReportType[]
 }
 
 
 @Injectable({ providedIn: 'root' })
 export class FieldReportService {
 
-  private fieldReportArray: FieldReportType[] = []
   private fieldReports!: FieldReportsType
-  private fieldReportsSubject!: BehaviorSubject<FieldReportsType>
+  private fieldReportsSubject: BehaviorSubject<FieldReportsType>
+  private selectedFieldReports!: FieldReportsType  // TODO: Enable subscription to this also?
 
-  private selectedFieldReportArray: FieldReportType[] = []
-  private selectedFieldReports!: FieldReportsType
-
-  private fieldReportStatuses: FieldReportStatusType[] = []  // only needed to make fakes
   private storageLocalName = 'fieldReports'
-  private nextId = 0
   private serverUri = 'http://localhost:4000/products'
-
-  private bounds = new LatLngBounds([90, 180], [-90, -180]) //SW, NE
-  private selectedBounds = new LatLngBounds([90, 180], [-90, -180]) //SW, NE
   private boundsMargin = 0.0025
 
   constructor(
@@ -66,120 +58,67 @@ export class FieldReportService {
     private log: LogService,
     private httpClient: HttpClient) {
 
-    log.verbose("Contructing FieldReportService: once or repeatedly?!--------------", "FieldReportService")
+    log.verbose("Contruction: once or repeatedly?!--------------", "FieldReportService")
 
     let localStorageFieldReports = localStorage.getItem(this.storageLocalName)
 
     if (localStorageFieldReports == null) {
-      log.warn(`No Field Reports found in Local Storage. Will rebuild from defaults.`)
-      this.initFieldReports()
+      log.warn(`No Field Reports found in Local Storage. Will rebuild from defaults.`, "FieldReportService")
+      this.fieldReports = this.initFieldReports()
     } else if (localStorageFieldReports.indexOf("version") <= 0) {
-      log.error(`Field Reports in Local Storage appear corrupted & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`)
+      log.error(`Field Reports in Local Storage appear corrupted & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`, "FieldReportService")
       localStorage.setItem(this.storageLocalName + '-BAD', localStorageFieldReports)
-      this.initFieldReports()
+      this.fieldReports = this.initFieldReports()
+    } else {
+      this.fieldReports = JSON.parse(localStorageFieldReports)
     }
 
+    this.log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event}, op period ${this.fieldReports.operationPeriod} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, "FieldReportService")
 
-    this.fieldReports = ((localStorageFieldReports != null) && (localStorageFieldReports.indexOf("version") <= 0))
-      ? JSON.parse(localStorageFieldReports) : null   //TODO: clean up
-    if (this.fieldReports) {
-
-      log.warn(`No Field Reports found in Local Storage (or were corrupted). Will rebuild from defaults.`)
-      //
-      this.initFieldReports()
-    }
-
-    this.log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event}, op period ${this.fieldReports.operationPeriod} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`)
-
-    // if ((localStorageFieldReports != null)) {
-    //   let ugg = JSON.parse(localStorageFieldReports)
-    //this.log.info(`JSON.parse(localStorageFieldReports) ${ugg}`)
-    // }
-
-    this.fieldReportStatuses = this.settingService.getFieldReportStatuses()
-    // Calc nextId (only used by unused routines?!)
-    if (this.fieldReportArray.length > 0) {
-      for (const fieldReport of this.fieldReportArray) {
-        if (fieldReport.id >= this.nextId) this.nextId = fieldReport.id + 1
-      }
-      this.recalcFieldBounds()
-      this.updateFieldReports()
-    }
+    this.fieldReportsSubject = new BehaviorSubject(this.fieldReports)
+    this.updateFieldReports()
   }
 
   /**
    * Set default/initial FieldReports
    */
-  initFieldReports() {
-    this.fieldReports = {
+  private initFieldReports() {
+    return {
       version: '0.34',  // TODO: Should be in Settings?
       date: new Date,
       event: 'ACS Exercise #1',  // TODO: Should be in Settings?
       operationPeriod: 'OpPeriod1',  // TODO: Should be in Settings?
-      bounds: this.bounds,
+      bounds: new LatLngBounds([90, 180], [-90, -180]), //SW, NE
       numReport: 0,
       maxId: 0,
       filter: '', // All reports or not? Guard to ensure a subset never gets writen to localstorage?
       //rangers: RangerType
       fieldReportStatuses: this.settingService.fieldReportStatuses,  // TODO: Should be in Settings?
-      fieldReports: []
+      fieldReportArray: []
     }
-    return this.fieldReports
   }
 
   /**
-   *
-   * @param newReports Subscribe to Field Report updates
-   * implicit promise for new bound(s) too
+   * Subscribe to Field Report updates
    */
-  getFieldReportUpdates(): Observable<FieldReportsType> {
+  public getFieldReportsObserver(): Observable<FieldReportsType> {
+    //const fieldReportsObservable = new Observable(observer => {
+    //  () => {observer.next(this.fieldReports.fieldReportArray)}})
     return this.fieldReportsSubject.asObservable()
   }
 
   /**
-   * Register new field reports here, it will update bounds and other metadata, and notify observers
-   * @param newReports
+   * rewrite field reports to localStorage & notify observers
    */
-  setFieldReports(newReports: FieldReportType[]) {
-    this.fieldReportArray = newReports
-    this.recalcFieldBounds()
-    this.updateFieldReports()
-  }
+  private updateFieldReports() {
+    localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports.fieldReportArray))
 
-  // In simple terms, here fieldReportObservable are publishing our primary data array that is fieldReports.
-  // So if any entity needs to get the values out of observable, then it first needs to
-  // subscribe that observable and then fieldReportObservable starts to publish the values,
-  // and then subscriber get the values.
-  // TODO: remove next routine - unless the 1 second delay is good...
-  public getFieldReports(): any {
-    const fieldReportsObservable = new Observable(observer => {
-      setTimeout(() => {
-        observer.next(this.fieldReportArray);
-      }, 1000);
-    })
-    return fieldReportsObservable
-  }
-
-
-
-  subscribe(observer: Observer<FieldReportType[]>) {
-    this.fieldReportsSubject.subscribe(observer)
-  }
-
-  subscribeToFieldReports(): Observable<FieldReportType[]> {
-    return of(this.fieldReportArray)
-  }
-
-  // rewrite field reports to localStorage & notifies observers
-  updateFieldReports() {
-    localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReportArray))
-
-    this.log.verbose(`New field reports are available to observers...`)
+    this.log.verbose(`New field reports are available to observers...`, "FieldReportService")
     this.fieldReportsSubject.next(this.fieldReports)
 
     /*
-    // TODO: Whats the difference of above & below?!
-    this.fieldReportsSubject.next(this.fieldReportArray.map(  // REVIEW: is this just for 1 new report, or any localstorage updates?
+    TODO: Whats the difference of above & below?!
+    this.fieldReportsSubject.next(this.fieldReports.fieldReportArray.map(  // REVIEW: is this just for 1 new report, or any localstorage updates?
       fieldReport => ({
         id: fieldReport.id,
         callsign: fieldReport.callsign,
@@ -195,42 +134,34 @@ export class FieldReportService {
     */
   }
 
-
-  addfieldReport(formData: string): FieldReportType {
-    this.log.info(`FieldReportService: Got new field report: ${formData}`)
+  public addfieldReport(formData: string) {
+    this.log.info(`Got new field report: ${formData}`, 'FieldReportService')
 
     let newReport: FieldReportType = JSON.parse(formData)
-    newReport.id = this.nextId++
-    this.fieldReportArray.push(newReport)
-    this.updateFieldReportBounds(newReport)
+    newReport.id = this.fieldReports.maxId++
+    this.fieldReports.fieldReportArray.push(newReport)
+    this.fieldReports.bounds.extend([newReport.lat, newReport.lng])
     this.updateFieldReports() // put to localStorage & update subscribers
-
-    this.log.verbose("TODO: send new report to server (via subscription)...");
-    // Ang Dev w/ TS , pg 145
-
-    // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
-    //this.httpClient.post(`${this.serverUri}/add`, newReport).subscribe(res => this.log.info('Subscription of add report to httpClient is Done'));
-    /* gets VM12981:1          POST http://localhost:4000/products/add net::ERR_CONNECTION_REFUSED
-  core.mjs:6485 ERROR HttpErrorResponse {headers: HttpHeaders, status: 0, statusText: 'Unknown Error', url: 'http://localhost:4000/products/add', ok: false, …}*/
-    //this.log.verbose("Sent new report to server (via subscription)...");
-
-    return newReport;
-  }
-  // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
-
-  setSelectedFieldReports(selection: FieldReportType[]) {
-    this.selectedFieldReportArray = selection
-    // TODO: Update seperate bounds
   }
 
-  getSelectedFieldReports() {
-    return this.selectedFieldReportArray
+  public setSelectedFieldReports(selection: FieldReportType[]) {
+    if (this.selectedFieldReports == null) {
+      this.selectedFieldReports = this.initFieldReports()
+      this.selectedFieldReports.filter = "As selected by user"
+    }
+    this.selectedFieldReports.fieldReportArray = selection
+    this.recalcFieldBounds(this.selectedFieldReports)
   }
 
-  deleteAllFieldReports() {
-    this.fieldReportArray = []
+  public getSelectedFieldReports() { // TODO: Use setter & getters?, pg 452 Ang Dev w/ TS
+    return this.selectedFieldReports
+  }
+
+  public deleteAllFieldReports() {
+    // TODO: reset header properties too?!
+    this.fieldReports.fieldReportArray = []
     localStorage.removeItem(this.storageLocalName)
-    this.nextId = 0 // REVIEW: is this desired???
+    this.fieldReports.maxId = 0 // REVIEW: is this desired???
   }
 
 
@@ -240,43 +171,34 @@ export class FieldReportService {
     return { east: bounds.getEast(), north: bounds.getNorth(), south: bounds.getSouth(), west: bounds.getWest() }
   }
 
-  /*
-  getFieldReportBounds() {
-    return this.bounds
-  }
-
-  getFieldReportBound() {
-    return this.bound
-  }
-*/
-  recalcFieldBounds() {
-    this.log.verbose(`recalcFieldBounds got ${this.fieldReportArray.length} field reports`)
+  recalcFieldBounds(reports: FieldReportsType) {
+    this.log.verbose(`recalcFieldBounds got ${reports.fieldReportArray.length} field reports`, "FieldReportService")
     let north
     let west
     let south
     let east
 
-    if (this.fieldReportArray.length) {
-      north = this.fieldReportArray[0].lat
-      west = this.fieldReportArray[0].lng
-      south = this.fieldReportArray[0].lat
-      east = this.fieldReportArray[0].lng
+    if (reports.fieldReportArray.length) {
+      north = reports.fieldReportArray[0].lat
+      west = reports.fieldReportArray[0].lng
+      south = reports.fieldReportArray[0].lat
+      east = reports.fieldReportArray[0].lng
 
       // https://www.w3docs.com/snippets/javascript/how-to-find-the-min-max-elements-in-an-array-in-javascript.html
       // concludes with: "the results show that the standard loop is the fastest"
 
-      for (let i = 1; i < this.fieldReportArray.length; i++) {
-        if (this.fieldReportArray[i].lat > north) {
-          north = Math.round(this.fieldReportArray[i].lat * 10000) / 10000
+      for (let i = 1; i < reports.fieldReportArray.length; i++) {
+        if (reports.fieldReportArray[i].lat > north) {
+          north = Math.round(reports.fieldReportArray[i].lat * 10000) / 10000
         }
-        if (this.fieldReportArray[i].lat < south) {
-          south = Math.round(this.fieldReportArray[i].lat * 10000) / 10000
+        if (reports.fieldReportArray[i].lat < south) {
+          south = Math.round(reports.fieldReportArray[i].lat * 10000) / 10000
         }
-        if (this.fieldReportArray[i].lng > east) {
-          east = Math.round(this.fieldReportArray[i].lng * 10000) / 10000
+        if (reports.fieldReportArray[i].lng > east) {
+          east = Math.round(reports.fieldReportArray[i].lng * 10000) / 10000
         }
-        if (this.fieldReportArray[i].lng > west) {
-          west = Math.round(this.fieldReportArray[i].lng * 10000) / 10000
+        if (reports.fieldReportArray[i].lng > west) {
+          west = Math.round(reports.fieldReportArray[i].lng * 10000) / 10000
         }
       }
     } else {
@@ -287,40 +209,20 @@ export class FieldReportService {
       east = SettingsService.Settings.defLng
     }
 
-    this.log.info(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `)
+    this.log.info(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `, "FieldReportService")
     if (east - west < 2 * this.boundsMargin) {
       east += this.boundsMargin
       west -= this.boundsMargin
-      this.log.info(`recalcFieldBounds BROADENED to E:${east} W:${west} `)
+      this.log.info(`recalcFieldBounds BROADENED to E:${east} W:${west} `, "FieldReportService")
     }
     if (north - south < 2 * this.boundsMargin) {
       north += this.boundsMargin
       south -= this.boundsMargin
-      this.log.info(`recalcFieldBounds BROADENED to N:${north} S:${south} `)
+      this.log.info(`recalcFieldBounds BROADENED to N:${north} S:${south} `, "FieldReportService")
     }
 
-
-    this.bounds = new LatLngBounds([south, west], [north, east]) //SW, NE
-    //this.bound = { east: east, north: north, south: south, west: west } //e,n,s,w
-    //this.bound = { east: Math.round(east*10000)/10000, north: Math.round(north*10000)/10000, south: Math.round(south*10000)/10000, west: Math.round(west*10000)/10000 } //e,n,s,w
-    return this.bound
-
-
+    reports.bounds = new LatLngBounds([south, west], [north, east]) //SW, NE
   }
-
-  private updateFieldReportBounds(newFR: FieldReportType) {
-    this.bounds.extend([newFR.lat, newFR.lng])
-    //this.bound = this.getBoundFromBounds(this.bounds)
-    // BUG: Need to reissue fieldReports to subscribers!
-    return this.bound
-  }
-
-  // TODO: put in coordinates or utility? This relies on GOOGLE.MAPS!
-  /*getBoundFromBounds(bounds: google.maps.LatLngBounds): google.maps.LatLngBoundsLiteral {
-    let NE = new google.maps.LatLng(bounds.getNorthEast())
-    let SW = new google.maps.LatLng(bounds.getSouthWest())
-    return { east: NE.lng(), north: NE.lat(), south: SW.lat(), west: SW.lng() }
-  }*/
 
   generateFakeData(num: number = 15) {
     let teams = this.teamService.getTeams()
@@ -334,61 +236,73 @@ export class FieldReportService {
       "Wow", "na", "Can't hear you", "Bounced via tail of a comet!", "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
 
     const msSince1970 = new Date().getTime()
-    this.log.info(`Adding an additional ${num} FAKE field reports... with base of ${msSince1970}`)
+    this.log.info(`Adding an additional ${num} FAKE field reports... with base of ${msSince1970}`, "FieldReportService")
 
     for (let i = 0; i < num; i++) {
-      this.fieldReportArray.push({
-        id: this.nextId++,
+      this.fieldReports.fieldReportArray.push({
+        id: this.fieldReports.maxId++,
         callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
         team: teams[Math.floor(Math.random() * teams.length)].name,
         address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
         lat: SettingsService.Settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
         lng: SettingsService.Settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
         date: new Date(Math.floor(msSince1970 - (Math.random() * 10 * 60 * 60 * 1000))), // 0-10 hrs earlier
-        status: this.fieldReportStatuses[Math.floor(Math.random() * this.fieldReportStatuses.length)].status,
+        status: this.fieldReports.fieldReportStatuses[Math.floor(Math.random() * this.fieldReports.fieldReportStatuses.length)].status,
         note: notes[Math.floor(Math.random() * notes.length)]
       })
     }
-    this.recalcFieldBounds()
+    this.recalcFieldBounds(this.fieldReports)
   }
 
   // ---------------------------------  UNUSED -------------------------------------------------------
 
-  allFieldReportsToServer_unused() {
-    this.log.verbose("Sending all reports to server (via subscription)...")
+  /**
+   * Register new field reports here, it will update bounds and other metadata, and notify observers
+   * @param newReports
+   */
+  private setFieldReports(newReports: FieldReportType[]) {
+    this.fieldReports.fieldReportArray = newReports
+    this.recalcFieldBounds(this.fieldReports)
+    this.updateFieldReports()
+  }
+
+  private allFieldReportsToServer_unused() {
+    this.log.verbose("Sending all reports to server (via subscription)...", "FieldReportService")
 
     // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
 
     // TODO: replace "add" with"post" or ???
-    this.httpClient.post(`${this.serverUri}/add`, this.fieldReportArray)
-      .subscribe(res => this.log.verbose('Subscription of all reports to httpClient is Done'));
+    this.httpClient.post(`${this.serverUri}/add`, this.fieldReports.fieldReportArray)
+      .subscribe(res => this.log.verbose('Subscription of all reports to httpClient is Done', "FieldReportService"))
 
-    this.log.verbose("Sent all reports to server (via subscription)...");
+    this.log.verbose("Sent all reports to server (via subscription)...", "FieldReportService");
   }
 
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
 
-  getFieldReport(id: number) {
+  private getFieldReport(id: number) {
     const index = this.findIndex(id);
-    return this.fieldReportArray[index];
+    return this.fieldReports.fieldReportArray[index];
   }
 
   updateFieldReport_unused(report: FieldReportType) {
-    const index = this.findIndex(report.id);
-    this.fieldReportArray[index] = report;
-    this.updateFieldReports();
+    const index = this.findIndex(report.id)
+    this.fieldReports.fieldReportArray[index] = report
+    // TODO: recalc bounds
+    this.updateFieldReports()
   }
 
-  deleteFieldReport(id: number) {
+  private deleteFieldReport(id: number) {
     const index = this.findIndex(id);
-    this.fieldReportArray.splice(index, 1);
+    this.fieldReports.fieldReportArray.splice(index, 1);
+    // TODO: recalc bounds
     this.updateFieldReports();
     // this.nextId-- // REVIEW: is this desired???
   }
 
   private findIndex(id: number): number {
-    for (let i = 0; i < this.fieldReportArray.length; i++) {
-      if (this.fieldReportArray[i].id === id) {
+    for (let i = 0; i < this.fieldReports.fieldReportArray.length; i++) {
+      if (this.fieldReports.fieldReportArray[i].id === id) {
         return i
       }
     }
@@ -396,39 +310,39 @@ export class FieldReportService {
     // return -1
   }
 
-  sortFieldReportsByCallsign_unused() {
-    return this.fieldReportArray.sort((n1, n2) => {
+  private sortFieldReportsByCallsign_unused() {
+    return this.fieldReports.fieldReportArray.sort((n1, n2) => {
       if (n1.callsign > n2.callsign) { return 1 }
       if (n1.callsign < n2.callsign) { return -1 }
       return 0;
     })
 
     // let sorted = this.fieldReports.sort((a, b) => a.callsign > b.callsign ? 1 : -1)
-    // this.log.verbose("SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!")
+    // this.log.verbose("SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!", "FieldReportService")
   }
 
-  sortFieldReportsByDate_unused() {
-    return this.fieldReportArray.sort((n1, n2) => {
+  private sortFieldReportsByDate_unused() {
+    return this.fieldReports.fieldReportArray.sort((n1, n2) => {
       if (n1.date > n2.date) { return 1 }
       if (n1.date < n2.date) { return -1 }
       return 0;
     })
   }
 
-  sortFieldReportsByTeam_unused() {
-    return this.fieldReportArray.sort((n1, n2) => {
+  private sortFieldReportsByTeam_unused() {
+    return this.fieldReports.fieldReportArray.sort((n1, n2) => {
       if (n1.team > n2.team) { return 1 }
       if (n1.team < n2.team) { return -1 }
       return 0;
     })
   }
 
-  filterFieldReportsByDate_unused(beg: Date, end: Date) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
+  private filterFieldReportsByDate_unused(beg: Date, end: Date) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
     const minDate = new Date(0)
     const maxDate = new Date(2999, 0)
     beg = beg < minDate ? beg : minDate
     end = (end < maxDate) ? end : maxDate
 
-    return this.fieldReportArray.filter((report) => (report.date >= beg && report.date <= end))
+    return this.fieldReports.fieldReportArray.filter((report) => (report.date >= beg && report.date <= end))
   }
 }
