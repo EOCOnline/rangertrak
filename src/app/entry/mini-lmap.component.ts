@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
 import { DOCUMENT, JsonPipe } from '@angular/common'
-import { fromEvent } from 'rxjs';
-import * as L from 'leaflet';
+import { fromEvent } from 'rxjs'
+import * as L from 'leaflet'
 //import { Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
 import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
 //import 'leaflet.markercluster';

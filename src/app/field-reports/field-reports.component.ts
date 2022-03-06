@@ -323,7 +323,7 @@ export class FieldReportsComponent implements OnInit {
 
   // Save them to localstorage & update subscribers
   onBtnUpdateFieldReports() {
-    this.fieldReportService.UpdateFieldReports()
+    this.fieldReportService.updateFieldReports()
   }
 
   onBtnImportFieldReports_unused() {
@@ -336,7 +336,7 @@ export class FieldReportsComponent implements OnInit {
     // https://material-components.github.io/material-components-web-catalog/#/component/slider
     this.fieldReportService.generateFakeData(num)
     console.log(`Generated ${num} FAKE Field Reports`)
-    this.fieldReportService.UpdateFieldReports()
+    this.fieldReportService.updateFieldReports()
     //this.fieldReports$ = this.fieldReportService.subscribeToFieldReports()
     this.refreshGrid()
     this.reloadPage() //TODO: why aren't above enough?!!!

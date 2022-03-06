@@ -10,9 +10,15 @@ export type SecretType = {
   "note": string
 }
 
+/**
+ * This has 'all' event data (aside from Rangers & Field Reports)
+ * for readily serialization/dehydration
+ * ? REVIEW: Add Statuses and any other data (aside from Rangers & Field Reports to this
+ * ? Change name too?
+ */
 export type SettingsType = {
-  id: number,
-  name: string,
+  id: number, // needed, or use w/ name to allow several sets of settings: needed?
+  name: string, // incident Name? Op Period?, Mission#
   application: string,
   version: string,
   note: string,
@@ -27,7 +33,8 @@ export type SettingsType = {
   allowManualPinDrops: boolean,
   debugMode: boolean,
   logToPanel: boolean,
-  logToConsole: boolean
+  logToConsole: boolean,
+  // Statuses
 }
 
 export type FieldReportStatusType = { status: string, color: string, icon: string }
@@ -105,7 +112,7 @@ export class SettingsService {
     if ((this.fieldReportStatuses == undefined) || (this.fieldReportStatuses == null) || (this.fieldReportStatuses.length == 0)) {
       this.ResetFieldReportStatusDefaults()
     }
-    console.log(`${this.fieldReportStatuses.length} FieldReport Statuses initialized ` + (SettingsService.Settings.debugMode? JSON.stringify(this.fieldReportStatuses):""))
+    console.log(`${this.fieldReportStatuses.length} FieldReport Statuses initialized ` + (SettingsService.Settings.debugMode ? JSON.stringify(this.fieldReportStatuses) : ""))
 
   }
 
