@@ -26,6 +26,9 @@ type AOA = any[][]  // array of arrays
 })
 export class RangersComponent implements OnInit {
 
+  private id = 'Ranger Component'
+  public eventInfo = ''
+
   localUrl: any[] = []
   //teamService
   //rangerService //: { generateFakeData: (arg0: RangerType[]) => void; }
@@ -103,7 +106,7 @@ export class RangersComponent implements OnInit {
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
-
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
     this.settings = SettingsService.Settings
   }
 

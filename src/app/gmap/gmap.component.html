@@ -1,31 +1,53 @@
 <h1>{{title}}</h1>
-
+<h2>{{eventInfo}}</h2>
 <details>
   <summary class="big">Instructions</summary>
-  This currently displays all rangers/teams without filtering. In the future more options should be available, including
-  different icons/text boxes, etc.<br />
+  This currently displays all rangers/teams without filtering. In the future more options
+  should be available, including different icons/text boxes, etc.<br />
   <ul>
-    <li style="color:red">If most recent field reports are not displayed, please curse, then refresh the page, or try
-      switching temporarily to the Field Reports screen to ensure they were recorded. Let me know, but I believe they are getting stored.</li>
-    <li>NOTE: per <a href="https://issuetracker.google.com/issues/35827808" target="_blank">#35827808</a> this map can
-      NOT be made available when offline!</li>
-    <li>Zoom in close (in some populated areas) to display the tilt control at lower right on map: allows map tilting &
-      rotation</li>
+    <li style="color:red">
+      If most recent field reports are not displayed, please curse, then refresh the page,
+      or try switching temporarily to the Field Reports screen to ensure they were
+      recorded. Let me know, but I believe they are getting stored.
+    </li>
+    <li>
+      NOTE: per
+      <a href="https://issuetracker.google.com/issues/35827808" target="_blank"
+        >#35827808</a
+      >
+      this map can NOT be made available when offline!
+    </li>
+    <li>
+      Zoom in close (in some populated areas) to display the tilt control at lower right
+      on map: allows map tilting & rotation
+    </li>
     <li>Display Keyboard controls with button at lower right of map</li>
     <li>Click or hover over marker to display coordinates and callsign</li>
     <li>Right-click on Map (not Satellite view) to display traffic layer</li>
     <li>Upper Left Map/Satellite control allows viewing Terrain or Labels as desired</li>
-    <li>Click on the overlay map (at the lower right) to switch between the 4 amps types: roadmap, terrain, satellite & hybrid</li>
+    <li>
+      Click on the overlay map (at the lower right) to switch between the 4 amps types:
+      roadmap, terrain, satellite & hybrid
+    </li>
   </ul>
 </details>
-<br>
+<br />
 
 <div *ngIf="apiLoaded" id="container">
   <!-- | async -->
-  <google-map id="gMap" width="100%" [center]="center" [zoom]="zoom" [options]="mapOptions"
-    (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="toggleTrafficLayer()" (zoomChanged)="zoomed()"
-    (mapInitialized)="onMapInitialized($event)" (mapMouseover)="zoomed()">
-
+  <google-map
+    id="gMap"
+    width="100%"
+    [center]="center"
+    [zoom]="zoom"
+    [options]="mapOptions"
+    (mapClick)="addManualMarkerEvent($event)"
+    (mapMousemove)="onMapMouseMove($event)"
+    (mapRightclick)="toggleTrafficLayer()"
+    (zoomChanged)="zoomed()"
+    (mapInitialized)="onMapInitialized($event)"
+    (mapMouseover)="zoomed()"
+  >
     <!--map-marker-clusterer [imagePath]="markerClustererImagePath">
       <map-marker *ngFor="let markerPosition of markerPositions"
                   [position]="markerPosition"></map-marker>
@@ -41,29 +63,39 @@
 
     <map-circle [center]="circleCenter" [radius]="radius"></map-circle>
 
-
     <div id="overview">
       <map-info-window> infoWindowContent could go here</map-info-window>
-      <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.5-5'}}</span>   Longitude: <span class="strong">{{mouseLatLng?.lng | number:'1.5-5'}}</span>
+      <div>
+        Latitude:
+        <span class="strong">{{mouseLatLng?.lat | number:'1.5-5'}}</span> Longitude:
+        <span class="strong">{{mouseLatLng?.lng | number:'1.5-5'}}</span>
       </div>
     </div>
-
   </google-map>
 
   <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-  <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.5-5'}}</span>   Longitude: <span class="strong">{{mouseLatLng?.lng | number:'1.5-5'}}</span>
-    Zoom: <span class="strong">{{zoomDisplay}}</span>
+  <div>
+    Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.5-5'}}</span> Longitude:
+    <span class="strong">{{mouseLatLng?.lng | number:'1.5-5'}}</span> Zoom:
+    <span class="strong">{{zoomDisplay}}</span>
   </div>
 </div>
-<br>
+<br />
 
 <!--button class="mdc-switch" id="selectedFieldReports"  (click)="useSelectedFieldReports()">Use Selected Field Reports</button-->
 <!--
   https://material.io/components/switches/web#switches
   https://material.io/components/switches/web#api -->
-  <label for="selectedFieldReports">Field reports to show: All </label>
+<label for="selectedFieldReports">Field reports to show: All </label>
 
-  <button id="selectedFieldReports" class="mdc-switch mdc-switch--unselected" type="button" role="switch" aria-checked="false" (click)="getAndDisplayFieldReports()">
+<button
+  id="selectedFieldReports"
+  class="mdc-switch mdc-switch--unselected"
+  type="button"
+  role="switch"
+  aria-checked="false"
+  (click)="getAndDisplayFieldReports()"
+>
   <div class="mdc-switch__track"></div>
   <div class="mdc-switch__handle-track">
     <div class="mdc-switch__handle">
@@ -84,16 +116,19 @@
 </button>
 <label for="selectedFieldReports"> Just those selected in the Field Report panel</label>
 
-
-<br>
+<br />
 <details>
   <summary class="big">Advanced</summary>
   <ul>
-    <li>This might be used to set filtering options - or maybe we rely on selections made in the Field Report
-      pane/window...</li>
-    <li><a href="https://developers.google.com/maps/documentation/javascript/reference/map">Detailed code/option
-        references</a></li>
-
+    <li>
+      This might be used to set filtering options - or maybe we rely on selections made in
+      the Field Report pane/window...
+    </li>
+    <li>
+      <a href="https://developers.google.com/maps/documentation/javascript/reference/map"
+        >Detailed code/option references</a
+      >
+    </li>
   </ul>
   <button (click)="logCenter()">Log center</button>
   <!--button (click)="onInfoClick()">Info Window</button-->

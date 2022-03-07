@@ -1,35 +1,26 @@
 import { DOCUMENT } from '@angular/common'
-import { Component, Inject, OnInit, ViewChild, isDevMode, Input, NgZone } from '@angular/core'
+import { Component, Inject, OnInit, ViewChild, isDevMode, Input, NgZone, AfterViewInit, OnDestroy } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
 import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { HttpClient } from '@angular/common/http';
 
-//import { MatDatepickerModule } from '@angular/material/datepicker'
-//import { MatInputModule } from '@angular/material/input'
-
 import { MatSnackBar } from '@angular/material/snack-bar'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { Observable, debounceTime, map, startWith, switchMap, subscribeOn } from 'rxjs'
 import { FieldReport } from './location.interface'
 import { AlertsComponent } from '../alerts/alerts.component'
-import { FieldReportService, FieldReportStatusType, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/'
+import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, TeamService } from '../shared/services/'
 
-
-
-//import { MatDatepickerModule } from '@matheo/datepicker'; //https://www.npmjs.com/package/@matheo/datepicker
-//import { MatNativeDateModule } from '@matheo/datepicker/core';
-import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker'// (already in ngModule)
 import * as dayjs from 'dayjs' // https://day.js.org/docs/en/ or https://github.com/dayjs/luxon/
 
 import * as P from '@popperjs/core';
 //import { createPopper } from '@popperjs/core';
 import type { StrictModifiers } from '@popperjs/core';
 
-import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { mdiAccount, mdiInformationOutline } from '@mdi/js';
+//import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+//import { mdiAccount, mdiInformationOutline } from '@mdi/js';
 //import { lookupCollections, locate } from '@iconify/json'; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry } from '@angular/material/icon';// https://material.angular.io/components/icon/examples
+//import { MatIconRegistry } from '@angular/material/icon';// https://material.angular.io/components/icon/examples
 
 
 // IDEA: use https://material.angular.io/components/badge/ ???
@@ -91,17 +82,20 @@ export class IconComponent {
   styleUrls: ['./entry.component.scss'],
   providers: [RangerService, FieldReportService, SettingsService, TeamService]
 })
-export class EntryComponent implements OnInit {
+export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
-  @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z'; // dupl of that above
+  @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z' // dupl of that above
+  private id = 'Entry Form'
+  public eventInfo = ''
+
   myForm!: FormGroup
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
   locationFrmGrp!: FormGroup
 
-  faMapMarkedAlt = faMapMarkedAlt
-  faInfoCircle = faInfoCircle
-  mdiAccount: string = mdiAccount
-  mdiInformationOutline: string = mdiInformationOutline
+  //; faMapMarkedAlt = faMapMarkedAlt
+  // faInfoCircle = faInfoCircle
+  //mdiAccount: string = mdiAccount
+  //  mdiInformationOutline: string = mdiInformationOutline
 
 
 
@@ -171,10 +165,11 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     private _formBuilder: FormBuilder,
     private rangerService: RangerService,
     private fieldReportService: FieldReportService,
+    private log: LogService,
     private settingsService: SettingsService,
     // private teamService: TeamService,
     private _snackBar: MatSnackBar,
-    iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, // for svg mat icons
+    //iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, // for svg mat icons
     private http: HttpClient,
     private zone: NgZone,
     @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
@@ -182,13 +177,13 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     // https://fonts.google.com/icons && https://material.angular.io/components/icon
     // Note that we provide the icon here as a string literal here due to a limitation in
     // Stackblitz. If you want to provide the icon from a URL, you can use:
-    iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
+    //iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
     //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
 
     // REVIEW: Min/Max times ignored?!
     this._setMinDate(10) // no times early than 10 hours ago
     this._setMaxDate(1)  // no times later than 1 hours from now
-
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
     this.rangers = rangerService.GetRangers() // TODO: or getActiveRangers?!
 
     this.alert = new AlertsComponent(this._snackBar, this.document)// TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
@@ -199,7 +194,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     }
 
     this.fieldReportService = fieldReportService
-    this.fieldReportStatuses = settingsService.getFieldReportStatuses() // TODO: Need to update if user modified settings page: SUBSCRIBE!! or do every redisplay??
+    this.fieldReportStatuses = settingsService.getFieldReportStatuses() // TODO: Need to update if user modified settings page: SUBSCRIBE!! or do every redisplay?? Allowed to change midstream?! (Add only)
     this.settings = SettingsService.Settings
 
     // NOTE: workaround for onChange not working...
@@ -211,38 +206,20 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       startWith(''),
       map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
     )
-    console.log(`constructor: ranger ${(this.filteredRangers)}`) //JSON.stringify
+    log.verbose(`constructor: ranger ${this.filteredRangers}`, 'EntryComponent') //JSON.stringify
 
     // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
     // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
   }
 
 
-  //https://www.c-sharpcorner.com/article/formbuilder-service-in-angular/
-  //change the setTimeout statement by replacing setValue to patchValue.
-  // setTimeout(() => this.registrationForm.patchValue(this.sampleData), 5000);
-  //Now you can skip giving any field control value from the sampleData object. It will not throw error and set the values that are available.
-
-
-
   ngOnInit(): void {
-    console.log(`EntryForm test started at ${Date()} with development mode ${isDevMode() ? "" : "NOT "}enabled`)
-    console.log("EntryComponent - ngOnInit - Use settings to fill form")
+    this.log.info(`EntryForm initialization at ${Date()} with development mode ${isDevMode() ? "" : "NOT "}enabled`, 'EntryComponent')
+    this.log.verbose("EntryComponent - ngOnInit - Use settings to fill form", 'EntryComponent')
 
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
-
-    console.log(`Running ${this.settings.application} version ${this.settings.version}`)
-
-
-    /* this.myForm = this._formBuilder.group({
-       name: [''],
-       loc2: <FormGroup>this._formBuilder.group({
-         street: [''],
-         zip: ['']
-       }) as FormGroup
-     })
- */
+    this.log.info(`Running ${this.settings.application} version ${this.settings.version}`)  // verifies Settings has been loaded
 
     /* i.e., entryDetailsForm probably constructed at wrong time?!
     Move the component creation to ngOnInit hook
@@ -261,22 +238,15 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       id: -1,
       callsign: [''],
       team: ['T1'],
-      locationFrmGrp: this.initLocation()
-      /*this._formBuilder.group({
-        lat: 0,
-        lng: 0,
-        address: ''
-      })*/,
+      locationFrmGrp: this.initLocation(),
       date: [new Date()],
       status: [this.fieldReportStatuses[this.settings.defRangerStatus].status],
       note: ['']
     })
 
-    //this.addLocation()
-
     // subscribe to addresses value changes
     this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
-      console.log(`Subscription to locationFrmGrp got: ${x}`);
+      this.log.verbose(`Subscription to locationFrmGrp got: ${x}`, 'EntryComponent');
     })
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
@@ -307,7 +277,12 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
        ],
      }) */
     this.date = dayjs()
-    console.log(`EntryForm ngOnInit completed at ${Date()}`)
+    this.log.verbose(`EntryForm ngOnInit completed at ${Date()}`, 'EntryComponent')
+  }
+
+
+  ngAfterViewInit() {
+    // OK to register for form events here
   }
 
   initLocation() { // TODO: Shouldn't this be in location.component.ts?!
@@ -322,7 +297,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     let addr = this.locationFrmGrp.get("address")
     if (addr) {
       addr.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged(locationFrmGrp))
-      console.log("Made reservations!")
+      this.log.verbose("Made reservations!", 'EntryComponent')
     } else {
       console.warn("could NOT Make reservations")
     }
@@ -331,7 +306,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   private _filterRangers(value: string): RangerType[] {
-    console.log(`_filterRangers  value changed: ${value}`)
+    this.log.verbose(`_filterRangers  value changed: ${value}`, 'EntryComponent')
 
     const filterValue = value.toLowerCase()
     this.entryDetailsForm.value.callsign = filterValue
@@ -350,27 +325,15 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   // https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
   // https://stackoverflow.com/a/54048660
   resetForm() {
-    console.log("Resetting form...")
+    this.log.verbose("Resetting form...", 'EntryComponent')
 
     this.entryDetailsForm = this._formBuilder.group({
       id: -2,
       callsign: [''],
       team: ['T0'],
-      location: this.initLocation()
-      /*{
-        address: [''], // ' , Vashon, WA 98070' ?
-        lat: [this.settings.defLat,
-        Validators.required,
-          //Validators.minLength(4)
-        ],
-        lng: [this.settings.defLng,
-        Validators.required,
-          //Validators.minLength(4)
-        ],
-      }*/
-      ,
+      location: this.initLocation(),
       date: [new Date()],  // TODO: reset dateCtrl instead?!
-      status: [this.fieldReportStatuses[this.settings.defRangerStatus]],   // TODO: Allow changing list & default of statuses in settings?!
+      status: [this.fieldReportStatuses[this.settings.defRangerStatus]],
       note: ['']
     })
     // Allow getting new OnChangeUpdates - or use the subscription?!
@@ -379,31 +342,32 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   locationChanged(loc: FormGroup) {
-    console.log(`value changed ###########################`)
+    this.log.verbose(`locationChanged  ###########################`, 'EntryComponent')
   }
 
 
   // TODO: NOt working yet...
   CallsignChanged(callsign: string) { // Just serves timer for input field - post interaction
-    console.log(`EntryForm CallsignChanged()`)
+    this.log.verbose(`EntryForm CallsignChanged()`, 'EntryComponent')
 
     this.callInfo = this.document.getElementById("enter__Callsign-upshot")
     if (this.callInfo) {
-      console.log(`EntryForm CallsignChanged looking for ${callsign}`)
+      this.log.verbose(`EntryForm CallsignChanged looking for ${callsign}`, 'EntryComponent')
       //let ranger = this.rangers[this.findIndex(callsign)]
       let ranger = this.rangerService.getRanger(callsign)  // REVIEW is this.rangers here & service in sync?
       this.callInfo.innerHTML = `<span>${ranger.callsign} </span> | <small> ${ranger.licensee} | ${ranger.phone}</small > `
       //< img class= "enter__Callsign-img" aria-hidden src = "${ranger.image}" height = "50" >
     } else {
-      console.log(`EntryForm CallsignChanged did not find enter__Callsign-upshot`)
+      this.log.warn(`EntryForm CallsignChanged did not find enter__Callsign-upshot`, 'EntryComponent')
     }
   }
 
   CallsignCtrlChanged() { // NOTE: NEVER CALLED (my error, maybe does now..)!!!, so use workaround above...
+    this.log.error(`callsignCtrlChanged() called!!!!!!!!!!!!!!!!!!`, 'EntryComponent')
     return
     let callSign: string = (this.document.getElementById("enter__Callsign-input") as HTMLInputElement).value
     if (callSign) {
-      console.log(`CallsignCtrlChanged() call= ${callSign} at ${Date.now}`)
+      this.log.verbose(`CallsignCtrlChanged() call= ${callSign} at ${Date.now}`)
       this.CallsignChanged(callSign)
     }
 
@@ -420,7 +384,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     https://gist.github.com/paulirish/5d52fb081b3570c81e3a
   */
   reset_animation(element: HTMLElement) {
-    console.log(`Fade Animation reset`)
+    this.log.verbose(`Fade Animation reset`, 'EntryComponent')
     element.style.animation = 'none';
     element.offsetHeight; // trigger reflow
     element.style.animation = "";
@@ -428,19 +392,17 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
   // save(model: FieldReport) {
   // call API to save FieldReport
-  // console.log(model);
+  // this.log.verbose(model, 'EntryComponent');
   //}
 
   onFormSubmit(formData1: string): void {
-    console.log(`Form submited at date=${this.date} `)
+    this.log.verbose(`Form submited at date=${this.date} `, 'EntryComponent')
     //this.date=this.dateCtrl.value // TODO:
     this.entryDetailsForm.value.date = this.dateCtrl.value
     let formData = JSON.stringify(this.entryDetailsForm.value)
 
     let newReport = this.fieldReportService.addfieldReport(formData)
-    console.log(`Report id # ${newReport.id} has been added.`)
-    console.log("formData:  " + formData)
-    //console.log("formData1: " + JSON.stringify(formData1))
+    this.log.info(`Report id # ${newReport.id} has been added with: ${formData} `, 'EntryComponent')
 
     if (this.submitInfo) {
       // Display fading confirmation to right of Submit button
@@ -448,12 +410,12 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       this.reset_animation(this.submitInfo)
     }
     else {
-      console.log("NO this.submitInfo ID FOUND!!!")
+      this.log.error("Submittion info field not found", 'EntryComponent')
     }
     this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
 
-    //this.entryDetailsForm.reset() // std reset just blanks values, doesn't initialize them...
-    this.resetForm()
+
+    this.resetForm()  // std reset just blanks values, doesn't initialize them...
   }
 
 
@@ -516,4 +478,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     this.maxDate = now.add(hours, 'hours');
   }
 
+  ngOnDestroy() {
+    //this.fieldReportsSubscription$.unsubscribe()
+  }
 }

@@ -1,6 +1,6 @@
 export { RangerService, RangerType } from "./ranger.service" // RangerStatus
 export { TeamService, TeamType } from "./team.service"
-export { FieldReportService, FieldReportType, FieldReportSource } from "./field-report.service"
+export { FieldReportService, FieldReportType, FieldReportSource, FieldReportsType } from "./field-report.service"
 export { LogService, LogLevel, LogType } from "./log.service"
 export { MarkerService } from "./marker.service"
 export { PopupService } from "./popup.service"

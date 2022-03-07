@@ -12,6 +12,8 @@ export class Utility {
     return new google.maps.LatLng(parseFloat(latlngStr[0]), parseFloat(latlngStr[1]))
   }
 
+
+  // also consider string.padStart()
   static zeroFill(integ: number, lngth: number) {
     var strg = integ.toString();
     while (strg.length < lngth)

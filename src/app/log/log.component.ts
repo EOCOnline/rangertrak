@@ -16,17 +16,17 @@ import { LogType, LogService, LogLevel, SettingsService } from '../shared/servic
   styleUrls: ['./log.component.scss'] //, 'home.page.scss']
 })
 export class LogComponent { //implements OnInit
-  // If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
-
-  logPanel: HTMLElement | null
-  logSubscription: Subscription
-  eventInfo = ''
+  // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
+  private id = 'Log Component'
+  private logPanel: HTMLElement | null
+  private logSubscription: Subscription
+  public eventInfo = ''
 
   // https://material.angular.io/components/checkbox
-  verbose = false
-  info = true
-  warn = true
-  error = true
+  public verbose = false
+  public info = true
+  public warn = true
+  public error = true
 
 
   constructor(
@@ -34,11 +34,11 @@ export class LogComponent { //implements OnInit
     @Inject(DOCUMENT) private document: Document) {
     this.logSubscription = logService.getLogObserver().subscribe({
       next: (log) => {
-        console.log(log)
+        console.log(log) //! REMOVE ME!
         this.gotNewLog(log)
       },
-      error: (e) => logService.error('Log subscripotion got:' + e, 'Log Component'),
-      complete: () => logService.info('Log Subscription complete', 'Log Component')
+      error: (e) => console.error('Log subscripotion got:' + e, this.id),
+      complete: () => console.info('Log Subscription complete', this.id)
     })
 
     this.logPanel = this.document.getElementById("log")

@@ -93,6 +93,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
   //settings
   mymarkers = L.markerClusterGroup()
   mapOptions = ""
+  public eventInfo = ''
 
 
   markerClusterGroup: L.MarkerClusterGroup//  the MarkerClusterGroup class extends the FeatureGroup so it has all of the handy methods like clearLayers() or removeLayers()
@@ -108,7 +109,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
     this.zoomDisplay = SettingsService.Settings.defZoom
     this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
     //this.settings = SettingsService.Settings
-
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
     this.markerClusterGroup = L.markerClusterGroup({ removeOutsideVisibleBounds: true });
   }
 
@@ -123,7 +124,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
     // The sender decides when you get it, but all you have to do is to wait until it comes straight into your inbox.
 
     this.fieldReports$ = this.fieldReportService.subscribeToFieldReports() // Only returns an empty observable! - no data. pg 146 (Ang Dev for TS)
-    // asyns pipe in the template actually pulls it over TouchEvent[Symbol]..
+    // async pipe in the template actually pulls it over TouchEvent[Symbol]..
 
     // https://appdividend.com/2022/02/03/angular-observables/
     /*this.fieldReports$.subscribe(

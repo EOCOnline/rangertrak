@@ -4,7 +4,7 @@ import { RangerService, SettingsService, FieldReportStatusType, TeamService } fr
 import { HttpClient } from '@angular/common/http'
 import * as L from 'leaflet'
 import { LatLngBounds } from 'leaflet';
-import { LogService } from './log.service';
+import { LogService } from './';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
@@ -43,6 +43,7 @@ export type FieldReportsType = {  // OK to export to CSV/Excel?!
 @Injectable({ providedIn: 'root' })
 export class FieldReportService {
 
+  private id = 'Field Report Service'
   private fieldReports!: FieldReportsType
   private fieldReportsSubject: BehaviorSubject<FieldReportsType>
   private selectedFieldReports!: FieldReportsType  // TODO: Enable subscription to this also?
@@ -58,22 +59,22 @@ export class FieldReportService {
     private log: LogService,
     private httpClient: HttpClient) {
 
-    log.verbose("Contruction: once or repeatedly?!--------------", "FieldReportService")
+    log.verbose("Contruction: once or repeatedly?!--------------", this.id)
 
     let localStorageFieldReports = localStorage.getItem(this.storageLocalName)
 
     if (localStorageFieldReports == null) {
-      log.warn(`No Field Reports found in Local Storage. Will rebuild from defaults.`, "FieldReportService")
+      log.warn(`No Field Reports found in Local Storage. Will rebuild from defaults.`, this.id)
       this.fieldReports = this.initFieldReports()
     } else if (localStorageFieldReports.indexOf("version") <= 0) {
-      log.error(`Field Reports in Local Storage appear corrupted & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`, "FieldReportService")
+      log.error(`Field Reports in Local Storage appear corrupted & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`, this.id)
       localStorage.setItem(this.storageLocalName + '-BAD', localStorageFieldReports)
       this.fieldReports = this.initFieldReports()
     } else {
       this.fieldReports = JSON.parse(localStorageFieldReports)
     }
 
-    this.log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event}, op period ${this.fieldReports.operationPeriod} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, "FieldReportService")
+    log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event}, op period ${this.fieldReports.operationPeriod} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
 
     this.fieldReportsSubject = new BehaviorSubject(this.fieldReports)
     this.updateFieldReports()
@@ -111,9 +112,9 @@ export class FieldReportService {
    * rewrite field reports to localStorage & notify observers
    */
   private updateFieldReports() {
-    localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports.fieldReportArray))
+    localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports))
 
-    this.log.verbose(`New field reports are available to observers...`, "FieldReportService")
+    this.log.verbose(`New field reports are available to observers...`, this.id)
     this.fieldReportsSubject.next(this.fieldReports)
 
     /*
@@ -142,6 +143,7 @@ export class FieldReportService {
     this.fieldReports.fieldReportArray.push(newReport)
     this.fieldReports.bounds.extend([newReport.lat, newReport.lng])
     this.updateFieldReports() // put to localStorage & update subscribers
+    return newReport
   }
 
   public setSelectedFieldReports(selection: FieldReportType[]) {
@@ -172,7 +174,7 @@ export class FieldReportService {
   }
 
   recalcFieldBounds(reports: FieldReportsType) {
-    this.log.verbose(`recalcFieldBounds got ${reports.fieldReportArray.length} field reports`, "FieldReportService")
+    this.log.verbose(`recalcFieldBounds got ${reports.fieldReportArray.length} field reports`, this.id)
     let north
     let west
     let south
@@ -209,16 +211,16 @@ export class FieldReportService {
       east = SettingsService.Settings.defLng
     }
 
-    this.log.info(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `, "FieldReportService")
+    this.log.info(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `, this.id)
     if (east - west < 2 * this.boundsMargin) {
       east += this.boundsMargin
       west -= this.boundsMargin
-      this.log.info(`recalcFieldBounds BROADENED to E:${east} W:${west} `, "FieldReportService")
+      this.log.info(`recalcFieldBounds BROADENED to E:${east} W:${west} `, this.id)
     }
     if (north - south < 2 * this.boundsMargin) {
       north += this.boundsMargin
       south -= this.boundsMargin
-      this.log.info(`recalcFieldBounds BROADENED to N:${north} S:${south} `, "FieldReportService")
+      this.log.info(`recalcFieldBounds BROADENED to N:${north} S:${south} `, this.id)
     }
 
     reports.bounds = new LatLngBounds([south, west], [north, east]) //SW, NE
@@ -236,7 +238,7 @@ export class FieldReportService {
       "Wow", "na", "Can't hear you", "Bounced via tail of a comet!", "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
 
     const msSince1970 = new Date().getTime()
-    this.log.info(`Adding an additional ${num} FAKE field reports... with base of ${msSince1970}`, "FieldReportService")
+    this.log.info(`Adding an additional ${num} FAKE field reports... with base of ${msSince1970}`, this.id)
 
     for (let i = 0; i < num; i++) {
       this.fieldReports.fieldReportArray.push({
@@ -267,15 +269,15 @@ export class FieldReportService {
   }
 
   private allFieldReportsToServer_unused() {
-    this.log.verbose("Sending all reports to server (via subscription)...", "FieldReportService")
+    this.log.verbose("Sending all reports to server (via subscription)...", this.id)
 
     // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
 
     // TODO: replace "add" with"post" or ???
     this.httpClient.post(`${this.serverUri}/add`, this.fieldReports.fieldReportArray)
-      .subscribe(res => this.log.verbose('Subscription of all reports to httpClient is Done', "FieldReportService"))
+      .subscribe(res => this.log.verbose('Subscription of all reports to httpClient is Done', this.id))
 
-    this.log.verbose("Sent all reports to server (via subscription)...", "FieldReportService");
+    this.log.verbose("Sent all reports to server (via subscription)...", this.id);
   }
 
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
@@ -318,7 +320,7 @@ export class FieldReportService {
     })
 
     // let sorted = this.fieldReports.sort((a, b) => a.callsign > b.callsign ? 1 : -1)
-    // this.log.verbose("SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!", "FieldReportService")
+    // this.log.verbose("SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!", this.id)
   }
 
   private sortFieldReportsByDate_unused() {

@@ -54,11 +54,11 @@ export class GmapComponent implements OnInit {    //extends Map
   @ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
 
   // items for template
-  title = 'Google Map'
+  protected title = 'Google Map'
   mouseLatLng?: google.maps.LatLngLiteral;
   //Vashon = new google.maps.LatLng(47.4471, -122.4627)
   //Kaanapali = new google.maps.LatLng(20.9338, -156.7168)
-
+  public eventInfo = ''
   // google.maps.Map is NOT the same as GoogleMap...
   gMap?: google.maps.Map
   overviewGMap?: google.maps.Map
@@ -114,6 +114,7 @@ export class GmapComponent implements OnInit {    //extends Map
     private fieldReportService: FieldReportService,
     private httpClient: HttpClient,
     @Inject(DOCUMENT) private document: Document) {
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
 
     this.fieldReportService = fieldReportService
     this.zoom = SettingsService.Settings.defZoom
