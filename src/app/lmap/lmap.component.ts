@@ -1,6 +1,7 @@
-import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild, OnDestroy } from '@angular/core'
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
+import { Observable, Subscription } from 'rxjs'
 /*
 import * as LMC from "leaflet.markercluster"  // https://github.com/Leaflet/Leaflet.markercluster
 //import {} from LeafletMarkerClusterModule
@@ -13,24 +14,23 @@ import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, LatLng
 //import {icon, latLng, marker} from 'leaflet';
 //import * as L from 'leaflet'
 import * as L from 'leaflet';
-import 'leaflet.markercluster';
+import 'leaflet.markercluster'
 https://stackoverflow.com/questions/58847492/error-typeerror-a-markerclustergroup-is-not-a-function
 
 another guess would be that the timing in production is different than on develop. your initMarkers gets called via ngOnChanges but that might be to early. The map or the cluster might not be initialized yet. Try to call initMarkers within markerClusterReady or mapReady
 */
 
 
-import * as L from 'leaflet';
-//import { Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
-import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
+import * as L from 'leaflet'
+import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet'
 import 'leaflet.markercluster';
-import { openDB, deleteDB, wrap, unwrap } from 'idb';
+//import { openDB, deleteDB, wrap, unwrp } from 'idb'
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services'
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService } from '../shared/services'
 import { CodeArea, OpenLocationCode, Utility } from '../shared/'
 import { Context } from 'ag-grid-community'
-import { Observable } from 'rxjs';
+import { MDCSwitch } from '@material/switch'
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // °°°°
@@ -75,10 +75,11 @@ export type addressType = {
   ],
   providers: [SettingsService]
 })
-export class LmapComponent implements OnInit, AfterViewInit {
-
+export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
+  private id = 'Leaflet Map Component'
   //const L = window['L'];
-  title = 'Leaflet Map'
+  public title = 'Leaflet Map'
+  public eventInfo = ''
   lmap?: L.Map
   overviewLMap?: L.Map
   overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } } // TODO: Leaflet's version?
@@ -88,20 +89,26 @@ export class LmapComponent implements OnInit, AfterViewInit {
   zoomDisplay // what's displayed below main map
   center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
   mouseLatLng = this.center
-  fieldReports$!: Observable<FieldReportType[]>
-  fieldReports: FieldReportType[] = []
   //settings
   mymarkers = L.markerClusterGroup()
   mapOptions = ""
-  public eventInfo = ''
-
 
   markerClusterGroup: L.MarkerClusterGroup//  the MarkerClusterGroup class extends the FeatureGroup so it has all of the handy methods like clearLayers() or removeLayers()
   markerClusterData = []
 
+  private fieldReports: FieldReportsType | undefined
+  public fieldReportArray: FieldReportType[] = []
+  private fieldReportsSubscription$!: Subscription
+  private fieldReportStatuses: FieldReportStatusType[] = []
+
+  //selectedFieldReports: FieldReportType[] = []
+  filterSwitch: MDCSwitch | null = null
+  filterButton: HTMLButtonElement | null = null
+
   constructor(private settingsService: SettingsService,
     private fieldReportService: FieldReportService,
     private httpClient: HttpClient,
+    private log: LogService,
     @Inject(DOCUMENT) private document: Document) {
 
     this.fieldReportService = fieldReportService
@@ -115,25 +122,39 @@ export class LmapComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
 
+
+
+    //this.fieldReportsSubscription$ =
+    this.fieldReportService.getFieldReportsObserver().subscribe({
+      next: (newReport) => {
+        console.log(newReport)
+        this.gotNewFieldReports(newReport)
+      },
+      error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
+      complete: () => this.log.info('Field Reports Subscription complete', this.id)
+    })
+
+    /*
     const fieldReportsObservable = this.fieldReportService.getFieldReports();
     fieldReportsObservable.subscribe((fieldReportData: FieldReportType[]) => {
       this.fieldReports = fieldReportData
     })
+    */
     // Remember, Observables producing the values Asynchronously. Observables are the lazy collections of multiple
     // values or streams over time. It is like a subscription to the newsletter, if you keep that subscription open, you will get the new one every once and a while.
     // The sender decides when you get it, but all you have to do is to wait until it comes straight into your inbox.
 
-    this.fieldReports$ = this.fieldReportService.subscribeToFieldReports() // Only returns an empty observable! - no data. pg 146 (Ang Dev for TS)
+    //this.fieldReports$ = this.fieldReportService.subscribeToFieldReports() // Only returns an empty observable! - no data. pg 146 (Ang Dev for TS)
     // async pipe in the template actually pulls it over TouchEvent[Symbol]..
 
     // https://appdividend.com/2022/02/03/angular-observables/
     /*this.fieldReports$.subscribe(
-      x => console.log('Observer got a next value: ' + x),
+      x => this.log.verbose('Observer got a next value: ' + x),
       err => console.error('Observer got an error: ' + err),
-      () => console.log('Observer got a complete notification')
+      () => this.log.verbose('Observer got a complete notification')
     )*/
 
-    console.log(`Now have ${this.fieldReports.length} Field Reports retrieved from Local Storage and/or fakes generated`)
+    this.log.info(`Now have ${this.fieldReports?.numReport} Field Reports retrieved from Local Storage and/or fakes generated`, this.id)
 
 
     //https://www.npmjs.com/package/leaflet.markercluster
@@ -168,12 +189,27 @@ export class LmapComponent implements OnInit, AfterViewInit {
     });
     */
   }
+
+  ngAfterViewInit2() {
+    // OK to register for form events here
+  }
+
+  gotNewFieldReports(newReports: FieldReportsType) {
+    this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`, this.id)
+
+    this.fieldReports = newReports
+    this.fieldReportArray = newReports.fieldReportArray
+    //this.refreshGrid()
+    // this.reloadPage()  // TODO: needed?
+  }
+
+
   onMapReady(ev: any) {
-    console.log(`Leaflet OnMapReady`)
+    this.log.verbose(`Leaflet OnMapReady`, this.id)
   }
 
   private initMap() {
-    console.log("Init Leaflet Map..........")
+    this.log.verbose("Init Leaflet Map..........", this.id)
 
     this.lmap = L.map('lmap', {
       center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
@@ -188,7 +224,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
 
     tiles.addTo(this.lmap)
     this.displayAllMarkers()
-    this.fitBounds()
+    this.lmap?.fitBounds(this.fieldReports!.bounds)
 
     this.lmap?.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
       if (this.zoomDisplay && this.lmap) {
@@ -202,7 +238,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
     this.lmap.on('click', (ev: L.LeafletMouseEvent) => {
       // TODO: If enabled, drop a marker there...
       if (ev.latlng.lat) {
-        console.log(`Click at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`)
+        this.log.verbose(`Click at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`, this.id)
       }
     })
 
@@ -233,7 +269,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
     /*this.overviewLMap!.addListener("click", () => {
       let mapId = this.overviewMapType.cur++ % 4
       this.overviewLMap!.setMapTypeId(this.overviewMapType.types.type[mapId])
-      console.log(`Overview map set to ${this.overviewMapType.types.type[mapId]}`)
+      this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
     })*/
 
     // const infowindow = new google.maps.InfoWindow({
@@ -249,7 +285,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
       if ($event.latlng) {
         this.mouseLatLng = $event.latlng //.toJSON()
       }
-      //console.log(`Overview map at ${JSON.stringify(this.mouseLatLng)}`)
+      //this.log.verbose(`Overview map at ${JSON.stringify(this.mouseLatLng)}`, this.id)
       //infowindow.setContent(`${JSON.stringify(latlng)}`)
     })
 
@@ -282,9 +318,9 @@ export class LmapComponent implements OnInit, AfterViewInit {
 
     let mymarkers = L.markerClusterGroup();
 
-    for (let i = 0; i < this.fieldReports.length; i++) {
-      let title = `${this.fieldReports[i].callsign} at ${this.fieldReports[i].date} with ${this.fieldReports[i].status}`
-      let marker = L.marker(new L.LatLng(this.fieldReports[i].lat, this.fieldReports[i].lng), { title: title })
+    forEach (i)
+      let title = `${i.callsign} at ${i.date} with ${i.status}`
+      let marker = L.marker(new L.LatLng(i.lat, i.lng), { title: title })
       // = L.marker(new L.LatLng(a[0], a[1]), { title: title });
       marker.bindPopup(title)
       mymarkers.addLayer(marker);
@@ -294,36 +330,28 @@ export class LmapComponent implements OnInit, AfterViewInit {
   }*/
 
 
-  private fitBounds() {
-    this.fieldReportService.recalcFieldBounds()
-    let bound = this.fieldReportService.getFieldReportBound()  // { east: east, north: north, south: south, west: west } //e,n,s,w
-    console.log(`Fitting bounds= :${JSON.stringify(bound)}`)
-    this.lmap?.fitBounds([
-      [bound.south, bound.west],
-      [bound.north, bound.east]
-    ]);
-  }
 
   displayAllMarkers() {
-    this.fieldReports = this.fieldReportService.getFieldReports() // REVIEW: wipes out any not previously saved...
-    console.log(`displayAllMarkers: all ${this.fieldReports.length} of 'em`)
 
-    for (let i = 0; i < this.fieldReports.length; i++) {
-      if (this.fieldReports[i].lat && this.fieldReports[i].lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
-        let title = `${this.fieldReports[i].callsign} at ${this.fieldReports[i].date} with ${this.fieldReports[i].status}`
-        console.log(`displayAllMarkers: ${i}: ${JSON.stringify(this.fieldReports[i])}`)
+    // REVIEW: wipes out any not previously saved...
 
-        let marker = L.marker(new L.LatLng(this.fieldReports[i].lat, this.fieldReports[i].lng), { title: title })
+    this.log.verbose(`displayAllMarkers: all ${this.fieldReports?.numReport} of 'em`, this.id)
+    this.fieldReports?.fieldReportArray.forEach(i => {
+      if (i.lat && i.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
+        let title = `${i.callsign} at ${i.date} with ${i.status}`
+        this.log.verbose(`displayAllMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
+
+        let marker = L.marker(new L.LatLng(i.lat, i.lng), { title: title })
         marker.bindPopup(title)
         this.mymarkers.addLayer(marker);
       } else {
-        console.warn(`displayAllMarkers: skipping report # ${this.fieldReports[i].id}; bad lat/lng: ${i}: ${JSON.stringify(this.fieldReports[i])}`)
+        console.warn(`displayAllMarkers: skipping report # ${i.id}; bad lat/lng: ${i}: ${JSON.stringify(i)}`)
       }
-    }
+    })
 
     this.lmap?.addLayer(this.mymarkers);
 
-    //console.log(`displayAllMarkers: created ${this.mymarkers.getChildCount()} of 'em`) //this.mymarkers.getChildCount is not a function
+    //this.log.verbose(`displayAllMarkers: created ${this.mymarkers.getChildCount()} of 'em`, this.id) //this.mymarkers.getChildCount is not a function
 
     // to refresh markers that have changed:
     // https://github.com/Leaflet/Leaflet.markercluster#refreshing-the-clusters-icon
@@ -331,14 +359,14 @@ export class LmapComponent implements OnInit, AfterViewInit {
 
 
   private displayAllMarkers_NoCluster_Unused() {
-    //this.fieldReports$ = this.fieldReportService.getFieldReports() // REVIEW: wipes out any not previously saved...
-    for (let i = 0; i < this.fieldReports.length; i++) {
-      this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
-    }
+    // REVIEW: wipes out any not previously saved...
+    this.fieldReports?.fieldReportArray.forEach(i => {
+      this.addMarker(i.lat, i.lng, i.status)
+    })
   }
 
   private onMapMouseMove_Unused(event: L.LeafletEvent) {  // MouseEvent) { //google.maps.MapMouseEvent) {
-    console.log(`onMapMouseMove: ${JSON.stringify(event)}`)
+    this.log.verbose(`onMapMouseMove: ${JSON.stringify(event)}`, this.id)
     //if (event.type. .lat) {
     //this.mouseLatLng = { lat: event.lat, lng: event.lng }
     //}
@@ -372,7 +400,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
 
 
   private addMarker(lat: number, lng: number, status: string = '') {
-    //console.log(`addMarker at ${lat}. ${lng}, ${status}`)
+    //this.log.verbose(`addMarker at ${lat}. ${lng}, ${status}`, this.id)
 
     //iconDefault
 
@@ -388,19 +416,19 @@ export class LmapComponent implements OnInit, AfterViewInit {
 
         _marker.bindPopup(city);
         _marker.on('popupopen', function() {
-          console.log('open popup');
+          this.log.verbose('open popup', this.id);
         });
         _marker.on('popupclose', function() {
-          console.log('close popup');
+          this.log.verbose('close popup', this.id);
         });
         _marker.on('mouseout', function() {
-          console.log('close popup with mouseout');
+          this.log.verbose('close popup with mouseout', this.id);
           _map.closePopup();
         });
-        console.log(_map.getZoom());
+        this.log.verbose(_map.getZoom());
         if (_map.getZoom() > 15 && _map.hasLayer(_marker)) {
           _map.closePopup();
-          console.log('zoom > 15 close popup');
+          this.log.verbose('zoom > 15 close popup', this.id);
         }
       */
 
@@ -441,7 +469,7 @@ export class LmapComponent implements OnInit, AfterViewInit {
 */
 
   private _markerOnClick(e: any) {
-    console.warn(`Got Marker Click!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! e= ${JSON.stringify(e)}`)
+    this.log.warn(`Got Marker Click!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! e= ${JSON.stringify(e)}`, this.id)
   }
 
   /* some error on map clicking
@@ -540,18 +568,19 @@ createTile @ leaflet-src.js:11702
     });
   }
 
+  /*
   // or on centerChanged
   private logCenter() {
-    console.log(`Map center is at ${JSON.stringify(this.lmap?.getCenter())}`)
+    this.log.verbose(`Map center is at ${JSON.stringify(this.lmap?.getCenter())}`, this.id)
     this.lmap?.on("moveend", () => {
-      console.log(this.lmap?.getCenter().toString());
+      this.log.verbose(this.lmap!.getCenter().toString(), this.id);
     });
   }
-
+*/
 
   /*
     addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
-      console.log(`addMarker`)
+      this.log.verbose(`addMarker`, this.id)
 
       if (infoContent == "") {
         infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}`
@@ -585,7 +614,7 @@ createTile @ leaflet-src.js:11702
         let pos = `lat: ${latLng.lat}; long: ${latLng.lng}`
         //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; long: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
 
-        console.log("Actually adding marker now...")
+        this.log.verbose("Actually adding marker now...", this.id)
         let m = new google.maps.Marker({
           draggable: true,
           animation: animation,
@@ -627,7 +656,7 @@ createTile @ leaflet-src.js:11702
         )
         this.markers.push(m)
       } else {
-        console.log("event.latLng is BAD; can not add marker..")
+        this.log.verbose("event.latLng is BAD; can not add marker..", this.id)
       }
       //this.refreshMarkerDisplay()
     }
@@ -639,7 +668,7 @@ createTile @ leaflet-src.js:11702
   // https://stackblitz.com/edit/ts-leaflet-markercluster
 
   /*
-   //console.log("ngAfterViewInit..........")
+   //this.log.verbose("ngAfterViewInit..........", this.id)
    this.initMap()
 
    if (this.lmap) {
@@ -775,6 +804,10 @@ createTile @ leaflet-src.js:11702
       }
       */
   }
+
+  ngOnDestroy() {
+    this.fieldReportsSubscription$.unsubscribe()
+  }
 }
 
 
@@ -782,6 +815,7 @@ createTile @ leaflet-src.js:11702
 function initShapesLayer() {
   throw new Error('Function not implemented.');
 }
+
 /*
 OLD CODE from Ranger 4.2 ===============================================
 

@@ -47,12 +47,14 @@
     (gridReady)="onGridReady($event)"
     [gridOptions]="gridOptions"
     class="ag-theme-alpine"
-    [rowData]="fieldReports$ | async"
+    [rowData]="fieldReportArray"
     [columnDefs]="columnDefs"
     [defaultColDef]="defaultColDef"
     [tooltipShowDelay]="500"
   >
     <!--
+
+      was :  [rowData]="fieldReports.fieldreportArray | async"
       (firstDataRendered)="onFirstDataRendered($event)"
       (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1
 

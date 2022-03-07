@@ -1,3 +1,4 @@
+/// <reference types="@types/google.maps" />
 import { Component, Inject, isDevMode, OnInit } from '@angular/core';
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 //import { addressType } from '../lmap/lmap.component' // BUG:

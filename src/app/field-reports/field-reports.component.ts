@@ -21,10 +21,11 @@ export class myUnusedPipe implements PipeTransform {
 export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private id = 'Field Report'
+  private fieldReports: FieldReportsType | undefined
   public fieldReportArray: FieldReportType[] = []
   private fieldReportsSubscription$!: Subscription
   private fieldReportStatuses: FieldReportStatusType[] = []
-  //fieldReportStatuses$!: Observable<FieldReportStatusType[]> //TODO:
+  // fieldReportStatuses$!: Observable<FieldReportStatusType[]> //TODO:
   private settings
 
   public eventInfo = ''
@@ -35,8 +36,8 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   private http: any
   private numSeperatorWarnings = 0
   private maxSeperatorWarnings = 3
-  private numFakesForm!: FormGroup
-  private nFakes = 10
+  public numFakesForm!: FormGroup
+  public nFakes = 10
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
@@ -62,8 +63,8 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     filter: true,
     floatingFilter: true
   }
-  backupRowData: any[] = []
-  rowData: any[] = []
+  private backupRowData: any[] = []
+  private rowData: any[] = []
 
   constructor(
     private formBuilder: FormBuilder,
@@ -142,17 +143,17 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.numFakesForm = this.formBuilder.group({})
 
     if (!this.settings.debugMode) {
-      this.log.verbose("running in non-debug mode")
+      this.log.verbose("running in non-debug mode", this.id)
       // this.displayHide("enter__Fake--id") // debug mode SHOULD be ON...
     } else {
-      this.log.verbose("running in debug mode")
+      this.log.verbose("running in debug mode", this.id)
       this.displayShow("enter__Fake--id")
     }
 
     if (this.gridApi) {
       this.gridApi.refreshCells()
     } else {
-      this.log.verbose("no this.gridApi yet in ngOnInit()")
+      this.log.verbose("no this.gridApi yet in ngOnInit()", this.id)
     }
   }
 
@@ -161,15 +162,16 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   gotNewFieldReports(newReports: FieldReportsType) {
-    this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`)
+    this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`, this.id)
 
+    this.fieldReports = newReports
     this.fieldReportArray = newReports.fieldReportArray
     this.refreshGrid()
     // this.reloadPage()  // TODO: needed?
   }
 
   onGridReady = (params: any) => {
-    this.log.verbose("Field Report Form onGridReady")
+    this.log.verbose("Field Report Form onGridReady", this.id)
 
     this.gridApi = params.api
     this.gridColumnApi = params.columnApi
@@ -192,23 +194,23 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     const weekday = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
     let dt = 'unknown date'
     let d: Date = params.data.date
-    //this.log.verbose(`Day is: ${d.toISOString()}`)
-    //this.log.verbose(`WeekDay is: ${d.getDay}`)
+    //this.log.verbose(`Day is: ${d.toISOString()}`, this.id)
+    //this.log.verbose(`WeekDay is: ${d.getDay}`, this.id)
 
     try {  // TODO: Use the date pipe instead?
       //weekday[d.getDay()] +
       dt = formatDate(d, 'M-dd HH:MM:ss', 'en-US')
-      //this.log.verbose(`Day is: ${params.data.date.toISOString()}`)
+      //this.log.verbose(`Day is: ${params.data.date.toISOString()}`, this.id)
     } catch (error: any) {
       dt = `Bad date format: Error name: ${error.name}; msg: ${error.message}`
     }
 
     // https://www.w3schools.com/jsref/jsref_obj_date.asp
-    //this.log.verbose(`Day is: ${params.data.date.toISOString()}`)
+    //this.log.verbose(`Day is: ${params.data.date.toISOString()}`, this.id)
     /*
         if (this.isValidDate(d)) {
           dt = weekday[d.getDay()] + formatDate(d, 'yyyy-MM-dd HH:MM:ss', 'en-US')
-          this.log.verbose(`Day is: ${params.data.date.toISOString()}`)
+          this.log.verbose(`Day is: ${params.data.date.toISOString()}`, this.id)
         }
     */
     return dt
@@ -321,7 +323,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     // https://github.com/material-components/material-components-web/tree/master/packages/mdc-slider#discrete-slider
     // https://material-components.github.io/material-components-web-catalog/#/component/slider
     this.fieldReportService.generateFakeData(num)
-    this.log.verbose(`Generated ${num} FAKE Field Reports`)
+    this.log.verbose(`Generated ${num} FAKE Field Reports`, this.id)
     //this.fieldReportService.updateFieldReports()
     //this.fieldReports$ = this.fieldReportService.subscribeToFieldReports()
     //this.refreshGrid()
