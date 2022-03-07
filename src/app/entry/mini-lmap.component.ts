@@ -5,7 +5,7 @@ import * as L from 'leaflet'
 //import { Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
 import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
 //import 'leaflet.markercluster';
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services'
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, LogService } from '../shared/services'
 import { openDB, deleteDB, wrap, unwrap } from 'idb';
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 
@@ -39,6 +39,7 @@ L.Marker.prototype.options.icon = iconDefault;
 })
 export class MiniLMapComponent implements AfterViewInit {
 
+  id = 'Leaflet MiniMap'
   title = 'Leaflet Map'
   lmap?: L.Map
 
@@ -50,26 +51,28 @@ export class MiniLMapComponent implements AfterViewInit {
   //mymarkers = L.markerClusterGroup()
 
   constructor(
-    @Inject(DOCUMENT) private document: Document) {
-    console.log("Leaflet constructor() ..........")
+    private log: LogService,
+    @Inject(DOCUMENT) private document: Document
+  ) {
+    this.log.verbose("constructor()", this.id)
     this.zoom = SettingsService.Settings.defZoom
     this.zoomDisplay = SettingsService.Settings.defZoom
     this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
   }
 
   ngAfterViewInit() {
-    console.log("Leaflet ngAfterViewInit() ..........")
+    this.log.verbose("ngAfterViewInit()", this.id)
     this.initMap();
     //this.mymarkers = L.markerClusterGroup()
     // TODO: How & Where to subscribe for location updates?!
   }
 
   onMapReady(ev: any) {
-    console.log(`Leaflet minimap OnMapReady`)
+    this.log.verbose(` OnMapReady`)
   }
 
   private initMap() {
-    console.log("Leaflet initMap() ..........")
+    this.log.verbose("initMap() ", this.id)
 
     this.lmap = L.map('lmap', {
       center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
@@ -106,7 +109,7 @@ export class MiniLMapComponent implements AfterViewInit {
     // Subscribe to start listening for mouse-move events
     const subscription = mouseMoves.subscribe(evt => {
       // Log coords of mouse movements
-      console.log(`Coords: ${evt.clientX} X ${evt.clientY}`)
+      this.log.verbose(`Coords: ${evt.clientX} X ${evt.clientY}`, this.id)
 
       // When the mouse is over the upper-left of the screen,
       // unsubscribe to stop listening for mouse movements
@@ -123,7 +126,7 @@ export class MiniLMapComponent implements AfterViewInit {
   /*
   onMapMouseMove(event: any) {
     //L.LeafletMouseEvent) { //LeafletEvent) {  // MouseEvent) { //google.maps.MapMouseEvent) {
-    console.log(`onMapMouseMove: ${JSON.stringify(event)}`)
+    this.log.verbose(`onMapMouseMove: ${JSON.stringify(event)}`, this.id)
     //if (event.type. .lat) {
     this.mouseLatLng = { lat: event.lat, lng: event.lng }
     //}
@@ -161,7 +164,7 @@ export class MiniLMapComponent implements AfterViewInit {
   }
 
   private addMarker(lat: number, lng: number, status: string = '') {
-    //console.log(`addMarker at ${lat}. ${lng}, ${status}`)
+    //this.log.verbose(`addMarker at ${lat}. ${lng}, ${status}`, this.id)
 
     //iconDefault
 
@@ -177,19 +180,19 @@ export class MiniLMapComponent implements AfterViewInit {
 
         _marker.bindPopup(city);
         _marker.on('popupopen', function() {
-          console.log('open popup');
+          this.log.verbose('open popup', this.id);
         });
         _marker.on('popupclose', function() {
-          console.log('close popup');
+          this.log.verbose('close popup', this.id);
         });
         _marker.on('mouseout', function() {
-          console.log('close popup with mouseout');
+          this.log.verbose('close popup with mouseout', this.id);
           _map.closePopup();
         });
-        console.log(_map.getZoom());
+        this.log.verbose(_map.getZoom(), this.id)
         if (_map.getZoom() > 15 && _map.hasLayer(_marker)) {
           _map.closePopup();
-          console.log('zoom > 15 close popup');
+          this.log.verbose('zoom > 15 close popup', this.id);
         }
       */
 

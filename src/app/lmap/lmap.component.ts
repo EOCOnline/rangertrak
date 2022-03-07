@@ -127,7 +127,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     //this.fieldReportsSubscription$ =
     this.fieldReportService.getFieldReportsObserver().subscribe({
       next: (newReport) => {
-        console.log(newReport)
+        console.log(`gotNewFieldReport to LMap: ${JSON.stringify(newReport)}`)
         this.gotNewFieldReports(newReport)
       },
       error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
@@ -209,7 +209,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initMap() {
-    this.log.verbose("Init Leaflet Map..........", this.id)
+    this.log.verbose("Init Leaflet Map", this.id)
 
     this.lmap = L.map('lmap', {
       center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
@@ -223,9 +223,13 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     tiles.addTo(this.lmap)
-    this.displayAllMarkers()
-    this.lmap?.fitBounds(this.fieldReports!.bounds)
 
+    if (this.lmap && this.fieldReports) {
+      this.displayAllMarkers()
+      console.error(JSON.stringify(this.fieldReports.bounds))
+      this.lmap.fitBounds(this.fieldReports.bounds)
+      this.log.warn(`Not able to set bounds - maybe premature?`, this.id)
+    }
     this.lmap?.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
       if (this.zoomDisplay && this.lmap) {
         this.zoom = this.lmap.getZoom()

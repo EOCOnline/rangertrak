@@ -89,7 +89,7 @@ export class FieldReportService {
       date: new Date,
       event: 'ACS Exercise #1',  // TODO: Should be in Settings?
       operationPeriod: 'OpPeriod1',  // TODO: Should be in Settings?
-      bounds: new LatLngBounds([90, 180], [-90, -180]), //SW, NE
+      bounds: new LatLngBounds([89.9, 179.9], [-89.9, -179.9]), //SW, NE
       numReport: 0,
       maxId: 0,
       filter: '', // All reports or not? Guard to ensure a subset never gets writen to localstorage?

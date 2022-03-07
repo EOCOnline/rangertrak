@@ -409,7 +409,7 @@ MarkerClustererPlus Library - also old
     this.log.verbose(`addMarker`, this.id)
 
     if (infoContent == "") {
-      infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}`
+      infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${Date()}`
     }
     if (title == "") {
       title = infoContent

@@ -1,15 +1,25 @@
-<h1>Log</h1>
-<h2>{{eventInfo}}</h2>
-<pre id="log">Event information log</pre>
+<h1>Event Log</h1>
+<h3>{{eventInfo}} {{ dateNow | date :'short'}}</h3>
+<div id="log">
+  Event information log
+</div>
 
 <mat-card>
   <mat-card-content>
-    <h2>Log levels to display:</h2>
-    <!--section>
-      <mat-checkbox [(ngModel)]="verbose">Verbose</mat-checkbox>
-      <mat-checkbox [(ngModel)]="info">Informational</mat-checkbox>
-      <mat-checkbox [(ngModel)]="warn">Warnings</mat-checkbox>
-      <mat-checkbox [(ngModel)]="error">Errors</mat-checkbox>
-    </section-->
+    <h3>Log levels to display:</h3>
+    <section>
+      <mat-checkbox [(ngModel)]="verbose" (change)="this.redisplayLog()"
+        >Verbose</mat-checkbox
+      >
+      <mat-checkbox [(ngModel)]="info" (change)="this.redisplayLog()"
+        >Informational</mat-checkbox
+      >
+      <mat-checkbox [(ngModel)]="warn" (change)="this.redisplayLog()"
+        >Warnings</mat-checkbox
+      >
+      <mat-checkbox [(ngModel)]="error" (change)="this.redisplayLog()"
+        >Errors</mat-checkbox
+      >
+    </section>
   </mat-card-content>
 </mat-card>

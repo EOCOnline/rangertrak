@@ -11,10 +11,11 @@ h1 {
   margin     : 0;
 }
 
-pre {
-  height          : 80vh;
+#log {
+  height          : 70vh;
   font-family     : monospace;
-  font-size       : 1em;
+  font-size       : 0.8em;
+  line-height     : 12px;
   padding         : 2px 5px;
   color           : rgb(57, 34, 161);
   background-color: rgb(226, 238, 156);
@@ -23,13 +24,23 @@ pre {
   overflow        : auto;
 }
 
+h3 {
+  margin            : 0px 0px;
+  //background-color: crimson;
+}
+
+.mat-checkbox {
+  margin: 0px 10px;
+}
+
 .verbose {
-  color: rgb(66, 65, 65);
+  color    : rgb(66, 65, 65);
+  font-size: 8px;
 }
 
 .info {
   //font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  color: black;
+  color: rgb(7, 246, 39);
 }
 
 .warn {
@@ -38,4 +49,22 @@ pre {
 
 .error {
   color: red
+}
+
+#tiny {
+  font-size       : 10px;
+  color           : crimson;
+  background-color: cornflowerblue;
+}
+
+#tiny2 {
+  font-size       : 8px;
+  color           : rgb(82, 177, 241);
+  background-color: rgb(74, 165, 90);
+}
+
+.tiny {
+  font-size       : 10px;
+  color           : crimson;
+  background-color: cornflowerblue;
 }

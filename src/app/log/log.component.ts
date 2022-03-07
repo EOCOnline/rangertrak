@@ -1,9 +1,9 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject } from '@angular/core'
+import { AfterContentInit, AfterViewInit, Component, Inject, OnInit } from '@angular/core'
 import { Subscription, switchMap } from 'rxjs';
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { Utility } from "../shared"
-
+import { faMapMarkedAlt, faCircleInfo, faCircleCheck, faCircleExclamation, faBug } from '@fortawesome/free-solid-svg-icons';
 import { LogType, LogService, LogLevel, SettingsService } from '../shared/services/';
 
 /**
@@ -15,73 +15,121 @@ import { LogType, LogService, LogLevel, SettingsService } from '../shared/servic
   templateUrl: './log.component.html',
   styleUrls: ['./log.component.scss']
 })
-export class LogComponent { //implements OnInit
+export class LogComponent implements OnInit { //}, AfterContentInit, AfterViewInit {
   // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
   private id = 'Log Component'
-  private logPanel: HTMLElement | null
+  private logPanel: HTMLElement | null = null
   private logSubscription: Subscription
   public eventInfo = ''
+  private latestLog: LogType[] = []
+  public dateNow = Date.now()
 
   // https://material.angular.io/components/checkbox
-  public verbose = false
+  public verbose = true
   public info = true
   public warn = true
   public error = true
-
+  faCircleInfo = faCircleInfo
+  faCircleCheck = faCircleCheck
+  faCircleExclamation = faCircleExclamation
+  faBug = faBug
 
   constructor(
     private logService: LogService,
     @Inject(DOCUMENT) private document: Document) {
+    console.log(`Constructing log compoennt`)
+
     this.logSubscription = logService.getLogObserver().subscribe({
       next: (log) => {
-        console.log(`LogPanel got: ${log}`) //! REMOVE ME!
+        //console.log(`LogPanel got: ${JSON.stringify(log)}`)
+        this.latestLog = log
         this.gotNewLog(log)
       },
       error: (e) => console.error('Log Subscription got:' + e, this.id),
       complete: () => console.info('Log Subscription complete', this.id)
     })
-
-    this.logPanel = this.document.getElementById("log")
-    if (this.logPanel === null) { throw ("unable to find log panel...") }
   }
 
   /**
    * Create heading for Log Panel
    */
   ngOnInit(): void {
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${new Date}`
+    console.log(`Into log compoennt's ngInit`)
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
+
+    this.logPanel = this.document.getElementById("log")
+    if (this.logPanel) {
+      // YES!
+      console.log(`ngOnInit() found logPanel.`)
+      this.redisplayLog()
+    }
   }
+  /*
+    ngAfterContentInit() {
+      this.logPanel = this.document.getElementById("log")
+      if (this.logPanel) {
+        // YES!
+        console.log(`ngAfterContentInit() found logPanel.`)
+        this.redisplayLog()
+      }
+    }
+
+    ngAfterViewInit() {
+      this.logPanel = this.document.getElementById("log")
+      if (this.logPanel) {
+        console.log(`ngAfterViewInit() found logPanel.`)
+        this.redisplayLog()
+      }
+    }
+  */
+  redisplayLog() {
+    console.log(`redisplay log with only ${this.verbose ? 'verbose, ' : ''}${this.info ? 'info, ' : ''}${this.warn ? 'warnings, ' : ''}${this.error ? 'errors ' : ''}`)
+    this.gotNewLog(this.latestLog)
+  }
+
   /**
-   *
-   * @param v
+   * If you have to display reserved characters such as <, >, &, " within the <pre> tag,
+   * the characters must be escaped using their respective HTML entity.
    */
   gotNewLog(log: LogType[]) {
-    if (this.logPanel === null) { throw ("unable to find log panel...") }
-    console.log('New log entry received!')
+    console.log(`got new log with ${log.length} entries`)
+
+    this.logPanel = this.document.getElementById("log")
+    if (!this.logPanel) {
+      console.warn(`Asked to display the logs BEFORE the logPanel could be initialized. Will retry. For: \n${JSON.stringify(log.slice(-1))} `)
+      //  TODO: Retry after a second or it's otherwise created...
+      return
+    }
+    if (this.logPanel == undefined) { throw ("log panel undefined...") }
+
+    this.logPanel!.innerHTML = ''
     log.forEach(entry => {
-      let time = Utility.zeroFill(entry.date.getHours(), 2) + ":" + Utility.zeroFill(entry.date.getMinutes(), 2) + ":" + Utility.zeroFill(entry.date.getSeconds(), 2) + ":" + Utility.zeroFill(entry.date.getMilliseconds(), 4)
+      let time = entry.date.getHours().toString().padStart(2, '0') + ":" + entry.date.getMinutes().toString().padStart(2, '0') + ":" + entry.date.getSeconds().toString().padStart(2, '0') + "." + entry.date.getMilliseconds().toString().padStart(3, '0')
+      //let time1 = Utility.zeroFill(entry.date.getHours(), 2) + ":" + Utility.zeroFill(entry.date.getMinutes(), 2) + ":" + Utility.zeroFill(entry.date.getSeconds(), 2) + ":" + Utility.zeroFill(entry.date.getMilliseconds(), 4)
+
       switch (entry.level) {
         case LogLevel.Verbose:
           if (this.verbose) {
-            this.logPanel!.innerHTML += `<span class="${entry.level}">${time} - ${entry.source}:  ${entry.msg}</span> \n`
+            // BUG: Classes and id's show up in debugger, but font-sizes & colors don't get calculated/are ineffective!
+            this.logPanel!.innerHTML += `<i class="fa-solid fa-circle-check"></i><span class="${entry.level}"><span id="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
           }
           break;
 
         case LogLevel.Info:
           if (this.info) {
-            this.logPanel!.innerHTML += `<span class="${entry.level}">${time} - ${entry.source}:  ${entry.msg}</span> \n`
+            this.logPanel!.innerHTML += `<i class="fa-solid fa-circle-info"></i><span class="info"><span class="tiny" id="tiny2"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
           }
           break;
 
         case LogLevel.Warn:
           if (this.warn) {
-            this.logPanel!.innerHTML += `<span class="${entry.level}">${time} - ${entry.source}:  ${entry.msg}</span> \n`
+            this.logPanel!.innerHTML += `<i class="fa-solid fa-circle-exclamation"></i><span class="${entry.level}"><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
           }
           break;
 
         case LogLevel.Error:
           if (this.error) {
-            this.logPanel!.innerHTML += `<span class="${entry.level}">${time} - ${entry.source}:  ${entry.msg}</span> \n`
+            this.logPanel!.innerHTML += `<i class="fa-solid fa-bug"></i><span class="${entry.level}"><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
           }
           break;
       }

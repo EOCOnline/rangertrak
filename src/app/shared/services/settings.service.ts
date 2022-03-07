@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
 import * as packageJson from '../../../../package.json'
+import { LogService } from './'
 
 export type SecretType = {
   "id": number,
@@ -41,6 +42,8 @@ export type FieldReportStatusType = { status: string, color: string, icon: strin
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
+
+  private id = 'Settings Service'
   static storageLocalName = 'appSettings'
   static secrets: SecretType[]
   static Settings: SettingsType
@@ -49,13 +52,16 @@ export class SettingsService {
   fieldReportStatuses: FieldReportStatusType[] = []
   static version: string
 
-  constructor() {
-    console.log("Contructing SettingsService") // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
+  constructor(
+    private log: LogService
+  ) {
+    // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
+    this.log.verbose('Constructing', this.id)
 
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
     let secretWorkaround = JSON.stringify(secrets)
     SettingsService.secrets = JSON.parse(secretWorkaround)
-    //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
+    //this.log.verbose('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
     // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key: environmental values, GitHub vault, or  encryption? https://www.doppler.com/
 
     // populate SettingsService.Settings
@@ -64,21 +70,21 @@ export class SettingsService {
     let localStorageSettings = localStorage.getItem(SettingsService.storageLocalName)
     let needSettings = SettingsService.Settings == undefined
     if (needSettings) {
-      console.log("Get App Settings...")
+      this.log.info("Get App Settings...", this.id)
       try {
         if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") > 0) {
           SettingsService.Settings = JSON.parse(localStorageSettings)
-          console.log("Initialized App Settings from localstorage")
+          this.log.verbose("Initialized App Settings from localstorage", this.id)
           needSettings = false
         }
       } catch (error: any) {
-        console.log(`localstorage App Settings i.e., ${localStorageSettings} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
+        this.log.verbose(`localstorage App Settings i.e., ${localStorageSettings} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`, this.id);
         // TODO: Do it!
         // REVIEW:
         localStorage.removeItem(SettingsService.storageLocalName)
       }
     }
-    if (needSettings) { SettingsService.ResetDefaults() }
+    if (needSettings) { this.ResetDefaults() }
 
     // REVIEW: Above may come up with an old version #, so do this after the above
     // package.json has version: https://www.npmjs.com/package/standard-version: npm run release
@@ -87,7 +93,7 @@ export class SettingsService {
     //this.version = packageAsJson.version
     SettingsService.version = packageAsJson.version
     SettingsService.Settings.version = packageAsJson.version
-    console.log(`Got version: ${packageAsJson.version} `)
+    this.log.verbose(`Got version: ${packageAsJson.version} `, this.id)
     // REVIEW: following forces garbage collection of package.json, for security? (would happen at end of constructor too)
     packageAsString = ''
     packageAsJson = null
@@ -96,14 +102,14 @@ export class SettingsService {
     // populate Field Report Statuses
     let localStorageFieldReportStatuses = localStorage.getItem(SettingsService.localStorageFieldReportStatusName)
     if (localStorageFieldReportStatuses != undefined) { //|| this.fieldReportStatuses.length == 0
-      console.log(`Got ${localStorageFieldReportStatuses?.length} fieldReportStatuses from LocalStorage, parse 'em`)
+      this.log.verbose(`Got ${localStorageFieldReportStatuses?.length} fieldReportStatuses from LocalStorage, parse 'em`, this.id)
       try {
         if (localStorageFieldReportStatuses != null && localStorageFieldReportStatuses.indexOf("status") > 0) {
           this.fieldReportStatuses = JSON.parse(localStorageFieldReportStatuses)
-          console.log(`Initialized ${this.fieldReportStatuses.length} fieldreport statuses from localstorage`)
+          this.log.verbose(`Initialized ${this.fieldReportStatuses.length} fieldreport statuses from localstorage`, this.id)
         }
       } catch (error: any) {
-        console.error(`localstorage App Settings i.e., ${SettingsService.localStorageFieldReportStatusName} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
+        console.error(`localstorage App Settings i.e., ${SettingsService.localStorageFieldReportStatusName} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`, this.id)
         // TODO: Do it!
         // REVIEW:
         localStorage.removeItem(SettingsService.localStorageFieldReportStatusName)
@@ -112,13 +118,13 @@ export class SettingsService {
     if ((this.fieldReportStatuses == undefined) || (this.fieldReportStatuses == null) || (this.fieldReportStatuses.length == 0)) {
       this.ResetFieldReportStatusDefaults()
     }
-    console.log(`${this.fieldReportStatuses.length} FieldReport Statuses initialized ` + (SettingsService.Settings.debugMode ? JSON.stringify(this.fieldReportStatuses) : ""))
+    this.log.verbose(`${this.fieldReportStatuses.length} FieldReport Statuses initialized ${SettingsService.Settings.debugMode ? JSON.stringify(this.fieldReportStatuses) : ''}`)
 
   }
-
-  static ResetDefaults() {
+  // static
+  ResetDefaults() {
     //original hardcoded defaults... not saved until form is submitted... This form doesn't allow editing of all values
-    console.log("Initialize App Settings from hardcoded values")
+    this.log.verbose("Initialize App Settings from hardcoded values", this.id)
 
     // TODO: Need different sets for each type of map, and perhaps various (selectable/savable) copies of 'preferences'
     SettingsService.Settings = {
@@ -152,14 +158,15 @@ export class SettingsService {
       { status: 'Check-in', color: 'grey', icon: '' },
       { status: 'Check-out', color: 'dark-grey', icon: '' }
     ]
-    console.log(`ResetFieldReportStatusDefaults reset to ${this.fieldReportStatuses.length} Statuses`)
+    this.log.verbose(`ResetFieldReportStatusDefaults reset to ${this.fieldReportStatuses.length} Statuses`, this.id)
     return this.fieldReportStatuses
   }
 
-  static Update(newSettings: SettingsType) {
+  // TODO: static
+  Update(newSettings: SettingsType) {
     // TODO: any validation...
-    localStorage.setItem(SettingsService.storageLocalName, JSON.stringify(newSettings));
-    console.log("Updated Application Settings to " + JSON.stringify(newSettings))
+    localStorage.setItem(SettingsService.storageLocalName, JSON.stringify(newSettings))
+    this.log.verbose(`Updated Application Settings to ${JSON.stringify(newSettings)}`, this.id)
   }
 
   getFieldReportStatuses() {
@@ -170,7 +177,7 @@ export class SettingsService {
     // TODO: any validation...
     this.fieldReportStatuses = newStatuses
     localStorage.setItem(SettingsService.localStorageFieldReportStatusName, JSON.stringify(newStatuses));
-    console.log("Replaced FieldReport Statuses with " + JSON.stringify(newStatuses))
+    this.log.verbose("Replaced FieldReport Statuses with " + JSON.stringify(newStatuses), this.id)
   }
 
   localStorageVoyeur() {
@@ -178,7 +185,7 @@ export class SettingsService {
     for (var i = 0; i < localStorage.length; i++) {
       key = localStorage.key(i)
       if (key != null) {
-        console.log(`item ${i} = ${JSON.parse(key)}`)
+        this.log.verbose(`item ${i} = ${JSON.parse(key)}`, this.id)
       }
     }
   }

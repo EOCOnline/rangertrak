@@ -183,7 +183,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     // REVIEW: Min/Max times ignored?!
     this._setMinDate(10) // no times early than 10 hours ago
     this._setMaxDate(1)  // no times later than 1 hours from now
-   this.rangers = rangerService.GetRangers() // TODO: or getActiveRangers?!
+    this.rangers = rangerService.GetRangers() // TODO: or getActiveRangers?!
 
     this.alert = new AlertsComponent(this._snackBar, this.document)// TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
     if (this.rangers.length < 1) {
@@ -205,22 +205,22 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       startWith(''),
       map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
     )
-    log.verbose(`constructor: ranger ${this.filteredRangers}`, 'EntryComponent') //JSON.stringify
-    
+    log.verbose(`constructor: ranger ${this.filteredRangers}`, this.id) //JSON.stringify
+
     this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
-    
+
     // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
     // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
   }
 
 
   ngOnInit(): void {
-    this.log.info(`EntryForm initialization at ${Date()} with development mode ${isDevMode() ? "" : "NOT "}enabled`, 'EntryComponent')
-    this.log.verbose("EntryComponent - ngOnInit - Use settings to fill form", 'EntryComponent')
+    this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
+    this.log.verbose("EntryComponent - ngOnInit - Use settings to fill form", this.id)
 
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
-    this.log.info(`Running ${this.settings.application} version ${this.settings.version}`)  // verifies Settings has been loaded
+    this.log.info(`Running ${this.settings.application} version ${this.settings.version}`, this.id)  // verifies Settings has been loaded
 
     /* i.e., entryDetailsForm probably constructed at wrong time?!
     Move the component creation to ngOnInit hook
@@ -247,7 +247,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
     // subscribe to addresses value changes
     this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
-      this.log.verbose(`Subscription to locationFrmGrp got: ${x}`, 'EntryComponent');
+      this.log.verbose(`Subscription to locationFrmGrp got: ${x}`, this.id);
     })
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
@@ -278,7 +278,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
        ],
      }) */
     this.date = dayjs()
-    this.log.verbose(`EntryForm ngOnInit completed at ${Date()}`, 'EntryComponent')
+    this.log.verbose(` ngOnInit completed`, this.id)
   }
 
 
@@ -298,7 +298,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     let addr = this.locationFrmGrp.get("address")
     if (addr) {
       addr.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged(locationFrmGrp))
-      this.log.verbose("Made reservations!", 'EntryComponent')
+      this.log.verbose("Made reservations!", this.id)
     } else {
       console.warn("could NOT Make reservations")
     }
@@ -307,7 +307,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   private _filterRangers(value: string): RangerType[] {
-    this.log.verbose(`_filterRangers  value changed: ${value}`, 'EntryComponent')
+    this.log.verbose(`_filterRangers  value changed: ${value}`, this.id)
 
     const filterValue = value.toLowerCase()
     this.entryDetailsForm.value.callsign = filterValue
@@ -326,7 +326,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   // https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
   // https://stackoverflow.com/a/54048660
   resetForm() {
-    this.log.verbose("Resetting form...", 'EntryComponent')
+    this.log.verbose("Resetting form...", this.id)
 
     this.entryDetailsForm = this._formBuilder.group({
       id: -2,
@@ -343,32 +343,32 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   locationChanged(loc: FormGroup) {
-    this.log.verbose(`locationChanged  ###########################`, 'EntryComponent')
+    this.log.verbose(`locationChanged  ###########################`, this.id)
   }
 
 
   // TODO: NOt working yet...
   CallsignChanged(callsign: string) { // Just serves timer for input field - post interaction
-    this.log.verbose(`EntryForm CallsignChanged()`, 'EntryComponent')
+    this.log.verbose(`EntryForm CallsignChanged()`, this.id)
 
     this.callInfo = this.document.getElementById("enter__Callsign-upshot")
     if (this.callInfo) {
-      this.log.verbose(`EntryForm CallsignChanged looking for ${callsign}`, 'EntryComponent')
+      this.log.verbose(`EntryForm CallsignChanged looking for ${callsign}`, this.id)
       //let ranger = this.rangers[this.findIndex(callsign)]
       let ranger = this.rangerService.getRanger(callsign)  // REVIEW is this.rangers here & service in sync?
       this.callInfo.innerHTML = `<span>${ranger.callsign} </span> | <small> ${ranger.licensee} | ${ranger.phone}</small > `
       //< img class= "enter__Callsign-img" aria-hidden src = "${ranger.image}" height = "50" >
     } else {
-      this.log.warn(`EntryForm CallsignChanged did not find enter__Callsign-upshot`, 'EntryComponent')
+      this.log.warn(`EntryForm CallsignChanged did not find enter__Callsign-upshot`, this.id)
     }
   }
 
   CallsignCtrlChanged() { // NOTE: NEVER CALLED (my error, maybe does now..)!!!, so use workaround above...
-    this.log.error(`callsignCtrlChanged() called!!!!!!!!!!!!!!!!!!`, 'EntryComponent')
+    this.log.error(`callsignCtrlChanged() called!!!!!!!!!!!!!!!!!!`, this.id)
     return
     let callSign: string = (this.document.getElementById("enter__Callsign-input") as HTMLInputElement).value
     if (callSign) {
-      this.log.verbose(`CallsignCtrlChanged() call= ${callSign} at ${Date.now}`)
+      this.log.verbose(`CallsignCtrlChanged() call= ${callSign}`)
       this.CallsignChanged(callSign)
     }
 
@@ -385,7 +385,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     https://gist.github.com/paulirish/5d52fb081b3570c81e3a
   */
   reset_animation(element: HTMLElement) {
-    this.log.verbose(`Fade Animation reset`, 'EntryComponent')
+    this.log.verbose(`Fade Animation reset`, this.id)
     element.style.animation = 'none';
     element.offsetHeight; // trigger reflow
     element.style.animation = "";
@@ -393,17 +393,17 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
   // save(model: FieldReport) {
   // call API to save FieldReport
-  // this.log.verbose(model, 'EntryComponent');
+  // this.log.verbose(model, this.id);
   //}
 
   onFormSubmit(formData1: string): void {
-    this.log.verbose(`Form submited at date=${this.date} `, 'EntryComponent')
+    this.log.verbose(`Form submited`, this.id)
     //this.date=this.dateCtrl.value // TODO:
     this.entryDetailsForm.value.date = this.dateCtrl.value
     let formData = JSON.stringify(this.entryDetailsForm.value)
 
     let newReport = this.fieldReportService.addfieldReport(formData)
-    this.log.info(`Report id # ${newReport.id} has been added with: ${formData} `, 'EntryComponent')
+    this.log.info(`Report id # ${newReport.id} has been added with: ${formData} `, this.id)
 
     if (this.submitInfo) {
       // Display fading confirmation to right of Submit button
@@ -411,7 +411,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       this.reset_animation(this.submitInfo)
     }
     else {
-      this.log.error("Submittion info field not found", 'EntryComponent')
+      this.log.error("Submittion info field not found", this.id)
     }
     this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
 

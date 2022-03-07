@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common'
 import { Component, enableProdMode, Inject, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FieldReportService, FieldReportStatusType, RangerService, SettingsService, SettingsType } from '../shared/services/'
+import { FieldReportService, FieldReportStatusType, LogService, RangerService, SettingsService, SettingsType } from '../shared/services/'
 import { AgGridModule } from 'ag-grid-angular'
 //import { Color } from '@angular-material-components/color-picker';
 //import { ThemePalette } from '@angular/material/core';
@@ -41,9 +41,6 @@ export class SettingsComponent implements OnInit {
     //columnHoverHighlight: true, // turn ON column hover, default: off
   }// rowSelection: "multiple"}
 
-
-
-
   defaultColDef: ColDef = {
     flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
     minWidth: 30,
@@ -70,7 +67,7 @@ export class SettingsComponent implements OnInit {
     {
       headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code",
       cellStyle: (params: { value: string; }) => {
-        //  console.log(`editor returned: ${params.value}`)
+        //  this.log.verbose(`editor returned: ${params.value}`)
         // TODO: typically the colorPicker only should stay up while hovered over...we have to click away because????
 
         let newColor = params.value
@@ -119,7 +116,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         // iterate through every node in the grid
         //let rowNode:any //Cannot redeclare block-scoped variable 'rowNode'
         /*this.gridApi.forEachNode((rowNode: { data: string; }, index: any) => {
-          console.log('node ' + rowNode.data + ' is in the grid');
+          this.log.verbose('node ' + rowNode.data + ' is in the grid');
         });
 */
         //this.getRowNodeId = data => data.id;
@@ -174,6 +171,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       settings.component.ts(155, 17): This type does not have a value, so it cannot be used as injection token.
     */
     private fieldReportService: FieldReportService,
+    private log: LogService,
     private rangerService: RangerService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
@@ -181,31 +179,31 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     //this.settings = settingService()
     this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
     this.settings = SettingsService.Settings // only using static functions/values from the service...
-    console.log('Application Settings set to static values. But not initialized???')
+    this.log.verbose('Settings set to static values. But not initialized???', this.id)
   }
 
   ngOnInit(): void {
     if (this.settings == undefined) {
-      console.log('WARN: Application Settings need to be initialized.')
+      this.log.warn('Settings need to be initialized.', this.id)
       // TODO: SettingsService.ResetDefaults()
     } else {
-      console.log(`SettingsComponent: Application: ${this.settings.application} -- Version: ${this.settings.version}`)
+      this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
     }
 
     this.settingsEditorForm = this.getFormArrayFromSettingsArray()
     this.rowData = this.settingsService.getFieldReportStatuses()
 
-    console.log("settings component ngInit done at ", Date())
+    this.log.verbose("ngInit done ", this.id)
   }
 
   onBtnResetDefaults() {
-    SettingsService.ResetDefaults() // need to refresh page?!
+    this.settingsService.ResetDefaults() // need to refresh page?!
     this.rowData = this.settingsService.ResetFieldReportStatusDefaults()
   }
 
   // TODO: Need different settings stored for gMap, lMap and miniMap
   getFormArrayFromSettingsArray() {
-    console.log("into getFormArrayFromSettingsArray at ", Date())
+    this.log.verbose(" getFormArrayFromSettingsArray", this.id)
 
     // NOTE: Form array differs some from SettingsType so need to translate back & forth
     return this.fb.group({
@@ -255,7 +253,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   }
 
   onGridReady = (params: any) => {
-    console.log("Settings Form onGridReady")
+    this.log.verbose(" onGridReady", this.id)
 
     this.gridApi = params.api
     this.gridColumnApi = params.columnApi
@@ -279,7 +277,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       this.gridApi.refreshCells()
       this.gridApi.sizeColumnsToFit();
     } else {
-      console.log("no this.gridApi yet in refreshStatusGrid()")
+      this.log.verbose("no this.gridApi yet in refreshStatusGrid()", this.id)
     }
     //window.location.reload() -- reloads endlessly!
     // TODO: try   getSelectedRowData() & then refresh row color instead - set color by row, vs cell
@@ -313,11 +311,11 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
   //TODO: If user edits field report status color, need to update background: refreshCells()????
   onFormSubmit(): void {
-    console.log("Update Application Settings...")
+    this.log.verbose("Update Settings...", this.id)
     let newSettings: SettingsType = this.getSettingsArrayFromFormArray()
-    SettingsService.Update(newSettings)
+    this.settingsService.Update(newSettings)
 
-    console.log(`Update FieldReportStatuses... ${JSON.stringify(this.rowData)}`)
+    this.log.verbose(`Update FieldReportStatuses... ${JSON.stringify(this.rowData)}`)
     this.settingsService.updateFieldReportStatus(this.rowData)
 
     // TODO: Set this up as an observable, or Components that have ALREADY pulled down the values won't refresh them!!!!

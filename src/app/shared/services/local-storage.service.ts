@@ -176,7 +176,7 @@ test2() {
 
     this.clear = result;
     //this.localStorage.clear();
-    console.log("IndexedDB Cleared at ", Date());
+    console.log("IndexedDB Cleared ");
 
     this.mkrSize$ = this.localStorage.setItem('rngr_MarkerSize', '10').pipe(
       mergeMap(() => this.localStorage.setItem('rngr_MarkerSize2', '5')),
