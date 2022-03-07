@@ -14,7 +14,7 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';// https://material.
 
-import { SettingsService } from '../shared/services';
+import { SettingsService, LogService } from '../shared/services';
 /*
 https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
 https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-driven-forms-in-angular-2
@@ -117,6 +117,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   //locationCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
   //@Input() group: FormGroup;
 
+  private id = 'Location within entry form'
   public address = ""
   // Grab reference to #elements in template (vs. getElementById)
   // TODO: Remove all these! Per bottom pg 137, go to [FormControl]="nameToUse"
@@ -174,13 +175,14 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     private settingsService: SettingsService,
     private _formBuilder: FormBuilder,
     iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, // for svg mat icons
+    private log: LogService,
     @Inject(DOCUMENT) private document: Document) {
-    console.log("LocationComponent - constructor")
+    this.log.info("Construction", this.id)
 
     this.lat = SettingsService.Settings.defLat
     this.lng = SettingsService.Settings.defLng
     this.newLocation(this.lat, this.lng)
-    debugger
+    //debugger
     // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
     this.locationFrmGrp = this._formBuilder.group({
       address: ['', Validators.required],
@@ -193,7 +195,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // Stackblitz. If you want to provide the icon from a URL, you can use:
     iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
     //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
-    console.log("LocationComponent - out of constructor")
+    this.log.verbose("Out of constructor", this.id)
   }
 
   // #endregion Constructors (1)
@@ -201,7 +203,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   // #region Public Methods (11)
 
   public ngOnInit(): void {
-    console.log("LocationComponent - ngOnInit")
+    this.log.info("ngOnInit", this.id)
 
     this.newLocation(SettingsService.Settings.defLat, SettingsService.Settings.defLng)
 
@@ -221,7 +223,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
             })
       */
 
-    console.log("LocationComponent - out of ngOnInit")
+    this.log.verbose("out of ngOnInit", this.id)
   }
 
   public ngAfterViewInit() {
@@ -230,17 +232,17 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // On Location/Address Change subscriptions  // TODO: USE THESE!!!
     if (this.locationFrmGrp) {
       this.locationFrmGrp.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        console.log('########  latitude value changed: ' + x)
+        this.log.verbose('########  latitude value changed: ' + x, this.id)
       })
       this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        console.log('########## lat float value changed: ' + x)
+        this.log.verbose('########## lat float value changed: ' + x, this.id)
       })
       this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        console.log('#######  lng Float value changed: ' + x)
+        this.log.verbose('#######  lng Float value changed: ' + x), this.id
       })
 
       // TODO: NOt working yet...
-      console.log(`addressCtrl.valueChanges`)
+      this.log.verbose(`addressCtrl.valueChanges`, this.id)
       // TODO: No formControlName="addressCtrl"!!!!
       // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
       //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
@@ -252,7 +254,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
 
   public newLocation(latDD: number, lngDD: number) {
-    console.log(`updateCoords with new Coordinates: lat: ${latDD}, lng: ${lngDD}`);
+    this.log.info(`newLocation with lat: ${latDD}, lng: ${lngDD}`, this.id);
 
     this.lat = latDD
     this.lng = lngDD
@@ -297,7 +299,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // TODO: this.address =""
     /*
         let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
-        console.log("updateCoords: Encode returned PlusCode: " + pCode)
+        this.log.verbose("updateCoords: Encode returned PlusCode: " + pCode, this.id)
         let fullCode
         if (pCode.length != 0) {
           if (OpenLocationCode.isValid(pCode)) {
@@ -306,16 +308,16 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
               fullCode = OpenLocationCode.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
             } else {
               fullCode = pCode;
-              console.log("Shorten +Codes, Global:" + fullCode + ", Lat:" + SettingsService.Settings.defLat + "; lng:" + SettingsService.Settings.defLng);
+              this.log.verbose("Shorten +Codes, Global:" + fullCode + ", Lat:" + SettingsService.Settings.defLat + "; lng:" + SettingsService.Settings.defLng), this.id;
               // Attempt to trim the first characters from a code; may return same innerText...
               pCode = OpenLocationCode.shorten(fullCode, SettingsService.Settings.defLat, SettingsService.Settings.defLng)
             }
-            console.log("New PlusCodes: " + pCode + "; Global: " + fullCode);
+            this.log.verbose("New PlusCodes: " + pCode + "; Global: " + fullCode, this.id);
             //(document.getElementById("addresses") as HTMLInputElement).value = pCode;
             //document.getElementById("addressLabel").innerHTML = defPCodeLabel; // as HTMLLabelElement
             (document.getElementById("pCodeGlobal") as HTMLLabelElement).innerHTML = " &nbsp;&nbsp; +Code: " + fullCode;
           } else {
-            console.log("Invalid +PlusCode: " + pCode);
+            this.log.verbose("Invalid +PlusCode: " + pCode, this.id);
             document.getElementById("pCodeGlobal")!.innerHTML = " &nbsp;&nbsp; Unable to get +Code"
             //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
           }
@@ -324,13 +326,13 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   }
 
   public setCtrl_unused(ctrlName: string, value: number | string) {
-    console.log(`setCtrl()`)
+    this.log.verbose(`setCtrl()`, this.id)
     let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
     if (!ctrl) {
-      console.warn(`setCtrl(): Could not find element: ${ctrlName}`)
+      this.log.warn(`setCtrl(): Could not find element: ${ctrlName}`, this.id)
     } else {
       ctrl.value = value.toString()
-      //console.log(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`)
+      //this.log.verbose(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`, this.id)
     }
   }
 
@@ -351,17 +353,17 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
   // TODO: https://github.com/angular-material-extensions/google-maps-autocomplete
   public addressCtrlChanged(what: string) {
-    console.log(`addressCtrlChanged`)
+    this.log.verbose(`addressCtrlChanged`, this.id)
     // TODO: No formControlName="addressCtrl"!!!!
 
     // this.form.markAsPristine();
     // this.form.markAsUntouched();
     // if (this.locationFrmGrp.get('address')?.touched) {
-    //   console.log('address WAS touched')
+    //   this.log.verbose('address WAS touched', this.id)
     //   //this.locationFrmGrp.get('address')?.markAsUntouched
     // }
     // if (this.locationFrmGrp.get('address')?.dirty) {
-    //   console.log('address WAS dirty')
+    //   this.log.verbose('address WAS dirty', this.id)
     //   //this.location.get('address')?.markAsPristine
     // }
 
@@ -393,7 +395,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
           + Number((this.document.getElementById("enter__Where--LngI") as HTMLInputElement).value) / 100
         let ll = new google.maps.LatLng(llat, llng) // Move from Google to Leaflet!
         let newAddress = this.geocoder.getAddressFromLatLng(ll)  // TODO: Disable!!
-        console.log(`addressCtrlChanged new ll: ${JSON.stringify(ll)}; addr: ${newAddress}`)
+        this.log.verbose(`addressCtrlChanged new latlng: ${JSON.stringify(ll)}; addr: ${newAddress}`, this.id)
 
         this.newLocation(llat, llng)
         /*
@@ -407,15 +409,15 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
         this.newMarker({ lat: llat, lng: llng }, `Time: ${Date.now} at Lat: ${llat}, Lng: ${llng}, street: ${newAddress}`)
         break;
       default:
-        console.log(`UNEXPECTED ${what} received in AddressCtrlChanged()`)
+        this.log.error(`UNEXPECTED ${what} received in AddressCtrlChanged()`, this.id)
         break;
     }
-    console.log('addressCtrlChanged done') // TODO: No formControlName="addressCtrl"!!!!
+    this.log.verbose('addressCtrlChanged done', this.id) // TODO: No formControlName="addressCtrl"!!!!
   }
 
 
   public chkAddresses() {
-    console.log("LocationComponent - chkAddresses")
+    this.log.verbose("LocationComponent - chkAddresses", this.id)
 
     /* if JSON.stringify(addr): gets
     TypeError: Converting circular structure to JSON
@@ -429,20 +431,20 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
     let tWords // = document.getElementById("addresses")!.innerText // as HTMLInputElement).value
     let addr = document.getElementById("addressCtrl") as HTMLInputElement// ?.innerText
-    console.log(`Looking into address: ${addr}`)
+    this.log.verbose(`Looking into address: ${addr}`, this.id)
     if (addr == null)
       return
     //debugger
     let addrText = addr.value;
-    console.log(`Got some kind of address: ${addrText}`)
+    this.log.verbose(`Got some kind of address: ${addrText}`, this.id)
     if (addrText.length) {
       if (addrText.includes("+")) {
-        console.log("Got PCode: " + addrText)
+        this.log.verbose("Got PCode: " + addrText, this.id)
         this.chkPCodes(addrText)
       } else {
         tWords = addrText.split(".")
         if (tWords.length == 3) {
-          console.log("Got What 3 Words: " + addrText)
+          this.log.verbose("Got What 3 Words: " + addrText, this.id)
           this.chk3Words(addrText)
         } else {
           let result = this.chkStreetAddress(addrText)
@@ -475,7 +477,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   // https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
 
   public newMarker(loc: google.maps.LatLngLiteral, title: string = "") {  // TODO: Remove google ref
-    console.log("updateLocation() running")
+    this.log.verbose("newMarker()", this.id)
 
     let addr = this.document.getElementById("derivedAddress")
     // ERROR: if (addr) { addr.innerHTML = "New What3Words goes here!" } // TODO: move to another routine...
@@ -510,13 +512,13 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
 
   this.reactiveForm.get("firstname").valueChanges.subscribe(selectedValue => {
-  console.log('firstname value changed')
-  console.log(selectedValue)
-  console.log(this.reactiveForm.get("firstname").value)
-  console.log(this.reactiveForm.value)    //shows the old first name
+  this.log.verbose('firstname value changed', this.id)
+  this.log.verbose(selectedValue, this.id)
+  this.log.verbose(this.reactiveForm.get("firstname").value, this.id)
+  this.log.verbose(this.reactiveForm.value, this.id)    //shows the old first name
 
   setTimeout(() => {
-    console.log(this.reactiveForm.value)   //shows the latest first name
+    this.log.verbose(this.reactiveForm.value, this.id)   //shows the latest first name
   })
 
   For Example, the following code will result in the ValueChanges of the firstname. but not of its parent (i.e. top-level form)
@@ -531,7 +533,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
   // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
   public chk3Words(tWords: string) {
-    console.log("LocationComponent - chk3Words")
+    this.log.verbose("chk3Words", this.id)
     /*let settings = {
       "async": true,
       "crossDomain": true,
@@ -541,7 +543,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     }
 
     $.ajax(settings).done(function (response) {
-      console.log("ddd=" +response);
+      this.log.verbose("ddd=" +response, this.id);
     });
     */
 
@@ -554,10 +556,10 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     let errMsg = "";
 
     // let tWords = document.getElementById("addresses")!.innerText;// as HTMLInputElement).value
-    console.log('chk3Words - ' + tWords);
+    this.log.verbose('chk3Words - ' + tWords, this.id);
     if (tWords.length) {
       // soemthing entered...
-      console.log("3Words='" + tWords + "'");
+      this.log.verbose("3Words='" + tWords + "'", this.id);
       //this.w3w.w3wAuto(tWords)
       /* BUG:
           this.w3w.w3wAuto.autosuggest(tWords, {
@@ -569,7 +571,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
           })
             .then((response: { suggestions: { words: any }[] }) => {
               const verifiedWords = response.suggestions[0].words;
-              console.log("Verified Words='" + verifiedWords + "'");
+              this.log.verbose("Verified Words='" + verifiedWords + "'", this.id);
               if (tWords != verifiedWords) {
                 document.getElementById("addressLabel")!.textContent = " Verified as: " + verifiedWords; // as HTMLLabelElement
               } else {
@@ -589,7 +591,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
       // TODO:       this.updateCoords(lat,lng)
       errMsg = ""
-      console.log("Unable to verify 3 words entered: " + errMsg);
+      this.log.info("Unable to verify 3 words entered: " + errMsg, this.id);
       document.getElementById("addressLabel")!.textContent = "*** Not able to verify 3 words! ***"; // as HTMLLabelElement
       //})
     }
@@ -600,10 +602,10 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public chkPCodes(pCode: string) {
     // REVIEW: Duplicate of code above...
     //let pCode = document.getElementById("addresses")!.innerText //value;
-    console.log("chkPCodes got '" + pCode + "'");
+    this.log.verbose("chkPCodes got '" + pCode + "'", this.id);
     if (pCode.length) {
       let result = this.geocoder.getLatLngAndAddressFromPlaceID(pCode)
-      console.log(`chkPCode of ${pCode} got result:${JSON.stringify(result)}`);
+      this.log.verbose(`chkPCode of ${pCode} got result:${JSON.stringify(result)}`, this.id);
 
       if (result.position) {
         //    (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
@@ -612,7 +614,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
         (document.getElementById("lng") as HTMLInputElement).value = "JSON.stringify(result.position)";
       }
       else {
-        console.log(`chkPCode of ${pCode} got NULL result!!!`);
+        this.log.warn(`chkPCode of ${pCode} got NULL result!!!`, this.id);
       }
 
       if (OpenLocationCode.isValid(pCode)) {
@@ -622,7 +624,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
         // Following needs a full (Global) code
         let coord = OpenLocationCode.decode(pCode)
-        console.log("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', lng=' + coord.longitudeCenter);
+        this.log.verbose("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', lng=' + coord.longitudeCenter, this.id);
 
         this.newLocation(coord.latitudeCenter, coord.longitudeCenter);
       }
@@ -636,7 +638,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
   public chkStreetAddress(addrText: string) {
     //https://developers.google.com/maps/documentation/geocoding/requests-geocoding
-    console.log("Got street address to check: " + addrText)
+    this.log.verbose("Got street address to check: " + addrText, this.id)
     // Type 'GeocoderResult' must have a '[Symbol.iterator]()' method that returns an iterator.
     //let result:google.maps.GeocoderResult = this.geocoder.isValidAddress(addrText)
     //  return this.geocoder.isValidAddress(addrText)
@@ -746,7 +748,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     }
   */
   public onInfoWhere() {
-    console.log("LocationComponent - onInfoWhere")
+    this.log.verbose("onInfoWhere", this.id)
     let s = "for Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds"
   }
 

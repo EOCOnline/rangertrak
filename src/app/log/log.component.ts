@@ -7,13 +7,13 @@ import { Utility } from "../shared"
 import { LogType, LogService, LogLevel, SettingsService } from '../shared/services/';
 
 /**
- * Keep the Log Panel pane synchronized with comments
+ * Update the Log Panel pane with notifications
  *
  */
 @Component({
   selector: 'rangertrak-log',
-  templateUrl: './log.component.html', //'home.page.html'
-  styleUrls: ['./log.component.scss'] //, 'home.page.scss']
+  templateUrl: './log.component.html',
+  styleUrls: ['./log.component.scss']
 })
 export class LogComponent { //implements OnInit
   // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
@@ -34,10 +34,10 @@ export class LogComponent { //implements OnInit
     @Inject(DOCUMENT) private document: Document) {
     this.logSubscription = logService.getLogObserver().subscribe({
       next: (log) => {
-        console.log(log) //! REMOVE ME!
+        console.log(`LogPanel got: ${log}`) //! REMOVE ME!
         this.gotNewLog(log)
       },
-      error: (e) => console.error('Log subscripotion got:' + e, this.id),
+      error: (e) => console.error('Log Subscription got:' + e, this.id),
       complete: () => console.info('Log Subscription complete', this.id)
     })
 
@@ -49,7 +49,7 @@ export class LogComponent { //implements OnInit
    * Create heading for Log Panel
    */
   ngOnInit(): void {
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${new Date}`
   }
   /**
    *
@@ -57,7 +57,7 @@ export class LogComponent { //implements OnInit
    */
   gotNewLog(log: LogType[]) {
     if (this.logPanel === null) { throw ("unable to find log panel...") }
-
+    console.log('New log entry received!')
     log.forEach(entry => {
       let time = Utility.zeroFill(entry.date.getHours(), 2) + ":" + Utility.zeroFill(entry.date.getMinutes(), 2) + ":" + Utility.zeroFill(entry.date.getSeconds(), 2) + ":" + Utility.zeroFill(entry.date.getMilliseconds(), 4)
       switch (entry.level) {
