@@ -4,15 +4,15 @@ import { HttpClient } from '@angular/common/http'
 import { Observable, Subscription } from 'rxjs'
 /*
 import * as LMC from "leaflet.markercluster"  // https://github.com/Leaflet/Leaflet.markercluster
-//import {} from LeafletMarkerClusterModule
-//import { LeafletMarkerClusterModule } from 'leaflet.markercluster' //https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
-// https://stackblitz.com/edit/typescript-leaflet-marker-cluster   MarkerClusterGroup
-// better: https://blog.mestwin.net/leaflet-angular-marker-clustering/
-//import 'leaflet.markercluster/dist/MarkerCluster.Default.css' // also in angular.json
+import {} from LeafletMarkerClusterModule
+import { LeafletMarkerClusterModule } from 'leaflet.markercluster' //https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
+https://stackblitz.com/edit/typescript-leaflet-marker-cluster   MarkerClusterGroup
+better: https://blog.mestwin.net/leaflet-angular-marker-clustering/
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css' // also in angular.json
 import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, LatLng } from 'leaflet';
-// MarkerClusterGroup, MarkerClusterGroupOptions
-//import {icon, latLng, marker} from 'leaflet';
-//import * as L from 'leaflet'
+MarkerClusterGroup, MarkerClusterGroupOptions
+import {icon, latLng, marker} from 'leaflet';
+import * as L from 'leaflet'
 import * as L from 'leaflet';
 import 'leaflet.markercluster'
 https://stackoverflow.com/questions/58847492/error-typeerror-a-markerclustergroup-is-not-a-function
@@ -97,6 +97,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   markerClusterData = []
 
   private fieldReports: FieldReportsType | undefined
+  private latestReport: FieldReportsType | undefined
   public fieldReportArray: FieldReportType[] = []
   private fieldReportsSubscription$!: Subscription
   private fieldReportStatuses: FieldReportStatusType[] = []
@@ -121,18 +122,16 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-
-
-
-    //this.fieldReportsSubscription$ =
-    this.fieldReportService.getFieldReportsObserver().subscribe({
-      next: (newReport) => {
-        console.log(`gotNewFieldReport to LMap: ${JSON.stringify(newReport)}`)
-        this.gotNewFieldReports(newReport)
-      },
-      error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
-      complete: () => this.log.info('Field Reports Subscription complete', this.id)
-    })
+    this.fieldReportsSubscription$ =
+      this.fieldReportService.getFieldReportsObserver().subscribe({
+        next: (newReport) => {
+          this.log.verbose(`gotNewFieldReport to LMap: ${JSON.stringify(newReport)}`, this.id)
+          this.latestReport = newReport
+          this.gotNewFieldReports(newReport)
+        },
+        error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
+        complete: () => this.log.info('Field Reports Subscription complete', this.id)
+      })
 
     /*
     const fieldReportsObservable = this.fieldReportService.getFieldReports();
@@ -226,15 +225,24 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.lmap && this.fieldReports) {
       this.displayAllMarkers()
-      console.error(JSON.stringify(this.fieldReports.bounds))
+
+
+
+      this.log.info(`Immediately prior to calling lmap.fitBounds: ${JSON.stringify(this.fieldReports.bounds)}`, this.id)
+      this.log.verbose(`E: ${this.fieldReports.bounds.getEast};  N: ${this.fieldReports.bounds.getNorth};  W: ${this.fieldReports.bounds.getWest};  S: ${this.fieldReports.bounds.getSouth};  `, this.id)
+
+
       this.lmap.fitBounds(this.fieldReports.bounds)
-      this.log.warn(`Not able to set bounds - maybe premature?`, this.id)
+
+
+
+
+      //this.log.warn(`Not able to set bounds - maybe premature?`, this.id)
     }
     this.lmap?.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
       if (this.zoomDisplay && this.lmap) {
         this.zoom = this.lmap.getZoom()
         this.zoomDisplay = this.lmap.getZoom()
-
       }
       //this.zoom! = this.lmap?.getZoom()
     })

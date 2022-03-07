@@ -102,10 +102,12 @@ export class SettingsService {
     // populate Field Report Statuses
     let localStorageFieldReportStatuses = localStorage.getItem(SettingsService.localStorageFieldReportStatusName)
     if (localStorageFieldReportStatuses != undefined) { //|| this.fieldReportStatuses.length == 0
-      this.log.verbose(`Got ${localStorageFieldReportStatuses?.length} fieldReportStatuses from LocalStorage, parse 'em`, this.id)
+      this.log.verbose(`Got ${localStorageFieldReportStatuses?.length} characters of fieldReportStatuses from LocalStorage, parse 'em`, this.id)
       try {
         if (localStorageFieldReportStatuses != null && localStorageFieldReportStatuses.indexOf("status") > 0) {
           this.fieldReportStatuses = JSON.parse(localStorageFieldReportStatuses)
+          //this.log.verbose(`localStorageFieldReportStatuses =  ${localStorageFieldReportStatuses} `, this.id)
+          //this.log.verbose(`fieldReportStatuses = ${this.fieldReportStatuses}`, this.id)
           this.log.verbose(`Initialized ${this.fieldReportStatuses.length} fieldreport statuses from localstorage`, this.id)
         }
       } catch (error: any) {

@@ -167,7 +167,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fieldReports = newReports
     this.fieldReportArray = newReports.fieldReportArray
     this.refreshGrid()
-    // this.reloadPage()  // TODO: needed?
+    //this.reloadPage()  // TODO: needed? - creates endless loop!
   }
 
   onGridReady = (params: any) => {
@@ -182,8 +182,13 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   //onFirstDataRendered(params: any) {
   refreshGrid() {
     // https://blog.ag-grid.com/refresh-grid-after-data-change/
-    this.gridApi.refreshCells()
-    this.gridApi.sizeColumnsToFit()
+    if (this.gridApi) {
+      // TypeError: this.gridApi.sizeColumnsToFit is not a function!!!
+      this.gridApi.refreshCells()
+      this.gridApi.sizeColumnsToFit()
+    } else {
+      this.log.warn(`refreshGrid(): gridApi not established yet!`, this.id)
+    }
   }
 
   reloadPage() {

@@ -75,7 +75,7 @@ export class FieldReportService {
     }
 
     log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event}, op period ${this.fieldReports.operationPeriod} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
-
+    this.recalcFieldBounds(this.fieldReports)
     this.fieldReportsSubject = new BehaviorSubject(this.fieldReports)
     this.updateFieldReports()
   }
@@ -112,6 +112,8 @@ export class FieldReportService {
    * rewrite field reports to localStorage & notify observers
    */
   private updateFieldReports() {
+    this.log.verbose(`NEW REPORT AVAILABLE, with E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
+
     localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports))
 
     this.log.verbose(`New field reports are available to observers...`, this.id)
@@ -141,7 +143,8 @@ export class FieldReportService {
     let newReport: FieldReportType = JSON.parse(formData)
     newReport.id = this.fieldReports.maxId++
     this.fieldReports.fieldReportArray.push(newReport)
-    this.fieldReports.bounds.extend([newReport.lat, newReport.lng])
+    let newPt = L.latLng(newReport.lat, newReport.lng)
+    this.fieldReports.bounds.extend(newPt)
     this.updateFieldReports() // put to localStorage & update subscribers
     return newReport
   }
@@ -153,6 +156,7 @@ export class FieldReportService {
     }
     this.selectedFieldReports.fieldReportArray = selection
     this.recalcFieldBounds(this.selectedFieldReports)
+    // Update - if subscribed...
   }
 
   public getSelectedFieldReports() { // TODO: Use setter & getters?, pg 452 Ang Dev w/ TS
@@ -170,11 +174,14 @@ export class FieldReportService {
   // ------------------ BOUNDS ---------------------------
 
   boundsToBound(bounds: LatLngBounds) {
+    this.log.verbose(`Bounds conversion -- E: ${bounds.getEast()};  N: ${bounds.getNorth()};  W: ${bounds.getWest()};  S: ${bounds.getSouth()};  `, this.id)
     return { east: bounds.getEast(), north: bounds.getNorth(), south: bounds.getSouth(), west: bounds.getWest() }
   }
 
   recalcFieldBounds(reports: FieldReportsType) {
     this.log.verbose(`recalcFieldBounds got ${reports.fieldReportArray.length} field reports`, this.id)
+    //this.log.verbose(`OLD Value: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
+
     let north
     let west
     let south
@@ -223,7 +230,13 @@ export class FieldReportService {
       this.log.info(`recalcFieldBounds BROADENED to N:${north} S:${south} `, this.id)
     }
 
-    reports.bounds = new LatLngBounds([south, west], [north, east]) //SW, NE
+    let sw = L.latLng(south, west)
+    let ne = L.latLng(north, east)
+    //latLngBounds(southWest: LatLngExpression, northEast: LatLngExpression): LatLngBounds
+    reports.bounds = L.latLngBounds([[south, west], [north, east]])//SW, NE
+    //reports.bounds = new LatLngBounds(sw, ne) //SW, NE
+    this.log.verbose(`=============================== NEW Value: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
+
   }
 
   generateFakeData(num: number = 15) {
@@ -252,8 +265,10 @@ export class FieldReportService {
         status: this.fieldReports.fieldReportStatuses[Math.floor(Math.random() * this.fieldReports.fieldReportStatuses.length)].status,
         note: notes[Math.floor(Math.random() * notes.length)]
       })
+      this.fieldReports.numReport += num
     }
     this.recalcFieldBounds(this.fieldReports)
+    this.updateFieldReports()
   }
 
   // ---------------------------------  UNUSED -------------------------------------------------------
