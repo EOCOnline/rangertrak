@@ -27,6 +27,7 @@ type AOA = any[][]  // array of arrays
 export class RangersComponent implements OnInit {
 
   private id = 'Ranger Component'
+  public title = 'Rangers (CERT, ACS/ARES, etc)'
   public eventInfo = ''
   public dateNow = Date.now()
 

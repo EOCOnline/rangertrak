@@ -69,7 +69,7 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
   center: google.maps.LatLngLiteral
   trafficLayer = new google.maps.TrafficLayer()
   trafficLayerVisible = 0
-  usingSelectedFieldReports = false
+
   mapOptions: google.maps.MapOptions = {
     zoomControl: true,
     scrollwheel: true,
@@ -103,12 +103,17 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
   circleCenter: google.maps.LatLngLiteral = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
   radius = 10;
 
+  usingSelectedFieldReports = false
+  selectedRows = 0
+  allRows = 0
+  private latestReport: FieldReportsType | undefined
   private fieldReports: FieldReportsType | undefined
   public fieldReportArray: FieldReportType[] = []
   private fieldReportsSubscription$!: Subscription
   private fieldReportStatuses: FieldReportStatusType[] = []
 
   //selectedFieldReports: FieldReportType[] = []
+
   filterSwitch: MDCSwitch | null = null
   filterButton: HTMLButtonElement | null = null
 
@@ -121,7 +126,8 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
     this.eventInfo = `Event: ; Mission: ; Op Period: ; `
 
     this.fieldReportService = fieldReportService
-    this.zoom = SettingsService.Settings.defZoom
+    this.selectedRows =
+      this.zoom = SettingsService.Settings.defZoom
     this.zoomDisplay = SettingsService.Settings.defZoom
 
     // https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
@@ -179,7 +185,8 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
 
     this.fieldReportsSubscription$ = this.fieldReportService.getFieldReportsObserver().subscribe({
       next: (newReport) => {
-        console.log(newReport)
+        //console.log(newReport)
+        this.latestReport = newReport
         this.gotNewFieldReports(newReport)
       },
       error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
@@ -187,10 +194,11 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     })
 
     this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
-    if (!this.filterButton) { throw ("Could not find gMap Selection button!") }
+    if (!this.filterButton) { throw ("Could not find Field Report Selection button!") }
 
+    this.selectedRows = this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
     this.filterSwitch = new MDCSwitch(this.filterButton)
-    if (!this.filterSwitch) throw ("Could not find gMap Selection Switch!")
+    if (!this.filterSwitch) throw ("Could not find Field Report Selection Switch!")
   }
 
   ngAfterViewInit() {
@@ -200,9 +208,11 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   gotNewFieldReports(newReports: FieldReportsType) {
     this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`, this.id)
 
+    this.allRows = newReports.numReport
     this.fieldReports = newReports
     this.fieldReportArray = newReports.fieldReportArray
-    //this.refreshGrid()
+    console.assert(this.allRows == this.fieldReportArray.length)
+    //this.refreshMap()
     // this.reloadPage()  // TODO: needed?
   }
 

@@ -18,6 +18,7 @@ import { LogType, LogService, LogLevel, SettingsService } from '../shared/servic
 export class LogComponent implements OnInit { //}, AfterContentInit, AfterViewInit {
   // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
   private id = 'Log Component'
+  public title = 'Event Summary Log'
   private logPanel: HTMLElement | null = null
   private logSubscription: Subscription
   public eventInfo = ''

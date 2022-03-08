@@ -77,6 +77,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   public fieldReportArray: FieldReportType[] = []
   private fieldReportsSubscription$!: Subscription
   private fieldReportStatuses: FieldReportStatusType[] = []
+  selectedRows = 0
+  allRows = 0
 
   //selectedFieldReports: FieldReportType[] = []
   filterSwitch: MDCSwitch | null = null
@@ -107,6 +109,14 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
         error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
         complete: () => this.log.info('Field Reports Subscription complete', this.id)
       })
+
+    this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
+    if (!this.filterButton) { throw ("Could not find Field Report Selection button!") }
+
+    this.selectedRows = this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
+    this.filterSwitch = new MDCSwitch(this.filterButton)
+    if (!this.filterSwitch) throw ("Could not find Field Report Selection Switch!")
+
   }
 
   ngAfterViewInit() {
@@ -117,9 +127,11 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   gotNewFieldReports(newReports: FieldReportsType) {
     this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`, this.id)
 
+    this.allRows = newReports.numReport
     this.fieldReports = newReports
     this.fieldReportArray = newReports.fieldReportArray
-    //this.refreshGrid()
+    console.assert(this.allRows == this.fieldReportArray.length)
+    //this.refreshMap()
     // this.reloadPage()  // TODO: needed?
   }
 
@@ -188,6 +200,9 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // ---------------- Init OverView Map -----------------
 
+
+    // TODO: Add a light grey rectangle on overview map to show extend/bounods of main map
+    // TODO: Add a switch to only show 'selected' reports from the FieldReport page...
     const OVERVIEW_DIFFERENCE = 5
     const OVERVIEW_MIN_ZOOM = 5
     const OVERVIEW_MAX_ZOOM = 16
@@ -246,6 +261,17 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   clamp(num: number, min: number, max: number) {
     return Math.min(Math.max(num, min), max)
+  }
+
+
+  // TODO: Unset the following if SWITCH is unset!!!!
+  getAndDisplayFieldReports() {
+    if (!this.filterSwitch || !this.filterSwitch.selected) {
+      this.log.verbose(`Displaying ALL ${this.fieldReportArray.length} field Reports`, this.id)
+    } else {
+      this.fieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
+      this.log.verbose(`Displaying ${this.fieldReportArray.length} SELECTED field Reports`, this.id)
+    }
   }
 
   displayAllMarkers() {

@@ -1,4 +1,4 @@
-<pageHeader>...</pageHeader>
+<pageHeader [parentTitle]="title">...</pageHeader>
 <details>
   <summary class="big">Instructions</summary>
   This currently displays all rangers/teams without filtering. In the future more options
@@ -73,7 +73,7 @@
 <!--
   https://material.io/components/switches/web#switches
   https://material.io/components/switches/web#api -->
-<label for="selectedFieldReports">Field reports to show: All </label>
+<label for="selectedFieldReports">Field reports to show: All ({{this.allRows}}) </label>
 
 <button
   id="selectedFieldReports"
@@ -101,7 +101,9 @@
     </div>
   </div>
 </button>
-<label for="selectedFieldReports"> Just those selected in the Field Report panel</label>
+<label for="selectedFieldReports">
+  Just those ({{this.selectedRows}}) selected in the Field Report panel</label
+>
 
 <br />
 <details>

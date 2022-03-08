@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ClockService } from '../services'
 //import { FlexLayoutModule } from '@angular/flex-layout';
@@ -9,14 +9,17 @@ import { ClockService } from '../services'
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+  @Input() parentTitle: string
 
-  public title = 'title'
+
+  //public parentTitle = 'title'
   public eventInfo = ''
   public dateNow = Date.now()
   public time?: Observable<Date>
 
   constructor(
     private clockService: ClockService) {
+    this.parentTitle = 'a parent title'
   }
 
   ngOnInit(): void {
@@ -24,3 +27,7 @@ export class HeaderComponent implements OnInit {
   }
   // Layout: https://tburleson-layouts-demos.firebaseapp.com/#/docs
 }
+function Import() {
+  throw new Error('Function not implemented.');
+}
+

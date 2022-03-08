@@ -1,4 +1,4 @@
-<pageHeader>...</pageHeader>
+<pageHeader [parentTitle]="title">...</pageHeader>
 
 <!--div *ngIf="apiLoaded" | async
 (leafletMouseM ove)="onMapMouseMove($event)"
@@ -17,14 +17,50 @@
 </div>
 
 <br />
+<!--button class="mdc-switch" id="selectedFieldReports"  (click)="useSelectedFieldReports()">Use Selected Field Reports</button-->
+<!--
+  https://material.io/components/switches/web#switches
+  https://material.io/components/switches/web#api -->
+<label for="selectedFieldReports">Field reports to show: All ({{this.allRows}}) </label>
 
+<button
+  id="selectedFieldReports"
+  class="mdc-switch mdc-switch--unselected"
+  type="button"
+  role="switch"
+  aria-checked="false"
+  (click)="getAndDisplayFieldReports()"
+>
+  <div class="mdc-switch__track"></div>
+  <div class="mdc-switch__handle-track">
+    <div class="mdc-switch__handle">
+      <div class="mdc-switch__shadow">
+        <div class="mdc-elevation-overlay"></div>
+      </div>
+      <div class="mdc-switch__ripple"></div>
+      <div class="mdc-switch__icons">
+        <svg class="mdc-switch__icon mdc-switch__icon--on" viewBox="0 0 24 24">
+          <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z" />
+        </svg>
+        <svg class="mdc-switch__icon mdc-switch__icon--off" viewBox="0 0 24 24">
+          <path d="M20 13H4v-2h16v2z" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</button>
+<label for="selectedFieldReports">
+  Just those ({{this.selectedRows}}) selected in the Field Report panel</label
+>
+
+<br />
 <details>
   <summary>Instructions</summary>
   <ul>
     <li>This displays All Field Reports for All Rangers by default.</li>
     <li>
-      FUTURE: IF a subset of Field Reports are selected on the Field Reports page, then
-      ONLY those can be displayed here.
+      IF a subset of Field Reports are selected on the Field Reports page, then ONLY those
+      can be displayed here.
     </li>
   </ul>
   >

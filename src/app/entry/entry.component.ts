@@ -86,6 +86,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z' // dupl of that above
   private id = 'Entry Form'
+  public title = 'Field Report Entry'
   public eventInfo = ''
   public dateNow = Date.now()
 

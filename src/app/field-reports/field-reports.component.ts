@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup } from '@angular/forms'
 
 import { FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, RangerService, SettingsService, TeamService } from '../shared/services';
 import { Observable, Subscription, subscribeOn } from 'rxjs';
+import { SelectionChangedEvent } from 'ag-grid-community';
 
 @Pipe({ name: 'myUnusedPipe' })
 export class myUnusedPipe implements PipeTransform {
@@ -21,6 +22,7 @@ export class myUnusedPipe implements PipeTransform {
 export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private id = 'Field Report'
+  public title = 'Field Reports'
   private fieldReports: FieldReportsType | undefined
   public fieldReportArray: FieldReportType[] = []
   private fieldReportsSubscription$!: Subscription
@@ -30,6 +32,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public eventInfo = ''
   public dateNow = Date.now()
+  public selectedRows = 0
   public columnDefs
   private gridApi: any
   private gridColumnApi
@@ -48,7 +51,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     // pagination: true,
 
     // EVENT handlers
-    // onRowClicked: event => this.log.verbose('A row was clicked'),
+    onSelectionChanged: (event: SelectionChangedEvent) => this.onRowSelection(event),
 
     // CALLBACKS
     // getRowHeight: (params) => 25
@@ -180,6 +183,15 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
   }
 
+  // https://www.ag-grid.com/javascript-data-grid/grid-events/#reference-selection-selectionChanged
+  onRowSelection(event: SelectionChangedEvent) {
+    let selectedNodes = this.gridApi.getSelectedNodes()
+    this.selectedRows = selectedNodes.length
+    let selectedData = selectedNodes.map((node: { data: FieldReportType; }) => node.data)
+    this.log.verbose(`Selected Row Data obtained ${selectedNodes.length} selected rows`, this.id)
+    this.fieldReportService.setSelectedFieldReports(selectedData)
+  }
+
   //onFirstDataRendered(params: any) {
   refreshGrid() {
     // https://blog.ag-grid.com/refresh-grid-after-data-change/
@@ -241,14 +253,13 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // filteredReports:FieldReportType[] = this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000)) //FUTURE:
-
-
-  onBtnSetSelectedRowData() {
-    let selectedNodes = this.gridApi.getSelectedNodes();
-    let selectedData = selectedNodes.map((node: { data: FieldReportType; }) => node.data);
-    this.log.verbose(`onBtnGetSelectedRowData obtained ${selectedNodes.length} selected rows:\n${JSON.stringify(selectedData)}`, this.id)
-    this.fieldReportService.setSelectedFieldReports(selectedData)
-  }
+  // onBtnSetSelectedRowData() {
+  //   let selectedNodes = this.gridApi.getSelectedNodes();
+  //   let selectedData = selectedNodes.map((node: { data: FieldReportType; }) => node.data);
+  //   this.selectedRows = selectedNodes.length
+  //   this.log.verbose(`onBtnGetSelectedRowData obtained ${selectedNodes.length} selected rows:\n${JSON.stringify(selectedData)}`, this.id)
+  //   this.fieldReportService.setSelectedFieldReports(selectedData)
+  // }
 
 
   // following from https://ag-grid.com/javascript-data-grid/csv-export/

@@ -1,5 +1,5 @@
 <div fxLayout="row" fxLayoutAlign="space-between">
-  <span fxFlex="20">{{title}}</span>
-  <span fxFlex="30">{{eventInfo}}</span>
-  <span fxFlex="70">{{ time | async | date: 'dd hh:mm:ss'}}</span>
+  <span fxFlex="20" class="title">{{parentTitle}}</span>
+  <span fxFlex="30" class="event">{{eventInfo}}</span>
+  <span fxFlex="70" class="clock">{{time | async | date: 'MMM d, hh:mm:ss'}}</span>
 </div>

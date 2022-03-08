@@ -18,6 +18,7 @@ import { ColDef } from 'ag-grid-community';
 })
 export class SettingsComponent implements OnInit {
   private id = 'Settings Component'
+  title = 'Application Settings'
   public eventInfo = ''
   public dateNow = Date.now()
   settings: SettingsType

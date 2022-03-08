@@ -1,4 +1,4 @@
-<pageHeader>...</pageHeader>
+<pageHeader [parentTitle]="title">...</pageHeader>
 <details>
   <summary class="big">Tips</summary>
   <ul>
@@ -61,6 +61,10 @@
           [showToolPanel]="showToolPanel"
         -->
   </ag-grid-angular>
+  <div>
+    <span class="strong">Selected Rows: {{selectedRows}}</span> (Maps have a button to
+    only show these rows)
+  </div>
   <br />
   <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
       <button (click)="onBtNormal()">Normal Layout</button-->
@@ -80,9 +84,6 @@
     [To be removed - should happen automatically] Force field reports update:
     <button (click)="reloadPage()">Reload Page</button>
   </div>
-
-  [To be removed - should happen automatically] Record selected rows (for mapping):
-  <button (click)="onBtnSetSelectedRowData()">Note Row Selection</button>
 
   <br />
   <details>
