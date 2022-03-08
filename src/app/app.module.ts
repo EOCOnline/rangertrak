@@ -1,4 +1,4 @@
-import { FieldReportService, FieldReportSource, FieldReportStatusType, FieldReportType, MarkerService, PopupService, RangerService, RangerType, SettingsService, SettingsType, ShapeService, TeamService, TeamType } from './shared/services/';
+import { ClockService, FieldReportService, FieldReportSource, FieldReportStatusType, FieldReportType, MarkerService, PopupService, RangerService, RangerType, SettingsService, SettingsType, ShapeService, TeamService, TeamType } from './shared/services/';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AgGridModule } from 'ag-grid-angular';
@@ -9,6 +9,7 @@ import { MoodRenderer } from './settings/mood-renderer.component';
 import { AlertsComponent } from './alerts/alerts.component';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { FlexLayoutModule } from '@angular/flex-layout';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
@@ -40,6 +41,7 @@ import { environment } from '../environments/environment';
 import { LocationComponent } from './entry/location.component';
 import { MiniGMapComponent } from './entry/mini-gmap.component';
 import { MiniLMapComponent } from './entry/mini-lmap.component';
+import { HeaderComponent } from './shared/';
 //import { loc2Component } from './entry/loc2.component';
 
 // from ionic-app.module.ts
@@ -57,6 +59,7 @@ import { MiniLMapComponent } from './entry/mini-lmap.component';
     BrowserAnimationsModule,
     BrowserModule,
     CommonModule,
+    FlexLayoutModule,
     FormsModule,
     GoogleMapsModule,
     HttpClientModule,
@@ -107,14 +110,15 @@ import { MiniLMapComponent } from './entry/mini-lmap.component';
     LogComponent,
     LocationComponent,
     MiniGMapComponent,
-    MiniLMapComponent
+    MiniLMapComponent,
+    HeaderComponent
     //,     loc2Component
   ],
 
   // Define any required @Injectables. Any sub-components or modules can get the same @Injectable instance via dependency injection.
   // In the case of the AppModule, these @Injectables are application-scoped
   providers: [
-    TeamService, RangerService, FieldReportService, MarkerService, PopupService, SettingsService, ShapeService,
+    ClockService, TeamService, RangerService, FieldReportService, MarkerService, PopupService, SettingsService, ShapeService,
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS }
   ],

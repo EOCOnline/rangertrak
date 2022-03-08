@@ -1,7 +1,7 @@
 
 import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
 
-import { SettingsService } from '../../shared/services'
+import { SettingsService, ClockService } from '../../shared/services'
 
 @Component({
   selector: 'rangertrak-about',
@@ -13,7 +13,6 @@ export class AboutComponent {  //implements OnInit {
 
   id = 'About'
   public eventInfo = ''
-  public dateNow = Date.now()
 
   version = ""
 

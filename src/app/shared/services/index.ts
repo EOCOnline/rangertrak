@@ -7,3 +7,5 @@ export { PopupService } from "./popup.service"
 export { SettingsService, SettingsType, SecretType, FieldReportStatusType } from "./settings.service"
 export { ShapeService } from "./shape.service"
 export { DataService } from "./data.service"
+export { ClockService } from "./clock.service"
+

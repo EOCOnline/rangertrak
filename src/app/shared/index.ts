@@ -24,6 +24,8 @@ export { Utility } from "./utility"
 // not exported: GetLatLongFrom3Words
 
 export { DDToDMS } from "./coordinate"
+export { HeaderComponent } from "./header/header.component"
+
 //export { MarkerService } from "./marker.service";
 //export { PopupService } from "./popup.service";
 //export { ShapeService } from "./shape.service";
