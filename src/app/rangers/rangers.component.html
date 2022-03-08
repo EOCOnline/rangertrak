@@ -3,12 +3,11 @@
   <div class="mdc-banner__fixed">
     <div class="mdc-banner__content" role="alertdialog" aria-live="assertive">
       <div class="mdc-banner__graphic-text-wrapper">
-
         <!-- https://fonts.google.com/icons?selected=Material+Icons -->
-        <div class="mdc-banner__graphic" role="img" alt=""><i class="material-icons mdc-banner__icon">emoji_people</i>
+        <div class="mdc-banner__graphic" role="img" alt="">
+          <i class="material-icons mdc-banner__icon">emoji_people</i>
         </div>
-        <div class="mdc-banner__text">
-        </div>
+        <div class="mdc-banner__text"></div>
       </div>
       <div class="mdc-banner__actions">
         <!--button type="button" class="mdc-button mdc-banner__secondary-action">
@@ -25,35 +24,62 @@
 </div>
 
 <h1>Rangers</h1>
-
+<h3>{{eventInfo}} {{ dateNow | date :'short'}}</h3>
 <details>
   <summary class="big">Instructions</summary>
   This list of participants was taken from the FCC Database February 3, 2022. <br />
   It has been significantly reformatted and your edits may alter it further.<br />
-  To maintain these changes between browser sessions, a button in the Advanced sectino below allows writing the
-  following table to the Browser Local Storage
-  where it will remain (thru multiple browser sessions) until explicitly deleted.<br />
+  To maintain these changes between browser sessions, a button in the Advanced sectino
+  below allows writing the following table to the Browser Local Storage where it will
+  remain (thru multiple browser sessions) until explicitly deleted.<br />
   <ul>
-    <li>The photos are not associated with the correct person currently - so are disabled for now. </li>
-    <li>Some fields may be editable (single or double-click), and ONCE SAVED can be exported to a CSV file.</li>
-    <li><span style="color:red;">Edits HAVE to be
-        MANUALLY saved by selecting the "Save Data" button in the Advanced section below.</span> </li>
+    <li>
+      The photos are not associated with the correct person currently - so are disabled
+      for now.
+    </li>
+    <li>
+      Some fields may be editable (single or double-click), and ONCE SAVED can be exported
+      to a CSV file.
+    </li>
+    <li>
+      <span style="color:red;"
+        >Edits HAVE to be MANUALLY saved by selecting the "Save Data" button in the
+        Advanced section below.</span
+      >
+    </li>
     <li>Click on a column heading to sort by that field.</li>
     <li>Click & Drag on a column heading to move columns</li>
-    <li>Hovering over a cell (e.g., any callsign) may show additional information. </li>
+    <li>Hovering over a cell (e.g., any callsign) may show additional information.</li>
     <li>Icons at the top right of each column allows filtering on the value</li>
-    <li>Export Rangers will save data as a CSV file for Excel. For <a
-        href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank">details</a></li>
-    <li>FUTURE: Import Excel button currently brings in the data - but due to imporoper quoting it doesn't show up, so
-      isn't working - yet.</li>
+    <li>
+      Export Rangers will save data as a CSV file for Excel. For
+      <a href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank"
+        >details</a
+      >
+    </li>
+    <li>
+      FUTURE: Import Excel button currently brings in the data - but due to imporoper
+      quoting it doesn't show up, so isn't working - yet.
+    </li>
   </ul>
 </details>
-<br>
+<br />
 
 <div id="rangersgrid">
-  <ag-grid-angular #rangerGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 60vh;"
-    (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="rangers"
-    [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [tooltipShowDelay]="500">
+  <ag-grid-angular
+    #rangerGrid
+    rowAnimation
+    pagination
+    paginationAutoPageSize
+    style="width: 100%; height: 60vh;"
+    (gridReady)="onGridReady($event)"
+    [gridOptions]="gridOptions"
+    class="ag-theme-alpine"
+    [rowData]="rangers"
+    [columnDefs]="columnDefs"
+    [defaultColDef]="defaultColDef"
+    [tooltipShowDelay]="500"
+  >
     <!--
           (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1
 
@@ -66,74 +92,108 @@
       <button (click)="onBtNormal()">Normal Layout</button-->
 
   <div>
-    <button (click)="onBtnExportToExcel()">Export Rangers</button> with column separator of
+    <button (click)="onBtnExportToExcel()">Export Rangers</button> with column separator
+    of
     <select (change)="onSeperatorChange()" id="columnSeparator">
       <option value="none">comma (,)</option>
       <option value="tab">tab</option>
       <option value="|">bar (|)</option>
     </select>
   </div>
-  <br>
+  <br />
   <button (click)="onDeselectAll()">Clear Selection</button>
-  <br>
-  <br>
-  <button (click)="onBtnAddRanger()"
-    title="Add a new Ranger, or a new CERT, or a new Team Tactical sign: they're considered identically">Add new
-    tactical sign</button>
-  <br>
-  <br>
+  <br />
+  <br />
+  <button
+    (click)="onBtnAddRanger()"
+    title="Add a new Ranger, or a new CERT, or a new Team Tactical sign: they're considered identically"
+  >
+    Add new tactical sign
+  </button>
+  <br />
+  <br />
   <details>
     <summary><span class="big" id="Advanced">Advanced</span></summary>
 
     If no rangers exist, or you would like to replace those shown above, either:
     <ol>
-      <li>BEST: Use the "Add Vashon Rangers" button to import all known HAM Radio licensees. <p>This list of potential
-          Rangers was taken from the FCC Database Feb 3, 2022. <br>
-          It has been significantly reformatted and your edits may alter it further.<br>
-          Contact John with a better list if desired... </li>
-      <li>Add new rangers (or other tactical signs such as Team Names/CERTs) into the grid.</li>
+      <li>
+        BEST: Use the "Add Vashon Rangers" button to import all known HAM Radio licensees.
+        <p>
+          This list of potential Rangers was taken from the FCC Database Feb 3, 2022.
+          <br />
+          It has been significantly reformatted and your edits may alter it further.<br />
+          Contact John with a better list if desired...
+        </p>
+      </li>
+
+      <li>
+        Add new rangers (or other tactical signs such as Team Names/CERTs) into the grid.
+      </li>
     </ol>
-    <hr>
+    <hr />
 
-
-    <p>To maintain these changes between browser sessions, we write the table
-      above to the Browser Local Storage where it will remain until deleted. Use this "Save Data" button
-      to save the current state of the grid above, so it will be restored the next time this web page
-      is opened on this browser & device</p>
+    <p>
+      To maintain these changes between browser sessions, we write the table above to the
+      Browser Local Storage where it will remain until deleted. Use this "Save Data"
+      button to save the current state of the grid above, so it will be restored the next
+      time this web page is opened on this browser & device
+    </p>
     Save Rangers to Local Storage:
-    <button (click)="onBtnUpdateLocalStorage()" style="margin-bottom: 5px"
-      title="Preserve the edits above to the Rangers stored on this browser">Save Rangers</button><br>
+    <button
+      (click)="onBtnUpdateLocalStorage()"
+      style="margin-bottom: 5px"
+      title="Preserve the edits above to the Rangers stored on this browser"
+    >
+      Save Rangers</button
+    ><br />
 
     Delete ALL Rangers from Local Storage:
-    <button (click)="onBtnDeleteRangers()">Delete Rangers</button><br>
+    <button (click)="onBtnDeleteRangers()">Delete Rangers</button><br />
 
     <div id="rangers__Fake">
       Add the large list of Vashon rangers to any existing rangers:
-      <button (click)="loadVashonRangers()" type="button" id="enter__Fake--button">Add Vashon Rangers</button>
+      <button (click)="loadVashonRangers()" type="button" id="enter__Fake--button">
+        Add Vashon Rangers
+      </button>
       <!--button (click)="onBtnReloadPage()" type="button">Reload Page</button-->
     </div>
   </details>
 
-
-  <br>
+  <br />
   <details>
     <summary><span class="big">Untested or unlikely to work!</span></summary>
     <ul>
-      <li>FUTURE: Import Rangers from a JSON file: <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px"
-          title="Import Rangers from JSON file">Import
-          Rangers (JSON)</button><br>, or</li>
-      <li>FUTURE: Replace existing Rangers with those from an Excel file: <input type="file"
-          (change)="onBtnImportExcel($event)" multiple="false" accept=".csv, .xls, .xslt" />
-        Then SAVE RANGERS below and then REFRESH PAGE! </li>
+      <li>
+        FUTURE: Import Rangers from a JSON file:
+        <button
+          (click)="onBtnImportJson($event)"
+          style="margin-bottom: 5px"
+          title="Import Rangers from JSON file"
+        >
+          Import Rangers (JSON)</button
+        ><br />, or
+      </li>
+      <li>
+        FUTURE: Replace existing Rangers with those from an Excel file:
+        <input
+          type="file"
+          (change)="onBtnImportExcel($event)"
+          multiple="false"
+          accept=".csv, .xls, .xslt"
+        />
+        Then SAVE RANGERS below and then REFRESH PAGE!
+      </li>
     </ul>
 
-    FUTURE: Import Excel button currently 'works', but imports wrong spreadsheet and does nothing with it!<br>
+    FUTURE: Import Excel button currently 'works', but imports wrong spreadsheet and does
+    nothing with it!<br />
     // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
     <label for="myfile">Select a file:</label>
-    <input type="file" id="myfile" name="myfile">
+    <input type="file" id="myfile" name="myfile" />
 
     <label for="avatar">Choose a png OR jpg only test:</label>
-    <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg">
+    <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg" />
 
     <!-- Events
       https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event
@@ -148,13 +208,11 @@
         log.textContent = e.target.value;
       }
     -->
-    <hr>
+    <hr />
 
-    <br>
+    <br />
     <label for="myfile2">Select a file:</label>
-    <input type="file2" id="myfile2" name="myfile2">
-
-
+    <input type="file2" id="myfile2" name="myfile2" />
 
     <!-- Array<Array<any>> neatly maps to this table
          https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/  -->
@@ -167,17 +225,18 @@
       </tr>
     </table>
 
-
-    <hr>
+    <hr />
     <div id="ranger__ImportExcel--zzzzzz">
       FUTURE - attempt import of an Excel file:
       <input type="file" (change)="onFileChange($event)" multiple="false" />
       <button ion-button color="secondary" (click)="import()">Import Data</button>
       <button ion-button color="secondary" (click)="export()">Export Data</button>
-      Code from <a href="http://sheetjs.com" target="_blank">http://sheetjs.com</a>, specifically
+      Code from <a href="http://sheetjs.com" target="_blank">http://sheetjs.com</a>,
+      specifically
       <a href="https://oss.sheetjs.com/" target="_blank">https://oss.sheetjs.com/</a> &
-      <a href="https://github.com/SheetJS/SheetJS.github.io/"
-        target="_blank">https://github.com/SheetJS/SheetJS.github.io/</a>
+      <a href="https://github.com/SheetJS/SheetJS.github.io/" target="_blank"
+        >https://github.com/SheetJS/SheetJS.github.io/</a
+      >
     </div>
   </details>
 </div>

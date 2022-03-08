@@ -1,25 +1,41 @@
-<div id="SettingsBody" class="container" > <!-- [ngStyle]="{backgroundImage:'./src/assets/imgs/20220205_112741.jpg'}" -->
+<div id="SettingsBody" class="container">
+  <!-- [ngStyle]="{backgroundImage:'./src/assets/imgs/20220205_112741.jpg'}" -->
   <form [formGroup]="settingsEditorForm" (ngSubmit)="onFormSubmit()">
-
     <h1>Application Defaults</h1>
-
+    <h3>{{eventInfo}} {{ dateNow | date :'short'}}</h3>
     <details>
       <summary>Instructions</summary>
       <ul>
         <li>Any saved settings are restored from the browser's local storage.</li>
-        <li>If nothing has been saved, or the user selects "Reset all values", then hardcoded values are used.</li>
-        <li>Settings are NOT shared with other browsers, whether on this device or others.</li>
-        <li>Browser local storage contents are viewable using a browser's developer tools: F12</li>
-        <li>Change font size using CTRL+mouse wheel or your browser's view size settings.</li>
+        <li>
+          If nothing has been saved, or the user selects "Reset all values", then
+          hardcoded values are used.
+        </li>
+        <li>
+          Settings are NOT shared with other browsers, whether on this device or others.
+        </li>
+        <li>
+          Browser local storage contents are viewable using a browser's developer tools:
+          F12
+        </li>
+        <li>
+          Change font size using CTRL+mouse wheel or your browser's view size settings.
+        </li>
       </ul>
     </details>
-    <br>
+    <br />
 
-    <div class="input-group">Notes for this group of settings:
-      <textarea formControlName="note" id="" cols="50" rows="1"
-        placeholder="Description of this group of settings"></textarea>
+    <div class="input-group">
+      Notes for this group of settings:
+      <textarea
+        formControlName="note"
+        id=""
+        cols="50"
+        rows="1"
+        placeholder="Description of this group of settings"
+      ></textarea>
     </div>
-    <br>
+    <br />
 
     <h2>Entry Form Defaults</h2>
     <!--legend>Default </legend-->
@@ -27,62 +43,103 @@
       <summary>Location Guidance</summary>
       <ul>
         <li>This sets initial (default) values for lat & long in the entry form.</li>
-        <li>What3Words uses this to set the focus, prioritizing suggested
-          results (for incorrect words) by proximity to this point.</li>
+        <li>
+          What3Words uses this to set the focus, prioritizing suggested results (for
+          incorrect words) by proximity to this point.
+        </li>
         <li>PlusCodes uses this for converting short to full/global codes.</li>
-        <li>Maps do not use this. They are auto-centered on the bounding
-          coordinates centroid of all points entered and the map is then
-          zoomed to show all points.</li>
+        <li>
+          Maps do not use this. They are auto-centered on the bounding coordinates
+          centroid of all points entered and the map is then zoomed to show all points.
+        </li>
       </ul>
     </details>
-    <div class="input-group">Latitude:
+    <div class="input-group">
+      Latitude:
       <input
         [class.border-danger]="settingsEditorForm.get('latitude')?.touched && settingsEditorForm.get('latitude')?.invalid"
-        type="number" formControlName="latitude" placeholder=47.5>
+        type="number"
+        formControlName="latitude"
+        placeholder="47.5"
+      />
       <div
         *ngIf="settingsEditorForm.get('latitude')?.touched && settingsEditorForm.get('latitude')?.hasError('required')"
-        class="text-sm text-danger">latitude is required</div>
+        class="text-sm text-danger"
+      >
+        latitude is required
+      </div>
     </div>
 
-    <div class="input-group">Longitude:
+    <div class="input-group">
+      Longitude:
       <input
         [class.border-danger]="settingsEditorForm.get('longitude')?.touched && settingsEditorForm.get('longitude')?.invalid"
-        type="number" formControlName="longitude" placeholder=-122.5>
+        type="number"
+        formControlName="longitude"
+        placeholder="-122.5"
+      />
       <div
         *ngIf="settingsEditorForm.get('longitude')?.touched && settingsEditorForm.get('longitude')?.hasError('required')"
-        class="text-sm text-danger">longitude is required</div>
+        class="text-sm text-danger"
+      >
+        longitude is required
+      </div>
     </div>
 
-    <div class="input-group">Zoom (3-21):
-      <input [class.border-danger]="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.invalid"
-        type="number" formControlName="zoom" placeholder=15>
-      <div *ngIf="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.hasError('required')"
-        class="text-sm text-danger">zoom is required</div>
+    <div class="input-group">
+      Zoom (3-21):
+      <input
+        [class.border-danger]="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.invalid"
+        type="number"
+        formControlName="zoom"
+        placeholder="15"
+      />
+      <div
+        *ngIf="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.hasError('required')"
+        class="text-sm text-danger"
+      >
+        zoom is required
+      </div>
     </div>
 
-    <div class="input-group">Plus Code:
+    <div class="input-group">
+      Plus Code:
       <input
         [class.border-danger]="settingsEditorForm.get('plusCode')?.touched && settingsEditorForm.get('plusCode')?.invalid"
-        type="text" formControlName="plusCode" placeholder="84VVCGWP+VW">
+        type="text"
+        formControlName="plusCode"
+        placeholder="84VVCGWP+VW"
+      />
       <div
         *ngIf="settingsEditorForm.get('plusCode')?.touched && settingsEditorForm.get('plusCode')?.hasError('required')"
-        class="text-sm text-danger">plusCode is required</div>
+        class="text-sm text-danger"
+      >
+        plusCode is required
+      </div>
     </div>
-    <br>
+    <br />
     <h2>Field Reports</h2>
 
-    <div class="input-group">Markers
+    <div class="input-group">
+      Markers
       <input
         [class.border-danger]="settingsEditorForm.get('allowManualPinDrops')?.touched && settingsEditorForm.get('allowManualPinDrops')?.invalid"
-        type="checkbox" formControlName="allowManualPinDrops" placeholder="allowManualPinDrops">
+        type="checkbox"
+        formControlName="allowManualPinDrops"
+        placeholder="allowManualPinDrops"
+      />
       <div
         *ngIf="settingsEditorForm.get('allowManualPinDrops')?.touched && settingsEditorForm.get('debugMallowManualPinDropsode')?.hasError('required')"
-        class="text-sm text-danger">allowManualPinDrops is required</div>
+        class="text-sm text-danger"
+      >
+        allowManualPinDrops is required
+      </div>
       Allow Manual Pin Drops on Google & Leaflet Maps (default: false)
     </div>
-    <br>
+    <br />
 
-    Field Report Statuses: (Renaming a status here will not rename existing field report statuses)
+    Field Report Statuses: (Renaming a status here will not rename existing field report
+    statuses)
     <!--div id="settings__ColorChart" display="hidden">
       <img src= '../../assets/imgs/ColorChart.png' title="These 3 letter codes ARE valid colors!, from https://html-color-codes.com/" id ="settings__ColorChart-img"/>
     </div-->
@@ -103,13 +160,24 @@
       </mat-form-field>
     </mat-card-->
 
-    <ag-grid-angular class="ag-theme-alpine" (gridReady)="onGridReady($event)" [gridOptions]="gridOptions"
-      [defaultColDef]="defaultColDef" [tooltipShowDelay]=500 [rowData]="rowData" [columnDefs]="columnDefs">
+    <ag-grid-angular
+      class="ag-theme-alpine"
+      (gridReady)="onGridReady($event)"
+      [gridOptions]="gridOptions"
+      [defaultColDef]="defaultColDef"
+      [tooltipShowDelay]="500"
+      [rowData]="rowData"
+      [columnDefs]="columnDefs"
+    >
     </ag-grid-angular>
-    <button (click)="onBtnAddFRStatus()" title="Add a new Field Report Status">Add new
-      row</button> &nbsp;&nbsp;&nbsp;
-    <button (click)="this.refreshStatusGrid()" title="Refresh Report Statuses">Refresh Statuses Grid</button>
-    <br>
+    <button (click)="onBtnAddFRStatus()" title="Add a new Field Report Status">
+      Add new row
+    </button>
+    &nbsp;&nbsp;&nbsp;
+    <button (click)="this.refreshStatusGrid()" title="Refresh Report Statuses">
+      Refresh Statuses Grid
+    </button>
+    <br />
     <!--h2>Markers</h2>
 
     <div class="input-group">Marker Shape:
@@ -133,20 +201,24 @@
         class="text-sm text-danger">markerSize is required</div>
     </div-->
 
-
-    <br>
+    <br />
     <h2>Debug</h2>
 
     <div class="input-group">
       <input
         [class.border-danger]="settingsEditorForm.get('debugMode')?.touched && settingsEditorForm.get('debugMode')?.invalid"
-        type="checkbox" formControlName="debugMode" placeholder="debugMode">
+        type="checkbox"
+        formControlName="debugMode"
+        placeholder="debugMode"
+      />
       <div
         *ngIf="settingsEditorForm.get('debugMode')?.touched && settingsEditorForm.get('debugMode')?.hasError('required')"
-        class="text-sm text-danger">debug mode is required</div>
+        class="text-sm text-danger"
+      >
+        debug mode is required
+      </div>
       Debug Mode
     </div>
-
 
     <!-- TODO: future: [ ] enable touch user interface<br>-->
     <!--
@@ -201,29 +273,34 @@
       <! -- <div>TODO: <button (click)="setQuickFilter()">Filter Teams</button></div> ->
     </div-->
 
-    <br>
+    <br />
 
     Save above settings (to local storage):
     <button [disabled]="settingsEditorForm.invalid" type="submit">Save</button>
     <!-- REVIEW: Other pages only reflect these changes if refreshed!!! -->
 
-    <br>
-    <br>
+    <br />
+    <br />
 
     <details>
       <summary><span class="big">Advanced Options</span></summary>
-      <button (click)="onBtnResetDefaults()">Reset All these Settings to Default values</button><br>
-      <br>
-      <h2><a href="https://fonts.google.com/share?selection.family=Open+Sans%7CMontserrat%7CRoboto%7CPlayfair+Display%7CLato%7CMerriweather%7CHelvetica%7CLora%7CPT+Serif%7CSpectral%7CTimes+New+Roman%7CAkaya+Telivigala%7COpen+Sans+Condensed%7CSaira+Extra+Condensed%7CBoogaloo%7CAnton%7CFaster+One%7CArima+Madurai" target="_blank">Font Explorium</a></h2>
+      <button (click)="onBtnResetDefaults()">
+        Reset All these Settings to Default values</button
+      ><br />
+      <br />
+      <h2>
+        <a
+          href="https://fonts.google.com/share?selection.family=Open+Sans%7CMontserrat%7CRoboto%7CPlayfair+Display%7CLato%7CMerriweather%7CHelvetica%7CLora%7CPT+Serif%7CSpectral%7CTimes+New+Roman%7CAkaya+Telivigala%7COpen+Sans+Condensed%7CSaira+Extra+Condensed%7CBoogaloo%7CAnton%7CFaster+One%7CArima+Madurai"
+          target="_blank"
+          >Font Explorium</a
+        >
+      </h2>
       <ul style="font-size: large;">
         <li *ngFor="let font of fonts">
           {{font}}: <span style="font-family: {{font}};">{{pangram}}</span>
         </li>
       </ul>
-
     </details>
-
-
 
     <!--hr>
 <div class="card">
@@ -284,3 +361,5 @@
       <button type="button" class="btn btn-success btn-sm pull-right" title="Save">Save</button>
   </div>
 </div-->
+  </form>
+</div>

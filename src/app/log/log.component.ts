@@ -21,8 +21,9 @@ export class LogComponent implements OnInit { //}, AfterContentInit, AfterViewIn
   private logPanel: HTMLElement | null = null
   private logSubscription: Subscription
   public eventInfo = ''
-  private latestLog: LogType[] = []
   public dateNow = Date.now()
+  private latestLog: LogType[] = []
+
 
   // https://material.angular.io/components/checkbox
   public verbose = true

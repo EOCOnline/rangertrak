@@ -230,13 +230,8 @@ export class FieldReportService {
       this.log.info(`recalcFieldBounds BROADENED to N:${north} S:${south} `, this.id)
     }
 
-    let sw = L.latLng(south, west)
-    let ne = L.latLng(north, east)
-    //latLngBounds(southWest: LatLngExpression, northEast: LatLngExpression): LatLngBounds
     reports.bounds = L.latLngBounds([[south, west], [north, east]])//SW, NE
-    //reports.bounds = new LatLngBounds(sw, ne) //SW, NE
-    this.log.verbose(`=============================== NEW Value: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
-
+    //this.log.verbose(`New bounds: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
   }
 
   generateFakeData(num: number = 15) {

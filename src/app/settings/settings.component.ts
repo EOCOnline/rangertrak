@@ -18,13 +18,14 @@ import { ColDef } from 'ag-grid-community';
 })
 export class SettingsComponent implements OnInit {
   private id = 'Settings Component'
+  public eventInfo = ''
+  public dateNow = Date.now()
   settings: SettingsType
   settingsEditorForm!: FormGroup
 
   private gridApi: any
   private gridColumnApi: any
   rowData: FieldReportStatusType[] = []
-  public eventInfo = ''
 
   /*
   colorCtr: AbstractControl = new FormControl(new Color(255, 243, 200), [Validators.required])
@@ -177,7 +178,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     @Inject(DOCUMENT) private document: Document) {
     this.pangram = this.getPangram()
     //this.settings = settingService()
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date}`
     this.settings = SettingsService.Settings // only using static functions/values from the service...
     this.log.verbose('Settings set to static values. But not initialized???', this.id)
   }
@@ -190,6 +191,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
     }
 
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
     this.settingsEditorForm = this.getFormArrayFromSettingsArray()
     this.rowData = this.settingsService.getFieldReportStatuses()
 

@@ -1,5 +1,5 @@
 <h1>{{title}}</h1>
-<h3>{{eventInfo}}</h3>
+<h3>{{eventInfo}} {{ dateNow | date :'short'}}</h3>
 <details>
   <summary class="big">Instructions</summary>
   This currently displays all rangers/teams without filtering. In the future more options
@@ -48,18 +48,7 @@
     (mapInitialized)="onMapInitialized($event)"
     (mapMouseover)="zoomed()"
   >
-    <!--map-marker-clusterer [imagePath]="markerClustererImagePath">
-      <map-marker *ngFor="let markerPosition of markerPositions"
-                  [position]="markerPosition"></map-marker>
-    </map-marker-clusterer-->
-
     <div id="markerDiv" #markerDiv *ngFor="let marker of markers"></div>
-
-    <!--
-      (mapClick)="openInfoWindow($event)"
-
-        [position]="marker.position"
-        [options]="marker.options"  -->
 
     <map-circle [center]="circleCenter" [radius]="radius"></map-circle>
 
@@ -67,16 +56,15 @@
       <map-info-window> infoWindowContent could go here</map-info-window>
       <div>
         Latitude:
-        <span class="strong">{{mouseLatLng?.lat | number:'1.5-5'}}</span> Longitude:
-        <span class="strong">{{mouseLatLng?.lng | number:'1.5-5'}}</span>
+        <span class="strong">{{mouseLatLng?.lat?.toFixed(5)}}</span> Longitude:
+        <span class="strong">{{mouseLatLng?.lng?.toFixed(5)}}</span>
       </div>
     </div>
   </google-map>
 
-  <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
   <div>
-    Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.5-5'}}</span> Longitude:
-    <span class="strong">{{mouseLatLng?.lng | number:'1.5-5'}}</span> Zoom:
+    Latitude: <span class="strong">{{mouseLatLng?.lat?.toFixed(5)}}</span> Longitude:
+    <span class="strong">{{mouseLatLng?.lng?.toFixed(5)}}</span> Zoom:
     <span class="strong">{{zoomDisplay}}</span>
   </div>
 </div>
@@ -131,6 +119,4 @@
     </li>
   </ul>
   <button (click)="logCenter()">Log center</button>
-  <!--button (click)="onInfoClick()">Info Window</button-->
-  <!--button (click)="addMarker()">Add marker</button-->
 </details>

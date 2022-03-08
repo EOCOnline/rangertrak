@@ -38,6 +38,34 @@ export type SettingsType = {
   // Statuses
 }
 
+export type SettingsType2 = {
+  id: number, // needed, or use w/ name to allow several sets of settings: needed?
+  event: string,
+  mission: string,
+  opPeriod: string,
+  opPeriodStart: Date,
+  opPeriodEnd: Date,
+  //note: string,
+
+  application: string,
+  version: string,
+
+  defLat: number,
+  defLng: number,
+  defZoom: number,
+  defPlusCode: string,
+  w3wLocale: string,
+
+  markerSize: number,
+  markerShape: number,
+
+  defRangerStatus: number
+  RangerStatuses: FieldReportStatusType[],
+
+  allowManualPinDrops: boolean,
+  debugMode: boolean,
+}
+
 export type FieldReportStatusType = { status: string, color: string, icon: string }
 
 @Injectable({ providedIn: 'root' })

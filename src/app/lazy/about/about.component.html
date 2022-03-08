@@ -4,7 +4,7 @@
   [ngStyle]="{backgroundImage:'./src/assets/imgs/AlpineMarmot.png'}"
 >
   <h1>RangerTrak.org</h1>
-  <h3>{{eventInfo}}</h3>
+  <h3>{{eventInfo}} {{ dateNow | date :'short'}}</h3>
   <h2>About</h2>
   <div>
     <p class="bold">Version {{version}}</p>

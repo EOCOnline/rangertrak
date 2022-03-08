@@ -28,6 +28,7 @@ export class RangersComponent implements OnInit {
 
   private id = 'Ranger Component'
   public eventInfo = ''
+  public dateNow = Date.now()
 
   localUrl: any[] = []
   //teamService
@@ -107,7 +108,7 @@ export class RangersComponent implements OnInit {
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
     this.settings = SettingsService.Settings
   }
 

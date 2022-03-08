@@ -87,6 +87,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z' // dupl of that above
   private id = 'Entry Form'
   public eventInfo = ''
+  public dateNow = Date.now()
 
   myForm!: FormGroup
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
@@ -207,7 +208,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     )
     log.verbose(`constructor: ranger ${this.filteredRangers}`, this.id) //JSON.stringify
 
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
 
     // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
     // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),

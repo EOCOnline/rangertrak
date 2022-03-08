@@ -13,6 +13,7 @@ export class AboutComponent {  //implements OnInit {
 
   id = 'About'
   public eventInfo = ''
+  public dateNow = Date.now()
 
   version = ""
 
@@ -21,7 +22,7 @@ export class AboutComponent {  //implements OnInit {
   ) {
     console.log("AboutComponent getting constructed")
     this.version = SettingsService.Settings.version
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
   }
 
   //ngOnInit() {  }

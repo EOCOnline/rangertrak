@@ -53,6 +53,7 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
 
   private id = 'Google Map Component'
   public eventInfo = ''
+  public dateNow = Date.now()
 
   // items for template
   public title = 'Google Map'
@@ -117,7 +118,7 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
     private log: LogService,
     private httpClient: HttpClient,
     @Inject(DOCUMENT) private document: Document) {
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
 
     this.fieldReportService = fieldReportService
     this.zoom = SettingsService.Settings.defZoom

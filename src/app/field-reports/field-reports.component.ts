@@ -29,6 +29,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   private settings
 
   public eventInfo = ''
+  public dateNow = Date.now()
   public columnDefs
   private gridApi: any
   private gridColumnApi
@@ -75,7 +76,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document
   ) {
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date.now}`
+    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
