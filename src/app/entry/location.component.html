@@ -20,10 +20,7 @@
   <div id="arrow" data-popper-arrow></div>
 </div-->
 
-<div class="input-group" [formGroup]="locationFrmGrp">
-  &nbsp;&nbsp;&nbsp;&nbsp;Latitude:
-
-  <!--
+<!--
       [class.border-danger]="location.get('latI')?.touched && location.get('latI')?.invalid"
 
 
@@ -64,6 +61,10 @@
     at controlParentException (forms.mjs:1474:12)
 [FormControl]="latI"
       -->
+
+<div class="input-group" [formGroup]="locationFrmGrp">
+  &nbsp;&nbsp;&nbsp;&nbsp;Latitude:
+
   <input
     #latI
     name="latI"
