@@ -15,7 +15,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { EntryComponent } from './entry/entry.component';
 import { FieldReportsComponent } from './field-reports/field-reports.component';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+//import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FooterComponent } from './footer/footer.component';
 import { GmapComponent } from './gmap/gmap.component';
 import { GoogleMapsModule } from '@angular/google-maps'
@@ -66,7 +66,7 @@ import { HeaderComponent } from './shared/';
     MaterialModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    FontAwesomeModule,
+    // FontAwesomeModule,
     AgGridModule.withComponents([
       MoodEditor,
       MoodRenderer,

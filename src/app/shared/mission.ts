@@ -2,7 +2,7 @@ import { Injectable, OnInit } from '@angular/core';
 import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 
 
-import { FaStackItemSizeDirective } from '@fortawesome/angular-fontawesome';
+//import { FaStackItemSizeDirective } from '@fortawesome/angular-fontawesome';
 import { OpPeriod } from './op-period';
 
 //@Injectable({  providedIn: 'root' })
