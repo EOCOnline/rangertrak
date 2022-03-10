@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Utility } from '../utility';
+import { Injectable } from '@angular/core'
+import { BehaviorSubject, Observable } from 'rxjs'
+import { Utility } from '../utility'
+import chalk from 'chalk'
 
 export enum LogLevel { Verbose, Info, Warn, Error }
 export type LogType = {
@@ -26,11 +27,16 @@ export class LogService {
   }
 
   // compare to functionality of https://developer.mozilla.org/en-US/docs/Web/API/console
+  // Chrome console formatting: https://developer.chrome.com/docs/devtools/console/format-style/
+  // https://www.npmjs.com/package/chalk
   log(msg: string, source: string = this.defaultSource, level: LogLevel = LogLevel.Info) {
     let dt = new Date
     let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
     switch (level) {
       case LogLevel.Verbose:
+        console.log(chalk.blue(`${time} - From ${source} - ${msg}`))
+        break;
+
       case LogLevel.Info:
         console.log(`${time} - From ${source} - ${msg}`)
         break;

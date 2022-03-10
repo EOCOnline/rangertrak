@@ -40,30 +40,38 @@ export type SettingsType = {
 
 export type SettingsType2 = {
   id: number, // needed, or use w/ name to allow several sets of settings: needed?
-  event: string,
+  eventName: string,
+  eventNotes: string,
   mission: string,
   opPeriod: string,
   opPeriodStart: Date,
   opPeriodEnd: Date,
-  //note: string,
 
   application: string,
   version: string,
+  debugMode: boolean,
 
-  defLat: number,
-  defLng: number,
-  defZoom: number,
   defPlusCode: string,
   w3wLocale: string,
+  allowManualPinDrops: boolean,
 
-  markerSize: number,
-  markerShape: number,
+  google: {
+    defLat: number,
+    defLng: number,
+    defZoom: number,
+    markerScheme: string
+  },
+
+  leaflet: {
+    defLat: number,
+    defLng: number,
+    defZoom: number,
+    markerScheme: string
+  },
 
   defRangerStatus: number
   RangerStatuses: FieldReportStatusType[],
-
-  allowManualPinDrops: boolean,
-  debugMode: boolean,
+  RangerKeywords: string[],
 }
 
 export type FieldReportStatusType = { status: string, color: string, icon: string }
