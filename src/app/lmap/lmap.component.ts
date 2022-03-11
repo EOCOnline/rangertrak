@@ -50,7 +50,7 @@ export type addressType = {
     './lmap.component.scss',
     "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.css", // REVIEW: also added to angular.json: needed there?
     "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css", // (not needed if you use your own iconCreateFunction instead of the default one)
-    '../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)
+    '../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)
   ],
   providers: [SettingsService]
 })
@@ -116,7 +116,6 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedRows = this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
     this.filterSwitch = new MDCSwitch(this.filterButton)
     if (!this.filterSwitch) throw ("Could not find Field Report Selection Switch!")
-
   }
 
   ngAfterViewInit() {
@@ -130,7 +129,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.allRows = newReports.numReport
     this.fieldReports = newReports
     this.fieldReportArray = newReports.fieldReportArray
-    console.assert(this.allRows == this.fieldReportArray.length)
+    console.assert(this.allRows == this.fieldReportArray.length, `this.allRows=${this.allRows} != this.fieldReportArray.length ${this.fieldReportArray.length}`)
     //this.refreshMap()
     // this.reloadPage()  // TODO: needed?
   }
@@ -166,13 +165,12 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.lmap.fitBounds(this.fieldReports.bounds)
     }
 
-    //this.lmap?.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
-    this.lmap?.on('zoomlevelschange', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
-      if (this.zoomDisplay && this.lmap) {
+    // BUG: not working....
+    this.lmap?.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
+      if (this.lmap) { // this.zoomDisplay &&
         this.zoom = this.lmap.getZoom()
         this.zoomDisplay = this.lmap.getZoom()
       }
-      //this.zoom! = this.lmap?.getZoom()
     })
 
     this.lmap.on('click', (ev: L.LeafletMouseEvent) => {
@@ -206,7 +204,6 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     const OVERVIEW_DIFFERENCE = 5
     const OVERVIEW_MIN_ZOOM = 5
     const OVERVIEW_MAX_ZOOM = 16
-    // https://developers.google.com/maps/documentation/javascript/examples/inset-map
     // instantiate the overview map without controls
     // https://leafletjs.com/reference.html#map-example
     this.overviewLMap = L.map('overview', {
@@ -215,6 +212,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
       zoomControl: false,
       keyboard: false,
       scrollWheelZoom: false,
+      dragging: false,
     })
 
     const overviewTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

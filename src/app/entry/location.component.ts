@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { debounceTime, fromEvent, Observable } from 'rxjs';
-import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
+import { DDToDMS, CodeArea, GoogleGeocode, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map,
 
 import * as P from '@popperjs/core';
 //import { createPopper } from '@popperjs/core';

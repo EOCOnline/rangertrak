@@ -7,16 +7,22 @@ with ($primary: #962f10,
 //@use "@material/banner/styles";
 // https://material.io/components/buttons/web#api
 
+$filledColor : #F0F0F0;
+
+.filled {
+  background-color: $filledColor;
+}
+
 /*
 // https://www.concretepage.com/angular-material/angular-material-radio-button#color
 .rButton {
-  border-color: blue;
+  border-color        : blue;
   // background-color: rgb(132, 151, 21); // of whole list
 }
 
    // For outer circle
    .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-    border-color: rgb(71, 223, 51);
+    border-color      : rgb(71, 223, 51);
   }
 
   // For inner circle
@@ -25,12 +31,12 @@ with ($primary: #962f10,
       background-color: rgb(132, 151, 21);
   }
 
-  ::ng-deep .mat-radio-checked .mat-radio-outer-circle {
-    border-color: rgb(13, 171, 219);
+                      ::ng-deep .mat-radio-checked .mat-radio-outer-circle {
+    border-color      : rgb(13, 171, 219);
 }
 
-::ng-deep .mat-radio-checked .mat-radio-inner-circle {
-    background-color: rgb(153, 58, 98);
+                      ::ng-deep .mat-radio-checked .mat-radio-inner-circle {
+    background-color  : rgb(153, 58, 98);
 }
 */
 
@@ -176,8 +182,8 @@ input[type=number] {
   float           : right;
   height          : 50px;
   width           : 10vw;
-  border          : 1px solid brown;
-  background-color: rgb(240, 255, 250);
+  border          : 3px solid brown;
+  background-color: $filledColor;
   font            : 0.8em sans-serif;
 }
 
@@ -188,7 +194,7 @@ input[type=number] {
 .enter__What--area {
   border: 1px dotted rgb(52, 28, 192);
 
-  background-color    : #F0F0F0;
+  background-color    : $filledColor;
   //text-orientation: upright;
   //text-transform: capitalize;
   //float             : left;

@@ -2,7 +2,8 @@ import { Component, Inject, Pipe, PipeTransform, OnInit, OnDestroy, AfterViewIni
 import { DOCUMENT, formatDate } from '@angular/common'
 import { FormBuilder, FormGroup } from '@angular/forms'
 
-import { FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, RangerService, SettingsService, TeamService } from '../shared/services';
+import { FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, RangerService, SettingsService } from '../shared/services';
+// , TeamService
 import { Observable, Subscription, subscribeOn } from 'rxjs';
 import { SelectionChangedEvent } from 'ag-grid-community';
 
@@ -74,7 +75,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     private formBuilder: FormBuilder,
     private fieldReportService: FieldReportService,
     private log: LogService,
-    private teamService: TeamService,
+    // private teamService: TeamService,
     private rangerService: RangerService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document

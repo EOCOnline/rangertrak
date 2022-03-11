@@ -14,9 +14,9 @@ import { CodeArea, OpenLocationCode } from "./data.service";
 //export { TeamService, TeamType } from "./team.service";
 //export { FieldReportService, FieldReportType, FieldReportSource, FieldReportStatuses } from "./field-report.service";
 
-export { Map, LayerType } from "./map";
-export { OpPeriod } from "./op-period";
-export { Mission } from "./mission";
+//export { Map, LayerType } from "./unused/map";
+//export { OpPeriod } from "./unused/op-period";
+//export { Mission } from "./unused/mission";
 export { CodeArea, OpenLocationCode } from "./open-location-code"  // HAD TO REMMOVE default KEYWORD????
 //export { What3Words } from "./3words"
 export { GoogleGeocode } from "./google-geocode"

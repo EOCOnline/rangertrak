@@ -1,3 +1,4 @@
+<pageHeader [parentTitle]="title">...</pageHeader>
 <div class="container">
   <form
     #frm="ngForm"
@@ -106,7 +107,7 @@ Error: Failed to execute 'setAttribute' on 'Element': '[location' is not a valid
 location as FormGroup does compile, but above run-time error...
 -->
 
-      <rangertrak-location #NeuvoLocation></rangertrak-location>
+      <rangertrak-location #NeuvoLocation appearance="filled"></rangertrak-location>
 
       <!--
 
@@ -163,7 +164,7 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
         <mat-datepicker-toggle
           matSuffix
           [for]="$any(datePicker)"
-          title="Click me to display the picker"
+          title="Click me to display a time picker"
         >
         </mat-datepicker-toggle>
 
@@ -187,12 +188,12 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
           </ng-template>
         </ngx-mat-datetime-picker>
 
-        <div
+        <span
           *ngIf="entryDetailsForm.get('date')?.touched && entryDetailsForm.get('date')?.hasError('required')"
           class="text-sm text-danger"
         >
           date is required
-        </div>
+        </span>
       </mat-form-field>
     </div>
 
@@ -201,6 +202,7 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
     <div class="input-group bordered">
       <mat-label>Status:</mat-label>
       <mat-radio-group
+        class="filled"
         labelPosition="after"
         formControlName="status"
         [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid"
@@ -249,7 +251,7 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
     </div-->
 
     <br />
-    <br />
+
     <!--button (click)="onBtnUpdateLocation()">Update location</button> <br-->
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
     <button

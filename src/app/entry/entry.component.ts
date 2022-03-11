@@ -7,9 +7,9 @@ import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, debounceTime, map, startWith, switchMap, subscribeOn } from 'rxjs'
 import { FieldReport } from './location.interface'
-import { AlertsComponent } from '../alerts/alerts.component'
-import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, TeamService } from '../shared/services/'
-
+import { AlertsComponent } from '../shared/alerts/alerts.component'
+import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService } from '../shared/services/'
+// , TeamService
 import * as dayjs from 'dayjs' // https://day.js.org/docs/en/ or https://github.com/dayjs/luxon/
 
 import * as P from '@popperjs/core';
@@ -80,7 +80,7 @@ export class IconComponent {
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
-  providers: [RangerService, FieldReportService, SettingsService, TeamService]
+  providers: [RangerService, FieldReportService, SettingsService] //, TeamService
 })
 export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/

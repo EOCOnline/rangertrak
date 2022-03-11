@@ -1,6 +1,6 @@
 import { BehaviorSubject, Observable, Observer, of } from 'rxjs'
 import { Injectable, OnInit, Pipe, PipeTransform } from '@angular/core'
-import { RangerService, SettingsService, FieldReportStatusType, TeamService } from './index'
+import { RangerService, SettingsService, FieldReportStatusType } from './index' // , TeamService
 import { HttpClient } from '@angular/common/http'
 import * as L from 'leaflet'
 import { LatLngBounds } from 'leaflet';
@@ -54,7 +54,7 @@ export class FieldReportService {
 
   constructor(
     private rangerService: RangerService,
-    private teamService: TeamService,
+    //  private teamService: TeamService,
     private settingService: SettingsService,
     private log: LogService,
     private httpClient: HttpClient) {
@@ -235,7 +235,7 @@ export class FieldReportService {
   }
 
   generateFakeData(num: number = 15) {
-    let teams = this.teamService.getTeams()
+    // let teams = this.teamService.getTeams()
     let rangers = this.rangerService.GetRangers()
     if (rangers == null || rangers.length < 1) {
       alert("No Rangers! Please add some 1st.")
@@ -252,7 +252,7 @@ export class FieldReportService {
       this.fieldReports.fieldReportArray.push({
         id: this.fieldReports.maxId++,
         callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
-        team: teams[Math.floor(Math.random() * teams.length)].name,
+        team: 'T1', //teams[Math.floor(Math.random() * teams.length)].name,
         address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
         lat: SettingsService.Settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
         lng: SettingsService.Settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,

@@ -170,7 +170,7 @@ export class SettingsService {
       name: "standard hardcoded settings",
       application: "RangerTrak",
       version: SettingsService.version,
-      note: "values set by code, please edit them to serve you!",
+      note: "",
       defLat: 47.4472,
       defLng: -122.4627,  // Vashon EOC!
       defZoom: 17,

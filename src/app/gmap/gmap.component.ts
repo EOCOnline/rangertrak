@@ -6,7 +6,8 @@ import { HttpClient } from '@angular/common/http'
 import { catchError, map, Observable, of, Subscription } from 'rxjs'
 import * as GMC from "@googlemaps/markerclusterer"
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService } from '../shared/services'
-import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
+import { CodeArea, OpenLocationCode, Utility } from '../shared/'
+// Map
 import { MDCSwitch } from '@material/switch'
 
 /*

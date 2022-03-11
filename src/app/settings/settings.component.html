@@ -2,16 +2,42 @@
   <!-- [ngStyle]="{backgroundImage:'./src/assets/imgs/20220205_112741.jpg'}" -->
   <form [formGroup]="settingsEditorForm" (ngSubmit)="onFormSubmit()">
     <pageHeader [parentTitle]="title">...</pageHeader>
+    <br />
     <details>
       <summary>Instructions</summary>
       <ul>
-        <li>Any saved settings are restored from the browser's local storage.</li>
         <li>
-          If nothing has been saved, or the user selects "Reset all values", then
-          hardcoded values are used.
+          When starting a new event:
+          <ul>
+            <li>
+              Remove leftover "Field Reports" from previous operational periods or
+              exercises.
+              <br />
+              Do so at the bottom of the Field Reports page.
+            </li>
+            <li>
+              Update the list of Rangers on the Rangers page. <br />
+              (Minor updates and new rangers can be added throughout the event.)
+            </li>
+            <li>
+              As soon as practical, either reset all settings (see Advanced Options below)
+              -- <br />
+              or just edit the following settings
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          Settings are (manually) saved to and automatically restored from this browser's
+          local storage.
         </li>
         <li>
-          Settings are NOT shared with other browsers, whether on this device or others.
+          Each browser on each device maintains its own Local Storage: they are not
+          shared.
+        </li>
+        <li>
+          If nothing has been saved, or the user selects "Reset Values", then hardcoded
+          values are used.
         </li>
         <li>
           Browser local storage contents are viewable using a browser's developer tools:
@@ -25,13 +51,14 @@
     <br />
 
     <div class="input-group">
-      Notes for this group of settings:
+      <span class="strong">Incident/Exercise Description:</span><br />
       <textarea
+        appearance="fill"
         formControlName="note"
         id=""
-        cols="50"
-        rows="1"
-        placeholder="Description of this group of settings"
+        cols="100"
+        rows="4"
+        placeholder="Incident name, Mission #, Op Period, etc."
       ></textarea>
     </div>
     <br />
@@ -39,7 +66,7 @@
     <h2>Entry Form Defaults</h2>
     <!--legend>Default </legend-->
     <details>
-      <summary>Location Guidance</summary>
+      <summary><span class="strong">Location Guidance</span></summary>
       <ul>
         <li>This sets initial (default) values for lat & long in the entry form.</li>
         <li>
@@ -54,7 +81,8 @@
       </ul>
     </details>
     <div class="input-group">
-      Latitude:
+      <span class="strong"></span>
+      <span class="strong">Latitude:</span>
       <input
         [class.border-danger]="settingsEditorForm.get('latitude')?.touched && settingsEditorForm.get('latitude')?.invalid"
         type="number"
@@ -70,7 +98,7 @@
     </div>
 
     <div class="input-group">
-      Longitude:
+      <span class="strong">Longitude:</span>
       <input
         [class.border-danger]="settingsEditorForm.get('longitude')?.touched && settingsEditorForm.get('longitude')?.invalid"
         type="number"
@@ -86,7 +114,7 @@
     </div>
 
     <div class="input-group">
-      Zoom (3-21):
+      <span class="strong">Zoom (3-21):</span>
       <input
         [class.border-danger]="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.invalid"
         type="number"
@@ -102,7 +130,7 @@
     </div>
 
     <div class="input-group">
-      Plus Code:
+      <span class="strong">Plus Code:</span>
       <input
         [class.border-danger]="settingsEditorForm.get('plusCode')?.touched && settingsEditorForm.get('plusCode')?.invalid"
         type="text"
@@ -120,7 +148,7 @@
     <h2>Field Reports</h2>
 
     <div class="input-group">
-      Markers
+      <span class="strong">Markers</span>
       <input
         [class.border-danger]="settingsEditorForm.get('allowManualPinDrops')?.touched && settingsEditorForm.get('allowManualPinDrops')?.invalid"
         type="checkbox"
@@ -137,8 +165,10 @@
     </div>
     <br />
 
-    Field Report Statuses: (Renaming a status here will not rename existing field report
-    statuses)
+    <span class="strong">Field Report Statuses: </span>
+    <br />
+    (Don't edit status names - once used for this event.<br />
+    Add new statuses anytime.)
     <!--div id="settings__ColorChart" display="hidden">
       <img src= '../../assets/imgs/ColorChart.png' title="These 3 letter codes ARE valid colors!, from https://html-color-codes.com/" id ="settings__ColorChart-img"/>
     </div-->
@@ -216,7 +246,7 @@
       >
         debug mode is required
       </div>
-      Debug Mode
+      <span class="strong">Debug Mode</span>
     </div>
 
     <!-- TODO: future: [ ] enable touch user interface<br>-->
@@ -274,7 +304,7 @@
 
     <br />
 
-    Save above settings (to local storage):
+    <span class="strong">Save above settings: </span>
     <button [disabled]="settingsEditorForm.invalid" type="submit">Save</button>
     <!-- REVIEW: Other pages only reflect these changes if refreshed!!! -->
 
@@ -283,9 +313,11 @@
 
     <details>
       <summary><span class="big">Advanced Options</span></summary>
-      <button (click)="onBtnResetDefaults()">
-        Reset All these Settings to Default values</button
-      ><br />
+      <span class="strong"
+        >At the start of a new Incident or Exercise edit the settings above, <br />
+        or just reset all settings to their default value:
+      </span>
+      <button (click)="onBtnResetDefaults()">Reset Settings</button><br />
       <br />
       <h2>
         <a

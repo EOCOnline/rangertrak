@@ -5,6 +5,12 @@ with ($primary: #962f10,
 @use "@material/button/styles";
 @use "@material/banner";
 
+$filledColor : #F0F0F0;
+
+.enter__Where-div {
+  background-color: $filledColor;
+  width           : 50vw;
+}
 
 #enter__Where--latI,
 #enter__Where--lngI {

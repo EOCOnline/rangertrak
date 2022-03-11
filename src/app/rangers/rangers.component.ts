@@ -1,9 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FieldReportService, FieldReportType, LogService, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/';
+import { FieldReportService, FieldReportType, LogService, RangerService, RangerType, SettingsService } from '../shared/services/';
+// , TeamService
 import { DOCUMENT } from '@angular/common'
 import { csvImport } from './csvImport'
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AlertsComponent } from '../alerts/alerts.component';
+import { AlertsComponent } from '../shared/alerts/alerts.component';
 
 
 /* Following gets:

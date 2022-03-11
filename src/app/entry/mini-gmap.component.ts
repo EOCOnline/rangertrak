@@ -2,7 +2,7 @@
 import { Component, Inject, isDevMode, OnInit } from '@angular/core';
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 //import { addressType } from '../lmap/lmap.component' // BUG:
-import { Map, DDToDMS, CodeArea, OpenLocationCode, GoogleGeocode } from '../shared/' // BUG: , What3Words
+import { DDToDMS, CodeArea, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map, , GoogleGeocode
 import { LatLng } from 'leaflet';
 import { DOCUMENT } from '@angular/common';
 
@@ -43,7 +43,7 @@ export class MiniGMapComponent implements OnInit {
     draggableCursor: 'crosshair', // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
     //heading: 90,
   }
-  geocoder = new GoogleGeocode
+  //geocoder = new GoogleGeocode
 
 
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SettingsService } from '../shared/services/'
+import { SettingsService } from '../services'
 
 /**
  * Footer component
@@ -17,7 +17,7 @@ export class FooterComponent implements OnInit {
 
   constructor(
     private settingsService: SettingsService) {
-     // this.settings = SettingsService.Settings // only using static functions/values from the service...
+    // this.settings = SettingsService.Settings // only using static functions/values from the service...
     this.version = SettingsService.Settings.version
   }
 

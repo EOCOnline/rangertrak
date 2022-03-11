@@ -1,16 +1,23 @@
+@use "@material/theme"
+with ($primary: #962f10,
+  $on-primary: #442C2E);
+@use "@material/button";
+@use "@material/button/styles";
+@use "@material/banner";
+
 @import "ag-grid-community/dist/styles/ag-grid.css";
 @import "ag-grid-community/dist/styles/ag-theme-balham.css";
 
 ag-grid-angular {
   height: 400px;
-  width: 400px;
+  width : 400px;
 }
 
 label {
-  font-weight: bold;
+  font-weight   : bold;
   padding-bottom: .5rem;
-  padding-top: 1rem;
-  display: inline-block;
+  padding-top   : 1rem;
+  display       : inline-block;
 }
 
 button {
@@ -18,37 +25,32 @@ button {
 }
 
 .big {
-  font-size: large;
+  font-size  : large;
   font-weight: bold;
 }
 
-h1,h2,h3 {
-  margin-top: 10px;
+.strong {
+  font-weight: bold;
+}
+
+h1,
+h2,
+h3 {
+  margin-top   : 10px;
   margin-bottom: 1px;
 }
 
 .wideField {
-  width:10em;
+  width: 10em;
 }
-
-/*
-.example-form {
-  min-width: 150px;
-  max-width: 300px;
-  width: 100%;
-}
-
-.example-full-width {
-  width: 100%;
-}
-*/
 
 .fill-warning {
-  background-color:rgb(212, 179, 106) ;
+  background-color: rgb(212, 179, 106);
 }
 
 .text-warning {
-  color: rgb(175, 75, 35); ;
+  color: rgb(175, 75, 35);
+  ;
 }
 
 .border-warning {
@@ -58,28 +60,28 @@ h1,h2,h3 {
 
 #teamgrid1 {
   background-color: rgb(215, 241, 143);
-  /*display: inline-block;*/
-  height: 40em;
-  width: 40em;
+  /*display       : inline-block;*/
+  height          : 40em;
+  width           : 40em;
 }
 
 .mood {
   border-radius: 15px;
-  border: 1px solid grey;
-  background: #e6e6e6;
-  padding: 15px;
-  text-align: center;
-  display: inline-block;
-  outline: none;
+  border       : 1px solid grey;
+  background   : #e6e6e6;
+  padding      : 15px;
+  text-align   : center;
+  display      : inline-block;
+  outline      : none;
 }
 
 .default {
-  border: 1px solid transparent;
+  border : 1px solid transparent;
   padding: 4px;
 }
 
 .selected {
-  border: 1px solid lightgreen;
+  border : 1px solid lightgreen;
   padding: 4px;
 }
 
@@ -87,14 +89,14 @@ h1,h2,h3 {
   //display: inline-block;
   //background-image: './src/assets/imgs/AlpineMarmot.png' !important;
   //height: 650 px;
-  color: black;
+  color             : black;
   //background-image: linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(8, 8, 8, 0.5)), url("../../assets/imgs/20220205_112741.jpg") ;
-  background-image: linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(221, 213, 213, 0.5)), url("../../assets/imgs/20220205_112750.jpg") ;
+  background-image  : linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(221, 213, 213, 0.5)), url("../../assets/imgs/20220205_112750.jpg");
   //color: black;
   //background-image: url("../../../assets/imgs/AlpineMarmot.png") ;
   //background-size: 100%;
   //background-size: contain;
-  background-size: cover;
+  background-size   : cover;
 }
 
 // https://dev.to/nazanin_ashrafi/how-to-darken-an-image-with-css-4f5h

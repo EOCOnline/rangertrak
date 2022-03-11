@@ -1,4 +1,5 @@
-import { ClockService, FieldReportService, FieldReportSource, FieldReportStatusType, FieldReportType, MarkerService, PopupService, RangerService, RangerType, SettingsService, SettingsType, ShapeService, TeamService, TeamType } from './shared/services/';
+import { ClockService, FieldReportService, FieldReportSource, FieldReportStatusType, FieldReportType, PopupService, RangerService, RangerType, SettingsService, SettingsType } from './shared/services/';
+//, TeamService, MarkerService, ShapeService, TeamType
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AgGridModule } from 'ag-grid-angular';
@@ -6,7 +7,7 @@ import { ColorEditor } from './settings/color-editor.component';
 import { MoodEditor } from './settings/mood-editor.component';
 import { MoodRenderer } from './settings/mood-renderer.component';
 //import { AgmCoreModule } from '@agm/core';
-import { AlertsComponent } from './alerts/alerts.component';
+import { AlertsComponent } from './shared/alerts/alerts.component';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -16,7 +17,7 @@ import { CommonModule } from '@angular/common';
 import { EntryComponent } from './entry/entry.component';
 import { FieldReportsComponent } from './field-reports/field-reports.component';
 //import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { FooterComponent } from './footer/footer.component';
+import { FooterComponent } from './shared/footer/footer.component';
 import { GmapComponent } from './gmap/gmap.component';
 import { GoogleMapsModule } from '@angular/google-maps'
 import { HttpClientModule } from '@angular/common/http';
@@ -31,7 +32,7 @@ import { MDCBanner } from '@material/banner'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { MaterialModule } from './material.module';
 
-import { NavbarComponent } from './navbar/navbar.component';
+import { NavbarComponent } from './shared/header/navbar/navbar.component';
 import { NgModule } from '@angular/core';
 import { RangersComponent } from './rangers/rangers.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -118,7 +119,7 @@ import { HeaderComponent } from './shared/';
   // Define any required @Injectables. Any sub-components or modules can get the same @Injectable instance via dependency injection.
   // In the case of the AppModule, these @Injectables are application-scoped
   providers: [
-    ClockService, TeamService, RangerService, FieldReportService, MarkerService, PopupService, SettingsService, ShapeService,
+    ClockService, RangerService, FieldReportService, PopupService, SettingsService, //, TeamService, ShapeService, MarkerService
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS }
   ],
