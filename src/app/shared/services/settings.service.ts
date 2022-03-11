@@ -19,7 +19,7 @@ export type SecretType = {
  */
 export type SettingsType = {
   id: number, // needed, or use w/ name to allow several sets of settings: needed?
-  name: string, // incident Name? Op Period?, Mission#
+  name: string, // incident Name + Op Period + Mission#, etc. 1st line tops every page
   application: string,
   version: string,
   note: string,
@@ -167,7 +167,7 @@ export class SettingsService {
     // TODO: Need different sets for each type of map, and perhaps various (selectable/savable) copies of 'preferences'
     SettingsService.Settings = {
       id: 0,  // FUTURE: allow different setts of settings (e.g., per location)???
-      name: "standard hardcoded settings",
+      name: "Edit this on Settings Page",
       application: "RangerTrak",
       version: SettingsService.version,
       note: "",

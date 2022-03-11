@@ -114,6 +114,11 @@ export class FieldReportService {
   private updateFieldReports() {
     this.log.verbose(`NEW REPORT AVAILABLE, with E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
 
+    // sanity check
+    if (this.fieldReports.numReport != this.fieldReports.fieldReportArray.length) {
+      this.log.error(`this.fieldReports.numReport=${this.fieldReports.numReport} != this.fieldReports.fieldReportArray.length ${this.fieldReports.fieldReportArray.length}`)
+    }
+
     localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports))
 
     this.log.verbose(`New field reports are available to observers...`, this.id)
