@@ -9,7 +9,7 @@ import 'leaflet.markercluster';
 //import { openDB, deleteDB, wrap, unwrp } from 'idb'
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService } from '../shared/services'
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, SettingsType } from '../shared/services'
 //import { CodeArea, OpenLocationCode, Utility } from '../shared/'
 //import { Context } from 'ag-grid-community'
 import { MDCSwitch } from '@material/switch'
@@ -57,8 +57,9 @@ export type addressType = {
 export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   private id = 'Leaflet Map Component'
   public title = 'Leaflet Map'
-  public eventInfo = ''
-  public dateNow = Date.now()
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
+
   lmap?: L.Map
   overviewLMap?: L.Map
   overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } } // TODO: Leaflet's version?
@@ -84,7 +85,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   filterSwitch: MDCSwitch | null = null
   filterButton: HTMLButtonElement | null = null
 
-  constructor(private settingsService: SettingsService,
+  constructor(
+    private settingsService: SettingsService,
     private fieldReportService: FieldReportService,
     private httpClient: HttpClient,
     private log: LogService,
@@ -94,8 +96,16 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.zoom = this.settingsService.settings.defZoom
     this.zoomDisplay = this.settingsService.settings.defZoom
     this.center = { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng }
-    //this.settings = this.settingsService.settings
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
+
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
+
     this.markerClusterGroup = L.markerClusterGroup({ removeOutsideVisibleBounds: true });
   }
 

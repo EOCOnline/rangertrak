@@ -11,11 +11,13 @@ export type MarkerType = {
   draggable: boolean
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class MarkerService {
   stations: string = '/assets/data/VashonFireStations.geojson';
 
-  constructor(private http: HttpClient, private popupService: PopupService) {
+  constructor(
+    private http: HttpClient,
+    private popupService: PopupService) {
   }
 
   static scaledRadius(val: number, maxVal: number): number {
@@ -55,7 +57,7 @@ export class MarkerService {
 
   labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  generateFakeMarkerData(markers:MarkerType[], num: number = 15) {
+  generateFakeMarkerData(markers: MarkerType[], num: number = 15) {
     console.log("Generating " + num + " more rows of FAKE field reports!")
     for (let i = 0; i < num; i++) {
       markers.push(

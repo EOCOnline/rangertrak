@@ -4,7 +4,7 @@ import { Subscription, switchMap } from 'rxjs';
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { Utility } from "../shared"
 import { faMapMarkedAlt, faCircleInfo, faCircleCheck, faCircleExclamation, faBug } from '@fortawesome/free-solid-svg-icons';
-import { LogType, LogService, LogLevel, SettingsService } from '../shared/services/';
+import { LogType, LogService, LogLevel, SettingsService, SettingsType } from '../shared/services/';
 
 /**
  * Update the Log Panel pane with notifications
@@ -21,10 +21,10 @@ export class LogComponent implements OnInit { //}, AfterContentInit, AfterViewIn
   public title = 'Event Summary Log'
   private logPanel: HTMLElement | null = null
   private logSubscription: Subscription
-  public eventInfo = ''
-  public dateNow = Date.now()
-  private latestLog: LogType[] = []
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
 
+  private latestLog: LogType[] = []
 
   // https://material.angular.io/components/checkbox
   public verbose = true
@@ -38,6 +38,7 @@ export class LogComponent implements OnInit { //}, AfterContentInit, AfterViewIn
 
   constructor(
     private logService: LogService,
+    private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
     console.log(`Constructing log compoennt`)
 
@@ -50,6 +51,15 @@ export class LogComponent implements OnInit { //}, AfterContentInit, AfterViewIn
       error: (e) => console.error('Log Subscription got:' + e, this.id),
       complete: () => console.info('Log Subscription complete', this.id)
     })
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
+
   }
 
   /**
@@ -57,7 +67,7 @@ export class LogComponent implements OnInit { //}, AfterContentInit, AfterViewIn
    */
   ngOnInit(): void {
     console.log(`Into log compoennt's ngInit`)
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
+
 
     this.logPanel = this.document.getElementById("log")
     if (this.logPanel) {

@@ -30,7 +30,7 @@ export type SettingsTypeOld = {
   w3wLocale: string,
   markerSize: number,
   markerShape: number,
-  defRangerStatus: number
+  defFieldReportStatus: number
   allowManualPinDrops: boolean,
   debugMode: boolean,
   logToPanel: boolean,
@@ -75,9 +75,9 @@ export type SettingsType = {
     OverviewMaxZoom: number
   },
 
-  defRangerStatus: number
-  rangerStatuses: FieldReportStatusType[],
-  // rangerKeywords: string[],  // Future...could also just search notes field
+  defFieldReportStatus: number
+  fieldReportStatuses: FieldReportStatusType[],
+  // fieldReportKeywords: string[],  // Future...could also just search notes field
 }
 
 
@@ -89,7 +89,7 @@ export class SettingsService {
   private storageLocalName = 'appSettings'
   static secrets: SecretType[]
   public settings!: SettingsType
-  private settingsSubject?: BehaviorSubject<SettingsType>
+  private settingsSubject: BehaviorSubject<SettingsType>
   private defOpPeriodLength = 12 // hours
 
   constructor(
@@ -122,13 +122,12 @@ export class SettingsService {
         }
       } catch (error: any) {
         this.log.verbose(`Unable to parse settings in localstorage (${localStorageSettings}), so will be renamed out of the way. Error: ${error.name}; msg: ${error.message}`, this.id);
-        // Do it!
         // localStorage.removeItem(this.storageLocalName) /// will get overwritten anyway
         localStorage.setItem(this.storageLocalName + '-BAD', localStorageSettings!)
       }
     }
     if (needSettings) {
-      this.settings = this.initSettings(this.settings)
+      this.settings = this.initSettings()
     }
 
     // REVIEW: Above comes up with an old version # (if loaded from localStorage), so do this after the above
@@ -141,6 +140,7 @@ export class SettingsService {
     this.log.verbose(`Got version: ${packageAsJson.version} `, this.id)
 
     // Save & publish settings to subscribers
+    this.settingsSubject = new BehaviorSubject(this.settings)
     this.updateSettings(this.settings)
 
     // REVIEW: following forces garbage collection of package.json, for security? (would happen at end of constructor too)
@@ -152,7 +152,7 @@ export class SettingsService {
    *   populate Field Report Statuses
    */
 
-  private initSettings(settings: SettingsType) {
+  private initSettings() { // settings: SettingsType
     //original hardcoded defaults... not saved until form is submitted... This form doesn't allow editing of all values
     this.log.verbose("Initialize App Settings from hardcoded values", this.id)
 
@@ -195,8 +195,8 @@ export class SettingsService {
         OverviewMaxZoom: 16
       },
 
-      defRangerStatus: 0, // which of the following array entries to use as the default value
-      rangerStatuses: [
+      defFieldReportStatus: 0, // which of the following array entries to use as the default value
+      fieldReportStatuses: [
         { status: 'Normal', color: '', icon: '' },
         { status: 'Need Rest', color: 'cce', icon: '' },
         { status: 'Urgent', color: 'red', icon: '' },
@@ -204,7 +204,7 @@ export class SettingsService {
         { status: 'Check-in', color: 'grey', icon: '' },
         { status: 'Check-out', color: 'dark-grey', icon: '' }
       ],
-      // rangerKeywords: [''],  // Future...could also just search notes field
+      // fieldReportKeywords: [''],  // Future...could also just search notes field
     }
   }
 

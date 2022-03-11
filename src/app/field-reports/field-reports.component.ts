@@ -2,7 +2,7 @@ import { Component, Inject, Pipe, PipeTransform, OnInit, OnDestroy, AfterViewIni
 import { DOCUMENT, formatDate } from '@angular/common'
 import { FormBuilder, FormGroup } from '@angular/forms'
 
-import { FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, RangerService, SettingsService } from '../shared/services';
+import { FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, RangerService, SettingsService, SettingsType } from '../shared/services';
 // , TeamService
 import { Observable, Subscription, subscribeOn } from 'rxjs';
 import { SelectionChangedEvent } from 'ag-grid-community';
@@ -29,10 +29,9 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   private fieldReportsSubscription$!: Subscription
   private fieldReportStatuses: FieldReportStatusType[] = []
   // fieldReportStatuses$!: Observable<FieldReportStatusType[]> //TODO:
-  private settings
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
 
-  public eventInfo = ''
-  public dateNow = Date.now()
   public selectedRows = 0
   public columnDefs
   private gridApi: any
@@ -80,12 +79,20 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document
   ) {
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
+
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
 
-    this.settings = SettingsService
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
+
     this.fieldReportStatuses = settingsService.getFieldReportStatuses() // TODO: Only obtained at construction, won't reflect an update from the settings page??? : SUBSCRIBE!!
     //this.fieldReportStatuses$.next(this.fieldReportStatuses)
 

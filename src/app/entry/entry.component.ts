@@ -5,10 +5,10 @@ import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveF
 import { HttpClient } from '@angular/common/http';
 
 import { MatSnackBar } from '@angular/material/snack-bar'
-import { Observable, debounceTime, map, startWith, switchMap, subscribeOn } from 'rxjs'
+import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
 import { FieldReport } from './location.interface'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
-import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService } from '../shared/services/'
+import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, SettingsType } from '../shared/services/'
 // , TeamService
 import * as dayjs from 'dayjs' // https://day.js.org/docs/en/ or https://github.com/dayjs/luxon/
 
@@ -87,8 +87,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z' // dupl of that above
   private id = 'Entry Form'
   public title = 'Field Report Entry'
-  public eventInfo = ''
-  public dateNow = Date.now()
+
+
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
 
   myForm!: FormGroup
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
@@ -109,7 +111,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   filteredRangers: Observable<RangerType[]>
   rangers: RangerType[] = []
   fieldReportStatuses: FieldReportStatusType[] = []
-  settings
+
 
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
@@ -182,6 +184,15 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     //iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
     //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
 
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        console.log(newSettings)
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
     // REVIEW: Min/Max times ignored?!
     this._setMinDate(10) // no times early than 10 hours ago
     this._setMaxDate(1)  // no times later than 1 hours from now
@@ -209,7 +220,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     )
     log.verbose(`constructor: ranger ${this.filteredRangers}`, this.id) //JSON.stringify
 
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
+
 
     // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
     // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
@@ -243,7 +254,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       team: ['T1'],
       locationFrmGrp: this.initLocation(),
       date: [new Date()],
-      status: [this.fieldReportStatuses[this.settings.defRangerStatus].status],
+      status: [this.fieldReportStatuses[this.settings.defFieldReportStatus].status],
       note: ['']
     })
 
@@ -336,7 +347,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       team: ['T0'],
       location: this.initLocation(),
       date: [new Date()],  // TODO: reset dateCtrl instead?!
-      status: [this.fieldReportStatuses[this.settings.defRangerStatus]],
+      status: [this.fieldReportStatuses[this.settings.defFieldReportStatus]],
       note: ['']
     })
     // Allow getting new OnChangeUpdates - or use the subscription?!

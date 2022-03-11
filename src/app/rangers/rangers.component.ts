@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FieldReportService, FieldReportType, LogService, RangerService, RangerType, SettingsService } from '../shared/services/';
+import { FieldReportService, FieldReportType, LogService, RangerService, RangerType, SettingsService, SettingsType } from '../shared/services/';
 // , TeamService
 import { DOCUMENT } from '@angular/common'
 import { csvImport } from './csvImport'
@@ -12,6 +12,7 @@ index.js:553 [webpack-dev-server] WARNING
 D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'. CommonJS or AMD dependencies can cause optimization bailouts.
 For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies */
 import * as XLSX from 'xlsx';
+import { Subscription } from 'rxjs';
 
 /* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
 // https://github.com/SheetJS/SheetJS.github.io
@@ -29,8 +30,10 @@ export class RangersComponent implements OnInit {
 
   private id = 'Ranger Component'
   public title = 'Rangers (CERT, ACS/ARES, etc)'
-  public eventInfo = ''
-  public dateNow = Date.now()
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
+
+
 
   localUrl: any[] = []
   //teamService
@@ -43,7 +46,6 @@ export class RangersComponent implements OnInit {
   numSeperatorWarnings = 0
   maxSeperatorWarnings = 3
   now: Date
-  settings
   excelData: AOA = [[1, 2, 3], [4, 5, 6]];
   excelData2: RangerType[] = [] //[[1, 2, 3], [4, 5, 6]];
 
@@ -110,8 +112,15 @@ export class RangersComponent implements OnInit {
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
-    this.settings = this.settingsService.settings
+
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
   }
 
   ngOnInit(): void {

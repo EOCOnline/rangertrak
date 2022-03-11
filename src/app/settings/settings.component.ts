@@ -9,23 +9,24 @@ import { ColorEditor } from './color-editor.component';
 import { MoodEditor } from './mood-editor.component';
 import { MoodRenderer } from './mood-renderer.component';
 import { ColDef } from 'ag-grid-community';
+import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'rangertrak-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
-  //providers: [SettingsService]
+  providers: [SettingsService]
 })
 export class SettingsComponent implements OnInit {
   private id = 'Settings Component'
   title = 'Application Settings'
-  //public eventInfo = ''
-  public dateNow = Date.now()
-  settings: SettingsType
-  settingsEditorForm!: FormGroup
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
+  private settingsEditorForm!: FormGroup
 
   private gridApi: any
-  private gridColumnApi: any
+  //private gridColumnApi: any
   rowData: FieldReportStatusType[] = []
 
   /*
@@ -172,15 +173,26 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       Consider using the @Inject decorator to specify an injection token.(-992003)
       settings.component.ts(155, 17): This type does not have a value, so it cannot be used as injection token.
     */
-    private fieldReportService: FieldReportService,
+    //private fieldReportService: FieldReportService,
     private log: LogService,
-    private rangerService: RangerService,
+    //private rangerService: RangerService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
+
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        console.log(newSettings)
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
+
     this.pangram = this.getPangram()
     //this.settings = settingService()
     //this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date}`
-    this.settings = this.settingsService.settings // only using static functions/values from the service...
+    // this.settings = this.settingsService.settings
     this.log.verbose('Settings set to static values. But not initialized???', this.id)
   }
 
@@ -192,7 +204,6 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
     }
 
-    //this.eventInfo = `Event: ; Mission: ; Op Period: ; `
     this.settingsEditorForm = this.getFormArrayFromSettingsArray()
     this.rowData = this.settingsService.getFieldReportStatuses()
 
@@ -224,7 +235,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       w3wLocale: [this.settings.w3wLocale],
       markerSize: [this.settings.markerSize],
       markerShape: [this.settings.markerShape, Validators.required],
-      defRangerStatus: [this.settings.defRangerStatus],
+      defFieldReportStatus: [this.settings.defFieldReportStatus],
       allowManualPinDrops: [this.settings.allowManualPinDrops],
       debugMode: [this.settings.debugMode],
       logToPanel: [this.settings.logToPanel], // null or blank for unchecked 'yes'
@@ -247,7 +258,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       w3wLocale: this.settingsEditorForm.value.w3wLocale as string,
       markerSize: this.settingsEditorForm.value.markerSize as number,
       markerShape: this.settingsEditorForm.value.markerShape as number,
-      defRangerStatus: this.settingsEditorForm.value.defRangerStatus as number,
+      defFieldReportStatus: this.settingsEditorForm.value.defFieldReportStatus as number,
       allowManualPinDrops: this.settingsEditorForm.value.allowManualPinDrops as boolean,
       debugMode: this.settingsEditorForm.value.debugMode as boolean,
       logToPanel: this.settingsEditorForm.value.logToPanel as boolean,

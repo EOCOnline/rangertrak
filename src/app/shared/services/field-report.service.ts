@@ -1,20 +1,23 @@
-import { BehaviorSubject, Observable, Observer, of } from 'rxjs'
+import { BehaviorSubject, Observable, Observer, of, Subscription, throwError } from 'rxjs'
 import { Injectable, OnInit, Pipe, PipeTransform } from '@angular/core'
-import { RangerService, SettingsService, FieldReportStatusType } from './index' // , TeamService
+import { RangerService, SettingsService, SettingsType, LogService } from './' // , TeamService
 import { HttpClient } from '@angular/common/http'
-import * as L from 'leaflet'
+import L from 'leaflet'
 import { LatLngBounds } from 'leaflet';
-import { LogService } from './';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 export type FieldReportStatusType = { status: string, color: string, icon: string }
+
 /**
  * Data to store with every field report entry
  */
 export type FieldReportType = {
   id: number,
-  callsign: string, team: string,
-  address: string, lat: number, lng: number,
+  callsign: string,
+  //team: string,
+  lat: number,
+  lng: number,
+  address: string,
   date: Date,
   status: string,
   note: string,
@@ -23,19 +26,16 @@ export type FieldReportType = {
 
 /**
  * A packet of all field data for the op period
- * ?It does NOT include Rangers or Settings  // Review!
+ * except Rangers or Settings
  */
-export type FieldReportsType = {  // OK to export to CSV/Excel?!
-  version: string,  // TODO: Should be in Settings?
+export type FieldReportsType = {
+  version: string,
   date: Date,
-  //event: string,  // TODO: Should be in Settings?
-  //operationPeriod: string,  // TODO: Should be in Settings?
+  event: string,
   bounds: LatLngBounds,
   numReport: number,
   maxId: number,
   filter: string, // All reports or not? Guard to ensure a subset never gets writen to localstorage?
-  //rangers: RangerType
-  //fieldReportStatuses: FieldReportStatusType[],  // TODO: Should be in Settings?
   fieldReportArray: FieldReportType[]
 }
 
@@ -47,7 +47,8 @@ export class FieldReportService {
   private fieldReports!: FieldReportsType
   private fieldReportsSubject: BehaviorSubject<FieldReportsType>
   private selectedFieldReports!: FieldReportsType  // TODO: Enable subscription to this also?
-
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
   private storageLocalName = 'fieldReports'
   private serverUri = 'http://localhost:4000/products'
   private boundsMargin = 0.0025
@@ -55,46 +56,67 @@ export class FieldReportService {
   constructor(
     private rangerService: RangerService,
     //  private teamService: TeamService,
-    private settingService: SettingsService,
+    private settingsService: SettingsService,
     private log: LogService,
     private httpClient: HttpClient) {
 
     log.verbose("Contruction: once or repeatedly?!--------------", this.id)
+
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
 
     let localStorageFieldReports = localStorage.getItem(this.storageLocalName)
 
     if (localStorageFieldReports == null) {
       log.warn(`No Field Reports found in Local Storage. Will rebuild from defaults.`, this.id)
       this.fieldReports = this.initFieldReports()
-    } else if (localStorageFieldReports.indexOf("version") <= 0) {
+    }
+    else if (localStorageFieldReports.indexOf("version") <= 0) {
       log.error(`Field Reports in Local Storage appear corrupted & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`, this.id)
       localStorage.setItem(this.storageLocalName + '-BAD', localStorageFieldReports)
       this.fieldReports = this.initFieldReports()
-    } else {
+    }
+    else {
       this.fieldReports = JSON.parse(localStorageFieldReports)
     }
 
-    log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event}, op period ${this.fieldReports.operationPeriod} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
-    this.recalcFieldBounds(this.fieldReports)
+    log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
+    //this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
     this.fieldReportsSubject = new BehaviorSubject(this.fieldReports)
     this.updateFieldReports()
   }
+
+
 
   /**
    * Set default/initial FieldReports
    */
   private initFieldReports() {
+
+    //(property) FieldReportService.fieldReports: FieldReportsType
+    //Type '{ version: string | undefined; date: Date; event: string; bounds: L.LatLngBounds; numReport: number; maxId: number; filter: string; fieldReportArray: { id: number; callsign: string; lat: number | undefined; ... 4 more ...; note: string; }[]; }' is not assignable to type 'FieldReportsType'.ts(2322)
+
+    if (this.settings === undefined) {
+      this.log.error(`this.Settings not yet set!`, this.id)
+      //throwError(() => new Error(`this.Settings was not yet set in FieldReportService!!!!!`))
+      //debugger
+      //return null
+    }
+
     return {
-      //version: '0.34',  // TODO: Should be in Settings?
-      // date: new Date,
-      // event: 'ACS Exercise #1',  // TODO: Should be in Settings?
-      //operationPeriod: 'OpPeriod1',  // TODO: Should be in Settings?
+      version: this.settings ? this.settings.version : '0',
+      date: new Date(),
+      event: this.settings ? this.settings.event : '',
       bounds: new LatLngBounds([89.9, 179.9], [-89.9, -179.9]), //SW, NE
       numReport: 0,
       maxId: 0,
       filter: '', // All reports or not? Guard to ensure a subset never gets writen to localstorage?
-      //rangers: RangerType
-      //fieldReportStatuses: this.settingService.fieldReportStatuses,  // TODO: Should be in Settings?
       fieldReportArray: []
     }
   }
@@ -110,7 +132,7 @@ export class FieldReportService {
    * rewrite field reports to localStorage & notify observers
    */
   private updateFieldReports() {
-    this.log.verbose(`NEW REPORT AVAILABLE, with E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
+    //this.log.verbose(`NEW REPORT AVAILABLE, with E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
 
     // Do any needed sanity/validation here
     if (this.fieldReports.numReport != this.fieldReports.fieldReportArray.length) {
@@ -121,23 +143,6 @@ export class FieldReportService {
 
     this.log.verbose(`New field reports are available to observers...`, this.id)
     this.fieldReportsSubject.next(this.fieldReports)
-
-    /*
-    TODO: Whats the difference of above & below?!
-    this.fieldReportsSubject.next(this.fieldReports.fieldReportArray.map(  // REVIEW: is this just for 1 new report, or any localstorage updates?
-      fieldReport => ({
-        id: fieldReport.id,
-        callsign: fieldReport.callsign,
-        team: fieldReport.team,
-        address: fieldReport.address,
-        lat: fieldReport.lat,
-        lng: fieldReport.lng,
-        date: fieldReport.date,
-        status: fieldReport.status,
-        note: fieldReport.note
-      })
-    ))
-    */
   }
 
   public addfieldReport(formData: string) {
@@ -244,6 +249,11 @@ export class FieldReportService {
       alert("No Rangers! Please add some 1st.")
       return
     }
+    if (this.settings === undefined) {
+      this.log.error(`this.settings was undefined in generateFakeData()`, this.id)
+      return
+    }
+
     const streets = ["Ave", "St.", "Pl.", "Court", "Circle"]
     const notes = ["Reports beautiful sunrise", "Roudy Kids", "Approaching Neighborhood CERT", "Confused & dazed in the sun",
       "Wow", "na", "Can't hear you", "Bounced via tail of a comet!", "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
@@ -255,12 +265,12 @@ export class FieldReportService {
       this.fieldReports.fieldReportArray.push({
         id: this.fieldReports.maxId++,
         callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
-        team: 'T1', //teams[Math.floor(Math.random() * teams.length)].name,
+        //team: 'T1', //teams[Math.floor(Math.random() * teams.length)].name,
         address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
         lat: this.settingsService.settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
         lng: this.settingsService.settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
         date: new Date(Math.floor(msSince1970 - (Math.random() * 10 * 60 * 60 * 1000))), // 0-10 hrs earlier
-        status: this.fieldReports.fieldReportStatuses[Math.floor(Math.random() * this.fieldReports.fieldReportStatuses.length)].status,
+        status: this.settings.fieldReportStatuses[Math.floor(Math.random() * this.settings.fieldReportStatuses.length)].status,
         note: notes[Math.floor(Math.random() * notes.length)]
       })
       this.fieldReports.numReport += num
@@ -344,6 +354,7 @@ export class FieldReportService {
     })
   }
 
+  /*
   private sortFieldReportsByTeam_unused() {
     return this.fieldReports.fieldReportArray.sort((n1, n2) => {
       if (n1.team > n2.team) { return 1 }
@@ -351,6 +362,7 @@ export class FieldReportService {
       return 0;
     })
   }
+*/
 
   private filterFieldReportsByDate_unused(beg: Date, end: Date) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
     const minDate = new Date(0)

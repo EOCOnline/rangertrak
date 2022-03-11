@@ -5,6 +5,7 @@ import { NavigationEnd } from '@angular/router';
 
 //import { MatFormFieldModule } from '@angular/material/form-field';
 import { MDCBanner } from '@material/banner';
+import { SettingsService } from '../services';
 
 @Component({
   selector: 'rangertrak-alerts',
@@ -19,7 +20,17 @@ export class AlertsComponent implements OnInit {
 
   constructor(
     private _snackBar: MatSnackBar,
+    private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
+
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
     this.isAlertHidden = true;
   }
 
@@ -32,7 +43,7 @@ export class AlertsComponent implements OnInit {
     }
   }
 
-  Banner(msg: string, action1: string|undefined = 'Close', action2: string|undefined = "Close") {
+  Banner(msg: string, action1: string | undefined = 'Close', action2: string | undefined = "Close") {
     // https://material.io/components/banners#usage  //@use "@material/banner/styles";
 
     //console.log(`BANNER Called with ${msg}`)

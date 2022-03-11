@@ -20,10 +20,6 @@ export interface RangerType {
   note: string
 }
 
-//export enum RangerStatus { '', 'Normal', 'Need Rest', 'REW', 'OnSite', 'Checked-in', 'Checked-out' }  // TODO: Allow changing list & default of statuses in settings?!
-
-//
-
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING
 D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'. CommonJS or AMD dependencies can cause optimization bailouts.

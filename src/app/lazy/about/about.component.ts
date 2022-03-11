@@ -1,7 +1,8 @@
 
 import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
+import { Subscription } from 'rxjs'
 
-import { SettingsService, ClockService } from '../../shared/services'
+import { SettingsService, ClockService, SettingsType } from '../../shared/services'
 
 @Component({
   selector: 'rangertrak-about',
@@ -12,16 +13,24 @@ import { SettingsService, ClockService } from '../../shared/services'
 export class AboutComponent {  //implements OnInit {
 
   id = 'About'
-  public eventInfo = ''
-
-  version = ""
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
 
   constructor(
-    //private settingsService: SettingsService
+    private settingsService: SettingsService
   ) {
     console.log("AboutComponent getting constructed")
-    this.version = this.settingsService.settings.version
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
+
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
+    this.version = this.settings.version
+
   }
 
   //ngOnInit() {  }

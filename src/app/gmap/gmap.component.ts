@@ -5,7 +5,7 @@ import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { catchError, map, Observable, of, Subscription } from 'rxjs'
 import * as GMC from "@googlemaps/markerclusterer"
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService } from '../shared/services'
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, SettingsType } from '../shared/services'
 import { CodeArea, OpenLocationCode, Utility } from '../shared/'
 // Map
 import { MDCSwitch } from '@material/switch'
@@ -53,11 +53,11 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
   @ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
 
   private id = 'Google Map Component'
-  public eventInfo = ''
-  public dateNow = Date.now()
+  public title = 'Google Map'
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
 
   // items for template
-  public title = 'Google Map'
   mouseLatLng?: google.maps.LatLngLiteral;
   // google.maps.Map is NOT the same as GoogleMap...
   gMap?: google.maps.Map
@@ -124,7 +124,15 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
     private log: LogService,
     private httpClient: HttpClient,
     @Inject(DOCUMENT) private document: Document) {
-    this.eventInfo = `Event: ; Mission: ; Op Period: ; `
+
+
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
 
     this.fieldReportService = fieldReportService
     this.selectedRows =
