@@ -220,10 +220,10 @@ export class FieldReportService {
       }
     } else {
       // no field reports yet! Rely on broadening processing below
-      north = this.settingsService.settings.defLat
-      west = this.settingsService.settings.defLng
-      south = this.settingsService.settings.defLat
-      east = this.settingsService.settings.defLng
+      north = this.settings.defLat
+      west = this.settings.defLng
+      south = this.settings.defLat
+      east = this.settings.defLng
     }
 
     this.log.info(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `, this.id)
@@ -267,8 +267,8 @@ export class FieldReportService {
         callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
         //team: 'T1', //teams[Math.floor(Math.random() * teams.length)].name,
         address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
-        lat: this.settingsService.settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
-        lng: this.settingsService.settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
+        lat: this.settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
+        lng: this.settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
         date: new Date(Math.floor(msSince1970 - (Math.random() * 10 * 60 * 60 * 1000))), // 0-10 hrs earlier
         status: this.settings.fieldReportStatuses[Math.floor(Math.random() * this.settings.fieldReportStatuses.length)].status,
         note: notes[Math.floor(Math.random() * notes.length)]

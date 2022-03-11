@@ -179,15 +179,15 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("Construction", this.id)
 
-    this.lat = this.settingsService.settings.defLat
-    this.lng = this.settingsService.settings.defLng
+    this.lat = this.settings.defLat
+    this.lng = this.settings.defLng
     this.newLocation(this.lat, this.lng)
     //debugger
     // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
     this.locationFrmGrp = this._formBuilder.group({
       address: ['', Validators.required],
-      lat: [this.settingsService.settings.defLat],
-      lng: [this.settingsService.settings.defLng]
+      lat: [this.settings.defLat],
+      lng: [this.settings.defLng]
     });
 
     // https://fonts.google.com/icons && https://material.angular.io/components/icon
@@ -205,7 +205,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public ngOnInit(): void {
     this.log.info("ngOnInit", this.id)
 
-    this.newLocation(this.settingsService.settings.defLat, this.settingsService.settings.defLng)
+    this.newLocation(this.settings.defLat, this.settings.defLng)
 
     /*
             this.button = document.querySelector('#button') as HTMLButtonElement
@@ -305,12 +305,12 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
           if (OpenLocationCode.isValid(pCode)) {
             if (OpenLocationCode.isShort(pCode)) {
               // Recover the full code from a short code:
-              fullCode = OpenLocationCode.recoverNearest(pCode, this.settingsService.settings.defLat, this.settingsService.settings.defLng)
+              fullCode = OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
             } else {
               fullCode = pCode;
-              this.log.verbose("Shorten +Codes, Global:" + fullCode + ", Lat:" + this.settingsService.settings.defLat + "; lng:" + this.settingsService.settings.defLng), this.id;
+              this.log.verbose("Shorten +Codes, Global:" + fullCode + ", Lat:" + this.settings.defLat + "; lng:" + this.settings.defLng), this.id;
               // Attempt to trim the first characters from a code; may return same innerText...
-              pCode = OpenLocationCode.shorten(fullCode, this.settingsService.settings.defLat, this.settingsService.settings.defLng)
+              pCode = OpenLocationCode.shorten(fullCode, this.settings.defLat, this.settings.defLng)
             }
             this.log.verbose("New PlusCodes: " + pCode + "; Global: " + fullCode, this.id);
             //(document.getElementById("addresses") as HTMLInputElement).value = pCode;
@@ -566,7 +566,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
             nFocusResults: 1,
             //clipTo####: ["US"],
             cliptoboundingbox: { south_lat, west_lng, north_lat, east_lng }, // Clip prevents ANY values outside region
-            focus: { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.deflng }, // Focus prioritizes words closer to this point
+            focus: { lat: this.settings.defLat, lng: this.settings.deflng }, // Focus prioritizes words closer to this point
             nResults: 1
           })
             .then((response: { suggestions: { words: any }[] }) => {
@@ -619,7 +619,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
       if (OpenLocationCode.isValid(pCode)) {
         if (OpenLocationCode.isShort(pCode)) {
-          pCode = OpenLocationCode.recoverNearest(pCode, this.settingsService.settings.defLat, this.settingsService.settings.defLng)
+          pCode = OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
         }
 
         // Following needs a full (Global) code
@@ -630,8 +630,8 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       }
 
       else {
-        //    document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: " + this.settingsService.settings.defPlusCode
-        //document.getElementById("pCodeGlobal")!.innerHTML = this.settingsService.settings.defPlusCode
+        //    document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: " + this.settings.defPlusCode
+        //document.getElementById("pCodeGlobal")!.innerHTML = this.settings.defPlusCode
       }
     }
   }

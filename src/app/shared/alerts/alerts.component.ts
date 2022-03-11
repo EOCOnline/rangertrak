@@ -5,7 +5,9 @@ import { NavigationEnd } from '@angular/router';
 
 //import { MatFormFieldModule } from '@angular/material/form-field';
 import { MDCBanner } from '@material/banner';
-import { SettingsService } from '../services';
+import { Subscription } from 'rxjs';
+import { SettingsService, SettingsType } from '../services';
+import { LogService } from '../services/log.service';
 
 @Component({
   selector: 'rangertrak-alerts',
@@ -14,12 +16,16 @@ import { SettingsService } from '../services';
 })
 export class AlertsComponent implements OnInit {
 
+  private id = 'Alerts Component'
   isAlertHidden: boolean
   private alertBanner: HTMLElement | null = null
   emoji = 'emoji_people'
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
 
   constructor(
     private _snackBar: MatSnackBar,
+    private log: LogService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
 

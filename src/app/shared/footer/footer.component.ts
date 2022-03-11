@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SettingsService, SettingsType } from '../services'
+import { LogService } from '../services/log.service';
 
 /**
  * Footer component
@@ -14,11 +15,13 @@ export class FooterComponent implements OnInit {
 
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
+  private id = 'Footer Component'
 
   today = new Date()
   version
 
   constructor(
+    private log: LogService,
     private settingsService: SettingsService) {
 
     this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
@@ -30,7 +33,7 @@ export class FooterComponent implements OnInit {
     })
 
 
-    this.version = this.settings.version
+    this.version = this.settings?.version
   }
 
   ngOnInit(): void {

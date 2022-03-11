@@ -198,7 +198,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     this._setMaxDate(1)  // no times later than 1 hours from now
     this.rangers = rangerService.GetRangers() // TODO: or getActiveRangers?!
 
-    this.alert = new AlertsComponent(this._snackBar, this.document)// TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
+    this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)// TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
     if (this.rangers.length < 1) {
       this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page.', 'Go to Rangers page', 'Ignore')
       //this.alert.OpenSnackBar(`No Rangers exist. Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
@@ -206,8 +206,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     }
 
     this.fieldReportService = fieldReportService
-    this.fieldReportStatuses = settingsService.getFieldReportStatuses() // TODO: Need to update if user modified settings page: SUBSCRIBE!! or do every redisplay?? Allowed to change midstream?! (Add only)
-    this.settings = this.settingsService.settings
+    this.fieldReportStatuses = this.settings?.fieldReportStatuses!
 
     // NOTE: workaround for onChange not working...
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))
@@ -233,7 +232,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
-    this.log.info(`Running ${this.settings.application} version ${this.settings.version}`, this.id)  // verifies Settings has been loaded
+    this.log.info(`Running ${this.settings?.application} version ${this.settings?.version}`, this.id)  // verifies Settings has been loaded
 
     /* i.e., entryDetailsForm probably constructed at wrong time?!
     Move the component creation to ngOnInit hook
@@ -254,7 +253,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       team: ['T1'],
       locationFrmGrp: this.initLocation(),
       date: [new Date()],
-      status: [this.fieldReportStatuses[this.settings.defFieldReportStatus].status],
+      status: [this.fieldReportStatuses[this.settings ? this.settings.defFieldReportStatus : 0].status],
       note: ['']
     })
 
@@ -265,7 +264,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
 
-    if (!this.settings.debugMode) {
+    if (!this.settings?.debugMode) {
       this.displayHide("enter__frm-reguritation")
     }
 
@@ -303,8 +302,8 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
     this.locationFrmGrp = this._formBuilder.group({
       address: [''], //, Validators.required],
-      lat: [this.settings.defLat],
-      lng: [this.settings.defLng]
+      lat: [this.settings?.defLat],
+      lng: [this.settings?.defLng]
     })
 
     this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged(locationFrmGrp))
@@ -347,7 +346,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       team: ['T0'],
       location: this.initLocation(),
       date: [new Date()],  // TODO: reset dateCtrl instead?!
-      status: [this.fieldReportStatuses[this.settings.defFieldReportStatus]],
+      status: [this.fieldReportStatuses[this.settings ? this.settings.defFieldReportStatus : 0]],
       note: ['']
     })
     // Allow getting new OnChangeUpdates - or use the subscription?!

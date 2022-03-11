@@ -55,8 +55,8 @@ export class LogComponent implements OnInit { //}, AfterContentInit, AfterViewIn
       next: (newSettings) => {
         this.settings = newSettings
       },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
+      error: (e) => console.error('Settings Subscription got:' + e, this.id),
+      complete: () => console.info('Settings Subscription complete', this.id)
     })
 
 
@@ -66,7 +66,7 @@ export class LogComponent implements OnInit { //}, AfterContentInit, AfterViewIn
    * Create heading for Log Panel
    */
   ngOnInit(): void {
-    console.log(`Into log compoennt's ngInit`)
+    console.log(`Into log component's ngInit`)
 
 
     this.logPanel = this.document.getElementById("log")

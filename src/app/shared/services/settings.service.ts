@@ -30,7 +30,7 @@ export type SettingsTypeOld = {
   w3wLocale: string,
   markerSize: number,
   markerShape: number,
-  defFieldReportStatus: number
+  defFieldReportStatus: number,
   allowManualPinDrops: boolean,
   debugMode: boolean,
   logToPanel: boolean,
@@ -63,7 +63,7 @@ export type SettingsType = {
     defZoom: number,  // or just zoom to bounds?
     markerScheme: string,
     OverviewDifference: number,
-    OverviewMimZoom: number,
+    OverviewMinZoom: number,
     OverviewMaxZoom: number
   },
 
@@ -71,7 +71,7 @@ export type SettingsType = {
     defZoom: number,  // or just zoom to bounds?
     markerScheme: string,
     OverviewDifference: number,
-    OverviewMimZoom: number,
+    OverviewMinZoom: number,
     OverviewMaxZoom: number
   },
 
@@ -183,7 +183,7 @@ export class SettingsService {
         defZoom: 17,  // used? or just zoom to bounds?
         markerScheme: '',
         OverviewDifference: 5,
-        OverviewMimZoom: 5,
+        OverviewMinZoom: 5,
         OverviewMaxZoom: 16
       },
 
@@ -191,7 +191,7 @@ export class SettingsService {
         defZoom: 17,  // or just zoom to bounds?
         markerScheme: '',
         OverviewDifference: 5,
-        OverviewMimZoom: 5,
+        OverviewMinZoom: 5,
         OverviewMaxZoom: 16
       },
 
@@ -211,7 +211,7 @@ export class SettingsService {
   /**
   * rewrite field reports to localStorage & notify observers
   */
-  private updateSettings(newSettings: SettingsType) {
+  public updateSettings(newSettings: SettingsType) {
     // Do any needed sanity/validation here
 
     localStorage.setItem(this.storageLocalName, JSON.stringify(newSettings))

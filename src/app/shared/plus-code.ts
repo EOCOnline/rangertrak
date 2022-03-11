@@ -57,7 +57,7 @@ export class PlusCode {
 
       if (PC.isValid(pCode)) {
         if (PC.isShort) {
-          pCode = PC.recoverNearest(pCode, this.settingsService.settings.defLat, this.settingsService.settings.defLong); //OpenLocationCode.recoverNearest
+          pCode = PC.recoverNearest(pCode, this.settings.defLat, this.settings.defLong); //OpenLocationCode.recoverNearest
         }
 
         // Following needs a full (Global) code
@@ -69,7 +69,7 @@ export class PlusCode {
 
       else {
         document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: ";
-        document.getElementById("pCodeGlobal")!.innerHTML = this.settingsService.settings.defPlusCode;
+        document.getElementById("pCodeGlobal")!.innerHTML = this.settings.defPlusCode;
       }
     }
   }

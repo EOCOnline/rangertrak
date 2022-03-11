@@ -9,7 +9,7 @@ import { ColorEditor } from './color-editor.component';
 import { MoodEditor } from './mood-editor.component';
 import { MoodRenderer } from './mood-renderer.component';
 import { ColDef } from 'ag-grid-community';
-import { Subscription } from 'rxjs';
+import { Subscription, throwError } from 'rxjs';
 
 
 @Component({
@@ -26,7 +26,7 @@ export class SettingsComponent implements OnInit {
   private settingsEditorForm!: FormGroup
 
   private gridApi: any
-  //private gridColumnApi: any
+  private gridColumnApi: any
   rowData: FieldReportStatusType[] = []
 
   /*
@@ -192,7 +192,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     this.pangram = this.getPangram()
     //this.settings = settingService()
     //this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date}`
-    // this.settings = this.settingsService.settings
+    // this.settings = this.settings
     this.log.verbose('Settings set to static values. But not initialized???', this.id)
   }
 
@@ -205,24 +205,30 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     }
 
     this.settingsEditorForm = this.getFormArrayFromSettingsArray()
-    this.rowData = this.settingsService.getFieldReportStatuses()
+    this.rowData = this.settings!.fieldReportStatuses
 
     this.log.verbose("ngInit done ", this.id)
   }
 
   onBtnResetDefaults() {
-    this.settingsService.ResetDefaults() // need to refresh page?!
-    this.rowData = this.settingsService.ResetFieldReportStatusDefaults()
+    throwError(() => new Error(`unimplemented onBtnResetDefaults()`))  // TODO
+    //this.settingsService.ResetDefaults() // need to refresh page?!
+    //this.rowData = this.settingsService.ResetFieldReportStatusDefaults()
   }
 
   // TODO: Need different settings stored for gMap, lMap and miniMap
   getFormArrayFromSettingsArray() {
     this.log.verbose(" getFormArrayFromSettingsArray", this.id)
 
+    if (!this.settings) {
+      this.log.error(`this.settings is null`, this.id)
+      return
+    }
     // NOTE: Form array differs some from SettingsType so need to translate back & forth
     return this.fb.group({
-      application: [this.settings.application], // not shown for editing
-      version: [this.settings.version], // not shown for editing
+
+      application:
+        version:
       id: [this.settings.id],
       name: [this.settings.name],
       note: [this.settings.note],
@@ -234,24 +240,64 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       plusCode: [this.settings.defPlusCode],
       w3wLocale: [this.settings.w3wLocale],
       markerSize: [this.settings.markerSize],
-      markerShape: [this.settings.markerShape, Validators.required],
-      defFieldReportStatus: [this.settings.defFieldReportStatus],
-      allowManualPinDrops: [this.settings.allowManualPinDrops],
-      debugMode: [this.settings.debugMode],
-      logToPanel: [this.settings.logToPanel], // null or blank for unchecked 'yes'
-      logToConsole: [this.settings.logToConsole], // null or blank for unchecked 'check'
+      markerShape: [this.settings?.markerShape, Validators.required],
+      defFieldReportStatus: [this.settings?.defFieldReportStatus],
+      allowManualPinDrops: [this.settings?.allowManualPinDrops],
+      debugMode:
+        logToPanel: [this.settings?.logToPanel], // null or blank for unchecked 'yes'
+      logToConsole: [this.settings?.logToConsole], // null or blank for unchecked 'check'
+      ///////////////////////////////////////////////////
+      settingsName: string, // FUTURE: Use if people want to load and saveas, or have various 'templates'
+      settingsDate: Date, // when last edited...
+
+      mission: string,
+      event: string,
+      eventNotes: string,
+      opPeriod: string,
+      opPeriodStart: Date,
+      opPeriodEnd: Date,
+
+      application: [this.settings.application], // not shown for editing
+      version: [this.settings.version], // not shown for editing
+      debugMode: [this.settings?.debugMode],
+
+      defLat: number,
+      defLng: number,
+      defPlusCode: string,
+      w3wLocale: string,
+      allowManualPinDrops: boolean,
+
+      google: {
+        defZoom: number,  // or just zoom to bounds?
+        markerScheme: string,
+        OverviewDifference: number,
+        OverviewMimZoom: number,
+        OverviewMaxZoom: number
+      },
+
+      leaflet: {
+        defZoom: number,  // or just zoom to bounds?
+        markerScheme: string,
+        OverviewDifference: number,
+        OverviewMimZoom: number,
+        OverviewMaxZoom: number
+      },
+
+      defFieldReportStatus: number
+      fieldReportStatuses: FieldReportStatusType[],
+      // fieldReportKeywords: string[],  // Future...could also just search notes field
     })
 
   }
 
   getSettingsArrayFromFormArray(): SettingsType {
     return {
-      application: this.settingsEditorForm.value.application as string,
-      version: this.settingsEditorForm.value.version as string,
-      id: this.settingsEditorForm.value.id as number,
-      name: this.settingsEditorForm.value.name as string,
-      note: this.settingsEditorForm.value.note as string,
-      defLat: this.settingsEditorForm.value.latitude as number,
+      application: this.settings ? EditorForm.value.application as string,
+      version: this.settings ? EditorForm.value.version as string,
+      id: this.settings ? EditorForm.value.id as number,
+      name: this.settings ? EditorForm.value.name as string,
+      note: this.settings ? EditorForm.value.note as string,
+      defLat: this.settings ? EditorForm.value.latitude as number,
       defLng: this.settingsEditorForm.value.longitude as number,
       defZoom: this.settingsEditorForm.value.zoom as number,
       defPlusCode: this.settingsEditorForm.value.plusCode as string,
@@ -329,10 +375,6 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     let newSettings: SettingsType = this.getSettingsArrayFromFormArray()
     this.settingsService.updateSettings(newSettings)
 
-    this.log.verbose(`Update FieldReportStatuses... ${JSON.stringify(this.rowData)}`)
-    this.settingsService.updateFieldReportStatus(this.rowData)
-
-    // TODO: Set this up as an observable, or Components that have ALREADY pulled down the values won't refresh them!!!!
     // TODO: If Debug disabled then call:
     //enableProdMode()
     window.location.reload()

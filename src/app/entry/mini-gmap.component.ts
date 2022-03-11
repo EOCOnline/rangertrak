@@ -89,12 +89,12 @@ export class MiniGMapComponent implements OnInit {
   updateOverviewMap() {
     console.log(`updateOverviewMap`)
 
-    //let latlng = new google.maps.LatLng(this.settingsService.settings.defLat, this.settingsService.settings.deflng)
-    //let latlngL = {lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.deflng}
+    //let latlng = new google.maps.LatLng(this.settings.defLat, this.settings.deflng)
+    //let latlngL = {lat: this.settings.defLat, lng: this.settings.deflng}
 
     // TODO: FitBounds to new point, not to DefLat & Deflng  -- do it on addMarker?
     // this.gMap?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
-    //this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng })) // zooms to max!
+    //this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: this.settings.defLat, lng: this.settings.defLng })) // zooms to max!
     this.gMap?.setZoom(17) // no effect
   }
 

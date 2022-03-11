@@ -65,7 +65,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } } // TODO: Leaflet's version?
   zoom // actual zoom level of main map
   zoomDisplay // what's displayed below main map
-  center = { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng }
+  center = { lat: this.settings?.defLat, lng: this.settings?.defLng }
   mouseLatLng = this.center
   mymarkers = L.markerClusterGroup()
   mapOptions = ""
@@ -93,9 +93,9 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document) {
 
     this.fieldReportService = fieldReportService
-    this.zoom = this.settingsService.settings.defZoom
-    this.zoomDisplay = this.settingsService.settings.defZoom
-    this.center = { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng }
+    this.zoom = this.settings?.leaflet.defZoom
+    this.zoomDisplay = this.zoom
+    this.center = { lat: this.settings?.defLat, lng: this.settings?.defLng }
 
     this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
@@ -156,8 +156,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     this.lmap = L.map('lmap', {
-      center: [this.settingsService.settings.defLat, this.settingsService.settings.defLng],
-      zoom: this.settingsService.settings.defZoom
+      center: [this.settings!.defLat, this.settings!.defLng],
+      zoom: this.settings?.leaflet.defZoom
     })
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -199,9 +199,9 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.lmap.on("move", () => {
       this.overviewLMap!.setView(this.lmap!.getCenter()!, this.clamp(
-        this.lmap!.getZoom()! - OVERVIEW_DIFFERENCE,
-        OVERVIEW_MIN_ZOOM,
-        OVERVIEW_MAX_ZOOM
+        this.lmap!.getZoom()! - this.settings!.leaflet.OverviewDifference,
+        this.settings!.leaflet.OverviewMinZoom,
+        this.settings!.leaflet.OverviewMaxZoom
       ))
     })
 
@@ -211,14 +211,12 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // TODO: Add a light grey rectangle on overview map to show extend/bounods of main map
     // TODO: Add a switch to only show 'selected' reports from the FieldReport page...
-    const OVERVIEW_DIFFERENCE = 5
-    const OVERVIEW_MIN_ZOOM = 5
-    const OVERVIEW_MAX_ZOOM = 16
+
     // instantiate the overview map without controls
     // https://leafletjs.com/reference.html#map-example
     this.overviewLMap = L.map('overview', {
-      center: [this.settingsService.settings.defLat, this.settingsService.settings.defLng],
-      zoom: this.settingsService.settings.defZoom,
+      center: [this.settings!.defLat, this.settings!.defLng],
+      zoom: this.settings!.leaflet.defZoom,
       zoomControl: false,
       keyboard: false,
       scrollWheelZoom: false,
@@ -226,8 +224,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     const overviewTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: OVERVIEW_MAX_ZOOM,
-      minZoom: OVERVIEW_MIN_ZOOM,
+      maxZoom: this.settings!.leaflet.OverviewMaxZoom,
+      minZoom: this.settings!.leaflet.OverviewMinZoom,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
@@ -242,7 +240,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // const infowindow = new google.maps.InfoWindow({
     //   content: "Mouse location...",
-    //   position: { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng },
+    //   position: { lat: this.settings.defLat, lng: this.settings.defLng },
     // })
     //infowindow.open(this.overviewLMap);
 
@@ -260,9 +258,9 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.overviewLMap!.on("bounds_changed", () => {
       this.overviewLMap!.setView(this.lmap!.getCenter()!, this.clamp(
-        this.lmap!.getZoom()! - OVERVIEW_DIFFERENCE,
-        OVERVIEW_MIN_ZOOM,
-        OVERVIEW_MAX_ZOOM
+        this.lmap!.getZoom()! - this.settings!.leaflet.OverviewDifference,
+        this.settings!.leaflet.OverviewMaxZoom,
+        this.settings!.leaflet.OverviewMinZoom
       ))
     })
   }
