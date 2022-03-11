@@ -17,8 +17,8 @@ export class FooterComponent implements OnInit {
 
   constructor(
     private settingsService: SettingsService) {
-    // this.settings = SettingsService.Settings // only using static functions/values from the service...
-    this.version = SettingsService.Settings.version
+    // this.settings = this.settingsService.settings // only using static functions/values from the service...
+    this.version = this.settingsService.settings.version
   }
 
   ngOnInit(): void {

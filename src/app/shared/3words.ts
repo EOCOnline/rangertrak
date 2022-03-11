@@ -252,7 +252,7 @@ export class What3Words {
               nFocusResults: 1,
               //clipTo####: ["US"], - done by default
               // TODO: cliptoboundingbox: { south_lat, west_lng, north_lat, east_lng }, // Clip prevents ANY values outside region
-              focus: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }, // Focus prioritizes words closer to this point
+              focus: { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLong }, // Focus prioritizes words closer to this point
               nResults: 1
             })
               .then(function (response: any) {

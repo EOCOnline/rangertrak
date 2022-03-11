@@ -45,7 +45,7 @@ export class MiniLMapComponent implements AfterViewInit {
 
   zoom // actual zoom level of main map
   zoomDisplay // what's displayed below main map
-  center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
+  center = { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng }
   mouseLatLng = this.center
   mapOptions = ""
   //mymarkers = L.markerClusterGroup()
@@ -55,9 +55,9 @@ export class MiniLMapComponent implements AfterViewInit {
     @Inject(DOCUMENT) private document: Document
   ) {
     this.log.verbose("constructor()", this.id)
-    this.zoom = SettingsService.Settings.defZoom
-    this.zoomDisplay = SettingsService.Settings.defZoom
-    this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
+    this.zoom = this.settingsService.settings.defZoom
+    this.zoomDisplay = this.settingsService.settings.defZoom
+    this.center = { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng }
   }
 
   ngAfterViewInit() {
@@ -75,8 +75,8 @@ export class MiniLMapComponent implements AfterViewInit {
     this.log.verbose("initMap() ", this.id)
 
     this.lmap = L.map('lmap', {
-      center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
-      zoom: SettingsService.Settings.defZoom + 2
+      center: [this.settingsService.settings.defLat, this.settingsService.settings.defLng],
+      zoom: this.settingsService.settings.defZoom + 2
     })
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -86,8 +86,8 @@ export class MiniLMapComponent implements AfterViewInit {
     })
 
     tiles.addTo(this.lmap)
-    this.addMarker(SettingsService.Settings.defLat - 0.001, SettingsService.Settings.defLng - 0.001, "Home Base #2")
-    this.addCircle(SettingsService.Settings.defLat + 0.001, SettingsService.Settings.defLng + 0.001, "Home Base")
+    this.addMarker(this.settingsService.settings.defLat - 0.001, this.settingsService.settings.defLng - 0.001, "Home Base #2")
+    this.addCircle(this.settingsService.settings.defLat + 0.001, this.settingsService.settings.defLng + 0.001, "Home Base")
     //this.displayAllMarkers()
     //this.fitBounds()
 
@@ -140,7 +140,7 @@ export class MiniLMapComponent implements AfterViewInit {
   }
 
   displayAMarker() {
-    this.addMarker(SettingsService.Settings.defLat - 0.001, SettingsService.Settings.defLng - 0.001, "Home Base")
+    this.addMarker(this.settingsService.settings.defLat - 0.001, this.settingsService.settings.defLng - 0.001, "Home Base")
   }
 
   displayAllMarkers() {

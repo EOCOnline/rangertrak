@@ -64,7 +64,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } } // TODO: Leaflet's version?
   zoom // actual zoom level of main map
   zoomDisplay // what's displayed below main map
-  center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
+  center = { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng }
   mouseLatLng = this.center
   mymarkers = L.markerClusterGroup()
   mapOptions = ""
@@ -91,10 +91,10 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document) {
 
     this.fieldReportService = fieldReportService
-    this.zoom = SettingsService.Settings.defZoom
-    this.zoomDisplay = SettingsService.Settings.defZoom
-    this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
-    //this.settings = SettingsService.Settings
+    this.zoom = this.settingsService.settings.defZoom
+    this.zoomDisplay = this.settingsService.settings.defZoom
+    this.center = { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng }
+    //this.settings = this.settingsService.settings
     this.eventInfo = `Event: ; Mission: ; Op Period: ; `
     this.markerClusterGroup = L.markerClusterGroup({ removeOutsideVisibleBounds: true });
   }
@@ -146,8 +146,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     this.lmap = L.map('lmap', {
-      center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
-      zoom: SettingsService.Settings.defZoom
+      center: [this.settingsService.settings.defLat, this.settingsService.settings.defLng],
+      zoom: this.settingsService.settings.defZoom
     })
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -207,8 +207,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     // instantiate the overview map without controls
     // https://leafletjs.com/reference.html#map-example
     this.overviewLMap = L.map('overview', {
-      center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
-      zoom: SettingsService.Settings.defZoom,
+      center: [this.settingsService.settings.defLat, this.settingsService.settings.defLng],
+      zoom: this.settingsService.settings.defZoom,
       zoomControl: false,
       keyboard: false,
       scrollWheelZoom: false,
@@ -232,7 +232,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // const infowindow = new google.maps.InfoWindow({
     //   content: "Mouse location...",
-    //   position: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng },
+    //   position: { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng },
     // })
     //infowindow.open(this.overviewLMap);
 

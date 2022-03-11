@@ -196,7 +196,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
     this.fieldReportService = fieldReportService
     this.fieldReportStatuses = settingsService.getFieldReportStatuses() // TODO: Need to update if user modified settings page: SUBSCRIBE!! or do every redisplay?? Allowed to change midstream?! (Add only)
-    this.settings = SettingsService.Settings
+    this.settings = this.settingsService.settings
 
     // NOTE: workaround for onChange not working...
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))

@@ -180,7 +180,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     this.pangram = this.getPangram()
     //this.settings = settingService()
     //this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date}`
-    this.settings = SettingsService.Settings // only using static functions/values from the service...
+    this.settings = this.settingsService.settings // only using static functions/values from the service...
     this.log.verbose('Settings set to static values. But not initialized???', this.id)
   }
 
@@ -316,7 +316,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   onFormSubmit(): void {
     this.log.verbose("Update Settings...", this.id)
     let newSettings: SettingsType = this.getSettingsArrayFromFormArray()
-    this.settingsService.Update(newSettings)
+    this.settingsService.updateSettings(newSettings)
 
     this.log.verbose(`Update FieldReportStatuses... ${JSON.stringify(this.rowData)}`)
     this.settingsService.updateFieldReportStatus(this.rowData)

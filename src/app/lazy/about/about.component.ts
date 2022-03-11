@@ -20,7 +20,7 @@ export class AboutComponent {  //implements OnInit {
     //private settingsService: SettingsService
   ) {
     console.log("AboutComponent getting constructed")
-    this.version = SettingsService.Settings.version
+    this.version = this.settingsService.settings.version
     this.eventInfo = `Event: ; Mission: ; Op Period: ; `
   }
 

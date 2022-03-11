@@ -111,7 +111,7 @@ export class RangersComponent implements OnInit {
     this.gridApi = ""
     this.gridColumnApi = ""
     this.eventInfo = `Event: ; Mission: ; Op Period: ; `
-    this.settings = SettingsService.Settings
+    this.settings = this.settingsService.settings
   }
 
   ngOnInit(): void {

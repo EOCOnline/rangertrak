@@ -26,7 +26,7 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.time = this.clockService.getCurrentTime()
-    this.eventInfo = SettingsService.Settings.name.split("\n")[0]
+    this.eventInfo = this.settingsService.settings.name.split("\n")[0]
   }
   // Layout: https://tburleson-layouts-demos.firebaseapp.com/#/docs
 }

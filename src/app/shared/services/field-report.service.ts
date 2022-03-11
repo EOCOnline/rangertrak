@@ -7,7 +7,7 @@ import { LatLngBounds } from 'leaflet';
 import { LogService } from './';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
-
+export type FieldReportStatusType = { status: string, color: string, icon: string }
 /**
  * Data to store with every field report entry
  */
@@ -22,20 +22,20 @@ export type FieldReportType = {
 }
 
 /**
- * A packet of all field data for the event, or at least the op period
+ * A packet of all field data for the op period
  * ?It does NOT include Rangers or Settings  // Review!
  */
 export type FieldReportsType = {  // OK to export to CSV/Excel?!
   version: string,  // TODO: Should be in Settings?
   date: Date,
-  event: string,  // TODO: Should be in Settings?
-  operationPeriod: string,  // TODO: Should be in Settings?
+  //event: string,  // TODO: Should be in Settings?
+  //operationPeriod: string,  // TODO: Should be in Settings?
   bounds: LatLngBounds,
   numReport: number,
   maxId: number,
   filter: string, // All reports or not? Guard to ensure a subset never gets writen to localstorage?
   //rangers: RangerType
-  fieldReportStatuses: FieldReportStatusType[],  // TODO: Should be in Settings?
+  //fieldReportStatuses: FieldReportStatusType[],  // TODO: Should be in Settings?
   fieldReportArray: FieldReportType[]
 }
 
@@ -85,26 +85,24 @@ export class FieldReportService {
    */
   private initFieldReports() {
     return {
-      version: '0.34',  // TODO: Should be in Settings?
-      date: new Date,
-      event: 'ACS Exercise #1',  // TODO: Should be in Settings?
-      operationPeriod: 'OpPeriod1',  // TODO: Should be in Settings?
+      //version: '0.34',  // TODO: Should be in Settings?
+      // date: new Date,
+      // event: 'ACS Exercise #1',  // TODO: Should be in Settings?
+      //operationPeriod: 'OpPeriod1',  // TODO: Should be in Settings?
       bounds: new LatLngBounds([89.9, 179.9], [-89.9, -179.9]), //SW, NE
       numReport: 0,
       maxId: 0,
       filter: '', // All reports or not? Guard to ensure a subset never gets writen to localstorage?
       //rangers: RangerType
-      fieldReportStatuses: this.settingService.fieldReportStatuses,  // TODO: Should be in Settings?
+      //fieldReportStatuses: this.settingService.fieldReportStatuses,  // TODO: Should be in Settings?
       fieldReportArray: []
     }
   }
 
   /**
-   * Subscribe to Field Report updates
+   * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
    */
   public getFieldReportsObserver(): Observable<FieldReportsType> {
-    //const fieldReportsObservable = new Observable(observer => {
-    //  () => {observer.next(this.fieldReports.fieldReportArray)}})
     return this.fieldReportsSubject.asObservable()
   }
 
@@ -114,7 +112,7 @@ export class FieldReportService {
   private updateFieldReports() {
     this.log.verbose(`NEW REPORT AVAILABLE, with E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
 
-    // sanity check
+    // Do any needed sanity/validation here
     if (this.fieldReports.numReport != this.fieldReports.fieldReportArray.length) {
       this.log.error(`this.fieldReports.numReport=${this.fieldReports.numReport} != this.fieldReports.fieldReportArray.length ${this.fieldReports.fieldReportArray.length}`)
     }
@@ -217,10 +215,10 @@ export class FieldReportService {
       }
     } else {
       // no field reports yet! Rely on broadening processing below
-      north = SettingsService.Settings.defLat
-      west = SettingsService.Settings.defLng
-      south = SettingsService.Settings.defLat
-      east = SettingsService.Settings.defLng
+      north = this.settingsService.settings.defLat
+      west = this.settingsService.settings.defLng
+      south = this.settingsService.settings.defLat
+      east = this.settingsService.settings.defLng
     }
 
     this.log.info(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `, this.id)
@@ -259,8 +257,8 @@ export class FieldReportService {
         callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
         team: 'T1', //teams[Math.floor(Math.random() * teams.length)].name,
         address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
-        lat: SettingsService.Settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
-        lng: SettingsService.Settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
+        lat: this.settingsService.settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
+        lng: this.settingsService.settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
         date: new Date(Math.floor(msSince1970 - (Math.random() * 10 * 60 * 60 * 1000))), // 0-10 hrs earlier
         status: this.fieldReports.fieldReportStatuses[Math.floor(Math.random() * this.fieldReports.fieldReportStatuses.length)].status,
         note: notes[Math.floor(Math.random() * notes.length)]

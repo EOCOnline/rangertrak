@@ -101,7 +101,7 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
   apiLoaded //: Observable<boolean>
 
   // next 2 even used?
-  circleCenter: google.maps.LatLngLiteral = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
+  circleCenter: google.maps.LatLngLiteral = { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng }
   radius = 10;
 
   usingSelectedFieldReports = false
@@ -128,8 +128,8 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
 
     this.fieldReportService = fieldReportService
     this.selectedRows =
-      this.zoom = SettingsService.Settings.defZoom
-    this.zoomDisplay = SettingsService.Settings.defZoom
+      this.zoom = this.settingsService.settings.defZoom
+    this.zoomDisplay = this.settingsService.settings.defZoom
 
     // https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
     // this.markerPositions = []; evil angular wrapper
@@ -150,8 +150,8 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
-    this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
-    // this.circleCenter: google.maps.LatLngLiteral = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng};
+    this.center = { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng }
+    // this.circleCenter: google.maps.LatLngLiteral = {lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng};
     // https://github.com/angular/components/tree/master/src/google-maps
     // this.apiLoaded = httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=${SettingsService.secrets[3].key}`, 'callback')
     this.apiLoaded = true
@@ -237,9 +237,9 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       // onClusterClick?: onClusterClickHandler,
     })
 
-    this.log.verbose(`Setting G map Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLng}, zoom: ${SettingsService.Settings.defZoom}`, this.id)
-    this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })
-    this.gMap.setZoom(SettingsService.Settings.defZoom)
+    this.log.verbose(`Setting G map Center= lat:${this.settingsService.settings.defLat}, lng: ${this.settingsService.settings.defLng}, zoom: ${this.settingsService.settings.defZoom}`, this.id)
+    this.gMap.setCenter({ lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng })
+    this.gMap.setZoom(this.settingsService.settings.defZoom)
     this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports?.bounds!))
 
     // Overview map: https://developers.google.com/maps/documentation/javascript/examples/inset-map
@@ -288,7 +288,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
 
     // const infowindow = new google.maps.InfoWindow({
     //   content: "Mouse location...",
-    //   position: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng },
+    //   position: { lat: this.settingsService.settings.defLat, lng: this.settingsService.settings.defLng },
     // })
     //infowindow.open(this.overviewGMap);
 
@@ -332,7 +332,7 @@ MarkerClustererPlus Library - also old
   */
 
   addManualMarkerEvent(event: google.maps.MapMouseEvent) {
-    if (SettingsService.Settings.allowManualPinDrops) {
+    if (this.settingsService.settings.allowManualPinDrops) {
       if (event.latLng) {
         this.addMarker(event.latLng)
       } else {
