@@ -85,13 +85,13 @@
       <span class="strong"></span>
       <span class="strong">Latitude:</span>
       <input
-        [class.border-danger]="settingsEditorForm.get('latitude')?.touched && settingsEditorForm.get('latitude')?.invalid"
+        [class.border-danger]="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.invalid"
         type="number"
         formControlName="latitude"
         placeholder="47.5"
       />
       <div
-        *ngIf="settingsEditorForm.get('latitude')?.touched && settingsEditorForm.get('latitude')?.hasError('required')"
+        *ngIf="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.hasError('required')"
         class="text-sm text-danger"
       >
         latitude is required
@@ -101,13 +101,13 @@
     <div class="input-group">
       <span class="strong">Longitude:</span>
       <input
-        [class.border-danger]="settingsEditorForm.get('longitude')?.touched && settingsEditorForm.get('longitude')?.invalid"
+        [class.border-danger]="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.invalid"
         type="number"
         formControlName="longitude"
         placeholder="-122.5"
       />
       <div
-        *ngIf="settingsEditorForm.get('longitude')?.touched && settingsEditorForm.get('longitude')?.hasError('required')"
+        *ngIf="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.hasError('required')"
         class="text-sm text-danger"
       >
         longitude is required
@@ -117,13 +117,13 @@
     <div class="input-group">
       <span class="strong">Zoom (3-21):</span>
       <input
-        [class.border-danger]="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.invalid"
+        [class.border-danger]="settingsEditorForm.get('defZoom')?.touched && settingsEditorForm.get('defZoom')?.invalid"
         type="number"
         formControlName="zoom"
         placeholder="15"
       />
       <div
-        *ngIf="settingsEditorForm.get('zoom')?.touched && settingsEditorForm.get('zoom')?.hasError('required')"
+        *ngIf="settingsEditorForm.get('defZoom')?.touched && settingsEditorForm.get('defZoom')?.hasError('required')"
         class="text-sm text-danger"
       >
         zoom is required
@@ -133,13 +133,13 @@
     <div class="input-group">
       <span class="strong">Plus Code:</span>
       <input
-        [class.border-danger]="settingsEditorForm.get('plusCode')?.touched && settingsEditorForm.get('plusCode')?.invalid"
+        [class.border-danger]="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.invalid"
         type="text"
         formControlName="plusCode"
         placeholder="84VVCGWP+VW"
       />
       <div
-        *ngIf="settingsEditorForm.get('plusCode')?.touched && settingsEditorForm.get('plusCode')?.hasError('required')"
+        *ngIf="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.hasError('required')"
         class="text-sm text-danger"
       >
         plusCode is required

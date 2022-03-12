@@ -106,7 +106,7 @@ export class RangersComponent implements OnInit {
   ) {
     this.log.info(` Construction`, this.id)
 
-    this.alert = new AlertsComponent(this._snackBar, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
+    this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
     //this.teamService = teamService
     //this.rangerService = rangerService
     this.now = new Date()

@@ -93,7 +93,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
 
-    this.fieldReportStatuses = settingsService.getFieldReportStatuses() // TODO: Only obtained at construction, won't reflect an update from the settings page??? : SUBSCRIBE!!
+    this.fieldReportStatuses = this.settings!.fieldReportStatuses
     //this.fieldReportStatuses$.next(this.fieldReportStatuses)
 
     this.columnDefs = [
@@ -154,7 +154,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.numFakesForm = this.formBuilder.group({})
 
-    if (!this.settings.debugMode) {
+    if (!this.settings!.debugMode) {
       this.log.verbose("running in non-debug mode", this.id)
       // this.displayHide("enter__Fake--id") // debug mode SHOULD be ON...
     } else {

@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
 import { DOCUMENT, JsonPipe } from '@angular/common'
-import { fromEvent } from 'rxjs'
+import { fromEvent, Subscription } from 'rxjs'
 import * as L from 'leaflet'
 //import { Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
 import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
 //import 'leaflet.markercluster';
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, LogService } from '../shared/services'
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, LogService, SettingsType } from '../shared/services'
 import { openDB, deleteDB, wrap, unwrap } from 'idb';
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 
@@ -45,19 +45,33 @@ export class MiniLMapComponent implements AfterViewInit {
 
   zoom // actual zoom level of main map
   zoomDisplay // what's displayed below main map
-  center = { lat: this.settings.defLat, lng: this.settings.defLng }
-  mouseLatLng = this.center
+  center
+  mouseLatLng
   mapOptions = ""
   //mymarkers = L.markerClusterGroup()
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
+
 
   constructor(
     private log: LogService,
+    private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.log.verbose("constructor()", this.id)
-    this.zoom = this.settings.defZoom
-    this.zoomDisplay = this.settings.defZoom
-    this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
+
+    this.zoom = this.settings!.leaflet.defZoom
+    this.zoomDisplay = this.zoom
+    this.center = { lat: this.settings!.defLat, lng: this.settings!.defLng }
+    this.mouseLatLng = this.center
   }
 
   ngAfterViewInit() {
@@ -75,8 +89,8 @@ export class MiniLMapComponent implements AfterViewInit {
     this.log.verbose("initMap() ", this.id)
 
     this.lmap = L.map('lmap', {
-      center: [this.settings.defLat, this.settings.defLng],
-      zoom: this.settings.defZoom + 2
+      center: [this.settings!.defLat, this.settings!.defLng],
+      zoom: this.settings!.leaflet.defZoom
     })
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -86,8 +100,8 @@ export class MiniLMapComponent implements AfterViewInit {
     })
 
     tiles.addTo(this.lmap)
-    this.addMarker(this.settings.defLat - 0.001, this.settings.defLng - 0.001, "Home Base #2")
-    this.addCircle(this.settings.defLat + 0.001, this.settings.defLng + 0.001, "Home Base")
+    this.addMarker(this.settings!.defLat - 0.001, this.settings!.defLng - 0.001, "Home Base #2")
+    this.addCircle(this.settings!.defLat + 0.001, this.settings!.defLng + 0.001, "Home Base")
     //this.displayAllMarkers()
     //this.fitBounds()
 
@@ -140,7 +154,7 @@ export class MiniLMapComponent implements AfterViewInit {
   }
 
   displayAMarker() {
-    this.addMarker(this.settings.defLat - 0.001, this.settings.defLng - 0.001, "Home Base")
+    this.addMarker(this.settings!.defLat - 0.001, this.settings!.defLng - 0.001, "Home Base")
   }
 
   displayAllMarkers() {

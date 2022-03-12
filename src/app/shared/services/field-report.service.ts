@@ -190,6 +190,11 @@ export class FieldReportService {
     this.log.verbose(`recalcFieldBounds got ${reports.fieldReportArray.length} field reports`, this.id)
     //this.log.verbose(`OLD Value: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
 
+    if (!this.settings) {
+      this.log.error('this.settings is undefined', this.id)
+      throwError(() => new Error('this.settings is undefined'))
+      return
+    }
     let north
     let west
     let south

@@ -22,8 +22,8 @@ export class SettingsComponent implements OnInit {
   private id = 'Settings Component'
   title = 'Application Settings'
   private settingsSubscription$!: Subscription
-  private settings?: SettingsType
-  private settingsEditorForm!: FormGroup
+  public settings?: SettingsType
+  public settingsEditorForm!: FormGroup
 
   private gridApi: any
   private gridColumnApi: any
@@ -181,19 +181,15 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
     this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
-        console.log(newSettings)
+        //console.log(newSettings)
         this.settings = newSettings
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-
     this.pangram = this.getPangram()
-    //this.settings = settingService()
-    //this.eventInfo = `Event: ; Mission: ; Op Period: ; Date ${Date}`
-    // this.settings = this.settings
-    this.log.verbose('Settings set to static values. But not initialized???', this.id)
+    //this.log.verbose('Settings set to static values. But not initialized???', this.id)
   }
 
   ngOnInit(): void {
@@ -204,7 +200,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
     }
 
-    this.settingsEditorForm = this.getFormArrayFromSettingsArray()
+    this.settingsEditorForm = this.getFormArrayFromSettingsArray()!
     this.rowData = this.settings!.fieldReportStatuses
 
     this.log.verbose("ngInit done ", this.id)
@@ -216,99 +212,124 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     //this.rowData = this.settingsService.ResetFieldReportStatusDefaults()
   }
 
-  // TODO: Need different settings stored for gMap, lMap and miniMap
   getFormArrayFromSettingsArray() {
-    this.log.verbose(" getFormArrayFromSettingsArray", this.id)
+    this.log.verbose("getFormArrayFromSettingsArray", this.id)
 
     if (!this.settings) {
       this.log.error(`this.settings is null`, this.id)
       return
     }
+
     // NOTE: Form array differs some from SettingsType so need to translate back & forth
     return this.fb.group({
+      settingsName: [this.settings.settingsName], // FUTURE: Use if people want to load and saveas, or have various 'templates'
+      settingsDate: [this.settings.settingsDate], // when last edited... // not shown for editing
 
-      application:
-        version:
-      id: [this.settings.id],
-      name: [this.settings.name],
-      note: [this.settings.note],
-      latitude: [this.settings.defLat, Validators.required],
-      longitude: [this.settings.defLng, Validators.required],
-
-      zoom: [this.settings.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation
-
-      plusCode: [this.settings.defPlusCode],
-      w3wLocale: [this.settings.w3wLocale],
-      markerSize: [this.settings.markerSize],
-      markerShape: [this.settings?.markerShape, Validators.required],
-      defFieldReportStatus: [this.settings?.defFieldReportStatus],
-      allowManualPinDrops: [this.settings?.allowManualPinDrops],
-      debugMode:
-        logToPanel: [this.settings?.logToPanel], // null or blank for unchecked 'yes'
-      logToConsole: [this.settings?.logToConsole], // null or blank for unchecked 'check'
-      ///////////////////////////////////////////////////
-      settingsName: string, // FUTURE: Use if people want to load and saveas, or have various 'templates'
-      settingsDate: Date, // when last edited...
-
-      mission: string,
-      event: string,
-      eventNotes: string,
-      opPeriod: string,
-      opPeriodStart: Date,
-      opPeriodEnd: Date,
+      mission: [this.settings.mission],
+      event: [this.settings.event],
+      eventNotes: [this.settings.eventNotes],
+      opPeriod: [this.settings.opPeriod],
+      opPeriodStart: [this.settings.opPeriodStart],
+      opPeriodEnd: [this.settings.opPeriodEnd],
 
       application: [this.settings.application], // not shown for editing
       version: [this.settings.version], // not shown for editing
-      debugMode: [this.settings?.debugMode],
+      debugMode: [this.settings.debugMode],
 
-      defLat: number,
-      defLng: number,
-      defPlusCode: string,
-      w3wLocale: string,
-      allowManualPinDrops: boolean,
+      defLat: [this.settings.defLat, Validators.required],
+      defLng: [this.settings.defLng, Validators.required],
+      defPlusCode: [this.settings.defPlusCode],
+      w3wLocale: [this.settings.w3wLocale],
+      allowManualPinDrops: [this.settings.allowManualPinDrops],
 
       google: {
-        defZoom: number,  // or just zoom to bounds?
-        markerScheme: string,
-        OverviewDifference: number,
-        OverviewMimZoom: number,
-        OverviewMaxZoom: number
+        defZoom: [this.settings.google.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation    // or just zoom to bounds?
+        markerScheme: [this.settings.google.markerScheme],
+        OverviewDifference: [this.settings.google.OverviewDifference],
+        OverviewMinZoom: [this.settings.google.OverviewMinZoom],
+        OverviewMaxZoom: [this.settings.google.OverviewMaxZoom]
       },
 
       leaflet: {
-        defZoom: number,  // or just zoom to bounds?
-        markerScheme: string,
-        OverviewDifference: number,
-        OverviewMimZoom: number,
-        OverviewMaxZoom: number
+        defZoom: [this.settings.leaflet.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation  // or just zoom to bounds?
+        markerScheme: [this.settings.leaflet.markerScheme],
+        OverviewDifference: [this.settings.leaflet.OverviewDifference],
+        OverviewMinZoom: [this.settings.leaflet.OverviewMinZoom],
+        OverviewMaxZoom: [this.settings.leaflet.OverviewMaxZoom]
       },
-
-      defFieldReportStatus: number
-      fieldReportStatuses: FieldReportStatusType[],
+      defFieldReportStatus: [this.settings.defFieldReportStatus],
+      fieldReportStatuses: [this.settings.fieldReportStatuses]
       // fieldReportKeywords: string[],  // Future...could also just search notes field
     })
-
   }
 
-  getSettingsArrayFromFormArray(): SettingsType {
+  getSettingsArrayFromFormArray() { //}: SettingsType {
+    this.log.verbose("getSettingsArrayFromFormArray", this.id)
+
+    if (!this.settings) {
+      this.log.error(`this.settings is null`, this.id)
+      return null
+    }
+
     return {
-      application: this.settings ? EditorForm.value.application as string,
-      version: this.settings ? EditorForm.value.version as string,
-      id: this.settings ? EditorForm.value.id as number,
-      name: this.settings ? EditorForm.value.name as string,
-      note: this.settings ? EditorForm.value.note as string,
-      defLat: this.settings ? EditorForm.value.latitude as number,
-      defLng: this.settingsEditorForm.value.longitude as number,
-      defZoom: this.settingsEditorForm.value.zoom as number,
-      defPlusCode: this.settingsEditorForm.value.plusCode as string,
-      w3wLocale: this.settingsEditorForm.value.w3wLocale as string,
-      markerSize: this.settingsEditorForm.value.markerSize as number,
-      markerShape: this.settingsEditorForm.value.markerShape as number,
-      defFieldReportStatus: this.settingsEditorForm.value.defFieldReportStatus as number,
-      allowManualPinDrops: this.settingsEditorForm.value.allowManualPinDrops as boolean,
-      debugMode: this.settingsEditorForm.value.debugMode as boolean,
-      logToPanel: this.settingsEditorForm.value.logToPanel as boolean,
-      logToConsole: this.settingsEditorForm.value.logToConsole as boolean,
+      settingsName: this.settingsEditorForm.value.settingsName, // FUTURE: Use if people want to load and saveas, or have various 'templates'
+      settingsDate: this.settingsEditorForm.value.settingsDate, // when last edited... // not shown for editing
+
+      mission: this.settingsEditorForm.value.mission,
+      event: this.settingsEditorForm.value.event,
+      eventNotes: this.settingsEditorForm.value.eventNotes,
+      opPeriod: this.settingsEditorForm.value.opPeriod,
+      opPeriodStart: this.settingsEditorForm.value.opPeriodStart,
+      opPeriodEnd: this.settingsEditorForm.value.opPeriodEnd,
+
+      application: this.settingsEditorForm.value.application, // not shown for editing
+      version: this.settingsEditorForm.value.version, // not shown for editing
+      debugMode: this.settingsEditorForm.value.debugMode,
+
+      defLat: this.settingsEditorForm.value.defLat,
+      defLng: this.settingsEditorForm.value.defLng,
+      defPlusCode: this.settingsEditorForm.value.defPlusCode,
+      w3wLocale: this.settingsEditorForm.value.w3wLocale,
+      allowManualPinDrops: this.settingsEditorForm.value.allowManualPinDrops,
+
+      google: {
+        defZoom: this.settingsEditorForm.value.google.defZoom, //, Validators.min(3), Validators.max(21), //https://www.concretepage.com/angular-2/angular-4-min-max-validation    // or just zoom to bounds?
+        markerScheme: this.settingsEditorForm.value.google.markerScheme,
+        OverviewDifference: this.settingsEditorForm.value.google.OverviewDifference,
+        OverviewMinZoom: this.settingsEditorForm.value.google.OverviewMinZoom,
+        OverviewMaxZoom: this.settingsEditorForm.value.google.OverviewMaxZoom
+      },
+
+      leaflet: {
+        defZoom: this.settingsEditorForm.value.leaflet.defZoom, //, Validators.min(3), Validators.max(21), //https://www.concretepage.com/angular-2/angular-4-min-max-validation  // or just zoom to bounds?
+        markerScheme: this.settingsEditorForm.value.leaflet.markerScheme,
+        OverviewDifference: this.settingsEditorForm.value.leaflet.OverviewDifference,
+        OverviewMinZoom: this.settingsEditorForm.value.leaflet.OverviewMinZoom,
+        OverviewMaxZoom: this.settingsEditorForm.value.leaflet.OverviewMaxZoom
+      },
+      defFieldReportStatus: this.settingsEditorForm.value.defFieldReportStatus,
+      fieldReportStatuses: this.settingsEditorForm.value.fieldReportStatuses
+      // fieldReportKeywords: string[],  // Future...could also just search notes field
+
+      /*
+            application: this.settings ?  as string,
+            version: this.settings ? EditorForm.value.version as string,
+            id: this.settings ? EditorForm.value.id as number,
+            name: this.settings ? EditorForm.value.name as string,
+            note: this.settings ? EditorForm.value.note as string,
+            defLat: this.settings ? EditorForm.value.latitude as number,
+            defLng: this.settingsEditorForm.value.longitude as number,
+            defZoom: this.settingsEditorForm.value.zoom as number,
+            defPlusCode: this.settingsEditorForm.value.plusCode as string,
+            w3wLocale: this.settingsEditorForm.value.w3wLocale as string,
+            markerSize: this.settingsEditorForm.value.markerSize as number,
+            markerShape: this.settingsEditorForm.value.markerShape as number,
+            defFieldReportStatus: this.settingsEditorForm.value.defFieldReportStatus as number,
+            allowManualPinDrops: this.settingsEditorForm.value.allowManualPinDrops as boolean,
+            debugMode: this.settingsEditorForm.value.debugMode as boolean,
+            logToPanel: this.settingsEditorForm.value.logToPanel as boolean,
+            logToConsole: this.settingsEditorForm.value.logToConsole as boolean,
+            */
     }
   }
 
@@ -372,7 +393,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   //TODO: If user edits field report status color, need to update background: refreshCells()????
   onFormSubmit(): void {
     this.log.verbose("Update Settings...", this.id)
-    let newSettings: SettingsType = this.getSettingsArrayFromFormArray()
+    let newSettings: SettingsType = this.getSettingsArrayFromFormArray()!
     this.settingsService.updateSettings(newSettings)
 
     // TODO: If Debug disabled then call:

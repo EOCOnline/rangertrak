@@ -186,7 +186,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
 
     this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
-        console.log(newSettings)
+        //console.log(newSettings)
         this.settings = newSettings
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),

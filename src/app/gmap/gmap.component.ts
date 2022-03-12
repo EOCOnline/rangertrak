@@ -101,7 +101,7 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
   apiLoaded //: Observable<boolean>
 
   // next 2 even used?
-  circleCenter: google.maps.LatLngLiteral = { lat: this.settings.defLat, lng: this.settings.defLng }
+  circleCenter: google.maps.LatLngLiteral = { lat: this.settings!.defLat, lng: this.settings!.defLng }
   radius = 10;
 
   usingSelectedFieldReports = false
@@ -136,8 +136,8 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
 
     this.fieldReportService = fieldReportService
     this.selectedRows =
-      this.zoom = this.settings.defZoom
-    this.zoomDisplay = this.settings.defZoom
+      this.zoom = this.settings!.google.defZoom
+    this.zoomDisplay = this.settings!.google.defZoom
 
     // https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
     // this.markerPositions = []; evil angular wrapper
@@ -158,7 +158,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
-    this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
+    this.center = { lat: this.settings!.defLat, lng: this.settings!.defLng }
     // this.circleCenter: google.maps.LatLngLiteral = {lat: this.settings.defLat, lng: this.settings.defLng};
     // https://github.com/angular/components/tree/master/src/google-maps
     // this.apiLoaded = httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=${SettingsService.secrets[3].key}`, 'callback')
@@ -245,15 +245,12 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       // onClusterClick?: onClusterClickHandler,
     })
 
-    this.log.verbose(`Setting G map Center= lat:${this.settings.defLat}, lng: ${this.settings.defLng}, zoom: ${this.settings.defZoom}`, this.id)
-    this.gMap.setCenter({ lat: this.settings.defLat, lng: this.settings.defLng })
-    this.gMap.setZoom(this.settings.defZoom)
+    this.log.verbose(`Setting G map Center= lat:${this.settings!.defLat}, lng: ${this.settings!.defLng}, zoom: ${this.settings!.google.defZoom}`, this.id)
+    this.gMap.setCenter({ lat: this.settings!.defLat, lng: this.settings!.defLng })
+    this.gMap.setZoom(this.settings!.google.defZoom)
     this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports?.bounds!))
 
     // Overview map: https://developers.google.com/maps/documentation/javascript/examples/inset-map
-    const OVERVIEW_DIFFERENCE = 6
-    const OVERVIEW_MIN_ZOOM = 5
-    const OVERVIEW_MAX_ZOOM = 16
     this.overviewGMap = new google.maps.Map(
       document.getElementById("overview") as HTMLElement,
       {
@@ -287,9 +284,9 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       this.overviewGMap!.setCenter(this.gMap!.getCenter()!);
       this.overviewGMap!.setZoom(
         this.clamp(
-          this.gMap!.getZoom()! - OVERVIEW_DIFFERENCE,
-          OVERVIEW_MIN_ZOOM,
-          OVERVIEW_MAX_ZOOM
+          this.gMap!.getZoom()! - this.settings!.google.OverviewDifference,
+          this.settings!.google.OverviewMinZoom,
+          this.settings!.google.OverviewMaxZoom
         )
       );
     })
@@ -340,7 +337,7 @@ MarkerClustererPlus Library - also old
   */
 
   addManualMarkerEvent(event: google.maps.MapMouseEvent) {
-    if (this.settings.allowManualPinDrops) {
+    if (this.settings!.allowManualPinDrops) {
       if (event.latLng) {
         this.addMarker(event.latLng)
       } else {
@@ -380,7 +377,7 @@ MarkerClustererPlus Library - also old
     let labelColor
     let fr: FieldReportType
 
-    let fieldReportStatuses: FieldReportStatusType[] = this.settingsService.getFieldReportStatuses()
+    let fieldReportStatuses: FieldReportStatusType[] = this.settings!.fieldReportStatuses
     // REVIEW: Might this mess with existing fr's?
     this.log.verbose(`displayAllMarkers got ${this.fieldReportArray.length} field reports`, this.id)
     for (let i = 0; i < this.fieldReportArray.length; i++) {

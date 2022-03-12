@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { debounceTime, fromEvent, Observable } from 'rxjs';
+import { debounceTime, fromEvent, Observable, Subscription } from 'rxjs';
 import { DDToDMS, CodeArea, GoogleGeocode, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map,
 
 import * as P from '@popperjs/core';
@@ -14,7 +14,7 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';// https://material.
 
-import { SettingsService, LogService } from '../shared/services';
+import { SettingsService, LogService, SettingsType } from '../shared/services';
 /*
 https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
 https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-driven-forms-in-angular-2
@@ -167,6 +167,9 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public mdiAccount: string = mdiAccount
   public mdiInformationOutline: string = mdiInformationOutline
 
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
+
   // #endregion Properties (33)
 
   // #region Constructors (1)
@@ -179,15 +182,23 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("Construction", this.id)
 
-    this.lat = this.settings.defLat
-    this.lng = this.settings.defLng
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
+    this.lat = this.settings!.defLat
+    this.lng = this.settings!.defLng
     this.newLocation(this.lat, this.lng)
     //debugger
     // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
     this.locationFrmGrp = this._formBuilder.group({
       address: ['', Validators.required],
-      lat: [this.settings.defLat],
-      lng: [this.settings.defLng]
+      lat: [this.settings!.defLat],
+      lng: [this.settings!.defLng]
     });
 
     // https://fonts.google.com/icons && https://material.angular.io/components/icon
@@ -205,7 +216,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public ngOnInit(): void {
     this.log.info("ngOnInit", this.id)
 
-    this.newLocation(this.settings.defLat, this.settings.defLng)
+    this.newLocation(this.settings!.defLat, this.settings!.defLng)
 
     /*
             this.button = document.querySelector('#button') as HTMLButtonElement
@@ -619,7 +630,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
       if (OpenLocationCode.isValid(pCode)) {
         if (OpenLocationCode.isShort(pCode)) {
-          pCode = OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
+          pCode = OpenLocationCode.recoverNearest(pCode, this.settings!.defLat, this.settings!.defLng)
         }
 
         // Following needs a full (Global) code
