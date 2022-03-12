@@ -44,7 +44,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   private settings?: SettingsType
 
   private locationSubscription$!: Subscription
-  private location?: LocationType
+  public location!: LocationType
 
   myForm!: FormGroup
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
@@ -142,6 +142,8 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       next: (newSettings) => {
         //console.log(newSettings)
         this.settings = newSettings
+        //this.fieldReportService = fieldReportService
+        this.fieldReportStatuses = this.settings.fieldReportStatuses
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
@@ -159,6 +161,7 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       //TODO: Force navigation to /Rangers?
     }
 
+    /*
     this.locationSubscription$ = this.locationService.getSettingsObserver().subscribe({
       next: (newLocation) => {
         console.log(`entry form got newLocation: ${JSON.stringify(newLocation)}`)
@@ -167,13 +170,10 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       error: (e) => this.log.error('Location Subscription got:' + e, this.id),
       complete: () => this.log.info('Location Subscription complete', this.id)
     })
-
-    this.fieldReportService = fieldReportService
-    this.fieldReportStatuses = this.settings?.fieldReportStatuses!
+*/
 
     // NOTE: workaround for onChange not working...
-    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))
-
+    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
 
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff
     this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
@@ -182,10 +182,19 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     )
     log.verbose(`constructor: ranger ${this.filteredRangers}`, this.id) //JSON.stringify
 
-
-
     // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
     // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+  }
+
+  onNewLocation(newLocation: any) {
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.verbose(`Got new location: ${JSON.stringify(newLocation)}`, this.id)
+    this.location = JSON.parse(newLocation)
+    // This then automatically gets sent to mini-map children via their @Input statements
+  }
+
+  locationChanged_noLongerNeeded(loc: FormGroup) {
+    this.log.verbose(`locationChanged  ###########################`, this.id)
   }
 
 
@@ -231,7 +240,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       this.displayHide("enter__frm-reguritation")
     }
 
-    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.CallsignChanged(newCall))
+    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
 
     // These elements got moved to <rangertrak-location> element!
     //this.button = document.querySelector('#button') as HTMLButtonElement
@@ -262,23 +271,24 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   initLocation() { // TODO: Shouldn't this be in location.component.ts?!
-
     this.locationFrmGrp = this._formBuilder.group({
-      address: [''], //, Validators.required],
       lat: [this.settings?.defLat],
-      lng: [this.settings?.defLng]
+      lng: [this.settings?.defLng],
+      address: [''] //, Validators.required],
     })
 
-    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged(locationFrmGrp))
+    /*
+    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
     let addr = this.locationFrmGrp.get("address")
     if (addr) {
-      addr.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged(locationFrmGrp))
+      addr.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
       this.log.verbose("Made reservations!", this.id)
     } else {
       console.warn("could NOT Make reservations")
     }
-    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged(locationFrmGrp))
+    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
     return this.locationFrmGrp
+    */
   }
 
   private _filterRangers(value: string): RangerType[] {
@@ -300,7 +310,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   // this.myReactiveForm.reset(this.myReactiveForm.value)
   // https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
   // https://stackoverflow.com/a/54048660
-  resetForm() {
+  resetEntryForm() {
     this.log.verbose("Resetting form...", this.id)
 
     this.entryDetailsForm = this._formBuilder.group({
@@ -317,13 +327,8 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     this.entryDetailsForm.markAsUntouched();
   }
 
-  locationChanged(loc: FormGroup) {
-    this.log.verbose(`locationChanged  ###########################`, this.id)
-  }
-
-
   // TODO: NOt working yet...
-  CallsignChanged(callsign: string) { // Just serves timer for input field - post interaction
+  callsignChanged(callsign: string) { // Just serves timer for input field - post interaction
     this.log.verbose(`EntryForm CallsignChanged()`, this.id)
 
     this.callInfo = this.document.getElementById("enter__Callsign-upshot")
@@ -338,13 +343,13 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     }
   }
 
-  CallsignCtrlChanged() { // NOTE: NEVER CALLED (my error, maybe does now..)!!!, so use workaround above...
+  callsignCtrlChanged() { // NOTE: NEVER CALLED (my error, maybe does now..)!!!, so use workaround above...
     this.log.error(`callsignCtrlChanged() called!!!!!!!!!!!!!!!!!!`, this.id)
     return
     let callSign: string = (this.document.getElementById("enter__Callsign-input") as HTMLInputElement).value
     if (callSign) {
       this.log.verbose(`CallsignCtrlChanged() call= ${callSign}`)
-      this.CallsignChanged(callSign)
+      this.callsignChanged(callSign)
     }
 
     // TODO: update #enter__Callsign-upshot
@@ -359,7 +364,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     https://css-tricks.com/restart-css-animation/
     https://gist.github.com/paulirish/5d52fb081b3570c81e3a
   */
-  reset_animation(element: HTMLElement) {
+  resetMaterialFadeAnimation(element: HTMLElement) {
     this.log.verbose(`Fade Animation reset`, this.id)
     element.style.animation = 'none';
     element.offsetHeight; // trigger reflow
@@ -383,7 +388,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     if (this.submitInfo) {
       // Display fading confirmation to right of Submit button
       this.submitInfo.innerText = `Entry id # ${newReport.id} Saved. ${formData}`
-      this.reset_animation(this.submitInfo)
+      this.resetMaterialFadeAnimation(this.submitInfo)
     }
     else {
       this.log.error("Submittion info field not found", this.id)
@@ -391,7 +396,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
 
 
-    this.resetForm()  // std reset just blanks values, doesn't initialize them...
+    this.resetEntryForm()  // std reset just blanks values, doesn't initialize them...
   }
 
 

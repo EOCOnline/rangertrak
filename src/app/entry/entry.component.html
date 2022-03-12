@@ -6,8 +6,8 @@
     (ngSubmit)="onFormSubmit(frm.value)"
     class="enter__form"
   >
-    <rangertrak-mini-lmap>LMAP HERE</rangertrak-mini-lmap>
-    <!--rangertrak-mini-gmap>GMAP HERE</rangertrak-mini-gmap-->
+    <mini-lmap [locationUpdated]="location">LMAP HERE</mini-lmap>
+    <!--mini-gmap [locationUpdated]="location">GMAP HERE</mini-gmap-->
 
     <!--pageHeader [parentTitle]="title">...</pageHeader-->
     <h2 class="elegant">
@@ -27,7 +27,7 @@
         aria-label="Callsigns"
         formControlName="callsign"
         [matAutocomplete]="auto"
-        (change)="this.CallsignCtrlChanged()"
+        (change)="this.callsignCtrlChanged()"
         id="enter__Callsign-input"
         tabindex="1"
         data-lpignore="true"
@@ -107,9 +107,11 @@ Error: Failed to execute 'setAttribute' on 'Element': '[location' is not a valid
 location as FormGroup does compile, but above run-time error...
 -->
 
-      <rangertrak-location #NeuvoLocation></rangertrak-location>
+      <rangertrak-location
+        (newLocationEvent)="onNewLocation($event)"
+      ></rangertrak-location>
 
-      <!--
+      <!-- above gets: Property 'subscribe' does not exist on type 'EventEmitter'.
 
               [parentLat]="latDD"
         [parentLng]="lngDD"
@@ -255,7 +257,7 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
     <!--button (click)="onBtnUpdateLocation()">Update location</button> <br-->
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
     <button
-      (click)="resetForm()"
+      (click)="resetEntryForm()"
       title="Reset all form fields to their defaults"
       class="eButton"
       type="button"

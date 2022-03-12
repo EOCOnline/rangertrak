@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { BehaviorSubject, debounceTime, fromEvent, Observable, Subscription } from 'rxjs';
 import { DDToDMS, CodeArea, GoogleGeocode, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map,
@@ -15,6 +15,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';// https://material.
 
 import { SettingsService, LogService, SettingsType } from '../shared/services';
+import { MiniLMapComponent } from './mini-lmap.component';
 /*
 https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
 https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-driven-forms-in-angular-2
@@ -39,6 +40,31 @@ export class LocationComponent implements OnInit, AfterViewInit {
 
   // Grab reference to location portion of parent's entry form
   @Input() public locationFrmGrp: FormGroup // input from entry.component.ts
+
+  // gets Type 'EventEmitter' is not generic.
+  // per pg 188, Ng Dev w/TS
+  //@Output() newLocation: EventEmitter<LocationType> = new EventEmitter()
+
+  // per: https://www.ifourtechnolab.com/blog/understanding-output-and-eventemitter-in-angular
+  // gets Operator '>' cannot be applied to types 'boolean' and 'MiniLMapComponent'
+  //@Output() newLocationEvent = new EventEmitter() < LocationType > <MiniLMapComponent>()
+
+  // per https://www.concretepage.com/angular-2/angular-2-custom-event-binding-eventemitter-example
+  // Expected 0 type arguments, but got 1
+  @Output() newLocationEvent = new EventEmitter<LocationType>()
+
+  //https://angular.io/api/core/EventEmitter
+  /* The EventEmitter class is defined and exposed by the events module:
+
+  const EventEmitter = require('events');
+  All EventEmitters emit the event 'newListener' when new listeners are added and 'removeListener' when existing listeners are removed.
+
+  It supports the following option:
+
+  @since — v0.1.26
+
+  Type 'EventEmitter' is not generic
+  */
 
   /*
   LocationComponent - out of ngOnInit
@@ -111,6 +137,10 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public lngS = 0
 
 
+
+
+
+
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
   // button: HTMLButtonElement | undefined
   //tooltip: HTMLHtmlElement | undefined
@@ -121,10 +151,10 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public mdiAccount: string = mdiAccount
   public mdiInformationOutline: string = mdiInformationOutline
 
-  private settingsSubscription$!: Subscription
+  private settingsSubscription$: Subscription
   private settings?: SettingsType
 
-  private locationSubject: BehaviorSubject<LocationType>
+  //private locationSubject: BehaviorSubject<LocationType>
   // #endregion Properties (33)
 
   // #region Constructors (1)
@@ -145,13 +175,19 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
+    /*
+      gets: Property 'settings' is used before being assigned.
+      if (!this.settings) {
+        this.log.error(`This.settings not set in constructor!`, this.id)
+        throwError(()=>new Error(`This.settings not set in constructor!`))
+      }
+      */
+
     this.location = {
-      lat: this.settings!.defLat,
-      lng: this.settings!.defLng,
+      lat: this.settings ? this.settings.defLat : 0,
+      lng: this.settings ? this.settings.defLng : 0,
       address: ''
     }
-
-    this.showNewLocationOnForm(this.location.lat, this.location.lng)
 
     // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
     this.locationFrmGrp = this._formBuilder.group({
@@ -160,9 +196,9 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       address: [this.location.address, Validators.required]
     });
 
-    // Save & publish location to subscribers
-    this.locationSubject = new BehaviorSubject(this.location)
-    this.updateLocation(this.location)
+    // showNewLocation ALSO updates location.address...
+    this.showNewLocationOnForm(this.location.lat, this.location.lng)
+    this.updateLocation(this.location) // Emit new location event to parent
 
     // https://fonts.google.com/icons && https://material.angular.io/components/icon
     // Note that we provide the icon here as a string literal here due to a limitation in
@@ -173,6 +209,22 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     this.log.verbose("Out of constructor", this.id)
   }
 
+  public updateLocation(newLocation: LocationType) {
+    // Do any needed sanity/validation here
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.verbose(`Emit new Location ${JSON.stringify(newLocation)}`, this.id)
+    this.newLocationEvent.emit(this.location)
+    /*if (! {
+      this.log.warn(`New location event had no listeners!`, this.id)
+    }*/
+  }
+
+  /**
+   * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
+
+  public getLocationObserver(): Observable<LocationType> {
+    return this.locationSubject!.asObservable()
+  }*/
   // #endregion Constructors (1)
 
   // #region Public Methods (11)
@@ -224,19 +276,10 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     }
   }
 
-  public updateLocation(newLocation: LocationType) {
-    // Do any needed sanity/validation here
-
-    // localStorage.setItem(this.storageLocalName, JSON.stringify(newLocation))
-
-    this.locationSubject!.next(this.location)
-    this.log.info(`Notified subscribers of new Application Settings ${JSON.stringify(newLocation)}`, this.id)
-    this.log.verbose(`${JSON.stringify(newLocation)}`, this.id)
-  }
 
   /**
    * Update form with new address
-   *
+   * ALSO updates location.address...
    * @param latDD
    * @param lngDD
    */

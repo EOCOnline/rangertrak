@@ -1,5 +1,5 @@
 /// <reference types="@types/google.maps" />
-import { Component, Inject, isDevMode, OnInit } from '@angular/core';
+import { Component, Inject, Input, isDevMode, OnInit } from '@angular/core';
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 //import { addressType } from '../lmap/lmap.component' // BUG:
 import { DDToDMS, CodeArea, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map, , GoogleGeocode
@@ -12,14 +12,26 @@ import { LogService, SettingsService, SettingsType } from '../shared/services/';
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
 @Component({
-  selector: 'rangertrak-mini-gmap',
+  selector: 'mini-gmap',
   templateUrl: './mini-gmap.component.html',
   styleUrls: ['./mini-gmap.component.scss']
 })
 export class MiniGMapComponent implements OnInit {
+  @Input() set locationUpdated(value: LocationType) {
+    if (value && value.lat != undefined) {
+      this.location = {
+        lat: value.lat,
+        lng: value.lng,
+        address: value.address
+      }
+      this.log.verbose(`new location passed in ${JSON.stringify(value)}`, this.id)
+    } else {
+      this.log.error(`Bad location passed in ${JSON.stringify(value)}`, this.id)
+    }
+  }
 
   private id = "Google mini-map Component"
-  private locationSubscription$!: Subscription
+  //private locationSubscription$!: Subscription
   private location?: LocationType
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
@@ -71,6 +83,7 @@ export class MiniGMapComponent implements OnInit {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
+    /*
     this.locationSubscription$ = this.locationService.getSettingsObserver().subscribe({
       next: (newLocation) => {
         this.log.verbose(`mini-map got newLocation: ${JSON.stringify(newLocation)}`)
@@ -78,7 +91,7 @@ export class MiniGMapComponent implements OnInit {
       },
       error: (e) => this.log.error('Location Subscription got:' + e, this.id),
       complete: () => this.log.info('Location Subscription complete', this.id)
-    })
+    })*/
   }
 
   ngOnInit(): void {

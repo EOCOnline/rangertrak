@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, Inject, Input, NgZone, OnInit, ViewChild } from '@angular/core'
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { fromEvent, Subscription } from 'rxjs'
 
@@ -34,12 +34,24 @@ L.Marker.prototype.options.icon = iconDefault;
 
 
 @Component({
-  selector: 'rangertrak-mini-lmap',
+  selector: 'mini-lmap',
   templateUrl: './mini-lmap.component.html',
   styleUrls: ['./mini-lmap.component.scss',
     '../../../node_modules/leaflet/dist/leaflet.css'] // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
 })
 export class MiniLMapComponent implements AfterViewInit {
+  @Input() set locationUpdated(value: LocationType) {
+    if (value && value.lat != undefined) {
+      this.location = {
+        lat: value.lat,
+        lng: value.lng,
+        address: value.address
+      }
+      this.log.verbose(`new location passed in ${JSON.stringify(value)}`, this.id)
+    } else {
+      this.log.error(`Bad location passed in ${JSON.stringify(value)}`, this.id)
+    }
+  }
 
   id = 'Leaflet MiniMap'
   title = 'Leaflet Map'
@@ -54,7 +66,7 @@ export class MiniLMapComponent implements AfterViewInit {
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
 
-  private locationSubscription$!: Subscription
+  //private locationSubscription$!: Subscription
   private location?: LocationType
 
 
@@ -72,6 +84,7 @@ export class MiniLMapComponent implements AfterViewInit {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
+    /*
     this.locationSubscription$ = this.locationService.getSettingsObserver().subscribe({
       next: (newLocation) => {
         console.log(`Got newLocation: ${JSON.stringify(newLocation)}`)
@@ -80,6 +93,7 @@ export class MiniLMapComponent implements AfterViewInit {
       error: (e) => this.log.error('Location Subscription got:' + e, this.id),
       complete: () => this.log.info('Location Subscription complete', this.id)
     })
+*/
 
     this.zoom = this.settings!.leaflet.defZoom
     this.zoomDisplay = this.zoom
@@ -233,6 +247,4 @@ export class MiniLMapComponent implements AfterViewInit {
       //_marker.addEventListener('click', this._markerOnClick);
     }
   }
-
-
 }
