@@ -73,7 +73,7 @@ import { HeaderComponent } from './shared/';
       MoodRenderer,
     ]),
     // https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method: singleton
-    // AgmCoreModule.forRoot({ apiKey: 'AIzaSyDDPgrn2iLu2p4II4H1Ww27dx6pVycHVs4' }),
+    // AgmCoreModule.forRoot({ apiKey: 'API_KEY_GOES_HERE' }),
     // AgmSnazzyInfoWindowModule, // BUG: API_KEY
     LazyModule,
     NgxMatColorPickerModule,
