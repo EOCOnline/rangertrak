@@ -7,9 +7,14 @@ with ($primary: #962f10,
 
 $filledColor : #F0F0F0;
 
-.enter__Where-div {
+.enter__Where-div2 {
+  //background-color: $filledColor;
+  width: 600px;
+}
+
+.enter__Where-input {
   background-color: $filledColor;
-  width           : 50vw;
+  width           : 600px;
 }
 
 #enter__Where--latI,

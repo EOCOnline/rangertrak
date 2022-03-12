@@ -135,6 +135,12 @@ input[type=number] {
   width: 400px;
 }
 
+.enter__Status {
+  padding           : 8px 0;
+  //width           : 650px;
+  background-color  : $filledColor;
+}
+
 .eButton {
   //display: inline-block;
   width             : 80px;

@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { debounceTime, fromEvent, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, fromEvent, Observable, Subscription } from 'rxjs';
 import { DDToDMS, CodeArea, GoogleGeocode, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map,
 
 import * as P from '@popperjs/core';
@@ -22,55 +22,10 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 ICONS: see pg 164, Ang Dev w/ TS
 */
 
-const THUMBUP_ICON =
-  `
-  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px">
-    <path d="M0 0h24v24H0z" fill="none"/>
-    <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.` +
-  `44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5` +
-  `1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z"/>
-  </svg>
-`
-
-// https://popper.js.org/docs/v2/constructors/
-type Placement =
-  | 'auto'
-  | 'auto-start'
-  | 'auto-end'
-  | 'top'
-  | 'top-start'
-  | 'top-end'
-  | 'bottom'
-  | 'bottom-start'
-  | 'bottom-end'
-  | 'right'
-  | 'right-start'
-  | 'right-end'
-  | 'left'
-  | 'left-start'
-  | 'left-end';
-type Strategy = 'absolute' | 'fixed';
-/*type Options = {|
-  placement: Placement, // "bottom"
-  modifiers: Array<$Shape<Modifier<any>>>, // []
-  strategy: PositioningStrategy, // "absolute",
-  onFirstUpdate?: ($Shape<State>) => void, // undefined
-|};*/
-
-@Component({
-  selector: 'icon',
-  template: `
-    <svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
-        <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
-    </svg>
-  `
-})
-export class IconComponent2 {
-  // #region Properties (1)
-
-  @Input('path') public data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
-
-  // #endregion Properties (1)
+export type LocationType = {
+  lat: number, // Deg Decimal
+  lng: number, // Deg Decimal
+  address: string
 }
 
 @Component({
@@ -118,7 +73,6 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   //@Input() group: FormGroup;
 
   private id = 'Location within entry form'
-  public address = ""
   // Grab reference to #elements in template (vs. getElementById)
   // TODO: Remove all these! Per bottom pg 137, go to [FormControl]="nameToUse"
   @ViewChild('latI') elLatI: any
@@ -140,7 +94,8 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public geocoder = new GoogleGeocode
   //w3w = new What3Words()
 
-  public lat: number // Deg Decimal
+  public location!: LocationType
+
   public latI = 0 // Integer portion
   public latF = 0 // Float portion
   public latQ = "N" // Quadrant
@@ -148,7 +103,6 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public latM = 0 // Minutes
   public latS = 0 // Seconds
 
-  public lng: number
   public lngI = 0
   public lngD = 0
   public lngF = 0
@@ -170,6 +124,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
 
+  private locationSubject: BehaviorSubject<LocationType>
   // #endregion Properties (33)
 
   // #region Constructors (1)
@@ -190,22 +145,31 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    this.lat = this.settings!.defLat
-    this.lng = this.settings!.defLng
-    this.newLocation(this.lat, this.lng)
-    //debugger
+    this.location = {
+      lat: this.settings!.defLat,
+      lng: this.settings!.defLng,
+      address: ''
+    }
+
+    this.showNewLocationOnForm(this.location.lat, this.location.lng)
+
     // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
     this.locationFrmGrp = this._formBuilder.group({
-      address: ['', Validators.required],
-      lat: [this.settings!.defLat],
-      lng: [this.settings!.defLng]
+      lat: [this.location.lat],
+      lng: [this.location.lng],
+      address: [this.location.address, Validators.required]
     });
+
+    // Save & publish location to subscribers
+    this.locationSubject = new BehaviorSubject(this.location)
+    this.updateLocation(this.location)
 
     // https://fonts.google.com/icons && https://material.angular.io/components/icon
     // Note that we provide the icon here as a string literal here due to a limitation in
     // Stackblitz. If you want to provide the icon from a URL, you can use:
     iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
     //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
+
     this.log.verbose("Out of constructor", this.id)
   }
 
@@ -216,7 +180,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public ngOnInit(): void {
     this.log.info("ngOnInit", this.id)
 
-    this.newLocation(this.settings!.defLat, this.settings!.defLng)
+    this.showNewLocationOnForm(this.settings!.defLat, this.settings!.defLng)
 
     /*
             this.button = document.querySelector('#button') as HTMLButtonElement
@@ -260,15 +224,27 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     }
   }
 
+  public updateLocation(newLocation: LocationType) {
+    // Do any needed sanity/validation here
 
+    // localStorage.setItem(this.storageLocalName, JSON.stringify(newLocation))
 
+    this.locationSubject!.next(this.location)
+    this.log.info(`Notified subscribers of new Application Settings ${JSON.stringify(newLocation)}`, this.id)
+    this.log.verbose(`${JSON.stringify(newLocation)}`, this.id)
+  }
 
-
-  public newLocation(latDD: number, lngDD: number) {
+  /**
+   * Update form with new address
+   *
+   * @param latDD
+   * @param lngDD
+   */
+  public showNewLocationOnForm(latDD: number, lngDD: number) {
     this.log.info(`newLocation with lat: ${latDD}, lng: ${lngDD}`, this.id);
 
-    this.lat = latDD
-    this.lng = lngDD
+    this.location.lat = latDD
+    this.location.lng = lngDD
 
     this.latI = Math.floor(latDD)
     // {{latI}} shows [object HTMLInputElement]
@@ -282,32 +258,32 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     //this.latF = (latDD - this.latI).toFixed(4)
     this.latF = Math.round((latDD - this.latI) * 10000)
     this.lngF = Math.round((lngDD - this.lngI) * 10000)
-    // this.setCtrl("enter__Where--LatI", this.latI)
-    // this.setCtrl("enter__Where--LatD", this.latF)
-    // this.setCtrl("enter__Where--LngI", this.lngI)
-    // this.setCtrl("enter__Where--LngD", this.lngF)
+    this.setCtrl("enter__Where--LatI", this.latI)
+    this.setCtrl("enter__Where--LatD", this.latF)
+    this.setCtrl("enter__Where--LngI", this.lngI)
+    this.setCtrl("enter__Where--LngD", this.lngF)
 
     let latDMS = DDToDMS(latDD, false);
     this.latQ = latDMS.dir
     this.latD = latDMS.deg
     this.latM = latDMS.min
     this.latS = latDMS.sec
-    // this.setCtrl("latitudeQ", latDMS.dir)
-    // this.setCtrl("latitudeD", latDMS.deg)
-    // this.setCtrl("latitudeM", latDMS.min)
-    // this.setCtrl("latitudeS", latDMS.sec)
+    this.setCtrl("latitudeQ", latDMS.dir)
+    this.setCtrl("latitudeD", latDMS.deg)
+    this.setCtrl("latitudeM", latDMS.min)
+    this.setCtrl("latitudeS", latDMS.sec)
 
     let lngDMS = DDToDMS(lngDD, true);
     this.lngQ = lngDMS.dir
     this.lngD = lngDMS.deg
     this.lngM = lngDMS.min
     this.lngS = lngDMS.sec
-    // this.setCtrl("longitudeQ", lngDMS.dir)
-    // this.setCtrl("longitudeD", lngDMS.deg)
-    // this.setCtrl("longitudeM", lngDMS.min)
-    // this.setCtrl("longitudeS", lngDMS.sec)
+    this.setCtrl("longitudeQ", lngDMS.dir)
+    this.setCtrl("longitudeD", lngDMS.deg)
+    this.setCtrl("longitudeM", lngDMS.min)
+    this.setCtrl("longitudeS", lngDMS.sec)
 
-    // TODO: this.address =""
+    // TODO: this.location.address =""
     /*
         let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
         this.log.verbose("updateCoords: Encode returned PlusCode: " + pCode, this.id)
@@ -336,7 +312,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // TODO: EMIT AN EVENT!!!!
   }
 
-  public setCtrl_unused(ctrlName: string, value: number | string) {
+  public setCtrl(ctrlName: string, value: number | string) {
     this.log.verbose(`setCtrl()`, this.id)
     let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
     if (!ctrl) {
@@ -349,7 +325,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
 
   /*
-    //this.addressCtrlChanged('lat') // HACK: to display marker
+    //this.location.addressCtrlChanged('lat') // HACK: to display marker
     this.UpdateLocation_unused ({ lat: latDD, lng: lngDD }) {
     //ToDO: Update 3 words too!
     //if (initialized) this.displaySmallMap(latDD, lngDD);
@@ -408,7 +384,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
         let newAddress = this.geocoder.getAddressFromLatLng(ll)  // TODO: Disable!!
         this.log.verbose(`addressCtrlChanged new latlng: ${JSON.stringify(ll)}; addr: ${newAddress}`, this.id)
 
-        this.newLocation(llat, llng)
+        this.showNewLocationOnForm(llat, llng)
         /*
                 let addrLabel = this.document.getElementById("addressLabel") // as HTMLLabelElement
                 if (addrLabel) {
@@ -492,7 +468,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
     let addr = this.document.getElementById("derivedAddress")
     // ERROR: if (addr) { addr.innerHTML = "New What3Words goes here!" } // TODO: move to another routine...
-    //this.document.getElementById("enter__Where--Address-upshot").value = this.address
+    //this.document.getElementById("enter__Where--Address-upshot").value = this.location.address
 
 
     if (title == "") {
@@ -637,7 +613,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
         let coord = OpenLocationCode.decode(pCode)
         this.log.verbose("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', lng=' + coord.longitudeCenter, this.id);
 
-        this.newLocation(coord.latitudeCenter, coord.longitudeCenter);
+        this.showNewLocationOnForm(coord.latitudeCenter, coord.longitudeCenter);
       }
 
       else {
@@ -765,4 +741,60 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
 
   // #endregion Public Methods (11)
+}
+
+
+
+
+
+
+const THUMBUP_ICON =
+  `
+  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px">
+    <path d="M0 0h24v24H0z" fill="none"/>
+    <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.` +
+  `44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5` +
+  `1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z"/>
+  </svg>
+`
+
+// https://popper.js.org/docs/v2/constructors/
+type Placement =
+  | 'auto'
+  | 'auto-start'
+  | 'auto-end'
+  | 'top'
+  | 'top-start'
+  | 'top-end'
+  | 'bottom'
+  | 'bottom-start'
+  | 'bottom-end'
+  | 'right'
+  | 'right-start'
+  | 'right-end'
+  | 'left'
+  | 'left-start'
+  | 'left-end';
+type Strategy = 'absolute' | 'fixed';
+/*type Options = {|
+  placement: Placement, // "bottom"
+  modifiers: Array<$Shape<Modifier<any>>>, // []
+  strategy: PositioningStrategy, // "absolute",
+  onFirstUpdate?: ($Shape<State>) => void, // undefined
+|};*/
+
+@Component({
+  selector: 'icon',
+  template: `
+    <svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
+        <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
+    </svg>
+  `
+})
+export class IconComponent2 {
+  // #region Properties (1)
+
+  @Input('path') public data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
+
+  // #endregion Properties (1)
 }

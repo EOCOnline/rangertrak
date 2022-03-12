@@ -1,13 +1,15 @@
 import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { fromEvent, Subscription } from 'rxjs'
+
 import * as L from 'leaflet'
-//import { Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
-import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet';
+import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet'
+
 //import 'leaflet.markercluster';
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, LogService, SettingsType } from '../shared/services'
 import { openDB, deleteDB, wrap, unwrap } from 'idb';
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
+import { LocationType } from './location.component'
 
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
 const iconUrl = 'assets/imgs/marker-icon.png'
@@ -52,6 +54,9 @@ export class MiniLMapComponent implements AfterViewInit {
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
 
+  private locationSubscription$!: Subscription
+  private location?: LocationType
+
 
   constructor(
     private log: LogService,
@@ -67,6 +72,14 @@ export class MiniLMapComponent implements AfterViewInit {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
+    this.locationSubscription$ = this.locationService.getSettingsObserver().subscribe({
+      next: (newLocation) => {
+        console.log(`Got newLocation: ${JSON.stringify(newLocation)}`)
+        this.location = newLocation
+      },
+      error: (e) => this.log.error('Location Subscription got:' + e, this.id),
+      complete: () => this.log.info('Location Subscription complete', this.id)
+    })
 
     this.zoom = this.settings!.leaflet.defZoom
     this.zoomDisplay = this.zoom

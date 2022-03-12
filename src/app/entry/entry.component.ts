@@ -1,8 +1,8 @@
 import { DOCUMENT } from '@angular/common'
-import { Component, Inject, OnInit, ViewChild, isDevMode, Input, NgZone, AfterViewInit, OnDestroy } from '@angular/core';
-import { ThemePalette } from '@angular/material/core';
+import { Component, Inject, OnInit, ViewChild, isDevMode, Input, NgZone, AfterViewInit, OnDestroy } from '@angular/core'
+import { ThemePalette } from '@angular/material/core'
 import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
@@ -12,68 +12,19 @@ import { FieldReportService, FieldReportStatusType, RangerService, LogService, R
 // , TeamService
 import * as dayjs from 'dayjs' // https://day.js.org/docs/en/ or https://github.com/dayjs/luxon/
 
-import * as P from '@popperjs/core';
-//import { createPopper } from '@popperjs/core';
-import type { StrictModifiers } from '@popperjs/core';
+import * as P from '@popperjs/core'
+//import { createPopper } from '@popperjs/core'
+import type { StrictModifiers } from '@popperjs/core'
 
 //import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 //import { mdiAccount, mdiInformationOutline } from '@mdi/js';
 //import { lookupCollections, locate } from '@iconify/json'; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser'
+import { LocationType } from './location.component'
 //import { MatIconRegistry } from '@angular/material/icon';// https://material.angular.io/components/icon/examples
 
 
 // IDEA: use https://material.angular.io/components/badge/ ???
-
-const THUMBUP_ICON =
-  `
-  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px">
-    <path d="M0 0h24v24H0z" fill="none"/>
-    <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.` +
-  `44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5` +
-  `1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z"/>
-  </svg>
-`
-
-// https://popper.js.org/docs/v2/constructors/
-type Placement =
-  | 'auto'
-  | 'auto-start'
-  | 'auto-end'
-  | 'top'
-  | 'top-start'
-  | 'top-end'
-  | 'bottom'
-  | 'bottom-start'
-  | 'bottom-end'
-  | 'right'
-  | 'right-start'
-  | 'right-end'
-  | 'left'
-  | 'left-start'
-  | 'left-end';
-type Strategy = 'absolute' | 'fixed';
-/*type Options = {|
-  placement: Placement, // "bottom"
-  modifiers: Array<$Shape<Modifier<any>>>, // []
-  strategy: PositioningStrategy, // "absolute",
-  onFirstUpdate?: ($Shape<State>) => void, // undefined
-|};*/
-
-
-
-@Component({
-  selector: 'icon',
-  template: `
-    <svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
-        <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
-    </svg>
-  `
-})
-export class IconComponent {
-  @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
-}
-
 
 
 @Component({
@@ -91,6 +42,9 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
+
+  private locationSubscription$!: Subscription
+  private location?: LocationType
 
   myForm!: FormGroup
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
@@ -204,6 +158,15 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       //this.alert.OpenSnackBar(`No Rangers exist. Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
       //TODO: Force navigation to /Rangers?
     }
+
+    this.locationSubscription$ = this.locationService.getSettingsObserver().subscribe({
+      next: (newLocation) => {
+        console.log(`entry form got newLocation: ${JSON.stringify(newLocation)}`)
+        this.location = newLocation
+      },
+      error: (e) => this.log.error('Location Subscription got:' + e, this.id),
+      complete: () => this.log.info('Location Subscription complete', this.id)
+    })
 
     this.fieldReportService = fieldReportService
     this.fieldReportStatuses = this.settings?.fieldReportStatuses!
@@ -495,3 +458,59 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     //this.fieldReportsSubscription$.unsubscribe()
   }
 }
+
+
+
+
+// TODO: Duplicate of that at bottom of locationComponent?!
+
+
+const THUMBUP_ICON =
+  `
+  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px">
+    <path d="M0 0h24v24H0z" fill="none"/>
+    <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.` +
+  `44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5` +
+  `1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z"/>
+  </svg>
+`
+
+// https://popper.js.org/docs/v2/constructors/
+type Placement =
+  | 'auto'
+  | 'auto-start'
+  | 'auto-end'
+  | 'top'
+  | 'top-start'
+  | 'top-end'
+  | 'bottom'
+  | 'bottom-start'
+  | 'bottom-end'
+  | 'right'
+  | 'right-start'
+  | 'right-end'
+  | 'left'
+  | 'left-start'
+  | 'left-end';
+type Strategy = 'absolute' | 'fixed';
+/*type Options = {|
+  placement: Placement, // "bottom"
+  modifiers: Array<$Shape<Modifier<any>>>, // []
+  strategy: PositioningStrategy, // "absolute",
+  onFirstUpdate?: ($Shape<State>) => void, // undefined
+|};*/
+
+
+
+@Component({
+  selector: 'icon',
+  template: `
+    <svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
+        <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
+    </svg>
+  `
+})
+export class IconComponent {
+  @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
+}
+

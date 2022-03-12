@@ -5,6 +5,9 @@ import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 import { DDToDMS, CodeArea, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map, , GoogleGeocode
 import { LatLng } from 'leaflet';
 import { DOCUMENT } from '@angular/common';
+import { LocationType } from './location.component'
+import { Subscription } from 'rxjs';
+import { LogService, SettingsService, SettingsType } from '../shared/services/';
 
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
@@ -15,6 +18,11 @@ const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 })
 export class MiniGMapComponent implements OnInit {
 
+  private id = "Google mini-map Component"
+  private locationSubscription$!: Subscription
+  private location?: LocationType
+  private settingsSubscription$!: Subscription
+  private settings?: SettingsType
 
   // ------------------ MAP STUFF  ------------------
   // imports this.map as a GoogleMap which is the Angular wrapper around a google.maps.Map...
@@ -48,46 +56,63 @@ export class MiniGMapComponent implements OnInit {
 
 
   constructor(
+    private log: LogService,
+    private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document
   ) {
-    console.log(`MiniGMapComponent constructed with development mode ${isDevMode() ? "" : "NOT "}enabled`)
+    this.log.verbose(`MiniGMapComponent constructed with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
 
+    this.log.verbose("constructor()", this.id)
+    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
+    this.locationSubscription$ = this.locationService.getSettingsObserver().subscribe({
+      next: (newLocation) => {
+        this.log.verbose(`mini-map got newLocation: ${JSON.stringify(newLocation)}`)
+        this.location = newLocation
+      },
+      error: (e) => this.log.error('Location Subscription got:' + e, this.id),
+      complete: () => this.log.info('Location Subscription complete', this.id)
+    })
   }
 
   ngOnInit(): void {
-    console.log(`MiniGMapComponent onInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`)
+    this.log.verbose(`MiniGMapComponent onInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
 
     // subscribe to addresses value changes
     /* TODO: How?!
     this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
-      console.log(`Subscription to location got: ${x}`);
+      this.log.verbose(`Subscription to location got: ${x}`, this.id);
     })
 */
 
   }
-
-
 
   // ------------------------------------------------------------------------
   // Map stuff below
   //#region
 
   onMapInitialized(newMapReference: google.maps.Map) {
-    console.log(`onMapInitialized()`)
+    this.log.verbose(`onMapInitialized()`)
     this.gMap = newMapReference
     /*
         if (this.gMap == null) {
-          console.log("onMapInitialized(): This.gMap is null")
+          this.log.verbose("onMapInitialized(): This.gMap is null", this.id)
         } else {
-          console.log(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`)
+          this.log.verbose(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`, this.id)
         }
         */
     this.updateOverviewMap()
-    console.log(`onMapInitialized done`)
+    this.log.verbose(`onMapInitialized done`, this.id)
   }
 
   updateOverviewMap() {
-    console.log(`updateOverviewMap`)
+    this.log.verbose(`updateOverviewMap`, this.id)
 
     //let latlng = new google.maps.LatLng(this.settings.defLat, this.settings.deflng)
     //let latlngL = {lat: this.settings.defLat, lng: this.settings.deflng}
@@ -101,14 +126,14 @@ export class MiniGMapComponent implements OnInit {
   onMapMouseMove(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
       this.mouseLatLng = event.latLng.toJSON()
-      //console.log('moving()');
+      //this.log.verbose('moving()', this.id);
     }
     else {
-      console.warn('move(): NO event.latLng!!!!!!!!!!!!!');
+      this.log.warn('move(): NO event.latLng!!!!!!!!!!!!!', this.id);
     }
   }
 
-  zoomed() {
+  onMapZoomed() {
     if (this.zoom && this.gMap) {
       this.zoom = this.gMap.getZoom()!
     }
@@ -116,18 +141,14 @@ export class MiniGMapComponent implements OnInit {
   // TODO: chg miniMap out with Leaflet map (for offline use)
   //#endregion
 
-
-
-
-
   displayMarker(pos: google.maps.LatLngLiteral, title = 'Latest Location') {
-    console.log(`displayMarker at ${pos}, title: ${title}`)
+    this.log.verbose(`displayMarker at ${pos}, title: ${title}`, this.id)
 
     // Review: will this overwrite/remove any previous marker?
     if (this.gMap) {
       this.onlyMarker.setMap(this.gMap)
     } else {
-      console.warn('gMap NOT set in displayMarker!!!!')
+      this.log.warn('gMap NOT set in displayMarker!!!!', this.id)
     }
     this.onlyMarker.setPosition(pos)
     this.onlyMarker.setTitle(title)
@@ -142,18 +163,4 @@ export class MiniGMapComponent implements OnInit {
      },
      */
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
