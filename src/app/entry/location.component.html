@@ -69,18 +69,18 @@
 <div class="container enter__Where-div">
   <div appearance="filled" class="enter__Where-input">
     <div class="input-group" [formGroup]="locationFrmGrp">
-      &nbsp;&nbsp;&nbsp;&nbsp;Latitude:
+      &nbsp;&nbsp;&nbsp;Latitude:
 
       <input
         #latI
         name="latI"
+        [value]="latI"
         type="number"
         formControlName="lat"
         placeholder="LatI"
         min="-180"
         max="180"
-        id="enter__Where--latI"
-        [value]="latI"
+        id="enter__Where-latI"
       />
 
       <!-- TODO: name="latitudeDDI" id="latitudeDDI" -->
@@ -96,15 +96,15 @@
 
       <input
         #latF
-        type="number"
         placeholder="LatF"
+        [value]="latF"
         name="latitudeDDD"
-        step="0.001"
-        [style.width.px]="30"
+        type="number"
+        step="100"
         min="0"
         max="99999"
         step="100"
-        id="enter__Where--latF"
+        id="enter__Where-latF"
         tabindex="2"
       />
 
@@ -117,7 +117,7 @@
       <input
         #latQ
         name="latQ"
-        id="enter__Where--latQ"
+        id="enter__Where-latQ"
         type="text"
         pattern="'e','E','w','W'"
         title="E or W"
@@ -135,7 +135,7 @@
       <input
         #latD
         name="latD"
-        id="enter__Where--latD"
+        id="enter__Where-latD"
         type="text"
         min="0"
         max="180"
@@ -145,7 +145,7 @@
       <input
         #latM
         name="latM"
-        id="enter__Where--latM"
+        id="enter__Where-latM"
         type="text"
         min="0"
         max="59"
@@ -154,7 +154,7 @@
       <input
         #latS
         name="latS"
-        id="enter__Where--latS"
+        id="enter__Where-latS"
         type="text"
         min="0"
         max="59.99"
@@ -163,12 +163,7 @@
     </div>
 
     <div class="input-group">
-      Longitude
-      <!--img src="../../assets/icons/information-outline.png"
-      title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" /  size="30"
-      [class.border-danger]="location.get('lngI')?.touched && location.get('lngI')?.invalid"
-
-      -->:
+      Longitude:
       <input
         #lngI
         type="number"
@@ -178,18 +173,13 @@
         id="longitudeDDI"
         min="-90"
         max="90"
-        id="enter__Where--lngI"
+        id="enter__Where-lngI"
         tabindex="3"
       />
 
       <!-- onchange="DDCoordsChanged()"
             {{lngI}}  {{lngF}}   {{lngQ}}
-          -->
-      <!--span *ngIf="location.get('lngI')?.touched && location.get('lngI')?.hasError('required')"
-            class="text-sm text-danger">longitude is required
-        formControlName="lngD"
-            [class.border-danger]="location.get('lngD')?.touched && location.get('lngD')?.invalid"
-          </span-->&nbsp;&nbsp;.
+          -->.
 
       <input
         #lngF
@@ -197,22 +187,17 @@
         placeholder="LngF"
         (change)="this.addressCtrlChanged('lngF')"
         name="latitudeDDD"
-        step="0.001"
+        step="100"
         min="0"
         max="99999"
-        id="enter__Where--lngF"
+        id="enter__Where-lngF"
         tabindex="4"
-      />
-
-      <!--span *ngIf="location.get('lngD')?.touched && location.get('lngD')?.hasError('required')
-                  && location.get('lngD')?.touched && location.get('lngD')?.hasError('required')"
-        class="text-sm text-danger">Latitude is required
-      </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
+      />° <span title="Decimal Degrees">DD</span> or&nbsp;
 
       <input
         #lngQ
         name="longitudeQ"
-        id="enter__Where--lngQ"
+        id="enter__Where-lngQ"
         type="text"
         pattern="'n','N','s','S'"
         title="N or S"
@@ -220,14 +205,14 @@
       />
       <input
         name="longitudeD"
-        id="enter__Where--lngD"
+        id="enter__Where-lngD"
         type="text"
         max="180"
         onchange="DMSCoordsChanged()"
       />°
       <input
         name="longitudeM"
-        id="enter__Where--lngM"
+        id="enter__Where-lngM"
         type="text"
         min="0"
         max="59"
@@ -235,7 +220,7 @@
       />'
       <input
         name="longitudeS"
-        id="enter__Where--lngS"
+        id="enter__Where-lngS"
         type="text"
         min="0"
         max="59.99"
@@ -255,7 +240,7 @@
       type="text"
       formControlName="address"
       address
-      id="enter__Where--Address"
+      id="enter__Where-Address"
       tabindex="5"
       title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
       placeholder="Optional Address"
