@@ -33,8 +33,6 @@ export class RangersComponent implements OnInit {
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
 
-
-
   localUrl: any[] = []
   //teamService
   //rangerService //: { generateFakeData: (arg0: RangerType[]) => void; }
