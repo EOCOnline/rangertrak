@@ -53,9 +53,10 @@
     <div class="input-group">
       <span class="strong">Mission: </span>
       <input
-        type="text"
         formControlName="mission"
         placeholder="Mission #"
+        [style.width.px]="100"
+        type="text"
         data-lpignore="true"
       />
     </div>
@@ -63,9 +64,10 @@
     <div class="input-group">
       <span class="strong">Event Name: </span>
       <input
-        type="text"
         formControlName="event"
         placeholder="Event Name"
+        [style.width.px]="100"
+        type="text"
         data-lpignore="true"
       />
     </div>
@@ -85,9 +87,10 @@
     <div class="input-group">
       <span class="strong">OpPeriod Name: </span>
       <input
-        type="text"
         formControlName="OpPeriod"
         placeholder="Operational Period"
+        [style.width.px]="120"
+        type="text"
         data-lpignore="true"
       />
     </div>
@@ -95,9 +98,10 @@
     <div class="input-group">
       <span class="strong">OpPeriod Start: </span>
       <input
-        type="text"
         formControlName="OpPeriodStart"
         placeholder="Start Time"
+        [style.width.px]="100"
+        type="text"
         data-lpignore="true"
       />
     </div>
@@ -105,13 +109,15 @@
     <div class="input-group">
       <span class="strong">OpPeriod End: </span>
       <input
-        type="text"
         formControlName="OpPeriodEnd"
         placeholder="Ending Time"
+        [style.width.px]="100"
+        type="text"
         data-lpignore="true"
       />
     </div>
     <br />
+
     <h2>Location Defaults</h2>
     <!--legend>Default </legend-->
     <details>
@@ -130,12 +136,14 @@
       </ul>
     </details>
     <div class="input-group">
-      <span class="strong">Latitude: </span>
+      <span class="strong">Latitude: &nbsp;</span>
       <input
         [class.border-danger]="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.invalid"
         type="number"
         formControlName="latitude"
         placeholder="{{settings?.defLat?.toFixed(4)}}"
+        value="{{settings?.defLat?.toFixed(4)}}"
+        [style.width.px]="60"
         data-lpignore="true"
       />
       <div
@@ -153,6 +161,7 @@
         type="number"
         formControlName="longitude"
         placeholder="{{settings!.defLng?.toFixed(4)}}"
+        [style.width.px]="60"
         data-lpignore="true"
       />
       <div
@@ -170,6 +179,7 @@
         type="text"
         formControlName="plusCode"
         placeholder="84VVCGWP+VW"
+        [style.width.px]="100"
         data-lpignore="true"
       />
       <div
@@ -187,6 +197,7 @@
         type="text"
         formControlName="w3wLocale"
         placeholder="Vashon, WA"
+        [style.width.px]="100"
         data-lpignore="true"
       />
       <div
@@ -216,9 +227,10 @@
       <span class="strong">Default Zoom: </span>
       <input
         [class.border-danger]="settingsEditorForm.get('leaflet.defZoom')?.touched && settingsEditorForm.get('leaflet.defZoom')?.invalid"
-        type="number"
         formControlName="leaflet.defZoom"
         placeholder="15"
+        type="number"
+        [style.width.px]="50"
       />
       <div
         *ngIf="settingsEditorForm.get('leaflet.defZoom')?.touched && settingsEditorForm.get('leaflet.defZoom')?.hasError('required')"
@@ -235,6 +247,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('leaflet.OverviewDifference')?.touched && settingsEditorForm.get('leaflet.OverviewDifference')?.invalid"
         type="number"
+        [style.width.px]="50"
         formControlName="leaflet.OverviewDifference"
         placeholder="5"
       />
@@ -267,6 +280,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('leaflet.OverviewMaxZoom')?.touched && settingsEditorForm.get('leaflet.OverviewMaxZoom')?.invalid"
         type="number"
+        [style.width.px]="50"
         formControlName="leaflet.OverviewMaxZoom"
         placeholder="21"
       />
@@ -285,6 +299,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('google.defZoom')?.touched && settingsEditorForm.get('google.defZoom')?.invalid"
         type="number"
+        [style.width.px]="50"
         formControlName="google.defZoom"
         placeholder="15"
       />
@@ -303,6 +318,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('google.OverviewDifference')?.touched && settingsEditorForm.get('google.OverviewDifference')?.invalid"
         type="number"
+        [style.width.px]="50"
         formControlName="google.OverviewDifference"
         placeholder="5"
       />
@@ -319,6 +335,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('google.OverviewMinZoom')?.touched && settingsEditorForm.get('google.OverviewMinZoom')?.invalid"
         type="number"
+        [style.width.px]="50"
         formControlName="google.OverviewMinZoom"
         placeholder="5"
       />
@@ -335,6 +352,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('google.OverviewMaxZoom')?.touched && settingsEditorForm.get('google.OverviewMaxZoom')?.invalid"
         type="number"
+        [style.width.px]="50"
         formControlName="google.OverviewMaxZoom"
         placeholder="21"
       />

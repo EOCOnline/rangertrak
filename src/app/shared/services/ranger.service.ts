@@ -4,21 +4,8 @@ import { formatDate } from '@angular/common';
 import { BehaviorSubject, Observable, Observer, of } from 'rxjs';
 import { csvImport } from 'src/app/rangers/csvImport';
 //import { debounceTime, map, startWith } from 'rxjs/operators'
-import { LogService } from './'
+import { LogService, RangerType } from './'
 import * as rangers from '../../../assets/data/Rangers.3Feb22.json'
-
-export interface RangerType {
-  callsign: string
-  licensee: string
-  // licenseKey: number
-  phone: string
-  address: string
-  image: string
-  team: string
-  icon: string
-  status: string
-  note: string
-}
 
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING

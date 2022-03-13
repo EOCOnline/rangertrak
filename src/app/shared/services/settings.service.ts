@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs'
 
 import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
 import * as packageJson from '../../../../package.json'
-import { LogService, FieldReportStatusType } from './'
+import { LogService, FieldReportStatusType, SettingsType } from './'
 
 export type SecretType = {
   "id": number,
@@ -11,73 +11,6 @@ export type SecretType = {
   "url": string,
   "key": string,
   "note": string
-}
-
-/**
- * This has 'all' event data (aside from Rangers & Field Reports)
- * for readily serialization/dehydration
- */
-export type SettingsTypeOld = {
-  id: number, // needed, or use w/ name to allow several sets of settings: needed?
-  name: string, // incident Name + Op Period + Mission#, etc. 1st line tops every page
-  application: string,
-  version: string,
-  note: string,
-  defLat: number,
-  defLng: number,
-  defZoom: number,
-  defPlusCode: string,
-  w3wLocale: string,
-  markerSize: number,
-  markerShape: number,
-  defFieldReportStatus: number,
-  allowManualPinDrops: boolean,
-  debugMode: boolean,
-  logToPanel: boolean,
-  logToConsole: boolean,
-  // Statuses
-}
-
-export type SettingsType = {
-  settingsName: string, // FUTURE: Use if people want to load and saveas, or have various 'templates'
-  settingsDate: Date, // when last edited...
-
-  mission: string,
-  event: string,
-  eventNotes: string,
-  opPeriod: string,
-  opPeriodStart: Date,
-  opPeriodEnd: Date,
-
-  application: string,
-  version: string,
-  debugMode: boolean,
-
-  defLat: number,
-  defLng: number,
-  defPlusCode: string,
-  w3wLocale: string,
-  allowManualPinDrops: boolean,
-
-  google: {
-    defZoom: number,  // or just zoom to bounds?
-    markerScheme: string,
-    OverviewDifference: number,
-    OverviewMinZoom: number,
-    OverviewMaxZoom: number
-  },
-
-  leaflet: {
-    defZoom: number,  // or just zoom to bounds?
-    markerScheme: string,
-    OverviewDifference: number,
-    OverviewMinZoom: number,
-    OverviewMaxZoom: number
-  },
-
-  defFieldReportStatus: number
-  fieldReportStatuses: FieldReportStatusType[],
-  // fieldReportKeywords: string[],  // Future...could also just search notes field
 }
 
 

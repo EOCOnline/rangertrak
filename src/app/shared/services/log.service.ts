@@ -2,14 +2,7 @@ import { Injectable } from '@angular/core'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { Utility } from '../utility'
 import chalk from 'chalk'
-
-export enum LogLevel { Verbose, Info, Warn, Error }
-export type LogType = {
-  date: Date,
-  msg: string,
-  level: LogLevel,
-  source: string
-}
+import { LogType, LogLevel } from '.'
 
 @Injectable({ providedIn: 'root' })
 export class LogService {
