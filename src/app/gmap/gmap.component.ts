@@ -101,7 +101,7 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
   apiLoaded //: Observable<boolean>
 
   // next 2 even used?
-  circleCenter: google.maps.LatLngLiteral = { lat: this.settings!.defLat, lng: this.settings!.defLng }
+  circleCenter: google.maps.LatLngLiteral = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
   radius = 10;
 
   usingSelectedFieldReports = false

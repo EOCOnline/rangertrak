@@ -195,7 +195,6 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   ngOnInit(): void {
     if (this.settings == undefined) {
       this.log.warn('Settings need to be initialized.', this.id)
-      // TODO: SettingsService.ResetDefaults()
     } else {
       this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
     }
@@ -242,6 +241,14 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       w3wLocale: [this.settings.w3wLocale],
       allowManualPinDrops: [this.settings.allowManualPinDrops],
 
+      leaflet: {
+        defZoom: [this.settings.leaflet.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation  // or just zoom to bounds?
+        markerScheme: [this.settings.leaflet.markerScheme],
+        OverviewDifference: [this.settings.leaflet.OverviewDifference],
+        OverviewMinZoom: [this.settings.leaflet.OverviewMinZoom],
+        OverviewMaxZoom: [this.settings.leaflet.OverviewMaxZoom]
+      },
+
       google: {
         defZoom: [this.settings.google.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation    // or just zoom to bounds?
         markerScheme: [this.settings.google.markerScheme],
@@ -250,13 +257,6 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         OverviewMaxZoom: [this.settings.google.OverviewMaxZoom]
       },
 
-      leaflet: {
-        defZoom: [this.settings.leaflet.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation  // or just zoom to bounds?
-        markerScheme: [this.settings.leaflet.markerScheme],
-        OverviewDifference: [this.settings.leaflet.OverviewDifference],
-        OverviewMinZoom: [this.settings.leaflet.OverviewMinZoom],
-        OverviewMaxZoom: [this.settings.leaflet.OverviewMaxZoom]
-      },
       defFieldReportStatus: [this.settings.defFieldReportStatus],
       fieldReportStatuses: [this.settings.fieldReportStatuses]
       // fieldReportKeywords: string[],  // Future...could also just search notes field

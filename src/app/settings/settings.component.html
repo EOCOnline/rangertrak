@@ -1,7 +1,6 @@
+<pageHeader [parentTitle]="title">...</pageHeader>
 <div id="SettingsBody" class="container">
-  <!-- [ngStyle]="{backgroundImage:'./src/assets/imgs/20220205_112741.jpg'}" -->
   <form [formGroup]="settingsEditorForm" (ngSubmit)="onFormSubmit()">
-    <pageHeader [parentTitle]="title">...</pageHeader>
     <br />
     <details>
       <summary>Instructions</summary>
@@ -48,23 +47,72 @@
         </li>
       </ul>
     </details>
+
     <br />
+    <h2>Event Information</h2>
+    <div class="input-group">
+      <span class="strong">Mission: </span>
+      <input
+        type="text"
+        formControlName="mission"
+        placeholder="Mission #"
+        data-lpignore="true"
+      />
+    </div>
 
     <div class="input-group">
-      <span class="strong">Incident/Exercise Description:</span><br />
+      <span class="strong">Event Name: </span>
+      <input
+        type="text"
+        formControlName="event"
+        placeholder="Event Name"
+        data-lpignore="true"
+      />
+    </div>
+
+    <div class="input-group">
+      <span class="strong">Event Notes: </span><br />
       <textarea
         appearance="fill"
-        formControlName="note"
+        formControlName="eventNotes"
         id=""
-        cols="75"
+        cols="60"
         rows="4"
-        placeholder="Incident name, Mission #, Op Period, etc.
-1st line goes at top of evey page!"
+        placeholder="Event description, if needed"
       ></textarea>
     </div>
-    <br />
 
-    <h2>Entry Form Defaults</h2>
+    <div class="input-group">
+      <span class="strong">OpPeriod Name: </span>
+      <input
+        type="text"
+        formControlName="OpPeriod"
+        placeholder="Operational Period"
+        data-lpignore="true"
+      />
+    </div>
+
+    <div class="input-group">
+      <span class="strong">OpPeriod Start: </span>
+      <input
+        type="text"
+        formControlName="OpPeriodStart"
+        placeholder="Start Time"
+        data-lpignore="true"
+      />
+    </div>
+
+    <div class="input-group">
+      <span class="strong">OpPeriod End: </span>
+      <input
+        type="text"
+        formControlName="OpPeriodEnd"
+        placeholder="Ending Time"
+        data-lpignore="true"
+      />
+    </div>
+    <br />
+    <h2>Location Defaults</h2>
     <!--legend>Default </legend-->
     <details>
       <summary><span class="strong">Location Guidance</span></summary>
@@ -82,13 +130,13 @@
       </ul>
     </details>
     <div class="input-group">
-      <span class="strong"></span>
-      <span class="strong">Latitude:</span>
+      <span class="strong">Latitude: </span>
       <input
         [class.border-danger]="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.invalid"
         type="number"
         formControlName="latitude"
-        placeholder="47.5"
+        placeholder="{{settings?.defLat?.toFixed(4)}}"
+        data-lpignore="true"
       />
       <div
         *ngIf="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.hasError('required')"
@@ -99,12 +147,13 @@
     </div>
 
     <div class="input-group">
-      <span class="strong">Longitude:</span>
+      <span class="strong">Longitude: </span>
       <input
         [class.border-danger]="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.invalid"
         type="number"
         formControlName="longitude"
-        placeholder="-122.5"
+        placeholder="{{settings!.defLng?.toFixed(4)}}"
+        data-lpignore="true"
       />
       <div
         *ngIf="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.hasError('required')"
@@ -115,28 +164,13 @@
     </div>
 
     <div class="input-group">
-      <span class="strong">Zoom (3-21):</span>
-      <input
-        [class.border-danger]="settingsEditorForm.get('defZoom')?.touched && settingsEditorForm.get('defZoom')?.invalid"
-        type="number"
-        formControlName="zoom"
-        placeholder="15"
-      />
-      <div
-        *ngIf="settingsEditorForm.get('defZoom')?.touched && settingsEditorForm.get('defZoom')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        zoom is required
-      </div>
-    </div>
-
-    <div class="input-group">
-      <span class="strong">Plus Code:</span>
+      <span class="strong">Plus Code: </span>
       <input
         [class.border-danger]="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.invalid"
         type="text"
         formControlName="plusCode"
         placeholder="84VVCGWP+VW"
+        data-lpignore="true"
       />
       <div
         *ngIf="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.hasError('required')"
@@ -145,50 +179,178 @@
         plusCode is required
       </div>
     </div>
-    <br />
-    <h2>Field Reports</h2>
 
     <div class="input-group">
-      <span class="strong">Markers</span>
+      <span class="strong">w3wLocale: </span>
       <input
-        [class.border-danger]="settingsEditorForm.get('allowManualPinDrops')?.touched && settingsEditorForm.get('allowManualPinDrops')?.invalid"
+        [class.border-danger]="settingsEditorForm.get('w3wLocale')?.touched && settingsEditorForm.get('w3wLocale')?.invalid"
+        type="text"
+        formControlName="w3wLocale"
+        placeholder="Vashon, WA"
+        data-lpignore="true"
+      />
+      <div
+        *ngIf="settingsEditorForm.get('w3wLocale')?.touched && settingsEditorForm.get('w3wLocale')?.hasError('required')"
+        class="text-sm text-danger"
+      >
+        plusCode is required
+      </div>
+    </div>
+    <br />
+    <h2>Maps</h2>
+
+    <div class="input-group">
+      <span class="strong">Markers: </span>
+      <input
         type="checkbox"
         formControlName="allowManualPinDrops"
         placeholder="allowManualPinDrops"
       />
-      <div
-        *ngIf="settingsEditorForm.get('allowManualPinDrops')?.touched && settingsEditorForm.get('debugMallowManualPinDropsode')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        allowManualPinDrops is required
-      </div>
-      Allow Manual Pin Drops on Google & Leaflet Maps (default: false)
+      Should clicks on Google & Leaflet <br />
+      Maps show up as new markers?
     </div>
     <br />
 
-    <span class="strong">Field Report Statuses: </span>
+    <h3>Leaflet Map Settings</h3>
+    <div class="input-group">
+      <span class="strong">Default Zoom: </span>
+      <input
+        [class.border-danger]="settingsEditorForm.get('leaflet.defZoom')?.touched && settingsEditorForm.get('leaflet.defZoom')?.invalid"
+        type="number"
+        formControlName="leaflet.defZoom"
+        placeholder="15"
+      />
+      <div
+        *ngIf="settingsEditorForm.get('leaflet.defZoom')?.touched && settingsEditorForm.get('leaflet.defZoom')?.hasError('required')"
+        class="text-sm text-danger"
+      >
+        leaflet.zoom is required
+      </div>
+    </div>
+
+    <!-- markerScheme - unused for now -->
+
+    <div class="input-group">
+      <span class="strong">Overview Map Zoom Difference: </span>
+      <input
+        [class.border-danger]="settingsEditorForm.get('leaflet.OverviewDifference')?.touched && settingsEditorForm.get('leaflet.OverviewDifference')?.invalid"
+        type="number"
+        formControlName="leaflet.OverviewDifference"
+        placeholder="5"
+      />
+      <div
+        *ngIf="settingsEditorForm.get('leaflet.OverviewDifference')?.touched && settingsEditorForm.get('leaflet.OverviewDifference')?.hasError('required')"
+        class="text-sm text-danger"
+      >
+        OverviewDifference is required
+      </div>
+    </div>
+
+    <div class="input-group">
+      <span class="strong">Overview Map Min Zoom: </span>
+      <input
+        [class.border-danger]="settingsEditorForm.get('leaflet.OverviewMinZoom')?.touched && settingsEditorForm.get('leaflet.OverviewMinZoom')?.invalid"
+        type="number"
+        formControlName="leaflet.OverviewMinZoom"
+        placeholder="5"
+      />
+      <div
+        *ngIf="settingsEditorForm.get('leaflet.OverviewMinZoom')?.touched && settingsEditorForm.get('leaflet.OverviewMinZoom')?.hasError('required')"
+        class="text-sm text-danger"
+      >
+        leaflet.OverviewMinZoom is required
+      </div>
+    </div>
+
+    <div class="input-group">
+      <span class="strong">Overview Map Max Zoom: </span>
+      <input
+        [class.border-danger]="settingsEditorForm.get('leaflet.OverviewMaxZoom')?.touched && settingsEditorForm.get('leaflet.OverviewMaxZoom')?.invalid"
+        type="number"
+        formControlName="leaflet.OverviewMaxZoom"
+        placeholder="21"
+      />
+      <div
+        *ngIf="settingsEditorForm.get('leaflet.OverviewMaxZoom')?.touched && settingsEditorForm.get('leaflet.OverviewMaxZoom')?.hasError('required')"
+        class="text-sm text-danger"
+      >
+        leaflet.OverviewMaxZoom is required
+      </div>
+    </div>
     <br />
-    (Don't edit status names - once used for this event.<br />
+
+    <h3>Google Map Settings</h3>
+    <div class="input-group">
+      <span class="strong">Default Zoom: </span>
+      <input
+        [class.border-danger]="settingsEditorForm.get('google.defZoom')?.touched && settingsEditorForm.get('google.defZoom')?.invalid"
+        type="number"
+        formControlName="google.defZoom"
+        placeholder="15"
+      />
+      <div
+        *ngIf="settingsEditorForm.get('google.defZoom')?.touched && settingsEditorForm.get('google.defZoom')?.hasError('required')"
+        class="text-sm text-danger"
+      >
+        google.zoom is required
+      </div>
+    </div>
+
+    <!-- markerScheme - unused for now -->
+
+    <div class="input-group">
+      <span class="strong">Overview Map Zoom Difference: </span>
+      <input
+        [class.border-danger]="settingsEditorForm.get('google.OverviewDifference')?.touched && settingsEditorForm.get('google.OverviewDifference')?.invalid"
+        type="number"
+        formControlName="google.OverviewDifference"
+        placeholder="5"
+      />
+      <div
+        *ngIf="settingsEditorForm.get('google.OverviewDifference')?.touched && settingsEditorForm.get('google.OverviewDifference')?.hasError('required')"
+        class="text-sm text-danger"
+      >
+        OverviewDifference is required
+      </div>
+    </div>
+
+    <div class="input-group">
+      <span class="strong">Overview Map Min Zoom: </span>
+      <input
+        [class.border-danger]="settingsEditorForm.get('google.OverviewMinZoom')?.touched && settingsEditorForm.get('google.OverviewMinZoom')?.invalid"
+        type="number"
+        formControlName="google.OverviewMinZoom"
+        placeholder="5"
+      />
+      <div
+        *ngIf="settingsEditorForm.get('google.OverviewMinZoom')?.touched && settingsEditorForm.get('google.OverviewMinZoom')?.hasError('required')"
+        class="text-sm text-danger"
+      >
+        google.OverviewMinZoom is required
+      </div>
+    </div>
+
+    <div class="input-group">
+      <span class="strong">Overview Map Max Zoom: </span>
+      <input
+        [class.border-danger]="settingsEditorForm.get('google.OverviewMaxZoom')?.touched && settingsEditorForm.get('google.OverviewMaxZoom')?.invalid"
+        type="number"
+        formControlName="google.OverviewMaxZoom"
+        placeholder="21"
+      />
+      <div
+        *ngIf="settingsEditorForm.get('google.OverviewMaxZoom')?.touched && settingsEditorForm.get('google.OverviewMaxZoom')?.hasError('required')"
+        class="text-sm text-danger"
+      >
+        google.OverviewMaxZoom is required
+      </div>
+    </div>
+    <br />
+
+    <h2>Field Report Statuses</h2>
+    (Don't edit status names - if they've already <br />
+    been used for this event.<br />
     Add new statuses anytime.)
-    <!--div id="settings__ColorChart" display="hidden">
-      <img src= '../../assets/imgs/ColorChart.png' title="These 3 letter codes ARE valid colors!, from https://html-color-codes.com/" id ="settings__ColorChart-img"/>
-    </div-->
-
-    <!-- https://h2qutc.github.io/angular-material-components/colorpicker>
-    <mat-card >
-      <div class="row" [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}}</div>
-      <div class="row">RGBA: {{colorCtr.value?.rgba}}</div>
-    </mat-card>
-
-    < [formControlName]="colorCtr" >
-    <mat-card class="zone zone-picker">
-      <mat-form-field>
-        <input matInput [ngxMatColorPicker]="picker"  [disabled]="colorCntlDisabled" >
-
-        <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
-        <ngx-mat-color-picker #picker [touchUi]="touchUi" [color]="color"></ngx-mat-color-picker>
-      </mat-form-field>
-    </mat-card-->
 
     <ag-grid-angular
       class="ag-theme-alpine"
@@ -200,6 +362,7 @@
       [columnDefs]="columnDefs"
     >
     </ag-grid-angular>
+
     <button (click)="onBtnAddFRStatus()" title="Add a new Field Report Status">
       Add new row
     </button>
@@ -208,106 +371,21 @@
       Refresh Statuses Grid
     </button>
     <br />
-    <!--h2>Markers</h2>
-
-    <div class="input-group">Marker Shape:
-      <select formControlName="markerShape" class="wideField">
-        <! -- [class.border-danger]="settingsEditorForm.get('markerShape')?.touched && settingsEditorForm.get('markerShape')?.invalid" -- >
-        <! --option [va xx lue]="''">Select markerShape</option>
-        <option [va xx lue]="shape.shapeId" id="shapeOptions" *ngFor="let shape of shapes">{{sha  pe.sha  s eName}}</option-- >
-        <option [value]="shape" id="shapeOptions" *ngFor="let shape of shapes">{{shape}}</option>
-      </select>
-      <div
-        *ngIf="settingsEditorForm.get('markerShape')?.touched && settingsEditorForm.get('markerShape')?.hasError('required')"
-        class="text-sm text-danger">markerShape is required</div>
-    </div>
-
-    <div class="input-group">Marker Size:
-      <input
-        [class.border-danger]="settingsEditorForm.get('markerSize')?.touched && settingsEditorForm.get('markerSize')?.invalid"
-        type="number" formControlName="markerSize" placeholder="5">
-      <div
-        *ngIf="settingsEditorForm.get('markerSize')?.touched && settingsEditorForm.get('markerSize')?.hasError('required')"
-        class="text-sm text-danger">markerSize is required</div>
-    </div-->
 
     <br />
     <h2>Debug</h2>
 
     <div class="input-group">
-      <input
-        [class.border-danger]="settingsEditorForm.get('debugMode')?.touched && settingsEditorForm.get('debugMode')?.invalid"
-        type="checkbox"
-        formControlName="debugMode"
-        placeholder="debugMode"
-      />
-      <div
-        *ngIf="settingsEditorForm.get('debugMode')?.touched && settingsEditorForm.get('debugMode')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        debug mode is required
-      </div>
+      <input type="checkbox" formControlName="debugMode" placeholder="debugMode" />
       <span class="strong">Debug Mode</span>
     </div>
 
     <!-- TODO: future: [ ] enable touch user interface<br>-->
-    <!--
-      touchUi from https://h2qutc.github.io/angular-material-components/colorpicker
-
-
-      div class="input-group">
-      <input
-        [class.border-danger]="settingsEditorForm.get('logToPanel')?.touched && settingsEditorForm.get('logToPanel')?.invalid"
-        type="checkbox" formControlName="logToPanel" placeholder="logToPanel">
-      <div
-        *ngIf="settingsEditorForm.get('logToPanel')?.touched && settingsEditorForm.get('logToPanel')?.hasError('required')"
-        class="text-sm text-danger">logToPanel is required</div>
-      Log to Panel
-    </div>
-
-    <div class="input-group">
-      <input
-        [class.border-danger]="settingsEditorForm.get('logToConsole')?.touched && settingsEditorForm.get('logToConsole')?.invalid"
-        type="checkbox" formControlName="logToConsole" placeholder="logToConsole">
-      <div
-        *ngIf="settingsEditorForm.get('logToConsole')?.touched && settingsEditorForm.get('logToConsole')?.hasError('required')"
-        class="text-sm text-danger">logToConsole is required</div>
-      Log to Browser Console
-    </div -->
-
-    <!--h2>Teams</h2>
-    <details>
-      <summary>Team Details</summary>
-      <ul>
-        <li>If Shape = 'Marker', then display the icon</li>
-        <li>If Shape = 'Circle', then display circles using color & fillColor</li>
-        <li>Notes are ignored. They are displayed below for your optional use, if desired</li>
-      </ul>
-    </details-->
-
-    <!-- https://www.ag-grid.com/angular-data-grid/grid-interface/
-    <div id="teamgrid">
-      <ag-grid-angular #teamGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 400px;"
-        class="ag-theme-alpine" [rowData]="teams" [columnDefs]="columns" [defaultColDef]="{
-            flex: 1,
-            minWidth: 60,
-            editable: true,
-            resizable: true
-          }" (gridReady)="onGridReady($event)">
-      </ag-grid-angular>
-      <br />
-      <button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
-      <button (click)="onBtNormal()">Normal Layout</button>
-      <! -- <div><button (click)="addTeamRow()">Add a new (blank) Team</button></div> ->
-      <div>TODO: <button (click)="exportDataAsCsv()">Export Team Grid</button></div>
-      <! -- <div>TODO: <button (click)="setQuickFilter()">Filter Teams</button></div> ->
-    </div-->
 
     <br />
 
     <span class="strong">Save above settings: </span>
     <button [disabled]="settingsEditorForm.invalid" type="submit">Save</button>
-    <!-- REVIEW: Other pages only reflect these changes if refreshed!!! -->
 
     <br />
     <br />
@@ -333,65 +411,5 @@
         </li>
       </ul>
     </details>
-
-    <!--hr>
-<div class="card">
-  <div class="card-header">
-      <h5>Reactive Forms with PrimeNg Table</h5>
-  </div>
-  <div class="card-body">
-      <form [formGroup]="employeeForm">
-          <p-table [value]="tableRowArray.controls" [responsive]="true">
-              <ng-template pTemplate="header">
-                  <tr>
-                      <ng-container *ngFor="let col of columns">
-                          <td>{{col}}</td>
-                      </ng-container>
-                  </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
-                  <ng-container formArrayName="tableRowArray">
-                      <tr [formGroupName]="rowIndex">
-                          <td>
-                              <input type="text" class="form-control form-control-sm" formControlName="name" />
-                              <div class="text-danger" *ngIf="rowData.get('name').errors && (rowData.get('name').dirty || rowData.get('name').touched)">
-                                  <div *ngIf="rowData.get('name').errors?.required">Name is Required</div>
-                              </div>
-                          </td>
-                          <td>
-                              <input type="text" class="form-control form-control-sm" formControlName="address" />
-                              <div class="text-danger" *ngIf="rowData.get('address').errors && (rowData.get('address').dirty || rowData.get('address').touched)">
-                                  <div *ngIf="rowData.get('address').errors?.required">Address is Required</div>
-                              </div>
-                          </td>
-                          <td>
-                              <input type="text" class="form-control form-control-sm" formControlName="salary" />
-                              <div class="text-danger" *ngIf="rowData.get('salary').errors && (rowData.get('salary').dirty || rowData.get('salary').touched)">
-                                  <div *ngIf="rowData.get('salary').errors?.required">Salary is Required</div>
-                                  <div *ngIf="rowData.get('salary').errors?.pattern">Number Only, max 6 digits with max 2 decimals</div>
-                              </div>
-                          </td>
-                          <td>
-                              <div class="form-check">
-                                  <input type="checkbox" class="form-check-input" formControlName="isActive" />
-                                  <label class="form-check-label"></label>
-                              </div>
-                          </td>
-                          <td>
-                              <button type="button" class="btn btn-default" title="Delete" (click)="onDeleteRow(rowIndex)">
-                                  <i class="fa fa-trash-o" aria-hidden="true"></i>
-                              </button>
-                          </td>
-                      </tr>
-                  </ng-container>
-              </ng-template>
-          </p-table>
-      </form>
-  </div>
-  <div class="card-footer">
-      <button type="button" class="btn btn-primary btn-sm pull-left" (click)="addNewRow()">Add Row</button>
-      <button type="button" class="btn btn-success btn-sm pull-right" title="Save">Save</button>
-  </div>
-</div-->
   </form>
 </div>
