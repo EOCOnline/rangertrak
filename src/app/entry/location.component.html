@@ -62,8 +62,6 @@
 [FormControl]="latI"
 
 
-
-
  formControlName must be used with a parent formGroup directive.
 -->
 <div class="container enter__Where-div">
@@ -87,7 +85,6 @@
 
       <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
     class="text-sm text-danger">lat is required
-
 
       [class.border-danger]="location.get('latD')?.touched && location.get('latD')?.invalid"
       formControlName="lat3D"
@@ -258,10 +255,8 @@
       onchange="chkAddresses()"> (optional) -->
   <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
 
-  <span id="addressLabel" value="">aL</span>&nbsp;&nbsp;
-  <br />
-
-  <span id="pCodeGlobal">pCG</span>
+  <span id="addressLabel" title="Normalized Address" value="">aL</span>&nbsp;&nbsp;;
+  <span title="Global (Google) Plus Code" id="pCodeGlobal">pCG</span>
 </div>
 <!--div
     *ngIf="location.get('address')?.touched && location.get('address')?.hasError('required')"

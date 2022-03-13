@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { AfterViewInit, Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { BehaviorSubject, debounceTime, fromEvent, Observable, Subscription } from 'rxjs';
-import { DDToDMS, CodeArea, GoogleGeocode, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map,
+import { DDToDMS, CodeArea, GoogleGeocode, OpenLocationCode } from '../shared/'
 
 import * as P from '@popperjs/core';
 //import { createPopper } from '@popperjs/core';
@@ -10,12 +10,12 @@ import type { StrictModifiers } from '@popperjs/core';
 
 import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { mdiAccount, mdiInformationOutline } from '@mdi/js';
+import { MatIconRegistry } from '@angular/material/icon';
 //import { lookupCollections, locate } from '@iconify/json'; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
+
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry } from '@angular/material/icon';// https://material.
 
 import { SettingsService, LogService, SettingsType, LocationType } from '../shared/services';
-//import { MiniLMapComponent } from './mini-lmap.component';
 /*
 https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
 https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-driven-forms-in-angular-2
