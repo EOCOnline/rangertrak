@@ -65,7 +65,7 @@
  formControlName must be used with a parent formGroup directive.
 -->
 <div class="container enter__Where-div">
-  <div appearance="filled" class="enter__Where-input">
+  <div appearance="filled" class="timepicker__Where-input">
     <div class="input-group" [formGroup]="locationFrmGrp">
       &nbsp;&nbsp;&nbsp;Latitude:
 
@@ -229,10 +229,7 @@
     Street Address,
     <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>, or
     <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>:
-    <!--
-     {{lngD}} {{lngM}}    {{lngS}}
-
-     [class.border-danger]="location.get('address')?.touched && location.get('address')?.invalid" -->
+    <!--   {{lngD}} {{lngM}}    {{lngS}} -->
     <input
       type="text"
       formControlName="address"
@@ -245,11 +242,9 @@
       (change)="this.addressCtrlChanged('addr')"
     />
   </div>
-  <!-- filled -->
 
   <!--   {{address}}
-      formControlName="addressCtrl"
-
+      formControlName="address"
       input name="addresses" id="addresses" type="text" size="15" value=""
       placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
       onchange="chkAddresses()"> (optional) -->
@@ -258,10 +253,6 @@
   <span id="addressLabel" title="Normalized Address" value="">aL</span>&nbsp;&nbsp;;
   <span title="Global (Google) Plus Code" id="pCodeGlobal">pCG</span>
 </div>
-<!--div
-    *ngIf="location.get('address')?.touched && location.get('address')?.hasError('required')"
-    class="text-sm text-danger">address is required</div  -->
-<!--/div-->
 
 <!--br-->
 
@@ -286,27 +277,3 @@
   </div>
   <!- -/form- ->
   </div-->
-
-<!--div [formGroup]="location">
-  <div class="form-group col-xs-6">
-    <label>Address</label>
-    <input type="text" class="form-control" formControlName="address" />
-    <!-small [hidden]="locationForm.controls.address.valid" class="text-danger">
-        Street is required
-    </small->
-  </div>
-
-  <div class="form-group col-xs-6">
-    <label>lat</label>
-    <input type="number" class="form-control" formControlName="lat" />
-  </div>
-
-  <div class="form-group col-xs-6">
-    <label>lng</label>
-    <input type="number" class="form-control" formControlName="lng" />
-  </div>
-
-  <!-input formControlName="address">
-  <input formControlName="lat">
-  <input formControlName="lng"->
-  </div   </div>  -->

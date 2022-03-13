@@ -166,14 +166,6 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    /*
-      gets: Property 'settings' is used before being assigned.
-      if (!this.settings) {
-        this.log.error(`This.settings not set in constructor!`, this.id)
-        throwError(()=>new Error(`This.settings not set in constructor!`))
-      }
-      */
-
     this.location = {
       lat: this.settings ? this.settings.defLat : 0,
       lng: this.settings ? this.settings.defLng : 0,
@@ -182,16 +174,16 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
     // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
 
-    // todo: need to repeatedly update this.locationFrmGrp - keep in sync w/ vals?
+    // new values here bubble up as emitted events - see onNewLocation()
     this.locationFrmGrp = this._formBuilder.group({
       lat: [this.location.lat],
       lng: [this.location.lng],
       address: [this.location.address, Validators.required]
     });
 
-    // showNewLocation ALSO updates location.address...
+    // showNewLocation ALSO updates location.address... so should be done before onNewLocation
     this.showNewLocationOnForm(this.location.lat, this.location.lng)
-    this.updateLocation(this.location) // Emit new location event to parent
+    this.onNewLocation(this.location) // Emit new location event to parent
 
     // https://fonts.google.com/icons && https://material.angular.io/components/icon
     // Note that we provide the icon here as a string literal here due to a limitation in
@@ -202,7 +194,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     this.log.verbose("Out of constructor", this.id)
   }
 
-  public updateLocation(newLocation: LocationType) {
+  public onNewLocation(newLocation: LocationType) {
     // Do any needed sanity/validation here
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.verbose(`Emit new Location ${JSON.stringify(newLocation)}`, this.id)
@@ -210,6 +202,8 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     /*if (! {
       this.log.warn(`New location event had no listeners!`, this.id)
     }*/
+    // TODO: this.lat = newLocation.lat, this.lng = newLocation.lng, this.address = newLocation.address
+    // REVIEW: above done in showNewLocationOnForm() - right location?!
   }
 
   /**
@@ -249,7 +243,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public ngAfterViewInit() {
     //let keyup$ = Observable.fromEvent(this.elLatI.nativeElement, 'keyup')
 
-    // On Location/Address Change subscriptions  // TODO: USE THESE!!!
+    // On Location/Address Change subscriptions  // TODO: USE THESE - or not???
     if (this.locationFrmGrp) {
       this.locationFrmGrp.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         this.log.verbose('########  latitude value changed: ' + x, this.id)
@@ -272,7 +266,9 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
   /**
    * Update form with new address
-   * ALSO updates location.address...
+   * ALSO updates location.address
+   * ...thus a prerequisite before onNewLocation() to notify others
+   *
    * @param latDD
    * @param lngDD
    */
@@ -301,7 +297,9 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     this.setCtrl("enter__Where--LngI", this.lngI)
     this.setCtrl("enter__Where--LngD", this.lngF)
 
-    let latDMS = DDToDMS(latDD, false);
+    let latDMS = DDToDMS(latDD, false)
+    this.log.verbose(`newLocation with lat: ${latDMS.dir}, ${latDMS.deg}, ${latDMS.min}, ${latDMS.sec}`, this.id)
+
     this.latQ = latDMS.dir
     this.latD = latDMS.deg
     this.latM = latDMS.min
@@ -311,7 +309,9 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     this.setCtrl("latitudeM", latDMS.min)
     this.setCtrl("latitudeS", latDMS.sec)
 
-    let lngDMS = DDToDMS(lngDD, true);
+    let lngDMS = DDToDMS(lngDD, true)
+    this.log.verbose(`newLocation with lng: ${lngDMS.dir}, ${lngDMS.deg}, ${lngDMS.min}, ${lngDMS.sec}`, this.id);
+
     this.lngQ = lngDMS.dir
     this.lngD = lngDMS.deg
     this.lngM = lngDMS.min
@@ -347,7 +347,6 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
             //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
           }
     */
-    // TODO: EMIT AN EVENT!!!!
   }
 
   public setCtrl(ctrlName: string, value: number | string) {
@@ -360,20 +359,6 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       //this.log.verbose(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`, this.id)
     }
   }
-
-
-  /*
-    //this.location.addressCtrlChanged('lat') // HACK: to display marker
-    this.UpdateLocation_unused ({ lat: latDD, lng: lngDD }) {
-    //ToDO: Update 3 words too!
-    //if (initialized) this.displaySmallMap(latDD, lngDD);
-    }
-*/
-
-
-
-
-
 
 
   // TODO: https://github.com/angular-material-extensions/google-maps-autocomplete

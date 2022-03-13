@@ -6,9 +6,8 @@ import { HttpClient } from '@angular/common/http'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
-import { AlertsComponent } from '../shared/alerts/alerts.component'
+import { AlertsComponent } from '../shared/'
 import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, SettingsType, LocationType } from '../shared/services/'
-// , TeamService
 import * as dayjs from 'dayjs' // https://day.js.org/docs/en/ or https://github.com/dayjs/luxon/
 
 import * as P from '@popperjs/core'
@@ -44,6 +43,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   private locationSubscription$!: Subscription
   public location!: LocationType
 
+  private timeSubscription$!: Subscription
+  public time!: Date
+  dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
+
   myForm!: FormGroup
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
   locationFrmGrp!: FormGroup
@@ -73,41 +76,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   tooltip: HTMLHtmlElement | undefined
   popperInstance: any //typeof P.createPopper | undefined
 
-  // --------------- DATE-TIME PICKER -----------------
-
-  // https://github.com/angular/components/issues/5648
-  // https://ng-matero.github.io/extensions/components/datetimepicker/overview (nice)
-  // https://vlio20.github.io/angular-datepicker/timeInline (unused)
-  // https://h2qutc.github.io/angular-material-components - IN USE HERE!
-  public date: dayjs.Dayjs = dayjs()
-
-
-  /*  It looks like you're using the disabled attribute with a reactive form directive.
-   If you set disabled to true when you set up this control in your component class,
-   the disabled attribute will actually be set in the DOM for
-    you. We recommend using this approach to avoid 'changed after checked' errors.
-
-    Example:
-    form = new FormGroup({
-      first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
-      last: new FormControl('Drew', Validators.required)
-    });
-  */
-  public disabled = false;
-  public showSpinners = true;
-  public showSeconds = false; // only affects display in timePicker
-  public touchUi = false;
-  public enableMeridian = false; // 24 hr clock
-
-  minDate!: dayjs.Dayjs | null
-  maxDate!: dayjs.Dayjs | null
-  public stepHour = 1;
-  public stepMinute = 1;
-  public stepSecond = 1;
-  public color: ThemePalette = 'primary';
-  disableMinute = false
-  hideTime = false
-  dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
 
   // https://github.com/h2qutc/angular-material-components
   /* following causes:  No suitable injection token for parameter '_formBuilder' of class 'EntryComponent'.
@@ -147,9 +115,6 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    // REVIEW: Min/Max times ignored?!
-    this._setMinDate(10) // no times early than 10 hours ago
-    this._setMaxDate(1)  // no times later than 1 hours from now
     this.rangers = rangerService.GetRangers() // TODO: or getActiveRangers?!
 
     this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)// TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
@@ -158,17 +123,6 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
       //this.alert.OpenSnackBar(`No Rangers exist. Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
       //TODO: Force navigation to /Rangers?
     }
-
-    /*
-    this.locationSubscription$ = this.locationService.getSettingsObserver().subscribe({
-      next: (newLocation) => {
-        console.log(`entry form got newLocation: ${JSON.stringify(newLocation)}`)
-        this.location = newLocation
-      },
-      error: (e) => this.log.error('Location Subscription got:' + e, this.id),
-      complete: () => this.log.info('Location Subscription complete', this.id)
-    })
-*/
 
     // NOTE: workaround for onChange not working...
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
@@ -197,7 +151,6 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
   locationChanged_noLongerNeeded(loc: FormGroup) {
     this.log.verbose(`locationChanged  ###########################`, this.id)
   }
-
 
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
@@ -266,7 +219,6 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     this.date = dayjs()
     this.log.verbose(` ngOnInit completed`, this.id)
   }
-
 
   ngAfterViewInit() {
     // OK to register for form events here
@@ -397,21 +349,13 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     }
     this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
 
-
     this.resetEntryForm()  // std reset just blanks values, doesn't initialize them...
   }
 
-
-
-  /*
-  FUTURE: Allow entry of keywords
+  /* FUTURE: Allow keywords, or search Notes for semicolon delimited tokens?
   get keywordsControls(): any {
   return (<FormArray>this.entryDetailsForm.get('keywords')).controls
   }   */
-
-
-
-
 
   // ---------------- MISC HELPERS -----------------------------
   displayHide(htmlElementID: string) {
@@ -428,49 +372,12 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     }
   }
 
-
-
-  // --------------- DATE-TIME PICKER -----------------
-  toggleMinDate(evt: any) {
-    if (evt.checked) {
-      this._setMinDate();
-    } else {
-      this.minDate = null;
-    }
-  }
-
-  toggleMaxDate(evt: any) {
-    if (evt.checked) {
-      this._setMaxDate();
-    } else {
-      this.maxDate = null;
-    }
-  }
-
-  closePicker() {
-    this.timePicker.cancel();
-  }
-
-  private _setMinDate(hours: number = 10) {
-    const now = dayjs();
-    this.minDate = now.subtract(hours, 'hours');
-  }
-
-  private _setMaxDate(hours: number = 10) {
-    const now = dayjs();
-    this.maxDate = now.add(hours, 'hours');
-  }
-
   ngOnDestroy() {
     //this.fieldReportsSubscription$.unsubscribe()
   }
 }
 
-
-
-
 // TODO: Duplicate of that at bottom of locationComponent?!
-
 
 const THUMBUP_ICON =
   `
@@ -507,8 +414,6 @@ type Strategy = 'absolute' | 'fixed';
   onFirstUpdate?: ($Shape<State>) => void, // undefined
 |};*/
 
-
-
 @Component({
   selector: 'icon',
   template: `
@@ -520,4 +425,3 @@ type Strategy = 'absolute' | 'fixed';
 export class IconComponent {
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
 }
-

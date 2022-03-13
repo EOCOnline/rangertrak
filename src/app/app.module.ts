@@ -32,7 +32,7 @@ import { MDCBanner } from '@material/banner'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { MaterialModule } from './material.module';
 
-import { NavbarComponent } from './shared/header/navbar/navbar.component';
+import { NavbarComponent } from './shared/navbar/navbar.component';
 import { NgModule } from '@angular/core';
 import { RangersComponent } from './rangers/rangers.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -43,6 +43,7 @@ import { LocationComponent } from './entry/location.component';
 import { MiniGMapComponent } from './entry/mini-gmap.component';
 import { MiniLMapComponent } from './entry/mini-lmap.component';
 import { HeaderComponent } from './shared/';
+import { TimePickerComponent } from './shared/time-picker/time-picker.component';
 //import { loc2Component } from './entry/loc2.component';
 
 // from ionic-app.module.ts
@@ -112,7 +113,8 @@ import { HeaderComponent } from './shared/';
     LocationComponent,
     MiniGMapComponent,
     MiniLMapComponent,
-    HeaderComponent
+    HeaderComponent,
+    TimePickerComponent
     //,     loc2Component
   ],
 
