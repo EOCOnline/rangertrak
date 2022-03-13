@@ -6,9 +6,8 @@ import { HttpClient } from '@angular/common/http'
 
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
-import { FieldReport } from './location.interface'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
-import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, SettingsType } from '../shared/services/'
+import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, SettingsType, LocationType } from '../shared/services/'
 // , TeamService
 import * as dayjs from 'dayjs' // https://day.js.org/docs/en/ or https://github.com/dayjs/luxon/
 
@@ -20,7 +19,6 @@ import type { StrictModifiers } from '@popperjs/core'
 //import { mdiAccount, mdiInformationOutline } from '@mdi/js';
 //import { lookupCollections, locate } from '@iconify/json'; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
 import { DomSanitizer } from '@angular/platform-browser'
-import { LocationType } from './location.component'
 //import { MatIconRegistry } from '@angular/material/icon';// https://material.angular.io/components/icon/examples
 
 
@@ -191,6 +189,9 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     this.log.verbose(`Got new location: ${JSON.stringify(newLocation)}`, this.id)
     this.location = JSON.parse(newLocation)
     // This then automatically gets sent to mini-map children via their @Input statements
+
+    // TODO: BUT, we still need to update our local copy:
+    //this.locationFrmGrp
   }
 
   locationChanged_noLongerNeeded(loc: FormGroup) {
@@ -220,13 +221,14 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
  */
 
     this.entryDetailsForm = this._formBuilder.group({
+      // matches html's FormControlName="whatever"
       id: -1,
       callsign: [''],
-      team: ['T1'],
+      // team: ['T1'],
       locationFrmGrp: this.initLocation(),
       date: [new Date()],
       status: [this.fieldReportStatuses[this.settings ? this.settings.defFieldReportStatus : 0].status],
-      note: ['']
+      notes: ['']
     })
 
     // subscribe to addresses value changes
@@ -272,8 +274,8 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
   initLocation() { // TODO: Shouldn't this be in location.component.ts?!
     this.locationFrmGrp = this._formBuilder.group({
-      lat: [this.settings?.defLat],
-      lng: [this.settings?.defLng],
+      lat: [this.settings!.defLat],
+      lng: [this.settings!.defLng],
       address: [''] //, Validators.required],
     })
 

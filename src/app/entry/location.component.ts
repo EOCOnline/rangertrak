@@ -14,8 +14,8 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';// https://material.
 
-import { SettingsService, LogService, SettingsType } from '../shared/services';
-import { MiniLMapComponent } from './mini-lmap.component';
+import { SettingsService, LogService, SettingsType, LocationType } from '../shared/services';
+//import { MiniLMapComponent } from './mini-lmap.component';
 /*
 https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
 https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-driven-forms-in-angular-2
@@ -23,11 +23,7 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 ICONS: see pg 164, Ang Dev w/ TS
 */
 
-export type LocationType = {
-  lat: number, // Deg Decimal
-  lng: number, // Deg Decimal
-  address: string
-}
+// formControlName must be used with a parent formGroup directive.
 
 @Component({
   //moduleId: module.id,
@@ -98,7 +94,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   //locationCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
   //@Input() group: FormGroup;
 
-  private id = 'Location within entry form'
+  private id = "Entry Form's Location Component"
   // Grab reference to #elements in template (vs. getElementById)
   // TODO: Remove all these! Per bottom pg 137, go to [FormControl]="nameToUse"
   @ViewChild('latI') elLatI: any
@@ -135,11 +131,6 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public lngM = 0
   public lngQ = "E"
   public lngS = 0
-
-
-
-
-
 
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
   // button: HTMLButtonElement | undefined
@@ -190,6 +181,8 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     }
 
     // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
+
+    // todo: need to repeatedly update this.locationFrmGrp - keep in sync w/ vals?
     this.locationFrmGrp = this._formBuilder.group({
       lat: [this.location.lat],
       lng: [this.location.lng],
@@ -284,6 +277,8 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
    * @param lngDD
    */
   public showNewLocationOnForm(latDD: number, lngDD: number) {
+    // todo: need to repeatedly update this.locationFrmGrp - keep in sync w/ vals?
+
     this.log.info(`newLocation with lat: ${latDD}, lng: ${lngDD}`, this.id);
 
     this.location.lat = latDD

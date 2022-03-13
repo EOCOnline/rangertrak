@@ -6,10 +6,9 @@ import * as L from 'leaflet'
 import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet'
 
 //import 'leaflet.markercluster';
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, LogService, SettingsType } from '../shared/services'
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, LocationType, LogService, SettingsType } from '../shared/services'
 import { openDB, deleteDB, wrap, unwrap } from 'idb';
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
-import { LocationType } from './location.component'
 
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
 const iconUrl = 'assets/imgs/marker-icon.png'
@@ -41,16 +40,7 @@ L.Marker.prototype.options.icon = iconDefault;
 })
 export class MiniLMapComponent implements AfterViewInit {
   @Input() set locationUpdated(value: LocationType) {
-    if (value && value.lat != undefined) {
-      this.location = {
-        lat: value.lat,
-        lng: value.lng,
-        address: value.address
-      }
-      this.log.verbose(`new location passed in ${JSON.stringify(value)}`, this.id)
-    } else {
-      this.log.error(`Bad location passed in ${JSON.stringify(value)}`, this.id)
-    }
+    this.gotNewLocation(value)
   }
 
   id = 'Leaflet MiniMap'
@@ -127,8 +117,7 @@ export class MiniLMapComponent implements AfterViewInit {
     })
 
     tiles.addTo(this.lmap)
-    this.addMarker(this.settings!.defLat - 0.001, this.settings!.defLng - 0.001, "Home Base #2")
-    this.addCircle(this.settings!.defLat + 0.001, this.settings!.defLng + 0.001, "Home Base")
+
     //this.displayAllMarkers()
     //this.fitBounds()
 
@@ -163,6 +152,24 @@ export class MiniLMapComponent implements AfterViewInit {
       this.mouseLatLng = evt.latlng
     })
   }
+
+  private gotNewLocation(value: LocationType) {
+    this.log.verbose(`new location passed in ${JSON.stringify(value)}`, this.id)
+
+    if (value && value.lat != undefined) {
+      this.location = {
+        lat: value.lat,
+        lng: value.lng,
+        address: value.address
+      }
+      this.addMarker(this.location.lat, this.location.lng, this.location.address)
+      this.addCircle(this.location.lat, this.location.lng, this.location.address)
+
+    } else {
+      this.log.error(`Bad location passed in ${JSON.stringify(value)}`, this.id)
+    }
+  }
+
 
   /*
   onMapMouseMove(event: any) {

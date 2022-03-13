@@ -1,43 +1,11 @@
 import { BehaviorSubject, Observable, Observer, of, Subscription, throwError } from 'rxjs'
 import { Injectable, OnInit, Pipe, PipeTransform } from '@angular/core'
-import { RangerService, SettingsService, SettingsType, LogService } from './' // , TeamService
+import { RangerService, SettingsService, SettingsType, LogService, FieldReportsType, FieldReportType, FieldReportStatusType } from './' // , TeamService
 import { HttpClient } from '@angular/common/http'
 import L from 'leaflet'
 import { LatLngBounds } from 'leaflet';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
-export type FieldReportStatusType = { status: string, color: string, icon: string }
-
-/**
- * Data to store with every field report entry
- */
-export type FieldReportType = {
-  id: number,
-  callsign: string,
-  //team: string,
-  lat: number,
-  lng: number,
-  address: string,
-  date: Date,
-  status: string,
-  note: string,
-  // source: FieldReportSource
-}
-
-/**
- * A packet of all field data for the op period
- * except Rangers or Settings
- */
-export type FieldReportsType = {
-  version: string,
-  date: Date,
-  event: string,
-  bounds: LatLngBounds,
-  numReport: number,
-  maxId: number,
-  filter: string, // All reports or not? Guard to ensure a subset never gets writen to localstorage?
-  fieldReportArray: FieldReportType[]
-}
 
 
 @Injectable({ providedIn: 'root' })
@@ -276,7 +244,7 @@ export class FieldReportService {
         lng: this.settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
         date: new Date(Math.floor(msSince1970 - (Math.random() * 10 * 60 * 60 * 1000))), // 0-10 hrs earlier
         status: this.settings.fieldReportStatuses[Math.floor(Math.random() * this.settings.fieldReportStatuses.length)].status,
-        note: notes[Math.floor(Math.random() * notes.length)]
+        notes: notes[Math.floor(Math.random() * notes.length)]
       })
       this.fieldReports.numReport += num
     }

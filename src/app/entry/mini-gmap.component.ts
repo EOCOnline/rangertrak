@@ -1,13 +1,11 @@
 /// <reference types="@types/google.maps" />
 import { Component, Inject, Input, isDevMode, OnInit } from '@angular/core';
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
-//import { addressType } from '../lmap/lmap.component' // BUG:
 import { DDToDMS, CodeArea, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map, , GoogleGeocode
 import { LatLng } from 'leaflet';
 import { DOCUMENT } from '@angular/common';
-import { LocationType } from './location.component'
 import { Subscription } from 'rxjs';
-import { LogService, SettingsService, SettingsType } from '../shared/services/';
+import { LogService, SettingsService, SettingsType, LocationType } from '../shared/services/';
 
 const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 

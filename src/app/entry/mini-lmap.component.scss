@@ -1,11 +1,11 @@
 .lmap-container {
-  display         : block;
-  float           : right;
-  width           : 35vw; // 30vw;
-  height          : 40vh; //200px !important; //
-  border          : 5px brown;
-  background-color: #F0F0F0;
-  margin-right    : 10px;
+  display               : block;
+  float                 : right;
+  //width             : 35vw; // 30vw;
+  //height          : 25vh; //200px !important; //
+  //border              : 5px brown;
+  background-color      : #F0F0F0;
+  margin-right          : 10px;
 }
 
 .lmap-frame {
@@ -15,7 +15,7 @@
 }
 
 #lmap {
-  height: 40vh; //100%;
+  height: 35vh; //100%;
 }
 
 .strong {
