@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core';
 import dayjs from 'dayjs';
@@ -12,10 +12,9 @@ import { FieldReportService, FieldReportStatusType, RangerService, LogService, R
   styleUrls: ['./time-picker.component.scss']
 })
 export class TimePickerComponent implements OnInit {
-  @Input() public timepickerFrmControl: FormControl // input from entry.component.ts
-
-  @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
-
+  @Input() public timepickerFormControl: FormControl // input from entry.component.ts
+  @Output() newTimeEvent = new EventEmitter<Date>()
+  // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
 
   private id = "DateTime Picker"
 
@@ -60,13 +59,11 @@ export class TimePickerComponent implements OnInit {
     private log: LogService,
     private _formBuilder: FormBuilder,
     @Inject(DOCUMENT) private document: Document) {
-    this.log.info(`timepicker initialization`, this.id)
+    this.log.info(`timepicker construction`, this.id)
 
-
-    // todo: need to repeatedly update this.locationFrmGrp - keep in sync w/ vals?
-    this.timepickerFrmControl = this._formBuilder.group({
-      date: [this.date]
-    });
+    // BUG: maybe should be in EntryComponent.ts instead? as locationFrmGrp is there...
+    // new values here bubble up as emitted events - see onNewLocation()
+    this.timepickerFormControl = this._formBuilder.control([this.time])
 
     // REVIEW: Min/Max times ignored?!
     // TODO: These should get passed in
@@ -78,17 +75,15 @@ export class TimePickerComponent implements OnInit {
     this.date = dayjs()
   }
 
-  onNewTime(newTime: any) {
+  onNewTime(newTime: Date) {
     // Do any needed sanity/validation here
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     // todo : validate min/max time?
-    this.log.verbose(`Got new time: ${JSON.stringify(newTime)}`, this.id)
-    this.time = JSON.parse(newTime) as Date
-
-    this.log.verbose(`Emit new Location ${JSON.stringify(newLocation)}`, this.id)
-    this.newLocationEvent.emit(this.location)
+    this.log.verbose(`Got new time: ${newTime}. Emitting!`, this.id)
+    this.time = newTime
+    this.newTimeEvent.emit(this.time)
     /*if (! {
-      this.log.warn(`New location event had no listeners!`, this.id)
+      this.log.warn(`New time event had no listeners!`, this.id)
     }*/
 
     // TODO: BUT, we still need to update our local copy:
@@ -111,9 +106,9 @@ export class TimePickerComponent implements OnInit {
     }
   }
 
-  closePicker() {
-    this.timePicker.cancel();
-  }
+  // closePicker() {
+  //   this timePicker.cancel();
+  // }
 
   private _setMinDate(hours: number = 10) {
     const now = dayjs();

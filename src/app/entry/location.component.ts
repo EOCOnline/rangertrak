@@ -150,17 +150,18 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       address: [this.location.address, Validators.required]
     });
 
-    // showNewLocation ALSO updates location.address... so should be done before onNewLocation
+    // showNewLocation ALSO updates location.address... so needs be done before onNewLocation
     this.showNewLocationOnForm(this.location.lat, this.location.lng)
     this.onNewLocation(this.location) // Emit new location event to parent
 
     this.log.verbose("Out of constructor", this.id)
   }
 
-  public onNewLocation(newLocation: LocationType) {
+  public onNewLocation(newLocation: LocationType) { // Or LocationEvent?!
     // Do any needed sanity/validation here
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.verbose(`Emit new Location ${JSON.stringify(newLocation)}`, this.id)
+    this.location = newLocation
     this.newLocationEvent.emit(this.location)
     /*if (! {
       this.log.warn(`New location event had no listeners!`, this.id)
@@ -259,10 +260,10 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     //this.latF = (latDD - this.latI).toFixed(4)
     this.latF = Math.round((latDD - this.latI) * 10000)
     this.lngF = Math.round((lngDD - this.lngI) * 10000)
-    this.setCtrl("enter__Where--LatI", this.latI)
-    this.setCtrl("enter__Where--LatD", this.latF)
-    this.setCtrl("enter__Where--LngI", this.lngI)
-    this.setCtrl("enter__Where--LngD", this.lngF)
+    this.setCtrl("enter__Where-LatI", this.latI)
+    this.setCtrl("enter__Where-LatD", this.latF)
+    this.setCtrl("enter__Where-LngI", this.lngI)
+    this.setCtrl("enter__Where-LngD", this.lngF)
 
     let latDMS = DDToDMS(latDD, false)
     this.log.verbose(`newLocation with lat: ${latDMS.dir}, ${latDMS.deg}, ${latDMS.min}, ${latDMS.sec}`, this.id)
@@ -366,10 +367,10 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       case 'lngI':
       case 'lngD':
 
-        let llat = Number((this.document.getElementById("enter__Where--LatI") as HTMLInputElement).value)
-          + Number((this.document.getElementById("enter__Where--LatD") as HTMLInputElement).value) / 100
-        let llng = Number((this.document.getElementById("enter__Where--LngI") as HTMLInputElement).value)
-          + Number((this.document.getElementById("enter__Where--LngI") as HTMLInputElement).value) / 100
+        let llat = Number((this.document.getElementById("enter__Where-LatI") as HTMLInputElement).value)
+          + Number((this.document.getElementById("enter__Where-LatD") as HTMLInputElement).value) / 100
+        let llng = Number((this.document.getElementById("enter__Where-LngI") as HTMLInputElement).value)
+          + Number((this.document.getElementById("enter__Where-LngI") as HTMLInputElement).value) / 100
         let ll = new google.maps.LatLng(llat, llng) // Move from Google to Leaflet!
         let newAddress = this.geocoder.getAddressFromLatLng(ll)  // TODO: Disable!!
         this.log.verbose(`addressCtrlChanged new latlng: ${JSON.stringify(ll)}; addr: ${newAddress}`, this.id)
@@ -458,7 +459,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
     let addr = this.document.getElementById("derivedAddress")
     // ERROR: if (addr) { addr.innerHTML = "New What3Words goes here!" } // TODO: move to another routine...
-    //this.document.getElementById("enter__Where--Address-upshot").value = this.location.address
+    //this.document.getElementById("enter__Where-Address-upshot").value = this.location.address
 
 
     if (title == "") {
@@ -478,7 +479,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
   // https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
   // https://angular.io/api/common/AsyncPipe
-  // this.document.getElementById("enter__Where--Lat")?.onchange
+  // this.document.getElementById("enter__Where-Lat")?.onchange
 
   // https://angular.io/api/forms/AbstractControl
   // https://angular.io/api/forms/NgControlStatus ARE CSS Classes.
@@ -586,7 +587,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
       if (result.position) {
         //    (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
-        (document.getElementById("enter__Where--Lat") as HTMLInputElement).value = "result.position.lat";
+        (document.getElementById("enter__Where-Lat") as HTMLInputElement).value = "result.position.lat";
         // BUG: position has type of never????!!!!
         (document.getElementById("lng") as HTMLInputElement).value = "JSON.stringify(result.position)";
       }

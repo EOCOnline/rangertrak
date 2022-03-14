@@ -8,6 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
 import { AlertsComponent } from '../shared/'
 import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, SettingsType, LocationType } from '../shared/services/'
+import { TimePickerComponent } from '../shared/time-picker/time-picker.component';
 // IDEA: use https://material.angular.io/components/badge/ ???
 
 
@@ -31,7 +32,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   filteredRangers: Observable<RangerType[]>
 
   private settingsSubscription$!: Subscription
-  private settings?: SettingsType
+  public settings!: SettingsType
 
   // Get time events from <timepicker> component
   private timeSubscription$!: Subscription
@@ -47,6 +48,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   //myForm!: FormGroup
   locationFrmGrp!: FormGroup
   dateCtrl = new FormControl(new Date())
+  timepickerFormControl!: FormControl
 
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
@@ -77,15 +79,17 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       complete: () => this.log.info('Rangers Subscription complete', this.id)
     })
 
-    this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)// TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
+    // TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
+    this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)
+
+    // NOTE: workaround for onChange not working...
+    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
+
     if (this.rangers.length < 1) {
       this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page.', 'Go to Rangers page', 'Ignore')
       //this.alert.OpenSnackBar(`No Rangers exist. Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
       //TODO: Force navigation to /Rangers?
     }
-
-    // NOTE: workaround for onChange not working...
-    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
 
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff
     this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
@@ -105,21 +109,20 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // This then automatically gets sent to mini-map children via their @Input statements
 
     // TODO: BUT, we still need to update our local copy:
-    //this.locationFrmGrp
+    //this.locationFrmGrp is where the Event comes up from...
   }
+  //locationChanged_noLongerNeeded(loc: FormGroup) {
+  //    this.log.verbose(`locationChanged  ###########################`, this.id)  }
 
   onNewTime(newTimeEvent: any) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`Got new time: ${JSON.stringify(newTimeEvent)}`, this.id)
+    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
     this.time = JSON.parse(newTimeEvent)
     // This then automatically gets sent to mini-map children via their @Input statements
 
     // TODO: BUT, we still need to update our local copy:
-    //this.timeFrmGrp
+    //this.timepickerFormControl is where the Event comes up from...
   }
-
-  //locationChanged_noLongerNeeded(loc: FormGroup) {
-  //    this.log.verbose(`locationChanged  ###########################`, this.id)  }
 
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
@@ -142,15 +145,15 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
  [...]
  */
     this.initEntryForm()
-    // subscribe to addresses value changes
-    this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
-      this.log.verbose(`Subscription to locationFrmGrp got: ${x}`, this.id);
-    })
+    // subscribe to addresses value changes?  NO. It bubles up through newLocATION INSTEAD!!!
+    // this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
+    //   this.log.verbose(`Subscription to locationFrmGrp got: ${x}`, this.id);
+    // })
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
 
-    if (!this.settings?.debugMode) {
-      this.displayHide("enter__frm-reguritation")
+    if (this.settings?.debugMode) {
+      this.displayShow("enter__frm-reguritation")
     }
 
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
@@ -175,6 +178,12 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       lng: [this.settings.defLng],
       address: [''] //, Validators.required],
     })
+
+    // BUG: Duplicated in time-picker.component - as locationFrmGrp is there...
+    // new values here bubble up as emitted events - see onNewLocation()
+    this.timepickerFormControl = this._formBuilder.control(
+      new Date()
+    ) // TODO: Don't need new!
 
     /*
     this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
@@ -221,7 +230,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       callsign: [''],
       // team: ['T1'],
       locationFrmGrp: this.initLocation(),
-      date: [new Date()],
+      timepickerFormControl: [new Date()],
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status],
       notes: ['']
     })

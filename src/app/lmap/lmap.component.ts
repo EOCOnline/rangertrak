@@ -259,9 +259,9 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.overviewLMap!.on("bounds_changed", () => {
       this.overviewLMap!.setView(this.lmap!.getCenter()!, this.clamp(
-        this.lmap!.getZoom()! - this.settings ? this.settings.leaflet.OverviewDifference : 5,
-        this.settings ? this.settings.leaflet.OverviewMaxZoom : 15,
-        this.settings ? this.settings.leaflet.OverviewMinZoom : 4
+        this.lmap!.getZoom()! - (this.settings ? this.settings.leaflet.OverviewDifference : 5),
+        (this.settings ? this.settings.leaflet.OverviewMaxZoom : 15),
+        (this.settings ? this.settings.leaflet.OverviewMinZoom : 4)
       ))
     })
   }
