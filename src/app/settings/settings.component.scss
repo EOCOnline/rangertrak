@@ -13,6 +13,18 @@ ag-grid-angular {
   width : 400px;
 }
 
+$filledColor : #F0F0F0;
+
+.filled {
+  background-color: $filledColor;
+}
+
+.timepicker {
+  position: relative;
+  width   : 240px;
+  border  : 1px solid black;
+}
+
 label {
   font-weight   : bold;
   padding-bottom: .5rem;
@@ -33,11 +45,32 @@ button {
   font-weight: bold;
 }
 
+.elegant {
+  margin-top   : 25px;
+  margin-bottom: 0px;
+}
+
 h1,
 h2,
 h3 {
   margin-top   : 10px;
   margin-bottom: 1px;
+}
+
+.bordered {
+  border: 2 px solid rgb(62, 189, 189);
+}
+
+#addresses {
+  width: 200px;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+.strongish {
+  font-weight: 500;
 }
 
 .wideField {
@@ -48,6 +81,10 @@ h3 {
   background-color: rgb(212, 179, 106);
 }
 
+.small {
+  font-size: 12px;
+}
+
 .text-warning {
   color: rgb(175, 75, 35);
   ;
@@ -56,6 +93,10 @@ h3 {
 .border-warning {
   border-color: orange;
   border-style: groove;
+}
+
+.timepicker_When-input {
+  width: 400px;
 }
 
 #teamgrid1 {

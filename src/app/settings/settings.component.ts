@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common'
-import { Component, enableProdMode, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FieldReportService, FieldReportStatusType, LogService, RangerService, SettingsService, SettingsType } from '../shared/services/'
 import { AgGridModule } from 'ag-grid-angular'
@@ -10,6 +10,7 @@ import { MoodEditor } from './mood-editor.component';
 import { MoodRenderer } from './mood-renderer.component';
 import { ColDef } from 'ag-grid-community';
 import { Subscription, throwError } from 'rxjs';
+import { TimePickerComponent } from '../shared/';
 
 
 @Component({
@@ -19,6 +20,8 @@ import { Subscription, throwError } from 'rxjs';
   providers: [SettingsService]
 })
 export class SettingsComponent implements OnInit, OnDestroy {
+  @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
+
   private id = 'Settings Component'
   title = 'Application Settings'
 
@@ -26,9 +29,16 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public settings?: SettingsType
 
   public settingsEditorForm!: FormGroup
+  //  public leaflet!: FormGroup
+  //  public google!: FormGroup
 
-  private timeSubscription1$!: Subscription
-  private timeSubscription2$!: Subscription
+  // Get time events from <timepicker> component
+  private timeSubscriptionStart$!: Subscription
+  private timeSubscriptionEnd$!: Subscription
+  public time!: Date
+  dateCtrl = new FormControl(new Date())
+  //timepickerFormControlStart!: FormControl
+  //timepickerFormControlEnd!: FormControl
 
   private gridApi: any
   private gridColumnApi: any
@@ -204,14 +214,44 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     if (this.settings == undefined) {
       this.log.warn('Settings need to be initialized.', this.id)
     } else {
+      this.rowData = this.settings.fieldReportStatuses
       this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
     }
 
     this.settingsEditorForm = this.getFormArrayFromSettingsArray()!
-    this.rowData = this.settings!.fieldReportStatuses
+    //this.leaflet = this.settingsEditorForm.value.leaflet
+    //this.google = this.settingsEditorForm.value.google
+
+    // BUG: Why is this new TIME activity in LOCATION function!!!
+    // BUG: Duplicated in time-picker.component - as locationFrmGrp is there...
+    // new values here bubble up as emitted events - see onNewLocation()
+    // this.timepickerFormControlStart = this._formBuilder.control(
+    //   new Date()
+    // ) // TODO: Don't need new!
 
     this.log.verbose("ngInit done ", this.id)
   }
+
+  onNewTimeEventStart(newTimeEvent: any) {
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new start OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
+    this.settings!.opPeriodStart = JSON.parse(newTimeEvent)
+    // This then automatically gets sent to mini-map children via their @Input statements
+    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
+    // TODO: BUT, we still need to update our local copy:
+    //this.timepickerFormControl is where the Event comes up from...
+  }
+
+  onNewTimeEventEnd(newTimeEvent: any) {
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new end OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
+    this.settings!.opPeriodEnd = JSON.parse(newTimeEvent)
+    // This then automatically gets sent to mini-map children via their @Input statements
+    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
+    // TODO: BUT, we still need to update our local copy:
+    //this.timepickerFormControl is where the Event comes up from...
+  }
+
 
   onBtnResetDefaults() {
     throwError(() => new Error(`unimplemented onBtnResetDefaults()`))  // TODO
@@ -241,8 +281,11 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       event: [this.settings.event],
       eventNotes: [this.settings.eventNotes],
       opPeriod: [this.settings.opPeriod],
-      opPeriodStart: [this.settings.opPeriodStart],
-      opPeriodEnd: [this.settings.opPeriodEnd],
+
+      // opPeriodStart: [this.settings.opPeriodStart],
+      // opPeriodEnd: [this.settings.opPeriodEnd],
+      timepickerFormControlStart: [this.settings.opPeriodStart],
+      timepickerFormControlEnd: [this.settings.opPeriodEnd],
 
       application: [this.settings.application], // not shown for editing
       version: [this.settings.version], // not shown for editing
@@ -423,7 +466,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
   ngOnDestroy() {
     this.settingsSubscription$.unsubscribe()
-    this.timeSubscription1$.unsubscribe()
-    this.timeSubscription2$.unsubscribe()
+    this.timeSubscriptionStart$.unsubscribe()
+    this.timeSubscriptionEnd$.unsubscribe()
   }
 }

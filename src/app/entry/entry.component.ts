@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
 import { AlertsComponent } from '../shared/'
 import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, SettingsType, LocationType } from '../shared/services/'
-import { TimePickerComponent } from '../shared/time-picker/time-picker.component';
+import { TimePickerComponent } from '../shared/';
 // IDEA: use https://material.angular.io/components/badge/ ???
 
 
@@ -20,6 +20,7 @@ import { TimePickerComponent } from '../shared/time-picker/time-picker.component
 })
 export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
+
   private id = 'Entry Form'
   public title = 'Field Report Entry'
 
@@ -48,7 +49,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   //myForm!: FormGroup
   locationFrmGrp!: FormGroup
   dateCtrl = new FormControl(new Date())
-  timepickerFormControl!: FormControl
+  //timepickerFormControl!: FormControl
 
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
@@ -119,7 +120,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
     this.time = JSON.parse(newTimeEvent)
     // This then automatically gets sent to mini-map children via their @Input statements
-
+    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:
     //this.timepickerFormControl is where the Event comes up from...
   }
@@ -179,11 +180,13 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       address: [''] //, Validators.required],
     })
 
+    // Following is unsed!!
+    // BUG: Why is this new TIME activity in LOCATION function!!!
     // BUG: Duplicated in time-picker.component - as locationFrmGrp is there...
     // new values here bubble up as emitted events - see onNewLocation()
-    this.timepickerFormControl = this._formBuilder.control(
-      new Date()
-    ) // TODO: Don't need new!
+    // this.timepickerFormControl = this._formBuilder.control(
+    //   new Date()
+    // ) // TODO: Don't need new!
 
     /*
     this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))

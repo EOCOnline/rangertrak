@@ -89,7 +89,8 @@ export class SettingsService {
     //original hardcoded defaults... not saved until form is submitted... This form doesn't allow editing of all values
     this.log.verbose("Initialize App Settings from hardcoded values", this.id)
 
-    let dt = new Date
+    const dt = new Date()
+    this.log.error(`dt=${dt}, plus ${this.defOpPeriodLength} hours = ${new Date(this.defOpPeriodLength * 10000 * 60 * 60)}`)
 
     return {
       settingsName: '', // FUTURE: Use if people want to load and saveas, or have various 'templates'
@@ -112,16 +113,16 @@ export class SettingsService {
       w3wLocale: "Vashon, WA",
       allowManualPinDrops: false,
 
-      google: {
-        defZoom: 17,  // used? or just zoom to bounds?
+      leaflet: {
+        defZoom: 17,  // or just zoom to bounds?
         markerScheme: '',
         overviewDifference: 5,
         overviewMinZoom: 5,
         overviewMaxZoom: 16
       },
 
-      leaflet: {
-        defZoom: 17,  // or just zoom to bounds?
+      google: {
+        defZoom: 17,  // used? or just zoom to bounds?
         markerScheme: '',
         overviewDifference: 5,
         overviewMinZoom: 5,

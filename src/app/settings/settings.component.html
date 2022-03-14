@@ -95,7 +95,25 @@
       />
     </div>
 
-    <div class="input-group">
+    <!-- ======================================= -->
+
+    <span class="strong">OpPeriod Start: </span>
+    <div FormControl="timepickerFormControlStart" class="filled timepicker">
+      <rangertrak-time-picker
+        (newTimeEvent)="onNewTimeEventStart($event)"
+      ></rangertrak-time-picker>
+    </div>
+
+    <span class="strong">OpPeriod End: </span>
+    <div FormControl="timepickerFormControlEnd" class="filled timepicker">
+      <rangertrak-time-picker
+        (newTimeEvent)="onNewTimeEventEnd($event)"
+      ></rangertrak-time-picker>
+    </div>
+
+    <!-- ======================================= -->
+
+    <!--div class="input-group">
       <span class="strong">OpPeriod Start: </span>
       <input
         formControlName="opPeriodStart"
@@ -115,7 +133,10 @@
         type="text"
         data-lpignore="true"
       />
-    </div>
+    </div-->
+
+    <!-- ======================================= -->
+
     <br />
 
     <h2>Location Defaults</h2>
@@ -222,160 +243,149 @@
     </div>
     <br />
 
+    <!-- ======================================= -->
+
     <h3>Leaflet Map Settings</h3>
-    <!-- div [form   Group]="settingsEditorForm" -->
-    <div class="input-group">
-      <span class="strong">Default Zoom: </span>
-      <!-- BUG:
+    <div formGroupName="leaflet">
+      <!-- settingsEditorForm -->
+      <div class="input-group">
+        <span class="strong">Default Zoom: </span>
 
-      Cannot find control with name: 'leaflet.defZoom'
-
-      22:21:33:0816 - From Settings Component - Application: RangerTrak
-      -- Version: 0.11.38 log.service.ts:30
-      22:21:33:0817 - From Settings Component -
-      getFormArrayFromSettingsArray log.service.ts:30
-      22:21:33:0818 - From Settings
-      Component - ngInit done core.mjs:6485
-      ERROR Error:  at _throwError
-      (forms.mjs:1794:11) at setUpControl
-      (forms.mjs:1574:13) at FormGroupDirective.addControl
-      (forms.mjs:5350:9) at FormControlName._setUpControl
-      (forms.mjs:5912:43) at FormControlName.ngOnChanges
-      (forms.mjs:5857:18) at FormControlName.rememberChangeHistoryAndInvokeOnChangesHook
-      (core.mjs:1508:1) at callHook
-      (core.mjs:2552:1) at callHooks
-      (core.mjs:2511:1) at executeInitAndCheckHooks
-      (core.mjs:2462:1) at selectIndexInternal (core.mjs:8405:1)
-    -->
-      <input
-        formControlName="leaflet.defZoom"
-        placeholder="15"
-        type="number"
-        [style.width.px]="50"
-      />
-    </div>
-
-    <!-- markerScheme - unused for now -->
-
-    <div class="input-group">
-      <span class="strong">Overview Map Zoom Difference: </span>
-      <input
-        [class.border-danger]="settingsEditorForm.get('leaflet.overviewDifference')?.touched && settingsEditorForm.get('leaflet.overviewDifference')?.invalid"
-        type="number"
-        [style.width.px]="50"
-        formControlName="leaflet.overviewDifference"
-        placeholder="5"
-      />
-      <div
-        *ngIf="settingsEditorForm.get('leaflet.overviewDifference')?.touched && settingsEditorForm.get('leaflet.overviewDifference')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        overviewDifference is required
+        <input
+          formControlName="defZoom"
+          placeholder="15"
+          type="number"
+          [style.width.px]="50"
+        />
       </div>
-    </div>
 
-    <div class="input-group">
-      <span class="strong">Overview Map Min Zoom: </span>
-      <input
-        [class.border-danger]="settingsEditorForm.get('leaflet.overviewMinZoom')?.touched && settingsEditorForm.get('leaflet.overviewMinZoom')?.invalid"
-        type="number"
-        formControlName="leaflet.overviewMinZoom"
-        placeholder="5"
-      />
-      <div
-        *ngIf="settingsEditorForm.get('leaflet.overviewMinZoom')?.touched && settingsEditorForm.get('leaflet.overviewMinZoom')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        leaflet.overviewMinZoom is required
+      <!-- markerScheme - unused for now -->
+
+      <div class="input-group">
+        <span class="strong">Overview Map Zoom Difference: </span>
+        <input
+          [class.border-danger]="settingsEditorForm.get('overviewDifference')?.touched && settingsEditorForm.get('overviewDifference')?.invalid"
+          type="number"
+          [style.width.px]="50"
+          formControlName="overviewDifference"
+          placeholder="5"
+        />
+        <div
+          *ngIf="settingsEditorForm.get('overviewDifference')?.touched && settingsEditorForm.get('overviewDifference')?.hasError('required')"
+          class="text-sm text-danger"
+        >
+          overviewDifference is required
+        </div>
       </div>
-    </div>
 
-    <div class="input-group">
-      <span class="strong">Overview Map Max Zoom: </span>
-      <input
-        [class.border-danger]="settingsEditorForm.get('leaflet.overviewMaxZoom')?.touched && settingsEditorForm.get('leaflet.overviewMaxZoom')?.invalid"
-        type="number"
-        [style.width.px]="50"
-        formControlName="leaflet.overviewMaxZoom"
-        placeholder="21"
-      />
-      <div
-        *ngIf="settingsEditorForm.get('leaflet.overviewMaxZoom')?.touched && settingsEditorForm.get('leaflet.overviewMaxZoom')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        leaflet.overviewMaxZoom is required
+      <div class="input-group">
+        <span class="strong">Overview Map Min Zoom: </span>
+        <input
+          [class.border-danger]="settingsEditorForm.get('overviewMinZoom')?.touched && settingsEditorForm.get('overviewMinZoom')?.invalid"
+          type="number"
+          formControlName="overviewMinZoom"
+          placeholder="5"
+        />
+        <div
+          *ngIf="settingsEditorForm.get('overviewMinZoom')?.touched && settingsEditorForm.get('overviewMinZoom')?.hasError('required')"
+          class="text-sm text-danger"
+        >
+          overviewMinZoom is required
+        </div>
+      </div>
+
+      <div class="input-group">
+        <span class="strong">Overview Map Max Zoom: </span>
+        <input
+          [class.border-danger]="settingsEditorForm.get('overviewMaxZoom')?.touched && settingsEditorForm.get('overviewMaxZoom')?.invalid"
+          type="number"
+          [style.width.px]="50"
+          formControlName="overviewMaxZoom"
+          placeholder="21"
+        />
+        <div
+          *ngIf="settingsEditorForm.get('overviewMaxZoom')?.touched && settingsEditorForm.get('overviewMaxZoom')?.hasError('required')"
+          class="text-sm text-danger"
+        >
+          overviewMaxZoom is required
+        </div>
       </div>
     </div>
     <br />
 
+    <!-- ======================================= -->
+
     <h3>Google Map Settings</h3>
-    <div class="input-group">
-      <span class="strong">Default Zoom: </span>
-      <input
-        [class.border-danger]="settingsEditorForm.get('google.defZoom')?.touched && settingsEditorForm.get('google.defZoom')?.invalid"
-        type="number"
-        [style.width.px]="50"
-        formControlName="google.defZoom"
-        placeholder="15"
-      />
-      <div
-        *ngIf="settingsEditorForm.get('google.defZoom')?.touched && settingsEditorForm.get('google.defZoom')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        google.zoom is required
+    <div formGroupName="google">
+      <!-- settingsEditorForm -->
+      <div class="input-group">
+        <span class="strong">Default Zoom: </span>
+        <input
+          [class.border-danger]="settingsEditorForm.get('defZoom')?.touched && settingsEditorForm.get('defZoom')?.invalid"
+          type="number"
+          [style.width.px]="50"
+          formControlName="defZoom"
+          placeholder="15"
+        />
+        <div
+          *ngIf="settingsEditorForm.get('defZoom')?.touched && settingsEditorForm.get('defZoom')?.hasError('required')"
+          class="text-sm text-danger"
+        >
+          zoom is required
+        </div>
       </div>
-    </div>
 
-    <!-- markerScheme - unused for now -->
+      <!-- markerScheme - unused for now -->
 
-    <div class="input-group">
-      <span class="strong">Overview Map Zoom Difference: </span>
-      <input
-        [class.border-danger]="settingsEditorForm.get('google.overviewDifference')?.touched && settingsEditorForm.get('google.overviewDifference')?.invalid"
-        type="number"
-        [style.width.px]="50"
-        formControlName="google.overviewDifference"
-        placeholder="5"
-      />
-      <div
-        *ngIf="settingsEditorForm.get('google.overviewDifference')?.touched && settingsEditorForm.get('google.overviewDifference')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        overviewDifference is required
+      <div class="input-group">
+        <span class="strong">Overview Map Zoom Difference: </span>
+        <input
+          [class.border-danger]="settingsEditorForm.get('overviewDifference')?.touched && settingsEditorForm.get('overviewDifference')?.invalid"
+          type="number"
+          [style.width.px]="50"
+          formControlName="overviewDifference"
+          placeholder="5"
+        />
+        <div
+          *ngIf="settingsEditorForm.get('overviewDifference')?.touched && settingsEditorForm.get('overviewDifference')?.hasError('required')"
+          class="text-sm text-danger"
+        >
+          overviewDifference is required
+        </div>
       </div>
-    </div>
 
-    <div class="input-group">
-      <span class="strong">Overview Map Min Zoom: </span>
-      <input
-        [class.border-danger]="settingsEditorForm.get('google.overviewMinZoom')?.touched && settingsEditorForm.get('google.overviewMinZoom')?.invalid"
-        type="number"
-        [style.width.px]="50"
-        formControlName="google.overviewMinZoom"
-        placeholder="5"
-      />
-      <div
-        *ngIf="settingsEditorForm.get('google.overviewMinZoom')?.touched && settingsEditorForm.get('google.overviewMinZoom')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        google.overviewMinZoom is required
+      <div class="input-group">
+        <span class="strong">Overview Map Min Zoom: </span>
+        <input
+          [class.border-danger]="settingsEditorForm.get('overviewMinZoom')?.touched && settingsEditorForm.get('overviewMinZoom')?.invalid"
+          type="number"
+          [style.width.px]="50"
+          formControlName="overviewMinZoom"
+          placeholder="5"
+        />
+        <div
+          *ngIf="settingsEditorForm.get('overviewMinZoom')?.touched && settingsEditorForm.get('overviewMinZoom')?.hasError('required')"
+          class="text-sm text-danger"
+        >
+          overviewMinZoom is required
+        </div>
       </div>
-    </div>
 
-    <div class="input-group">
-      <span class="strong">Overview Map Max Zoom: </span>
-      <input
-        [class.border-danger]="settingsEditorForm.get('google.overviewMaxZoom')?.touched && settingsEditorForm.get('google.overviewMaxZoom')?.invalid"
-        type="number"
-        [style.width.px]="50"
-        formControlName="google.overviewMaxZoom"
-        placeholder="21"
-      />
-      <div
-        *ngIf="settingsEditorForm.get('google.overviewMaxZoom')?.touched && settingsEditorForm.get('google.overviewMaxZoom')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        google.overviewMaxZoom is required
+      <div class="input-group">
+        <span class="strong">Overview Map Max Zoom: </span>
+        <input
+          [class.border-danger]="settingsEditorForm.get('overviewMaxZoom')?.touched && settingsEditorForm.get('overviewMaxZoom')?.invalid"
+          type="number"
+          [style.width.px]="50"
+          formControlName="overviewMaxZoom"
+          placeholder="21"
+        />
+        <div
+          *ngIf="settingsEditorForm.get('overviewMaxZoom')?.touched && settingsEditorForm.get('overviewMaxZoom')?.hasError('required')"
+          class="text-sm text-danger"
+        >
+          overviewMaxZoom is required
+        </div>
       </div>
     </div>
     <br />
