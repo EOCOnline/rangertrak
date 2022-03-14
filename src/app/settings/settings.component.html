@@ -140,7 +140,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.invalid"
         type="number"
-        formControlName="latitude"
+        formControlName="defLat"
         placeholder="{{settings?.defLat?.toFixed(4)}}"
         value="{{settings?.defLat?.toFixed(4)}}"
         [style.width.px]="60"
@@ -159,7 +159,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.invalid"
         type="number"
-        formControlName="longitude"
+        formControlName="defLng"
         placeholder="{{settings!.defLng?.toFixed(4)}}"
         [style.width.px]="60"
         data-lpignore="true"
@@ -177,7 +177,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.invalid"
         type="text"
-        formControlName="plusCode"
+        formControlName="defPlusCode"
         placeholder="84VVCGWP+VW"
         [style.width.px]="100"
         data-lpignore="true"
@@ -223,21 +223,36 @@
     <br />
 
     <h3>Leaflet Map Settings</h3>
+    <!-- div [form   Group]="settingsEditorForm" -->
     <div class="input-group">
       <span class="strong">Default Zoom: </span>
+      <!-- BUG:
+
+      Cannot find control with name: 'leaflet.defZoom'
+
+      22:21:33:0816 - From Settings Component - Application: RangerTrak
+      -- Version: 0.11.38 log.service.ts:30
+      22:21:33:0817 - From Settings Component -
+      getFormArrayFromSettingsArray log.service.ts:30
+      22:21:33:0818 - From Settings
+      Component - ngInit done core.mjs:6485
+      ERROR Error:  at _throwError
+      (forms.mjs:1794:11) at setUpControl
+      (forms.mjs:1574:13) at FormGroupDirective.addControl
+      (forms.mjs:5350:9) at FormControlName._setUpControl
+      (forms.mjs:5912:43) at FormControlName.ngOnChanges
+      (forms.mjs:5857:18) at FormControlName.rememberChangeHistoryAndInvokeOnChangesHook
+      (core.mjs:1508:1) at callHook
+      (core.mjs:2552:1) at callHooks
+      (core.mjs:2511:1) at executeInitAndCheckHooks
+      (core.mjs:2462:1) at selectIndexInternal (core.mjs:8405:1)
+    -->
       <input
-        [class.border-danger]="settingsEditorForm.get('leaflet.defZoom')?.touched && settingsEditorForm.get('leaflet.defZoom')?.invalid"
         formControlName="leaflet.defZoom"
         placeholder="15"
         type="number"
         [style.width.px]="50"
       />
-      <div
-        *ngIf="settingsEditorForm.get('leaflet.defZoom')?.touched && settingsEditorForm.get('leaflet.defZoom')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        leaflet.zoom is required
-      </div>
     </div>
 
     <!-- markerScheme - unused for now -->

@@ -246,21 +246,21 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       w3wLocale: [this.settings.w3wLocale],
       allowManualPinDrops: [this.settings.allowManualPinDrops],
 
-      leaflet: {
+      leaflet: this.fb.group({
         defZoom: [this.settings.leaflet.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation  // or just zoom to bounds?
         markerScheme: [this.settings.leaflet.markerScheme],
-        verviewDifference: [this.settings.leaflet.overviewDifference],
+        overviewDifference: [this.settings.leaflet.overviewDifference],
         overviewMinZoom: [this.settings.leaflet.overviewMinZoom],
         overviewMaxZoom: [this.settings.leaflet.overviewMaxZoom]
-      },
+      }),
 
-      google: {
+      google: this.fb.group({
         defZoom: [this.settings.google.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation    // or just zoom to bounds?
         markerScheme: [this.settings.google.markerScheme],
         overviewDifference: [this.settings.google.overviewDifference],
         overviewMinZoom: [this.settings.google.overviewMinZoom],
         overviewMaxZoom: [this.settings.google.overviewMaxZoom]
-      },
+      }),
 
       defFieldReportStatus: [this.settings.defFieldReportStatus],
       fieldReportStatuses: [this.settings.fieldReportStatuses]

@@ -1,3 +1,5 @@
+[![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine)
+
 # Rangertrak
 
 This application aids tracking & mapping CERT, ACS, other teams, rangers & individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. They can radio in their locations - in a variety of formats, and be centrally tracked..
@@ -30,15 +32,15 @@ There are a number of ways to geocode a latitude & longitude. See https://en.wik
 - 3Word functionality (for now)
 
 ## To Run
-- (Future:) Simply visit https://www.RangerTrak.org once and the 2nd time you visit you will be given an option to 'install/download' the web page/application. That should put an icon on your homescreen or desktop that you can thereafter access without Internet access!
-  
+- (The Vision:) Simply visit https://www.RangerTrak.org once and the 2nd time you visit you will be given an option to 'install/download' the web page/application. That should put an icon on your homescreen or desktop that you can thereafter access without Internet access!
+
 ## To Build and Test
 - Grab a local copy of Github.com/eocOnline/Rangertrak
 - Install NodeJS and NPM
 - cd RangerTrak
 - npm install
 - ng serve -o
-  
+
 - or Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Running unit tests
