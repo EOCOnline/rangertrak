@@ -249,17 +249,17 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       leaflet: {
         defZoom: [this.settings.leaflet.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation  // or just zoom to bounds?
         markerScheme: [this.settings.leaflet.markerScheme],
-        OverviewDifference: [this.settings.leaflet.OverviewDifference],
-        OverviewMinZoom: [this.settings.leaflet.OverviewMinZoom],
-        OverviewMaxZoom: [this.settings.leaflet.OverviewMaxZoom]
+        verviewDifference: [this.settings.leaflet.overviewDifference],
+        overviewMinZoom: [this.settings.leaflet.overviewMinZoom],
+        overviewMaxZoom: [this.settings.leaflet.overviewMaxZoom]
       },
 
       google: {
         defZoom: [this.settings.google.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation    // or just zoom to bounds?
         markerScheme: [this.settings.google.markerScheme],
-        OverviewDifference: [this.settings.google.OverviewDifference],
-        OverviewMinZoom: [this.settings.google.OverviewMinZoom],
-        OverviewMaxZoom: [this.settings.google.OverviewMaxZoom]
+        overviewDifference: [this.settings.google.overviewDifference],
+        overviewMinZoom: [this.settings.google.overviewMinZoom],
+        overviewMaxZoom: [this.settings.google.overviewMaxZoom]
       },
 
       defFieldReportStatus: [this.settings.defFieldReportStatus],
@@ -305,17 +305,17 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       google: {
         defZoom: this.settingsEditorForm.value.google.defZoom, //, Validators.min(3), Validators.max(21), //https://www.concretepage.com/angular-2/angular-4-min-max-validation    // or just zoom to bounds?
         markerScheme: this.settingsEditorForm.value.google.markerScheme,
-        OverviewDifference: this.settingsEditorForm.value.google.OverviewDifference,
-        OverviewMinZoom: this.settingsEditorForm.value.google.OverviewMinZoom,
-        OverviewMaxZoom: this.settingsEditorForm.value.google.OverviewMaxZoom
+        overviewDifference: this.settingsEditorForm.value.google.overviewDifference,
+        overviewMinZoom: this.settingsEditorForm.value.google.overviewMinZoom,
+        overviewMaxZoom: this.settingsEditorForm.value.google.overviewMaxZoom
       },
 
       leaflet: {
         defZoom: this.settingsEditorForm.value.leaflet.defZoom, //, Validators.min(3), Validators.max(21), //https://www.concretepage.com/angular-2/angular-4-min-max-validation  // or just zoom to bounds?
         markerScheme: this.settingsEditorForm.value.leaflet.markerScheme,
-        OverviewDifference: this.settingsEditorForm.value.leaflet.OverviewDifference,
-        OverviewMinZoom: this.settingsEditorForm.value.leaflet.OverviewMinZoom,
-        OverviewMaxZoom: this.settingsEditorForm.value.leaflet.OverviewMaxZoom
+        overviewDifference: this.settingsEditorForm.value.leaflet.overviewDifference,
+        overviewMinZoom: this.settingsEditorForm.value.leaflet.overviewMinZoom,
+        overviewMaxZoom: this.settingsEditorForm.value.leaflet.overviewMaxZoom
       },
       defFieldReportStatus: this.settingsEditorForm.value.defFieldReportStatus,
       fieldReportStatuses: this.settingsEditorForm.value.fieldReportStatuses

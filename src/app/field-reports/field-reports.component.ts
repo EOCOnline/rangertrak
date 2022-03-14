@@ -253,10 +253,11 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     return (`${hours}:${minutes}:${seconds}`)
   }
 
-  rounder = (params: { data: FieldReportType }) => {
-    let val = Math.round(params.data.lat * 10000) / 10000.0
-    return val
-  }
+  //! BUG: JUST ROUNDS THE lat, not whatever is passed in!!!!!
+  // rounder = (params: { data: FieldReportType }) => {
+  //   let val = Math.round(params. data.lat * 10000) / 10000.0
+  //   return val
+  // }
 
   isValidDate(d: any) {
     return d instanceof Date //&& !isNaN(d);
@@ -318,6 +319,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Save them to localstorage & update subscribers
+  // REVIEW: SOMEHOW??? renaming the next to unused caused an error if slecting a row when running???
   onBtnUpdateFieldReports() {
     // https://blog.ag-grid.com/refresh-grid-after-data-change/#updating-through-variable-angular
     // BUG: Need to send the newly edited reports...with Header properties
@@ -325,7 +327,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     //this.fieldReportService.updateFieldReports()
   }
 
-  onBtnImportFieldReports_unused() {
+  onBtnImportFieldReportsFromJSON_unused() {
     alert(`onBtnImportFieldReports is unimplemented`)
 
     // TODO: https://blog.ag-grid.com/refresh-grid-after-data-change/

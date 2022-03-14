@@ -115,17 +115,17 @@ export class SettingsService {
       google: {
         defZoom: 17,  // used? or just zoom to bounds?
         markerScheme: '',
-        OverviewDifference: 5,
-        OverviewMinZoom: 5,
-        OverviewMaxZoom: 16
+        overviewDifference: 5,
+        overviewMinZoom: 5,
+        overviewMaxZoom: 16
       },
 
       leaflet: {
         defZoom: 17,  // or just zoom to bounds?
         markerScheme: '',
-        OverviewDifference: 5,
-        OverviewMinZoom: 5,
-        OverviewMaxZoom: 16
+        overviewDifference: 5,
+        overviewMinZoom: 5,
+        overviewMaxZoom: 16
       },
 
       defFieldReportStatus: 0, // which of the following array entries to use as the default value

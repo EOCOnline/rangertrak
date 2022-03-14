@@ -200,9 +200,9 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.lmap.on("move", () => {
       this.overviewLMap!.setView(this.lmap!.getCenter()!, this.clamp(
-        this.lmap!.getZoom()! - (this.settings ? this.settings.leaflet.OverviewDifference : 5),
-        (this.settings ? this.settings.leaflet.OverviewMinZoom : 4),
-        (this.settings ? this.settings.leaflet.OverviewMaxZoom : 15)
+        this.lmap!.getZoom()! - (this.settings ? this.settings.leaflet.overviewDifference : 5),
+        (this.settings ? this.settings.leaflet.overviewMinZoom : 4),
+        (this.settings ? this.settings.leaflet.overviewMaxZoom : 15)
       ))
     })
 
@@ -225,8 +225,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     const overviewTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: this.settings ? this.settings.leaflet.OverviewMaxZoom : 15,
-      minZoom: this.settings ? this.settings.leaflet.OverviewMinZoom : 4,
+      maxZoom: this.settings ? this.settings.leaflet.overviewMaxZoom : 15,
+      minZoom: this.settings ? this.settings.leaflet.overviewMinZoom : 4,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
@@ -259,9 +259,9 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.overviewLMap!.on("bounds_changed", () => {
       this.overviewLMap!.setView(this.lmap!.getCenter()!, this.clamp(
-        this.lmap!.getZoom()! - (this.settings ? this.settings.leaflet.OverviewDifference : 5),
-        (this.settings ? this.settings.leaflet.OverviewMaxZoom : 15),
-        (this.settings ? this.settings.leaflet.OverviewMinZoom : 4)
+        this.lmap!.getZoom()! - (this.settings ? this.settings.leaflet.overviewDifference : 5),
+        (this.settings ? this.settings.leaflet.overviewMaxZoom : 15),
+        (this.settings ? this.settings.leaflet.overviewMinZoom : 4)
       ))
     })
   }

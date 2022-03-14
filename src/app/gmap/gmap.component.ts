@@ -284,9 +284,9 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       this.overviewGMap!.setCenter(this.gMap!.getCenter()!);
       this.overviewGMap!.setZoom(
         this.clamp(
-          this.gMap!.getZoom()! - this.settings!.google.OverviewDifference,
-          this.settings!.google.OverviewMinZoom,
-          this.settings!.google.OverviewMaxZoom
+          this.gMap!.getZoom()! - this.settings!.google.overviewDifference,
+          this.settings!.google.overviewMinZoom,
+          this.settings!.google.overviewMaxZoom
         )
       );
     })

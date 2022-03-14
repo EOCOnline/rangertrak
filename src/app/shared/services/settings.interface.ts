@@ -28,17 +28,17 @@ export type SettingsType = {
   google: {
     defZoom: number,  // or just zoom to bounds?
     markerScheme: string,
-    OverviewDifference: number,
-    OverviewMinZoom: number,
-    OverviewMaxZoom: number
+    overviewDifference: number,
+    overviewMinZoom: number,
+    overviewMaxZoom: number
   },
 
   leaflet: {
     defZoom: number,  // or just zoom to bounds?
     markerScheme: string,
-    OverviewDifference: number,
-    OverviewMinZoom: number,
-    OverviewMaxZoom: number
+    overviewDifference: number,
+    overviewMinZoom: number,
+    overviewMaxZoom: number
   },
 
   defFieldReportStatus: number

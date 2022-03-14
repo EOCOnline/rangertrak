@@ -87,7 +87,7 @@
     <div class="input-group">
       <span class="strong">OpPeriod Name: </span>
       <input
-        formControlName="OpPeriod"
+        formControlName="opPeriod"
         placeholder="Operational Period"
         [style.width.px]="120"
         type="text"
@@ -98,7 +98,7 @@
     <div class="input-group">
       <span class="strong">OpPeriod Start: </span>
       <input
-        formControlName="OpPeriodStart"
+        formControlName="opPeriodStart"
         placeholder="Start Time"
         [style.width.px]="100"
         type="text"
@@ -109,7 +109,7 @@
     <div class="input-group">
       <span class="strong">OpPeriod End: </span>
       <input
-        formControlName="OpPeriodEnd"
+        formControlName="opPeriodEnd"
         placeholder="Ending Time"
         [style.width.px]="100"
         type="text"
@@ -245,50 +245,50 @@
     <div class="input-group">
       <span class="strong">Overview Map Zoom Difference: </span>
       <input
-        [class.border-danger]="settingsEditorForm.get('leaflet.OverviewDifference')?.touched && settingsEditorForm.get('leaflet.OverviewDifference')?.invalid"
+        [class.border-danger]="settingsEditorForm.get('leaflet.overviewDifference')?.touched && settingsEditorForm.get('leaflet.overviewDifference')?.invalid"
         type="number"
         [style.width.px]="50"
-        formControlName="leaflet.OverviewDifference"
+        formControlName="leaflet.overviewDifference"
         placeholder="5"
       />
       <div
-        *ngIf="settingsEditorForm.get('leaflet.OverviewDifference')?.touched && settingsEditorForm.get('leaflet.OverviewDifference')?.hasError('required')"
+        *ngIf="settingsEditorForm.get('leaflet.overviewDifference')?.touched && settingsEditorForm.get('leaflet.overviewDifference')?.hasError('required')"
         class="text-sm text-danger"
       >
-        OverviewDifference is required
+        overviewDifference is required
       </div>
     </div>
 
     <div class="input-group">
       <span class="strong">Overview Map Min Zoom: </span>
       <input
-        [class.border-danger]="settingsEditorForm.get('leaflet.OverviewMinZoom')?.touched && settingsEditorForm.get('leaflet.OverviewMinZoom')?.invalid"
+        [class.border-danger]="settingsEditorForm.get('leaflet.overviewMinZoom')?.touched && settingsEditorForm.get('leaflet.overviewMinZoom')?.invalid"
         type="number"
-        formControlName="leaflet.OverviewMinZoom"
+        formControlName="leaflet.overviewMinZoom"
         placeholder="5"
       />
       <div
-        *ngIf="settingsEditorForm.get('leaflet.OverviewMinZoom')?.touched && settingsEditorForm.get('leaflet.OverviewMinZoom')?.hasError('required')"
+        *ngIf="settingsEditorForm.get('leaflet.overviewMinZoom')?.touched && settingsEditorForm.get('leaflet.overviewMinZoom')?.hasError('required')"
         class="text-sm text-danger"
       >
-        leaflet.OverviewMinZoom is required
+        leaflet.overviewMinZoom is required
       </div>
     </div>
 
     <div class="input-group">
       <span class="strong">Overview Map Max Zoom: </span>
       <input
-        [class.border-danger]="settingsEditorForm.get('leaflet.OverviewMaxZoom')?.touched && settingsEditorForm.get('leaflet.OverviewMaxZoom')?.invalid"
+        [class.border-danger]="settingsEditorForm.get('leaflet.overviewMaxZoom')?.touched && settingsEditorForm.get('leaflet.overviewMaxZoom')?.invalid"
         type="number"
         [style.width.px]="50"
-        formControlName="leaflet.OverviewMaxZoom"
+        formControlName="leaflet.overviewMaxZoom"
         placeholder="21"
       />
       <div
-        *ngIf="settingsEditorForm.get('leaflet.OverviewMaxZoom')?.touched && settingsEditorForm.get('leaflet.OverviewMaxZoom')?.hasError('required')"
+        *ngIf="settingsEditorForm.get('leaflet.overviewMaxZoom')?.touched && settingsEditorForm.get('leaflet.overviewMaxZoom')?.hasError('required')"
         class="text-sm text-danger"
       >
-        leaflet.OverviewMaxZoom is required
+        leaflet.overviewMaxZoom is required
       </div>
     </div>
     <br />
@@ -316,51 +316,51 @@
     <div class="input-group">
       <span class="strong">Overview Map Zoom Difference: </span>
       <input
-        [class.border-danger]="settingsEditorForm.get('google.OverviewDifference')?.touched && settingsEditorForm.get('google.OverviewDifference')?.invalid"
+        [class.border-danger]="settingsEditorForm.get('google.overviewDifference')?.touched && settingsEditorForm.get('google.overviewDifference')?.invalid"
         type="number"
         [style.width.px]="50"
-        formControlName="google.OverviewDifference"
+        formControlName="google.overviewDifference"
         placeholder="5"
       />
       <div
-        *ngIf="settingsEditorForm.get('google.OverviewDifference')?.touched && settingsEditorForm.get('google.OverviewDifference')?.hasError('required')"
+        *ngIf="settingsEditorForm.get('google.overviewDifference')?.touched && settingsEditorForm.get('google.overviewDifference')?.hasError('required')"
         class="text-sm text-danger"
       >
-        OverviewDifference is required
+        overviewDifference is required
       </div>
     </div>
 
     <div class="input-group">
       <span class="strong">Overview Map Min Zoom: </span>
       <input
-        [class.border-danger]="settingsEditorForm.get('google.OverviewMinZoom')?.touched && settingsEditorForm.get('google.OverviewMinZoom')?.invalid"
+        [class.border-danger]="settingsEditorForm.get('google.overviewMinZoom')?.touched && settingsEditorForm.get('google.overviewMinZoom')?.invalid"
         type="number"
         [style.width.px]="50"
-        formControlName="google.OverviewMinZoom"
+        formControlName="google.overviewMinZoom"
         placeholder="5"
       />
       <div
-        *ngIf="settingsEditorForm.get('google.OverviewMinZoom')?.touched && settingsEditorForm.get('google.OverviewMinZoom')?.hasError('required')"
+        *ngIf="settingsEditorForm.get('google.overviewMinZoom')?.touched && settingsEditorForm.get('google.overviewMinZoom')?.hasError('required')"
         class="text-sm text-danger"
       >
-        google.OverviewMinZoom is required
+        google.overviewMinZoom is required
       </div>
     </div>
 
     <div class="input-group">
       <span class="strong">Overview Map Max Zoom: </span>
       <input
-        [class.border-danger]="settingsEditorForm.get('google.OverviewMaxZoom')?.touched && settingsEditorForm.get('google.OverviewMaxZoom')?.invalid"
+        [class.border-danger]="settingsEditorForm.get('google.overviewMaxZoom')?.touched && settingsEditorForm.get('google.overviewMaxZoom')?.invalid"
         type="number"
         [style.width.px]="50"
-        formControlName="google.OverviewMaxZoom"
+        formControlName="google.overviewMaxZoom"
         placeholder="21"
       />
       <div
-        *ngIf="settingsEditorForm.get('google.OverviewMaxZoom')?.touched && settingsEditorForm.get('google.OverviewMaxZoom')?.hasError('required')"
+        *ngIf="settingsEditorForm.get('google.overviewMaxZoom')?.touched && settingsEditorForm.get('google.overviewMaxZoom')?.hasError('required')"
         class="text-sm text-danger"
       >
-        google.OverviewMaxZoom is required
+        google.overviewMaxZoom is required
       </div>
     </div>
     <br />
