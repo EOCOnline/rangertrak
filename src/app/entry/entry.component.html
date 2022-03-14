@@ -157,7 +157,7 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
         tabindex="7"
       >
         <mat-radio-button
-          *ngFor="let stat of fieldReportStatuses"
+          *ngFor="let stat of settings.fieldReportStatuses"
           value="{{stat.status}}"
           class="rButton"
           ><span style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;

@@ -85,9 +85,9 @@ export class MiniLMapComponent implements AfterViewInit {
     })
 */
 
-    this.zoom = this.settings!.leaflet.defZoom
+    this.zoom = this.settings ? this.settings.leaflet.defZoom : 15
     this.zoomDisplay = this.zoom
-    this.center = { lat: this.settings!.defLat, lng: this.settings!.defLng }
+    this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
     this.mouseLatLng = this.center
   }
 
@@ -106,8 +106,8 @@ export class MiniLMapComponent implements AfterViewInit {
     this.log.verbose("initMap() ", this.id)
 
     this.lmap = L.map('lmap', {
-      center: [this.settings!.defLat, this.settings!.defLng],
-      zoom: this.settings!.leaflet.defZoom
+      center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
+      zoom: this.settings ? this.settings.leaflet.defZoom : 15
     })
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -188,7 +188,7 @@ export class MiniLMapComponent implements AfterViewInit {
   }
 
   displayAMarker() {
-    this.addMarker(this.settings!.defLat - 0.001, this.settings!.defLng - 0.001, "Home Base")
+    this.addMarker(this.settings ? this.settings.defLat : 0 - 0.001, this.settings ? this.settings.defLng : 0 - 0.001, "Home Base")
   }
 
   displayAllMarkers() {

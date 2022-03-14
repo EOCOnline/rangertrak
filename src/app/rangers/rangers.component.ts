@@ -1,25 +1,22 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FieldReportService, FieldReportType, LogService, RangerService, RangerType, SettingsService, SettingsType } from '../shared/services/';
-// , TeamService
 import { DOCUMENT } from '@angular/common'
 import { csvImport } from './csvImport'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AlertsComponent } from '../shared/alerts/alerts.component';
-
+import { Subscription } from 'rxjs';
 
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING
 D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'. CommonJS or AMD dependencies can cause optimization bailouts.
 For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies */
 import * as XLSX from 'xlsx';
-import { Subscription } from 'rxjs';
-
+type AOA = any[][]  // array of arrays
 /* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
 // https://github.com/SheetJS/SheetJS.github.io
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\src\app\sheetjs.component.ts
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\ionic.ts
 
-type AOA = any[][]  // array of arrays
 
 @Component({
   selector: 'rangertrak-rangers',
@@ -30,24 +27,28 @@ export class RangersComponent implements OnInit {
 
   private id = 'Ranger Component'
   public title = 'Rangers (CERT, ACS/ARES, etc)'
+
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
 
+  private rangersSubscription$!: Subscription
+  public rangers: RangerType[] = []
+
   localUrl: any[] = []
-  //teamService
-  //rangerService //: { generateFakeData: (arg0: RangerType[]) => void; }
-  rangers: RangerType[] = []
-  //columns = { "Callsign": String, "Team": String, "Address": String, "Status": String, "Note": String }
-  private gridApi: any
-  private gridColumnApi: any
+
   alert: any
+
   numSeperatorWarnings = 0
   maxSeperatorWarnings = 3
+
   now: Date
+
   excelData: AOA = [[1, 2, 3], [4, 5, 6]];
   excelData2: RangerType[] = [] //[[1, 2, 3], [4, 5, 6]];
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
+  private gridApi: any
+  private gridColumnApi: any
   gridOptions = {
     // PROPERTIES
     rowSelection: "multiple",
@@ -88,7 +89,6 @@ export class RangersComponent implements OnInit {
     { headerName: "phone", field: "phone", singleClickEdit: true, flex: 40 },
     { headerName: "address", field: "address", singleClickEdit: true, flex: 40 },
     //{ headerName: "image", field: "image", cellRenderer: this.imageCellRenderer },
-    //{ headerName: "team", field: "team" },  // TODO: Change to string representation - within Ag-grid???
     //{ headerName: "icon", field: "icon" },  // TODO: Change to string representation - within Ag-grid???
     { headerName: "status", field: "status", flex: 40 },
     { headerName: "note", field: "note", flex: 60 },
@@ -123,7 +123,12 @@ export class RangersComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.rangers = this.rangerService.GetRangers()
+    this.rangersSubscription$ = this.rangerService.getRangersObserver().subscribe({
+      next: (newRangers) => { this.rangers = newRangers },
+      error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
+      complete: () => this.log.info('Rangers Subscription complete', this.id)
+    })
+
     this.log.verbose(`ngInit: ${this.rangers.length} Rangers retrieved from Local Storage`, this.id)
 
     if (this.rangers.length < 1) {
@@ -164,8 +169,7 @@ export class RangersComponent implements OnInit {
 
   onBtnAddRanger(formData?: string) {
     this.log.verbose("Adding new ranger", this.id)
-    this.rangerService.AddRanger()
-    this.rangerService.UpdateLocalStorage()
+    this.rangerService.AddRanger()  // this calls updateLocalStorageAndPublish
     this.refreshGrid()
     this.reloadPage()
   }
@@ -181,7 +185,7 @@ export class RangersComponent implements OnInit {
   }
 
   onBtnUpdateLocalStorage() {
-    this.rangerService.UpdateLocalStorage()
+    this.rangerService.updateLocalStorageAndPublish()
   }
 
 
@@ -247,7 +251,7 @@ export class RangersComponent implements OnInit {
 
   //--------------------------------------------------------------------------
   onBtnImportExcel2() {
-    this.rangerService.LoadRangersFromExcel2()
+    this.rangerService.loadRangersFromExcel2()
     this.log.verbose(`Got excel file`, this.id)
     window.location.reload()
   }

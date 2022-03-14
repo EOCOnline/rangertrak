@@ -92,9 +92,11 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-
-    this.fieldReportStatuses = this.settings!.fieldReportStatuses
-    //this.fieldReportStatuses$.next(this.fieldReportStatuses)
+    if (this.settings) {
+      this.fieldReportStatuses = this.settings.fieldReportStatuses
+    } else {
+      this.log.error(`this.settings was null in constructor`, this.id)
+    }
 
     this.columnDefs = [
       { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1 }, // TODO:
@@ -154,9 +156,9 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.numFakesForm = this.formBuilder.group({})
 
-    if (!this.settings!.debugMode) {
+    if (this.settings ? !this.settings.debugMode : true) {
       this.log.verbose("running in non-debug mode", this.id)
-      // this.displayHide("enter__Fake--id") // debug mode SHOULD be ON...
+      // this.displayHide("enter__Fake--id") // should default to hidden
     } else {
       this.log.verbose("running in debug mode", this.id)
       this.displayShow("enter__Fake--id")

@@ -136,8 +136,8 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
 
     this.fieldReportService = fieldReportService
     this.selectedRows =
-      this.zoom = this.settings!.google.defZoom
-    this.zoomDisplay = this.settings!.google.defZoom
+      this.zoom = this.settings ? this.settings.google.defZoom : 15
+    this.zoomDisplay = this.settings ? this.settings.google.defZoom : 15
 
     // https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
     // this.markerPositions = []; evil angular wrapper
@@ -158,7 +158,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
-    this.center = { lat: this.settings!.defLat, lng: this.settings!.defLng }
+    this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
     // this.circleCenter: google.maps.LatLngLiteral = {lat: this.settings.defLat, lng: this.settings.defLng};
     // https://github.com/angular/components/tree/master/src/google-maps
     // this.apiLoaded = httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=${SettingsService.secrets[3].key}`, 'callback')
@@ -245,9 +245,9 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       // onClusterClick?: onClusterClickHandler,
     })
 
-    this.log.verbose(`Setting G map Center= lat:${this.settings!.defLat}, lng: ${this.settings!.defLng}, zoom: ${this.settings!.google.defZoom}`, this.id)
-    this.gMap.setCenter({ lat: this.settings!.defLat, lng: this.settings!.defLng })
-    this.gMap.setZoom(this.settings!.google.defZoom)
+    this.log.verbose(`Setting G map Center= lat:${this.settings ? this.settings.defLat : 0}, lng: ${this.settings ? this.settings.defLng : 0}, zoom: ${this.settings ? this.settings.google.defZoom : 15}`, this.id)
+    this.gMap.setCenter({ lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 })
+    this.gMap.setZoom(this.settings ? this.settings.google.defZoom : 15)
     this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports?.bounds!))
 
     // Overview map: https://developers.google.com/maps/documentation/javascript/examples/inset-map

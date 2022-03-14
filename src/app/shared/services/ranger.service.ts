@@ -21,16 +21,16 @@ type AOA = any[][]  // array of arrays
 
 @Injectable({ providedIn: 'root' })
 export class RangerService {
-  observRangers$: Observable<RangerType[]> | null = null
+  observeRangers$: Observable<RangerType[]> | null = null
 
   id = 'Ranger Service'
-  rangers: RangerType[] = []
-  //  rangers2: RangerType[] = []
-  private nextId = 0
+
   private rangersSubject =
-    new BehaviorSubject<RangerType[]>([]);  // REVIEW: Necessary?
+    new BehaviorSubject<RangerType[]>([])
+  rangers: RangerType[] = []
+
   private localStorageRangerName = 'rangers'
-  excelData: any[][] = [[1, 2, 3], [4, 5, 6]];
+  excelData: any[][] = [[1, 2], [3, 4]]
 
   constructor(
     private httpClient: HttpClient,
@@ -41,59 +41,39 @@ export class RangerService {
     this.log.verbose(`Got ${this.rangers.length} from Local Storage`, this.id)
 
     if (this.rangers.length == 0) {
-      //this.LoadRangersFromJSON() // Have user use button to initiate this
-      //Better to load hardcoded folks...
+      // TODO: Have user use button to load from their own CSV file
+
+      // BUG: load from JSON isn't "quite" working so grab hardcoded values in code below!!!
       this.loadHardcodedRangers()
-      this.log.verbose(`No Rangers in Local storage, so grabbed ${this.rangers.length} from Rangers.2Feb22.json file.`, this.id)
+      this.log.verbose(`No Rangers in Local storage, so grabbed ${this.rangers.length} from
+      hardcoded values.`, this.id)
+      //Rangers.2Feb22.json file.`, this.id)
     }
 
-    // Needed? Maybe to expose observable?
-    this.UpdateLocalStorage()
+    this.rangersSubject = new BehaviorSubject(this.rangers)
+    this.updateLocalStorageAndPublish()
   }
 
-  GetRangers() {
-    this.log.verbose(`GetRangers() returning ${this.rangers.length} Rangers`, this.id)
-    this.SortRangersByCallsign()   // TODO: Getting called too often?
-    return this.rangers
+  /**
+   * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
+   */
+  public getRangersObserver(): Observable<RangerType[]> {
+    return this.rangersSubject.asObservable()
   }
 
-  subscribe(observer: Observer<RangerType[]>) {
-    this.rangersSubject.subscribe(observer);
-  }
+  /**
+    * Update localStorage with new rangers & notify observers
+    * REVIEW: ALSO called from RangerComponent with new updates!
+    */
+  public updateLocalStorageAndPublish() {
+    // Do any needed sanity/validation here
 
-  //--------------------------------------------------------------------------
-  // Update localStorage with current Rangers data & Publish update for any Observers
-  UpdateLocalStorage() {
-    this.log.verbose(`RangersService: Saving ${this.rangers.length} rangers to local storage`, this.id)
+    this.log.verbose(`New set of ${this.rangers.length} rangers. Save to local storage & publish`, this.id)
+    this.SortRangersByCallsign()   // Only place this needs to be called?
+
     localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
-    //localStorage.setItem("SpecialRangers", JSON.stringify(this.rangers2))
-    //this.log.verbose("Updated Rangers to " + JSON.stringify(this.rangers), this.id)
 
-    this.SortRangersByCallsign()   // TODO: Getting called too often?
-
-
-    // now gets:
-    /*  Error: Uncaught (in promise): TypeError: this.rangers.map is not a function
-      TypeError: this.rangers.map is not a function
-          at RangerService.UpdateLocalStorage (ranger.service.ts:82:43)
-          at new RangerService (ranger.service.ts:60:10)
-  */
-
-    // licenseKey: ranger.licenseKey,
-    this.rangersSubject.next(this.rangers.map(
-      ranger => ({
-        callsign: ranger.callsign,
-        licensee: ranger.licensee,
-        phone: ranger.phone,
-        address: ranger.address,
-        image: ranger.image,
-        team: ranger.team,
-        icon: ranger.icon,
-        status: ranger.status,
-        note: ranger.note
-      })
-    ))
-
+    this.rangersSubject.next(this.rangers)
   }
 
   //--------------------------------------------------------------------------
@@ -116,7 +96,7 @@ export class RangerService {
 
     // also see secretss import as an example: Settings.ts
 
-    this.observRangers$ = this.httpClient.get<RangerType[]>(fileName) // from pg 281
+    this.observeRangers$ = this.httpClient.get<RangerType[]>(fileName) // from pg 281
 
     //this.rangers = []
     if (rangers != null) {
@@ -211,7 +191,7 @@ import { HttpClient } from '@angular/common/http';
     };
     this.log.verbose(`3 Got ${this.rangers.length} rangers from Excel file.`, this.id)
 
-    this.DisplayRangers(`Excel import from ${target.files[0].name}`)
+    //this.DisplayRangers_unused(`Excel import from ${target.files[0].name}`)
     this.log.verbose(`4 Got ${this.rangers.length} rangers from Excel file.`, this.id)
 
     reader.readAsArrayBuffer(target.files[0]);
@@ -223,71 +203,6 @@ import { HttpClient } from '@angular/common/http';
     return this.rangers
   }
 
-  //--------------------------------------------------------------------------
-  DisplayRangers(msg: string) {
-    let len = 10
-    if (this.rangers.length < len) len = this.rangers.length
-    this.log.verbose(`${msg}: (1st ${len} rows:)`, this.id)
-    for (let i = 0; i < len; i++) {
-      this.log.verbose(`${i} as $$: ${JSON.stringify(this.rangers[i])}`, this.id)
-      //this.log.verbose(`${i} as $$: ${JSON.stringify(this.rangers[i])}`, this.id)
-    }
-  }
-
-  //--------------------------------------------------------------------------
-  LoadRangersFromExcel2() {
-    //debugger
-    let fnc = new csvImport(document)
-    fnc.importExcel2()
-    //csvImport.importExcel2()
-    this.log.verbose(`Got excel file`, this.id)
-  }
-
-
-  //--------------------------------------------------------------------------
-  getRanger(callsign: string) {
-    const index = this.findIndex(callsign);
-    return this.rangers[index];
-  }
-
-  updateRanger(ranger: RangerType) {
-    const index = this.findIndex(ranger.callsign);
-    this.rangers[index] = ranger;
-    this.UpdateLocalStorage();
-  }
-
-  deleteRanger(callsign: string) {
-    const index = this.findIndex(callsign);
-    this.rangers.splice(index, 1);
-    this.UpdateLocalStorage();
-  }
-
-  // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
-  AddRanger(formData: string = ""): RangerType {
-    this.log.verbose(`Got new ranger: ${formData}`, this.id)
-    let newRanger: RangerType
-    if (formData != "") {
-      newRanger = JSON.parse(formData)
-    } else {
-      newRanger = {
-        callsign: "!!AAA_New_Tactical", licensee: "AAA_New_Name",        // licenseKey: number
-        image: "  ", phone: "206-463-0000", address: "St, Vashon, WA 98070", team: "", icon: "", status: "", note: `Manually added at ${formatDate(Date.now(), 'short', "en-US")}.` //https://angular.io/guide/i18n-common-locale-id
-      }
-    }
-    this.rangers.push(newRanger)
-
-    this.UpdateLocalStorage();
-    return newRanger;
-  }
-
-  private findIndex(callsign: string): number {
-    for (let i = 0; i < this.rangers.length; i++) {
-      if (this.rangers[i].callsign === callsign) return i;
-    }
-    throw new Error(`Ranger with callsign ${callsign} was not found!`);
-  }
-
-  //--------------------------------------------------------------------------
   deleteAllRangers() {
     this.rangers = []
     localStorage.removeItem('rangers')
@@ -306,7 +221,67 @@ import { HttpClient } from '@angular/common/http';
     })
   }
 
+  // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
+  public AddRanger(formData: string = ""): RangerType {
+    this.log.verbose(`Got new ranger: ${formData}`, this.id)
+    let newRanger: RangerType
+    if (formData != "") {
+      newRanger = JSON.parse(formData)
+    } else {
+      newRanger = {
+        callsign: "!!AAA_New_Tactical", licensee: "AAA_New_Name",        // licenseKey: number
+        image: "  ", phone: "206-463-0000", address: "St, Vashon, WA 98070", team: "", icon: "", status: "", note: `Manually added at ${formatDate(Date.now(), 'short', "en-US")}.` //https://angular.io/guide/i18n-common-locale-id
+      }
+    }
+    this.rangers.push(newRanger)
 
+    this.updateLocalStorageAndPublish();
+    return newRanger;
+  }
+
+
+  //-------------------  UNUSED -----------------------------
+  private displayRangers_unused(msg: string) {
+    let len = 10
+    if (this.rangers.length < len) len = this.rangers.length
+    this.log.verbose(`${msg}: (1st ${len} rows:)`, this.id)
+    for (let i = 0; i < len; i++) {
+      this.log.verbose(`${i} as $$: ${JSON.stringify(this.rangers[i])}`, this.id)
+      //this.log.verbose(`${i} as $$: ${JSON.stringify(this.rangers[i])}`, this.id)
+    }
+  }
+
+  public loadRangersFromExcel2() {  // still called by rangers Component from a button
+    //debugger
+    let fnc = new csvImport(document)
+    fnc.importExcel2()
+    //csvImport.importExcel2()
+    this.log.verbose(`Got excel file`, this.id)
+  }
+
+  getRanger(callsign: string) {
+    const index = this.findIndex(callsign);
+    return this.rangers[index];
+  }
+
+  updateRanger(ranger: RangerType) {
+    const index = this.findIndex(ranger.callsign);
+    this.rangers[index] = ranger;
+    this.updateLocalStorageAndPublish();
+  }
+
+  deleteRanger(callsign: string) {
+    const index = this.findIndex(callsign);
+    this.rangers.splice(index, 1);
+    this.updateLocalStorageAndPublish();
+  }
+
+  private findIndex(callsign: string): number {
+    for (let i = 0; i < this.rangers.length; i++) {
+      if (this.rangers[i].callsign === callsign) return i;
+    }
+    throw new Error(`Ranger with callsign ${callsign} was not found!`);
+  }
 
   SortRangersByCallsign_unused() {
     this.log.verbose(`SortRangersByCallsign: ${this.rangers.length} Rangers in array`, this.id)
@@ -338,20 +313,6 @@ import { HttpClient } from '@angular/common/http';
     /* Following from 98070 AND 98013 zip codes, MUST be sorted by call sign!
         https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
   */
-
-    /* TODO: Implement better fake data and pay attention to the number to create...
-    let teams = this.teamService.getTeams()
-    let rangers = this.rangerService.getRangers()
-    let streets = ["Ave", "St.", "Pl.", "Court", "Circle"]
-    let notes = ["Reports beautiful sunrise", "Roudy Kids", "Approaching Neighborhood CERT", "Confused & dazed in the sun",                "Wow", "na", "Can't hear you", "Bounced via tail of a comet!", "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
-
-        for (let i = 0; i < num; i++) {
-      array.push({
-         callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
-         team: teams[Math.floor(Math.random() * teams.length)].name
-         address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
-        */
-
     // REVIEW: push (i.e., add) vs. replace?
     this.rangers.push(
 
@@ -664,46 +625,28 @@ import { HttpClient } from '@angular/common/http';
       { callsign: "KG7JIW", licensee: "Tuttle, Holly K", phone: "206-463-", address: ", Burton, WA 98013", image: "./assets/imgs/REW/male.png", team: "t999", icon: " ", status: "Licensed", note: "-" }
 
     )
-
     //this.log.verbose(`Next: update LocalStorage: ${this.localStorageRangerName}`, this.id)
     this.SortRangersByCallsign()
-    this.UpdateLocalStorage();
+    this.updateLocalStorageAndPublish();
     //this.log.verbose(`returned from: updating LocalStorage: ${this.localStorageRangerName}`, this.id)
   }
 
-  // TODO:  getActiveRangers() {
+  /*
+  generateFakeRangers(num: number = 20){
+    let rangers = this.rangers
+    let streets = ["Ave", "St.", "Pl.", "Court", "Circle"]
+    for (let i = 0; i < num; i++) {
+      array.push({
+        callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
+           address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
+      })
+    }
+  }*/
+
+  // FUTURE:  getActiveRangers() {
   // filter for Ranger.status == 'checked in' ?
   // return this.rangers }
-
-  /* Needed?!
-  sortRangersByTeam() {
-    return this.rangers.sort((n1, n2) => {
-      if (n1.team > n2.team) { return 1 }
-      if (n1.team < n2.team) { return -1 }
-      return 0;
-    })
-  }
-*/
 }
 
 
-/*
-export class Ranger {
-
-  static nextId = 1;
-  id: Number;
-  date: Date;
-  callSign: string;
-  licensee: string;
-
-  constructor(callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string) {
-    this.id = Ranger.nextId++; // TODO: OK if user restarts app during SAME mission #?
-    this.date = new Date();
-    this.callSign = callSign;
-    this.licensee = licensee;
-
-    // add validation code here?! or in forms code?
-  }
-
-}*/
 

@@ -8,19 +8,6 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
 import { AlertsComponent } from '../shared/'
 import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, SettingsType, LocationType } from '../shared/services/'
-import * as dayjs from 'dayjs' // https://day.js.org/docs/en/ or https://github.com/dayjs/luxon/
-
-import * as P from '@popperjs/core'
-//import { createPopper } from '@popperjs/core'
-import type { StrictModifiers } from '@popperjs/core'
-
-//import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-//import { mdiAccount, mdiInformationOutline } from '@mdi/js';
-//import { lookupCollections, locate } from '@iconify/json'; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
-import { DomSanitizer } from '@angular/platform-browser'
-//import { MatIconRegistry } from '@angular/material/icon';// https://material.angular.io/components/icon/examples
-
-
 // IDEA: use https://material.angular.io/components/badge/ ???
 
 
@@ -32,57 +19,39 @@ import { DomSanitizer } from '@angular/platform-browser'
 })
 export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
-  @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z' // dupl of that above
   private id = 'Entry Form'
   public title = 'Field Report Entry'
 
+  // Get location events from <location> component
+  private locationSubscription$!: Subscription
+  public location!: LocationType
+
+  private rangersSubscription$!: Subscription
+  public rangers: RangerType[] = []
+  filteredRangers: Observable<RangerType[]>
 
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
 
-  private locationSubscription$!: Subscription
-  public location!: LocationType
-
+  // Get time events from <timepicker> component
   private timeSubscription$!: Subscription
   public time!: Date
-  dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
 
-  myForm!: FormGroup
-  //createPopper<StrictModifiers>(referenceElement, popperElement, options)
-  locationFrmGrp!: FormGroup
-
-  //; faMapMarkedAlt = faMapMarkedAlt
-  // faInfoCircle = faInfoCircle
-  //mdiAccount: string = mdiAccount
-  //  mdiInformationOutline: string = mdiInformationOutline
-
-
+  alert: any
 
   // --------------- ENTRY FORM -----------------
   // control creation in a component class = immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
   public entryDetailsForm!: FormGroup
   callsignCtrl = new FormControl()
-  // addressCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
-  filteredRangers: Observable<RangerType[]>
-  rangers: RangerType[] = []
-  fieldReportStatuses: FieldReportStatusType[] = []
 
+  //myForm!: FormGroup
+  locationFrmGrp!: FormGroup
+  dateCtrl = new FormControl(new Date())
 
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
-  alert: any
-
-  button: HTMLButtonElement | undefined
-  tooltip: HTMLHtmlElement | undefined
-  popperInstance: any //typeof P.createPopper | undefined
-
 
   // https://github.com/h2qutc/angular-material-components
-  /* following causes:  No suitable injection token for parameter '_formBuilder' of class 'EntryComponent'.
-  Consider using the @Inject decorator to specify an injection token.(-992003)
-entry.component.ts(77, 26): This type does not have a value, so it cannot be used as injection token.
-*/
-
   // TODO: Consider for tracking ValueChanges: https://angular.io/guide/observables-in-angular#reactive-forms
 
   constructor(
@@ -91,31 +60,22 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     private fieldReportService: FieldReportService,
     private log: LogService,
     private settingsService: SettingsService,
-    // private teamService: TeamService,
     private _snackBar: MatSnackBar,
-    //iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, // for svg mat icons
     private http: HttpClient,
     private zone: NgZone,
-    @Inject(DOCUMENT) private document: Document) {   //, private service: PostService) {
-
-    // https://fonts.google.com/icons && https://material.angular.io/components/icon
-    // Note that we provide the icon here as a string literal here due to a limitation in
-    // Stackblitz. If you want to provide the icon from a URL, you can use:
-    //iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
-    //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
+    @Inject(DOCUMENT) private document: Document) {
 
     this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        //console.log(newSettings)
-        this.settings = newSettings
-        //this.fieldReportService = fieldReportService
-        this.fieldReportStatuses = this.settings.fieldReportStatuses
-      },
+      next: (newSettings) => { this.settings = newSettings },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    this.rangers = rangerService.GetRangers() // TODO: or getActiveRangers?!
+    this.rangersSubscription$ = rangerService.getRangersObserver().subscribe({
+      next: (newRangers) => { this.rangers = newRangers },
+      error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
+      complete: () => this.log.info('Rangers Subscription complete', this.id)
+    })
 
     this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)// TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
     if (this.rangers.length < 1) {
@@ -138,28 +98,28 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
   }
 
-  onNewLocation(newLocation: any) {
+  onNewLocation(newLocationEvent: any) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`Got new location: ${JSON.stringify(newLocation)}`, this.id)
-    this.location = JSON.parse(newLocation)
+    this.log.verbose(`Got new location: ${JSON.stringify(newLocationEvent)}`, this.id)
+    this.location = JSON.parse(newLocationEvent)
     // This then automatically gets sent to mini-map children via their @Input statements
 
     // TODO: BUT, we still need to update our local copy:
     //this.locationFrmGrp
   }
 
-  onNewTime(newTime: any) {
+  onNewTime(newTimeEvent: any) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`Got new time: ${JSON.stringify(newTime)}`, this.id)
-    this.time = JSON.parse(newTime)
+    this.log.verbose(`Got new time: ${JSON.stringify(newTimeEvent)}`, this.id)
+    this.time = JSON.parse(newTimeEvent)
     // This then automatically gets sent to mini-map children via their @Input statements
 
     // TODO: BUT, we still need to update our local copy:
     //this.timeFrmGrp
   }
-  locationChanged_noLongerNeeded(loc: FormGroup) {
-    this.log.verbose(`locationChanged  ###########################`, this.id)
-  }
+
+  //locationChanged_noLongerNeeded(loc: FormGroup) {
+  //    this.log.verbose(`locationChanged  ###########################`, this.id)  }
 
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
@@ -195,25 +155,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
 
-    // These elements got moved to <rangertrak-location> element!
-    //this.button = document.querySelector('#button') as HTMLButtonElement
-    //this.tooltip = document.querySelector('#tooltip') as HTMLHtmlElement
-
     // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
-
-    // https://popper.js.org/docs/v2/constructors/
-    // Popper: Invalid reference or popper argument provided. They must be either a DOM element or virtual element.
-    // this.popperInstance = P.createPopper(this.button, this.tooltip)
-    /* , {
-       modifiers: [
-         {
-           name: 'offset',
-           options: {
-             offset: [0, 8],
-           },
-         },
-       ],
-     }) */
 
     this.log.verbose(` ngOnInit completed`, this.id)
   }
@@ -223,9 +165,14 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   initLocation() { // TODO: Shouldn't this be in location.component.ts?!
+    // BUG: duplicate of locationFrmGrp creation in EntryComponent.ts
+    if (!this.settings) {
+      this.log.error(`this.settings was null in initLocation`, this.id)
+      return
+    }
     this.locationFrmGrp = this._formBuilder.group({
-      lat: [this.settings!.defLat],
-      lng: [this.settings!.defLng],
+      lat: [this.settings.defLat],
+      lng: [this.settings.defLng],
       address: [''] //, Validators.required],
     })
 
@@ -263,6 +210,10 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
    * Transforms Settings Array into Form Array
    */
   initEntryForm() {
+    if (!this.settings) {
+      this.log.error(`this.settings was null in initEntryForm`, this.id)
+      return
+    }
 
     this.entryDetailsForm = this._formBuilder.group({
       // matches html's FormControlName="whatever"
@@ -271,7 +222,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       // team: ['T1'],
       locationFrmGrp: this.initLocation(),
       date: [new Date()],
-      status: [this.fieldReportStatuses[this.settings ? this.settings.defFieldReportStatus : 0].status],
+      status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status],
       notes: ['']
     })
   }
@@ -283,6 +234,10 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   // https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
   // https://stackoverflow.com/a/54048660
   resetEntryForm() {
+    if (!this.settings) {
+      this.log.error(`this.settings was null in initEntryForm`, this.id)
+      return
+    }
     this.log.verbose("Resetting form...", this.id)
     this.entryDetailsForm.reset() // this clears flags on the model like touched, dirty, etc.
 
@@ -294,7 +249,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       //team: ['T0'],
       location: this.initLocation(),
       date: [new Date()],  // TODO: reset dateCtrl instead?!
-      status: [this.fieldReportStatuses[this.settings ? this.settings.defFieldReportStatus : 0]],
+      status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus]],
       note: ['']
     })
     // Allow getting new OnChangeUpdates - or use the subscription?!

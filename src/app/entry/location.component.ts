@@ -11,8 +11,7 @@ import type { StrictModifiers } from '@popperjs/core';
 import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { mdiAccount, mdiInformationOutline } from '@mdi/js';
 import { MatIconRegistry } from '@angular/material/icon';
-//import { lookupCollections, locate } from '@iconify/json'; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
-import { DomSanitizer } from '@angular/platform-browser';
+
 
 import { SettingsService, LogService, SettingsType, LocationType } from '../shared/services';
 /*
@@ -125,7 +124,6 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   constructor(
     private settingsService: SettingsService,
     private _formBuilder: FormBuilder,
-    iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, // for svg mat icons
     private log: LogService,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("Construction", this.id)
@@ -144,8 +142,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       address: ''
     }
 
-    // ?initialize our location (duplicate!!! of that in EntryComponent.ts)
-
+    // BUG: duplicate of locationFrmGrp creation in EntryComponent.ts
     // new values here bubble up as emitted events - see onNewLocation()
     this.locationFrmGrp = this._formBuilder.group({
       lat: [this.location.lat],
@@ -156,12 +153,6 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // showNewLocation ALSO updates location.address... so should be done before onNewLocation
     this.showNewLocationOnForm(this.location.lat, this.location.lng)
     this.onNewLocation(this.location) // Emit new location event to parent
-
-    // https://fonts.google.com/icons && https://material.angular.io/components/icon
-    // Note that we provide the icon here as a string literal here due to a limitation in
-    // Stackblitz. If you want to provide the icon from a URL, you can use:
-    //iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
-    //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
 
     this.log.verbose("Out of constructor", this.id)
   }
@@ -190,8 +181,12 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
   public ngOnInit(): void {
     this.log.info("ngOnInit", this.id)
+    if (!this.settings) {
+      this.log.error(`this.settings was null in ngOnInit`, this.id)
+      return
+    }
 
-    this.showNewLocationOnForm(this.settings!.defLat, this.settings!.defLng)
+    this.showNewLocationOnForm(this.settings.defLat, this.settings.defLng)
 
     /*
             this.button = document.querySelector('#button') as HTMLButtonElement
@@ -599,9 +594,14 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
         this.log.warn(`chkPCode of ${pCode} got NULL result!!!`, this.id);
       }
 
+      if (!this.settings) {
+        this.log.error(`this.settings was null in chkPCodes`, this.id)
+        return
+      }
+
       if (OpenLocationCode.isValid(pCode)) {
         if (OpenLocationCode.isShort(pCode)) {
-          pCode = OpenLocationCode.recoverNearest(pCode, this.settings!.defLat, this.settings!.defLng)
+          pCode = OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
         }
 
         // Following needs a full (Global) code

@@ -4,6 +4,7 @@ import { RangerService, SettingsService, SettingsType, LogService, FieldReportsT
 import { HttpClient } from '@angular/common/http'
 import L from 'leaflet'
 import { LatLngBounds } from 'leaflet';
+import { RangerType } from './ranger.interface';
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
@@ -12,18 +13,23 @@ export enum FieldReportSource { Voice, Packet, APRS, Email }
 export class FieldReportService {
 
   private id = 'Field Report Service'
+
   private fieldReports!: FieldReportsType
   private fieldReportsSubject: BehaviorSubject<FieldReportsType>
   private selectedFieldReports!: FieldReportsType  // TODO: Enable subscription to this also?
+
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
+
+  private rangersSubscription$!: Subscription
+  public rangers: RangerType[] = []
+
   private storageLocalName = 'fieldReports'
   private serverUri = 'http://localhost:4000/products'
   private boundsMargin = 0.0025
 
   constructor(
     private rangerService: RangerService,
-    //  private teamService: TeamService,
     private settingsService: SettingsService,
     private log: LogService,
     private httpClient: HttpClient) {
@@ -38,34 +44,40 @@ export class FieldReportService {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
+    this.fieldReports = this.LoadFieldReportsFromLocalStorage()
 
+    log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
+
+    //this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
+    this.fieldReportsSubject = new BehaviorSubject(this.fieldReports)
+    this.updateFieldReportsAndPublish()
+  }
+
+  /**
+   * Try to load existing FieldReports from browser's Local Storage
+   * @returns
+   */
+  private LoadFieldReportsFromLocalStorage(): FieldReportsType {
     let localStorageFieldReports = localStorage.getItem(this.storageLocalName)
 
     if (localStorageFieldReports == null) {
-      log.warn(`No Field Reports found in Local Storage. Will rebuild from defaults.`, this.id)
-      this.fieldReports = this.initFieldReports()
+      this.log.warn(`No Field Reports found in Local Storage. Will rebuild from defaults.`, this.id)
+      return this.initEmptyFieldReports()
     }
     else if (localStorageFieldReports.indexOf("version") <= 0) {
-      log.error(`Field Reports in Local Storage appear corrupted & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`, this.id)
+      this.log.error(`Field Reports in Local Storage appear corrupted & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`, this.id)
       localStorage.setItem(this.storageLocalName + '-BAD', localStorageFieldReports)
-      this.fieldReports = this.initFieldReports()
+      return this.initEmptyFieldReports()
     }
     else {
-      this.fieldReports = JSON.parse(localStorageFieldReports)
+      return JSON.parse(localStorageFieldReports)
     }
-
-    log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
-    //this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
-    this.fieldReportsSubject = new BehaviorSubject(this.fieldReports)
-    this.updateFieldReports()
   }
 
-
-
   /**
-   * Set default/initial FieldReports
+   * Create a fresh/new/default/initial FieldReports object
    */
-  private initFieldReports() {
+  private initEmptyFieldReports() {
 
     //(property) FieldReportService.fieldReports: FieldReportsType
     //Type '{ version: string | undefined; date: Date; event: string; bounds: L.LatLngBounds; numReport: number; maxId: number; filter: string; fieldReportArray: { id: number; callsign: string; lat: number | undefined; ... 4 more ...; note: string; }[]; }' is not assignable to type 'FieldReportsType'.ts(2322)
@@ -97,9 +109,9 @@ export class FieldReportService {
   }
 
   /**
-   * rewrite field reports to localStorage & notify observers
+   * Update localStorage with new field reports & notify observers
    */
-  private updateFieldReports() {
+  private updateFieldReportsAndPublish() {
     //this.log.verbose(`NEW REPORT AVAILABLE, with E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
 
     // Do any needed sanity/validation here
@@ -121,13 +133,13 @@ export class FieldReportService {
     this.fieldReports.fieldReportArray.push(newReport)
     let newPt = L.latLng(newReport.lat, newReport.lng)
     this.fieldReports.bounds.extend(newPt)
-    this.updateFieldReports() // put to localStorage & update subscribers
+    this.updateFieldReportsAndPublish() // put to localStorage & update subscribers
     return newReport
   }
 
   public setSelectedFieldReports(selection: FieldReportType[]) {
     if (this.selectedFieldReports == null) {
-      this.selectedFieldReports = this.initFieldReports()
+      this.selectedFieldReports = this.initEmptyFieldReports()
       this.selectedFieldReports.filter = "As selected by user"
     }
     this.selectedFieldReports.fieldReportArray = selection
@@ -216,9 +228,15 @@ export class FieldReportService {
   }
 
   generateFakeData(num: number = 15) {
-    // let teams = this.teamService.getTeams()
-    let rangers = this.rangerService.GetRangers()
-    if (rangers == null || rangers.length < 1) {
+    let rangers: RangerType[] = []
+
+    this.rangersSubscription$ = this.rangerService.getRangersObserver().subscribe({
+      next: (newRangers) => { rangers = newRangers },
+      error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
+      complete: () => this.log.info('Rangers Subscription complete', this.id)
+    })
+
+    if (rangers == null || rangers!.length < 1) {
       alert("No Rangers! Please add some 1st.")
       return
     }
@@ -228,8 +246,12 @@ export class FieldReportService {
     }
 
     const streets = ["Ave", "St.", "Pl.", "Court", "Circle"]
-    const notes = ["Reports beautiful sunrise", "Roudy Kids", "Approaching Neighborhood CERT", "Confused & dazed in the sun",
-      "Wow", "na", "Can't hear you", "Bounced via tail of a comet!", "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
+    const notes = ["Reports beautiful sunrise", "Roudy Kids chasing me",
+      "Approaching Neighborhood CERT", "Confused & dazed by a sun spot",
+      "Wow", "#&)Rats)^%$#@", "na", "Can't hear you",
+      "Alright: Found another GeoCache!", "Need a Snickers bar",
+      "Bounced via tail of a comet!", "Is that...Sasquatch???",
+      "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
 
     const msSince1970 = new Date().getTime()
     this.log.info(`Adding an additional ${num} FAKE field reports... with base of ${msSince1970}`, this.id)
@@ -249,7 +271,7 @@ export class FieldReportService {
       this.fieldReports.numReport += num
     }
     this.recalcFieldBounds(this.fieldReports)
-    this.updateFieldReports()
+    this.updateFieldReportsAndPublish()
   }
 
   // ---------------------------------  UNUSED -------------------------------------------------------
@@ -261,7 +283,7 @@ export class FieldReportService {
   private setFieldReports(newReports: FieldReportType[]) {
     this.fieldReports.fieldReportArray = newReports
     this.recalcFieldBounds(this.fieldReports)
-    this.updateFieldReports()
+    this.updateFieldReportsAndPublish()
   }
 
   private allFieldReportsToServer_unused() {
@@ -287,14 +309,14 @@ export class FieldReportService {
     const index = this.findIndex(report.id)
     this.fieldReports.fieldReportArray[index] = report
     // TODO: recalc bounds
-    this.updateFieldReports()
+    this.updateFieldReportsAndPublish()
   }
 
   private deleteFieldReport(id: number) {
     const index = this.findIndex(id);
     this.fieldReports.fieldReportArray.splice(index, 1);
     // TODO: recalc bounds
-    this.updateFieldReports();
+    this.updateFieldReportsAndPublish();
     // this.nextId-- // REVIEW: is this desired???
   }
 
