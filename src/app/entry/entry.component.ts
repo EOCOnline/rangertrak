@@ -148,6 +148,15 @@ entry.component.ts(77, 26): This type does not have a value, so it cannot be use
     //this.locationFrmGrp
   }
 
+  onNewTime(newTime: any) {
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.verbose(`Got new time: ${JSON.stringify(newTime)}`, this.id)
+    this.time = JSON.parse(newTime)
+    // This then automatically gets sent to mini-map children via their @Input statements
+
+    // TODO: BUT, we still need to update our local copy:
+    //this.timeFrmGrp
+  }
   locationChanged_noLongerNeeded(loc: FormGroup) {
     this.log.verbose(`locationChanged  ###########################`, this.id)
   }
@@ -172,18 +181,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
  "team": "T1",
  [...]
  */
-
-    this.entryDetailsForm = this._formBuilder.group({
-      // matches html's FormControlName="whatever"
-      id: -1,
-      callsign: [''],
-      // team: ['T1'],
-      locationFrmGrp: this.initLocation(),
-      date: [new Date()],
-      status: [this.fieldReportStatuses[this.settings ? this.settings.defFieldReportStatus : 0].status],
-      notes: ['']
-    })
-
+    this.initEntryForm()
     // subscribe to addresses value changes
     this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
       this.log.verbose(`Subscription to locationFrmGrp got: ${x}`, this.id);
@@ -216,7 +214,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
          },
        ],
      }) */
-    this.date = dayjs()
+
     this.log.verbose(` ngOnInit completed`, this.id)
   }
 
@@ -261,24 +259,47 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     */
   }
 
+  /**
+   * Transforms Settings Array into Form Array
+   */
+  initEntryForm() {
+
+    this.entryDetailsForm = this._formBuilder.group({
+      // matches html's FormControlName="whatever"
+      id: -1,
+      callsign: [''],
+      // team: ['T1'],
+      locationFrmGrp: this.initLocation(),
+      date: [new Date()],
+      status: [this.fieldReportStatuses[this.settings ? this.settings.defFieldReportStatus : 0].status],
+      notes: ['']
+    })
+  }
+
+  /**
+   * Reinitializes Form Array values - without recrating a new object
+   */
   // this.myReactiveForm.reset(this.myReactiveForm.value)
   // https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
   // https://stackoverflow.com/a/54048660
   resetEntryForm() {
     this.log.verbose("Resetting form...", this.id)
+    this.entryDetailsForm.reset() // this clears flags on the model like touched, dirty, etc.
 
-    this.entryDetailsForm = this._formBuilder.group({
+    // this.entryDetailsForm = this._formBuilder.group({ // OLD: don't recreate the object!!
+    // NOTE: Use patchValue to update just a few
+    this.entryDetailsForm.setValue({
       id: -2,
       callsign: [''],
-      team: ['T0'],
+      //team: ['T0'],
       location: this.initLocation(),
       date: [new Date()],  // TODO: reset dateCtrl instead?!
       status: [this.fieldReportStatuses[this.settings ? this.settings.defFieldReportStatus : 0]],
       note: ['']
     })
     // Allow getting new OnChangeUpdates - or use the subscription?!
-    this.entryDetailsForm.markAsPristine();
-    this.entryDetailsForm.markAsUntouched();
+    //this.entryDetailsForm.markAsPristine();
+    //this.entryDetailsForm.markAsUntouched();
   }
 
   // TODO: NOt working yet...
@@ -325,13 +346,8 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     element.style.animation = "";
   }
 
-  // save(model: FieldReport) {
-  // call API to save FieldReport
-  // this.log.verbose(model, this.id);
-  //}
-
   onFormSubmit(formData1: string): void {
-    this.log.verbose(`Form submited`, this.id)
+    this.log.verbose(`Submit Form`, this.id)
     //this.date=this.dateCtrl.value // TODO:
     this.entryDetailsForm.value.date = this.dateCtrl.value
     let formData = JSON.stringify(this.entryDetailsForm.value)
@@ -345,7 +361,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       this.resetMaterialFadeAnimation(this.submitInfo)
     }
     else {
-      this.log.error("Submittion info field not found", this.id)
+      this.log.error("Submit Info field not found. Could not display report confirmation confirmation", this.id)
     }
     this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
 
@@ -375,53 +391,4 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   ngOnDestroy() {
     //this.fieldReportsSubscription$.unsubscribe()
   }
-}
-
-// TODO: Duplicate of that at bottom of locationComponent?!
-
-const THUMBUP_ICON =
-  `
-  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px">
-    <path d="M0 0h24v24H0z" fill="none"/>
-    <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.` +
-  `44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5` +
-  `1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z"/>
-  </svg>
-`
-
-// https://popper.js.org/docs/v2/constructors/
-type Placement =
-  | 'auto'
-  | 'auto-start'
-  | 'auto-end'
-  | 'top'
-  | 'top-start'
-  | 'top-end'
-  | 'bottom'
-  | 'bottom-start'
-  | 'bottom-end'
-  | 'right'
-  | 'right-start'
-  | 'right-end'
-  | 'left'
-  | 'left-start'
-  | 'left-end';
-type Strategy = 'absolute' | 'fixed';
-/*type Options = {|
-  placement: Placement, // "bottom"
-  modifiers: Array<$Shape<Modifier<any>>>, // []
-  strategy: PositioningStrategy, // "absolute",
-  onFirstUpdate?: ($Shape<State>) => void, // undefined
-|};*/
-
-@Component({
-  selector: 'icon',
-  template: `
-    <svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
-        <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
-    </svg>
-  `
-})
-export class IconComponent {
-  @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
 }

@@ -44,6 +44,7 @@ import { MiniGMapComponent } from './entry/mini-gmap.component';
 import { MiniLMapComponent } from './entry/mini-lmap.component';
 import { HeaderComponent } from './shared/';
 import { TimePickerComponent } from './shared/time-picker/time-picker.component';
+import { IconsComponent } from './shared/icons/icons.component';
 //import { loc2Component } from './entry/loc2.component';
 
 // from ionic-app.module.ts
@@ -114,7 +115,8 @@ import { TimePickerComponent } from './shared/time-picker/time-picker.component'
     MiniGMapComponent,
     MiniLMapComponent,
     HeaderComponent,
-    TimePickerComponent
+    TimePickerComponent,
+    IconsComponent
     //,     loc2Component
   ],
 

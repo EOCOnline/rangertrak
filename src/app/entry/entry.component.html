@@ -85,27 +85,26 @@
     <mat-icon svgIcon="thumbs-up" aria-hidden="false" aria-label="thumbs up SVG icon"></mat-icon>thumbsup
     <span class="material-icons-two-tone">info</span-->
 
-    <div formGroupName="locationFrmGrp">
-      <!--div>
+    <!--div>
         <label>address</label>
         <input type="text" formControlName="address">
         <div *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
           class="text-sm text-danger">bad address</div>
       </div-->
 
-      <!-- from Majd Asab in Medium.com...
+    <!-- from Majd Asab in Medium.com...
    [(ngModel)]="extLocation"
  name="extLocationVal"
  #validations=""ngModel"
 -->
 
-      <!--
+    <!--
 
   Error: Uncaught (in promise): InvalidCharacterError: Failed to execute 'setAttribute' on 'Element': '[location' is not a valid attribute name.
 Error: Failed to execute 'setAttribute' on 'Element': '[location' is not a valid attribute name.
 location as FormGroup does compile, but above run-time error...
 -->
-
+    <div formGroupName="locationFrmGrp">
       <rangertrak-location
         (newLocationEvent)="onNewLocation($event)"
       ></rangertrak-location>
@@ -142,7 +141,9 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
     <h2 class="elegant">
       <mat-label>When</mat-label>
     </h2>
-    <rangertrak-time-picker (newTimeEvent)="onNewTime($event)"></rangertrak-time-picker>
+    <div FormControl="timepickerFrmControl">
+      <rangertrak-time-picker (newTimeEvent)="onNewTime($event)"></rangertrak-time-picker>
+    </div>
 
     <h2 class="elegant bordered">What</h2>
 

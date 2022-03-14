@@ -75,6 +75,7 @@ export class TimePickerComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.date = dayjs()
   }
 
   onNewTime(newTime: any) {

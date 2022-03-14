@@ -12,7 +12,6 @@ import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { mdiAccount, mdiInformationOutline } from '@mdi/js';
 import { MatIconRegistry } from '@angular/material/icon';
 //import { lookupCollections, locate } from '@iconify/json'; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
-
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { SettingsService, LogService, SettingsType, LocationType } from '../shared/services';
@@ -20,10 +19,8 @@ import { SettingsService, LogService, SettingsType, LocationType } from '../shar
 https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
 https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-driven-forms-in-angular-2
 https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
-ICONS: see pg 164, Ang Dev w/ TS
 */
 
-// formControlName must be used with a parent formGroup directive.
 
 @Component({
   //moduleId: module.id,
@@ -36,32 +33,7 @@ export class LocationComponent implements OnInit, AfterViewInit {
 
   // Grab reference to location portion of parent's entry form
   @Input() public locationFrmGrp: FormGroup // input from entry.component.ts
-
-  // gets Type 'EventEmitter' is not generic.
-  // per pg 188, Ng Dev w/TS
-  //@Output() newLocation: EventEmitter<LocationType> = new EventEmitter()
-
-  // per: https://www.ifourtechnolab.com/blog/understanding-output-and-eventemitter-in-angular
-  // gets Operator '>' cannot be applied to types 'boolean' and 'MiniLMapComponent'
-  //@Output() newLocationEvent = new EventEmitter() < LocationType > <MiniLMapComponent>()
-
-  // per https://www.concretepage.com/angular-2/angular-2-custom-event-binding-eventemitter-example
-  // Expected 0 type arguments, but got 1
   @Output() newLocationEvent = new EventEmitter<LocationType>()
-
-  //https://angular.io/api/core/EventEmitter
-  /* The EventEmitter class is defined and exposed by the events module:
-
-  const EventEmitter = require('events');
-  All EventEmitters emit the event 'newListener' when new listeners are added and 'removeListener' when existing listeners are removed.
-
-  It supports the following option:
-
-  @since — v0.1.26
-
-  Type 'EventEmitter' is not generic
-  */
-
   /*
   LocationComponent - out of ngOnInit
 core.mjs:6485 ERROR Error: formControlName must be used with a
@@ -188,7 +160,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // https://fonts.google.com/icons && https://material.angular.io/components/icon
     // Note that we provide the icon here as a string literal here due to a limitation in
     // Stackblitz. If you want to provide the icon from a URL, you can use:
-    iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
+    //iconRegistry.addSvgIcon('thumbs-up', sanitizer.bypassSecurityTrustResourceUrl('icon.svg'))
     //iconRegistry.addSvgIconLiteral('thumbs-up', sanitizer.bypassSecurityTrustHtml(THUMBUP_ICON))
 
     this.log.verbose("Out of constructor", this.id)
@@ -764,60 +736,4 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
 
   // #endregion Public Methods (11)
-}
-
-
-
-
-
-
-const THUMBUP_ICON =
-  `
-  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px">
-    <path d="M0 0h24v24H0z" fill="none"/>
-    <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.` +
-  `44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5` +
-  `1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z"/>
-  </svg>
-`
-
-// https://popper.js.org/docs/v2/constructors/
-type Placement =
-  | 'auto'
-  | 'auto-start'
-  | 'auto-end'
-  | 'top'
-  | 'top-start'
-  | 'top-end'
-  | 'bottom'
-  | 'bottom-start'
-  | 'bottom-end'
-  | 'right'
-  | 'right-start'
-  | 'right-end'
-  | 'left'
-  | 'left-start'
-  | 'left-end';
-type Strategy = 'absolute' | 'fixed';
-/*type Options = {|
-  placement: Placement, // "bottom"
-  modifiers: Array<$Shape<Modifier<any>>>, // []
-  strategy: PositioningStrategy, // "absolute",
-  onFirstUpdate?: ($Shape<State>) => void, // undefined
-|};*/
-
-@Component({
-  selector: 'icon',
-  template: `
-    <svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
-        <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
-    </svg>
-  `
-})
-export class IconComponent2 {
-  // #region Properties (1)
-
-  @Input('path') public data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
-
-  // #endregion Properties (1)
 }

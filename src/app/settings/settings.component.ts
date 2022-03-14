@@ -211,6 +211,11 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     //this.rowData = this.settingsService.ResetFieldReportStatusDefaults()
   }
 
+  /**
+   * Transforms Settings Array into Form Array
+   * TODO: Rename to InitSettingsForm()
+   * REVIEW: Do we need a version like entry.component.ts's resetSettingsForm()?
+   */
   getFormArrayFromSettingsArray() {
     this.log.verbose("getFormArrayFromSettingsArray", this.id)
 
@@ -263,7 +268,12 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     })
   }
 
-  getSettingsArrayFromFormArray() { //}: SettingsType {
+  /**
+   * Transform back from Form Array to Settings Array that SettingsService can save
+   *
+   * @returns
+   */
+  getSettingsArrayFromFormArray() { //}: SettingsType { // Can't do with !this.settings guard...
     this.log.verbose("getSettingsArrayFromFormArray", this.id)
 
     if (!this.settings) {
@@ -310,26 +320,6 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       defFieldReportStatus: this.settingsEditorForm.value.defFieldReportStatus,
       fieldReportStatuses: this.settingsEditorForm.value.fieldReportStatuses
       // fieldReportKeywords: string[],  // Future...could also just search notes field
-
-      /*
-            application: this.settings ?  as string,
-            version: this.settings ? EditorForm.value.version as string,
-            id: this.settings ? EditorForm.value.id as number,
-            name: this.settings ? EditorForm.value.name as string,
-            note: this.settings ? EditorForm.value.note as string,
-            defLat: this.settings ? EditorForm.value.latitude as number,
-            defLng: this.settingsEditorForm.value.longitude as number,
-            defZoom: this.settingsEditorForm.value.zoom as number,
-            defPlusCode: this.settingsEditorForm.value.plusCode as string,
-            w3wLocale: this.settingsEditorForm.value.w3wLocale as string,
-            markerSize: this.settingsEditorForm.value.markerSize as number,
-            markerShape: this.settingsEditorForm.value.markerShape as number,
-            defFieldReportStatus: this.settingsEditorForm.value.defFieldReportStatus as number,
-            allowManualPinDrops: this.settingsEditorForm.value.allowManualPinDrops as boolean,
-            debugMode: this.settingsEditorForm.value.debugMode as boolean,
-            logToPanel: this.settingsEditorForm.value.logToPanel as boolean,
-            logToConsole: this.settingsEditorForm.value.logToConsole as boolean,
-            */
     }
   }
 
