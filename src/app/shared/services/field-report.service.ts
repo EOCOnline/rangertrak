@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, Observer, of, Subscription, throwError } from 'rxjs'
-import { Injectable, OnInit, Pipe, PipeTransform } from '@angular/core'
+import { Injectable, OnInit, Pipe, PipeTransform, OnDestroy } from '@angular/core';
 import { RangerService, SettingsService, SettingsType, LogService, FieldReportsType, FieldReportType, FieldReportStatusType } from './' // , TeamService
 import { HttpClient } from '@angular/common/http'
 import L from 'leaflet'
@@ -10,7 +10,7 @@ export enum FieldReportSource { Voice, Packet, APRS, Email }
 
 
 @Injectable({ providedIn: 'root' })
-export class FieldReportService {
+export class FieldReportService implements OnDestroy {
 
   private id = 'Field Report Service'
 
@@ -285,6 +285,11 @@ export class FieldReportService {
     }
     this.recalcFieldBounds(this.fieldReports)
     this.updateFieldReportsAndPublish()
+  }
+
+  ngOnDestroy() {
+    this.rangersSubscription$.unsubscribe()
+    this.settingsSubscription$.unsubscribe()
   }
 
   // ---------------------------------  UNUSED -------------------------------------------------------

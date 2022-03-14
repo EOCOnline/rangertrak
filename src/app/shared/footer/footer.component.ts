@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SettingsService, SettingsType } from '../services'
 import { LogService } from '../services/log.service';
@@ -11,7 +11,7 @@ import { LogService } from '../services/log.service';
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss']
 })
-export class FooterComponent implements OnInit {
+export class FooterComponent implements OnInit, OnDestroy {
 
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
@@ -39,4 +39,7 @@ export class FooterComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  ngOnDestroy() {
+    this.settingsSubscription$.unsubscribe()
+  }
 }

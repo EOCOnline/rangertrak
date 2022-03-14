@@ -353,6 +353,9 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   ngOnDestroy() {
-    //this.fieldReportsSubscription$.unsubscribe()
+    this.locationSubscription$.unsubscribe()
+    this.rangersSubscription$.unsubscribe()
+    this.settingsSubscription$.unsubscribe()
+    this.timeSubscription$.unsubscribe()
   }
 }

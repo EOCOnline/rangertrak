@@ -19,7 +19,7 @@ import { MDCSwitch } from '@material/switch'
  TODO: Allow geocoding: https://rapidapi.com/blog/google-maps-api-react/
  Option doc: https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions
 
-GoogleMapsModule exports three components that we can use:
+GoogleMapsModule (their Angular wrapper) exports three components that we can use:
 - GoogleMap: this is the wrapper around Google Maps, available via the google-map selector
 - MapMarker: used to add markers on the map, available via the map-marker selector
 - MapInfoWindow: the info window of a marker, available via the map-info-window selector
@@ -534,7 +534,9 @@ MarkerClustererPlus Library - also old
     // map.setTilt(45);
     this.log.info(`TrafficLayer made ${this.trafficLayerVisible ? 'visible' : 'hidden'}`, this.id)
   }
+
   ngOnDestroy() {
     this.fieldReportsSubscription$.unsubscribe()
+    this.settingsSubscription$.unsubscribe()
   }
 }

@@ -5,15 +5,13 @@ import { Observable, Subscription } from 'rxjs'
 
 import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet'
 import * as L from 'leaflet'
-
 import 'leaflet.markercluster';
+
 //import { openDB, deleteDB, wrap, unwrp } from 'idb'
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 // also: https://github.com/onthegomap/planetiler
 
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, SettingsType } from '../shared/services'
-//import { CodeArea, OpenLocationCode, Utility } from '../shared/'
-//import { Context } from 'ag-grid-community'
 import { MDCSwitch } from '@material/switch'
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
@@ -39,10 +37,6 @@ const markerIcon = L.icon({
 })
 L.Marker.prototype.options.icon = iconDefault;
 
-export type addressType = {
-  title: string;
-  num: number
-}
 
 
 @Component({
@@ -66,16 +60,19 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   private fieldReportsSubscription$!: Subscription
   private fieldReports: FieldReportsType | undefined
 
-  // private latestReport: FieldReportsType | undefined
-  public fieldReportArray: FieldReportType[] = []
-  //private fieldReportStatuses: FieldReportStatusType[] = []
+  // What gets displayed: alternates between all & selected rows, based on the switch
+  public displayedFieldReportArray: FieldReportType[] = []
+  // following doesn't need a subscription as user selections are auto-saved & available,
+  // if they switch to this page
+  //! REVIEW: UNLESS the switch was already on "selected rows" and isn't reswitched!!!
   private selectedReports: FieldReportsType | null = null
   numSelectedRows = 0
   allRows = 0
 
   lmap!: L.Map
-  overviewLMap?: L.Map
-  overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } } // TODO: Leaflet's version?
+  overviewLMap!: L.Map
+  // TODO: Leaflet's version of following?
+  overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
   zoom = 15 // actual zoom level of main map
   zoomDisplay = 15 // what's displayed below main map
   center = { lat: 0, lng: 0 }
@@ -86,7 +83,6 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   markerClusterGroup: L.MarkerClusterGroup//  the MarkerClusterGroup class extends the FeatureGroup so it has all of the handy methods like clearLayers() or removeLayers()
   markerClusterData = []
 
-  //selectedFieldReports: FieldReportType[] = []
   filterSwitch: MDCSwitch | null = null
   filterButton: HTMLButtonElement | null = null
 
@@ -101,6 +97,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
+        // REVIEW: Any new settings just ripple thru, or does anything need pushing?!
         this.settings = newSettings
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -110,7 +107,6 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fieldReportsSubscription$ =
       this.fieldReportService.getFieldReportsObserver().subscribe({
         next: (newReport) => {
-          //this.latestReport = newReport
           this.gotNewFieldReports(newReport)
         },
         error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
@@ -126,8 +122,14 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
     //! 2TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
+    // BUG: refresh page resets selected switch
     if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
-      this.numSelectedRows = this.selectedReports.fieldReportArray.length
+      this.numSelectedRows = this.selectedReports.numReport
+      if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
+        this.log.error(`ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
+        this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
+        this.numSelectedRows = this.selectedReports.fieldReportArray.length
+      }
     } else {
       this.log.warn(`Could not retrieve selected Field Reports in ngOnInit.`, this.id)
       this.numSelectedRows = 0
@@ -164,8 +166,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.allRows = newReports.numReport
     this.fieldReports = newReports
-    this.fieldReportArray = newReports.fieldReportArray
-    console.assert(this.allRows == this.fieldReportArray.length, `this.allRows=${this.allRows} != this.fieldReportArray.length ${this.fieldReportArray.length}`)
+    this.displayedFieldReportArray = newReports.fieldReportArray
+    console.assert(this.allRows == this.displayedFieldReportArray.length, `this.allRows=${this.allRows} != this.fieldReportArray.length ${this.displayedFieldReportArray.length}`)
     //this.refreshMap()
     // this.reloadPage()  // TODO: needed?
   }
@@ -296,21 +298,25 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     return Math.min(Math.max(num, min), max)
   }
 
-
-  // TODO: Unset the following if SWITCH is unset!!!!
   onSwitchSelectedFieldReports(event: any) {
     if (!this.filterSwitch || !this.filterSwitch.selected) {
       if (!this.fieldReports) {
         this.log.error(`this.settings not yet set in onSwitchSelectedFieldReports()`, this.id)
         return
       }
-      this.fieldReportArray = this.fieldReports.fieldReportArray
-      this.log.verbose(`Displaying ALL ${this.fieldReportArray.length} field Reports`, this.id)
+      this.displayedFieldReportArray = this.fieldReports.fieldReportArray
+      this.log.verbose(`Displaying ALL ${this.displayedFieldReportArray.length} field Reports`, this.id)
     } else {
-      this.fieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
-      this.log.verbose(`Displaying ${this.fieldReportArray.length} SELECTED field Reports`, this.id)
+      this.displayedFieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
+      if (this.numSelectedRows != this.displayedFieldReportArray.length) {
+        this.log.warn(`Need to update numSelectedRows ${this.numSelectedRows} better: != ${this.displayedFieldReportArray.length}`)
+      }
+      this.numSelectedRows = this.displayedFieldReportArray.length
+      this.log.verbose(`Displaying ${this.displayedFieldReportArray.length} SELECTED field Reports`, this.id)
     }
     // TODO: Need to refresh map?!
+    // this.refreshMap()
+    // this.reloadPage()  // TODO: needed?
   }
 
   displayAllMarkers() {

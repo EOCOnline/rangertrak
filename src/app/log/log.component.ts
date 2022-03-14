@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { AfterContentInit, AfterViewInit, Component, Inject, OnInit } from '@angular/core'
+import { AfterContentInit, AfterViewInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
 import { Subscription, switchMap } from 'rxjs';
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { Utility } from "../shared"
@@ -15,7 +15,7 @@ import { LogType, LogService, LogLevel, SettingsService, SettingsType } from '..
   templateUrl: './log.component.html',
   styleUrls: ['./log.component.scss']
 })
-export class LogComponent implements OnInit { //}, AfterContentInit, AfterViewInit {
+export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, AfterViewInit {
   // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
   private id = 'Log Component'
   public title = 'Event Summary Log'
@@ -149,5 +149,10 @@ export class LogComponent implements OnInit { //}, AfterContentInit, AfterViewIn
 
     let ot = this.logPanel.scrollHeight - this.logPanel.clientHeight
     if (ot > 0) this.logPanel.scrollTop = ot
+  }
+
+
+  ngOnDestroy() {
+    this.settingsSubscription$.unsubscribe()
   }
 }

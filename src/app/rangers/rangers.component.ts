@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FieldReportService, FieldReportType, LogService, RangerService, RangerType, SettingsService, SettingsType } from '../shared/services/';
 import { DOCUMENT } from '@angular/common'
 import { csvImport } from './csvImport'
@@ -23,7 +23,7 @@ type AOA = any[][]  // array of arrays
   templateUrl: './rangers.component.html',
   styleUrls: ['./rangers.component.scss']
 })
-export class RangersComponent implements OnInit {
+export class RangersComponent implements OnInit, OnDestroy {
 
   private id = 'Ranger Component'
   public title = 'Rangers (CERT, ACS/ARES, etc)'
@@ -443,6 +443,11 @@ export class RangersComponent implements OnInit {
     }
   }
 
+
+  ngOnDestroy() {
+    this.rangersSubscription$.unsubscribe()
+    this.settingsSubscription$.unsubscribe()
+  }
 }
 
   // works - but Unused....

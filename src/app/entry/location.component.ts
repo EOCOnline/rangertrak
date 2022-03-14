@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { BehaviorSubject, debounceTime, fromEvent, Observable, Subscription } from 'rxjs';
 import { DDToDMS, CodeArea, GoogleGeocode, OpenLocationCode } from '../shared/'
@@ -27,7 +27,7 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   templateUrl: './location.component.html',
   styleUrls: ['./location.component.scss']
 })
-export class LocationComponent implements OnInit, AfterViewInit {
+export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   // #region Properties (33)
 
   // Grab reference to location portion of parent's entry form
@@ -735,6 +735,8 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     let s = "for Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds"
   }
 
-
+  ngOnDestroy() {
+    this.settingsSubscription$.unsubscribe()
+  }
   // #endregion Public Methods (11)
 }

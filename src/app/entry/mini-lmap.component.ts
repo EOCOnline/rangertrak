@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Inject, Input, NgZone, OnInit, ViewChild } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, Inject, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { fromEvent, Subscription } from 'rxjs'
 
@@ -38,7 +38,7 @@ L.Marker.prototype.options.icon = iconDefault;
   styleUrls: ['./mini-lmap.component.scss',
     '../../../node_modules/leaflet/dist/leaflet.css'] // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
 })
-export class MiniLMapComponent implements AfterViewInit {
+export class MiniLMapComponent implements AfterViewInit, OnDestroy {
   @Input() set locationUpdated(value: LocationType) {
     this.gotNewLocation(value)
   }
@@ -253,5 +253,9 @@ export class MiniLMapComponent implements AfterViewInit {
 
       //_marker.addEventListener('click', this._markerOnClick);
     }
+  }
+
+  ngOnDestroy() {
+    this.settingsSubscription$.unsubscribe()
   }
 }

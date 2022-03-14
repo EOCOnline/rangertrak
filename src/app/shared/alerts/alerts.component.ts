@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { NavigationEnd } from '@angular/router';
 
@@ -14,7 +14,7 @@ import { LogService } from '../services/log.service';
   templateUrl: './alerts.component.html',
   styleUrls: ['./alerts.component.scss']
 })
-export class AlertsComponent implements OnInit {
+export class AlertsComponent implements OnInit, OnDestroy {
 
   private id = 'Alerts Component'
   isAlertHidden: boolean
@@ -109,6 +109,7 @@ export class AlertsComponent implements OnInit {
     }
   }
 
+  // REVIEW: or just use: toFixed(#)
   zeroFill(integ: number, lngth: number) {
     var strg = integ.toString();
     while (strg.length < lngth)
@@ -116,6 +117,9 @@ export class AlertsComponent implements OnInit {
     return strg;
   }
 
+  ngOnDestroy() {
+    this.settingsSubscription$.unsubscribe()
+  }
 }
 
 

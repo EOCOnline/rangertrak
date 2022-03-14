@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common'
-import { Component, enableProdMode, Inject, OnInit } from '@angular/core';
+import { Component, enableProdMode, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FieldReportService, FieldReportStatusType, LogService, RangerService, SettingsService, SettingsType } from '../shared/services/'
 import { AgGridModule } from 'ag-grid-angular'
@@ -18,12 +18,17 @@ import { Subscription, throwError } from 'rxjs';
   styleUrls: ['./settings.component.scss'],
   providers: [SettingsService]
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, OnDestroy {
   private id = 'Settings Component'
   title = 'Application Settings'
+
   private settingsSubscription$!: Subscription
   public settings?: SettingsType
+
   public settingsEditorForm!: FormGroup
+
+  private timeSubscription1$!: Subscription
+  private timeSubscription2$!: Subscription
 
   private gridApi: any
   private gridColumnApi: any
@@ -187,6 +192,9 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
+
+    // timeSubscription1$ =
+    //timeSubscription2$ =
 
     this.pangram = this.getPangram()
     //this.log.verbose('Settings set to static values. But not initialized???', this.id)
@@ -411,5 +419,11 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
   getPangram() {
     return this.pangrams[Math.floor(Math.random() * this.pangrams.length)]
+  }
+
+  ngOnDestroy() {
+    this.settingsSubscription$.unsubscribe()
+    this.timeSubscription1$.unsubscribe()
+    this.timeSubscription2$.unsubscribe()
   }
 }

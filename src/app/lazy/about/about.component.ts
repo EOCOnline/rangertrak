@@ -1,5 +1,5 @@
 
-import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
+import { Component, Inject, OnInit, ViewChild, isDevMode, OnDestroy } from '@angular/core'
 import { Subscription } from 'rxjs'
 
 import { SettingsService, ClockService, SettingsType, LogService } from '../../shared/services'
@@ -10,7 +10,7 @@ import { SettingsService, ClockService, SettingsType, LogService } from '../../s
   styleUrls: ['./about.component.scss'],
   providers: [SettingsService]
 })
-export class AboutComponent {  //implements OnInit {
+export class AboutComponent implements OnDestroy {
 
   id = 'About'
   private settingsSubscription$!: Subscription
@@ -35,4 +35,8 @@ export class AboutComponent {  //implements OnInit {
   }
 
   //ngOnInit() {  }
+
+  ngOnDestroy() {
+    this.settingsSubscription$.unsubscribe()
+  }
 }

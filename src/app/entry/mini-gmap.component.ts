@@ -1,5 +1,5 @@
 /// <reference types="@types/google.maps" />
-import { Component, Inject, Input, isDevMode, OnInit } from '@angular/core';
+import { Component, Inject, Input, isDevMode, OnDestroy, OnInit } from '@angular/core';
 import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 import { DDToDMS, CodeArea, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map, , GoogleGeocode
 import { LatLng } from 'leaflet';
@@ -14,7 +14,7 @@ const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
   templateUrl: './mini-gmap.component.html',
   styleUrls: ['./mini-gmap.component.scss']
 })
-export class MiniGMapComponent implements OnInit {
+export class MiniGMapComponent implements OnInit, OnDestroy {
   @Input() set locationUpdated(value: LocationType) {
     if (value && value.lat != undefined) {
       this.location = {
@@ -31,6 +31,7 @@ export class MiniGMapComponent implements OnInit {
   private id = "Google mini-map Component"
   //private locationSubscription$!: Subscription
   private location?: LocationType
+
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
 
@@ -173,5 +174,11 @@ export class MiniGMapComponent implements OnInit {
        fontSize: "18px",
      },
      */
+  }
+
+
+  ngOnDestroy() {
+    // this.locationSubscription$.unsubscribe()
+    this.settingsSubscription$.unsubscribe()
   }
 }
