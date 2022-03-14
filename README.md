@@ -23,6 +23,8 @@ There are a number of ways to geocode a latitude & longitude. See https://en.wik
 ## Future Roadmap
 - To work with out flaws!
 - Save and reload data to local files
+- Allow loading of additinoal layers (e.g., an image of trails, local features),
+  perhaps with https://github.com/publiclab/Leaflet.DistortableImage
 - improved docs: screenshots and architectural diagrams
 - - consider https://github.com/EventEmitter2/EventEmitter2 for multi-threaded msgs with service workers
 

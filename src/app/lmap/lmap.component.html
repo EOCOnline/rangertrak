@@ -8,16 +8,15 @@
   <div class="lmap-frame">
     <div id="lmap" leaflet (leafletMapReady)="onMapReady($event)"></div>
   </div>
+  <div>
+    Latitude: <span class="strong">{{mouseLatLng?.lat?.toFixed(5)}}</span> Longitude:
+    <span class="strong">{{mouseLatLng?.lng?.toFixed(5)}}</span> Zoom:
+    <span class="strong">{{zoom}}</span>
+  </div>
 </div>
 <div id="overview" overview></div>
-<div>
-  Latitude: <span class="strong">{{mouseLatLng?.lat?.toFixed(5)}}</span> Longitude:
-  <span class="strong">{{mouseLatLng?.lng?.toFixed(5)}}</span> Zoom:
-  <span class="strong">{{zoom}}</span>
-</div>
-
 <br />
-<!--button class="mdc-switch" id="selectedFieldReports"  (click)="useSelectedFieldReports()">Use Selected Field Reports</button-->
+
 <!--
   https://material.io/components/switches/web#switches
   https://material.io/components/switches/web#api -->
@@ -29,7 +28,7 @@
   type="button"
   role="switch"
   aria-checked="false"
-  (click)="getAndDisplayFieldReports()"
+  (click)="onSwitchSelectedFieldReports($event)"
 >
   <div class="mdc-switch__track"></div>
   <div class="mdc-switch__handle-track">
@@ -50,7 +49,7 @@
   </div>
 </button>
 <label for="selectedFieldReports">
-  Just those ({{this.selectedRows}}) selected in the Field Report panel</label
+  Just those ({{this.numSelectedRows}}) selected in the Field Report panel</label
 >
 
 <br />

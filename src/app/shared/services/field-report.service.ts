@@ -16,7 +16,11 @@ export class FieldReportService {
 
   private fieldReports!: FieldReportsType
   private fieldReportsSubject: BehaviorSubject<FieldReportsType>
-  private selectedFieldReports!: FieldReportsType  // TODO: Enable subscription to this also?
+
+  // REVIEW: No need to enable subscription to selectedFieldReports as they are
+  // auto-saved on evey selection and user is single-threaded, needs to do that,
+  // then move to maps which THEN grab the new values.
+  private selectedFieldReports!: FieldReportsType
 
   private settingsSubscription$!: Subscription
   private settings?: SettingsType
@@ -25,7 +29,7 @@ export class FieldReportService {
   public rangers: RangerType[] = []
 
   private storageLocalName = 'fieldReports'
-  private serverUri = 'http://localhost:4000/products'
+  private serverUri = 'http://localhost:4000/products' // FUTURE:
   private boundsMargin = 0.0025
 
   constructor(
@@ -116,7 +120,8 @@ export class FieldReportService {
 
     // Do any needed sanity/validation here
     if (this.fieldReports.numReport != this.fieldReports.fieldReportArray.length) {
-      this.log.error(`this.fieldReports.numReport=${this.fieldReports.numReport} != this.fieldReports.fieldReportArray.length ${this.fieldReports.fieldReportArray.length}`)
+      this.log.error(`this.fieldReports.numReport=${this.fieldReports.numReport} != this.fieldReports.fieldReportArray.length ${this.fieldReports.fieldReportArray.length}`, this.id)
+      this.fieldReports.numReport = this.fieldReports.fieldReportArray.length
     }
 
     localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports))
@@ -147,7 +152,15 @@ export class FieldReportService {
     // Update - if subscribed...
   }
 
-  public getSelectedFieldReports() { // TODO: Use setter & getters?, pg 452 Ang Dev w/ TS
+  public getSelectedFieldReports(): FieldReportsType {
+    // TODO: Use setter & getters?, pg 452 Ang Dev w/ TS
+    if (this.selectedFieldReports == null) {
+      this.log.warn(`User hasn't selected any rows yet,
+      but we're trying to retrieve Selected Rows!`, this.id)
+      this.selectedFieldReports = this.initEmptyFieldReports()
+      this.selectedFieldReports.filter = "As selected by user"
+      this.selectedFieldReports.fieldReportArray = this.fieldReports.fieldReportArray
+    }
     return this.selectedFieldReports
   }
 

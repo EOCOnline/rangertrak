@@ -59,29 +59,32 @@ export type addressType = {
 export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   private id = 'Leaflet Map Component'
   public title = 'Leaflet Map'
-  private settingsSubscription$!: Subscription
-  private settings?: SettingsType
 
-  lmap?: L.Map
+  private settingsSubscription$!: Subscription
+  private settings!: SettingsType
+
+  private fieldReportsSubscription$!: Subscription
+  private fieldReports: FieldReportsType | undefined
+
+  // private latestReport: FieldReportsType | undefined
+  public fieldReportArray: FieldReportType[] = []
+  //private fieldReportStatuses: FieldReportStatusType[] = []
+  private selectedReports: FieldReportsType | null = null
+  numSelectedRows = 0
+  allRows = 0
+
+  lmap!: L.Map
   overviewLMap?: L.Map
   overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } } // TODO: Leaflet's version?
-  zoom // actual zoom level of main map
-  zoomDisplay // what's displayed below main map
-  center = { lat: this.settings?.defLat, lng: this.settings?.defLng }
+  zoom = 15 // actual zoom level of main map
+  zoomDisplay = 15 // what's displayed below main map
+  center = { lat: 0, lng: 0 }
   mouseLatLng = this.center
   mymarkers = L.markerClusterGroup()
   mapOptions = ""
 
   markerClusterGroup: L.MarkerClusterGroup//  the MarkerClusterGroup class extends the FeatureGroup so it has all of the handy methods like clearLayers() or removeLayers()
   markerClusterData = []
-
-  private fieldReports: FieldReportsType | undefined
-  private latestReport: FieldReportsType | undefined
-  public fieldReportArray: FieldReportType[] = []
-  private fieldReportsSubscription$!: Subscription
-  private fieldReportStatuses: FieldReportStatusType[] = []
-  selectedRows = 0
-  allRows = 0
 
   //selectedFieldReports: FieldReportType[] = []
   filterSwitch: MDCSwitch | null = null
@@ -95,9 +98,6 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document) {
 
     this.fieldReportService = fieldReportService
-    this.zoom = this.settings?.leaflet.defZoom
-    this.zoomDisplay = this.zoom
-    this.center = { lat: this.settings?.defLat, lng: this.settings?.defLng }
 
     this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
@@ -107,31 +107,55 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-
-    this.markerClusterGroup = L.markerClusterGroup({ removeOutsideVisibleBounds: true });
-  }
-
-  ngOnInit() {
     this.fieldReportsSubscription$ =
       this.fieldReportService.getFieldReportsObserver().subscribe({
         next: (newReport) => {
-          this.latestReport = newReport
+          //this.latestReport = newReport
           this.gotNewFieldReports(newReport)
         },
         error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
         complete: () => this.log.info('Field Reports Subscription complete', this.id)
       })
 
+    this.markerClusterGroup = L.markerClusterGroup({ removeOutsideVisibleBounds: true });
+  }
+
+  ngOnInit() {
     this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
     if (!this.filterButton) { throw ("Could not find Field Report Selection button!") }
 
-    this.selectedRows = this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
+    // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
+    //! 2TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
+    if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
+      this.numSelectedRows = this.selectedReports.fieldReportArray.length
+    } else {
+      this.log.warn(`Could not retrieve selected Field Reports in ngOnInit.`, this.id)
+      this.numSelectedRows = 0
+    }
+
     this.filterSwitch = new MDCSwitch(this.filterButton)
     if (!this.filterSwitch) throw ("Could not find Field Report Selection Switch!")
+
+    if (!this.settings) {
+      this.log.error(`this.settings not yet established in ngInit()`, this.id)
+      return
+    }
+
+    this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
+    this.zoom = this.settings.leaflet.defZoom
+    this.zoomDisplay = this.zoom
   }
 
   ngAfterViewInit() {
-    this.initMap();
+    if (!this.settings) {
+      this.log.error(`this.settings not yet established in ngAfterViewInit()`, this.id)
+      return
+    }
+    this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
+    this.zoom = this.settings.leaflet.defZoom
+    this.zoomDisplay = this.zoom
+
+    this.initMap()
     this.mymarkers = L.markerClusterGroup()
   }
 
@@ -173,12 +197,13 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.lmap && this.fieldReports) {
       this.displayAllMarkers()
 
+      // this.fieldReports.bounds.getEast is not a function
       this.log.info(`E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
       this.lmap.fitBounds(this.fieldReports.bounds)
     }
 
     // BUG: not working....
-    this.lmap?.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
+    this.lmap.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
       if (this.lmap) { // this.zoomDisplay &&
         this.zoom = this.lmap.getZoom()
         this.zoomDisplay = this.lmap.getZoom()
@@ -273,13 +298,19 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   // TODO: Unset the following if SWITCH is unset!!!!
-  getAndDisplayFieldReports() {
+  onSwitchSelectedFieldReports(event: any) {
     if (!this.filterSwitch || !this.filterSwitch.selected) {
+      if (!this.fieldReports) {
+        this.log.error(`this.settings not yet set in onSwitchSelectedFieldReports()`, this.id)
+        return
+      }
+      this.fieldReportArray = this.fieldReports.fieldReportArray
       this.log.verbose(`Displaying ALL ${this.fieldReportArray.length} field Reports`, this.id)
     } else {
       this.fieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
       this.log.verbose(`Displaying ${this.fieldReportArray.length} SELECTED field Reports`, this.id)
     }
+    // TODO: Need to refresh map?!
   }
 
   displayAllMarkers() {
@@ -396,6 +427,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.fieldReportsSubscription$.unsubscribe()
+    this.settingsSubscription$.unsubscribe()
   }
 
 

@@ -24,7 +24,7 @@ export type FieldReportsType = {
   version: string,
   date: Date,
   event: string,
-  bounds: LatLngBounds,
+  bounds: L.LatLngBounds,
   numReport: number,
   maxId: number,
   filter: string, // All reports or not? Guard to ensure a subset never gets writen to localstorage?
