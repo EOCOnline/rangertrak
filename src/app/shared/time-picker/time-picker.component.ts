@@ -13,6 +13,7 @@ import { FieldReportService, FieldReportStatusType, RangerService, LogService, R
 })
 export class TimePickerComponent implements OnInit {
   @Input() public timepickerFormControl: FormControl // input from entry.component.ts
+  //@Input() public timepickerFormControl: FormControl // input from entry.component.ts
   @Output() newTimeEvent = new EventEmitter<Date>()
   // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
 
@@ -79,14 +80,13 @@ export class TimePickerComponent implements OnInit {
     // Do any needed sanity/validation here
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     // todo : validate min/max time?
-    this.log.verbose(`Got new time: ${newTime}. Emitting!`, this.id)
+    this.log.verbose(`Got new time: ${newTime}. Emitting!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`, this.id)
     this.time = newTime
+    //if (! (
     this.newTimeEvent.emit(this.time)
-    /*if (! {
-      this.log.warn(`New time event had no listeners!`, this.id)
-    }*/
-
-    // TODO: BUT, we still need to update our local copy:
+    //) {
+    // this.log.warn(`New time event had no listeners!`, this.id) }
+    // REVIEW: Let parent update the form fields & other data as necessary...
     //this.timeFrmGrp
   }
 

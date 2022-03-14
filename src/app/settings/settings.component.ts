@@ -236,6 +236,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new start OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
     this.settings!.opPeriodStart = JSON.parse(newTimeEvent)
+    this.settingsEditorForm.patchValue({ timepickerFormControlStart: JSON.parse(newTimeEvent) })
     // This then automatically gets sent to mini-map children via their @Input statements
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:
@@ -246,6 +247,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new end OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
     this.settings!.opPeriodEnd = JSON.parse(newTimeEvent)
+    this.settingsEditorForm.patchValue({ timepickerFormControlEnd: JSON.parse(newTimeEvent) })
+
     // This then automatically gets sent to mini-map children via their @Input statements
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:

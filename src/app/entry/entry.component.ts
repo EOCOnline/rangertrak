@@ -119,6 +119,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
     this.time = JSON.parse(newTimeEvent)
+    this.entryDetailsForm.patchValue({ timepickerFormControl: JSON.parse(newTimeEvent) })
+
     // This then automatically gets sent to mini-map children via their @Input statements
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:
