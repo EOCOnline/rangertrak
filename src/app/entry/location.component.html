@@ -65,18 +65,24 @@
  formControlName must be used with a parent formGroup directive.
 -->
 <div class="container enter__Where-div">
-  <div appearance="filled" class="timepicker__Where-input">
+  <div
+    appearance="filled"
+    class="timepicker__Where-input"
+    (mouseenter)="onMouseEnter()"
+    (mouseleave)="onMouseLeave()"
+  >
     <div class="input-group">
-      <!--   [formGroup]="locationFrmGrp" -->
+      <!--   [formGroup]="locationFrmGrp"
+      #latI
+        name="latI"
+        placeholder="LatI"
+      -->
       &nbsp;&nbsp;&nbsp;Latitude:
 
       <input
-        #latI
-        name="latI"
         [value]="latI"
         type="number"
         formControlName="lat"
-        placeholder="LatI"
         min="-180"
         max="180"
         id="enter__Where-latI"

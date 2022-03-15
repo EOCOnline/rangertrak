@@ -58,6 +58,7 @@
     "leaflet": "^1.7.1",
     "leaflet.markercluster": "^1.5.3",
     "leaflet.offline": "^2.1.0",
+    "ngx-dayjs": "^1.0.1",
     "picocolors": "^1.0.0",
     "rxfire": "^6.0.3",
     "rxjs": "^7.5.5",

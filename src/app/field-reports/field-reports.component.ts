@@ -218,6 +218,11 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     window.location.reload()
   }
 
+  /**
+   * Given a fieldReport, finds the date, and returns it as 'Sun Jan-01 23:00:00'
+   * @param params
+   * @returns
+   */
   myDateGetter = (params: { data: FieldReportType }) => {
     const weekday = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
     let dt = 'unknown date'

@@ -233,6 +233,14 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     }
   }
 
+  // See Ang Cookbook, pg 349ff
+  onMouseEnter() {
+    // TODO: establish events & control updates?
+  }
+
+  onMouseLeave() {
+    // TODO: tear down events & control updates?
+  }
 
   /**
    * Update form with new address

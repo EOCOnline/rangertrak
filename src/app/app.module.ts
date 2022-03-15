@@ -14,6 +14,7 @@ import { FlexLayoutModule } from '@angular/flex-layout'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { BrowserModule } from '@angular/platform-browser'
 import { CommonModule } from '@angular/common'
+// import { DayjsModule } from 'ngx-dayjs'
 import { EntryComponent } from './entry/entry.component'
 import { FieldReportsComponent } from './field-reports/field-reports.component'
 //import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
@@ -56,6 +57,7 @@ import { LogService } from './shared/services/log.service'
     BrowserAnimationsModule,
     BrowserModule,
     CommonModule,
+    // DayjsModule,
     FlexLayoutModule,
     FormsModule,
     GoogleMapsModule,
