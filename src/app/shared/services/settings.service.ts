@@ -14,7 +14,7 @@ export type SecretType = {
 }
 
 
-
+// TODO: Make into a singleton service
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
 
@@ -86,11 +86,13 @@ export class SettingsService {
    */
 
   private initSettings() { // settings: SettingsType
-    //original hardcoded defaults... not saved until form is submitted... This form doesn't allow editing of all values
+    //original hardcoded defaults... not updated until form is submitted... Settings.component.ts' form doesn't allow editing of all values
     this.log.verbose("Initialize App Settings from hardcoded values", this.id)
 
-    const dt = new Date()
-    this.log.error(`dt=${dt}, plus ${this.defOpPeriodLength} hours = ${new Date(this.defOpPeriodLength * 10000 * 60 * 60)}`)
+    let dt = new Date()
+    let endDt = new Date()
+    endDt.setHours(Number(dt.getHours()) + this.defOpPeriodLength)
+    this.log.verbose(`OpPeriod: ${dt.toLocaleString("en-US")}, plus ${this.defOpPeriodLength} hours = ${endDt.toLocaleString("en-US")} `, this.id)
 
     return {
       settingsName: '', // FUTURE: Use if people want to load and saveas, or have various 'templates'
@@ -101,7 +103,7 @@ export class SettingsService {
       eventNotes: '',
       opPeriod: '',
       opPeriodStart: dt,
-      opPeriodEnd: new Date(this.defOpPeriodLength * 10000 * 60 * 60),
+      opPeriodEnd: endDt,
 
       application: 'RangerTrak',
       version: '0', // not exposed in Settingss Component, so set in constructor
@@ -149,16 +151,15 @@ export class SettingsService {
     // Do any needed sanity/validation here
 
     localStorage.setItem(this.storageLocalName, JSON.stringify(newSettings))
-    this.settingsSubject!.next(this.settings)
-    this.log.info(`Notified subscribers of new Application Settings ${JSON.stringify(newSettings)}`, this.id)
-    this.log.verbose(`${JSON.stringify(newSettings)}`, this.id)
+    this.settingsSubject.next(this.settings)
+    this.log.verbose(`Notified subscribers of new Application Settings ${JSON.stringify(newSettings)} `, this.id)
   }
 
   /**
    * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
    */
   public getSettingsObserver(): Observable<SettingsType> {
-    return this.settingsSubject!.asObservable()
+    return this.settingsSubject.asObservable()
   }
 
   private localStorageVoyeur() {
@@ -166,7 +167,7 @@ export class SettingsService {
     for (var i = 0; i < localStorage.length; i++) {
       key = localStorage.key(i)
       if (key != null) {
-        this.log.verbose(`item ${i} = ${JSON.parse(key)}`, this.id)
+        this.log.verbose(`item ${i} = ${JSON.parse(key)} `, this.id)
       }
     }
   }

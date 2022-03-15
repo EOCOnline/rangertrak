@@ -3,35 +3,56 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 //import { MatSnackBar } from '@material/snackbar'
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker'
 import { filter, map, switchMap } from 'rxjs'
+import { LogService } from './shared/services'
 
 @Component({
   selector: 'rangertrak-root',
-
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'rangertrak';
+
+  private id = "AppComponent"
+  title = 'RangerTrak';
+  updateEvt: any = null
 
   constructor(
     private swUpdate: SwUpdate,
+    private log: LogService,
     private snackbar: MatSnackBar) {
   }
 
   ngOnInit() {
-
-
     //https://angular.io/api/service-worker/SwUpdate
-    const updatesAvailable = this.swUpdate.versionUpdates.pipe(
-      filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
-      map(evt => ({
-        type: 'UPDATE_AVAILABLE',
-        current: evt.currentVersion,
-        available: evt.latestVersion,
-      })));
 
+    const updatesAvailable =
+      this.swUpdate.versionUpdates.pipe(
+        filter(
+          (evt): evt is VersionReadyEvent => {
+            if (evt.type === 'VERSION_READY') {
+              this.log.verbose(`Version update event: ${JSON.stringify(evt)}`, this.id)
+              this.updateEvt = evt
+              return true
+            } else {
+              return false
+            }
+          }
+        ),
+        map(evt => {
+          ({
+            type: 'UPDATE_AVAILABLE',
+            current: evt.currentVersion,
+            available: evt.latestVersion,
+          })
+          //this.updateEvt = evt
+        }
+        )
+      )
 
     if (updatesAvailable) {
+      if (this.updateEvt) {
+        this.log.warn(`New update available: Current: ${this.updateEvt.currentVersion}; Future: ${this.updateEvt.latestVersion}`, this.id)
+      }
       // if( confirm(`Reload the page to update from current version ${evt.currentVersion} to latest version ${evt.latestVersion}. Proceed now?`)) { //TODO:
       //if( confirm(`Reload the page to update from the current to the latest version. Proceed now?`)) { // TODO: This showed up for every page refresh!!! (Try CNTRL-F5?)
       /* BUG: Gets: Error: Uncaught (in promise): Error: Service workers are disabled or not supported by this browser
