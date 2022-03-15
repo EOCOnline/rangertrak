@@ -32,7 +32,7 @@ export type FieldReportsType = {
 }
 
 /**
- *
+ * Field Reports can be tagged with a status. These can have color & associated icons & can be edited by the user.
  */
 export type FieldReportStatusType = {
   status: string,

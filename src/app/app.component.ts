@@ -25,19 +25,24 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     //https://angular.io/api/service-worker/SwUpdate
 
+    console.log(`this.swUpdate.versionUpdates: ${JSON.stringify(this.swUpdate.versionUpdates)}`)
+
     const updatesAvailable =
       this.swUpdate.versionUpdates.pipe(
+
         filter(
           (evt): evt is VersionReadyEvent => {
             if (evt.type === 'VERSION_READY') {
-              this.log.verbose(`Version update event: ${JSON.stringify(evt)}`, this.id)
+              console.log(`Version update event: ${JSON.stringify(evt)}`)
               this.updateEvt = evt
               return true
             } else {
+              console.log(`NOT a Version ready event: ${JSON.stringify(evt)}`)
               return false
             }
           }
         ),
+
         map(evt => {
           ({
             type: 'UPDATE_AVAILABLE',
@@ -51,7 +56,9 @@ export class AppComponent implements OnInit {
 
     if (updatesAvailable) {
       if (this.updateEvt) {
-        this.log.warn(`New update available: Current: ${this.updateEvt.currentVersion}; Future: ${this.updateEvt.latestVersion}`, this.id)
+        console.warn(`New update available: Current: ${this.updateEvt.currentVersion}; Future: ${this.updateEvt.latestVersion}`)//, this.id)
+      } else {
+        console.warn(`Version update but no this.updateEvt `)//, this.id)
       }
       // if( confirm(`Reload the page to update from current version ${evt.currentVersion} to latest version ${evt.latestVersion}. Proceed now?`)) { //TODO:
       //if( confirm(`Reload the page to update from the current to the latest version. Proceed now?`)) { // TODO: This showed up for every page refresh!!! (Try CNTRL-F5?)
@@ -62,7 +69,7 @@ export class AppComponent implements OnInit {
       //this.swUpdate.activateUpdate()
       // TODO: OR????
       // window.location.reload()
-      console.log(`App Updates ARE Available!  Reload page to install next version????`)
+      console.warn(`App Updates ARE Available!  Reload page to install next version????`)
       //  } else {
       //    console.log(`Don't update YET...`)
       //  }

@@ -39,9 +39,14 @@ L.Marker.prototype.options.icon = iconDefault;
     '../../../node_modules/leaflet/dist/leaflet.css'] // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
 })
 export class MiniLMapComponent implements AfterViewInit, OnDestroy {
-  @Input() set locationUpdated(value: LocationType) {
-    this.gotNewLocation(value)
+  @Input() set locationUpdated(newLocationEvent: any) {
+    this.log.verbose(`Got location event=${JSON.stringify(newLocationEvent)}`, this.id)
+    // spits out 'undefined'
+    this.onNewLocation(newLocationEvent)
   }
+  // @Input() set locationUpdated(value: LocationType) {
+  //   this.onNewLocation(value)
+  // }
 
   id = 'Leaflet MiniMap'
   title = 'Leaflet Map'
@@ -152,11 +157,11 @@ export class MiniLMapComponent implements AfterViewInit, OnDestroy {
       this.mouseLatLng = evt.latlng
     })
   }
-
-  private gotNewLocation(value: LocationType) {
+  // !From Leaflet MiniMap - new location passed in undefined
+  private onNewLocation(value: LocationType) {
     this.log.verbose(`new location passed in ${JSON.stringify(value)}`, this.id)
 
-    if (value && value.lat != undefined) {
+    if (value && value != undefined) {
       this.location = {
         lat: value.lat,
         lng: value.lng,

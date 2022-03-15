@@ -103,17 +103,19 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
   }
 
-  onNewLocation(newLocationEvent: any) {
+  onNewLocation(newLocation: LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`Got new location: ${JSON.stringify(newLocationEvent)}`, this.id)
-    this.location = JSON.parse(newLocationEvent)
+    this.log.verbose(`Got new location: ${JSON.stringify(newLocation)}`, this.id)
+    debugger
+    this.location = newLocation
     // This then automatically gets sent to mini-map children via their @Input statements
 
-    // TODO: BUT, we still need to update our local copy:
+    // REVIEW: patch entryForm object - as THAT is what gets saved with on form submit
+    this.entryDetailsForm.patchValue({
+      locationFrmGrp: newLocation
+    })
     //this.locationFrmGrp is where the Event comes up from...
   }
-  //locationChanged_noLongerNeeded(loc: FormGroup) {
-  //    this.log.verbose(`locationChanged  ###########################`, this.id)  }
 
   onNewTime(newTimeEvent: any) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188

@@ -4,13 +4,13 @@ import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms'
 import { BehaviorSubject, debounceTime, fromEvent, Observable, Subscription } from 'rxjs';
 import { DDToDMS, CodeArea, GoogleGeocode, OpenLocationCode } from '../shared/'
 
-import * as P from '@popperjs/core';
-//import { createPopper } from '@popperjs/core';
-import type { StrictModifiers } from '@popperjs/core';
+// import * as P from '@popperjs/core';
+///import { createPopper } from '@popperjs/core';
+// import type { StrictModifiers } from '@popperjs/core';
 
 import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { mdiAccount, mdiInformationOutline } from '@mdi/js';
-import { MatIconRegistry } from '@angular/material/icon';
+//import { MatIconRegistry } from '@angular/material/icon';
 
 
 import { SettingsService, LogService, SettingsType, LocationType } from '../shared/services';
@@ -28,10 +28,12 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   styleUrls: ['./location.component.scss']
 })
 export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
-  // #region Properties (33)
-
   // Grab reference to location portion of parent's entry form
   @Input() public locationFrmGrp: FormGroup // input from entry.component.ts
+  //
+  // We emit following event & per parent's template:
+  // (newLocationEvent)="onNewLocation($event)" their proceedure gets called.
+  // They pass this, via binding, to any other children that need it...
   @Output() newLocationEvent = new EventEmitter<LocationType>()
   /*
   LocationComponent - out of ngOnInit
@@ -65,7 +67,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   //locationCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
   //@Input() group: FormGroup;
 
-  private id = "Entry Form's Location Component"
+  private id = "Location Component"
   // Grab reference to #elements in template (vs. getElementById)
   // TODO: Remove all these! Per bottom pg 137, go to [FormControl]="nameToUse"
   @ViewChild('latI') elLatI: any
@@ -114,12 +116,9 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public mdiInformationOutline: string = mdiInformationOutline
 
   private settingsSubscription$: Subscription
-  private settings?: SettingsType
-
+  private settings!: SettingsType
   //private locationSubject: BehaviorSubject<LocationType>
-  // #endregion Properties (33)
 
-  // #region Constructors (1)
 
   constructor(
     private settingsService: SettingsService,
@@ -136,6 +135,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
+    // TODO: Give up the thread/sleep(500) to let the values come though?!
     this.location = {
       lat: this.settings ? this.settings.defLat : 0,
       lng: this.settings ? this.settings.defLng : 0,
@@ -160,12 +160,14 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public onNewLocation(newLocation: LocationType) { // Or LocationEvent?!
     // Do any needed sanity/validation here
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`Emit new Location ${JSON.stringify(newLocation)}`, this.id)
-    this.location = newLocation
+    this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
+
     this.newLocationEvent.emit(this.location)
     /*if (! {
       this.log.warn(`New location event had no listeners!`, this.id)
     }*/
+
+    this.location = newLocation
     // TODO: this.lat = newLocation.lat, this.lng = newLocation.lng, this.address = newLocation.address
     // REVIEW: above done in showNewLocationOnForm() - right location?!
   }
@@ -260,10 +262,10 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     //this.latF = (latDD - this.latI).toFixed(4)
     this.latF = Math.round((latDD - this.latI) * 10000)
     this.lngF = Math.round((lngDD - this.lngI) * 10000)
-    this.setCtrl("enter__Where-LatI", this.latI)
-    this.setCtrl("enter__Where-LatD", this.latF)
-    this.setCtrl("enter__Where-LngI", this.lngI)
-    this.setCtrl("enter__Where-LngD", this.lngF)
+    // this.setCtrl("enter__Where-LatI", this.latI)
+    // this.setCtrl("enter__Where-LatD", this.latF)
+    // this.setCtrl("enter__Where-LngI", this.lngI)
+    // this.setCtrl("enter__Where-LngD", this.lngF)
 
     let latDMS = DDToDMS(latDD, false)
     this.log.verbose(`newLocation with lat: ${latDMS.dir}, ${latDMS.deg}, ${latDMS.min}, ${latDMS.sec}`, this.id)
@@ -272,10 +274,10 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     this.latD = latDMS.deg
     this.latM = latDMS.min
     this.latS = latDMS.sec
-    this.setCtrl("latitudeQ", latDMS.dir)
-    this.setCtrl("latitudeD", latDMS.deg)
-    this.setCtrl("latitudeM", latDMS.min)
-    this.setCtrl("latitudeS", latDMS.sec)
+    // this.setCtrl("latitudeQ", latDMS.dir)
+    // this.setCtrl("latitudeD", latDMS.deg)
+    // this.setCtrl("latitudeM", latDMS.min)
+    // this.setCtrl("latitudeS", latDMS.sec)
 
     let lngDMS = DDToDMS(lngDD, true)
     this.log.verbose(`newLocation with lng: ${lngDMS.dir}, ${lngDMS.deg}, ${lngDMS.min}, ${lngDMS.sec}`, this.id);
@@ -284,10 +286,10 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     this.lngD = lngDMS.deg
     this.lngM = lngDMS.min
     this.lngS = lngDMS.sec
-    this.setCtrl("longitudeQ", lngDMS.dir)
-    this.setCtrl("longitudeD", lngDMS.deg)
-    this.setCtrl("longitudeM", lngDMS.min)
-    this.setCtrl("longitudeS", lngDMS.sec)
+    // this.setCtrl("longitudeQ", lngDMS.dir)
+    // this.setCtrl("longitudeD", lngDMS.deg)
+    // this.setCtrl("longitudeM", lngDMS.min)
+    // this.setCtrl("longitudeS", lngDMS.sec)
 
     // TODO: this.location.address =""
     /*
@@ -317,16 +319,16 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     */
   }
 
-  public setCtrl(ctrlName: string, value: number | string) {
-    this.log.verbose(`setCtrl()`, this.id)
-    let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
-    if (!ctrl) {
-      this.log.warn(`setCtrl(): Could not find element: ${ctrlName}`, this.id)
-    } else {
-      ctrl.value = value.toString()
-      //this.log.verbose(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`, this.id)
-    }
-  }
+  // public setCtrl(ctrlName: HTMLElement, value: number | string) {
+  //   this.log.verbose(`setCtrl(${ctrlName} to ${value})`, this.id)
+  //   // let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
+  //   // if (!ctrl) {
+  //   //   this.log.warn(`setCtrl(): Could not find element: ${ctrlName}`, this.id)
+  //   // } else {
+  //     ctrlName.value = value.toString()
+  //     //this.log.verbose(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`, this.id)
+  //  // }
+  // }
 
 
   // TODO: https://github.com/angular-material-extensions/google-maps-autocomplete

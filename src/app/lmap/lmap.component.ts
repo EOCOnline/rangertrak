@@ -199,7 +199,17 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.lmap && this.fieldReports) {
       this.displayAllMarkers()
 
-      // this.fieldReports.bounds.getEast is not a function
+
+
+
+
+
+
+
+
+
+      debugger
+      //! this.fieldReports.bounds.getEast is not a function
       this.log.info(`E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
       this.lmap.fitBounds(this.fieldReports.bounds)
     }
