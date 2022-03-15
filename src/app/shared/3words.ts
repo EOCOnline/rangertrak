@@ -11,7 +11,7 @@ import { SettingsService } from "./services";
 // import what3words, { ApiVersion, What3wordsService, AutosuggestClient, AutosuggestOptions, AutosuggestResponse, ConvertToCoordinatesClient, ConvertToCoordinatesOptions, ConvertTo3waClient, ConvertTo3waOptions } from '@what3words/api';
 import what3words, * as w3w from '@what3words/api';
 //import { W3W_REGEX } from "@what3words/javascript-components/dist/types/lib/constants";
-import { GoogleMap } from '@angular/google-maps';
+//import { GoogleMap } from '@angular/google-maps';
 // <script src="https://assets.what3words.com/sdk/v3/what3words.js?key=YOUR_apiKey"></script>
 // mainly from https://developer.what3words.com/tutorial/javascript
 

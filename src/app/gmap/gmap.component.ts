@@ -11,6 +11,9 @@ import { CodeArea, OpenLocationCode, Utility } from '../shared/'
 import { MDCSwitch } from '@material/switch'
 
 /*
+google-maps: OLD(???)
+google.maps: BEST(???)
+
   https://developers.google.com/maps/support/
   https://angular-maps.com/
   https://github.com/atmist/snazzy-info-window#html-structure

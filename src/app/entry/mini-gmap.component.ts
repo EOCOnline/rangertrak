@@ -1,8 +1,8 @@
 /// <reference types="@types/google.maps" />
 import { Component, Inject, Input, isDevMode, OnDestroy, OnInit } from '@angular/core';
-import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
-import { DDToDMS, CodeArea, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map, , GoogleGeocode
-import { LatLng } from 'leaflet';
+//import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
+//import { DDToDMS, CodeArea, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map, , GoogleGeocode
+//import { LatLng } from 'leaflet';
 import { DOCUMENT } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { LogService, SettingsService, SettingsType, LocationType } from '../shared/services/';

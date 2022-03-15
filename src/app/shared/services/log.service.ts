@@ -1,3 +1,4 @@
+/// <reference types="@types/picocolors" />
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { Utility } from '../utility'
