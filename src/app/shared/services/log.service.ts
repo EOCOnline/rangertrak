@@ -1,4 +1,4 @@
-/// <reference types="@types/picocolors" />
+// / <reference types= @types/picocolors /> - gets: Cannot find type definition file for '@types/picocolors'.
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { Utility } from '../utility'
