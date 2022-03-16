@@ -80,38 +80,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     const msStartTime = new Date(this.settings.opPeriodStart).getTime()
     this.timeElapsed$ = interval(1000)
-      .pipe(map((msStartTime) => {
+      .pipe(map(() => {
         let ms = new Date().getTime() - msStartTime
-        return (`${-Math.round((ms / (1000 * 60 * 60)) % 24)}:${-Math.round((ms / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(-Math.round(ms / 1000) % 60).toString().padStart(2, '0')}`)
+        return (`${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.round((ms / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(Math.round(ms / 1000) % 60).toString().padStart(2, '0')}`)
       }
       ))
 
     const msEndTime = new Date(this.settings.opPeriodEnd).getTime()
     this.timeLeft$ = interval(1000)
-      .pipe(map((msEndTime) => {
+      .pipe(map(() => {
         let ms = msEndTime - new Date().getTime()
         return (`${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.round((ms / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(Math.round(ms / 1000) % 60).toString().padStart(2, '0')}`)
       }
       ))
-
-
-    let currMS = new Date().getTime()
-    this.log.verbose(`StartTime = ${this.settings.opPeriodStart}; EndTime = ${this.settings.opPeriodEnd}`, this.id)
-    this.log.verbose(`msStartTime = ${msStartTime}; msEndTime = ${msEndTime}; currMS= ${new Date().getTime()}`, this.id)
-    this.log.verbose(`cur-start= ${currMS - msStartTime}; msEndTime-cur = ${msEndTime - currMS}`, this.id)
-
-    let ms = currMS - msStartTime
-    this.log.verbose(`cur-start= ${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.round((ms / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(Math.round(ms / 1000) % 60).toString().padStart(2, '0')}`, this.id)
-
-    ms = msEndTime - currMS
-    this.log.verbose(`end - curr= ${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.round((ms / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(Math.round(ms / 1000) % 60).toString().padStart(2, '0')}`, this.id)
-
-    // log.service.ts:37 14:39:24:0623 - From Header component - New settings received
-    // log.service.ts:37 14:39:24:0623 - From Header component - StartTime = 2022-03-15T 20:17:10.648Z; EndTime = 2022-03-16T 08:17:10.648Z
-    // log.service.ts:37 14:39:24:0624 - From Header component - msStartTime = 1647375430648; msEndTime = 1647418630648; currMS= 1647380364624
-    // log.service.ts:37 14:39:24:0624 - From Header component - cur-start= 4933975; msEndTime-cur = 38266025
-    // log.service.ts:37 14:39:24:0624 - From Header component - cur-start= 1:22:14
-    // log.service.ts:37 14:39:24:0624 - From Header component - end - curr= 11:38:46
   }
 
   ngOnDestroy() {

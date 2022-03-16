@@ -64,7 +64,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   public displayedFieldReportArray: FieldReportType[] = []
   // following doesn't need a subscription as user selections are auto-saved & available,
   // if they switch to this page
-  //! REVIEW: UNLESS the switch was already on "selected rows" and isn't reswitched!!!
+  //! REVIEW: UNLESS the switch was already on "selected rows" and isn't reswitched!!!: so just check/reset in ngOnInit?!
   private selectedReports: FieldReportsType | null = null
   numSelectedRows = 0
   allRows = 0
@@ -123,6 +123,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
     //! 2TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
     // BUG: refresh page resets selected switch
+    this.onSwitchSelectedFieldReports()
+
     if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
       this.numSelectedRows = this.selectedReports.numReport
       if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
@@ -201,16 +203,18 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-
-
-
-
-
-
-
-      debugger
+      // debugger
       //! this.fieldReports.bounds.getEast is not a function
-      this.log.info(`E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
+      //!this.log.info(`E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
+
+      /*
+            core.mjs:6485 ERROR Error: Bounds are not valid.
+          at NewClass.fitBounds (leaflet-src.js:3254:12)
+          at LmapComponent.initMap (lmap.component.ts:216:17)
+          at LmapComponent.ngAfterViewInit (lmap.component.ts:162:10)
+          */
+      // bnd: L.latLngBounds = this.fieldReports.bounds
+
       this.lmap.fitBounds(this.fieldReports.bounds)
     }
 
@@ -308,7 +312,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     return Math.min(Math.max(num, min), max)
   }
 
-  onSwitchSelectedFieldReports(event: any) {
+  onSwitchSelectedFieldReports() { //event: any) {
     if (!this.filterSwitch || !this.filterSwitch.selected) {
       if (!this.fieldReports) {
         this.log.error(`this.settings not yet set in onSwitchSelectedFieldReports()`, this.id)

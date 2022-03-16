@@ -58,8 +58,6 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
       error: (e) => console.error('Settings Subscription got:' + e, this.id),
       complete: () => console.info('Settings Subscription complete', this.id)
     })
-
-
   }
 
   /**
@@ -107,23 +105,23 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
     console.log(`got new log with ${log.length} entries`)
 
     this.logPanel = this.document.getElementById("log")
-    if (!this.logPanel) {
+    if (this.logPanel === null) {
       console.warn(`Asked to display the logs BEFORE the logPanel could be initialized. Will retry. For: \n${JSON.stringify(log.slice(-1))} `)
       //  TODO: Retry after a second or it's otherwise created...
       return
     }
     if (this.logPanel == undefined) { throw ("log panel undefined...") }
 
-    this.logPanel!.innerHTML = ''
+    this.logPanel.innerHTML = ''
     log.forEach(entry => {
       let time = entry.date.getHours().toString().padStart(2, '0') + ":" + entry.date.getMinutes().toString().padStart(2, '0') + ":" + entry.date.getSeconds().toString().padStart(2, '0') + "." + entry.date.getMilliseconds().toString().padStart(3, '0')
-      //let time1 = Utility.zeroFill(entry.date.getHours(), 2) + ":" + Utility.zeroFill(entry.date.getMinutes(), 2) + ":" + Utility.zeroFill(entry.date.getSeconds(), 2) + ":" + Utility.zeroFill(entry.date.getMilliseconds(), 4)
+      if (!this.logPanel) { return }
 
       switch (entry.level) {
         case LogLevel.Verbose:
           if (this.verbose) {
             // BUG: Classes and id's show up in debugger, but font-sizes & colors don't get calculated/are ineffective!
-            this.logPanel!.innerHTML += `<i class="fa-solid fa-circle-check"></i><span class="${entry.level}"><span id="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
+            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-check"></i><span class="verbose"><span id="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
           }
           break;
 
@@ -135,7 +133,7 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
 
         case LogLevel.Warn:
           if (this.warn) {
-            this.logPanel!.innerHTML += `<i class="fa-solid fa-circle-exclamation"></i><span class="${entry.level}"><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
+            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-exclamation"></i><span class="${entry.level}"><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
           }
           break;
 

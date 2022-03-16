@@ -12,16 +12,16 @@ h1 {
 }
 
 #log {
-  height          : 70vh;
-  font-family     : monospace;
-  font-size       : 0.8em;
-  line-height     : 12px;
-  padding         : 2px 5px;
-  color           : rgb(57, 34, 161);
-  background-color: rgb(226, 238, 156);
-  border          : 1px solid #030;
-  border-radius   : 4px;
-  overflow        : auto;
+  height            : 70vh;
+  font-family       : monospace;
+  font-size         : 0.8em;
+  line-height       : 12px;
+  padding           : 2px 5px;
+  //color           : rgb(57, 34, 161);
+  background-color  : rgb(226, 238, 156);
+  border            : 1px solid #030;
+  border-radius     : 4px;
+  overflow          : auto;
 }
 
 h3 {
@@ -36,6 +36,11 @@ h3 {
 .verbose {
   color    : rgb(66, 65, 65);
   font-size: 8px;
+}
+
+.Info {
+  //font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  color: rgb(7, 246, 39);
 }
 
 .info {

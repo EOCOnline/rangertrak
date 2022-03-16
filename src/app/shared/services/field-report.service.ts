@@ -288,8 +288,12 @@ export class FieldReportService implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.rangersSubscription$.unsubscribe()
-    this.settingsSubscription$.unsubscribe()
+    /* Error: Uncaught (in promise): TypeError: Cannot read properties of undefined (reading 'unsubscribe')
+       TypeError: Cannot read properties of undefined (reading 'unsubscribe')
+       at FieldReportService.ngOnDestroy (main.js:8505:35)
+    */
+    // this.rangersSubscription$.unsubscribe()
+    // this.settingsSubscription$.unsubscribe()
   }
 
   // ---------------------------------  UNUSED -------------------------------------------------------
