@@ -33,9 +33,9 @@ export class RangerService {
   excelData: any[][] = [[1, 2], [3, 4]]
 
   constructor(
-    private httpClient: HttpClient,
-    private log: LogService,
     @Optional() @SkipSelf() existingService: RangerService,
+    private httpClient: HttpClient,
+    private log: LogService
   ) {
     if (existingService) {
       /**

@@ -1,10 +1,9 @@
-import { Injectable, SkipSelf } from '@angular/core'
+import { Injectable, Optional, SkipSelf } from '@angular/core'
 import { BehaviorSubject, Observable, throwError } from 'rxjs'
 
 import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
 import * as packageJson from '../../../../package.json'
 import { LogService, FieldReportStatusType, SettingsType } from './'
-import { Optional } from 'ag-grid-community'
 
 export type SecretType = {
   "id": number,
@@ -26,8 +25,7 @@ export class SettingsService {
   private settingsSubject$: BehaviorSubject<SettingsType>
   private defOpPeriodLength = 12 // hours
 
-  constructor(
-    @Optional() @SkipSelf() existingService: SettingsService,
+  constructor(@Optional() @SkipSelf() existingService: SettingsService,
     private log: LogService
   ) {
     if (existingService) {
