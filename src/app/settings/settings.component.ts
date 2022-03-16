@@ -257,9 +257,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
 
   onBtnResetDefaults() {
-    throwError(() => new Error(`unimplemented onBtnResetDefaults()`))  // TODO
-    //this.settingsService.ResetDefaults() // need to refresh page?!
-    //this.rowData = this.settingsService.ResetFieldReportStatusDefaults()
+    this.settings = this.settingsService.ResetDefaults() // need to refresh page?!
+    //this.reloadPage_unused()
   }
 
   /**
@@ -388,7 +387,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   }
 
   onFirstDataRendered(params: any) {
-    // this.refreshStatusGrid() needed???
+    this.refreshStatusGrid() // REVIEW: needed???
   }
 
   onBtnAddFRStatus() {

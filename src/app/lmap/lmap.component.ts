@@ -200,6 +200,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     // ---------------- Init Main Map -----------------
 
 
+    //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
     this.lmap = L.map('lmap', {
       center: [this.settings.defLat, this.settings.defLng],
       zoom: this.settings.leaflet.defZoom

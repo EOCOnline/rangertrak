@@ -82,9 +82,19 @@ export class SettingsService {
   }
 
   /**
-   *   populate Field Report Statuses
+   * Called by Settings Component when user wants to reset
    */
+  public ResetDefaults(): SettingsType {
+    this.log.verbose(`Settings are being restored to their initial (hardcoded) values. Please re-enter mission info as desired.`, this.id)
+    this.settings = this.initSettings()
+    this.updateSettings(this.settings)
+    return this.settings
+  }
 
+  /**
+   *   populate Field Report Statuses
+   *
+   */
   private initSettings() { // settings: SettingsType
     //original hardcoded defaults... not updated until form is submitted... Settings.component.ts' form doesn't allow editing of all values
     this.log.verbose("Initialize App Settings from hardcoded values", this.id)
@@ -132,13 +142,13 @@ export class SettingsService {
       },
 
       defFieldReportStatus: 0, // which of the following array entries to use as the default value
+      //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
       fieldReportStatuses: [
         { status: 'Normal', color: '', icon: '' },
-        { status: 'Need Rest', color: 'cce', icon: '' },
-        { status: 'Urgent', color: 'red', icon: '' },
-        { status: 'Objective Update', color: 'aqua', icon: '' },
-        { status: 'Check-in', color: 'grey', icon: '' },
-        { status: 'Check-out', color: 'dark-grey', icon: '' }
+        { status: 'Check-in', color: 'darkkhaki', icon: '' },
+        { status: 'Check-out', color: 'darkgoldenrod', icon: '' },
+        { status: 'Need Rest', color: 'chartreuse', icon: '' },
+        { status: 'Urgent', color: 'red', icon: '' }
       ],
       // fieldReportKeywords: [''],  // Future...could also just search notes field
     }

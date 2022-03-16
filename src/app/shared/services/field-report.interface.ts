@@ -33,6 +33,7 @@ export type FieldReportsType = {
 
 /**
  * Field Reports can be tagged with a status. These can have color & associated icons & can be edited by the user.
+ * ? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
  */
 export type FieldReportStatusType = {
   status: string,

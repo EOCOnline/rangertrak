@@ -163,7 +163,7 @@ export class MiniLMapComponent implements AfterViewInit, OnDestroy {
   // @Input statement (above) catches parents update of 'this.location' & sends it to us
   // Based on listing 8.8 in TS dev w/ TS, pg 188
   public onNewLocationChild(value: any) {
-    this.log.verbose(`new location passed in ${JSON.stringify(value)}`, this.id)
+    this.log.verbose(`new location received in ${JSON.stringify(value)}`, this.id)
 
     if (value && value != undefined) {
       this.location = {
@@ -175,7 +175,7 @@ export class MiniLMapComponent implements AfterViewInit, OnDestroy {
       this.addCircle(this.location.lat, this.location.lng, this.location.address)
 
     } else {
-      this.log.error(`Bad location passed in ${JSON.stringify(value)}`, this.id)
+      this.log.error(`Bad location passed in to onNewLocationChild(): ${JSON.stringify(value)}`, this.id)
     }
   }
 

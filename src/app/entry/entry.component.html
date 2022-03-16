@@ -44,103 +44,22 @@
       </mat-autocomplete>
     </mat-form-field>
     <span id="enter__Callsign-upshot"></span>
-
-    <!-- br>ToDo: [Future: Maybe only enter Team OR Callsign. If team, then ALL TeamMembers get checked in all at once???]  >
-    <div #div1 class="input-group">Team:
-      <input [class.border-danger]="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.invalid"
-        type="text" formControlName="team" placeholder="Team">
-      <div *ngIf="entryDetailsForm.get('team')?.touched && entryDetailsForm.get('team')?.hasError('required')"
-        class="text-sm text-danger">Team is required</div>
-    </div -->
-
     <br />
-
-    <!--svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">
-      <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />
-  </svg-->
-    <!-- icons:  https://dev.materialdesignicons.com/getting-started/angular
-      https://iconify.design/
-      https://dev.materialdesignicons.com/getting-started
-      style="width:15px;height:15px"
-      {{mdiAccount}} dddfdd {{mdiIformationOutline}}
-      <fa-icon [icon]="faMapMarkedAlt"></fa-icon>
-    -->
-
-    <!-- https://fontawesome.com/v5.15/icons
-<img src="../../assets/icons/information-outline.png"
-    icon path="mdiAccount"></icon>
-  <icon path="mdiInformationOutline"></icon-->
 
     <!--onchange="DDCoordsChanged()"
       {{lat | number:'1.4-5'}}
-      {{entryDetailsForm.get(lat) | number:'1.4-5'}}
-
-
-
-      https://material.angular.io/components/icon/examples
-    -->
-    <!--mat-icon aria-hidden="false" aria-label="home icon">home</mat-icon>
-    <mat-icon aria-hidden="false" aria-label="info icon">info</mat-icon>
-    <mat-icon aria-hidden="false" aria-label="info icon">hiking</mat-icon>
-    <mat-icon svgIcon="thumbs-up" aria-hidden="false" aria-label="thumbs up SVG icon"></mat-icon>thumbsup
-    <span class="material-icons-two-tone">info</span-->
-
-    <!--div>
-        <label>address</label>
-        <input type="text" formControlName="address">
-        <div *ngIf="entryDetailsForm.get('address')?.touched && entryDetailsForm.get('address')?.hasError('required')"
-          class="text-sm text-danger">bad address</div>
-      </div-->
+      {{entryDetailsForm.get(lat) | number:'1.4-5'}} -->
 
     <!-- from Majd Asab in Medium.com...
-   [(ngModel)]="extLocation"
- name="extLocationVal"
- #validations=""ngModel"
--->
+   [(ngModel)]="extLocation" name="extLocationVal" #validations=""ngModel"-->
 
-    <!--
-
-  Error: Uncaught (in promise): InvalidCharacterError: Failed to execute 'setAttribute' on 'Element': '[location' is not a valid attribute name.
-Error: Failed to execute 'setAttribute' on 'Element': '[location' is not a valid attribute name.
-location as FormGroup does compile, but above run-time error...
--->
     <div formGroupName="locationFrmGrp">
       <rangertrak-location
         (newLocationEvent)="onNewLocationParent($event)"
       ></rangertrak-location>
-
-      <!-- above gets: Property 'subscribe' does not exist on type 'EventEmitter'.
-
-              [parentLat]="latDD"
-        [parentLng]="lngDD"
-
-
-        rangertrak-location [location as FormGroup]="entryDetailsForm.get('location')"></rangertrak-location-->
-      <!--rangertrak-location [group]="entryDetailsForm.get('location')"></rangertrak-location-->
-      <!-- (property) LocationComponent.group: FormGroup | null
-Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
-
-      <!--rangertrak-location [location]="entryDetailsForm.get('location')"></rangertrak-location-->
-      <!--rangertrak-location [locationForm]="entryDetailsForm.get('location')"></rangertrak-location-->
-
-      <!--div>
-        <label>lat</label>
-        <input type="number" formControlName="lat">
-        <div *ngIf="entryDetailsForm.get('lat')?.touched && entryDetailsForm.get('lat')?.hasError('required')"
-          class="text-sm text-danger">bad lat</div>
-      </div>
-
-      <div>
-        <label>langt</label>
-        <input type="number" formControlName="lng">
-        <div *ngIf="entryDetailsForm.get('lng')?.touched && entryDetailsForm.get('lng')?.hasError('required')"
-          class="text-sm text-danger">bad lng</div>
-      </div-->
     </div>
 
-    <h2 class="elegant">
-      <mat-label>When</mat-label>
-    </h2>
+    <h2 class="elegant"><mat-label>When</mat-label></h2>
     <div FormControl="timepickerFrmControl">
       <rangertrak-time-picker (newTimeEvent)="onNewTime($event)"></rangertrak-time-picker>
     </div>
@@ -153,7 +72,6 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
         class="filled  enter__Status"
         labelPosition="after"
         formControlName="status"
-        [class.border-danger]="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.invalid"
         tabindex="7"
       >
         <mat-radio-button
@@ -164,14 +82,9 @@ Type 'AbstractControl | null' is not assignable to type 'FormGroup | null'.-->
           <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
         </mat-radio-button>
       </mat-radio-group>
+      <br />
+      <br />
 
-      <div
-        *ngIf="entryDetailsForm.get('status')?.touched && entryDetailsForm.get('status')?.hasError('required')"
-        class="text-sm text-danger"
-      >
-        Status is required
-      </div>
-      <br /><br />
       <textarea
         class="input-group enter__What--area"
         formControlName="notes"
