@@ -1,7 +1,11 @@
 <div class="container enter__Where-div">
   <div appearance="filled" class="timepicker__Where-input">
     <div class="input-group" [formControl]="timepickerFormControl">
-      <!-- for $(datePicker) explaination:  https://stackoverflow.com/questions/64826483/ngxmatdatetimepicker-is-not-assignable-to-type-matdatepickerbase -->
+      <!-- for $(datePicker) explaination:  https://stackoverflow.com/questions/64826483/ngxmatdatetimepicker-is-not-assignable-to-type-matdatepickerbase
+        [ngxMatDatetimePicker]="$any(datePicker)", below, gets:
+        No value accessor for form control with unspecified name attribute
+        app.module.ts imports: NgxMatDatetimePickerModule
+      -->
       <mat-form-field appearance="fill">
         <mat-label>Report time</mat-label>
         <input

@@ -106,7 +106,7 @@ location as FormGroup does compile, but above run-time error...
 -->
     <div formGroupName="locationFrmGrp">
       <rangertrak-location
-        (newLocationEvent)="onNewLocation($event)"
+        (newLocationEvent)="onNewLocationParent($event)"
       ></rangertrak-location>
 
       <!-- above gets: Property 'subscribe' does not exist on type 'EventEmitter'.

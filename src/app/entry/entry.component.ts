@@ -11,7 +11,6 @@ import { FieldReportService, FieldReportStatusType, RangerService, LogService, R
 import { TimePickerComponent } from '../shared/';
 // IDEA: use https://material.angular.io/components/badge/ ???
 
-
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
@@ -103,10 +102,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
   }
 
-  onNewLocation(newLocation: LocationType) {
+  onNewLocationParent(newLocation: LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`Got new location: ${JSON.stringify(newLocation)}`, this.id)
-    debugger
+    this.log.verbose(`Parent got new location: ${JSON.stringify(newLocation)}`, this.id)
+    //!debugger
     this.location = newLocation
     // This then automatically gets sent to mini-map children via their @Input statements
 
@@ -114,7 +113,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.entryDetailsForm.patchValue({
       locationFrmGrp: newLocation
     })
-    //this.locationFrmGrp is where the Event comes up from...
   }
 
   onNewTime(newTimeEvent: any) {

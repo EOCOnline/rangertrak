@@ -5,6 +5,7 @@ import { ThemePalette } from '@angular/material/core';
 import dayjs from 'dayjs';
 import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
 import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, SettingsType, LocationType } from '../services/'
+import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker' // already in app.module.ts
 
 @Component({
   selector: 'rangertrak-time-picker',

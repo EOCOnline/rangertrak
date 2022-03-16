@@ -40,9 +40,9 @@ L.Marker.prototype.options.icon = iconDefault;
 })
 export class MiniLMapComponent implements AfterViewInit, OnDestroy {
   @Input() set locationUpdated(newLocationEvent: any) {
-    this.log.verbose(`Got location event=${JSON.stringify(newLocationEvent)}`, this.id)
-    // spits out 'undefined'
-    this.onNewLocation(newLocationEvent)
+    this.log.verbose(`Parent sent on location event to child: ${JSON.stringify(newLocationEvent)}`, this.id)
+    //! spits out 'undefined'
+    this.onNewLocationChild(newLocationEvent)
   }
   // @Input() set locationUpdated(value: LocationType) {
   //   this.onNewLocation(value)
@@ -157,8 +157,12 @@ export class MiniLMapComponent implements AfterViewInit, OnDestroy {
       this.mouseLatLng = evt.latlng
     })
   }
+
+
   // !From Leaflet MiniMap - new location passed in undefined
-  private onNewLocation(value: LocationType) {
+  // @Input statement (above) catches parents update of 'this.location' & sends it to us
+  // Based on listing 8.8 in TS dev w/ TS, pg 188
+  public onNewLocationChild(value: any) {
     this.log.verbose(`new location passed in ${JSON.stringify(value)}`, this.id)
 
     if (value && value != undefined) {
