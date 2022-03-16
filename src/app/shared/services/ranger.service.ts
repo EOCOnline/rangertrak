@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, OnInit, Optional, SkipSelf } from '@angular/core';
 import { formatDate } from '@angular/common';
-import { BehaviorSubject, Observable, Observer, of } from 'rxjs';
+import { BehaviorSubject, Observable, Observer, of, throwError } from 'rxjs';
 import { csvImport } from 'src/app/rangers/csvImport';
 //import { debounceTime, map, startWith } from 'rxjs/operators'
 import { LogService, RangerType } from './'
@@ -34,8 +34,21 @@ export class RangerService {
 
   constructor(
     private httpClient: HttpClient,
-    private log: LogService
+    private log: LogService,
+    @Optional() @SkipSelf() existingService: RangerService,
   ) {
+    if (existingService) {
+      /**
+       * see https://angular.io/guide/singleton-services
+       * Use @Optional() @SkipSelf() in singleton constructors to ensure
+       * future modules don't provide extra copies of this singleton service
+       * per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
+       */
+      throwError(() => {
+        console.error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+        new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+      })
+    }
     this.log.verbose("Construction", this.id)
     this.LoadRangersFromLocalStorage()
     this.log.verbose(`Got ${this.rangers.length} from Local Storage`, this.id)

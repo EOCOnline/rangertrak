@@ -1,6 +1,6 @@
 // / <reference types= @types/picocolors /> - gets: Cannot find type definition file for '@types/picocolors'.
-import { Injectable } from '@angular/core'
-import { BehaviorSubject, Observable } from 'rxjs'
+import { Injectable, Optional, SkipSelf } from '@angular/core'
+import { BehaviorSubject, Observable, throwError } from 'rxjs'
 import { Utility } from '../utility'
 import pc from "picocolors" // https://github.com/alexeyraspopov/picocolors
 import { LogType, LogLevel } from '.'
@@ -12,7 +12,21 @@ export class LogService {
   private logSubject$: BehaviorSubject<LogType[]>
   private defaultSource = 'Unknown'
 
-  constructor() {
+  constructor(
+    @Optional() @SkipSelf() existingService: LogService,
+  ) {
+    if (existingService) {
+      /**
+       * see https://angular.io/guide/singleton-services
+       * Use @Optional() @SkipSelf() in singleton constructors to ensure
+       * future modules don't provide extra copies of this singleton service
+       * per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
+       */
+      throwError(() => {
+        console.error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+        new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+      })
+    }
     console.log(pc.green(`==== Log ${pc.bgRed('Service')} ${pc.italic('Construction')} ====`))
 
     let initialEntry = {

@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, Observer, of, Subscription, throwError } from 'rxjs'
-import { Injectable, OnInit, Pipe, PipeTransform, OnDestroy } from '@angular/core';
+import { Injectable, OnInit, Pipe, PipeTransform, OnDestroy, SkipSelf, Optional } from '@angular/core';
 import { RangerService, SettingsService, SettingsType, LogService, FieldReportsType, FieldReportType, FieldReportStatusType } from './' // , TeamService
 import { HttpClient } from '@angular/common/http'
 import L from 'leaflet'
@@ -36,8 +36,21 @@ export class FieldReportService implements OnDestroy {
     private rangerService: RangerService,
     private settingsService: SettingsService,
     private log: LogService,
-    private httpClient: HttpClient) {
-
+    private httpClient: HttpClient,
+    @Optional() @SkipSelf() existingService: FieldReportService,
+  ) {
+    if (existingService) {
+      /**
+       * see https://angular.io/guide/singleton-services
+       * Use @Optional() @SkipSelf() in singleton constructors to ensure
+       * future modules don't provide extra copies of this singleton service
+       * per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
+       */
+      throwError(() => {
+        console.error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+        new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+      })
+    }
     log.verbose("Contruction: once or repeatedly?!--------------", this.id)
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({

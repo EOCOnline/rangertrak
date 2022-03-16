@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core'
-import { BehaviorSubject, Observable } from 'rxjs'
+import { Injectable, SkipSelf } from '@angular/core'
+import { BehaviorSubject, Observable, throwError } from 'rxjs'
 
 import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
 import * as packageJson from '../../../../package.json'
 import { LogService, FieldReportStatusType, SettingsType } from './'
+import { Optional } from 'ag-grid-community'
 
 export type SecretType = {
   "id": number,
@@ -26,8 +27,22 @@ export class SettingsService {
   private defOpPeriodLength = 12 // hours
 
   constructor(
+    @Optional() @SkipSelf() existingService: SettingsService,
     private log: LogService
   ) {
+    if (existingService) {
+      /**
+       * see https://angular.io/guide/singleton-services
+       * Use @Optional() @SkipSelf() in singleton constructors to ensure
+       * future modules don't provide extra copies of this singleton service
+       * per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
+       */
+      throwError(() => {
+        console.error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+        new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+      })
+    }
+
     // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
     this.log.verbose('Constructing', this.id)
 

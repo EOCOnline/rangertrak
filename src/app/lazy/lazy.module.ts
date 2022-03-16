@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common'  // vs. BrowserModule that App im
 import { LazyRoutingModule } from './lazy-routing.module';
 import { LazyComponent } from "./lazy.component";
 
-import { ThreeWordsService } from './shared/services/'
 //import { HeaderComponent } from '../shared';
 import { AboutComponent } from './about/about.component';
 //import { FlexLayoutModule } from '@angular/flex-layout';
@@ -13,6 +12,7 @@ import { AboutComponent } from './about/about.component';
 // https://malcoded.com/posts/angular-fundamentals-modules/ is good
 // https://angular.io/guide/build#configuring-commonjs-dependencies
 // https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method: singleton
+// https://angular.io/guide/singleton-services
 
 @NgModule({
 
@@ -24,7 +24,6 @@ import { AboutComponent } from './about/about.component';
 
     /*
       RouterModule.forChild([
-        //{path: '', component: ThreeWordsService},
         { path: 'about', component: AboutComponent }
       ])
     */
@@ -35,20 +34,14 @@ import { AboutComponent } from './about/about.component';
   declarations: [
     AboutComponent,
     LazyComponent
-    //, ThreeWordsService
-
   ],
 
-  // Define any required @Injectables. Any sub-components or modules can get the same @Injectable instance via dependency injection.
-  // In the case of the AppModule, these @Injectables are application-scoped
-  //
+  // Post Angular 6, singleton services don't go here: https://angular.io/guide/singleton-services
   //providers: [
-  //ThreeWordsService
   //],
 
   // Make components, directives or pipes available to other modules...
   exports: [
-    //ThreeWordsService,
     AboutComponent
   ]
 })

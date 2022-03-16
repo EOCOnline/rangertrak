@@ -1,4 +1,5 @@
-import { ClockService, FieldReportService, FieldReportSource, FieldReportStatusType, FieldReportType, PopupService, RangerService, RangerType, SettingsService, SettingsType } from './shared/services/'
+import { FieldReportSource, FieldReportStatusType, FieldReportType, RangerType, SettingsType } from './shared/services/'
+//import { ClockService, FieldReportService, PopupService, RangerService, SettingsService} from './shared/services/' // instead singleton services use "providedIn: 'root'""
 
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { AgGridModule } from 'ag-grid-angular'
@@ -45,7 +46,6 @@ import { MiniLMapComponent } from './entry/mini-lmap.component'
 import { HeaderComponent } from './shared/'
 import { TimePickerComponent } from './shared/time-picker/time-picker.component'
 import { IconsComponent } from './shared/icons/icons.component'
-import { LogService } from './shared/services/log.service';
 // REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
 // https://angular.io/guide/build#configuring-commonjs-dependencies
 
@@ -116,11 +116,18 @@ import { LogService } from './shared/services/log.service';
   ],
 
   // Define any required @Injectables. Any sub-components or modules can get the
-  //! same @Injectable instance (i.e., a singleton!)
-  // via dependency injection.
-  // In the case of the AppModule, these @Injectables are application-scoped
+  // same @Injectable instance (i.e., a singleton!) via dependency injection.
+  // In the case of the AppModule, these @Injectables are application-scoped.
+
+  // Use @Optional() @SkipSelf() in singleton constructors to ensure
+  // future modules don't provide extra copies of this singleton service
+  // per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
+
+  // Post Ang 6, do not put here as they are no longer tree-shakable,
+  // ? instead use providedin: 'root' at start of every service/singleton
+  // per https://angular.io/guide/singleton-services
   providers: [
-    ClockService, FieldReportService, LogService, PopupService, RangerService, SettingsService,
+    //ClockService, FieldReportService, LogService, PopupService, RangerService, SettingsService,
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS }
   ],
