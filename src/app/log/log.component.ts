@@ -21,8 +21,8 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
   public title = 'Event Summary Log'
   private logPanel: HTMLElement | null = null
   private logSubscription: Subscription
-  private settingsSubscription$!: Subscription
-  private settings?: SettingsType
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
 
   private latestLog: LogType[] = []
 
@@ -51,7 +51,7 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
       error: (e) => console.error('Log Subscription got:' + e, this.id),
       complete: () => console.info('Log Subscription complete', this.id)
     })
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
       },
@@ -152,6 +152,6 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
 
 
   ngOnDestroy() {
-    this.settingsSubscription$.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
 }

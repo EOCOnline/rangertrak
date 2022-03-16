@@ -13,8 +13,8 @@ import { SettingsService, ClockService, SettingsType, LogService } from '../../s
 export class AboutComponent implements OnDestroy {
 
   id = 'About'
-  private settingsSubscription$!: Subscription
-  private settings?: SettingsType
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
   public version = ''
 
   constructor(
@@ -23,7 +23,7 @@ export class AboutComponent implements OnDestroy {
   ) {
     console.log("AboutComponent getting constructed")
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
       },
@@ -37,6 +37,6 @@ export class AboutComponent implements OnDestroy {
   //ngOnInit() {  }
 
   ngOnDestroy() {
-    this.settingsSubscription$.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
 }

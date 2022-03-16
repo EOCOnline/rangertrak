@@ -24,18 +24,18 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   public title = 'Field Report Entry'
 
   // Get location events from <location> component
-  private locationSubscription$!: Subscription
+  private locationSubscription!: Subscription
   public location!: LocationType
 
-  private rangersSubscription$!: Subscription
+  private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
   filteredRangers: Observable<RangerType[]>
 
-  private settingsSubscription$!: Subscription
+  private settingsSubscription!: Subscription
   public settings!: SettingsType
 
   // Get time events from <timepicker> component
-  private timeSubscription$!: Subscription
+  private timeSubscription!: Subscription
   public time!: Date
 
   alert: any
@@ -67,13 +67,13 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     private zone: NgZone,
     @Inject(DOCUMENT) private document: Document) {
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => { this.settings = newSettings },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    this.rangersSubscription$ = rangerService.getRangersObserver().subscribe({
+    this.rangersSubscription = rangerService.getRangersObserver().subscribe({
       next: (newRangers) => { this.rangers = newRangers },
       error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
       complete: () => this.log.info('Rangers Subscription complete', this.id)
@@ -358,9 +358,9 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   ngOnDestroy() {
-    this.locationSubscription$.unsubscribe()
-    this.rangersSubscription$.unsubscribe()
-    this.settingsSubscription$.unsubscribe()
-    this.timeSubscription$.unsubscribe()
+    this.locationSubscription.unsubscribe()
+    this.rangersSubscription.unsubscribe()
+    this.settingsSubscription.unsubscribe()
+    this.timeSubscription.unsubscribe()
   }
 }

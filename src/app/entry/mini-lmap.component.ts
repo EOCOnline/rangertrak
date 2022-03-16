@@ -58,10 +58,10 @@ export class MiniLMapComponent implements AfterViewInit, OnDestroy {
   mouseLatLng
   mapOptions = ""
   //mymarkers = L.markerClusterGroup()
-  private settingsSubscription$!: Subscription
-  private settings?: SettingsType
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
 
-  //private locationSubscription$!: Subscription
+  //private locationSubscription!: Subscription
   private location?: LocationType
 
 
@@ -71,7 +71,7 @@ export class MiniLMapComponent implements AfterViewInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document
   ) {
     this.log.verbose("constructor()", this.id)
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
       },
@@ -80,7 +80,7 @@ export class MiniLMapComponent implements AfterViewInit, OnDestroy {
     })
 
     /*
-    this.locationSubscription$ = this.locationService.getSettingsObserver().subscribe({
+    this.locationSubscription = this.locationService.getSettingsObserver().subscribe({
       next: (newLocation) => {
         console.log(`Got newLocation: ${JSON.stringify(newLocation)}`)
         this.location = newLocation
@@ -265,6 +265,6 @@ export class MiniLMapComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.settingsSubscription$.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
 }

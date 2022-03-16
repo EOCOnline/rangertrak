@@ -25,8 +25,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private id = 'Settings Component'
   title = 'Application Settings'
 
-  private settingsSubscription$!: Subscription
-  public settings?: SettingsType
+  private settingsSubscription!: Subscription
+  public settings!: SettingsType
 
   public settingsEditorForm!: FormGroup
   //  public leaflet!: FormGroup
@@ -194,7 +194,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         //console.log(newSettings)
         this.settings = newSettings
@@ -212,7 +212,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
   ngOnInit(): void {
     if (this.settings == undefined) {
-      this.log.warn('Settings need to be initialized.', this.id)
+      this.log.warn('Settings need to be initialized, in ngOnInit.', this.id)
     } else {
       this.rowData = this.settings.fieldReportStatuses
       this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
@@ -233,9 +233,13 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   }
 
   onNewTimeEventStart(newTimeEvent: any) {
+    if (!this.settings) {
+      this.log.error(`this.settings is null at onNewTimeEventStart`, this.id)
+      return
+    }
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new start OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
-    this.settings!.opPeriodStart = JSON.parse(newTimeEvent)
+    this.settings.opPeriodStart = JSON.parse(newTimeEvent)
     this.settingsEditorForm.patchValue({ timepickerFormControlStart: JSON.parse(newTimeEvent) })
     // This then automatically gets sent to mini-map children via their @Input statements
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
@@ -244,9 +248,13 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   }
 
   onNewTimeEventEnd(newTimeEvent: any) {
+    if (!this.settings) {
+      this.log.error(`this.settings is null at onNewTimeEventEnd`, this.id)
+      return
+    }
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new end OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
-    this.settings!.opPeriodEnd = JSON.parse(newTimeEvent)
+    this.settings.opPeriodEnd = JSON.parse(newTimeEvent)
     this.settingsEditorForm.patchValue({ timepickerFormControlEnd: JSON.parse(newTimeEvent) })
 
     // This then automatically gets sent to mini-map children via their @Input statements
@@ -255,8 +263,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     //this.timepickerFormControl is where the Event comes up from...
   }
 
-
   onBtnResetDefaults() {
+    this.log.verbose(`onBtnResetDefaults: Reset Settings.`, this.id)
     this.settings = this.settingsService.ResetDefaults() // need to refresh page?!
     //this.reloadPage_unused()
   }
@@ -267,10 +275,10 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
    * REVIEW: Do we need a version like entry.component.ts's resetSettingsForm()?
    */
   getFormArrayFromSettingsArray() {
-    this.log.verbose("getFormArrayFromSettingsArray", this.id)
+    this.log.verbose("running getFormArrayFromSettingsArray()", this.id)
 
     if (!this.settings) {
-      this.log.error(`this.settings is null`, this.id)
+      this.log.error(`this.settings is null at getFormArrayFromSettingsArray`, this.id)
       return
     }
 
@@ -467,7 +475,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   }
 
   ngOnDestroy() {
-    this.settingsSubscription$.unsubscribe()
+    this.settingsSubscription.unsubscribe()
     this.timeSubscriptionStart$.unsubscribe()
     this.timeSubscriptionEnd$.unsubscribe()
   }

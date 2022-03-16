@@ -22,7 +22,7 @@ export class SettingsService {
   private storageLocalName = 'appSettings'
   static secrets: SecretType[]
   public settings!: SettingsType
-  private settingsSubject: BehaviorSubject<SettingsType>
+  private settingsSubject$: BehaviorSubject<SettingsType>
   private defOpPeriodLength = 12 // hours
 
   constructor(
@@ -73,7 +73,7 @@ export class SettingsService {
     this.log.verbose(`Got version: ${packageAsJson.version} `, this.id)
 
     // Save & publish settings to subscribers
-    this.settingsSubject = new BehaviorSubject(this.settings)
+    this.settingsSubject$ = new BehaviorSubject(this.settings)
     this.updateSettings(this.settings)
 
     // REVIEW: following forces garbage collection of package.json, for security? (would happen at end of constructor too)
@@ -161,7 +161,7 @@ export class SettingsService {
     // Do any needed sanity/validation here
 
     localStorage.setItem(this.storageLocalName, JSON.stringify(newSettings))
-    this.settingsSubject.next(this.settings)
+    this.settingsSubject$.next(this.settings)
     this.log.verbose(`Notified subscribers of new Application Settings ${JSON.stringify(newSettings)} `, this.id)
   }
 
@@ -169,7 +169,7 @@ export class SettingsService {
    * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
    */
   public getSettingsObserver(): Observable<SettingsType> {
-    return this.settingsSubject.asObservable()
+    return this.settingsSubject$.asObservable()
   }
 
   private localStorageVoyeur() {

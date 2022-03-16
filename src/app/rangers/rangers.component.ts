@@ -28,10 +28,10 @@ export class RangersComponent implements OnInit, OnDestroy {
   private id = 'Ranger Component'
   public title = 'Rangers (CERT, ACS/ARES, etc)'
 
-  private settingsSubscription$!: Subscription
-  private settings?: SettingsType
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
 
-  private rangersSubscription$!: Subscription
+  private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
 
   localUrl: any[] = []
@@ -111,7 +111,7 @@ export class RangersComponent implements OnInit, OnDestroy {
     this.gridApi = ""
     this.gridColumnApi = ""
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
       },
@@ -123,7 +123,7 @@ export class RangersComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
-    this.rangersSubscription$ = this.rangerService.getRangersObserver().subscribe({
+    this.rangersSubscription = this.rangerService.getRangersObserver().subscribe({
       next: (newRangers) => { this.rangers = newRangers },
       error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
       complete: () => this.log.info('Rangers Subscription complete', this.id)
@@ -445,8 +445,8 @@ export class RangersComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy() {
-    this.rangersSubscription$.unsubscribe()
-    this.settingsSubscription$.unsubscribe()
+    this.rangersSubscription.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
 }
 

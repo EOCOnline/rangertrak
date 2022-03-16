@@ -115,9 +115,9 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   public mdiAccount: string = mdiAccount
   public mdiInformationOutline: string = mdiInformationOutline
 
-  private settingsSubscription$: Subscription
+  private settingsSubscription: Subscription
   private settings!: SettingsType
-  //private locationSubject: BehaviorSubject<LocationType>
+  //private locationSubject$: BehaviorSubject<LocationType>
 
 
   constructor(
@@ -127,7 +127,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("Construction", this.id)
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
       },
@@ -176,7 +176,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
    * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
 
   public getLocationObserver(): Observable<LocationType> {
-    return this.locationSubject!.asObservable()
+    return this.locationSubject$!.asObservable()
   }*/
   // #endregion Constructors (1)
 
@@ -746,7 +746,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   }
 
   ngOnDestroy() {
-    this.settingsSubscription$.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
   // #endregion Public Methods (11)
 }

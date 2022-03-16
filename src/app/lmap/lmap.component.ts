@@ -54,10 +54,10 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   private id = 'Leaflet Map Component'
   public title = 'Leaflet Map'
 
-  private settingsSubscription$!: Subscription
+  private settingsSubscription!: Subscription
   private settings!: SettingsType
 
-  private fieldReportsSubscription$!: Subscription
+  private fieldReportsSubscription!: Subscription
   private fieldReports: FieldReportsType | undefined
 
   // What gets displayed: alternates between all & selected rows, based on the switch
@@ -98,7 +98,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.fieldReportService = fieldReportService
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         // REVIEW: Any new settings just ripple thru, or does anything need pushing?!
         this.settings = newSettings
@@ -107,7 +107,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    this.fieldReportsSubscription$ =
+    this.fieldReportsSubscription =
       this.fieldReportService.getFieldReportsObserver().subscribe({
         next: (newReport) => {
           this.gotNewFieldReports(newReport)
@@ -510,8 +510,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   */
 
   ngOnDestroy() {
-    this.fieldReportsSubscription$.unsubscribe()
-    this.settingsSubscription$.unsubscribe()
+    this.fieldReportsSubscription.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
 
 

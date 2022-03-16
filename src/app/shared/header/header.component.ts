@@ -22,7 +22,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private id = 'Header component'
 
-  private settingsSubscription$!: Subscription
+  private settingsSubscription!: Subscription
   private settings!: SettingsType
 
   public eventInfo = ''
@@ -42,7 +42,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private settingsService: SettingsService,
   ) {
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.onNewSettings(newSettings)
       },
@@ -96,6 +96,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.settingsSubscription$.unsubscribe
+    this.settingsSubscription.unsubscribe
   }
 }

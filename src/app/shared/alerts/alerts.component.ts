@@ -20,8 +20,8 @@ export class AlertsComponent implements OnInit, OnDestroy {
   isAlertHidden: boolean
   private alertBanner: HTMLElement | null = null
   emoji = 'emoji_people'
-  private settingsSubscription$!: Subscription
-  private settings?: SettingsType
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -29,7 +29,7 @@ export class AlertsComponent implements OnInit, OnDestroy {
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
       },
@@ -118,7 +118,7 @@ export class AlertsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.settingsSubscription$.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
 }
 

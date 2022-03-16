@@ -57,8 +57,8 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
 
   private id = 'Google Map Component'
   public title = 'Google Map'
-  private settingsSubscription$!: Subscription
-  private settings?: SettingsType
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
 
   // items for template
   mouseLatLng?: google.maps.LatLngLiteral;
@@ -113,7 +113,7 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
   private latestReport: FieldReportsType | undefined
   private fieldReports: FieldReportsType | undefined
   public fieldReportArray: FieldReportType[] = []
-  private fieldReportsSubscription$!: Subscription
+  private fieldReportsSubscription!: Subscription
   private fieldReportStatuses: FieldReportStatusType[] = []
 
   //selectedFieldReports: FieldReportType[] = []
@@ -129,7 +129,7 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
     @Inject(DOCUMENT) private document: Document) {
 
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
       },
@@ -195,7 +195,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
 
     // gMap is still null...
 
-    this.fieldReportsSubscription$ = this.fieldReportService.getFieldReportsObserver().subscribe({
+    this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
       next: (newReport) => {
         //console.log(newReport)
         this.latestReport = newReport
@@ -539,7 +539,7 @@ MarkerClustererPlus Library - also old
   }
 
   ngOnDestroy() {
-    this.fieldReportsSubscription$.unsubscribe()
-    this.settingsSubscription$.unsubscribe()
+    this.fieldReportsSubscription.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
 }

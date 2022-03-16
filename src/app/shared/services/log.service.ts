@@ -9,7 +9,7 @@ import { LogType, LogLevel } from '.'
 export class LogService {
 
   private Log: LogType[] = []
-  private logSubject: BehaviorSubject<LogType[]>
+  private logSubject$: BehaviorSubject<LogType[]>
   private defaultSource = 'Unknown'
 
   constructor() {
@@ -19,7 +19,7 @@ export class LogService {
       date: new Date, msg: 'Log Service is being constructed',
       level: LogLevel.Verbose, source: 'LogService'
     }
-    this.logSubject = new BehaviorSubject([initialEntry])
+    this.logSubject$ = new BehaviorSubject([initialEntry])
   }
 
   // compare to functionality of https://developer.mozilla.org/en-US/docs/Web/API/console
@@ -56,7 +56,7 @@ export class LogService {
         break;
     }
     this.Log.push({ date: new Date, msg: msg, level: level, source: source })
-    this.logSubject.next(this.Log)  //? Review: we republish the entire log, not just the next entry: ?????
+    this.logSubject$.next(this.Log)  //? Review: we republish the entire log, not just the next entry: ?????
   }
 
   verbose(msg: string, source: string = this.defaultSource) {
@@ -76,6 +76,6 @@ export class LogService {
   }
 
   getLogObserver(): Observable<LogType[]> {
-    return this.logSubject.asObservable()
+    return this.logSubject$.asObservable()
   }
 }

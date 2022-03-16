@@ -25,7 +25,7 @@ export class RangerService {
 
   id = 'Ranger Service'
 
-  private rangersSubject =
+  private rangersSubject$ =
     new BehaviorSubject<RangerType[]>([])
   rangers: RangerType[] = []
 
@@ -50,7 +50,7 @@ export class RangerService {
       //Rangers.2Feb22.json file.`, this.id)
     }
 
-    this.rangersSubject = new BehaviorSubject(this.rangers)
+    this.rangersSubject$ = new BehaviorSubject(this.rangers)
     this.updateLocalStorageAndPublish()
   }
 
@@ -58,7 +58,7 @@ export class RangerService {
    * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
    */
   public getRangersObserver(): Observable<RangerType[]> {
-    return this.rangersSubject.asObservable()
+    return this.rangersSubject$.asObservable()
   }
 
   /**
@@ -73,7 +73,7 @@ export class RangerService {
 
     localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
 
-    this.rangersSubject.next(this.rangers)
+    this.rangersSubject$.next(this.rangers)
   }
 
   //--------------------------------------------------------------------------

@@ -13,8 +13,8 @@ import { LogService } from '../services/log.service';
 })
 export class FooterComponent implements OnInit, OnDestroy {
 
-  private settingsSubscription$!: Subscription
-  private settings?: SettingsType
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
   private id = 'Footer Component'
 
   today = new Date()
@@ -24,14 +24,13 @@ export class FooterComponent implements OnInit, OnDestroy {
     private log: LogService,
     private settingsService: SettingsService) {
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
-
 
     this.version = this.settings?.version
   }
@@ -40,6 +39,6 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.settingsSubscription$.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
 }

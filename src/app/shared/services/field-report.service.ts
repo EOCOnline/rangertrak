@@ -15,17 +15,17 @@ export class FieldReportService implements OnDestroy {
   private id = 'Field Report Service'
 
   private fieldReports!: FieldReportsType
-  private fieldReportsSubject: BehaviorSubject<FieldReportsType>
+  private fieldReportsSubject$: BehaviorSubject<FieldReportsType>
 
   // REVIEW: No need to enable subscription to selectedFieldReports as they are
   // auto-saved on evey selection and user is single-threaded, needs to do that,
   // then move to maps which THEN grab the new values.
   private selectedFieldReports!: FieldReportsType
 
-  private settingsSubscription$!: Subscription
-  private settings?: SettingsType
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
 
-  private rangersSubscription$!: Subscription
+  private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
 
   private storageLocalName = 'fieldReports'
@@ -40,7 +40,7 @@ export class FieldReportService implements OnDestroy {
 
     log.verbose("Contruction: once or repeatedly?!--------------", this.id)
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
       },
@@ -53,7 +53,7 @@ export class FieldReportService implements OnDestroy {
     log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
 
     //this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
-    this.fieldReportsSubject = new BehaviorSubject(this.fieldReports)
+    this.fieldReportsSubject$ = new BehaviorSubject(this.fieldReports)
     this.updateFieldReportsAndPublish()
   }
 
@@ -109,7 +109,7 @@ export class FieldReportService implements OnDestroy {
    * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
    */
   public getFieldReportsObserver(): Observable<FieldReportsType> {
-    return this.fieldReportsSubject.asObservable()
+    return this.fieldReportsSubject$.asObservable()
   }
 
   /**
@@ -127,7 +127,7 @@ export class FieldReportService implements OnDestroy {
     localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports))
 
     this.log.verbose(`New field reports are available to observers...`, this.id)
-    this.fieldReportsSubject.next(this.fieldReports)
+    this.fieldReportsSubject$.next(this.fieldReports)
   }
 
   public addfieldReport(formData: string) {
@@ -245,7 +245,7 @@ export class FieldReportService implements OnDestroy {
   generateFakeData(num: number = 15) {
     let rangers: RangerType[] = []
 
-    this.rangersSubscription$ = this.rangerService.getRangersObserver().subscribe({
+    this.rangersSubscription = this.rangerService.getRangersObserver().subscribe({
       next: (newRangers) => { rangers = newRangers },
       error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
       complete: () => this.log.info('Rangers Subscription complete', this.id)
@@ -294,8 +294,8 @@ export class FieldReportService implements OnDestroy {
        TypeError: Cannot read properties of undefined (reading 'unsubscribe')
        at FieldReportService.ngOnDestroy (main.js:8505:35)
     */
-    // this.rangersSubscription$.unsubscribe()
-    // this.settingsSubscription$.unsubscribe()
+    // this.rangersSubscription.unsubscribe()
+    // this.settingsSubscription.unsubscribe()
   }
 
   // ---------------------------------  UNUSED -------------------------------------------------------

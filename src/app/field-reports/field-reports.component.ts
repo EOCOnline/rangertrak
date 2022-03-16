@@ -26,11 +26,11 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   public title = 'Field Reports'
   private fieldReports: FieldReportsType | undefined
   public fieldReportArray: FieldReportType[] = []
-  private fieldReportsSubscription$!: Subscription
+  private fieldReportsSubscription!: Subscription
   private fieldReportStatuses: FieldReportStatusType[] = []
-  // fieldReportStatuses$!: Observable<FieldReportStatusType[]> //TODO:
-  private settingsSubscription$!: Subscription
-  private settings?: SettingsType
+  // fieldReportStatuses!: Observable<FieldReportStatusType[]> //TODO:
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
 
   public selectedRows = 0
   public columnDefs
@@ -84,7 +84,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gridApi = ""
     this.gridColumnApi = ""
 
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
       },
@@ -145,7 +145,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.log.verbose("ngInit", this.id)
 
-    this.fieldReportsSubscription$ = this.fieldReportService.getFieldReportsObserver().subscribe({
+    this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
       next: (newReport) => {
         console.log(newReport)
         this.gotNewFieldReports(newReport)
@@ -383,6 +383,6 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.fieldReportsSubscription$.unsubscribe()
+    this.fieldReportsSubscription.unsubscribe()
   }
 }

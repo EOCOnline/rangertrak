@@ -29,11 +29,11 @@ export class MiniGMapComponent implements OnInit, OnDestroy {
   }
 
   private id = "Google mini-map Component"
-  //private locationSubscription$!: Subscription
+  //private locationSubscription!: Subscription
   private location?: LocationType
 
-  private settingsSubscription$!: Subscription
-  private settings?: SettingsType
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
 
   // ------------------ MAP STUFF  ------------------
   // imports this.map as a GoogleMap which is the Angular wrapper around a google.maps.Map...
@@ -74,7 +74,7 @@ export class MiniGMapComponent implements OnInit, OnDestroy {
     this.log.verbose(`MiniGMapComponent constructed with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
 
     this.log.verbose("constructor()", this.id)
-    this.settingsSubscription$ = this.settingsService.getSettingsObserver().subscribe({
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
       },
@@ -83,7 +83,7 @@ export class MiniGMapComponent implements OnInit, OnDestroy {
     })
 
     /*
-    this.locationSubscription$ = this.locationService.getSettingsObserver().subscribe({
+    this.locationSubscription = this.locationService.getSettingsObserver().subscribe({
       next: (newLocation) => {
         this.log.verbose(`mini-map got newLocation: ${JSON.stringify(newLocation)}`)
         this.location = newLocation
@@ -178,7 +178,7 @@ export class MiniGMapComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy() {
-    // this.locationSubscription$.unsubscribe()
-    this.settingsSubscription$.unsubscribe()
+    // this.locationSubscription.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
 }
