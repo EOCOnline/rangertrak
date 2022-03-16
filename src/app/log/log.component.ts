@@ -127,7 +127,7 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
 
         case LogLevel.Info:
           if (this.info) {
-            this.logPanel!.innerHTML += `<i class="fa-solid fa-circle-info"></i><span class="info"><span class="tiny" id="tiny2"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
+            this.logPanel.innerHTML += `<fa-icon [icon]="fa-circle-info"></fa-icon><span class="info"><span class="tiny" id="tiny2"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
           }
           break;
 
@@ -139,7 +139,7 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
 
         case LogLevel.Error:
           if (this.error) {
-            this.logPanel!.innerHTML += `<i class="fa-solid fa-bug"></i><span class="${entry.level}"><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
+            this.logPanel.innerHTML += `<i class="fa-solid fa-bug"></i><span class="${entry.level}"><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
           }
           break;
       }

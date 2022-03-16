@@ -7,6 +7,9 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LogService } from '../services';
 
+//https://www.npmjs.com/package/@fortawesome/angular-fontawesome
+// https://github.com/FortAwesome/angular-fontawesome is latest without going to fa6.x
+
 const THUMBUP_ICON =
   `
   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px">

@@ -1,7 +1,6 @@
 import { ClockService, FieldReportService, FieldReportSource, FieldReportStatusType, FieldReportType, PopupService, RangerService, RangerType, SettingsService, SettingsType } from './shared/services/'
 
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-
 import { AgGridModule } from 'ag-grid-angular'
 import { ColorEditor } from './settings/color-editor.component'
 import { MoodEditor } from './settings/mood-editor.component'
@@ -17,7 +16,7 @@ import { CommonModule } from '@angular/common'
 // import { DayjsModule } from 'ngx-dayjs'
 import { EntryComponent } from './entry/entry.component'
 import { FieldReportsComponent } from './field-reports/field-reports.component'
-//import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { FooterComponent } from './shared/footer/footer.component'
 import { GmapComponent } from './gmap/gmap.component'
 import { GoogleMapsModule } from '@angular/google-maps'
@@ -46,7 +45,7 @@ import { MiniLMapComponent } from './entry/mini-lmap.component'
 import { HeaderComponent } from './shared/'
 import { TimePickerComponent } from './shared/time-picker/time-picker.component'
 import { IconsComponent } from './shared/icons/icons.component'
-import { LogService } from './shared/services/log.service'
+import { LogService } from './shared/services/log.service';
 // REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
 // https://angular.io/guide/build#configuring-commonjs-dependencies
 
@@ -65,7 +64,7 @@ import { LogService } from './shared/services/log.service'
     MaterialModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    // FontAwesomeModule,
+    FontAwesomeModule,
     AgGridModule.withComponents([
       MoodEditor,
       MoodRenderer,
