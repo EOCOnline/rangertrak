@@ -148,6 +148,7 @@ export class FieldReportService implements OnDestroy {
       this.selectedFieldReports.filter = "As selected by user"
     }
     this.selectedFieldReports.fieldReportArray = selection
+    this.selectedFieldReports.numReport = selection.length
     this.recalcFieldBounds(this.selectedFieldReports)
     // Update - if subscribed...
   }
@@ -159,7 +160,8 @@ export class FieldReportService implements OnDestroy {
       but we're trying to retrieve Selected Rows!`, this.id)
       this.selectedFieldReports = this.initEmptyFieldReports()
       this.selectedFieldReports.filter = "As selected by user"
-      this.selectedFieldReports.fieldReportArray = this.fieldReports.fieldReportArray
+      this.selectedFieldReports.fieldReportArray = []
+      this.selectedFieldReports.numReport = 0
     }
     return this.selectedFieldReports
   }

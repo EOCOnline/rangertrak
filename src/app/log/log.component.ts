@@ -116,6 +116,7 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
     log.forEach(entry => {
       let time = entry.date.getHours().toString().padStart(2, '0') + ":" + entry.date.getMinutes().toString().padStart(2, '0') + ":" + entry.date.getSeconds().toString().padStart(2, '0') + "." + entry.date.getMilliseconds().toString().padStart(3, '0')
       if (!this.logPanel) { return }
+      // NOTE: ${entry.level} shows up as "LogLevel.Info"
 
       switch (entry.level) {
         case LogLevel.Verbose:
@@ -127,19 +128,19 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
 
         case LogLevel.Info:
           if (this.info) {
-            this.logPanel.innerHTML += `<fa-icon [icon]="fa-circle-info"></fa-icon><span class="info"><span class="tiny" id="tiny2"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
+            this.logPanel.innerHTML += `<fa-icon [icon]="fa-circle-info"></fa-icon><span class="info" style="background-color:yellow;"><span class="tiny" id="tiny2"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
           }
           break;
 
         case LogLevel.Warn:
           if (this.warn) {
-            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-exclamation"></i><span class="${entry.level}"><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
+            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-exclamation"></i><span class="warn" style="background-color:orange;""><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
           }
           break;
 
         case LogLevel.Error:
           if (this.error) {
-            this.logPanel.innerHTML += `<i class="fa-solid fa-bug"></i><span class="${entry.level}"><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
+            this.logPanel.innerHTML += `<i class="fa-solid fa-bug"></i><span class="error" style="background-color:red;"><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
           }
           break;
       }

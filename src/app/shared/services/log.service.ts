@@ -2,7 +2,6 @@
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { Utility } from '../utility'
-//import chalk from 'chalk'
 import pc from "picocolors" // https://github.com/alexeyraspopov/picocolors
 import { LogType, LogLevel } from '.'
 
@@ -14,6 +13,8 @@ export class LogService {
   private defaultSource = 'Unknown'
 
   constructor() {
+    console.log(pc.green(`==== Log ${pc.bgRed('Service')} ${pc.italic('Construction')} ====`))
+
     let initialEntry = {
       date: new Date, msg: 'Log Service is being constructed',
       level: LogLevel.Verbose, source: 'LogService'
