@@ -150,26 +150,9 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       address: [this.location.address, Validators.required]
     });
 
-    // showNewLocation ALSO updates location.address... so needs be done before onNewLocation
-    this.showNewLocationOnForm(this.location.lat, this.location.lng)
-    this.onNewLocation(this.location) // Emit new location event to parent
-
+    // showNewLocation ALSO updates location.address & emits new location event to parent
+    this.newLocationToFormAndEmit(this.location.lat, this.location.lng)
     this.log.verbose("Out of constructor", this.id)
-  }
-
-  public onNewLocation(newLocation: LocationType) { // Or LocationEvent?!
-    // Do any needed sanity/validation here
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
-
-    this.newLocationEvent.emit(this.location)
-    /*if (! {
-      this.log.warn(`New location event had no listeners!`, this.id)
-    }*/
-
-    this.location = newLocation
-    // TODO: this.lat = newLocation.lat, this.lng = newLocation.lng, this.address = newLocation.address
-    // REVIEW: above done in showNewLocationOnForm() - right location?!
   }
 
   /**
@@ -189,7 +172,9 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       return
     }
 
-    this.showNewLocationOnForm(this.settings.defLat, this.settings.defLng)
+    //!Following also done in constructor: only need 1!
+    //this.newLocationToFormAndEmit(this.settings.defLat, this.settings.defLng)
+    //this.onNewLocation(this.location) // Emit new location event to parent
 
     /*
             this.button = document.querySelector('#button') as HTMLButtonElement
@@ -245,14 +230,15 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   /**
    * Update form with new address
    * ALSO updates location.address
-   * ...thus a prerequisite before onNewLocation() to notify others
+   * also emits new location to notify others
    *
    * @param latDD
    * @param lngDD
    */
-  public showNewLocationOnForm(latDD: number, lngDD: number) {
+  public newLocationToFormAndEmit(latDD: number, lngDD: number) {
     // todo: need to repeatedly update this.locationFrmGrp - keep in sync w/ vals?
 
+    // Any location change should drive to a new latDD & LngDD & sent here
     this.log.info(`newLocation with lat: ${latDD}, lng: ${lngDD}`, this.id);
 
     this.location.lat = latDD
@@ -325,7 +311,20 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
             //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
           }
     */
+    this.onNewLocation(this.location) // Emit new location event to parent
   }
+
+  public onNewLocation(newLocation: LocationType) { // Or LocationEvent?!
+    // Do any needed sanity/validation here
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
+
+    this.newLocationEvent.emit(this.location)
+    /*if (! {
+      this.log.warn(`New location event had no listeners!`, this.id)
+    }*/
+  }
+
 
   // public setCtrl(ctrlName: HTMLElement, value: number | string) {
   //   this.log.verbose(`setCtrl(${ctrlName} to ${value})`, this.id)
@@ -385,7 +384,8 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
         let newAddress = this.geocoder.getAddressFromLatLng(ll)  // TODO: Disable!!
         this.log.verbose(`addressCtrlChanged new latlng: ${JSON.stringify(ll)}; addr: ${newAddress}`, this.id)
 
-        this.showNewLocationOnForm(llat, llng)
+        this.newLocationToFormAndEmit(llat, llng)
+
         /*
                 let addrLabel = this.document.getElementById("addressLabel") // as HTMLLabelElement
                 if (addrLabel) {
@@ -619,7 +619,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
         let coord = OpenLocationCode.decode(pCode)
         this.log.verbose("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', lng=' + coord.longitudeCenter, this.id);
 
-        this.showNewLocationOnForm(coord.latitudeCenter, coord.longitudeCenter);
+        this.newLocationToFormAndEmit(coord.latitudeCenter, coord.longitudeCenter)
       }
 
       else {

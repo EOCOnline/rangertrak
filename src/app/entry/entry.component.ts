@@ -96,7 +96,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       startWith(''),
       map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
     )
-    log.verbose(`constructor: ranger ${this.filteredRangers}`, this.id) //JSON.stringify
+    log.verbose(`constructor: got new callsign: [does endless loop:] {JSON.stringify(this.filteredRangers)}`, this.id)
 
     // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
     // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
@@ -104,10 +104,11 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onNewLocationParent(newLocation: LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`Parent got new location: ${JSON.stringify(newLocation)}`, this.id)
-    //!debugger
+    this.log.verbose(`Parent got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address}`, this.id)
+    //From Entry Form - Parent got new location: {"lat":47.4472,"lng":-122.4627,"address":""}
+
+    // Children (with @Input stmts - i.e., mini-map) automatically gets the updated location
     this.location = newLocation
-    // This then automatically gets sent to mini-map children via their @Input statements
 
     // REVIEW: patch entryForm object - as THAT is what gets saved with on form submit
     this.entryDetailsForm.patchValue({

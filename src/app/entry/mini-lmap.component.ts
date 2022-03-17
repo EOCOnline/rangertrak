@@ -39,10 +39,10 @@ L.Marker.prototype.options.icon = iconDefault;
     '../../../node_modules/leaflet/dist/leaflet.css'] // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
 })
 export class MiniLMapComponent implements AfterViewInit, OnDestroy {
-  @Input() set locationUpdated(newLocationEvent: any) {
-    this.log.verbose(`Parent sent on location event to child: ${JSON.stringify(newLocationEvent)}`, this.id)
+  @Input() set locationUpdated(newLocation: LocationType) {
+    this.log.verbose(`Parent sent on location event to child: ${JSON.stringify(newLocation)}`, this.id)
     //! spits out 'undefined'
-    this.onNewLocationChild(newLocationEvent)
+    this.onNewLocationChild(newLocation)
   }
   // @Input() set locationUpdated(value: LocationType) {
   //   this.onNewLocation(value)
@@ -162,20 +162,20 @@ export class MiniLMapComponent implements AfterViewInit, OnDestroy {
   // !From Leaflet MiniMap - new location passed in undefined
   // @Input statement (above) catches parents update of 'this.location' & sends it to us
   // Based on listing 8.8 in TS dev w/ TS, pg 188
-  public onNewLocationChild(value: any) {
-    this.log.verbose(`new location received in ${JSON.stringify(value)}`, this.id)
+  public onNewLocationChild(newLocation: LocationType) {
+    this.log.verbose(`new location received in ${JSON.stringify(newLocation)}`, this.id)
 
-    if (value && value != undefined) {
+    if (newLocation && newLocation != undefined) {
       this.location = {
-        lat: value.lat,
-        lng: value.lng,
-        address: value.address
+        lat: newLocation.lat,
+        lng: newLocation.lng,
+        address: newLocation.address
       }
       this.addMarker(this.location.lat, this.location.lng, this.location.address)
       this.addCircle(this.location.lat, this.location.lng, this.location.address)
 
     } else {
-      this.log.error(`Bad location passed in to onNewLocationChild(): ${JSON.stringify(value)}`, this.id)
+      this.log.error(`Bad location passed in to onNewLocationChild(): ${JSON.stringify(newLocation)}`, this.id)
     }
   }
 
