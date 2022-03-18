@@ -13,7 +13,8 @@ import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerMod
   styleUrls: ['./time-picker.component.scss']
 })
 export class TimePickerComponent implements OnInit {
-  @Input() public timepickerFormControl: FormControl // input from entry.component.ts
+  @Input() public timepickerFormGroup: FormControl // input from entry.component.ts
+  //  @Input() public timepickerFormControl: FormControl // input from entry.component.ts
   //@Input() public timepickerFormControl: FormControl // input from entry.component.ts
   @Output() newTimeEvent = new EventEmitter<Date>()
   // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
@@ -54,7 +55,9 @@ export class TimePickerComponent implements OnInit {
   disableMinute = false
   hideTime = false
   dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
-
+  timepickerFormGroup = new FormBuilder.group({
+    time: [new Date()]
+  })
 
 
   constructor(
@@ -65,7 +68,13 @@ export class TimePickerComponent implements OnInit {
 
     // BUG: maybe should be in EntryComponent.ts instead? as locationFrmGrp is there...
     // new values here bubble up as emitted events - see onNewLocation()
-    this.timepickerFormControl = this._formBuilder.control([this.time])
+
+    // formControlName must be used with a parent formGroup directive
+    //    this.timepickerFormControl = this._formBuilder.control([this.time])
+
+    this.timepickerFormGroup = this._formBuilder.group({
+      time: [this.time]
+    })
 
     // REVIEW: Min/Max times ignored?!
     // TODO: These should get passed in
