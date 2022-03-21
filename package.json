@@ -56,7 +56,6 @@
     "dayjs": "^1.11.0",
     "firebase": "^9.6.8",
     "idb": "^7.0.1",
-    "leaflet": "^1.7.1",
     "leaflet.markercluster": "^1.5.3",
     "leaflet.offline": "^2.1.0",
     "ngx-dayjs": "^1.0.1",

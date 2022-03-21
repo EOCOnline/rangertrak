@@ -13,7 +13,7 @@ import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerMod
   styleUrls: ['./time-picker.component.scss']
 })
 export class TimePickerComponent implements OnInit {
-  @Input() public timepickerFormGroup: FormControl // input from entry.component.ts
+  @Input() public timepickerFormGroup: FormGroup // input from entry.component.ts
   //  @Input() public timepickerFormControl: FormControl // input from entry.component.ts
   //@Input() public timepickerFormControl: FormControl // input from entry.component.ts
   @Output() newTimeEvent = new EventEmitter<Date>()
@@ -54,10 +54,7 @@ export class TimePickerComponent implements OnInit {
   public color: ThemePalette = 'primary';
   disableMinute = false
   hideTime = false
-  dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
-  timepickerFormGroup = new FormBuilder.group({
-    time: [new Date()]
-  })
+  //dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
 
 
   constructor(
@@ -80,6 +77,10 @@ export class TimePickerComponent implements OnInit {
     // TODO: These should get passed in
     this._setMinDate(10) // no times early than 10 hours ago
     this._setMaxDate(1)  // no times later than 1 hours from now
+
+    this.timepickerFormGroup = _formBuilder.group({
+      time: [new Date()]
+    })
   }
 
   ngOnInit(): void {
