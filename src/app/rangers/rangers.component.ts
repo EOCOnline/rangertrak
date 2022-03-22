@@ -215,7 +215,8 @@ export class RangersComponent implements OnInit, OnDestroy {
     }
     //this.localUrl //: any[]
     //this.rangerService.LoadRangersFromJSON(e.target.files[0])
-    window.location.reload()
+    this.log.verbose(`Reloading window!`, this.id)
+    this.reloadPage()
   }
 
 
@@ -246,14 +247,16 @@ export class RangersComponent implements OnInit, OnDestroy {
   onBtnImportExcel(evt: any) {
     this.excelData2 = this.rangerService.LoadRangersFromExcel(evt.target)
     this.log.verbose("excelData2: " + JSON.stringify(this.excelData2), this.id)
-    window.location.reload()
+    this.log.verbose(`Reloading window!`, this.id)
+    this.reloadPage()
   }
 
   //--------------------------------------------------------------------------
   onBtnImportExcel2() {
     this.rangerService.loadRangersFromExcel2()
     this.log.verbose(`Got excel file`, this.id)
-    window.location.reload()
+    this.log.verbose(`Reloading window!`, this.id)
+    this.reloadPage()
   }
 
   /* File Input element for browser */
@@ -342,6 +345,7 @@ export class RangersComponent implements OnInit, OnDestroy {
   }
 
   reloadPage() {
+    this.log.verbose(`Reloading window!`, this.id)
     window.location.reload()
   }
 
@@ -426,7 +430,7 @@ export class RangersComponent implements OnInit, OnDestroy {
     this.ngOnInit()
 
     this.log.verbose("loadVashonRangers calling window.location.reload...", this.id)
-    window.location.reload()
+    this.reloadPage()
   }
 
   displayHide(htmlElementID: string) {

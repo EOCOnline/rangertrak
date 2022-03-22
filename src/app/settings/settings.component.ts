@@ -401,7 +401,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   onBtnAddFRStatus() {
     this.rowData.push({ status: 'New Status', color: '', icon: '' })
     this.refreshStatusGrid()
-    window.location.reload()
+    this.log.verbose(`Reloading window!`, this.id)
+    this.reloadPage()
   }
 
   refreshStatusGrid() {
@@ -411,6 +412,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     } else {
       this.log.verbose("no this.gridApi yet in refreshStatusGrid()", this.id)
     }
+    // this.log.verbose(`Reloading window!`, this.id)
     //window.location.reload() -- reloads endlessly!
     // TODO: try   getSelectedRowData() & then refresh row color instead - set color by row, vs cell
     /*
@@ -436,8 +438,9 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     //      return selectedData;
   }
 
-  reloadPage_unused() {
+  reloadPage() {
     //REVIEW: Does this zap existing changes elsewhere on the page (used for reseting field statuses..)
+    this.log.verbose(`Reloading window!`, this.id)
     window.location.reload()
   }
 
@@ -449,7 +452,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
     // TODO: If Debug disabled then call:
     //enableProdMode()
-    window.location.reload()
+    this.log.verbose(`Reloading window!`, this.id)
+    this.reloadPage()
   }
 
   displayHide(htmlElementID: string) {

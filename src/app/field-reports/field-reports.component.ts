@@ -215,6 +215,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   reloadPage() {
+    this.log.verbose(`Reloading window!`, this.id)
     window.location.reload()
   }
 

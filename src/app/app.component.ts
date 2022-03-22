@@ -99,6 +99,7 @@ export class AppComponent implements OnInit {
       filter(result => result.dismissedByAction),
       map(() => this.swUpdate.activateUpdate().then(() => location.reload()))
     ).subscribe();
+    this.log.verbose(`Reloading window!`, this.id)
     */
   }
 }
