@@ -6,10 +6,10 @@ import { MDCSwitch } from '@material/switch'
 
 import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet'
 import * as L from 'leaflet'
-import 'leaflet.markercluster';
+//import 'leaflet.markercluster';
 
 //import { openDB, deleteDB, wrap, unwrp } from 'idb'
-import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
+//import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 // also: https://github.com/onthegomap/planetiler
 
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, SettingsType } from '../shared/services'
@@ -37,16 +37,28 @@ const markerIcon = L.icon({
 })
 L.Marker.prototype.options.icon = iconDefault;
 
+// From package.json
+//  "leaflet.markercluster": "^1.5.3",
+//    "leaflet.offline": "^2.1.0"
 
+// devedependencies:  "@types/leaflet": "^1.7.9",
+//    "@types/leaflet.markercluster": "^1.4.6",
+
+/* Angular.json: Styles
+
+"./node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css",
+              "./node_modules/leaflet.markercluster/dist/MarkerCluster.css",
+              "./node_modules/leaflet/dist/leaflet.css",
+              */
 
 @Component({
   selector: 'rangertrak-lmap',
   templateUrl: './lmap.component.html',
   styleUrls: [
-    './lmap.component.scss',
-    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.css", // REVIEW: also added to angular.json: needed there?
-    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css", // (not needed if you use your own iconCreateFunction instead of the default one)
-    '../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)
+    './lmap.component.scss'
+    //,     "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.css", // REVIEW: also added to angular.json: needed there?
+    // "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css" // (not needed if you use your own iconCreateFunction instead of the default one)
+    //'../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)
   ],
   providers: [SettingsService]
 })
@@ -95,6 +107,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     private httpClient: HttpClient,
     private log: LogService,
     @Inject(DOCUMENT) private document: Document) {
+    this.log.verbose(`Constructing Leaflet Map, using https://www.LeafletJS.com version ${L.version}`, this.id)
 
     this.fieldReportService = fieldReportService
 

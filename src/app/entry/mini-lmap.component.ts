@@ -3,10 +3,11 @@ import { DOCUMENT, JsonPipe } from '@angular/common'
 import { fromEvent, Subscription } from 'rxjs'
 
 import * as L from 'leaflet'
-import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet'
+import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions } from 'leaflet'
 
 //import 'leaflet.markercluster';
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, LocationType, LogService, SettingsType } from '../shared/services'
+// , MarkerClusterGroup, MarkerClusterGroupOptions
 import { openDB, deleteDB, wrap, unwrap } from 'idb';
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 
