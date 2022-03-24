@@ -6,10 +6,10 @@ import { MDCSwitch } from '@material/switch'
 
 import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet'
 import * as L from 'leaflet'
-//import 'leaflet.markercluster';
+import 'leaflet.markercluster';
 
 //import { openDB, deleteDB, wrap, unwrp } from 'idb'
-//import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
+import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 // also: https://github.com/onthegomap/planetiler
 
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, SettingsType } from '../shared/services'

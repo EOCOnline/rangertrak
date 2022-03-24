@@ -1,13 +1,13 @@
 import { AfterViewInit, Component, ElementRef, Inject, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { fromEvent, Subscription } from 'rxjs'
+import pc from "picocolors" // https://github.com/alexeyraspopov/picocolors
 
 import * as L from 'leaflet'
-import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions } from 'leaflet'
+import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet'
 
-//import 'leaflet.markercluster';
+import 'leaflet.markercluster';
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, LocationType, LogService, SettingsType } from '../shared/services'
-// , MarkerClusterGroup, MarkerClusterGroupOptions
 import { openDB, deleteDB, wrap, unwrap } from 'idb';
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 
@@ -40,8 +40,8 @@ L.Marker.prototype.options.icon = iconDefault;
     '../../../node_modules/leaflet/dist/leaflet.css'] // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
 })
 export class MiniLMapComponent implements AfterViewInit, OnDestroy {
-  @Input() set locationUpdated(newLocation: LocationType) {
-    this.log.verbose(`Parent sent on location event to child: ${JSON.stringify(newLocation)}`, this.id)
+  @Input() set locationUpdated(newLocation: LocationType) { // ! Or might this be an event???????????????????
+    this.log.verbose(pc.red(`Parent sent on a location event to child: ${JSON.stringify(newLocation)}`), this.id)
     //! spits out 'undefined'
     this.onNewLocationChild(newLocation)
   }
