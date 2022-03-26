@@ -60,23 +60,27 @@
         alt="info icon"
       />
     </h2>
-    <!--onchange="DDCoordsChanged()"
+    <!--onchange="DDCoordsChanged()
+
+      "FormControl="timepickerFrmControl"
+      formGroupName="locationFrmGrp"
+
       {{lat | number:'1.4-5'}}
       {{entryDetailsForm.get(lat) | number:'1.4-5'}} -->
 
     <!-- from Majd Asab in Medium.com...
    [(ngModel)]="extLocation" name="extLocationVal" #validations=""ngModel"-->
 
-    <div formGroupName="locationFrmGrp">
+    <!--div>
       <rangertrak-location
         (newLocationEvent)="onNewLocationParent($event)"
       ></rangertrak-location>
     </div>
 
     <h2 class="elegant"><mat-label>When</mat-label></h2>
-    <div FormControl="timepickerFrmControl">
-      <rangertrak-time-picker (newTimeEvent)="onNewTime($event)" ></rangertrak-time-picker>
-    </div>
+    <div>
+      <rangertrak-time-picker (newTimeEvent)="onNewTime($event)"></rangertrak-time-picker>
+    </div-->
 
     <h2 class="elegant bordered">What</h2>
 

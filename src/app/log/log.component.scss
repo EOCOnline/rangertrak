@@ -1,20 +1,7 @@
-body {
-  font-family     : arial, helvetica, freesans, sans-serif;
-  font-size       : 100%;
-  color           : #333;
-  background-color: #ddd;
-}
-
-h1 {
-  font-size  : 1.5em;
-  font-weight: normal;
-  margin     : 0;
-}
-
 #log {
   height            : 70vh;
   font-family       : monospace;
-  font-size         : 0.8em;
+  font-size         : 0.7em;
   line-height       : 12px;
   padding           : 2px 5px;
   //color           : rgb(57, 34, 161);
@@ -23,6 +10,22 @@ h1 {
   border-radius     : 4px;
   overflow          : auto;
 }
+
+#log .tiny {
+  font-size  : 8px;
+  font-family: 'Times New Roman', Times, serif;
+
+  color           : crimson;
+  background-color: cornflowerblue;
+}
+
+.tiny {
+  font-size       : 8px;
+  font-family     : 'Times New Roman', Times, serif;
+  color           : crimson !important;
+  background-color: cornflowerblue;
+}
+
 
 h3 {
   margin            : 0px 0px;
@@ -56,20 +59,15 @@ h3 {
   color: red
 }
 
-#tiny {
-  font-size       : 10px;
-  color           : crimson;
-  background-color: cornflowerblue;
-}
+// body {
+//   font-family     : arial, helvetica, freesans, sans-serif;
+//   font-size       : 100%;
+//   color           : #333;
+//   background-color: #ddd;
+// }
 
-#tiny2 {
-  font-size       : 8px;
-  color           : rgb(82, 177, 241);
-  background-color: rgb(74, 165, 90);
-}
-
-.tiny {
-  font-size       : 10px;
-  color           : crimson;
-  background-color: cornflowerblue;
-}
+// h1 {
+//   font-size  : 1.5em;
+//   font-weight: normal;
+//   margin     : 0;
+// }

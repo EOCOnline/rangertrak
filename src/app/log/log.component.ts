@@ -15,7 +15,7 @@ import { LogType, LogService, LogLevel, SettingsService, SettingsType } from '..
   templateUrl: './log.component.html',
   styleUrls: ['./log.component.scss']
 })
-export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, AfterViewInit {
+export class LogComponent implements OnInit, OnDestroy, AfterContentInit, AfterViewInit {
   // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
   private id = 'Log Component'
   public title = 'Event Summary Log'
@@ -40,7 +40,7 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
     private logService: LogService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
-    console.log(`Constructing log compoennt`)
+    console.log(`Constructing log component`)
 
     this.logSubscription = logService.getLogObserver().subscribe({
       next: (log) => {
@@ -51,6 +51,7 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
       error: (e) => console.error('Log Subscription got:' + e, this.id),
       complete: () => console.info('Log Subscription complete', this.id)
     })
+
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
@@ -64,36 +65,46 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
    * Create heading for Log Panel
    */
   ngOnInit(): void {
-    console.log(`Into log component's ngInit`)
-
+    //console.log(`Into log component's ngInit`)
 
     this.logPanel = this.document.getElementById("log")
     if (this.logPanel) {
       // YES!
       console.log(`ngOnInit() found logPanel.`)
       this.redisplayLog()
+    } else {
+      console.error('logPanel not found in ngOnInit(). Move code later!');
     }
   }
-  /*
-    ngAfterContentInit() {
-      this.logPanel = this.document.getElementById("log")
-      if (this.logPanel) {
-        // YES!
-        console.log(`ngAfterContentInit() found logPanel.`)
-        this.redisplayLog()
-      }
-    }
 
-    ngAfterViewInit() {
-      this.logPanel = this.document.getElementById("log")
-      if (this.logPanel) {
-        console.log(`ngAfterViewInit() found logPanel.`)
-        this.redisplayLog()
-      }
+  ngAfterContentInit() {
+    //console.log(`Into log component's ngAfterContentInit`)
+
+    this.logPanel = this.document.getElementById("log")
+    if (this.logPanel) {
+      // YES!
+      console.log(`ngAfterContentInit() found logPanel.`)
+      this.redisplayLog()
+    } else {
+      console.error('logPanel not found in ngAfterContentInit(). Move code later!');
     }
-  */
+  }
+
+  ngAfterViewInit() {
+    //console.log(`Into log component's ngAfterViewInit`)
+
+    this.logPanel = this.document.getElementById("log")
+    if (this.logPanel) {
+      // YES!
+      console.log(`ngOnIngAfterViewInitnit() found logPanel.`)
+      this.redisplayLog()
+    } else {
+      console.error('logPanel not found in ngAfterViewInit(). Move code later!');
+    }
+  }
+
   redisplayLog() {
-    console.log(`redisplay log with only ${this.verbose ? 'verbose, ' : ''}${this.info ? 'info, ' : ''}${this.warn ? 'warnings, ' : ''}${this.error ? 'errors ' : ''}`)
+    console.log(`Redisplay log with only ${this.verbose ? 'verbose, ' : ''}${this.info ? 'info, ' : ''}${this.warn ? 'warnings, ' : ''}${this.error ? 'errors ' : ''}`)
     this.gotNewLog(this.latestLog)
   }
 
@@ -102,47 +113,81 @@ export class LogComponent implements OnInit, OnDestroy { //}, AfterContentInit, 
    * the characters must be escaped using their respective HTML entity.
    */
   gotNewLog(log: LogType[]) {
-    console.log(`got new log with ${log.length} entries`)
+    //console.log(`got new log with ${log.length} entries`)
 
-    this.logPanel = this.document.getElementById("log")
-    if (this.logPanel === null) {
-      console.warn(`Asked to display the logs BEFORE the logPanel could be initialized. Will retry. For: \n${JSON.stringify(log.slice(-1))} `)
-      //  TODO: Retry after a second or it's otherwise created...
+    let i = 0
+    let msMaxDelay = 2000
+    while (!this.logPanel) {
+      setTimeout(() => {
+        console.error(`gotNewLog asked to display the logs BEFORE logPanel initialization. Delayed ${i / 10 * msMaxDelay} ms. Retrying.`) // For: \n${JSON.stringify(log.slice(-1))} `)
+        this.logPanel = this.document.getElementById("log")
+      }, msMaxDelay / 10)
+      if (++i > 9) {
+        return
+        //throw ("log panel undefined...")
+        //break
+      }
+    }
+
+    if (this.logPanel == null) {
+      console.error('this.logPanel is null...')
       return
     }
-    if (this.logPanel == undefined) { throw ("log panel undefined...") }
 
+    if (this.logPanel == undefined) {
+      console.error('this.logPanel is undefined...')
+      return
+    }
+
+    if (this.logPanel.innerHTML == null) {
+      console.error('this.logPanel.innerHTML is null...')
+      return
+    }
+
+
+    if (this.logPanel.innerHTML == undefined) {
+      console.error('this.logPanel.innerHTML is undefined...')
+      return
+    }
+
+    // TODO: rebuilds entire log panel, instead of just pushing last few entries onto it...
     this.logPanel.innerHTML = ''
+
     log.forEach(entry => {
       let time = entry.date.getHours().toString().padStart(2, '0') + ":" + entry.date.getMinutes().toString().padStart(2, '0') + ":" + entry.date.getSeconds().toString().padStart(2, '0') + "." + entry.date.getMilliseconds().toString().padStart(3, '0')
+      let preface = `<span class="tiny">${entry.source}: </span>` //`<span class="tiny"> ${time} - ${entry.source}:  </span>`
+
       if (!this.logPanel) { return }
-      // NOTE: ${entry.level} shows up as "LogLevel.Info"
 
       switch (entry.level) {
+
         case LogLevel.Verbose:
           if (this.verbose) {
             // BUG: Classes and id's show up in debugger, but font-sizes & colors don't get calculated/are ineffective!
-            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-check"></i><span class="verbose"><span id="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
+            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-check"></i><span class="verbose">${preface}${entry.msg}</span><br>`
           }
           break;
 
         case LogLevel.Info:
           if (this.info) {
-            this.logPanel.innerHTML += `<fa-icon [icon]="fa-circle-info"></fa-icon><span class="info" style="background-color:yellow;"><span class="tiny" id="tiny2"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
+            this.logPanel.innerHTML += `<fa-icon [icon]="fa-circle-info"></fa-icon><span class="info" style="background-color:yellow;">${preface}${entry.msg}</span><br>`
           }
           break;
 
         case LogLevel.Warn:
           if (this.warn) {
-            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-exclamation"></i><span class="warn" style="background-color:orange;""><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
+            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-exclamation"></i><span class="warn" style="background-color:orange;"">${preface}${entry.msg}</span><br>`
           }
           break;
 
         case LogLevel.Error:
           if (this.error) {
-            this.logPanel.innerHTML += `<i class="fa-solid fa-bug"></i><span class="error" style="background-color:red;"><span class="tiny"> ${time} - ${entry.source}:  </span>${entry.msg}</span><br>`
+            this.logPanel.innerHTML += `<i class="fa-solid fa-bug"></i><span class="error" style="background-color:red;">${preface}${entry.msg}</span><br>`
           }
           break;
+
+        default:
+          this.logPanel.innerHTML += `<i class="fa-solid fa-bug"></i><span class="error" style="background-color:salmon;">UNEXPECTED LOG TYPE: ${preface}${entry.msg}</span><br>`
       }
     })
 

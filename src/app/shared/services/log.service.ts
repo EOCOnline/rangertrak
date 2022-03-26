@@ -47,26 +47,27 @@ export class LogService {
   log(msg: string, source: string = this.defaultSource, level: LogLevel = LogLevel.Info) {
     let dt = new Date
     let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
+    let preface = '' // `${time} - From `
     switch (level) {
       case LogLevel.Verbose:
-        console.log(pc.blue(`${time} - From ${source} - ${msg}`))
+        console.log(pc.blue(`${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Info:
-        console.log(pc.bgCyan(`${time} - From ${source} - ${msg}`))
+        console.log(pc.bgCyan(`${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Warn:
-        console.warn(`${time} - From ${source} - ${msg}`)
+        console.warn(`${preface}${source}: ${msg}`)
         break;
 
       case LogLevel.Error:
-        console.error(pc.red(pc.bold(`${time} - From ${source} - ${msg}`)))
+        console.error(pc.red(pc.bold(`${preface}${source}: ${msg}`)))
         break;
 
       default:
         console.error(`Unknown level!`)
-        console.error(`${time} - From ${source} - ${msg}`)
+        console.error(`${preface}${source}: ${msg}`)
         break;
     }
     this.Log.push({ date: new Date, msg: msg, level: level, source: source })

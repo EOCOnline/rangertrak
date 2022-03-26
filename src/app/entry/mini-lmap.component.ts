@@ -40,10 +40,16 @@ L.Marker.prototype.options.icon = iconDefault;
     '../../../node_modules/leaflet/dist/leaflet.css'] // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
 })
 export class MiniLMapComponent implements AfterViewInit, OnDestroy {
+  //@Input() set locationUpdated(newLocation: LocationType) {
+  // ! Entry form hasn't received new location yet???
   @Input() set locationUpdated(newLocation: LocationType) { // ! Or might this be an event???????????????????
-    this.log.verbose(pc.red(`Parent sent on a location event to child: ${JSON.stringify(newLocation)}`), this.id)
-    //! spits out 'undefined'
-    this.onNewLocationChild(newLocation)
+    if ((newLocation && newLocation.lat) != undefined) {
+      this.log.verbose(pc.red(`Parent sent on a location event to child: ${JSON.stringify(newLocation)}`), this.id)
+      //! spits out 'undefined'
+      this.onNewLocationChild(newLocation)
+    } else {
+      this.log.error(pc.red(`DRATS: Parent sent undefined location event to child`), this.id)
+    }
   }
   // @Input() set locationUpdated(value: LocationType) {
   //   this.onNewLocation(value)

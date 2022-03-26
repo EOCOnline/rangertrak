@@ -25,7 +25,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Get location events from <location> component
   private locationSubscription!: Subscription
-  public location!: LocationType
+  public location: LocationType = { lat: 0, lng: 0, address: 'NOT_SET_YET' }
 
   private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
