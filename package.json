@@ -57,6 +57,7 @@
     "@what3words/api": "^4.0.5",
     "ag-grid-angular": "^27.1.1",
     "ag-grid-community": "^27.1.0",
+    "colors": "^1.4.0",
     "dayjs": "^1.11.0",
     "firebase": "^9.6.9",
     "idb": "^7.0.1",
