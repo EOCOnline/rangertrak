@@ -7,7 +7,8 @@
   <mat-card-content>
     <h3>Log levels to display:</h3>
     <section>
-      <mat-checkbox [(ngModel)]="excessive" (change)="this.redisplayLog()"
+      <!-- Other colors: primary, secondary, accent and warn  https://stackoverflow.com/questions/57926149/angular-material-colors -->
+      <mat-checkbox [(ngModel)]="excessive" (change)="this.redisplayLog()" color="primary"
         >Excessive</mat-checkbox
       >
       <mat-checkbox [(ngModel)]="verbose" (change)="this.redisplayLog()"

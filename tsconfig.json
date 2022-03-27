@@ -34,4 +34,16 @@
     "strictTemplates": true,
     "fullTemplateTypeCheck": true
   }
+  /*
+  https://www.devasking.com/issue/tsconfigjson-include-property
+  ,
+  "files": [
+    "./node_modules/picocolors/types.ts"
+  ]
+
+  ,
+  "exclude": [
+    "./node_modules/picocolors/types.ts"
+  ]
+  */
 }
