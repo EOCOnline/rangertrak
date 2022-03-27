@@ -5,7 +5,7 @@ import { Utility } from '../utility'
 import pc from "picocolors" // https://github.com/alexeyraspopov/picocolors
 import { LogType, LogLevel } from '.'
 
-const colors = require('colors/safe');
+//const colors = require('colors/safe');
 const hotStylin = 'background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;'
 
 @Injectable({ providedIn: 'root' })
@@ -30,7 +30,7 @@ export class LogService {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    console.log(pc.green(`==== Log ${colors.red.bold('Service')} ${pc.italic('Construction')} ====`))
+    console.log(pc.green(`==== Log ${pc.red('Service')} ${pc.italic('Construction')} ====`))
 
     let initialEntry = {
       date: new Date, msg: 'Log Service is being constructed',
@@ -58,15 +58,15 @@ export class LogService {
     switch (level) {
 
       case LogLevel.Excessive:
-        console.log(colors.red.bold(`%c${preface}${source}: ${msg}`))
+        console.log(pc.red(`%c${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Verbose:
-        console.log(colors.blue(`${preface}${source}: ${msg}`), hotStylin)
+        console.log(pc.blue(`${preface}${source}: ${msg}`), hotStylin)
         break;
 
       case LogLevel.Info:
-        console.log(colors.cyan(`${preface}${source}: ${msg}`))
+        console.log(pc.cyan(`${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Warn:

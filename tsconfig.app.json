@@ -9,6 +9,6 @@
     "src/polyfills.ts"
   ],
   "include": [
-    "src/**/*.d.ts"
+    /* "src/   **    /*.d.ts" perhttps://stackoverflow.com/questions/57729518/how-to-get-rid-of-the-warning-ts-file-is-part-of-the-typescript-compilation-but */
   ]
 }
