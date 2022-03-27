@@ -129,7 +129,7 @@ export class FieldReportService implements OnDestroy {
    * Update localStorage with new field reports & notify observers
    */
   private updateFieldReportsAndPublish() {
-    //this.log.verbose(`NEW REPORT AVAILABLE, with E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
+    //this.log.excessive(`NEW REPORT AVAILABLE, with E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
 
     // Do any needed sanity/validation here
     if (this.fieldReports.numReport != this.fieldReports.fieldReportArray.length) {
@@ -139,7 +139,7 @@ export class FieldReportService implements OnDestroy {
 
     localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports))
 
-    this.log.verbose(`New field reports are available to observers...`, this.id)
+    this.log.excessive(`New field reports are available to observers...`, this.id)
     this.fieldReportsSubject$.next(this.fieldReports)
   }
 
@@ -196,7 +196,7 @@ export class FieldReportService implements OnDestroy {
 
   recalcFieldBounds(reports: FieldReportsType) {
     this.log.verbose(`recalcFieldBounds got ${reports.fieldReportArray.length} field reports`, this.id)
-    //this.log.verbose(`OLD Value: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
+    //this.log.excessive(`OLD Value: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
 
     if (!this.settings) {
       this.log.error('this.settings is undefined', this.id)
@@ -252,7 +252,7 @@ export class FieldReportService implements OnDestroy {
     }
 
     reports.bounds = L.latLngBounds([[south, west], [north, east]])//SW, NE
-    //this.log.verbose(`New bounds: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
+    //this.log.excessive(`New bounds: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
   }
 
   generateFakeData(num: number = 15) {
@@ -330,7 +330,7 @@ export class FieldReportService implements OnDestroy {
 
     // TODO: replace "add" with"post" or ???
     this.httpClient.post(`${this.serverUri}/add`, this.fieldReports.fieldReportArray)
-      .subscribe(res => this.log.verbose('Subscription of all reports to httpClient is Done', this.id))
+      .subscribe(res => this.log.excessive('Subscription of all reports to httpClient is Done', this.id))
 
     this.log.verbose("Sent all reports to server (via subscription)...", this.id);
   }
@@ -375,7 +375,7 @@ export class FieldReportService implements OnDestroy {
     })
 
     // let sorted = this.fieldReports.sort((a, b) => a.callsign > b.callsign ? 1 : -1)
-    // this.log.verbose("SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!", this.id)
+    // this.log.excessive("SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!", this.id)
   }
 
   private sortFieldReportsByDate_unused() {

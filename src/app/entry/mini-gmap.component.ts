@@ -116,7 +116,7 @@ export class MiniGMapComponent implements OnInit, OnDestroy {
         if (this.gMap == null) {
           this.log.verbose("onMapInitialized(): This.gMap is null", this.id)
         } else {
-          this.log.verbose(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`, this.id)
+          this.log.excessive(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`, this.id)
         }
         */
     this.updateOverviewMap()
@@ -138,7 +138,7 @@ export class MiniGMapComponent implements OnInit, OnDestroy {
   onMapMouseMove(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
       this.mouseLatLng = event.latLng.toJSON()
-      //this.log.verbose('moving()', this.id);
+      //this.log.excessive('moving()', this.id);
     }
     else {
       this.log.warn('move(): NO event.latLng!!!!!!!!!!!!!', this.id);

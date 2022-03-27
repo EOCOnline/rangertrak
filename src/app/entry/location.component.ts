@@ -201,17 +201,17 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // On Location/Address Change subscriptions  // TODO: USE THESE - or not???
     if (this.locationFrmGrp) {
       this.locationFrmGrp.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        this.log.verbose('########  latitude value changed: ' + x, this.id)
+        this.log.excessive('########  latitude value changed: ' + x, this.id)
       })
       this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        this.log.verbose('########## lat float value changed: ' + x, this.id)
+        this.log.excessive('########## lat float value changed: ' + x, this.id)
       })
       this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        this.log.verbose('#######  lng Float value changed: ' + x), this.id
+        this.log.excessive('#######  lng Float value changed: ' + x), this.id
       })
 
       // TODO: NOt working yet...
-      this.log.verbose(`addressCtrl.valueChanges`, this.id)
+      this.log.excessive(`addressCtrl.valueChanges`, this.id)
       // TODO: No formControlName="addressCtrl"!!!!
       // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
       //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
@@ -262,7 +262,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // this.setCtrl("enter__Where-LngD", this.lngF)
 
     let latDMS = DDToDMS(latDD, false)
-    this.log.verbose(`newLocation with lat: ${latDMS.dir}, ${latDMS.deg}, ${latDMS.min}, ${latDMS.sec}`, this.id)
+    this.log.excessive(`newLocation with lat: ${latDMS.dir}, ${latDMS.deg}, ${latDMS.min}, ${latDMS.sec}`, this.id)
 
     this.latQ = latDMS.dir
     this.latD = latDMS.deg
@@ -274,7 +274,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // this.setCtrl("latitudeS", latDMS.sec)
 
     let lngDMS = DDToDMS(lngDD, true)
-    this.log.verbose(`newLocation with lng: ${lngDMS.dir}, ${lngDMS.deg}, ${lngDMS.min}, ${lngDMS.sec}`, this.id);
+    this.log.excessive(`newLocation with lng: ${lngDMS.dir}, ${lngDMS.deg}, ${lngDMS.min}, ${lngDMS.sec}`, this.id);
 
     this.lngQ = lngDMS.dir
     this.lngD = lngDMS.deg
@@ -327,13 +327,13 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
 
   // public setCtrl(ctrlName: HTMLElement, value: number | string) {
-  //   this.log.verbose(`setCtrl(${ctrlName} to ${value})`, this.id)
+  //   this.log.excessive(`setCtrl(${ctrlName} to ${value})`, this.id)
   //   // let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
   //   // if (!ctrl) {
   //   //   this.log.warn(`setCtrl(): Could not find element: ${ctrlName}`, this.id)
   //   // } else {
   //     ctrlName.value = value.toString()
-  //     //this.log.verbose(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`, this.id)
+  //     //this.log.excessive(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`, this.id)
   //  // }
   // }
 
@@ -346,11 +346,11 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // this.form.markAsPristine();
     // this.form.markAsUntouched();
     // if (this.locationFrmGrp.get('address')?.touched) {
-    //   this.log.verbose('address WAS touched', this.id)
+    //   this.log.excessive('address WAS touched', this.id)
     //   //this.locationFrmGrp.get('address')?.markAsUntouched
     // }
     // if (this.locationFrmGrp.get('address')?.dirty) {
-    //   this.log.verbose('address WAS dirty', this.id)
+    //   this.log.excessive('address WAS dirty', this.id)
     //   //this.location.get('address')?.markAsPristine
     // }
 
@@ -502,11 +502,11 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
   this.reactiveForm.get("firstname").valueChanges.subscribe(selectedValue => {
   this.log.verbose('firstname value changed', this.id)
   this.log.verbose(selectedValue, this.id)
-  this.log.verbose(this.reactiveForm.get("firstname").value, this.id)
-  this.log.verbose(this.reactiveForm.value, this.id)    //shows the old first name
+  this.log.excessive(this.reactiveForm.get("firstname").value, this.id)
+  this.log.excessive(this.reactiveForm.value, this.id)    //shows the old first name
 
   setTimeout(() => {
-    this.log.verbose(this.reactiveForm.value, this.id)   //shows the latest first name
+    this.log.excessive(this.reactiveForm.value, this.id)   //shows the latest first name
   }, 1000)
 
   For Example, the following code will result in the ValueChanges of the firstname. but not of its parent (i.e. top-level form)
@@ -531,7 +531,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     }
 
     $.ajax(settings).done(function (response) {
-      this.log.verbose("ddd=" +response, this.id);
+      this.log.excessive("ddd=" +response, this.id);
     });
     */
 

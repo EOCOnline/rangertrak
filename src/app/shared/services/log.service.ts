@@ -49,6 +49,11 @@ export class LogService {
     let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
     let preface = '' // `${time} - From `
     switch (level) {
+
+      case LogLevel.Excessive:
+        console.log(pc.gray(`${preface}${source}: ${msg}`))
+        break;
+
       case LogLevel.Verbose:
         console.log(pc.blue(`${preface}${source}: ${msg}`))
         break;
@@ -72,6 +77,10 @@ export class LogService {
     }
     this.Log.push({ date: new Date, msg: msg, level: level, source: source })
     this.logSubject$.next(this.Log)  //? Review: we republish the entire log, not just the next entry: ?????
+  }
+
+  excessive(msg: string, source: string = this.defaultSource) {
+    this.log(msg, source, LogLevel.Excessive)
   }
 
   verbose(msg: string, source: string = this.defaultSource) {

@@ -94,7 +94,7 @@ export class RangerService {
     let localStorageRangers = localStorage.getItem(this.localStorageRangerName)
     try {
       this.rangers = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : []   //TODO: clean up
-      this.log.verbose(`Loaded ${this.rangers.length} rangers from local storage`, this.id)
+      this.log.excessive(`Loaded ${this.rangers.length} rangers from local storage`, this.id)
     } catch (error: any) {
       this.log.verbose(`Unable to parse Rangers from Local Storage. Error: ${error.message}`, this.id)
     }
@@ -193,23 +193,23 @@ import { HttpClient } from '@angular/common/http';
 
       this.log.verbose(`myJson = ${myJson}`, this.id)
       let myJson2 = JSON.parse(myJson)
-      this.log.verbose(`myJson2 = ${myJson2}`, this.id)
-      this.log.verbose(`1 Got ${this.rangers.length} rangers from Excel file.`, this.id)
+      this.log.excessive(`myJson2 = ${myJson2}`, this.id)
+      this.log.excessive(`1 Got ${this.rangers.length} rangers from Excel file.`, this.id)
 
       // save data
       this.rangers = <AOR>(myJson2)
-      this.log.verbose(`2 Got ${this.rangers.length} rangers from Excel file...`, this.id)
+      this.log.excessive(`2 Got ${this.rangers.length} rangers from Excel file...`, this.id)
 
       //this.rangers = JSON.parse(myJson)
     };
-    this.log.verbose(`3 Got ${this.rangers.length} rangers from Excel file.`, this.id)
+    this.log.excessive(`3 Got ${this.rangers.length} rangers from Excel file.`, this.id)
 
     //this.DisplayRangers_unused(`Excel import from ${target.files[0].name}`)
-    this.log.verbose(`4 Got ${this.rangers.length} rangers from Excel file.`, this.id)
+    this.log.excessive(`4 Got ${this.rangers.length} rangers from Excel file.`, this.id)
 
     reader.readAsArrayBuffer(target.files[0]);
 
-    this.log.verbose(`5 Got ${this.rangers.length} rangers from Excel file.`, this.id)
+    this.log.excessive(`5 Got ${this.rangers.length} rangers from Excel file.`, this.id)
     this.SortRangersByCallsign()
 
     // this.UpdateLocalStorage
@@ -225,7 +225,7 @@ import { HttpClient } from '@angular/common/http';
   // this needs be done for the autocomplete control in the enter comonent to work correctly
   // TODO: Getting called too often?
   SortRangersByCallsign() {
-    this.log.verbose(`SortRangersByCallsign: ${this.rangers.length} Rangers in array`, this.id)
+    this.log.excessive(`SortRangersByCallsign: ${this.rangers.length} Rangers in array`, this.id)
 
     return this.rangers.sort((n1, n2) => {
       if (n1.callsign > n2.callsign) { return 1 }
@@ -236,7 +236,7 @@ import { HttpClient } from '@angular/common/http';
 
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
   public AddRanger(formData: string = ""): RangerType {
-    this.log.verbose(`Got new ranger: ${formData}`, this.id)
+    this.log.excessive(`Got new ranger: ${formData}`, this.id)
     let newRanger: RangerType
     if (formData != "") {
       newRanger = JSON.parse(formData)
@@ -257,9 +257,9 @@ import { HttpClient } from '@angular/common/http';
   private displayRangers_unused(msg: string) {
     let len = 10
     if (this.rangers.length < len) len = this.rangers.length
-    this.log.verbose(`${msg}: (1st ${len} rows:)`, this.id)
+    this.log.excessive(`${msg}: (1st ${len} rows:)`, this.id)
     for (let i = 0; i < len; i++) {
-      this.log.verbose(`${i} as $$: ${JSON.stringify(this.rangers[i])}`, this.id)
+      this.log.excessive(`${i} as $$: ${JSON.stringify(this.rangers[i])}`, this.id)
       //this.log.verbose(`${i} as $$: ${JSON.stringify(this.rangers[i])}`, this.id)
     }
   }
@@ -315,7 +315,7 @@ import { HttpClient } from '@angular/common/http';
     })
     //  let sorted = this.rangers.sort((first, second) => first.callsign > second.callsign ? 1 : -1)
 
-    this.log.verbose("SortRangersByCallsign...DONE --- BUT ARE THEY REVERSED?!", this.id)
+    this.log.excessive("SortRangersByCallsign...DONE --- BUT ARE THEY REVERSED?!", this.id)
     return this.rangers
   }
 

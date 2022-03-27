@@ -91,7 +91,7 @@ export class TimePickerComponent implements OnInit {
     // Do any needed sanity/validation here
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     // todo : validate min/max time?
-    this.log.verbose(`Got new time: ${newTime}. Emitting!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`, this.id)
+    this.log.excessive(`Got new time: ${newTime}. Emitting!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`, this.id)
     this.time = newTime
     //if (! (
     this.newTimeEvent.emit(this.time)

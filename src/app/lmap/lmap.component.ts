@@ -267,7 +267,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     //! BUG: not working....
     this.lmap.on('mousemove', (ev: L.LeafletMouseEvent) => {
       if (ev.latlng.lat) {
-        this.log.verbose(`Mouse at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`, this.id)
+        this.log.excessive(`Mouse at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`, this.id)
         this.mouseLatLng = ev.latlng
       } else {
         debugger // ! ==========================
@@ -417,7 +417,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.displayedFieldReportArray.forEach(i => {
       if (i.lat && i.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${i.date} with ${i.status}`
-        //this.log.verbose(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
+        this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
         let marker = L.marker(new L.LatLng(i.lat, i.lng), { title: title })
         marker.bindPopup(title)
@@ -444,7 +444,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private addMarker(lat: number, lng: number, status: string = '') {
-    //this.log.verbose(`addMarker at ${lat}. ${lng}, ${status}`, this.id)
+    this.log.excessive(`addMarker at ${lat}. ${lng}, ${status}`, this.id)
 
     //iconDefault
 
@@ -469,7 +469,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
           this.log.verbose('close popup with mouseout', this.id);
           _map.closePopup();
         });
-        this.log.verbose(_map.getZoom());
+        this.log.excessive(_map.getZoom());
         if (_map.getZoom() > 15 && _map.hasLayer(_marker)) {
           _map.closePopup();
           this.log.verbose('zoom > 15 close popup', this.id);
@@ -531,7 +531,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   //  -------------------------------------  UNUSED  -------------------------------------
 
   public onMapMouseMove_unused(event: MouseEvent) {
-    this.log.verbose(`onMapMouseMove: ${JSON.stringify(event)}`, this.id)
+    this.log.excessive(`onMapMouseMove: ${JSON.stringify(event)}`, this.id)
     //let ev = event as L.LeafletMouseEvent
     //this.mouseLatLng = { lat: event.latlng.lat, lng: event.latlng.lng }
   }

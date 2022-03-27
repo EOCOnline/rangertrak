@@ -190,7 +190,7 @@ export class SettingsService {
     for (var i = 0; i < localStorage.length; i++) {
       key = localStorage.key(i)
       if (key != null) {
-        this.log.verbose(`item ${i} = ${JSON.parse(key)} `, this.id)
+        this.log.excessive(`item ${i} = ${JSON.parse(key)} `, this.id)
       }
     }
   }

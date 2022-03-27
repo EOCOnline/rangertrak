@@ -228,23 +228,23 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     const weekday = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
     let dt = 'unknown date'
     let d: Date = params.data.date
-    //this.log.verbose(`Day is: ${d.toISOString()}`, this.id)
-    //this.log.verbose(`WeekDay is: ${d.getDay}`, this.id)
+    //this.log.excessive(`Day is: ${d.toISOString()}`, this.id)
+    //this.log.excessive(`WeekDay is: ${d.getDay}`, this.id)
 
     try {  // TODO: Use the date pipe instead?
       //weekday[d.getDay()] +
       dt = formatDate(d, 'M-dd HH:MM:ss', 'en-US')
-      //this.log.verbose(`Day is: ${params.data.date.toISOString()}`, this.id)
+      //this.log.excessive(`Day is: ${params.data.date.toISOString()}`, this.id)
     } catch (error: any) {
       dt = `Bad date format: Error name: ${error.name}; msg: ${error.message}`
     }
 
     // https://www.w3schools.com/jsref/jsref_obj_date.asp
-    //this.log.verbose(`Day is: ${params.data.date.toISOString()}`, this.id)
+    //this.log.excessive(`Day is: ${params.data.date.toISOString()}`, this.id)
     /*
         if (this.isValidDate(d)) {
           dt = weekday[d.getDay()] + formatDate(d, 'yyyy-MM-dd HH:MM:ss', 'en-US')
-          this.log.verbose(`Day is: ${params.data.date.toISOString()}`, this.id)
+          this.log.excessive(`Day is: ${params.data.date.toISOString()}`, this.id)
         }
     */
     return dt
@@ -274,7 +274,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   //   let selectedNodes = this.gridApi.getSelectedNodes();
   //   let selectedData = selectedNodes.map((node: { data: FieldReportType; }) => node.data);
   //   this.selectedRows = selectedNodes.length
-  //   this.log.verbose(`onBtnGetSelectedRowData obtained ${selectedNodes.length} selected rows:\n${JSON.stringify(selectedData)}`, this.id)
+  //   this.log.excessive(`onBtnGetSelectedRowData obtained ${selectedNodes.length} selected rows:\n${JSON.stringify(selectedData)}`, this.id)
   //   this.fieldReportService.setSelectedFieldReports(selectedData)
   // }
 
@@ -286,7 +286,7 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     var opt = selector.options[sel];
     var selVal = (<HTMLOptionElement>opt).value;
     var selText = (<HTMLOptionElement>opt).text
-    // this.log.verbose(`Got column seperator text:"${selText}", val:"${selVal}"`, this.id)
+    // this.log.excessive(`Got column seperator text:"${selText}", val:"${selVal}"`, this.id)
 
     switch (selVal) {
       case 'none':

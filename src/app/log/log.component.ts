@@ -27,6 +27,7 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, AfterV
   private latestLog: LogType[] = []
 
   // https://material.angular.io/components/checkbox
+  public excessive = false
   public verbose = true
   public info = true
   public warn = true
@@ -160,6 +161,13 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, AfterV
       if (!this.logPanel) { return }
 
       switch (entry.level) {
+
+        case LogLevel.Excessive:
+          if (this.excessive) {
+            // BUG: Classes and id's show up in debugger, but font-sizes & colors don't get calculated/are ineffective!
+            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-check"></i><span class="excessive">${preface}${entry.msg}</span><br>`
+          }
+          break;
 
         case LogLevel.Verbose:
           if (this.verbose) {

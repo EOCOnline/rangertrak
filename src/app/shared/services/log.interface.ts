@@ -1,4 +1,4 @@
-export enum LogLevel { Verbose, Info, Warn, Error }
+export enum LogLevel { Excessive, Verbose, Info, Warn, Error }
 export type LogType = {
   date: Date,
   msg: string,

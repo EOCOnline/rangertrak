@@ -7,6 +7,9 @@
   <mat-card-content>
     <h3>Log levels to display:</h3>
     <section>
+      <mat-checkbox [(ngModel)]="excessive" (change)="this.redisplayLog()"
+        >Excessive</mat-checkbox
+      >
       <mat-checkbox [(ngModel)]="verbose" (change)="this.redisplayLog()"
         >Verbose</mat-checkbox
       >

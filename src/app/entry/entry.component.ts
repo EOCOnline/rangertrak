@@ -274,7 +274,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
   // TODO: NOt working yet...
   callsignChanged(callsign: string) { // Just serves timer for input field - post interaction
-    this.log.verbose(`EntryForm CallsignChanged()`, this.id)
+    this.log.excessive(`EntryForm CallsignChanged()`, this.id)
 
     this.callInfo = this.document.getElementById("enter__Callsign-upshot")
     if (this.callInfo) {
@@ -293,7 +293,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     return
     let callSign: string = (this.document.getElementById("enter__Callsign-input") as HTMLInputElement).value
     if (callSign) {
-      this.log.verbose(`CallsignCtrlChanged() call= ${callSign}`)
+      this.log.excessive(`CallsignCtrlChanged() call= ${callSign}`)
       this.callsignChanged(callSign)
     }
 
@@ -310,7 +310,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     https://gist.github.com/paulirish/5d52fb081b3570c81e3a
   */
   resetMaterialFadeAnimation(element: HTMLElement) {
-    this.log.verbose(`Fade Animation reset`, this.id)
+    this.log.excessive(`Fade Animation reset`, this.id)
     element.style.animation = 'none';
     element.offsetHeight; // trigger reflow
     element.style.animation = "";

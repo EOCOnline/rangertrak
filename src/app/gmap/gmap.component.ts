@@ -462,7 +462,7 @@ MarkerClustererPlus Library - also old
         break
       }
 
-      this.log.verbose(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`, this.id)
+      this.log.excessive(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`, this.id)
 
       this.addMarker(latlng, title, labelText, title, labelColor, "28px", icon)
     }
@@ -471,7 +471,7 @@ MarkerClustererPlus Library - also old
   }
 
   addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP, msDelay = 100) {
-    this.log.verbose(`addMarker`, this.id)
+    this.log.excessive(`addMarker`, this.id)
 
     if (infoContent == "") {
       infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${Date()}`
@@ -504,7 +504,7 @@ MarkerClustererPlus Library - also old
       let pos = `lat: ${latLng.lat}; lng: ${latLng.lng}`
       //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; lng: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
 
-      this.log.verbose("Actually adding marker now...", this.id)
+      this.log.excessive("Actually adding marker now...", this.id)
 
       let m = new google.maps.Marker({
         draggable: true,
