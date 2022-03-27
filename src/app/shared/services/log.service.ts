@@ -6,6 +6,7 @@ import pc from "picocolors" // https://github.com/alexeyraspopov/picocolors
 import { LogType, LogLevel } from '.'
 
 const colors = require('colors/safe');
+const hotStylin = 'background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;'
 
 @Injectable({ providedIn: 'root' })
 export class LogService {
@@ -38,6 +39,10 @@ export class LogService {
     this.logSubject$ = new BehaviorSubject([initialEntry])
   }
 
+  // const style = 'background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;'
+  // console.log("%cHooray", style);
+  // https://developer.chrome.com/docs/devtools/console/format-style/#style-console-messages
+
   // compare to functionality of https://developer.mozilla.org/en-US/docs/Web/API/console
   // Chrome console formatting: https://developer.chrome.com/docs/devtools/console/format-style/
   // https://www.npmjs.com/package/chalk
@@ -53,11 +58,11 @@ export class LogService {
     switch (level) {
 
       case LogLevel.Excessive:
-        console.log(colors.red.bold(`${preface}${source}: ${msg}`))
+        console.log(colors.red.bold(`%c${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Verbose:
-        console.log(colors.blue(`${preface}${source}: ${msg}`))
+        console.log(colors.blue(`${preface}${source}: ${msg}`), hotStylin)
         break;
 
       case LogLevel.Info:
