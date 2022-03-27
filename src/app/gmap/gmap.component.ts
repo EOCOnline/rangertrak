@@ -11,8 +11,8 @@ import { CodeArea, OpenLocationCode, Utility } from '../shared/'
 import { MDCSwitch } from '@material/switch'
 
 /*
-google-maps: OLD(???)
-google.maps: BEST(???)
+google-maps: OLD
+google.maps: BEST
 
   https://developers.google.com/maps/support/
   https://angular-maps.com/
@@ -62,8 +62,10 @@ export class GmapComponent implements OnInit, OnDestroy {    //extends Map
 
   // items for template
   mouseLatLng?: google.maps.LatLngLiteral;
-  // google.maps.Map is NOT the same as GoogleMap...
-  gMap?: google.maps.Map
+
+  // this.map: GoogleMap (Angular wrapper for the same underlying map!)
+  // this.gMap: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
+  gMap!: google.maps.Map
   overviewGMap?: google.maps.Map
   overviewMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
   // overviewGMapOptions: google.maps.MapOptions
@@ -228,6 +230,8 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     // this.reloadPage()  // TODO: needed?
   }
 
+  // this.map: GoogleMap (Angular wrapper for the same underlying map!)
+  // this.gMap: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
   onMapInitialized(mappy: google.maps.Map) {
     this.log.verbose(`onMapInitialized()`, this.id)
     this.gMap = mappy
@@ -306,6 +310,12 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     return Math.min(Math.max(num, min), max)
   }
 
+
+
+  // ------------------------------------  Markers  ---------------------------------------
+
+
+
   /*
   https://github.com/googlemaps/js-markerclusterer - current!
 https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer - Angular components doesn't encapulate options functionality: identical clones only: ugg.
@@ -371,6 +381,29 @@ MarkerClustererPlus Library - also old
     })*/
   }
 
+  // Removes the markers from the map, but keeps them in the array.
+  hideMarkers(): void {
+    this.markers.forEach((i) => i.setMap(null))
+  }
+
+  // Shows any markers currently in the array.
+  showMarkers(): void {
+    if (!this.gMap) {
+      this.log.error(`showMarkers() got null gMap`, this.id)
+      return
+    }
+    this.markers.forEach((i) => i.setMap(this.gMap))
+  }
+
+  // Deletes all markers in the array by removing references to them.
+  removeAllMarkers() {
+    this.log.verbose(`removeAllMarkers()`, this.id)
+    this.hideMarkers()
+    this.markers = []
+    // this.gMap.clear();
+    // this.markerCluster.clearMarkers()
+  }
+
   displayAllMarkers() {
     let latlng
     //let infoContent
@@ -383,6 +416,17 @@ MarkerClustererPlus Library - also old
     let fieldReportStatuses: FieldReportStatusType[] = this.settings!.fieldReportStatuses
     // REVIEW: Might this mess with existing fr's?
     this.log.verbose(`displayAllMarkers got ${this.fieldReportArray.length} field reports`, this.id)
+
+    //! TODO: Start by hiding/clearing existing markers & rebuilding....
+    this.removeAllMarkers()
+
+    //if (!this.fieldReportArray.length) {
+    //this.removeAllMarkers()
+    //this.markerCluster.removeMarkers(this.markers)
+    //}
+
+    // this.markerCluster.addMarkers(this.markers)
+
     for (let i = 0; i < this.fieldReportArray.length; i++) {
       fr = this.fieldReportArray[i]
       latlng = new google.maps.LatLng(fr.lat, fr.lng)
@@ -419,13 +463,14 @@ MarkerClustererPlus Library - also old
       }
 
       this.log.verbose(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`, this.id)
+
       this.addMarker(latlng, title, labelText, title, labelColor, "28px", icon)
     }
 
     this.log.verbose(`displayAllMarkers added ${this.fieldReportArray.length} markers`, this.id)
   }
 
-  addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP) {
+  addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP, msDelay = 100) {
     this.log.verbose(`addMarker`, this.id)
 
     if (infoContent == "") {
@@ -460,6 +505,7 @@ MarkerClustererPlus Library - also old
       //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; lng: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
 
       this.log.verbose("Actually adding marker now...", this.id)
+
       let m = new google.maps.Marker({
         draggable: true,
         animation: animation,
@@ -477,6 +523,7 @@ MarkerClustererPlus Library - also old
         },
         // label: labels[labelIndex++ % labels.length],
       })
+
       // markers can only be keyboard focusable when they have click listeners
       // open info window when marker is clicked
       // marker.addListener("click", () => {
@@ -501,7 +548,13 @@ MarkerClustererPlus Library - also old
       )
       //this.markerPositions.push(latLng.toJSON()); evil angular wrapper
 
+      // Drop each marker - potentially with a bit of delay to create an anination effect
+      //window.setTimeout(() => {
+
       this.markers.push(m)
+
+      //}, msDelay)
+
     } else {
       this.log.error("event.latLng is BAD; can not add marker..", this.id)
     }

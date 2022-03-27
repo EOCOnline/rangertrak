@@ -1,84 +1,100 @@
-  .active {
-    font-weight: bold;
-    font-style: italic;
-    // background-color: rgb(137, 208, 221);
-  }
+@use "@material/icon-button";
+@use "@material/top-app-bar/mdc-top-app-bar";
+
+//@include icon-button.core-styles;
+
+.active {
+  font-weight        : bold;
+  font-style         : italic;
+  // background-color: rgb(137, 208, 221);
+}
+
+.main-nav {
+  display       : flex;
+  height        : 2em;
+  background    : rgb(183, 244, 255);
+  color         : white;
+  border-radius : 3px;
+  padding-top   : 0.5em;
+  padding-bottom: 0.15em;
+  font-family   : 'Arima Madurai', sans-serif;
+  font-size     : 1.2em;
+}
+
+.main-nav>ul {
+  list-style-type: none;
+  padding        : 0;
+  margin         : 0;
+  display        : flex;
+  flex           : 8;
+}
+
+.main-nav li {
+  font-style  : un;
+  margin-right: 1em;
+}
+
+.main-nav>form {
+  display        : flex;
+  justify-content: flex-end;
+  flex           : 1;
+}
+
+.git {
+  //align-self: flex-end;
+  position          : absolute;
+  right             : 10px;
+  //background-color: aquamarine;
+  //display: flex;
+  //justify-content: right;
+  //float: right;
+  //clear: both;
+}
+
+#git {
+  height      : 1.5em;
+  margin-right: 2px;
+}
+
+.main-nav input {
+  visibility  : hidden;
+  height      : 1.8em;
+  flex        : 1;
+  margin-right: 3px;
+}
+
+.main-nav button {
+  visibility   : hidden;
+  background   : white;
+  border       : 0;
+  border-radius: .8em;
+  color        : orangered;
+  height       : 1.8em;
+  padding      : 0 1em;
+  margin       : 0 1em;
+}
+
+.main-nav a {
+  margin-left    : 5px;
+  margin-right   : 5px;
+  text-decoration: none;
+  vertical-align : middle;
+}
+
+.main-nav a:hover {
+  color             : rgb(172, 80, 248);
+  //background-color: yellow;
+}
+
+// TODO: Doesn't collapse into a hamburger!!!
+@media screen and (max-width: 575px) {
   .main-nav {
-    display: flex;
-    height: 2em;
-    background: rgb(145, 195, 204);
-    color: white;
-    border-radius: 3px;
-    padding-top: 0.5em;
-    padding-bottom: 0.15em;
-    font-family:'Arima Madurai', sans-serif;
-    font-size: 1.2em;
-  }
-  .main-nav > ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex: 8;
-  }
-  .main-nav li {
-    font-style: un;
-    margin-right: 1em;
-  }
-  .main-nav > form {
-    display: flex;
-    justify-content: flex-end;
-    flex: 1;
-  }
-  .git {
-    //align-self: flex-end;
-    position:absolute;
-    right: 10px;
-    //background-color: aquamarine;
-    //display: flex;
-    //justify-content: right;
-    //float: right;
-    //clear: both;
-  }
-  #git {
-    height: 1.5em;
-    margin-right: 2px;
-  }
-  .main-nav input {
-    visibility: hidden;
-    height: 1.8em;
-    flex: 1;
-    margin-right: 3px;
-  }
-  .main-nav button {
-    visibility: hidden;
-    background: white;
-    border: 0;
-    border-radius: .8em;
-    color: orangered;
-    height: 1.8em;
-    padding: 0 1em;
-    margin: 0 1em;
-  }
-  .main-nav a {
-    margin-left: 5px;
-    margin-right: 5px;
-    text-decoration:none;
-    vertical-align: middle;
+    flex-direction: column;
   }
 
-  .main-nav a:hover {
-    color: rgb(165, 89, 228);
-    //background-color: yellow;
+  .main-nav ul {
+    flex-direction: row;
+    /* Change this to 'column' to stack the links */
+    margin-bottom : 0.1em;
   }
-
-  // TODO: Doesn't collapse into a hamburger!!!
- @media screen and (max-width: 575px) {
-   .main-nav {
-     flex-direction: column;
-   }
-   .main-nav ul {
-     flex-direction: row; /* Change this to 'column' to stack the links */
-     margin-bottom: 0.1em;
-   }
-  }
+}

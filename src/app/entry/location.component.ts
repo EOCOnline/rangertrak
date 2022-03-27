@@ -507,7 +507,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
   setTimeout(() => {
     this.log.verbose(this.reactiveForm.value, this.id)   //shows the latest first name
-  })
+  }, 1000)
 
   For Example, the following code will result in the ValueChanges of the firstname. but not of its parent (i.e. top-level form)
 
