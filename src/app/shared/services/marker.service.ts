@@ -70,20 +70,6 @@ export class MarkerService {
     });
   }
 
-  labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  generateFakeMarkerData(markers: MarkerType[], num: number = 15) {
-    console.log("Generating " + num + " more rows of FAKE field reports!")
-    for (let i = 0; i < num; i++) {
-      markers.push(
-        {
-          lat: 45 + Math.floor(Math.random() * 2000) / 1000,
-          lng: -121 + Math.floor(Math.random() * 1000) / 1000,
-          label: this.labels[Math.floor(Math.random() * this.labels.length)],
-          draggable: true
-        }
-      )
-    }
-    //console.log("Pushed # " + numberPushed++)
-  }
+}
 }

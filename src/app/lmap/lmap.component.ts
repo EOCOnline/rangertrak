@@ -13,6 +13,7 @@ import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 // also: https://github.com/onthegomap/planetiler
 
 import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, SettingsType } from '../shared/services'
+import { abstractMap } from '../shared/map'
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // Markers are copied into project via virtue of angular.json: search it for leaflet!!!
@@ -62,8 +63,8 @@ L.Marker.prototype.options.icon = iconDefault;
   ],
   providers: [SettingsService]
 })
-export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
-  private id = 'Leaflet Map Component'
+export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstractMap {
+  protected id = 'Leaflet Map Component'
   public title = 'Leaflet Map'
 
   private settingsSubscription!: Subscription
@@ -184,10 +185,10 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy {
   gotNewFieldReports(newReports: FieldReportsType) {
     this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`, this.id)
 
-    this.allRows = newReports.numReport
-    this.fieldReports = newReports
+
     this.displayedFieldReportArray = newReports.fieldReportArray
     console.assert(this.allRows == this.displayedFieldReportArray.length, `this.allRows=${this.allRows} != this.fieldReportArray.length ${this.displayedFieldReportArray.length}`)
+
     this.refreshMap()
     // this.reloadPage()  // TODO: needed?
   }
