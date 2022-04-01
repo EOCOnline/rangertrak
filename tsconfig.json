@@ -33,8 +33,17 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true,
     "fullTemplateTypeCheck": true
+  },
+  "paths": {
+    "@shared/*": [
+      "./src/shared/*"
+    ],
+    "@services/*": [
+      "./src/shared/services/*"
+    ]
   }
   /*
+  above from https://giancarlobuomprisco.com/typescript/writing-scalabale-typescript
   https://www.devasking.com/issue/tsconfigjson-include-property
   ,
   "files": [

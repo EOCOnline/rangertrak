@@ -5,16 +5,17 @@ import { Component, Inject, Input, isDevMode, OnDestroy, OnInit } from '@angular
 //import { LatLng } from 'leaflet';
 import { DOCUMENT } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { LogService, SettingsService, SettingsType, LocationType } from '../shared/services/';
-
-const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
+import { LogService, SettingsService, SettingsType, LocationType, FieldReportService } from '../shared/services/';
+import { AbstractMap } from '../shared/map'
+import { HttpClient } from '@angular/common/http';
+//const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
 @Component({
   selector: 'mini-gmap',
   templateUrl: './mini-gmap.component.html',
   styleUrls: ['./mini-gmap.component.scss']
 })
-export class MiniGMapComponent implements OnInit, OnDestroy {
+export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy {
   @Input() set locationUpdated(value: LocationType) {
     if (value && value.lat != undefined) {
       this.location = {
@@ -22,24 +23,19 @@ export class MiniGMapComponent implements OnInit, OnDestroy {
         lng: value.lng,
         address: value.address
       }
-      this.log.verbose(`new location passed in ${JSON.stringify(value)}`, this.id)
+      this.log.verbose(`New location passed in ${JSON.stringify(value)}`, this.id)
     } else {
       this.log.error(`Bad location passed in ${JSON.stringify(value)}`, this.id)
     }
   }
 
-  private id = "Google mini-map Component"
-  //private locationSubscription!: Subscription
-  private location?: LocationType
-
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
+  private override id = "Google mini-map Component"
 
   // ------------------ MAP STUFF  ------------------
   // imports this.map as a GoogleMap which is the Angular wrapper around a google.maps.Map...
   //@ViewChild(GoogleMap, { static: false }) map!: GoogleMap // even needed?
   // google.maps.Map is NOT the same as GoogleMap - but does refer to the same underlying map...
-  gMap?: google.maps.Map
+  gMap!: google.maps.Map
 
   onlyMarker = new google.maps.Marker({
     draggable: false,
@@ -67,20 +63,27 @@ export class MiniGMapComponent implements OnInit, OnDestroy {
 
 
   constructor(
-    private log: LogService,
-    private settingsService: SettingsService,
-    @Inject(DOCUMENT) private document: Document
+    settingsService: SettingsService,
+    fieldReportService: FieldReportService,
+    httpClient: HttpClient,
+    log: LogService,
+    document: Document
   ) {
+    super(settingsService,
+      fieldReportService,
+      httpClient,
+      log,
+      document)
+
     this.log.verbose(`MiniGMapComponent constructed with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
 
-    this.log.verbose("constructor()", this.id)
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
-      },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
-    })
+    // this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
+    //   next: (newSettings) => {
+    //     this.settings = newSettings
+    //   },
+    //   error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+    //   complete: () => this.log.info('Settings Subscription complete', this.id)
+    // })
 
     /*
     this.locationSubscription = this.locationService.getSettingsObserver().subscribe({
@@ -93,17 +96,57 @@ export class MiniGMapComponent implements OnInit, OnDestroy {
     })*/
   }
 
-  ngOnInit(): void {
-    this.log.verbose(`MiniGMapComponent onInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
 
-    // subscribe to addresses value changes
-    /* TODO: How?!
-    this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
-      this.log.verbose(`Subscription to location got: ${x}`, this.id);
-    })
+  override ngOnInit(): void {
+    super.ngOnInit()
+
+    this.log.verbose('ngOnInit()', this.id)
+
+    // displayReports = false
+
+    /* subscribe to addresses value changes
+this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
+  this.log.verbose(`Subscription to location got: ${x}`, this.id);
+})
 */
 
+    // https://developers.google.com/maps/documentation/geolocation/overview
+    // Works - *if* you want map zoomed on user's device...
+    // navigator.geolocation.getCurrentPosition((position) => {
+    //   this.center = {
+    //     lat: position.coords.latitude,
+    //     lng: position.coords.longitude
+    //   }
+    // })
   }
+
+
+  override ngAfterViewInit() {
+    super.ngAfterViewInit()
+    this.log.excessive("ngAfterViewInit()", this.id)
+
+    this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
+    this.zoom = this.settings.leaflet.defZoom
+    this.zoomDisplay = this.zoom
+    this.mouseLatLng = this.center
+
+  }
+
+
+  apiLoadedCallbackUNUSED() {
+    this.log.verbose("got apiLoadedCallback()", this.id)
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   // ------------------------------------------------------------------------
   // Map stuff below
@@ -123,27 +166,27 @@ export class MiniGMapComponent implements OnInit, OnDestroy {
     this.log.verbose(`onMapInitialized done`, this.id)
   }
 
-  updateOverviewMap() {
-    this.log.verbose(`updateOverviewMap`, this.id)
+  // updateOverviewMap() {
+  //   this.log.verbose(`updateOverviewMap`, this.id)
 
-    //let latlng = new google.maps.LatLng(this.settings.defLat, this.settings.deflng)
-    //let latlngL = {lat: this.settings.defLat, lng: this.settings.deflng}
+  //   //let latlng = new google.maps.LatLng(this.settings.defLat, this.settings.deflng)
+  //   //let latlngL = {lat: this.settings.defLat, lng: this.settings.deflng}
 
-    // TODO: FitBounds to new point, not to DefLat & Deflng  -- do it on addMarker?
-    // this.gMap?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
-    //this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: this.settings.defLat, lng: this.settings.defLng })) // zooms to max!
-    this.gMap?.setZoom(17) // no effect
-  }
+  //   // TODO: FitBounds to new point, not to DefLat & Deflng  -- do it on addMarker?
+  //   // this.gMap?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
+  //   //this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: this.settings.defLat, lng: this.settings.defLng })) // zooms to max!
+  //   this.gMap?.setZoom(17) // no effect
+  // }
 
-  onMapMouseMove(event: google.maps.MapMouseEvent) {
-    if (event.latLng) {
-      this.mouseLatLng = event.latLng.toJSON()
-      //this.log.excessive('moving()', this.id);
-    }
-    else {
-      this.log.warn('move(): NO event.latLng!!!!!!!!!!!!!', this.id);
-    }
-  }
+  // onMapMouseMove(event: google.maps.MapMouseEvent) {
+  //   if (event.latLng) {
+  //     this.mouseLatLng = event.latLng.toJSON()
+  //     //this.log.excessive('moving()', this.id);
+  //   }
+  //   else {
+  //     this.log.warn('move(): NO event.latLng!!!!!!!!!!!!!', this.id);
+  //   }
+  // }
 
   onMapZoomed() {
     if (this.zoom && this.gMap) {

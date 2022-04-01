@@ -1,19 +1,15 @@
-import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild, OnDestroy } from '@angular/core'
-import { DOCUMENT, JsonPipe } from '@angular/common'
+import { AfterViewInit, Component, OnInit, OnDestroy } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { Observable, Subscription } from 'rxjs'
-import { MDCSwitch } from '@material/switch'
 
-import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet'
+import { icon } from 'leaflet'
 import * as L from 'leaflet'
 import 'leaflet.markercluster';
-
 //import { openDB, deleteDB, wrap, unwrp } from 'idb'
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 // also: https://github.com/onthegomap/planetiler
 
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, SettingsType } from '../shared/services'
-import { abstractMap } from '../shared/map'
+import { SettingsService, FieldReportService, LogService } from '../shared/services'
+import { AbstractMap } from '../shared/map'
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // Markers are copied into project via virtue of angular.json: search it for leaflet!!!
@@ -63,237 +59,183 @@ L.Marker.prototype.options.icon = iconDefault;
   ],
   providers: [SettingsService]
 })
-export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstractMap {
-  protected id = 'Leaflet Map Component'
-  public title = 'Leaflet Map'
+export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {
 
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
+  protected override id = 'Leaflet Map Component'
+  public override title = 'Leaflet Map'
 
-  private fieldReportsSubscription!: Subscription
-  private fieldReports: FieldReportsType | undefined
-
-  // What gets displayed: alternates between all & selected rows, based on the switch
-  private selectedReports: FieldReportsType | null = null
-  public displayedFieldReportArray: FieldReportType[] = []
-  //!this is just a subcomponent of the above: use the above if possible...  OH NO: this actually flipps back & forth between all & selected field reports, based on the switch...
-  // following doesn't need a subscription as user selections are auto-saved & available,
-  // if they switch to this page
-  // REVIEW: UNLESS the switch was already on "selected rows" and isn't reswitched!!!: so just check/reset in ngOnInit?!
-  // Also # selected rows = ALL when initialized...
-
-  numSelectedRows = 0
-  allRows = 0
-
-  lmap!: L.Map
-  overviewLMap!: L.Map
   // TODO: Leaflet's version of following?
   overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
-  zoom = 15 // actual zoom level of main map
-  zoomDisplay = 15 // what's displayed below main map
-  center = { lat: 0, lng: 0 }
-  mouseLatLng = this.center
+
   mymarkers = L.markerClusterGroup()
   mapOptions = ""
 
   markerClusterGroup: L.MarkerClusterGroup // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
   markerClusterData = []
 
-  filterSwitch: MDCSwitch | null = null
-  filterButton: HTMLButtonElement | null = null
-
   constructor(
-    private settingsService: SettingsService,
-    private fieldReportService: FieldReportService,
-    private httpClient: HttpClient,
-    private log: LogService,
-    @Inject(DOCUMENT) private document: Document) {
+    settingsService: SettingsService,
+    fieldReportService: FieldReportService,
+    httpClient: HttpClient,
+    log: LogService,
+    document: Document
+  ) {
+    super(settingsService,
+      fieldReportService,
+      httpClient,
+      log,
+      document)
+
     this.log.verbose(`Constructing Leaflet Map, using https://www.LeafletJS.com version ${L.version}`, this.id)
-
-    this.fieldReportService = fieldReportService
-
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        // REVIEW: Any new settings just ripple thru, or does anything need pushing?!
-        this.settings = newSettings
-      },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
-    })
-
-    this.fieldReportsSubscription =
-      this.fieldReportService.getFieldReportsObserver().subscribe({
-        next: (newReport) => {
-          this.gotNewFieldReports(newReport)
-        },
-        error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
-        complete: () => this.log.info('Field Reports Subscription complete', this.id)
-      })
 
     this.markerClusterGroup = L.markerClusterGroup({ removeOutsideVisibleBounds: true });
   }
 
-  ngOnInit() {
-    this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
-    if (!this.filterButton) { throw ("Could not find Field Report Selection button!") }
+  override ngOnInit() {
+    super.ngOnInit()
+    this.log.excessive("ngOnInit()", this.id)
 
-    // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
-    //! 2TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
-    // BUG: refresh page resets selected switch
-    this.onSwitchSelectedFieldReports()
+    this.hasOverviewMap = true
+    this.hasSelectedReports = true
+  }
 
-    // Just get the # of rows in the selection (if any), so we can properly display that # next to the switch
-    if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
-      this.numSelectedRows = this.selectedReports.numReport
-      if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
-        this.log.error(`ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
-        this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
-        this.numSelectedRows = this.selectedReports.fieldReportArray.length
-      }
-    } else {
-      this.log.warn(`Could not retrieve selected Field Reports in ngOnInit.`, this.id)
-      this.numSelectedRows = 0
-    }
+  override ngAfterViewInit() {
+    super.ngAfterViewInit()
+    this.log.excessive("ngAfterViewInit()", this.id)
 
-    this.filterSwitch = new MDCSwitch(this.filterButton)
-    if (!this.filterSwitch) throw ("Could not find Field Report Selection Switch!")
-
-    // REVIEW: Following code is duplicated in ngAfterViewInit: which does the task?!
-    if (!this.settings) {
-      this.log.error(`this.settings not yet established in ngInit()`, this.id)
-      return
-    }
+    //!Verify settings exist?!
     this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
     this.zoom = this.settings.leaflet.defZoom
     this.zoomDisplay = this.zoom
-  }
+    this.mouseLatLng = this.center
 
-  ngAfterViewInit() {
-    if (!this.settings) {
-      this.log.error(`this.settings not yet established in ngAfterViewInit()`, this.id)
-      // REVIEW: Can initMap run OK w/ defaults, but w/o settings
-    } else {
-      this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
-      this.zoom = this.settings.leaflet.defZoom
-      this.zoomDisplay = this.zoom
-    }
-
-    this.initMap()
     this.mymarkers = L.markerClusterGroup()
   }
 
-  gotNewFieldReports(newReports: FieldReportsType) {
-    this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`, this.id)
+
+  override initMap() {
+    super.initMap()
+
+    this.log.excessive("initMap()", this.id)
 
 
-    this.displayedFieldReportArray = newReports.fieldReportArray
-    console.assert(this.allRows == this.displayedFieldReportArray.length, `this.allRows=${this.allRows} != this.fieldReportArray.length ${this.displayedFieldReportArray.length}`)
-
-    this.refreshMap()
-    // this.reloadPage()  // TODO: needed?
-  }
-
-  onMapReady(ev: any) {
-    this.log.verbose(`Leaflet OnMapReady`, this.id)
-  }
-
-
-  private initMap() {
-    this.log.verbose("Init Leaflet Map", this.id)
-
+    // ! Repeat of the guards in super:
     if (!this.settings) {
       this.log.error(`Settings not yet initialized while initializing the Leaflet Map!`, this.id)
       return
     }
 
-    if (!this.fieldReports) { //! or displayedFieldReportArray
+    if (displayReports && !this.fieldReports) { //! or displayedFieldReportArray
       this.log.error(`fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
       return
     }
+
 
     // ---------------- Init Main Map -----------------
 
 
     //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
-    this.lmap = L.map('lmap', {
+    this.map = L.map('lmap', {
       center: [this.settings.defLat, this.settings.defLng],
       zoom: this.settings.leaflet.defZoom
-    })
+    }) // Initial view set at map creation
 
+    if (!this.map) {
+      this.log.error(`this.map not created!`, this.id)
+      return
+    }
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 21,
       minZoom: 3,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
-    tiles.addTo(this.lmap)
+    tiles.addTo(this.map)
 
-    if (this.lmap && this.displayedFieldReportArray) {
+    if (this.displayReports) {
       // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
       // maybe do this further down?!
       this.displayMarkers()
-
-
-
-      // debugger
-      //! this.fieldReports.bounds.getEast is not a function
-      //!this.log.info(`E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
-
-      /*
-            core.mjs:6485 ERROR Error: Bounds are not valid.
-          at NewClass.fitBounds (leaflet-src.js:3254:12)
-          at LmapComponent.initMap (lmap.component.ts:216:17)
-          at LmapComponent.ngAfterViewInit (lmap.component.ts:162:10)
-          */
-      // bnd: L.latLngBounds = this.fieldReports.bounds
-      // ! displayedFieldReportArray
-      this.lmap.fitBounds(this.fieldReports.bounds)
+      //this.map.fitBounds(this.fieldReports.bounds)
+      this.map.fitBounds()
     }
 
     //! BUG: not working....
-    this.lmap.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
-      if (this.lmap) { // this.zoomDisplay &&
-        this.zoom = this.lmap.getZoom()
-        this.zoomDisplay = this.lmap.getZoom()
+    this.map.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
+      if (this.map) { // this.zoomDisplay &&
+        this.zoom = this.map.getZoom()
+        this.zoomDisplay = this.map.getZoom()
       }
     })
 
-    this.lmap.on('click', (ev: L.LeafletMouseEvent) => {
-      // TODO: If enabled, drop a marker there...
-      if (ev.latlng.lat) {
-        this.log.verbose(`Click at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`, this.id)
-      }
-    })
+
+
+    // debugger
+    //! this.fieldReports.bounds.getEast is not a function
+    //!this.log.info(`E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
+
+    /*
+          core.mjs:6485 ERROR Error: Bounds are not valid.
+        at NewClass.fitBounds (leaflet-src.js:3254:12)
+        at LmapComponent.initMap (lmap.component.ts:216:17)
+        at LmapComponent.ngAfterViewInit (lmap.component.ts:162:10)
+        */
+    // bnd: L.latLngBounds = this.fieldReports.bounds
+    // ! displayedFieldReportArray
+
+
+
+    // ! Already done in super:
+    // this.map.on('click', (ev: L.LeafletMouseEvent) => {
+    //   // TODO: If enabled, drop a marker there...
+    //   if (ev.latlng.lat) {
+    //     this.log.verbose(`Click at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`, this.id)
+
+    //     // TODO: Add Marker if settings ask for it...
+    //   }
+    // })
 
     //! BUG: not working....
-    this.lmap.on('mousemove', (ev: L.LeafletMouseEvent) => {
-      if (ev.latlng.lat) {
-        this.log.excessive(`Mouse at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`, this.id)
-        this.mouseLatLng = ev.latlng
-      } else {
-        debugger // ! ==========================
-        this.log.warn(`Mouse moved, but did not get an reasonable event to figure out lat/lng ${JSON.stringify(ev)}`, this.id)
-      }
-    })
+    // this.map.on('mousemove', (ev: L.LeafletMouseEvent) => {
+    //   if (ev.latlng.lat) {
+    //     this.log.excessive(`Mouse at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`, this.id)
+    //     this.mouseLatLng = ev.latlng
+    //   } else {
+    //     debugger // ! ==========================
+    //     this.log.warn(`Mouse moved, but did not get an reasonable event to figure out lat/lng ${JSON.stringify(ev)}`, this.id)
+    //   }
+    // })
 
-    this.lmap.on("move", () => {
-      this.overviewLMap.setView(this.lmap.getCenter()!, this.clamp(
-        this.lmap.getZoom() - (this.settings.leaflet.overviewDifference),
-        (this.settings.leaflet.overviewMinZoom),
-        (this.settings.leaflet.overviewMaxZoom)
-      ))
-    })
+    if (this.hasOverviewMap) {
+      this.initOverviewMap()
+
+      this.map.on("move", () => {
+        this.overviewMap.setView(this.map.getCenter()!,
+          this.clamp(
+            this.map.getZoom() -
+            (this.settings.leaflet.overviewDifference),
+            (this.settings.leaflet.overviewMinZoom),
+            (this.settings.leaflet.overviewMaxZoom)
+          ))
+      })
+    }
+  }
 
 
-    // ---------------- Init OverView Map -----------------
 
+  /**
+   *   ---------------- Init OverView Map -----------------
+   *
+   */
+  initOverviewMap() {
+    //! No super.initOverviewMap(), correct?!
 
     // TODO: Add a light grey rectangle on overview map to show extend/bounods of main map
     // TODO: Add a switch to only show 'selected' reports from the FieldReport page...
 
     // instantiate the overview map without controls
     // https://leafletjs.com/reference.html#map-example
-    this.overviewLMap = L.map('overview', {
+    this.overviewMap = L.map('overview', {
       center: [this.settings.defLat, this.settings.defLng],
       zoom: this.settings.leaflet.defZoom,
       zoomControl: false,
@@ -302,18 +244,29 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
       dragging: false,
     })
 
+
+
     const overviewTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: this.settings.leaflet.overviewMaxZoom,
       minZoom: this.settings.leaflet.overviewMinZoom,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
-    overviewTiles.addTo(this.overviewLMap)
+    overviewTiles.addTo(this.overviewMap)
+
+    // if (this.overviewMap === null || this.overviewMap === undefined) {
+    //   this.log.error(`Could not create overview map!`, this.id)
+    //   return
+    // }
+    // if (this.map == null || this.map == undefined) {
+    //   this.log.error(`map doesn't exist when creating overview map!`, this.id)
+    //   return
+    // }
 
     // TODO: Switch map type on click on the overview map
-    /* this.overviewLMap.addListener("click", () => {
+    /* this.overviewMap.addListener("click", () => {
       let mapId = this.overviewMapType.cur++ % 4
-      this.overviewLMap.setMapTypeId(this.overviewMapType.types.type[mapId])
+      this.overviewMap.setMapTypeId(this.overviewMapType.types.type[mapId])
       this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
     })*/
 
@@ -321,12 +274,12 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
     //   content: "Mouse location...",
     //   position: { lat: this.settings.defLat, lng: this.settings.defLng },
     // })
-    //infowindow.open(this.overviewLMap);
+    //infowindow.open(this.overviewMap);
 
-    this.overviewLMap.on('mousemove', ($event: L.LeafletMouseEvent) => {
+    this.overviewMap.on('mousemove', ($event: L.LeafletMouseEvent) => {
       // TODO: Only do while mouse is over map for efficiency?! mouseover & mouseout events...
-      if (this.zoomDisplay && this.overviewLMap) {
-        this.zoomDisplay = this.overviewLMap.getZoom()!
+      if (this.zoomDisplay) {
+        this.zoomDisplay = this.overviewMap!.getZoom()!
       }
       if ($event.latlng) {
         this.mouseLatLng = $event.latlng //.toJSON()
@@ -335,26 +288,28 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
       }
     })
 
-    this.overviewLMap.on("bounds_changed", () => {
-      this.overviewLMap.setView(this.lmap.getCenter(), this.clamp(
-        this.lmap.getZoom() - (this.settings.leaflet.overviewDifference),
+    this.overviewMap.on("bounds_changed", () => {
+      this.overviewMap!.setView(this.map.getCenter(), this.clamp(
+        this.map!.getZoom()! - (this.settings.leaflet.overviewDifference),
         (this.settings.leaflet.overviewMaxZoom),
         (this.settings.leaflet.overviewMinZoom)
       ))
     })
   }
 
-  clamp(num: number, min: number, max: number) {
-    return Math.min(Math.max(num, min), max)
+
+  onMapReady(ev: any) {
+    this.log.verbose(`OnMapReady()`, this.id)
   }
 
-  refreshMap() {
+
+  override refreshMap() {
     // Try map.remove(); before you try to reload the map. This removes the previous map element using Leaflet's library
-    if (this.lmap) {
-      this.lmap.invalidateSize() // https://github.com/Leaflet/Leaflet/issues/690
+    if (this.map) {
+      this.map.invalidateSize() // https://github.com/Leaflet/Leaflet/issues/690
       //or
-      // this.lmap.off()
-      // this.lmap.remove() // removing ALSO destroys the div id reference, so then rebuild the map div
+      // this.map.off()
+      // this.map.remove() // removing ALSO destroys the div id reference, so then rebuild the map div
       // this.initMap() // ?????????? Need testing!!!!
       // or
       /*
@@ -381,33 +336,11 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
     }
   }
 
-  onSwitchSelectedFieldReports() { //event: any) {
-    if (!this.filterSwitch || !this.filterSwitch.selected) {
-      if (!this.fieldReports) {
-        this.log.error(`field Reports not yet set in onSwitchSelectedFieldReports()`, this.id)
-        return
-      }
-      this.displayedFieldReportArray = this.fieldReports.fieldReportArray
-      this.log.verbose(`Displaying ALL ${this.displayedFieldReportArray.length} field Reports`, this.id)
-      if (this.numSelectedRows != this.displayedFieldReportArray.length) {
-        this.log.warn(`Need to update numSelectedRows ${this.numSelectedRows} != actual array length ${this.displayedFieldReportArray.length}`)
-      }
-    } else {
-      this.displayedFieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
-      // ! REVIEW: we did NOT grab the whole selectedFieldReports structure, JUST the report array: OK?!
-      this.numSelectedRows = this.displayedFieldReportArray.length
-      this.log.verbose(`Displaying ${this.displayedFieldReportArray.length} SELECTED field Reports`, this.id)
-    }
-    // TODO: Need to refresh map?!
-    this.refreshMap()
-    // this.reloadPage()  // TODO: needed?
-  }
-
 
   // ------------------------------------  Markers  ---------------------------------------
 
 
-  displayMarkers() {
+  override displayMarkers() {
     // REVIEW: wipes out any manually dropped markers. Could save 'em, but no request for that...
     //! This needs to be rerun & ONLY display selected rows/markers: i.e., to use  displayedFieldReportArray
     if (!this.displayedFieldReportArray) {
@@ -428,7 +361,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
       }
     })
 
-    this.lmap?.addLayer(this.mymarkers);
+    this.map.addLayer(this.mymarkers);
 
     // to refresh markers that have changed:
     // https://github.com/Leaflet/Leaflet.markercluster#refreshing-the-clusters-icon
@@ -444,17 +377,18 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
     })
   }
 
-  private addMarker(lat: number, lng: number, status: string = '') {
-    this.log.excessive(`addMarker at ${lat}. ${lng}, ${status}`, this.id)
+  override addMarker(lat: number, lng: number, title: string = '') {
+    this.log.excessive(`addMarker at ${lat}. ${lng}, ${title}`, this.id)
 
     //iconDefault
 
 
-    if (!lat || !lng || !this.lmap) {
-      console.error(`bad lat: ${lat} or lng: ${lng} or lmap: ${this.lmap}`)
+    if (!lat || !lng || !this.map) {
+      console.error(`bad lat: ${lat} or lng: ${lng} or lmap: ${this.map}`)
     } else {
       let _marker = new L.Marker([lat, lng], {
         icon: iconDefault
+        // ??: title
       })
       /*
       https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
@@ -481,7 +415,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
       //}
       //_map.addLayer(markerCluster);
 
-      _marker.addTo(this.lmap)
+      _marker.addTo(this.map)
 
       _marker.addEventListener('click', this._markerOnClick);
     }
@@ -523,11 +457,6 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
   733787.png:1          GET https://a.tile.openstreetmap.org/21/335179/733787.png 400
   */
 
-  ngOnDestroy() {
-    this.fieldReportsSubscription.unsubscribe()
-    this.settingsSubscription.unsubscribe()
-  }
-
 
   //  -------------------------------------  UNUSED  -------------------------------------
 
@@ -546,8 +475,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
   }
 
   private zoomed_unused() {
-    if (this.zoom && this.lmap) {
-      this.zoom = this.lmap.getZoom()
+    if (this.zoom && this.map) {
+      this.zoom = this.map.getZoom()
     }
   }
 
@@ -571,8 +500,8 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
           )
         });
 
-        if (this.lmap) {
-          this.lmap.addLayer(shapeLayer);
+        if (this.map) {
+          this.map.addLayer(shapeLayer);
         }
         shapeLayer.bringToBack();
       }
@@ -613,13 +542,13 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
   }
 
   private addLayersToMap() {
-    this.markerClusterGroup.addTo(this.lmap!);
+    this.markerClusterGroup.addTo(this.map!);
   }
 
   private addCircle_unused(lat: number, lng: number, status: string = '') {
     const circle = new L.CircleMarker([lat, lng], { radius: 20 })
-    if (this.lmap) {
-      circle.addTo(this.lmap)
+    if (this.map) {
+      circle.addTo(this.map)
     }
   }
 
@@ -676,7 +605,7 @@ export class LmapComponent implements OnInit, AfterViewInit, OnDestroy, abstract
       )
       });
 
-      this.lmap!.addLayer(stateLayer);
+      this.map!.addLayer(stateLayer);
       */
   }
 

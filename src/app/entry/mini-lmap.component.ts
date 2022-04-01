@@ -1,15 +1,19 @@
-import { AfterViewInit, Component, ElementRef, Inject, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core'
-import { DOCUMENT, JsonPipe } from '@angular/common'
-import { fromEvent, Subscription } from 'rxjs'
+import { AfterViewInit, Component, Input, OnDestroy } from '@angular/core'
+
 import pc from "picocolors" // https://github.com/alexeyraspopov/picocolors
 
 import * as L from 'leaflet'
-import { tileLayer, latLng, control, marker, icon, divIcon, LatLngBounds, Map, MapOptions, MarkerClusterGroup, MarkerClusterGroupOptions } from 'leaflet'
-
-import 'leaflet.markercluster';
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, LocationType, LogService, SettingsType } from '../shared/services'
-import { openDB, deleteDB, wrap, unwrap } from 'idb';
+import { icon } from 'leaflet'
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
+import 'leaflet.markercluster';
+
+import { SettingsService, FieldReportService, LocationType, LogService } from '../shared/services'
+
+
+import { AbstractMap } from '../shared/map'
+import { HttpClient } from '@angular/common/http'
+import { throwError } from 'rxjs';
+
 
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
 const iconUrl = 'assets/imgs/marker-icon.png'
@@ -37,9 +41,11 @@ L.Marker.prototype.options.icon = iconDefault;
   selector: 'mini-lmap',
   templateUrl: './mini-lmap.component.html',
   styleUrls: ['./mini-lmap.component.scss',
-    '../../../node_modules/leaflet/dist/leaflet.css'] // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
+    '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
+  providers: [SettingsService]
 })
-export class MiniLMapComponent implements AfterViewInit, OnDestroy {
+export class MiniLMapComponent extends AbstractMap implements AfterViewInit, OnDestroy {
+
   //@Input() set locationUpdated(newLocation: LocationType) {
   // ! Entry form hasn't received new location yet???
   @Input() set locationUpdated(newLocation: LocationType) { // ! Or might this be an event???????????????????
@@ -55,36 +61,23 @@ export class MiniLMapComponent implements AfterViewInit, OnDestroy {
   //   this.onNewLocation(value)
   // }
 
-  id = 'Leaflet MiniMap'
-  title = 'Leaflet Map'
-  lmap?: L.Map
-
-  zoom // actual zoom level of main map
-  zoomDisplay // what's displayed below main map
-  center
-  mouseLatLng
-  mapOptions = ""
-  //mymarkers = L.markerClusterGroup()
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
-
-  //private locationSubscription!: Subscription
-  private location?: LocationType
-
+  override id = 'Leaflet MiniMap Component'
+  override title = 'Leaflet MiniMap'
 
   constructor(
-    private log: LogService,
-    private settingsService: SettingsService,
-    @Inject(DOCUMENT) private document: Document
+    settingsService: SettingsService,
+    fieldReportService: FieldReportService,
+    httpClient: HttpClient,
+    log: LogService,
+    document: Document
   ) {
+    super(settingsService,
+      fieldReportService,
+      httpClient,
+      log,
+      document)
+
     this.log.verbose("constructor()", this.id)
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
-      },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
-    })
 
     /*
     this.locationSubscription = this.locationService.getSettingsObserver().subscribe({
@@ -97,181 +90,221 @@ export class MiniLMapComponent implements AfterViewInit, OnDestroy {
     })
 */
 
-    this.zoom = this.settings ? this.settings.leaflet.defZoom : 15
+  }
+
+  override ngOnInit() {
+    super.ngOnInit()
+    this.log.excessive("ngOnInit()", this.id)
+
+    // displayReports = false
+  }
+
+  override ngAfterViewInit() {
+    super.ngAfterViewInit()
+    this.log.excessive("ngAfterViewInit()", this.id)
+
+    //!Verify settings exist?!
+    this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
+    this.zoom = this.settings.leaflet.defZoom
     this.zoomDisplay = this.zoom
-    this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
     this.mouseLatLng = this.center
-  }
 
-  ngAfterViewInit() {
-    this.log.verbose("ngAfterViewInit()", this.id)
-    this.initMap();
     //this.mymarkers = L.markerClusterGroup()
-    // TODO: How & Where to subscribe for location updates?!
   }
 
-  onMapReady(ev: any) {
-    this.log.verbose(` OnMapReady`)
-  }
 
-  private initMap() {
-    this.log.verbose("initMap() ", this.id)
+  override initMap() {
+    super.initMap()
 
-    this.lmap = L.map('lmap', {
+    this.log.excessive("initMap()", this.id)
+
+    // ! Repeat of the guards in super:
+    if (!this.settings) {
+      this.log.error(`Settings not yet initialized while initializing the Leaflet Map!`, this.id)
+      return
+    }
+
+    if (this.displayReports && !this.fieldReports) { //! or displayedFieldReportArray
+      this.log.error(`fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
+      return
+    }
+
+    // ---------------- Init Map -----------------
+
+    this.map = L.map('lmap', {
       center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
       zoom: this.settings ? this.settings.leaflet.defZoom : 15
     })
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 21,
+      maxZoom: 21,  // REVIEW: put into settings?
       minZoom: 3,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
+    tiles.addTo(this.map)
 
-    tiles.addTo(this.lmap)
+    if (this.displayReports) {
+      // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
+      // maybe do this further down?!
+      this.displayMarkers()
+      //this.map.fitBounds(this.fieldReports.bounds)
+      this.map.fitBounds()
+    }
 
-    //this.displayAllMarkers()
-    //this.fitBounds()
-
-    this.lmap.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
-      if (this.zoomDisplay && this.lmap) {
-        this.zoom = this.lmap.getZoom()
-        this.zoomDisplay = this.lmap.getZoom()
-      }
-      //this.zoom! = this.lmap?.getZoom()
-    })
-
-
-    // TODO: Use an Observable, from https://angular.io/guide/rx-library#observable-creation-functions
-    const lmap = document.getElementById('lmap')!
-
-    // Create an Observable that will publish mouse movements
-    const mouseMoves = fromEvent<MouseEvent>(lmap, 'mousemove')
-
-    // Subscribe to start listening for mouse-move events
-    const subscription = mouseMoves.subscribe(evt => {
-      // Log coords of mouse movements
-      this.log.verbose(`Coords: ${evt.clientX} X ${evt.clientY}`, this.id)
-
-      // When the mouse is over the upper-left of the screen,
-      // unsubscribe to stop listening for mouse movements
-      if (evt.clientX < 40 && evt.clientY < 40) {
-        subscription.unsubscribe()
+    this.map.on('zoomend', (ev: L.LeafletEvent) => {
+      if (this.zoomDisplay && this.map) {
+        let z = this.map.getZoom()
+        if (z === undefined) {
+          z = this.settings.leaflet.defZoom
+        }
+        this.zoom = z
+        this.zoomDisplay = z
       }
     })
 
-    this.lmap.on('mousemove', (evt: L.LeafletMouseEvent) => {
-      this.mouseLatLng = evt.latlng
-    })
+
+    // this.map.on('mousemove', (evt: L.LeafletMouseEvent) => {
+    //   this.mouseLatLng = evt.latlng
+    // })
+
+    /*
+        // TODO: Use an Observable, from https://angular.io/guide/rx-library#observable-creation-functions
+        const lMapElement = document.getElementById('lmap')!
+
+        // Create an Observable that will publish mouse movements
+        const mouseMoves = fromEvent<MouseEvent>(lMapElement, 'mousemove')
+
+        // Subscribe to start listening for mouse-move events
+        const subscription = mouseMoves.subscribe(evt => {
+          // Log coords of mouse movements
+          //this.log.verbose(`Coords: ${evt.clientX} X ${evt.clientY}`, this.id)
+
+          TODO: If mouse moves off of the map do we need to unsubscribe (and resubscribe when over it)?
+          The subscription is only on the map, so won't apply (???) unless over it - maybe?!
+          // if (evt.clientX < 40 && evt.clientY < 40) {
+          //   subscription.unsubscribe()
+          // }
+        })
+        */
+
+    if (this.hasOverviewMap) {
+      this.initOverviewMap()
+
+      this.map.on("move", () => {
+
+        if (this.overviewMap instanceof L.Map) {
+
+          this.overviewMap.setView(this.map.getCenter()!,
+            this.clamp(
+              this.map.getZoom() -
+              (this.settings.leaflet.overviewDifference),
+              (this.settings.leaflet.overviewMinZoom),
+              (this.settings.leaflet.overviewMaxZoom)
+            ))
+        }
+      })
+    }
   }
+}
+
+initOverviewMap() {
+  //! TODO
+
+}
 
 
+  // TODO: Just rename MoveExistingMarker(), or AddNewMarker()?
   // !From Leaflet MiniMap - new location passed in undefined
   // @Input statement (above) catches parents update of 'this.location' & sends it to us
   // Based on listing 8.8 in TS dev w/ TS, pg 188
   public onNewLocationChild(newLocation: LocationType) {
-    this.log.verbose(`new location received in ${JSON.stringify(newLocation)}`, this.id)
+  this.log.verbose(`new location received in ${JSON.stringify(newLocation)}`, this.id)
 
-    if (newLocation && newLocation != undefined) {
-      this.location = {
-        lat: newLocation.lat,
-        lng: newLocation.lng,
-        address: newLocation.address
-      }
-      this.addMarker(this.location.lat, this.location.lng, this.location.address)
-      this.addCircle(this.location.lat, this.location.lng, this.location.address)
-
-    } else {
-      this.log.error(`Bad location passed in to onNewLocationChild(): ${JSON.stringify(newLocation)}`, this.id)
+  if (newLocation && newLocation != undefined) {
+    this.location = {
+      lat: newLocation.lat,
+      lng: newLocation.lng,
+      address: newLocation.address
     }
+    this.addMarker(this.location.lat, this.location.lng, this.location.address)
+    this.addCircle(this.location.lat, this.location.lng, this.location.address)
+
+  } else {
+    this.log.error(`Bad location passed in to onNewLocationChild(): ${JSON.stringify(newLocation)}`, this.id)
   }
+}
 
 
-  /*
-  onMapMouseMove(event: any) {
-    //L.LeafletMouseEvent) { //LeafletEvent) {  // MouseEvent) { //google.maps.MapMouseEvent) {
-    this.log.verbose(`onMapMouseMove: ${JSON.stringify(event)}`, this.id)
-    //if (event.type. .lat) {
-    this.mouseLatLng = { lat: event.lat, lng: event.lng }
-    //}
-  }
-*/
-  private addCircle(lat: number, lng: number, status: string = '') {
-    const circle = new L.CircleMarker([lat, lng], { radius: 20 })
-    if (this.lmap) {
-      circle.addTo(this.lmap)
-    }
-  }
+// displayAMarker() {
+//   this.addMarker(this.settings ? this.settings.defLat : 0 - 0.001, this.settings ? this.settings.defLng : 0 - 0.001, "Home Base")
+// }
 
-  displayAMarker() {
-    this.addMarker(this.settings ? this.settings.defLat : 0 - 0.001, this.settings ? this.settings.defLng : 0 - 0.001, "Home Base")
-  }
+// override displayAllMarkers() {
+//   // this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
+// }
 
-  displayAllMarkers() {
-    // this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
-  }
+// https:/ / blog.mestwin.net / leaflet - angular - marker - clustering /
+getDefaultIcon() {
+  return icon({
+    iconSize: [25, 41],
+    iconAnchor: [13, 41],
+    iconUrl: './../../assets/icons/marker-icon.png'
+  })
+}
 
-  // https:/ / blog.mestwin.net / leaflet - angular - marker - clustering /
-  private getDefaultIcon() {
-    return icon({
-      iconSize: [25, 41],
-      iconAnchor: [13, 41],
-      iconUrl: './../../assets/icons/marker-icon.png'
+createMarker() {
+  const mapIcon = this.getDefaultIcon();
+  // const coordinates = latLng([this.mapPoint.latitude, this.mapPoint.longitude]);
+  // this.lastLayer = marker(coordinates).setIcon(mapIcon);
+  // this.markerClusterGroup.addLayer(this.lastLayer)
+}
+
+  override addMarker(lat: number, lng: number, status: string = '') {
+  this.log.excessive(`addMarker at ${lat}. ${lng}, ${status}`, this.id)
+
+  if (!lat || !lng || !this.map) {
+    console.error(`bad lat: ${lat} or lng: ${lng} or lmap: ${this.map}`)
+  } else {
+    let _marker = new L.Marker([lat, lng], {
+      icon: iconDefault
     })
+    /*
+    https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
+
+      _marker.bindPopup(city);
+      _marker.on('popupopen', function() {
+        this.log.verbose('open popup', this.id);
+      });
+      _marker.on('popupclose', function() {
+        this.log.verbose('close popup', this.id);
+      });
+      _marker.on('mouseout', function() {
+        this.log.verbose('close popup with mouseout', this.id);
+        _map.closePopup();
+      });
+      this.log.verbose(_map.getZoom(), this.id)
+      if (_map.getZoom() > 15 && _map.hasLayer(_marker)) {
+        _map.closePopup();
+        this.log.verbose('zoom > 15 close popup', this.id);
+      }
+    */
+
+    //markerCluster.addLayer(_mar);
+    //}
+    //_map.addLayer(markerCluster);
+
+
+    _marker.addTo(this.map)
+
+    //_marker.addEventListener('click', this._markerOnClick);
   }
+}
 
-  private createMarker() {
-    const mapIcon = this.getDefaultIcon();
-    // const coordinates = latLng([this.mapPoint.latitude, this.mapPoint.longitude]);
-    // this.lastLayer = marker(coordinates).setIcon(mapIcon);
-    // this.markerClusterGroup.addLayer(this.lastLayer)
+  private addCircle(lat: number, lng: number, status: string = '') {
+  const circle = new L.CircleMarker([lat, lng], { radius: 20 })
+  if (this.map) {
+    circle.addTo(this.map)
   }
+}
 
-  private addMarker(lat: number, lng: number, status: string = '') {
-    //this.log.verbose(`addMarker at ${lat}. ${lng}, ${status}`, this.id)
-
-    //iconDefault
-
-
-    if (!lat || !lng || !this.lmap) {
-      console.error(`bad lat: ${lat} or lng: ${lng} or lmap: ${this.lmap}`)
-    } else {
-      let _marker = new L.Marker([lat, lng], {
-        icon: iconDefault
-      })
-      /*
-      https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
-
-        _marker.bindPopup(city);
-        _marker.on('popupopen', function() {
-          this.log.verbose('open popup', this.id);
-        });
-        _marker.on('popupclose', function() {
-          this.log.verbose('close popup', this.id);
-        });
-        _marker.on('mouseout', function() {
-          this.log.verbose('close popup with mouseout', this.id);
-          _map.closePopup();
-        });
-        this.log.verbose(_map.getZoom(), this.id)
-        if (_map.getZoom() > 15 && _map.hasLayer(_marker)) {
-          _map.closePopup();
-          this.log.verbose('zoom > 15 close popup', this.id);
-        }
-      */
-
-      //markerCluster.addLayer(_mar);
-      //}
-      //_map.addLayer(markerCluster);
-
-
-      _marker.addTo(this.lmap)
-
-      //_marker.addEventListener('click', this._markerOnClick);
-    }
-  }
-
-  ngOnDestroy() {
-    this.settingsSubscription.unsubscribe()
-  }
 }
