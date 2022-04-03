@@ -1,13 +1,18 @@
 /// <reference types="@types/google.maps" />
-import { Component, Inject, Input, isDevMode, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs'
+
 //import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 //import { DDToDMS, CodeArea, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map, , GoogleGeocode
 //import { LatLng } from 'leaflet';
-import { DOCUMENT } from '@angular/common';
-import { Subscription } from 'rxjs';
-import { LogService, SettingsService, SettingsType, LocationType, FieldReportService } from '../shared/services/';
+import { DOCUMENT } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
+import { Component, Inject, Input, isDevMode, OnDestroy, OnInit } from '@angular/core'
+
 import { AbstractMap } from '../shared/map'
-import { HttpClient } from '@angular/common/http';
+import {
+    FieldReportService, LocationType, LogService, SettingsService, SettingsType
+} from '../shared/services/'
+
 //const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
 @Component({
@@ -138,19 +143,8 @@ this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
   }
 
 
+  // -----------------------------  MAP STUFF -----------------------------------
 
-
-
-
-
-
-
-
-
-
-  // ------------------------------------------------------------------------
-  // Map stuff below
-  //#region
 
   onMapInitialized(newMapReference: google.maps.Map) {
     this.log.verbose(`onMapInitialized()`)

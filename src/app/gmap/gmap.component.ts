@@ -1,15 +1,21 @@
 /// <reference types="@types/google.maps" />
-import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
-import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone, OnDestroy } from '@angular/core';
+import { catchError, map, Observable, of, Subscription } from 'rxjs'
+
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { catchError, map, Observable, of, Subscription } from 'rxjs'
-import * as GMC from "@googlemaps/markerclusterer"
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, SettingsType } from '../shared/services'
-import { CodeArea, OpenLocationCode, Utility } from '../shared/'
+import { Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps'
+import * as GMC from '@googlemaps/markerclusterer'
 // Map
 import { MDCSwitch } from '@material/switch'
+
+import { CodeArea, OpenLocationCode, Utility } from '../shared/'
 import { AbstractMap } from '../shared/map'
+import {
+    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
+    SettingsService, SettingsType
+} from '../shared/services'
+
 /*
 google-maps: OLD
 google.maps: BEST
@@ -39,12 +45,12 @@ let marker: google.maps.Marker
   styleUrls: ['./gmap.component.scss'],
   providers: [SettingsService]
 })
-export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {    //extends Map
+export class GmapComponent extends AbstractMap implements OnDestroy {    //extends Map, OnInit,
 
   // Keep reference to map component, w/ @ViewChild decorator, allows:
   // https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#methods-and-getters
   // https://angular.io/api/core/ViewChild
-  // next line provides this.map!
+  // next line provides this.gMap!
   //@ViewChild(google.maps.Map, { static: false }) map!: google.maps.Map
   //@ViewChild(google.maps.InfoWindow, { static: false }) info!: google.maps.InfoWindow //| undefined
   // following was in https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#mapinfowindow
@@ -61,14 +67,13 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {   
   // items for template
   override mouseLatLng!: google.maps.LatLngLiteral;
 
-  // this.map: GoogleMap (Angular wrapper for the same underlying map!)
-  // this.map: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
-  //  gMap!: google.maps.Map
-  //overviewGMap!: google.maps.Map
+  // this.gMap: GoogleMap (Angular wrapper for the same underlying map!)
+  // this.gMap: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
+  gMap!: google.maps.Map
+  overviewGMap!: google.maps.Map
   overviewMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
   // overviewGMapOptions: google.maps.MapOptions
   // items for <google-map>
-  override center: google.maps.LatLngLiteral
   trafficLayer = new google.maps.TrafficLayer()
   trafficLayerVisible = 0
 
@@ -101,20 +106,6 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {   
   // infoContent = ''
   //apiLoaded //: Observable<boolean>
 
-  // next 2 even used?
-  //circleCenter: google.maps.LatLngLiteral = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
-  //radius = 10;
-
-  //usingSelectedFieldReports = false
-
-  private latestReport: FieldReportsType | undefined
-  private override fieldReports: FieldReportsType | undefined
-  public fieldReportArray: FieldReportType[] = []
-  private override fieldReportsSubscription!: Subscription
-  private fieldReportStatuses: FieldReportStatusType[] = []
-
-  //selectedFieldReports: FieldReportType[] = []
-
 
   constructor(
     settingsService: SettingsService,
@@ -132,6 +123,7 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {   
     this.log.verbose(`Constructing Google Map, using version ${google.maps.version}`, this.id)
 
     this.hasOverviewMap = true
+    this.displayReports = true
     this.hasSelectedReports = true
 
 
@@ -174,41 +166,51 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     this.log.verbose("got apiLoadedCallback()", this.id)
   }
 
-  override ngOnInit(): void {
-    super.ngOnInit()
+  // override ngOnInit(): void {
+  //   super.ngOnInit()
 
-    this.log.verbose('ngOnInit()', this.id)
+  //   this.log.excessive('ngOnInit()', this.id)
 
-    // https://developers.google.com/maps/documentation/geolocation/overview
-    // Works - *if* you want map zoomed on user's device...
-    // navigator.geolocation.getCurrentPosition((position) => {
-    //   this.center = {
-    //     lat: position.coords.latitude,
-    //     lng: position.coords.longitude
-    //   }
-    // })
-  }
+  // https://developers.google.com/maps/documentation/geolocation/overview
+  // Works - *if* you want map zoomed on user's device...
+  // navigator.geolocation.getCurrentPosition((position) => {
+  //   this.center = {
+  //     lat: position.coords.latitude,
+  //     lng: position.coords.longitude
+  //   }
+  // })
+  // }
 
 
   override ngAfterViewInit() {
     super.ngAfterViewInit()
     this.log.excessive("ngAfterViewInit()", this.id)
 
-    this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
-    this.zoom = this.settings.leaflet.defZoom
-    this.zoomDisplay = this.zoom
-    this.mouseLatLng = this.center
-
+    this.initMap()
   }
-
-
-
-
 
 
   override initMap() {
     super.initMap()
 
+    this.log.excessive("initMap()", this.id)
+
+    // ! Repeat of the guards in super:
+    if (!this.settings) {
+      this.log.error(`Settings not yet initialized while in initMap()!`, this.id)
+      return
+    }
+
+    if (this.displayReports && !this.fieldReports) { //! or displayedFieldReportArray
+      this.log.error(`fieldReports not yet initialized in initMap()!`, this.id)
+      return
+    }
+
+
+    // ---------------- Init Main Map -----------------
+
+
+    //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
 
     this.zoom = this.settings ? this.settings.google.defZoom : 15
     this.zoomDisplay = this.settings ? this.settings.google.defZoom : 15
@@ -218,7 +220,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     // https://github.com/googlemaps/js-markerclusterer
     // https://newbedev.com/google-markerclusterer-decluster-markers-below-a-certain-zoom-level
     this.markerCluster = new GMC.MarkerClusterer({
-      map: this.map,
+      map: this.gMap,
       markers: this.markers,
       // algorithm?: Algorithm,
       // renderer?: Renderer,
@@ -226,9 +228,9 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     })
 
     this.log.verbose(`Setting G map Center= lat:${this.settings ? this.settings.defLat : 0}, lng: ${this.settings ? this.settings.defLng : 0}, zoom: ${this.settings ? this.settings.google.defZoom : 15}`, this.id)
-    this.map.setCenter({ lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 })
-    this.map.setZoom(this.settings ? this.settings.google.defZoom : 15)
-    this.map.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports?.bounds!))
+    this.gMap.setCenter({ lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 })
+    this.gMap.setZoom(this.settings ? this.settings.google.defZoom : 15)
+    this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports?.bounds!))
 
     // Overview map: https://developers.google.com/maps/documentation/javascript/examples/inset-map
     this.overviewGMap = new google.maps.Map(
@@ -240,7 +242,9 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
         zoomControl: false,
         mapTypeId: 'terrain',
       }
-    );
+    )
+
+    this.overviewMap = this.overviewGMap // REVIEW: this creates another reference (used by abstract class..) - NOT a copy that evolves seperately - right?!.
 
     // cycle through map types when map is clicked
     this.overviewGMap!.addListener("click", () => {
@@ -260,11 +264,11 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       //infowindow.setContent(`${JSON.stringify(latlng)}`)
     })
 
-    this.map!.addListener("bounds_changed", () => {
-      this.overviewGMap!.setCenter(this.map!.getCenter()!);
+    this.gMap!.addListener("bounds_changed", () => {
+      this.overviewGMap!.setCenter(this.gMap!.getCenter()!);
       this.overviewGMap!.setZoom(
         this.clamp(
-          this.map!.getZoom()! - this.settings!.google.overviewDifference,
+          this.gMap!.getZoom()! - this.settings!.google.overviewDifference,
           this.settings!.google.overviewMinZoom,
           this.settings!.google.overviewMaxZoom
         )
@@ -272,18 +276,27 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     })
   }
 
-  // this.map: GoogleMap (Angular wrapper for the same underlying map!)
-  // this.map: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
+
+  // this.ngMap: GoogleMap (Angular wrapper for the same underlying map!)
+  // this.gMap: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
   onMapInitialized(mappy: google.maps.Map) {
     this.log.verbose(`onMapInitialized()`, this.id)
-    this.map = mappy
+
+    // REVIEW: Does this get called twice: once for Main Map & AGAIN for overviewMap?!
+    if (this.gMap) {
+      this.log.error(`OnMapInitialized getting called AGAIN - for overview map???`, this.id)
+      this.overviewGMap = mappy
+    } else {
+      this.gMap = mappy
+    }
+
     /* TODO: Emit update for subscribers: instead of always reloading at init stage...
         this.fieldReportArray = this.fieldReportService.getFieldReports().valueChanges.subscribe(x => {
           this.log.verbose(`Subscription to location got: ${x}`, this.id)
         })
         */
-
   }
+
 
   // ------------------------------------  Markers  ---------------------------------------
 
@@ -332,8 +345,10 @@ MarkerClustererPlus Library - also old
     }
   }
 
-  // TODO: Unset the following if SWITCH is unset!!!!
+
   getAndDisplayFieldReports() {
+    //super.Ge
+
     if (!this.filterSwitch || !this.filterSwitch.selected) {
       this.log.verbose(`Displaying ALL ${this.fieldReportArray.length} field Reports`, this.id)
     } else {
@@ -346,7 +361,7 @@ MarkerClustererPlus Library - also old
 
     // TODO: Duplicate code as in InitMap: move to a new routine...
     /*this.markerCluster = new GMC.MarkerClusterer({
-      map: this.map,
+      map: this.gMap,
       markers: this.markers,
       // algorithm?: Algorithm,
       // renderer?: Renderer,
@@ -361,11 +376,11 @@ MarkerClustererPlus Library - also old
 
   // Shows any markers currently in the array.
   showMarkers(): void {
-    if (!this.map) {
+    if (!this.gMap) {
       this.log.error(`showMarkers() got null gMap`, this.id)
       return
     }
-    this.markers.forEach((i) => i.setMap(this.map))
+    this.markers.forEach((i) => i.setMap(this.gMap))
   }
 
   // Deletes all markers in the array by removing references to them.
@@ -373,7 +388,7 @@ MarkerClustererPlus Library - also old
     this.log.verbose(`removeAllMarkers()`, this.id)
     this.hideMarkers()
     this.markers = []
-    // this.map.clear();
+    // this.gMap.clear();
     // this.markerCluster.clearMarkers()
   }
 
@@ -482,7 +497,7 @@ MarkerClustererPlus Library - also old
       let m = new google.maps.Marker({
         draggable: true,
         animation: animation,
-        // map: this.map,
+        // map: this.gMap,
         position: latLng,
         title: title,
         icon: icon,
@@ -501,7 +516,7 @@ MarkerClustererPlus Library - also old
       // open info window when marker is clicked
       // marker.addListener("click", () => {
       //this.infoWindow.setContent(label);
-      //this.infoWindow.open(this.map, marker);
+      //this.infoWindow.open(this.gMap, marker);
       // })
 
       m.addListener("click",   // this.toggleBounce)
@@ -514,7 +529,7 @@ MarkerClustererPlus Library - also old
             //content: 'How now red cow.',
             anchor: m,
             //setPosition: event.latLng,
-            //map: this.map,
+            //map: this.gMap,
             // shouldFocus: false,
           })
         }
@@ -551,15 +566,15 @@ MarkerClustererPlus Library - also old
   }
 
   zoomed() {
-    if (this.zoom && this.map) {
-      this.zoom = this.map.getZoom()!
-      this.zoomDisplay = this.map.getZoom()!
+    if (this.zoom && this.gMap) {
+      this.zoom = this.gMap.getZoom()!
+      this.zoomDisplay = this.gMap.getZoom()!
     }
   }
 
   toggleTrafficLayer() {
     this.trafficLayer.setMap(
-      (this.trafficLayerVisible ^= 1) ? this.map : null) // toggle trafficLayerVisible to 0 or 1
+      (this.trafficLayerVisible ^= 1) ? this.gMap : null) // toggle trafficLayerVisible to 0 or 1
     // map.setTilt(45);
     this.log.info(`TrafficLayer made ${this.trafficLayerVisible ? 'visible' : 'hidden'}`, this.id)
   }

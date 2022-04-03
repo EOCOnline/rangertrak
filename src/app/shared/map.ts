@@ -1,13 +1,21 @@
-import * as C from "./coordinate"
-import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild, OnDestroy, isDevMode } from '@angular/core'
+
+import L from 'leaflet'
+import { fromEvent, Observable, Subscription } from 'rxjs'
+import { catchError, mergeMap, toArray } from 'rxjs/operators'
+
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { fromEvent, Observable, Subscription } from 'rxjs'
-import { catchError, mergeMap, toArray } from 'rxjs/operators';
+import {
+    AfterViewInit, Component, ElementRef, Inject, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
+} from '@angular/core'
+import { MDCSwitch } from '@material/switch'
 
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, SettingsType, LocationType } from '../shared/services'
-import { MDCSwitch } from "@material/switch"
-import L from "leaflet"
+import {
+    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LocationType,
+    LogService, SettingsService, SettingsType
+} from '../shared/services'
+import * as C from './coordinate'
+
 //import { abstractMap } from '../shared/map'
 
 export enum MapType {
@@ -59,18 +67,13 @@ export interface LayerType {
 export type Map = L.Map | google.maps.Map
 
 @Component({ template: '' })
-export class AbstractMap implements OnInit, AfterViewInit, OnDestroy {
+export class AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
 
   protected id = 'Abstract Map Component'
   public title = 'Abstract Map'
 
   protected settingsSubscription!: Subscription
   protected settings!: SettingsType
-
-  protected displayReports = true
-  protected fieldReportsSubscription!: Subscription
-  protected fieldReports: FieldReportsType | undefined
-  protected displayedFieldReportArray: FieldReportType[] = []
 
   protected map!: Map
   protected location!: LocationType
@@ -79,11 +82,11 @@ export class AbstractMap implements OnInit, AfterViewInit, OnDestroy {
   protected zoom = 10 // actual zoom level of main map
   protected zoomDisplay = 10 // what's displayed below main map
 
-
-  // Only some maps have an overview map, or handle "selected" reports.
-  // If not, the following just remain false/undefined, as flags they're not active
-  protected hasOverviewMap = false // Guard for overview map logic
-  protected overviewMap: L.Map | google.maps.Map | undefined = undefined
+  protected displayReports = false // Guard for the following
+  protected fieldReportsSubscription!: Subscription
+  protected fieldReports: FieldReportsType | undefined
+  // The displayedFieldReportArray can either be all (fieldReports) or selectedReports!
+  protected displayedFieldReportArray: FieldReportType[] = []
 
   protected hasSelectedReports = false // Guard for the following
   protected selectedReports: FieldReportsType | undefined = undefined
@@ -91,6 +94,11 @@ export class AbstractMap implements OnInit, AfterViewInit, OnDestroy {
   protected filterButton: HTMLButtonElement | undefined = undefined
   protected numSelectedRows = 0
   protected allRows = 0
+
+
+  protected hasOverviewMap = false // Guard for overview map logic
+  protected overviewMap: L.Map | google.maps.Map | undefined = undefined
+
 
   constructor(protected settingsService: SettingsService,
     protected fieldReportService: FieldReportService,
@@ -123,9 +131,9 @@ export class AbstractMap implements OnInit, AfterViewInit, OnDestroy {
   /**
    *
    */
-  ngOnInit(): void {
-    this.log.verbose(`ngOnInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
-  }
+  // ngOnInit(): void {
+  //   this.log.verbose(`ngOnInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
+  // }
 
   /**
    * OK to register for form events here
@@ -135,34 +143,14 @@ export class AbstractMap implements OnInit, AfterViewInit, OnDestroy {
 
     if (!this.settings) {
       this.log.error(`this.settings not yet established in ngAfterViewInit()`, this.id)
-      // REVIEW: Can initMap run OK w/ defaults, but w/o settings
+      // REVIEW: Can initMap run OK w/ defaults, but w/o settings?
     } else {
       this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
-      this.zoomDisplay = this.zoom
+      this.mouseLatLng = this.center
     }
 
     if (this.hasSelectedReports) {
-      this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
-      if (this.filterButton == undefined) {
-        this.log.error("initMap() could not find selectedFieldReports", this.id)
-      } else {
-        // No need to *subscribe* currently, as everytime there is a selection
-        // made it gets stored and won't change once we're on this screen
-        this.numSelectedRows = this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
-        this.filterSwitch = new MDCSwitch(this.filterButton)
-        if (!this.filterSwitch) throw ("Found filterButton - but NOT Field Report Selection Switch!")
-      }
 
-
-
-      //! or
-
-      // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
-      //! 2TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
-      // BUG: refresh page resets selected switch
-      this.onSwitchSelectedFieldReports()
-
-      // Just get the # of rows in the selection (if any), so we can properly display that # next to the switch
       if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
         this.numSelectedRows = this.selectedReports.numReport
         if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
@@ -175,26 +163,48 @@ export class AbstractMap implements OnInit, AfterViewInit, OnDestroy {
         this.numSelectedRows = 0
       }
 
+
       this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
-      if (!this.filterButton) { throw ("Could not find Field Report Selection button!") }
+      if (this.filterButton == undefined) {
+        this.log.error("ngAfterViewInit() could not find selectedFieldReports", this.id)
+      } else {
+        // No need to *subscribe*, as everytime there is a selection made,
+        // it currently gets stored and won't change once we're on this screen
+        this.numSelectedRows = this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
+        // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
+        this.filterSwitch = new MDCSwitch(this.filterButton)
+        if (!this.filterSwitch) {
+          throw ("Found filterButton - but NOT Field Report Selection Switch!")
+        }
 
-      this.filterSwitch = new MDCSwitch(this.filterButton)
-      if (!this.filterSwitch) throw ("Could not find Field Report Selection Switch!")
 
+        //! TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
+        // BUG: refresh page resets selected switch
+        this.onSwitchSelectedFieldReports()
+
+        // Just get the # of rows in the selection (if any), so we can properly display that # next to the switch
+        if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
+          this.numSelectedRows = this.selectedReports.numReport
+          if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
+            this.log.error(`ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
+            this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
+            this.numSelectedRows = this.selectedReports.fieldReportArray.length
+          }
+        } else {
+          this.log.warn(`Could not retrieve selected Field Reports in ngOnInit.`, this.id)
+          this.numSelectedRows = 0
+        }
+
+        this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
+        if (!this.filterButton) { throw ("Could not find Field Report Selection button!") }
+
+        this.filterSwitch = new MDCSwitch(this.filterButton)
+        if (!this.filterSwitch) throw ("Could not find Field Report Selection Switch!")
+
+      }
     }
-    // REVIEW: Following code is duplicated in ngAfterViewInit: which does the task?!
-    if (!this.settings) {
-      this.log.error(`this.settings not yet established in ngInit()`, this.id)
-      return
-    }
+    // Derivitive maps should call this.initMap() themselves!
 
-
-
-
-
-    //async function name(params: type) {    }
-
-    // Derivitive maps should call this.initMap() themselves
   }
 
   /**
@@ -215,8 +225,8 @@ export class AbstractMap implements OnInit, AfterViewInit, OnDestroy {
       return
     }
 
-
-    // this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
+    this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
+    this.mouseLatLng = this.center
 
 
     // TODO: Use an Observable, from https://angular.io/guide/rx-library#observable-creation-functions
