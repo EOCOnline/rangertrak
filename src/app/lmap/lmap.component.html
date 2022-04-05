@@ -6,7 +6,7 @@
 
 <div class="lmap-container">
   <div class="lmap-frame">
-    <div id="lmap" leaflet (leafletMapReady)="onMapReady($event)"></div>
+    <div id="map" leaflet (leafletMapReady)="onMapReady($event)"></div>
   </div>
   <div>
     Latitude: <span class="strong">{{mouseLatLng.lat.toFixed(5)}}</span> Longitude:
@@ -20,7 +20,7 @@
 <!--
   https://material.io/components/switches/web#switches
   https://material.io/components/switches/web#api -->
-<label for="selectedFieldReports">Field reports to show: All ({{this.allRows}}) </label>
+<label for="selectedFieldReports">Field reports to show: All ({{this.numAllRows}}) </label>
 
 <button
   id="selectedFieldReports"

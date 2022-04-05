@@ -9,8 +9,9 @@ import * as L from 'leaflet'
 import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { throwError } from 'rxjs'
 
+import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 
 import { AbstractMap } from '../shared/map'
 import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
@@ -66,7 +67,7 @@ L.Marker.prototype.options.icon = iconDefault;
 })
 export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
 
-  protected override id = 'Leaflet Map Component'
+  public override id = 'Leaflet Map Component'
   public override title = 'Leaflet Map'
   private lMap!: L.Map
   private overviewLMap!: L.Map
@@ -85,7 +86,7 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
     fieldReportService: FieldReportService,
     httpClient: HttpClient,
     log: LogService,
-    document: Document
+    @Inject(DOCUMENT) protected override document: Document
   ) {
     super(settingsService,
       fieldReportService,
@@ -116,21 +117,35 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
 
 
   override initMap() {
+
+    this.log.excessive("initMap()  pre-super", this.id)
+
     super.initMap()
 
-    this.log.excessive("initMap()", this.id)
+    this.log.excessive("initMap() post-super", this.id)
 
 
     // ! Repeat of the guards in super:
-    if (!this.settings) {
-      this.log.error(`Settings not yet initialized while initializing the Leaflet Map!`, this.id)
+    if (this.settings === null) {
+      this.log.error(`Settings still NULL! while initializing the Leaflet Map!`, this.id)
       return
     }
+    this.log.excessive("initMap() post null check", this.id)
+
+    if (this.settings === undefined) {
+      this.log.error(`Settings still UNDEFINED! while initializing the Leaflet Map!`, this.id)
+      return
+    }
+
+
+    this.log.excessive("initMap()   1", this.id)
 
     if (this.displayReports && !this.fieldReports) { //! or displayedFieldReportArray
       this.log.error(`fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
       return
     }
+
+    this.log.excessive("initMap()  2", this.id)
 
     this.zoom = this.settings.leaflet.defZoom
     this.zoomDisplay = this.zoom
@@ -141,7 +156,13 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
 
 
     //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
-    this.lMap = L.map('lmap', {
+
+    this.zoom = this.settings ? this.settings.google.defZoom : 15
+    this.zoomDisplay = this.settings ? this.settings.google.defZoom : 15
+
+    this.log.excessive("initMap()  3", this.id)
+
+    this.lMap = L.map('map', {
       center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
       zoom: this.settings ? this.settings.leaflet.defZoom : 15
     }) // Default view set at map creation
@@ -164,13 +185,17 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
 
     tiles.addTo(this.lMap)
 
-    if (this.displayReports) {
+    this.log.excessive("initMap()   4", this.id)
+
+    if (this.displayReports && this.fieldReports) {
       // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
       // maybe do this further down?!
       this.displayMarkers()
-      //this.lMap.fitBounds(this.fieldReports.bounds)
-      this.lMap.fitBounds()
+      this.lMap.fitBounds(this.fieldReports.bounds)
+      //this.lMap.fitBounds(: L.LatLngBoundsExpression)
     }
+
+    this.log.excessive("initMap()   5", this.id)
 
     //! BUG: not working....
     this.lMap.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
@@ -178,6 +203,9 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
         this.zoom = this.lMap.getZoom()
         this.zoomDisplay = this.lMap.getZoom()
       }
+
+      this.log.excessive("initMap()   6", this.id)
+
     })
 
 
@@ -353,8 +381,13 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
 
   // ------------------------------------  Markers  ---------------------------------------
 
+  override hideMarkers() {
+    //! unimplemented
+  }
 
-
+  override clearMarkers() {
+    //!this.mymarkers = []
+  }
 
   override displayMarkers() {
     super.displayMarkers()
@@ -396,7 +429,7 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
 
   // https://blog.mestwin.net/leaflet-angular-marker-clustering/
   private getDefaultIcon() {
-    return icon({
+    return L.icon({
       iconSize: [25, 41],
       iconAnchor: [13, 41],
       iconUrl: './../../assets/icons/marker-icon.png'
@@ -447,7 +480,18 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
 
       _marker.addTo(this.lMap)
 
-      _marker.addEventListener('click', this._markerOnClick);
+      _marker.addEventListener('click', this.addManualMarkerEvent);
+    }
+  }
+
+  override addManualMarkerEvent(event: any) {
+    this.log.warn(`Got Marker Click!!!! event= ${JSON.stringify(event)}`, this.id)
+    if (this.settings!.allowManualPinDrops) {
+      if (event.latLng) {
+        this.addMarker(event.latLng.lat, event.latLng.lng, `Manual Marker dropped ${event.latLng.lat}, ${event.latLng.lng} at ${Date()}`)
+      } else {
+        this.log.error(`addMarker FAILED`, this.id)
+      }
     }
   }
 
@@ -456,10 +500,6 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
     if (this.lMap) {
       circle.addTo(this.lMap)
     }
-  }
-
-  private _markerOnClick(e: any) {
-    this.log.warn(`Got Marker Click!!!! e= ${JSON.stringify(e)}`, this.id)
   }
 
   /* some error on map clicking

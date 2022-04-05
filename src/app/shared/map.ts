@@ -67,33 +67,35 @@ export interface LayerType {
 export type Map = L.Map | google.maps.Map
 
 @Component({ template: '' })
-export class AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
+export abstract class AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
 
   protected id = 'Abstract Map Component'
   public title = 'Abstract Map'
 
-  protected settingsSubscription!: Subscription
+  protected settingsSubscription: Subscription
   protected settings!: SettingsType
 
   protected map!: Map
   protected location!: LocationType
-  protected center = { lat: 0, lng: 0 }
-  protected mouseLatLng = this.center //google.maps.LatLngLiteral |
-  protected zoom = 10 // actual zoom level of main map
-  protected zoomDisplay = 10 // what's displayed below main map
+  public center = { lat: 0, lng: 0 }
+  public mouseLatLng = this.center //google.maps.LatLngLiteral |
+  public zoom = 10 // actual zoom level of main map
+  public zoomDisplay = 10 // what's displayed below main map
 
   protected displayReports = false // Guard for the following
   protected fieldReportsSubscription!: Subscription
   protected fieldReports: FieldReportsType | undefined
   // The displayedFieldReportArray can either be all (fieldReports) or selectedReports!
+  protected fieldReportArray: FieldReportType[] = []  // just the array portion of fieldReports
   protected displayedFieldReportArray: FieldReportType[] = []
+  // protected markers: clusters?
 
   protected hasSelectedReports = false // Guard for the following
   protected selectedReports: FieldReportsType | undefined = undefined
   protected filterSwitch: MDCSwitch | undefined = undefined
   protected filterButton: HTMLButtonElement | undefined = undefined
-  protected numSelectedRows = 0
-  protected allRows = 0
+  public numSelectedRows = 0
+  public numAllRows = 0
 
 
   protected hasOverviewMap = false // Guard for overview map logic
@@ -106,7 +108,7 @@ export class AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
     protected log: LogService,
     @Inject(DOCUMENT) protected document: Document) {
 
-    this.log.verbose(`Constructing Abstract Map`, this.id)
+    this.log.excessive(`Constructing Abstract Map`, this.id)
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
@@ -212,29 +214,36 @@ export class AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
    * @returns
    */
   initMap() {
-    this.log.verbose("initMap()", this.id)
+    this.log.verbose("initMap()  A", this.id)
 
 
     if (!this.settings) {
       this.log.error(`Settings not yet initialized while initializing the Leaflet Map!`, this.id)
       return
     }
-
+    this.log.verbose("initMap()  B", this.id)
     if (!this.fieldReports) { //! or displayedFieldReportArray
       this.log.error(`fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
       return
     }
-
+    this.log.verbose("initMap()  C", this.id)
     this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
     this.mouseLatLng = this.center
 
 
     // TODO: Use an Observable, from https://angular.io/guide/rx-library#observable-creation-functions
     const mapElement = document.getElementById('map')!
+    this.log.verbose(`initMap()  D  ${mapElement}`, this.id)
+
+
 
     // Create an Observable that will publish mouse movements
     const mouseMoves = fromEvent<MouseEvent>(mapElement, 'mousemove')
 
+
+
+
+    this.log.verbose("initMap()    E", this.id)
     // Subscribe to start listening for mouse-move events
     const subscription = mouseMoves.subscribe(evt => {
       // Log coords of mouse movements
@@ -242,7 +251,7 @@ export class AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
       this.mouseLatLng = { lat: evt.clientX, lng: evt.clientY }
     })
 
-
+    this.log.verbose("initMap()   F", this.id)
   }
 
   nada() {
@@ -299,7 +308,7 @@ export class AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
   }
 
   refreshMap() {
-
+    this.log.error(`refreshMap() is unimplemented!`, this.id)
   }
 
   // ------------------------------------  Field Reports  ---------------------------------------
@@ -317,31 +326,40 @@ export class AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
   gotNewFieldReports(newReports: FieldReportsType) {
     this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`, this.id)
 
-    this.allRows = newReports.numReport
+    this.numAllRows = newReports.numReport
     this.fieldReports = newReports
     this.fieldReportArray = newReports.fieldReportArray
-    console.assert(this.allRows == this.fieldReportArray.length)
+    console.assert(this.numAllRows == this.fieldReportArray.length)
     this.refreshMap()
     // this.reloadPage()  // TODO: needed?
   }
 
   onSwitchSelectedFieldReports() { //event: any) {
-    if (!this.filterSwitch || !this.filterSwitch.selected) {
-      if (!this.fieldReports) {
-        this.log.error(`field Reports not yet set in onSwitchSelectedFieldReports()`, this.id)
-        return
-      }
-      this.displayedFieldReportArray = this.fieldReports.fieldReportArray
-      this.log.verbose(`Displaying ALL ${this.displayedFieldReportArray.length} field Reports`, this.id)
-      if (this.numSelectedRows != this.displayedFieldReportArray.length) {
-        this.log.warn(`Need to update numSelectedRows ${this.numSelectedRows} != actual array length ${this.displayedFieldReportArray.length}`)
-      }
-    } else {
+    if (!this.fieldReports) {
+      this.log.error(`field Reports not yet set in onSwitchSelectedFieldReports()`, this.id)
+      return
+    }
+
+    if (!this.filterSwitch) {
+      this.log.error(`filterSwitch not found in onSwitchSelectedFieldReports()`, this.id)
+      return
+    }
+
+    if (this.filterSwitch.selected) {
       this.displayedFieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
       // ! REVIEW: we did NOT grab the whole selectedFieldReports structure, JUST the report array: OK?!
       this.numSelectedRows = this.displayedFieldReportArray.length
       this.log.verbose(`Displaying ${this.displayedFieldReportArray.length} SELECTED field Reports`, this.id)
+    } else {
+      this.displayedFieldReportArray = this.fieldReports.fieldReportArray
+      this.log.verbose(`Displaying ALL ${this.displayedFieldReportArray.length} field Reports`, this.id)
+      if (this.numSelectedRows != this.displayedFieldReportArray.length) {
+        this.log.error(`Having to update numSelectedRows ${this.numSelectedRows} to match actual array length ${this.displayedFieldReportArray.length}`, this.id)
+
+        this.numSelectedRows = this.displayedFieldReportArray.length
+      }
     }
+
     // TODO: Need to refresh map?!
     this.refreshMap()
     // this.reloadPage()  // TODO: needed?
@@ -349,6 +367,10 @@ export class AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
 
   // ------------------------------------  Markers  ---------------------------------------
 
+  abstract addMarker(lat: number, lng: number, title: string): void
+  abstract hideMarkers(): void
+  abstract clearMarkers(): void
+  abstract addManualMarkerEvent(event: any): void
 
   displayMarkers() {
     this.log.verbose(`displayMarkers()`, this.id)
@@ -369,24 +391,9 @@ export class AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
   removeAllMarkers() {
     this.log.verbose(`removeAllMarkers()`, this.id)
     this.hideMarkers()
-    this.markers = []
+    // this.clearMarkers = [] // BUG: this won't work!
     // this.map.clear();
     // this.markerCluster.clearMarkers()
-  }
-
-  addMarker(lat: number, lng: number, title = 'Latest Location') {
-
-
-  }
-
-  addManualMarkerEvent(event: google.maps.MapMouseEvent) {
-    if (this.settings!.allowManualPinDrops) {
-      if (event.latLng) {
-        this.addMarker(event.latLng)
-      } else {
-        this.log.error(`addMarker FAILED`, this.id)
-      }
-    }
   }
 
   ngOnDestroy() {

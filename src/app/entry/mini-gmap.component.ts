@@ -6,7 +6,9 @@ import { Subscription } from 'rxjs'
 //import { LatLng } from 'leaflet';
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, isDevMode, OnDestroy, OnInit } from '@angular/core'
+import {
+    AfterViewInit, Component, Inject, Input, isDevMode, OnDestroy, OnInit
+} from '@angular/core'
 
 import { AbstractMap } from '../shared/map'
 import {
@@ -20,7 +22,8 @@ import {
   templateUrl: './mini-gmap.component.html',
   styleUrls: ['./mini-gmap.component.scss']
 })
-export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy {
+export class MiniGMapComponent extends AbstractMap implements AfterViewInit, OnDestroy {
+
   @Input() set locationUpdated(value: LocationType) {
     if (value && value.lat != undefined) {
       this.location = {
@@ -34,7 +37,7 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
     }
   }
 
-  private override id = "Google mini-map Component"
+  public override id = "Google mini-map Component"
 
   // ------------------ MAP STUFF  ------------------
   // imports this.map as a GoogleMap which is the Angular wrapper around a google.maps.Map...
@@ -48,12 +51,12 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
   }) // i.e., a singleton...
 
   // TODO: move to abstracted x instead of google.maps
-  mouseLatLng?: google.maps.LatLngLiteral
-  vashon = new google.maps.LatLng(47.4471, -122.4627)
+  //mouseLatLng?: google.maps.LatLngLiteral
+  //vashon = new google.maps.LatLng(47.4471, -122.4627)
 
-  zoom = 11
-  center: google.maps.LatLngLiteral = Vashon
-  options: google.maps.MapOptions = {
+  // zoom = 11
+  // center: google.maps.LatLngLiteral = Vashon
+  mapOptions: google.maps.MapOptions = {
     zoomControl: true,
     scrollwheel: true,
     disableDoubleClickZoom: true,
@@ -72,7 +75,7 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
     fieldReportService: FieldReportService,
     httpClient: HttpClient,
     log: LogService,
-    document: Document
+    @Inject(DOCUMENT) protected override document: Document
   ) {
     super(settingsService,
       fieldReportService,
@@ -81,6 +84,11 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
       document)
 
     this.log.verbose(`MiniGMapComponent constructed with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
+
+
+    this.hasOverviewMap = false
+    this.displayReports = false
+    this.hasSelectedReports = false
 
     // this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
     //   next: (newSettings) => {
@@ -101,9 +109,8 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
     })*/
   }
 
-
-  override ngOnInit(): void {
-    super.ngOnInit()
+  ngOnInit_unused(): void {
+    //super.ngOnInit()
 
     this.log.verbose('ngOnInit()', this.id)
 
@@ -125,29 +132,29 @@ this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
     // })
   }
 
+  apiLoadedCallbackUNUSED() {
+    this.log.verbose("got apiLoadedCallback()", this.id)
+  }
 
   override ngAfterViewInit() {
     super.ngAfterViewInit()
     this.log.excessive("ngAfterViewInit()", this.id)
 
-    this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
-    this.zoom = this.settings.leaflet.defZoom
-    this.zoomDisplay = this.zoom
-    this.mouseLatLng = this.center
+    // this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
+    // this.zoom = this.settings.leaflet.defZoom
+    // this.zoomDisplay = this.zoom
+    // this.mouseLatLng = this.center
 
+    //this.initMap()
   }
 
-
-  apiLoadedCallbackUNUSED() {
-    this.log.verbose("got apiLoadedCallback()", this.id)
-  }
 
 
   // -----------------------------  MAP STUFF -----------------------------------
 
 
   onMapInitialized(newMapReference: google.maps.Map) {
-    this.log.verbose(`onMapInitialized()`)
+    this.log.excessive(`onMapInitialized()`)
     this.gMap = newMapReference
     /*
         if (this.gMap == null) {
@@ -157,20 +164,21 @@ this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
         }
         */
     this.updateOverviewMap()
-    this.log.verbose(`onMapInitialized done`, this.id)
+    this.log.excessive(`onMapInitialized done`, this.id)
   }
 
-  // updateOverviewMap() {
-  //   this.log.verbose(`updateOverviewMap`, this.id)
 
-  //   //let latlng = new google.maps.LatLng(this.settings.defLat, this.settings.deflng)
-  //   //let latlngL = {lat: this.settings.defLat, lng: this.settings.deflng}
+  updateOverviewMap() {
+    this.log.excessive(`updateOverviewMap`, this.id)
 
-  //   // TODO: FitBounds to new point, not to DefLat & Deflng  -- do it on addMarker?
-  //   // this.gMap?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
-  //   //this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: this.settings.defLat, lng: this.settings.defLng })) // zooms to max!
-  //   this.gMap?.setZoom(17) // no effect
-  // }
+    //let latlng = new google.maps.LatLng(this.settings.defLat, this.settings.deflng)
+    //let latlngL = {lat: this.settings.defLat, lng: this.settings.deflng}
+
+    // TODO: FitBounds to new point, not to DefLat & Deflng  -- do it on addMarker?
+    // this.gMap?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
+    //this.gMap?.fitBounds(this.fieldReportService.bounds.extend({ lat: this.settings.defLat, lng: this.settings.defLng })) // zooms to max!
+    //   this.gMap?.setZoom(17) // no effect
+  }
 
   // onMapMouseMove(event: google.maps.MapMouseEvent) {
   //   if (event.latLng) {
@@ -182,13 +190,17 @@ this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
   //   }
   // }
 
-  onMapZoomed() {
-    if (this.zoom && this.gMap) {
-      this.zoom = this.gMap.getZoom()!
+  // onMapZoomed() {
+  //   if (this.zoom && this.gMap) {
+  //     this.zoom = this.gMap.getZoom()!
+  //   }
+  // }
+
+  onMapMouseMove(event: google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      // this.mouseLatLng = event.latLng.toJSON()
     }
   }
-  // TODO: chg miniMap out with Leaflet map (for offline use)
-  //#endregion
 
   displayMarker(pos: google.maps.LatLngLiteral, title = 'Latest Location') {
     this.log.verbose(`displayMarker at ${pos}, title: ${title}`, this.id)
@@ -214,8 +226,16 @@ this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
   }
 
 
-  ngOnDestroy() {
-    // this.locationSubscription.unsubscribe()
-    this.settingsSubscription.unsubscribe()
+  addMarker(lat: number, lng: number, title: string): void {
+    //throw new Error('Method not implemented.')
+  }
+  hideMarkers(): void {
+    //throw new Error('Method not implemented.')
+  }
+  clearMarkers(): void {
+    throw new Error('Method not implemented.')
+  }
+  addManualMarkerEvent(event: any): void {
+    //throw new Error('Method not implemented.')
   }
 }

@@ -1,9 +1,12 @@
 /// <reference types="@types/google.maps" />
+import { LatLng } from 'leaflet'
 import { catchError, map, Observable, of, Subscription } from 'rxjs'
 
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import {
+    AfterViewInit, Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild
+} from '@angular/core'
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps'
 import * as GMC from '@googlemaps/markerclusterer'
 // Map
@@ -45,7 +48,7 @@ let marker: google.maps.Marker
   styleUrls: ['./gmap.component.scss'],
   providers: [SettingsService]
 })
-export class GmapComponent extends AbstractMap implements OnDestroy {    //extends Map, OnInit,
+export class GmapComponent extends AbstractMap implements AfterViewInit, OnDestroy {    //extends Map, OnInit,
 
   // Keep reference to map component, w/ @ViewChild decorator, allows:
   // https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#methods-and-getters
@@ -58,16 +61,16 @@ export class GmapComponent extends AbstractMap implements OnDestroy {    //exten
   // https://stackblitz.com/edit/angular-9-google-maps-5v2cu8?file=src%2Fapp%2Fapp.component.ts
 
 
-  @ViewChild(GoogleMap, { static: false }) ngMap!: GoogleMap // even needed?
+  @ViewChild(GoogleMap, { static: false }) ngMap!: GoogleMap // MapInfoWindow even needed?
   @ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
 
-  private override id = 'Google Map Component'
+  public override id = 'Google Map Component'
   public override title = 'Google Map'
 
   // items for template
   override mouseLatLng!: google.maps.LatLngLiteral;
 
-  // this.gMap: GoogleMap (Angular wrapper for the same underlying map!)
+  // this.ngMap: GoogleMap (Angular wrapper for the same underlying map!)
   // this.gMap: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
   gMap!: google.maps.Map
   overviewGMap!: google.maps.Map
@@ -104,7 +107,7 @@ export class GmapComponent extends AbstractMap implements OnDestroy {    //exten
 
   labelIndex = 0;
   // infoContent = ''
-  //apiLoaded //: Observable<boolean>
+  apiLoaded //: Observable<boolean> // used by template
 
 
   constructor(
@@ -112,7 +115,7 @@ export class GmapComponent extends AbstractMap implements OnDestroy {    //exten
     fieldReportService: FieldReportService,
     httpClient: HttpClient,
     log: LogService,
-    document: Document
+    @Inject(DOCUMENT) protected override document: Document
   ) {
     super(settingsService,
       fieldReportService,
@@ -160,11 +163,9 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     // google.maps.event.addDomListener(window, 'load', this.initMap);
     // this.LoadMap()
     //super('MyName')
+    this.apiLoaded = true  //! bogus...
   }
 
-  apiLoadedCallbackUNUSED() {
-    this.log.verbose("got apiLoadedCallback()", this.id)
-  }
 
   // override ngOnInit(): void {
   //   super.ngOnInit()
@@ -181,6 +182,10 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   // })
   // }
 
+  apiLoadedCallbackUNUSED() {
+    this.log.verbose("got apiLoadedCallback()", this.id)
+    this.apiLoaded = true
+  }
 
   override ngAfterViewInit() {
     super.ngAfterViewInit()
@@ -188,6 +193,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
 
     this.initMap()
   }
+
 
 
   override initMap() {
@@ -276,19 +282,21 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     })
   }
 
+  onMapMouseMove(event: google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      this.mouseLatLng = event.latLng.toJSON()
+    }
+  }
+
 
   // this.ngMap: GoogleMap (Angular wrapper for the same underlying map!)
   // this.gMap: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
   onMapInitialized(mappy: google.maps.Map) {
     this.log.verbose(`onMapInitialized()`, this.id)
 
-    // REVIEW: Does this get called twice: once for Main Map & AGAIN for overviewMap?!
-    if (this.gMap) {
-      this.log.error(`OnMapInitialized getting called AGAIN - for overview map???`, this.id)
-      this.overviewGMap = mappy
-    } else {
-      this.gMap = mappy
-    }
+    // This event is ONLY registered for the main map, not overview
+    this.gMap = mappy
+
 
     /* TODO: Emit update for subscribers: instead of always reloading at init stage...
         this.fieldReportArray = this.fieldReportService.getFieldReports().valueChanges.subscribe(x => {
@@ -301,6 +309,9 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   // ------------------------------------  Markers  ---------------------------------------
 
 
+  override clearMarkers() {
+    this.markers = []
+  }
 
   /*
   https://github.com/googlemaps/js-markerclusterer - current!
@@ -335,10 +346,10 @@ MarkerClustererPlus Library - also old
     }
   */
 
-  override addManualMarkerEvent(event: google.maps.MapMouseEvent) {
+  addManualMarkerEvent(event: google.maps.MapMouseEvent) {
     if (this.settings!.allowManualPinDrops) {
       if (event.latLng) {
-        this.addMarker(event.latLng)
+        this.addMarker(event.latLng.lat(), event.latLng.lng(), `Manual Marker dropped ${event.latLng.lat}, ${event.latLng.lng} at ${Date()}`)
       } else {
         this.log.error(`addMarker FAILED`, this.id)
       }
@@ -370,7 +381,7 @@ MarkerClustererPlus Library - also old
   }
 
   // Removes the markers from the map, but keeps them in the array.
-  hideMarkers(): void {
+  override hideMarkers(): void {
     this.markers.forEach((i) => i.setMap(null))
   }
 
@@ -452,17 +463,17 @@ MarkerClustererPlus Library - also old
 
       this.log.excessive(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`, this.id)
 
-      this.addMarker(latlng, title, labelText, title, labelColor, "28px", icon)
+      this.addMarker(latlng.lat(), latlng.lng(), title, labelText, title, labelColor, "28px", icon)
     }
 
     this.log.verbose(`displayAllMarkers added ${this.fieldReportArray.length} markers`, this.id)
   }
 
-  override addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP, msDelay = 100) {
+  override addMarker(lat: number, lng: number, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP, msDelay = 100) {
     this.log.excessive(`addMarker`, this.id)
 
     if (infoContent == "") {
-      infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${Date()}`
+      infoContent = `Manual Marker dropped ${lat}, ${lng} at ${Date()}`
     }
     if (title == "") {
       title = infoContent
@@ -479,7 +490,7 @@ MarkerClustererPlus Library - also old
     // https://material.angular.io/components/icon/overview
     //https://developers.google.com/fonts/docs/material_icons
     //https://fonts.google.com/icons
-    if (latLng) {
+    if (lat && lng) {
       let dt = new Date();
       let time = `${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}` // :${Utility.zeroFill(dt.getMilliseconds(), 4)}`
       /* REVIEW:
@@ -489,7 +500,7 @@ MarkerClustererPlus Library - also old
        lng = Math.round(lng * 1000.0) / 1000.0
        let pos = `lat: ${lat}; lng: ${lng} `
        */
-      let pos = `lat: ${latLng.lat}; lng: ${latLng.lng}`
+      let pos = `lat: ${lat}; lng: ${lng}`
       //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; lng: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
 
       this.log.excessive("Actually adding marker now...", this.id)
@@ -498,7 +509,7 @@ MarkerClustererPlus Library - also old
         draggable: true,
         animation: animation,
         // map: this.gMap,
-        position: latLng,
+        position: { lat: lat, lng: lng },
         title: title,
         icon: icon,
         label: {
@@ -549,11 +560,6 @@ MarkerClustererPlus Library - also old
     //this.refreshMarkerDisplay()
   }
 
-  onMapMouseMove(event: google.maps.MapMouseEvent) {
-    if (event.latLng) {
-      this.mouseLatLng = event.latLng.toJSON()
-    }
-  }
 
   // -----------------------------------------------------------
   // Buttons

@@ -1,14 +1,24 @@
-import { DOCUMENT } from '@angular/common'
-import { Component, Inject, OnInit, ViewChild, isDevMode, Input, NgZone, AfterViewInit, OnDestroy } from '@angular/core'
-import { ThemePalette } from '@angular/material/core'
-import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { HttpClient } from '@angular/common/http'
+import {
+    debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
+} from 'rxjs'
 
+import { DOCUMENT } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
+import {
+    AfterViewInit, Component, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
+} from '@angular/core'
+import {
+    FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators
+} from '@angular/forms'
+import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
-import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
-import { AlertsComponent } from '../shared/'
-import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, SettingsType, LocationType } from '../shared/services/'
-import { TimePickerComponent } from '../shared/';
+
+import { AlertsComponent, TimePickerComponent } from '../shared/'
+import {
+    FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
+    SettingsService, SettingsType
+} from '../shared/services/'
+
 // IDEA: use https://material.angular.io/components/badge/ ???
 
 @Component({
@@ -66,6 +76,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     private http: HttpClient,
     private zone: NgZone,
     @Inject(DOCUMENT) private document: Document) {
+
+    this.log.excessive(`Constructing!`, this.id)
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => { this.settings = newSettings },
@@ -130,11 +142,11 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
-    this.log.verbose("EntryComponent - ngOnInit - Use settings to fill form", this.id)
+    this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
 
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
-    this.log.info(`Running ${this.settings?.application} version ${this.settings?.version}`, this.id)  // verifies Settings has been loaded
+    this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version}`, this.id)  // verifies Settings has been loaded
 
     /* i.e., entryDetailsForm probably constructed at wrong time?!
     Move the component creation to ngOnInit hook
@@ -164,7 +176,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
     // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
 
-    this.log.verbose(` ngOnInit completed`, this.id)
+    this.log.excessive(` ngOnInit completed`, this.id)
   }
 
   ngAfterViewInit() {
@@ -206,7 +218,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   private _filterRangers(value: string): RangerType[] {
-    this.log.verbose(`_filterRangers  value changed: ${value}`, this.id)
+    this.log.excessive(`_filterRangers  value changed: ${value}`, this.id)
 
     const filterValue = value.toLowerCase()
     this.entryDetailsForm.value.callsign = filterValue
@@ -317,7 +329,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   onFormSubmit(formData1: string): void {
-    this.log.verbose(`Submit Form`, this.id)
+    this.log.excessive(`Submit Form`, this.id)
     //this.date=this.dateCtrl.value // TODO:
     this.entryDetailsForm.value.date = this.dateCtrl.value
     let formData = JSON.stringify(this.entryDetailsForm.value)

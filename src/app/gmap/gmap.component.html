@@ -35,7 +35,7 @@
 <div *ngIf="apiLoaded" id="container">
   <!-- | async -->
   <google-map
-    id="gMap"
+    id="map"
     width="100%"
     [center]="center"
     [zoom]="zoom"
@@ -49,7 +49,7 @@
   >
     <div id="markerDiv" #markerDiv *ngFor="let marker of markers"></div>
 
-    <map-circle [center]="circleCenter" [radius]="radius"></map-circle>
+    <!--map-circle [center]="circleCenter" [radius]="radius"></map-circle -->
 
     <div id="overview">
       <map-info-window> infoWindowContent could go here</map-info-window>
@@ -73,7 +73,7 @@
 <!--
   https://material.io/components/switches/web#switches
   https://material.io/components/switches/web#api -->
-<label for="selectedFieldReports">Field reports to show: All ({{this.allRows}}) </label>
+<label for="selectedFieldReports">Field reports to show: All ({{this.numAllRows}}) </label>
 
 <button
   id="selectedFieldReports"
@@ -102,7 +102,7 @@
   </div>
 </button>
 <label for="selectedFieldReports">
-  Just those ({{this.selectedRows}}) selected in the Field Report panel</label
+  Just those ({{this.numSelectedRows}}) selected in the Field Report panel</label
 >
 
 <br />

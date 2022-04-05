@@ -1,20 +1,16 @@
-
-
-
-
-
-
-import 'leaflet.markercluster';
+import 'leaflet.markercluster'
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
-import * as L from 'leaflet'
-import pc from "picocolors" // https://github.com/alexeyraspopov/picocolors
-import { AbstractMap } from '../shared/map'
-import { AfterViewInit, Component, OnInit, Input, OnDestroy } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
-import { SettingsService, FieldReportService, LocationType, LogService } from '../shared/services'
-import { icon } from 'leaflet'
-import { throwError } from 'rxjs';
 
+import * as L from 'leaflet'
+import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
+import { throwError } from 'rxjs'
+
+import { DOCUMENT } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
+import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
+
+import { AbstractMap } from '../shared/map'
+import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
 
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
 const iconUrl = 'assets/imgs/marker-icon.png'
@@ -45,14 +41,14 @@ L.Marker.prototype.options.icon = iconDefault;
     '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
   providers: [SettingsService]
 })
-export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {
+export class MiniLMapComponent extends AbstractMap implements AfterViewInit, OnDestroy { // OnInit,
 
   //@Input() set locationUpdated(newLocation: LocationType) {
   // ! Entry form hasn't received new location yet???
   @Input() set locationUpdated(newLocation: LocationType) { // ! Or might this be an event???????????????????
     if ((newLocation && newLocation.lat) != undefined) {
       this.log.verbose(pc.red(`Parent sent on a location event to child: ${JSON.stringify(newLocation)}`), this.id)
-      //! spits out 'undefined'
+      //! Gets hit - BUT spits out 'undefined'
       this.onNewLocationChild(newLocation)
     } else {
       this.log.error(pc.red(`DRATS: Parent sent undefined location event to child`), this.id)
@@ -81,7 +77,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     fieldReportService: FieldReportService,
     httpClient: HttpClient,
     log: LogService,
-    document: Document
+    @Inject(DOCUMENT) protected override document: Document
   ) {
     super(settingsService,
       fieldReportService,
@@ -91,7 +87,13 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
     this.log.verbose(`Constructing Leaflet Map, using https://www.LeafletJS.com version ${L.version}`, this.id)
 
-    this.markerClusterGroup = L.markerClusterGroup({ removeOutsideVisibleBounds: true });
+    this.hasOverviewMap = false
+    this.displayReports = false
+    this.hasSelectedReports = false
+
+    this.markerClusterGroup = L.markerClusterGroup({
+      removeOutsideVisibleBounds: true
+    })
 
     /*
     this.locationSubscription = this.locationService.getSettingsObserver().subscribe({
@@ -106,22 +108,20 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
   }
 
-  override ngOnInit() {
-    super.ngOnInit()
-    this.log.excessive("ngOnInit()", this.id)
-
-
-  }
+  // override ngOnInit() {
+  //   super.ngOnInit()
+  //   this.log.excessive("ngOnInit()", this.id)
+  // }
 
   override ngAfterViewInit() {
     super.ngAfterViewInit()
     this.log.excessive("ngAfterViewInit()", this.id)
 
     //!Verify settings exist?!
-    this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
-    this.zoom = this.settings.leaflet.defZoom
-    this.zoomDisplay = this.zoom
-    this.mouseLatLng = this.center
+    // this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
+    // this.zoom = this.settings.leaflet.defZoom
+    // this.zoomDisplay = this.zoom
+    // this.mouseLatLng = this.center
 
     this.mymarkers = L.markerClusterGroup()
   }
@@ -131,7 +131,6 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     super.initMap()
 
     this.log.excessive("initMap()", this.id)
-
 
     // ! Repeat of the guards in super:
     if (!this.settings) {
@@ -149,7 +148,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
 
     //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
-    this.lMap = L.map('lmap', {
+    this.lMap = L.map('map', {
       center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
       zoom: this.settings ? this.settings.leaflet.defZoom : 15
     }) // Default view set at map creation
@@ -162,6 +161,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     // map can be either Leaflet or Google Map (in the abstract class) -
     // But we know it is JUST Leaflet map in this file!
     // Doing this avoids lots of type guards/hassles.
+    // ! REVIEW: Does this make a copy (that devolves) or a reference (always in sync)
     this.map = this.lMap
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -172,12 +172,12 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
     tiles.addTo(this.lMap)
 
-    if (this.displayReports) {
+    if (this.displayReports && this.fieldReports) {
       // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
       // maybe do this further down?!
       this.displayMarkers()
-      //this.lMap.fitBounds(this.fieldReports.bounds)
-      this.lMap.fitBounds()
+      this.lMap.fitBounds(this.fieldReports.bounds)
+      //this.lMap.fitBounds()
     }
 
 
@@ -199,7 +199,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
     /*
         // TODO: Use an Observable, from https://angular.io/guide/rx-library#observable-creation-functions
-        const lMapElement = document.getElementById('lmap')!
+        const lMapElement = document.getElementById('map')!
 
         // Create an Observable that will publish mouse movements
         const mouseMoves = fromEvent<MouseEvent>(lMapElement, 'mousemove')
@@ -417,7 +417,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
   // https:/ / blog.mestwin.net / leaflet - angular - marker - clustering /
   getDefaultIcon() {
-    return icon({
+    return L.icon({
       iconSize: [25, 41],
       iconAnchor: [13, 41],
       iconUrl: './../../assets/icons/marker-icon.png'
@@ -490,4 +490,16 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   createTile @ leaflet-src.js:11702
   733787.png:1          GET https://a.tile.openstreetmap.org/21/335179/733787.png 400
   */
+
+
+  hideMarkers(): void {
+    //throw new Error('Method not implemented.')
+  }
+  clearMarkers(): void {
+    throw new Error('Method not implemented.')
+  }
+  addManualMarkerEvent(event: any): void {
+    //throw new Error('Method not implemented.')
+  }
+
 }

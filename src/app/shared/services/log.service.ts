@@ -1,9 +1,11 @@
+import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
+import { BehaviorSubject, Observable, throwError } from 'rxjs'
+
 // / <reference types= @types/picocolors /> - gets: Cannot find type definition file for '@types/picocolors'.
 import { Injectable, Optional, SkipSelf } from '@angular/core'
-import { BehaviorSubject, Observable, throwError } from 'rxjs'
+
 import { Utility } from '../utility'
-import pc from "picocolors" // https://github.com/alexeyraspopov/picocolors
-import { LogType, LogLevel } from '.'
+import { LogLevel, LogType } from './'
 
 //const colors = require('colors/safe');
 const hotStylin = 'background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;'
@@ -52,12 +54,16 @@ export class LogService {
   // bgBlack, bgRed, bgGreen, bgYellow, bgBlue, bgMagenta, bgCyan, bgWhite
   // dim, bold, hidden, italic, underline, strikethrough, reset, inverse
   log(msg: string, source: string = this.defaultSource, level: LogLevel = LogLevel.Info) {
+
     let dt = new Date
     let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
+
     let preface = '' // `${time} - From `
+
     switch (level) {
 
       case LogLevel.Excessive:
+        // BUG: %c not getting interpreted...
         console.log(pc.red(`%c${preface}${source}: ${msg}`))
         break;
 
@@ -78,7 +84,7 @@ export class LogService {
         break;
 
       default:
-        console.error(`Unknown level!`)
+        console.error(`Unknown level = ${level}!`)
         console.error(`${preface}${source}: ${msg}`)
         break;
     }
