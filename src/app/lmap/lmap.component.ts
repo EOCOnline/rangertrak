@@ -185,7 +185,6 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
 
     tiles.addTo(this.lMap)
 
-    this.log.excessive("initMap()   4", this.id)
 
     if (this.displayReports && this.fieldReports) {
       // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
@@ -199,16 +198,13 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
 
     //! BUG: not working....
     this.lMap.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
+      this.log.excessive(`leaflet map got zoomed ${this.lMap.getZoom()} event!`, this.id)
+
       if (this.lMap) { // this.zoomDisplay &&
         this.zoom = this.lMap.getZoom()
         this.zoomDisplay = this.lMap.getZoom()
       }
-
-      this.log.excessive("initMap()   6", this.id)
-
     })
-
-
 
     // debugger
     //! this.fieldReports.bounds.getEast is not a function
@@ -263,7 +259,9 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
     }
   }
 
-
+  onZoomEnd_unused(event: any) {
+    this.log.excessive(`onZoomEnd() got ${JSON.stringify(event)}`, this.id)
+  }
 
   /**
    *   ---------------- Init OverView Map -----------------
@@ -417,6 +415,13 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
     // to refresh markers that have changed:
     // https://github.com/Leaflet/Leaflet.markercluster#refreshing-the-clusters-icon
   }
+
+  override onSwitchSelectedFieldReports() {
+    super.onSwitchSelectedFieldReports()
+    this.log.excessive(`onSwitchSelectedFieldReports()`, this.id)
+
+  }
+
 
   // displayAMarker() {
   //   this.addMarker(this.settings ? this.settings.defLat : 0 - 0.001, this.settings ? this.settings.defLng : 0 - 0.001, "Home Base")

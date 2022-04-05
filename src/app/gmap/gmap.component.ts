@@ -221,65 +221,84 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     this.zoom = this.settings ? this.settings.google.defZoom : 15
     this.zoomDisplay = this.settings ? this.settings.google.defZoom : 15
 
-    this.getAndDisplayFieldReports() // REVIEW: Works with NO Markers?
+    if (this.displayReports) {
+      this.getAndDisplayFieldReports() // REVIEW: Works with NO Markers?
 
-    // https://github.com/googlemaps/js-markerclusterer
-    // https://newbedev.com/google-markerclusterer-decluster-markers-below-a-certain-zoom-level
-    this.markerCluster = new GMC.MarkerClusterer({
-      map: this.gMap,
-      markers: this.markers,
-      // algorithm?: Algorithm,
-      // renderer?: Renderer,
-      // onClusterClick?: onClusterClickHandler,
-    })
+      // https://github.com/googlemaps/js-markerclusterer
+      // https://newbedev.com/google-markerclusterer-decluster-markers-below-a-certain-zoom-level
+      this.markerCluster = new GMC.MarkerClusterer({
+        map: this.gMap,
+        markers: this.markers,
+        // algorithm?: Algorithm,
+        // renderer?: Renderer,
+        // onClusterClick?: onClusterClickHandler,
+      })
 
-    this.log.verbose(`Setting G map Center= lat:${this.settings ? this.settings.defLat : 0}, lng: ${this.settings ? this.settings.defLng : 0}, zoom: ${this.settings ? this.settings.google.defZoom : 15}`, this.id)
-    this.gMap.setCenter({ lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 })
-    this.gMap.setZoom(this.settings ? this.settings.google.defZoom : 15)
-    this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports?.bounds!))
+      this.log.verbose(`Setting G map Center= lat:${this.settings ? this.settings.defLat : 0}, lng: ${this.settings ? this.settings.defLng : 0}, zoom: ${this.settings ? this.settings.google.defZoom : 15}`, this.id)
+      this.gMap.setCenter({ lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 })
+      this.gMap.setZoom(this.settings ? this.settings.google.defZoom : 15)
+      this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports!.bounds))
+    }
 
-    // Overview map: https://developers.google.com/maps/documentation/javascript/examples/inset-map
-    this.overviewGMap = new google.maps.Map(
-      document.getElementById("overview") as HTMLElement,
-      {
-        ...this.mapOptions,
-        disableDefaultUI: true,
-        gestureHandling: "none",
-        zoomControl: false,
-        mapTypeId: 'terrain',
+
+    // ---------------- Init Overview Map -----------------
+
+    if (this.hasOverviewMap) {
+      // Overview map: https://developers.google.com/maps/documentation/javascript/examples/inset-map
+      this.overviewGMap = new google.maps.Map(
+        document.getElementById("overview") as HTMLElement,
+        {
+          ...this.mapOptions,
+          disableDefaultUI: true,
+          gestureHandling: "none",
+          zoomControl: false,
+          mapTypeId: 'terrain',
+        }
+      )
+
+      if (!this.overviewGMap) {
+        this.log.error(`Could not create overview map!!!`, this.id)
+        return
       }
-    )
 
-    this.overviewMap = this.overviewGMap // REVIEW: this creates another reference (used by abstract class..) - NOT a copy that evolves seperately - right?!.
+      this.overviewMap = this.overviewGMap // REVIEW: this creates another reference (used by abstract class..) - NOT a copy that evolves seperately - right?!.
 
-    // cycle through map types when map is clicked
-    this.overviewGMap!.addListener("click", () => {
-      let mapId = this.overviewMapType.cur++ % 4
-      this.overviewGMap!.setMapTypeId(this.overviewMapType.types.type[mapId])
-      this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
-    })
+      // cycle through map types when map is clicked
+      this.overviewGMap.addListener("click", () => {
+        let mapId = this.overviewMapType.cur++ % 4
+        this.overviewGMap.setMapTypeId(this.overviewMapType.types.type[mapId])
+        this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
+      })
 
-    this.overviewGMap!.addListener("mousemove", ($event: any) => { // TODO: Only do while mouse is over map for efficiency?!
-      if (this.zoomDisplay && this.overviewGMap) {
-        this.zoomDisplay = this.overviewGMap.getZoom()!
-      }
-      if ($event.latLng) {
-        this.mouseLatLng = $event.latLng.toJSON()
-      }
-      //this.log.verbose(`Overview map at ${JSON.stringify(this.mouseLatLng)}`, this.id)
-      //infowindow.setContent(`${JSON.stringify(latlng)}`)
-    })
+      this.overviewGMap.addListener("mousemove", ($event: any) => { // TODO: Only do while mouse is over map for efficiency?!
+        if (this.zoomDisplay && this.overviewGMap) {
+          this.zoomDisplay = this.overviewGMap.getZoom()!
+        }
+        if ($event.latLng) {
+          this.mouseLatLng = $event.latLng.toJSON()
+        }
+        //this.log.verbose(`Overview map at ${JSON.stringify(this.mouseLatLng)}`, this.id)
+        //infowindow.setContent(`${JSON.stringify(latlng)}`)
+      })
 
-    this.gMap!.addListener("bounds_changed", () => {
-      this.overviewGMap!.setCenter(this.gMap!.getCenter()!);
-      this.overviewGMap!.setZoom(
-        this.clamp(
-          this.gMap!.getZoom()! - this.settings!.google.overviewDifference,
-          this.settings!.google.overviewMinZoom,
-          this.settings!.google.overviewMaxZoom
-        )
-      );
-    })
+      this.gMap.addListener("bounds_changed", () => {
+        this.overviewGMap.setCenter(this.gMap.getCenter()!);
+        this.overviewGMap.setZoom(
+          this.clamp(
+            this.gMap.getZoom()! - this.settings!.google.overviewDifference,
+            this.settings!.google.overviewMinZoom,
+            this.settings!.google.overviewMaxZoom
+          )
+        );
+      })
+    }
+  }
+
+  zoomed() {
+    if (this.zoom && this.gMap) {
+      this.zoom = this.gMap.getZoom()!
+      this.zoomDisplay = this.gMap.getZoom()!
+    }
   }
 
   onMapMouseMove(event: google.maps.MapMouseEvent) {
@@ -357,8 +376,16 @@ MarkerClustererPlus Library - also old
   }
 
 
+  override onSwitchSelectedFieldReports() {
+    super.onSwitchSelectedFieldReports()
+    this.log.excessive(`onSwitchSelectedFieldReports()`, this.id)
+
+    this.getAndDisplayFieldReports() // REVIEW: !!!!
+  }
+
+
   getAndDisplayFieldReports() {
-    //super.Ge
+    //super.onSwitchSelectedFieldReports()
 
     if (!this.filterSwitch || !this.filterSwitch.selected) {
       this.log.verbose(`Displaying ALL ${this.fieldReportArray.length} field Reports`, this.id)
@@ -571,12 +598,6 @@ MarkerClustererPlus Library - also old
     this.log.verbose(`Map center is at ${JSON.stringify(this.ngMap.getCenter())}`, this.id)
   }
 
-  zoomed() {
-    if (this.zoom && this.gMap) {
-      this.zoom = this.gMap.getZoom()!
-      this.zoomDisplay = this.gMap.getZoom()!
-    }
-  }
 
   toggleTrafficLayer() {
     this.trafficLayer.setMap(

@@ -61,11 +61,11 @@
     </div>
   </google-map>
 
-  <div>
+  <!--div>
     Latitude: <span class="strong">{{mouseLatLng?.lat?.toFixed(5)}}</span> Longitude:
     <span class="strong">{{mouseLatLng?.lng?.toFixed(5)}}</span> Zoom:
     <span class="strong">{{zoomDisplay}}</span>
-  </div>
+  </div-->
 </div>
 <br />
 
@@ -81,7 +81,7 @@
   type="button"
   role="switch"
   aria-checked="false"
-  (click)="getAndDisplayFieldReports()"
+  (click)="onSwitchSelectedFieldReports()"
 >
   <div class="mdc-switch__track"></div>
   <div class="mdc-switch__handle-track">

@@ -2,11 +2,13 @@
 
 <!--div *ngIf="apiLoaded" | async
 (leafletMouseM ove)="onMapMouseMove($event)"
+
+(zoom)="onZoomEnd($event)"
 -->
 
 <div class="lmap-container">
   <div class="lmap-frame">
-    <div id="map" leaflet (leafletMapReady)="onMapReady($event)"></div>
+    <div id="map" leaflet (leafletMapReady)="onMapReady($event)" ></div>
   </div>
   <div>
     Latitude: <span class="strong">{{mouseLatLng.lat.toFixed(5)}}</span> Longitude:

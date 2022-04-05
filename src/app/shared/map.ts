@@ -214,56 +214,57 @@ export abstract class AbstractMap implements AfterViewInit, OnDestroy {  //OnIni
    * @returns
    */
   initMap() {
-    this.log.verbose("initMap()  A", this.id)
-
+    this.log.verbose("initMap()", this.id)
 
     if (!this.settings) {
       this.log.error(`Settings not yet initialized while initializing the Leaflet Map!`, this.id)
       return
     }
-    this.log.verbose("initMap()  B", this.id)
+
     if (!this.fieldReports) { //! or displayedFieldReportArray
       this.log.error(`fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
       return
     }
-    this.log.verbose("initMap()  C", this.id)
+
     this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
     this.mouseLatLng = this.center
 
+    /* Works but only gets mouse coordinates - NOT extrapolated lat/lng!
+      // TODO: Use an Observable, from https://angular.io/guide/rx-library#observable-creation-functions
 
-    // TODO: Use an Observable, from https://angular.io/guide/rx-library#observable-creation-functions
-    const mapElement = document.getElementById('map')!
-    this.log.verbose(`initMap()  D  ${mapElement}`, this.id)
+      const mapElement = document.getElementById('map')!
 
+      // Create an Observable that will publish mouse movements
+      const mouseMoves = fromEvent<MouseEvent>(mapElement, 'mousemove')
 
+      // Subscribe to start listening for mouse-move events
+      const subscription = mouseMoves.subscribe(evt => {
+        // Log coords of mouse movements
+        //this.log.verbose(`Coords: ${evt.x} X ${evt.clientY}`, this.id)
+        this.mouseLatLng = { lat: evt.x, lng: evt.clientY }
+      })
+    */
 
-    // Create an Observable that will publish mouse movements
-    const mouseMoves = fromEvent<MouseEvent>(mapElement, 'mousemove')
-
-
-
-
-    this.log.verbose("initMap()    E", this.id)
-    // Subscribe to start listening for mouse-move events
-    const subscription = mouseMoves.subscribe(evt => {
-      // Log coords of mouse movements
-      this.log.verbose(`Coords: ${evt.clientX} X ${evt.clientY}`, this.id)
-      this.mouseLatLng = { lat: evt.clientX, lng: evt.clientY }
-    })
-
-    this.log.verbose("initMap()   F", this.id)
-  }
-
-  nada() {
     if (this.map instanceof L.Map) {
       this.map.on('mousemove', (evt: L.LeafletMouseEvent) => {
         this.mouseLatLng = evt.latlng
+        this.zoomDisplay = this.map.getZoom()!
       })
     } else {
-
+      this.map.addListener("mousemove", ($event: any) => { // TODO: Only do while mouse is over map for efficiency?!
+        this.zoomDisplay = this.map.getZoom()!
+        if ($event.latLng) {
+          this.mouseLatLng = $event.latLng.toJSON()
+        }
+        //this.log.verbose(`Overview map at ${JSON.stringify(this.mouseLatLng)}`, this.id)
+        //infowindow.setContent(`${JSON.stringify(latlng)}`)
+      })
 
     }
+
+
   }
+
 
   // updateOverviewMap() {
   //   this.log.verbose(`updateOverviewMap`, this.id)
@@ -334,6 +335,12 @@ export abstract class AbstractMap implements AfterViewInit, OnDestroy {  //OnIni
     // this.reloadPage()  // TODO: needed?
   }
 
+  /**
+   *
+   * @returns
+   */
+
+  //! BUG: Resets slected reports to ALL!!!!
   onSwitchSelectedFieldReports() { //event: any) {
     if (!this.fieldReports) {
       this.log.error(`field Reports not yet set in onSwitchSelectedFieldReports()`, this.id)
