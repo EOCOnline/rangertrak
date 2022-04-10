@@ -257,7 +257,7 @@ export abstract class AbstractMap implements AfterViewInit, OnDestroy {  //OnIni
           this.mouseLatLng = $event.latLng.toJSON()
         }
         //this.log.verbose(`Overview map at ${JSON.stringify(this.mouseLatLng)}`, this.id)
-        //infowindow.setContent(`${JSON.stringify(latlng)}`)
+        //i nfowindow.setContent(`${JSON.stringify(latlng)}`)
       })
 
     }
