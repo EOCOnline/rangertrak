@@ -21,13 +21,15 @@ import {
 
 // IDEA: use https://material.angular.io/components/badge/ ???
 
+export const undefinedAddressFlag = 'NOT_SET_YET'
+
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
   providers: [RangerService, FieldReportService, SettingsService] //, TeamService
 })
-export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
+export class EntryComponent implements OnInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
 
   private id = 'Entry Form'
@@ -35,7 +37,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Get location events from <location> component
   private locationSubscription!: Subscription
-  public location: LocationType = { lat: 0, lng: 0, address: 'NOT_SET_YET' }
+  public location: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
 
   private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
@@ -179,9 +181,6 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     this.log.excessive(` ngOnInit completed`, this.id)
   }
 
-  ngAfterViewInit() {
-    // OK to register for form events here
-  }
 
   initLocation() { // TODO: Shouldn't this be in location.component.ts?!
     // BUG: duplicate of locationFrmGrp creation in EntryComponent.ts

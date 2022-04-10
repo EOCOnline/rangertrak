@@ -1,17 +1,18 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable, OnInit, Optional, SkipSelf } from '@angular/core';
-import { formatDate } from '@angular/common';
-import { BehaviorSubject, Observable, Observer, of, throwError } from 'rxjs';
-import { csvImport } from 'src/app/rangers/csvImport';
-//import { debounceTime, map, startWith } from 'rxjs/operators'
-import { LogService, RangerType } from './'
-import * as rangers from '../../../assets/data/Rangers.3Feb22.json'
-
+import { BehaviorSubject, Observable, Observer, of, throwError } from 'rxjs'
+import { csvImport } from 'src/app/rangers/csvImport'
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING
 D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'. CommonJS or AMD dependencies can cause optimization bailouts.
 For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies */
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx'
+
+import { formatDate } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
+import { Injectable, OnInit, Optional, SkipSelf } from '@angular/core'
+
+import * as rangers from '../../../assets/data/Rangers.3Feb22.json'
+//import { debounceTime, map, startWith } from 'rxjs/operators'
+import { LogService, RangerType } from './'
 
 /* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
 // https://github.com/SheetJS/SheetJS.github.io
@@ -49,6 +50,7 @@ export class RangerService {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
+    //! REVIEW: Gets called twice!!
     this.log.verbose("Construction", this.id)
     this.LoadRangersFromLocalStorage()
     this.log.verbose(`Got ${this.rangers.length} from Local Storage`, this.id)

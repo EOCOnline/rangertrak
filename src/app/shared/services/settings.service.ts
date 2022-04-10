@@ -1,9 +1,10 @@
-import { Injectable, Optional, SkipSelf } from '@angular/core'
 import { BehaviorSubject, Observable, throwError } from 'rxjs'
 
-import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
+import { Injectable, Optional, SkipSelf } from '@angular/core'
+
 import * as packageJson from '../../../../package.json'
-import { LogService, FieldReportStatusType, SettingsType } from './'
+import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
+import { FieldReportStatusType, LogService, SettingsType } from './'
 
 export type SecretType = {
   "id": number,
@@ -42,6 +43,7 @@ export class SettingsService {
     }
 
     // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
+    //! REVIEW: Gets called twice!!
     this.log.verbose('Constructing', this.id)
 
     //  ------------------------- SECRETS -------------------------------

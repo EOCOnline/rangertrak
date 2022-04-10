@@ -1,19 +1,20 @@
-import { DOCUMENT } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { BehaviorSubject, debounceTime, fromEvent, Observable, Subscription } from 'rxjs';
-import { DDToDMS, CodeArea, GoogleGeocode, OpenLocationCode } from '../shared/'
+import { BehaviorSubject, debounceTime, fromEvent, Observable, Subscription } from 'rxjs'
 
+import { DOCUMENT } from '@angular/common'
+import {
+    AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild
+} from '@angular/core'
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 // import * as P from '@popperjs/core';
 ///import { createPopper } from '@popperjs/core';
 // import type { StrictModifiers } from '@popperjs/core';
+import { faInfoCircle, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
+import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 
-import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { mdiAccount, mdiInformationOutline } from '@mdi/js';
+import { CodeArea, DDToDMS, GoogleGeocode, OpenLocationCode } from '../shared/'
 //import { MatIconRegistry } from '@angular/material/icon';
+import { LocationType, LogService, SettingsService, SettingsType } from '../shared/services'
 
-
-import { SettingsService, LogService, SettingsType, LocationType } from '../shared/services';
 /*
 https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
 https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-driven-forms-in-angular-2
@@ -27,7 +28,7 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   templateUrl: './location.component.html',
   styleUrls: ['./location.component.scss']
 })
-export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
+export class LocationComponent implements OnInit, OnDestroy {
   // Grab reference to location portion of parent's entry form
   @Input() public locationFrmGrp: FormGroup // input from entry.component.ts
   //
@@ -192,10 +193,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
             })
       */
 
-    this.log.verbose("out of ngOnInit", this.id)
-  }
 
-  public ngAfterViewInit() {
     //let keyup$ = Observable.fromEvent(this.elLatI.nativeElement, 'keyup')
 
     // On Location/Address Change subscriptions  // TODO: USE THESE - or not???
@@ -216,6 +214,8 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
       //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
     }
+
+    this.log.verbose("out of ngOnInit", this.id)
   }
 
   // See Ang Cookbook, pg 349ff

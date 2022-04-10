@@ -11,7 +11,7 @@ import { throwError } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 
 import { AbstractMap } from '../shared/map'
 import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
@@ -65,7 +65,7 @@ L.Marker.prototype.options.icon = iconDefault;
   ],
   providers: [SettingsService]
 })
-export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
+export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
   public override id = 'Leaflet Map Component'
   public override title = 'Leaflet Map'
@@ -108,9 +108,9 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
   //   this.log.excessive("ngOnInit()", this.id)
   // }
 
-  override ngAfterViewInit() {
-    super.ngAfterViewInit()
-    this.log.excessive("ngAfterViewInit()", this.id)
+  override ngOnInit() {
+    super.ngOnInit()
+    this.log.excessive("ngOnInit()", this.id)
 
     this.initMap()
   }
@@ -214,7 +214,7 @@ export class LmapComponent extends AbstractMap implements AfterViewInit, OnDestr
           core.mjs:6485 ERROR Error: Bounds are not valid.
         at NewClass.fitBounds (leaflet-src.js:3254:12)
         at LmapComponent.initMap (lmap.component.ts:216:17)
-        at LmapComponent.ngAfterViewInit (lmap.component.ts:162:10)
+        at LmapComponent.ngOnInit (lmap.component.ts:162:10)
         */
     // bnd: L.latLngBounds = this.fieldReports.bounds
     // ! displayedFieldReportArray

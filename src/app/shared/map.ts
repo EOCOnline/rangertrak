@@ -67,7 +67,7 @@ export interface LayerType {
 export type Map = L.Map | google.maps.Map
 
 @Component({ template: '' })
-export abstract class AbstractMap implements AfterViewInit, OnDestroy {  //OnInit,
+export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
   protected id = 'Abstract Map Component'
   public title = 'Abstract Map'
@@ -140,11 +140,11 @@ export abstract class AbstractMap implements AfterViewInit, OnDestroy {  //OnIni
   /**
    * OK to register for form events here
    */
-  ngAfterViewInit() {
-    this.log.verbose("ngAfterViewInit()", this.id)
+  ngOnInit() {
+    this.log.verbose("ngOnInit()", this.id)
 
     if (!this.settings) {
-      this.log.error(`this.settings not yet established in ngAfterViewInit()`, this.id)
+      this.log.error(`this.settings not yet established in ngOnInit()`, this.id)
       // REVIEW: Can initMap run OK w/ defaults, but w/o settings?
     } else {
       this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
@@ -168,7 +168,7 @@ export abstract class AbstractMap implements AfterViewInit, OnDestroy {  //OnIni
 
       this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
       if (this.filterButton == undefined) {
-        this.log.error("ngAfterViewInit() could not find selectedFieldReports", this.id)
+        this.log.error("ngOnInit() could not find selectedFieldReports", this.id)
       } else {
         // No need to *subscribe*, as everytime there is a selection made,
         // it currently gets stored and won't change once we're on this screen

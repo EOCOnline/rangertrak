@@ -1,11 +1,17 @@
-import { Component, Inject, Pipe, PipeTransform, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { SelectionChangedEvent } from 'ag-grid-community'
+// , TeamService
+import { Observable, subscribeOn, Subscription } from 'rxjs'
+
 import { DOCUMENT, formatDate } from '@angular/common'
+import {
+    AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform
+} from '@angular/core'
 import { FormBuilder, FormGroup } from '@angular/forms'
 
-import { FieldReportService, FieldReportType, FieldReportStatusType, FieldReportsType, LogService, RangerService, SettingsService, SettingsType } from '../shared/services';
-// , TeamService
-import { Observable, Subscription, subscribeOn } from 'rxjs';
-import { SelectionChangedEvent } from 'ag-grid-community';
+import {
+    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
+    RangerService, SettingsService, SettingsType
+} from '../shared/services'
 
 @Pipe({ name: 'myUnusedPipe' })
 export class myUnusedPipe implements PipeTransform {
@@ -20,7 +26,7 @@ export class myUnusedPipe implements PipeTransform {
   templateUrl: './field-reports.component.html',
   styleUrls: ['./field-reports.component.scss']
 })
-export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class FieldReportsComponent implements OnInit, OnDestroy {
 
   private id = 'Field Report'
   public title = 'Field Reports'
@@ -171,9 +177,6 @@ export class FieldReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  ngAfterViewInit() {
-    // OK to register for form events here
-  }
 
   gotNewFieldReports(newReports: FieldReportsType) {
     this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`, this.id)

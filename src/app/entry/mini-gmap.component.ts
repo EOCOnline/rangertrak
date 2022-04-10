@@ -22,7 +22,7 @@ import {
   templateUrl: './mini-gmap.component.html',
   styleUrls: ['./mini-gmap.component.scss']
 })
-export class MiniGMapComponent extends AbstractMap implements AfterViewInit, OnDestroy {
+export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy {
 
   @Input() set locationUpdated(value: LocationType) {
     if (value && value.lat != undefined) {
@@ -109,8 +109,8 @@ export class MiniGMapComponent extends AbstractMap implements AfterViewInit, OnD
     })*/
   }
 
-  ngOnInit_unused(): void {
-    //super.ngOnInit()
+  override ngOnInit(): void {
+    super.ngOnInit()
 
     this.log.verbose('ngOnInit()', this.id)
 
@@ -130,15 +130,6 @@ this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
     //     lng: position.coords.longitude
     //   }
     // })
-  }
-
-  apiLoadedCallbackUNUSED() {
-    this.log.verbose("got apiLoadedCallback()", this.id)
-  }
-
-  override ngAfterViewInit() {
-    super.ngAfterViewInit()
-    this.log.excessive("ngAfterViewInit()", this.id)
 
     // this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
     // this.zoom = this.settings.leaflet.defZoom
@@ -146,6 +137,10 @@ this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
     // this.mouseLatLng = this.center
 
     //this.initMap()
+  }
+
+  apiLoadedCallbackUNUSED() {
+    this.log.verbose("got apiLoadedCallback()", this.id)
   }
 
 

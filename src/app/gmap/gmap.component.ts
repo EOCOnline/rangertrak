@@ -4,9 +4,7 @@ import { catchError, map, Observable, of, Subscription } from 'rxjs'
 
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import {
-    AfterViewInit, Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild
-} from '@angular/core'
+import { Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps'
 import * as GMC from '@googlemaps/markerclusterer'
 // Map
@@ -48,7 +46,7 @@ let marker: google.maps.Marker
   styleUrls: ['./gmap.component.scss'],
   providers: [SettingsService]
 })
-export class GmapComponent extends AbstractMap implements AfterViewInit, OnDestroy {    //extends Map, OnInit,
+export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {    //extends Map, OnInit,
 
   // Keep reference to map component, w/ @ViewChild decorator, allows:
   // https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#methods-and-getters
@@ -187,9 +185,9 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     this.apiLoaded = true
   }
 
-  override ngAfterViewInit() {
-    super.ngAfterViewInit()
-    this.log.excessive("ngAfterViewInit()", this.id)
+  override ngOnInit() {
+    super.ngOnInit()
+    this.log.excessive("ngOnInit()", this.id)
 
     this.initMap()
   }

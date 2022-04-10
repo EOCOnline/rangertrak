@@ -1,10 +1,14 @@
-import { DOCUMENT } from '@angular/common';
-import { AfterContentInit, AfterViewInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
-import { Subscription, switchMap } from 'rxjs';
+import { Subscription, switchMap } from 'rxjs'
+
+import { DOCUMENT } from '@angular/common'
+import { AfterContentInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
 import { MatCheckboxModule } from '@angular/material/checkbox'
-import { Utility } from "../shared"
-import { faMapMarkedAlt, faCircleInfo, faCircleCheck, faCircleExclamation, faBug } from '@fortawesome/free-solid-svg-icons';
-import { LogType, LogService, LogLevel, SettingsService, SettingsType } from '../shared/services/';
+import {
+    faBug, faCircleCheck, faCircleExclamation, faCircleInfo, faMapMarkedAlt
+} from '@fortawesome/free-solid-svg-icons'
+
+import { Utility } from '../shared'
+import { LogLevel, LogService, LogType, SettingsService, SettingsType } from '../shared/services/'
 
 /**
  * Update the Log Panel pane with notifications
@@ -15,7 +19,7 @@ import { LogType, LogService, LogLevel, SettingsService, SettingsType } from '..
   templateUrl: './log.component.html',
   styleUrls: ['./log.component.scss']
 })
-export class LogComponent implements OnInit, OnDestroy, AfterContentInit, AfterViewInit {
+export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit {
   // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
   private id = 'Log Component'
   public title = 'Event Summary Log'
@@ -91,18 +95,6 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, AfterV
     }
   }
 
-  ngAfterViewInit() {
-    //console.log(`Into log component's ngAfterViewInit`)
-
-    this.logPanel = this.document.getElementById("log")
-    if (this.logPanel) {
-      // YES!
-      console.log(`ngOnIngAfterViewInitnit() found logPanel.`)
-      this.redisplayLog()
-    } else {
-      console.error('logPanel not found in ngAfterViewInit(). Move code later!');
-    }
-  }
 
   redisplayLog() {
     console.log(`Redisplay log with only ${this.verbose ? 'verbose, ' : ''}${this.info ? 'info, ' : ''}${this.warn ? 'warnings, ' : ''}${this.error ? 'errors ' : ''}`)

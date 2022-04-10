@@ -16,6 +16,7 @@ export class LogService {
   private Log: LogType[] = []
   private logSubject$: BehaviorSubject<LogType[]>
   private defaultSource = 'Unknown'
+  static nextId = 1
 
   constructor(
     @Optional() @SkipSelf() existingService: LogService,
@@ -58,17 +59,20 @@ export class LogService {
     let dt = new Date
     let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
 
-    let preface = '' // `${time} - From `
+    let preface = `${LogService.nextId++}: ` // `${time} - From `
 
     switch (level) {
 
       case LogLevel.Excessive:
         // BUG: %c not getting interpreted...
-        console.log(pc.red(`%c${preface}${source}: ${msg}`))
+        //console.log(pc.red(`%c${preface}${source}: ${msg}`))
+        console.log(pc.red(`${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Verbose:
-        console.log(pc.blue(`${preface}${source}: ${msg}`), hotStylin)
+        // TODO: console.log(pc.blue(`${preface}${source}: ${msg}`), hotStylin)
+        // results in:  Header component: New settings received background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;
+        console.log(pc.blue(`${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Info:
