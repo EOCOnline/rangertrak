@@ -90,6 +90,7 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {   
     //heading: 90,
   }
 
+
   infowindow = new google.maps.InfoWindow({
     maxwidth: "150px",
   });
@@ -189,13 +190,14 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     super.ngOnInit()
     this.log.excessive("ngOnInit()", this.id)
 
-    this.initMap()
+    this.initMainMap()
+    this.updateFieldReports()
   }
 
 
 
-  override initMap() {
-    super.initMap()
+  override initMainMap() {
+    super.initMainMap()
 
     this.log.excessive("initMap()", this.id)
 
@@ -292,7 +294,8 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     }
   }
 
-  zoomed() {
+  override onMapZoomed() {
+    super.onMapZoomed()
     if (this.zoom && this.gMap) {
       this.zoom = this.gMap.getZoom()!
       this.zoomDisplay = this.gMap.getZoom()!
@@ -495,7 +498,7 @@ MarkerClustererPlus Library - also old
   }
 
   override addMarker(lat: number, lng: number, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP, msDelay = 100) {
-    this.log.excessive(`addMarker`, this.id)
+    //this.log.excessive(`addMarker`, this.id)
 
     if (infoContent == "") {
       infoContent = `Manual Marker dropped ${lat}, ${lng} at ${Date()}`
@@ -528,7 +531,7 @@ MarkerClustererPlus Library - also old
       let pos = `lat: ${lat}; lng: ${lng}`
       //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; lng: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
 
-      this.log.excessive("Actually adding marker now...", this.id)
+      // this.log.excessive("Actually adding marker now...", this.id)
 
       let m = new google.maps.Marker({
         draggable: true,

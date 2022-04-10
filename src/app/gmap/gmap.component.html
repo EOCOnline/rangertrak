@@ -1,4 +1,5 @@
 <pageHeader [parentTitle]="title">...</pageHeader>
+<br>
 <details>
   <summary class="big">Instructions</summary>
   This currently displays all rangers/teams without filtering. In the future more options
@@ -33,7 +34,10 @@
 <br />
 
 <div *ngIf="apiLoaded" id="container">
-  <!-- | async -->
+  <!-- | async
+
+  (mapMouseover)="onMapZoomed()"
+-->
   <google-map
     id="map"
     width="100%"
@@ -43,21 +47,23 @@
     (mapClick)="addManualMarkerEvent($event)"
     (mapMousemove)="onMapMouseMove($event)"
     (mapRightclick)="toggleTrafficLayer()"
-    (zoomChanged)="zoomed()"
+    (zoomChanged)="onMapZoomed()"
     (mapInitialized)="onMapInitialized($event)"
-    (mapMouseover)="zoomed()"
+
   >
     <div id="markerDiv" #markerDiv *ngFor="let marker of markers"></div>
 
     <!--map-circle [center]="circleCenter" [radius]="radius"></map-circle -->
-
+    <div>
+      Latitude:
+      <span class="strong">{{mouseLatLng?.lat?.toFixed(5)}}</span>
+      Longitude:
+      <span class="strong">{{mouseLatLng?.lng?.toFixed(5)}}</span>
+      Zoom:
+      <span class="strong">{{zoomDisplay?.toFixed(5)}}</span>
+    </div>
     <div id="overview">
-      <map-info-window> infoWindowContent could go here</map-info-window>
-      <div>
-        Latitude:
-        <span class="strong">{{mouseLatLng?.lat?.toFixed(5)}}</span> Longitude:
-        <span class="strong">{{mouseLatLng?.lng?.toFixed(5)}}</span>
-      </div>
+      <map-info-window> infoWindowContent goes here</map-info-window>
     </div>
   </google-map>
 

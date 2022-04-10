@@ -112,16 +112,43 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
     super.ngOnInit()
     this.log.excessive("ngOnInit()", this.id)
 
-    this.initMap()
+    this.initMainMap()
+
+    if (this.hasOverviewMap) {
+      this.initOverviewMap()
+
+      let rectangle = L.rectangle(this.lMap.getBounds(), { color: 'Blue', fillOpacity: 0.07, weight: 1 })
+      rectangle.addTo(this.overviewLMap)
+
+      this.lMap.on("move", () => {
+        //if (this.overviewLMap instanceof L.Map) {
+        this.overviewLMap.setView(this.lMap.getCenter()!,
+          this.clamp(
+            this.lMap.getZoom() -
+            (this.settings.leaflet.overviewDifference),
+            (this.settings.leaflet.overviewMinZoom),
+            (this.settings.leaflet.overviewMaxZoom)
+          ))
+        rectangle.setBounds(this.lMap.getBounds())
+      }
+        //}
+      )
+    }
+
+    if (this.displayReports && this.fieldReports) {
+      // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
+      this.displayMarkers()
+      //! BUG: this.lMap.fitBounds(this.fieldReports.bounds)
+      //this.lMap.fitBounds(: L.LatLngBoundsExpression)
+    }
+
+    // ! Following is duplicate of that above?!
+    this.updateFieldReports()
   }
 
-
-  override initMap() {
-
-    this.log.excessive("initMap()  pre-super", this.id)
-
-    super.initMap()
-
+  override initMainMap() {
+    //this.log.excessive("initMap()  pre-super", this.id)
+    super.initMainMap()
     this.log.excessive("initMap() post-super", this.id)
 
 
@@ -137,30 +164,23 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
       return
     }
 
-
-    this.log.excessive("initMap()   1", this.id)
-
     if (this.displayReports && !this.fieldReports) { //! or displayedFieldReportArray
       this.log.error(`fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
       return
     }
 
-    this.log.excessive("initMap()  2", this.id)
-
-    this.zoom = this.settings.leaflet.defZoom
-    this.zoomDisplay = this.zoom
-
     this.mymarkers = L.markerClusterGroup()
+
 
     // ---------------- Init Main Map -----------------
 
 
     //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
 
-    this.zoom = this.settings ? this.settings.google.defZoom : 15
-    this.zoomDisplay = this.settings ? this.settings.google.defZoom : 15
+    this.zoom = this.settings ? this.settings.leaflet.defZoom : 15
+    this.zoomDisplay = this.settings ? this.settings.leaflet.defZoom : 15
 
-    this.log.excessive("initMap()  3", this.id)
+    // this.log.excessive("initMap()  3", this.id)
 
     this.lMap = L.map('map', {
       center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
@@ -185,28 +205,6 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
 
     tiles.addTo(this.lMap)
 
-
-    if (this.displayReports && this.fieldReports) {
-      // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
-      // maybe do this further down?!
-      this.displayMarkers()
-      this.lMap.fitBounds(this.fieldReports.bounds)
-      //this.lMap.fitBounds(: L.LatLngBoundsExpression)
-    }
-
-    this.log.excessive("initMap()   5", this.id)
-
-    //! BUG: not working....
-    this.lMap.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
-      this.log.excessive(`leaflet map got zoomed ${this.lMap.getZoom()} event!`, this.id)
-
-      if (this.lMap) { // this.zoomDisplay &&
-        this.zoom = this.lMap.getZoom()
-        this.zoomDisplay = this.lMap.getZoom()
-      }
-    })
-
-    // debugger
     //! this.fieldReports.bounds.getEast is not a function
     //!this.log.info(`E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
 
@@ -219,48 +217,11 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
     // bnd: L.latLngBounds = this.fieldReports.bounds
     // ! displayedFieldReportArray
 
+    this.captureLMoveAndZoom(this.lMap)
 
-
-    // ! Already done in super:
-    // this.lMap.on('click', (ev: L.LeafletMouseEvent) => {
-    //   // TODO: If enabled, drop a marker there...
-    //   if (ev.latlng.lat) {
-    //     this.log.verbose(`Click at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`, this.id)
-
-    //     // TODO: Add Marker if settings ask for it...
-    //   }
+    // this.lMap.on('moveend', ($event: L.LeafletEvent) => {
+    //   rectangle.setBounds(this.lMap.getBounds())
     // })
-
-    //! BUG: not working....
-    // this.lMap.on('mousemove', (ev: L.LeafletMouseEvent) => {
-    //   if (ev.latlng.lat) {
-    //     this.log.excessive(`Mouse at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`, this.id)
-    //     this.mouseLatLng = ev.latlng
-    //   } else {
-    //     debugger // ! ==========================
-    //     this.log.warn(`Mouse moved, but did not get an reasonable event to figure out lat/lng ${JSON.stringify(ev)}`, this.id)
-    //   }
-    // })
-
-    if (this.hasOverviewMap) {
-      this.initOverviewMap()
-
-      this.lMap.on("move", () => {
-        if (this.overviewLMap instanceof L.Map) {
-          this.overviewLMap.setView(this.lMap.getCenter()!,
-            this.clamp(
-              this.lMap.getZoom() -
-              (this.settings.leaflet.overviewDifference),
-              (this.settings.leaflet.overviewMinZoom),
-              (this.settings.leaflet.overviewMaxZoom)
-            ))
-        }
-      })
-    }
-  }
-
-  onZoomEnd_unused(event: any) {
-    this.log.excessive(`onZoomEnd() got ${JSON.stringify(event)}`, this.id)
   }
 
   /**
@@ -271,6 +232,8 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
     //! No super.initOverviewMap(), correct?!
 
     // TODO: Add a light grey rectangle on overview map to show extend/bounods of main map
+
+
 
     // instantiate the overview map without controls
     // https://leafletjs.com/reference.html#map-example
@@ -315,27 +278,16 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
     // })
     //infowindow.open(this.overviewLMap);
 
-    this.overviewLMap.on('mousemove', ($event: L.LeafletMouseEvent) => {
-      // TODO: Only do while mouse is over map for efficiency?! mouseover & mouseout events...
-      if (this.zoomDisplay) {
-        this.zoomDisplay = this.overviewLMap!.getZoom()!
-      }
-      if ($event.latlng) {
-        this.mouseLatLng = $event.latlng //.toJSON()
-      } else {
-        this.log.warn(`No latlng on event in leaflet overview - initMap()`, this.id)
-      }
-    })
+    this.captureLMoveAndZoom(this.overviewLMap)
 
-    this.overviewLMap.on("bounds_changed", () => {
-      this.overviewLMap!.setView(this.lMap.getCenter(), this.clamp(
-        this.lMap!.getZoom()! - (this.settings.leaflet.overviewDifference),
-        (this.settings.leaflet.overviewMaxZoom),
-        (this.settings.leaflet.overviewMinZoom)
-      ))
-    })
+    // this.overviewLMap.on("bounds_changed", () => {
+    //   this.overviewLMap!.setView(this.lMap.getCenter(), this.clamp(
+    //     this.lMap!.getZoom()! - (this.settings.leaflet.overviewDifference),
+    //     (this.settings.leaflet.overviewMaxZoom),
+    //     (this.settings.leaflet.overviewMinZoom)
+    //   ))
+    // })
   }
-
 
   onMapReady(ev: any) {
     this.log.verbose(`OnMapReady()`, this.id)

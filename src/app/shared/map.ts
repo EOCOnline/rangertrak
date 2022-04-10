@@ -133,15 +133,9 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
   /**
    *
    */
-  // ngOnInit(): void {
-  //   this.log.verbose(`ngOnInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
-  // }
-
-  /**
-   * OK to register for form events here
-   */
   ngOnInit() {
     this.log.verbose("ngOnInit()", this.id)
+    //   this.log.verbose(`ngOnInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
 
     if (!this.settings) {
       this.log.error(`this.settings not yet established in ngOnInit()`, this.id)
@@ -151,117 +145,74 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
       this.mouseLatLng = this.center
     }
 
-    if (this.hasSelectedReports) {
-
-      if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
-        this.numSelectedRows = this.selectedReports.numReport
-        if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
-          this.log.error(`ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
-          this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
-          this.numSelectedRows = this.selectedReports.fieldReportArray.length
-        }
-      } else {
-        this.log.warn(`Could not retrieve selected Field Reports in ngOnInit.`, this.id)
-        this.numSelectedRows = 0
-      }
-
-
-      this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
-      if (this.filterButton == undefined) {
-        this.log.error("ngOnInit() could not find selectedFieldReports", this.id)
-      } else {
-        // No need to *subscribe*, as everytime there is a selection made,
-        // it currently gets stored and won't change once we're on this screen
-        this.numSelectedRows = this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
-        // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
-        this.filterSwitch = new MDCSwitch(this.filterButton)
-        if (!this.filterSwitch) {
-          throw ("Found filterButton - but NOT Field Report Selection Switch!")
-        }
-
-
-        //! TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
-        // BUG: refresh page resets selected switch
-        this.onSwitchSelectedFieldReports()
-
-        // Just get the # of rows in the selection (if any), so we can properly display that # next to the switch
-        if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
-          this.numSelectedRows = this.selectedReports.numReport
-          if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
-            this.log.error(`ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
-            this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
-            this.numSelectedRows = this.selectedReports.fieldReportArray.length
-          }
-        } else {
-          this.log.warn(`Could not retrieve selected Field Reports in ngOnInit.`, this.id)
-          this.numSelectedRows = 0
-        }
-
-        this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
-        if (!this.filterButton) { throw ("Could not find Field Report Selection button!") }
-
-        this.filterSwitch = new MDCSwitch(this.filterButton)
-        if (!this.filterSwitch) throw ("Could not find Field Report Selection Switch!")
-
-      }
-    }
     // Derivitive maps should call this.initMap() themselves!
-
   }
 
   /**
    *
    * @returns
    */
-  initMap() {
+  initMainMap() {
     this.log.verbose("initMap()", this.id)
 
     if (!this.settings) {
-      this.log.error(`Settings not yet initialized while initializing the Leaflet Map!`, this.id)
+      this.log.error(`Settings not yet initialized while initializing the abstract Map!`, this.id)
       return
     }
 
     if (!this.fieldReports) { //! or displayedFieldReportArray
-      this.log.error(`fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
+      this.log.error(`fieldReports not yet initialized while initializing abstract Map!`, this.id)
       return
     }
 
     this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
     this.mouseLatLng = this.center
 
-    /* Works but only gets mouse coordinates - NOT extrapolated lat/lng!
-      // TODO: Use an Observable, from https://angular.io/guide/rx-library#observable-creation-functions
-
-      const mapElement = document.getElementById('map')!
-
-      // Create an Observable that will publish mouse movements
-      const mouseMoves = fromEvent<MouseEvent>(mapElement, 'mousemove')
-
-      // Subscribe to start listening for mouse-move events
-      const subscription = mouseMoves.subscribe(evt => {
-        // Log coords of mouse movements
-        //this.log.verbose(`Coords: ${evt.x} X ${evt.clientY}`, this.id)
-        this.mouseLatLng = { lat: evt.x, lng: evt.clientY }
-      })
-    */
-
     if (this.map instanceof L.Map) {
-      this.map.on('mousemove', (evt: L.LeafletMouseEvent) => {
-        this.mouseLatLng = evt.latlng
-        this.zoomDisplay = this.map.getZoom()!
-      })
+      // leaflet map
+    } else if (this.map instanceof google.maps.Map) {
+      // google map
     } else {
-      this.map.addListener("mousemove", ($event: any) => { // TODO: Only do while mouse is over map for efficiency?!
-        this.zoomDisplay = this.map.getZoom()!
-        if ($event.latLng) {
-          this.mouseLatLng = $event.latLng.toJSON()
-        }
-        //this.log.verbose(`Overview map at ${JSON.stringify(this.mouseLatLng)}`, this.id)
-        //i nfowindow.setContent(`${JSON.stringify(latlng)}`)
-      })
-
+      this.log.error(`InitMap(): map not a leaflet or google map - ignoring as uninitialized?`, this.id)
     }
 
+  }
+
+  captureLMoveAndZoom(map: L.Map) {
+    if (!map) {
+      this.log.warn(`No map in leaflet captureMoveAndZoom()`, this.id)
+      return
+    }
+
+    map.on('mousemove', ($event: L.LeafletMouseEvent) => {
+      // if (this.zoomDisplay) {
+      this.zoomDisplay = map.getZoom()
+      //}
+      if ($event.latlng) {
+        this.mouseLatLng = $event.latlng //.toJSON()
+      } else {
+        this.log.warn(`No latlng on event in leaflet captureMoveAndZoom()`, this.id)
+      }
+    })
+  }
+
+  captureGMoveAndZoom(map: google.maps.Map) {
+    if (!map) {
+      this.log.warn(`No map in captureGMoveAndZoom()`, this.id)
+      return
+    }
+
+    map.addListener("mousemove", ($event: any) => {
+      //if (this.zoomDisplay) {
+      this.zoomDisplay = map.getZoom()!
+      //}
+
+      if ($event.latLng) {
+        this.mouseLatLng = $event.latLng.toJSON()
+      } else {
+        this.log.warn(`No latlng on event in captureGMoveAndZoom()`, this.id)
+      }
+    })
 
   }
 
@@ -269,12 +220,15 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
   // updateOverviewMap() {
   //   this.log.verbose(`updateOverviewMap`, this.id)
 
-  //   //let latlng = new google.maps.LatLng(this.settings.defLat, this.settings.deflng)
-  //   //let latlngL = {lat: this.settings.defLat, lng: this.settings.deflng}
+  // TODO: display a small semi-transparent rectangle showing where the main map is
 
-  //   // TODO: FitBounds to new point, not to DefLat & Deflng  -- do it on addMarker?
-  //   // this.map?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
-  //   //this.map?.fitBounds(this.fieldReportService.bounds.extend({ lat: this.settings.defLat, lng: this.settings.defLng })) // zooms to max!
+  //let latlng = new google.maps.LatLng(this.settings.defLat, this.settings.deflng)
+  //let latlngL = {lat: this.settings.defLat, lng: this.settings.deflng}
+
+  // TODO: FitBounds to new point, not to DefLat & Deflng  -- do it on addMarker?
+  // this.map?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
+  //this.map?.fitBounds(this.fieldReportService.bounds.extend({ lat: this.settings.defLat, lng: this.settings.defLng })) // zooms to max!
+
   //   this.map.setZoom(17) // no effect
   // }
 
@@ -313,6 +267,65 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
   }
 
   // ------------------------------------  Field Reports  ---------------------------------------
+
+  updateFieldReports() {
+    if (this.hasSelectedReports) {
+
+      if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
+        this.numSelectedRows = this.selectedReports.numReport
+        if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
+          this.log.error(`ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
+          this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
+          this.numSelectedRows = this.selectedReports.fieldReportArray.length
+        }
+      } else {
+        this.log.warn(`Could not retrieve selected Field Reports in updateFieldReports.`, this.id)
+        this.numSelectedRows = 0
+      }
+
+
+      this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
+      if (this.filterButton == undefined) {
+        this.log.error("updateFieldReports() could not find selectedFieldReports", this.id)
+      } else {
+        // No need to *subscribe*, as everytime there is a selection made,
+        // it currently gets stored and won't change once we're on this screen
+        this.numSelectedRows = this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
+        // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
+        this.filterSwitch = new MDCSwitch(this.filterButton)
+        if (!this.filterSwitch) {
+          throw ("Found filterButton - but NOT Field Report Selection Switch!")
+        }
+
+
+        //! TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
+        // BUG: refresh page resets selected switch
+        this.onSwitchSelectedFieldReports()
+
+        // Just get the # of rows in the selection (if any), so we can properly display that # next to the switch
+        if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
+          this.numSelectedRows = this.selectedReports.numReport
+          if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
+            this.log.error(`ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
+            this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
+            this.numSelectedRows = this.selectedReports.fieldReportArray.length
+          }
+        } else {
+          this.log.warn(`Could not retrieve selected Field Reports in ngOnInit.`, this.id)
+          this.numSelectedRows = 0
+        }
+
+        this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
+        if (!this.filterButton) { throw ("Could not find Field Report Selection button!") }
+
+        this.filterSwitch = new MDCSwitch(this.filterButton)
+        if (!this.filterSwitch) throw ("Could not find Field Report Selection Switch!")
+
+      }
+    }
+  }
+
+
 
   /*
   What gets displayed: alternates between all & selected rows, based on the switch
@@ -391,7 +404,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
       return
     }
 
-    // this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
+    //! this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
   }
 
   // Deletes all markers in the array by removing references to them.

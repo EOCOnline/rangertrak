@@ -145,11 +145,13 @@ Ensure that there are no changes to the bindings in the template after change de
         */
     this.log.excessive("exiting ngOnInit() ...", this.id)
 
+    this.initMainMap()
+    this.updateFieldReports()
   }
 
 
-  override initMap() {
-    super.initMap()
+  override initMainMap() {
+    super.initMainMap()
 
     this.log.excessive("initMap()", this.id)
 
@@ -214,30 +216,6 @@ Ensure that there are no changes to the bindings in the template after change de
     })
 
 
-    // this.lMap.on('mousemove', (evt: L.LeafletMouseEvent) => {
-    //   this.mouseLatLng = evt.latlng
-    // })
-
-    /*
-        // TODO: Use an Observable, from https://angular.io/guide/rx-library#observable-creation-functions
-        const lMapElement = document.getElementById('map')!
-
-        // Create an Observable that will publish mouse movements
-        const mouseMoves = fromEvent<MouseEvent>(lMapElement, 'mousemove')
-
-        // Subscribe to start listening for mouse-move events
-        const subscription = mouseMoves.subscribe(evt => {
-          // Log coords of mouse movements
-          //this.log.verbose(`Coords: ${evt.clientX} X ${evt.clientY}`, this.id)
-
-          TODO: If mouse moves off of the map do we need to unsubscribe (and resubscribe when over it)?
-          The subscription is only on the map, so won't apply (???) unless over it - maybe?!
-          // if (evt.clientX < 40 && evt.clientY < 40) {
-          //   subscription.unsubscribe()
-          // }
-        })
-        */
-
     if (this.hasOverviewMap) {
       this.initOverviewMap()
 
@@ -253,6 +231,8 @@ Ensure that there are no changes to the bindings in the template after change de
         }
       })
     }
+
+    this.captureLMoveAndZoom(this.lMap)
   }
 
 
@@ -309,25 +289,15 @@ Ensure that there are no changes to the bindings in the template after change de
     // })
     //infowindow.open(this.overviewLMap);
 
-    this.overviewLMap.on('mousemove', ($event: L.LeafletMouseEvent) => {
-      // TODO: Only do while mouse is over map for efficiency?! mouseover & mouseout events...
-      if (this.zoomDisplay) {
-        this.zoomDisplay = this.overviewLMap!.getZoom()!
-      }
-      if ($event.latlng) {
-        this.mouseLatLng = $event.latlng //.toJSON()
-      } else {
-        this.log.warn(`No latlng on event in leaflet overview - initMap()`, this.id)
-      }
-    })
+    this.captureLMoveAndZoom(this.overviewLMap)
 
-    this.overviewLMap.on("bounds_changed", () => {
-      this.overviewLMap!.setView(this.lMap.getCenter(), this.clamp(
-        this.lMap!.getZoom()! - (this.settings.leaflet.overviewDifference),
-        (this.settings.leaflet.overviewMaxZoom),
-        (this.settings.leaflet.overviewMinZoom)
-      ))
-    })
+    // this.overviewLMap.on("bounds_changed", () => {
+    //   this.overviewLMap!.setView(this.lMap.getCenter(), this.clamp(
+    //     this.lMap!.getZoom()! - (this.settings.leaflet.overviewDifference),
+    //     (this.settings.leaflet.overviewMaxZoom),
+    //     (this.settings.leaflet.overviewMinZoom)
+    //   ))
+    // })
   }
 
 

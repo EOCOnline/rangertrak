@@ -136,7 +136,8 @@ this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
     // this.zoomDisplay = this.zoom
     // this.mouseLatLng = this.center
 
-    //this.initMap()
+    this.initMainMap()
+    this.updateFieldReports()
   }
 
   apiLoadedCallbackUNUSED() {
