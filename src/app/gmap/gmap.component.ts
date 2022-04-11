@@ -85,7 +85,7 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {   
     scrollwheel: true,
     disableDoubleClickZoom: true,
     mapTypeId: 'hybrid',
-    zoom: 17,
+    zoom: 18,
     maxZoom: 21,
     minZoom: 4,
     draggableCursor: 'crosshair', //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
@@ -192,7 +192,8 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     super.ngOnInit()
     this.log.excessive("ngOnInit()", this.id)
 
-    this.initMainMap()
+    // Following just sets zoom...
+    // this.initMainMap()
 
     if (this.displayReports) {
       this.log.excessive("into getAndDisplayFieldReports()", this.id)
@@ -211,15 +212,12 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
 
       this.updateFieldReports()
     }
-    this.log.excessive("into initOverViewMap()", this.id)
-    this.initOverViewMap()
-
 
     this.log.excessive("done with ngOnInit()", this.id)
 
   }
 
-
+  // ---------------- Init Main Map -----------------
   override initMainMap() {
     super.initMainMap()
 
@@ -230,15 +228,6 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       this.log.error(`Settings not yet initialized while in initMap()!`, this.id)
       return
     }
-
-    if (this.displayReports && !this.fieldReports) { //! or displayedFieldReportArray
-      this.log.error(`fieldReports not yet initialized in initMap()!`, this.id)
-      return
-    }
-
-
-    // ---------------- Init Main Map -----------------
-
 
     //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
 
@@ -256,56 +245,6 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       this.gMap.setCenter({ lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 })
       this.gMap.setZoom(this.settings ? this.settings.google.defZoom : 15)
       this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports!.bounds))
-    }
-  }
-
-
-  // ---------------- Init Overview Map -----------------
-  initOverViewMap() {
-    if (this.hasOverviewMap) {
-      this.log.excessive(`initOverViewMap()`, this.id)
-
-      /*let mapElement = document.getElementById("overviewMap") //as HTMLElement
-
-      if (!mapElement) {
-        this.log.error(`initOverViewMap() could not find Id of overviewMap`, this.id)
-        //return
-      }
-
-      // Overview map: https://developers.google.com/maps/documentation/javascript/examples/inset-map
-      this.overviewGMap = new google.maps.Map(
-        document.getElementById("overviewMap") as HTMLElement,
-        this.overviewMapOptions
-      )
-*/
-
-      if (!this.overviewGMap) {
-        this.log.error(`Did not find (/create) overview map!`, this.id)
-        return
-      }
-
-      this.overviewMap = this.overviewGMap // REVIEW: this creates another reference (used by abstract class..) - NOT a copy that evolves seperately - right?!.
-      this.log.excessive(`initOverViewMap()  2`, this.id)
-
-      // cycle through map types when map is clicked
-      this.overviewGMap.addListener("click", () => {
-        let mapId = this.overviewMapType.cur++ % 4
-        this.overviewGMap.setMapTypeId(this.overviewMapType.types.type[mapId])
-        this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
-      })
-
-      // this.overviewGMap.addListener("mousemove", ($event: any) => { // TODO: Only do while mouse is over map for efficiency?!
-      //   if (this.zoomDisplay && this.overviewGMap) {
-      //     this.zoomDisplay = this.overviewGMap.getZoom()!
-      //   }
-      //   if ($event.latLng) {
-      //     this.mouseLatLng = $event.latLng.toJSON()
-      //   }
-      //   //this.log.verbose(`Overview map at ${JSON.stringify(this.mouseLatLng)}`, this.id)
-      //   //infowindow.setContent(`${JSON.stringify(latlng)}`)
-      // })
-
-
     }
   }
 
@@ -332,7 +271,10 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     // This event is ONLY registered for the main map, not overview
     this.gMap = mappy
     this.captureGMoveAndZoom(this.gMap)
-
+    if (this.displayReports) {
+      // gets: core.mjs:6485 ERROR TypeError: bounds.getEast is not a function at FieldReportService.boundsToBound (field-report.service.ts:193:56)
+      // this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports!.bounds))
+    }
     /* TODO: Emit update for subscribers: instead of always reloading at init stage...
         this.fieldReportArray = this.fieldReportService.getFieldReports().valueChanges.subscribe(x => {
           this.log.verbose(`Subscription to location got: ${x}`, this.id)
@@ -345,6 +287,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
 
     // This event is ONLY registered for the overview map
     this.overviewGMap = mappy
+    this.overviewMap = this.overviewGMap // REVIEW: this creates another reference (used by abstract class..) - NOT a copy that evolves seperately - right?!.
     this.captureGMoveAndZoom(this.overviewGMap)
 
     this.gMap.addListener("bounds_changed", () => {
@@ -356,6 +299,13 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
           this.settings!.google.overviewMaxZoom
         )
       );
+    })
+
+    // cycle through map types when map is clicked
+    this.overviewGMap.addListener("click", () => {
+      let mapId = this.overviewMapType.cur++ % 4
+      this.overviewGMap.setMapTypeId(this.overviewMapType.types.type[mapId])
+      this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
     })
 
   }
