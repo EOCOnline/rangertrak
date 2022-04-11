@@ -25,6 +25,21 @@ $filledColor : #F0F0F0;
   border  : 1px solid black;
 }
 
+// https://www.codingtag.com/remove-arrows-from-input-type-number
+// to hide spinners
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin            : 0;
+}
+
+/* Specilly used for Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
 label {
   font-weight   : bold;
   padding-bottom: .5rem;
