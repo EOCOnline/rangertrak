@@ -1,5 +1,5 @@
 /// <reference types="@types/google.maps" />
-import { LatLng } from 'leaflet'
+import { LatLng, LatLngBounds } from 'leaflet'
 import { catchError, map, Observable, of, Subscription } from 'rxjs'
 
 import { DOCUMENT, JsonPipe } from '@angular/common'
@@ -290,6 +290,16 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     this.overviewMap = this.overviewGMap // REVIEW: this creates another reference (used by abstract class..) - NOT a copy that evolves seperately - right?!.
     this.captureGMoveAndZoom(this.overviewGMap)
 
+    let rectangle = new google.maps.Rectangle({
+      strokeColor: 'blue',
+      strokeOpacity: 0.8,
+      strokeWeight: 1,
+      fillColor: 'blue',
+      fillOpacity: 0.07,
+      map: this.overviewGMap,
+      bounds: this.gMap.getBounds()
+    })
+
     this.gMap.addListener("bounds_changed", () => {
       this.overviewGMap.setCenter(this.gMap.getCenter()!);
       this.overviewGMap.setZoom(
@@ -298,7 +308,11 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
           this.settings!.google.overviewMinZoom,
           this.settings!.google.overviewMaxZoom
         )
-      );
+      )
+      rectangle.LatLngBounds =
+        rectangle.setOptions({
+          bounds: this.gMap.getBounds() as google.maps.LatLngBounds
+        })
     })
 
     // cycle through map types when map is clicked
