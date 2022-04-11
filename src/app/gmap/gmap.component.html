@@ -62,16 +62,22 @@
       Zoom:
       <span class="strong">{{zoomDisplay?.toFixed(5)}}</span>
     </div>
-    <div id="overview">
-      <map-info-window> infoWindowContent goes here</map-info-window>
-    </div>
+    <map-info-window> https://developers.google.com/maps/documentation/javascript/infowindows</map-info-window>
   </google-map>
 
-  <!--div>
-    Latitude: <span class="strong">{{mouseLatLng?.lat?.toFixed(5)}}</span> Longitude:
-    <span class="strong">{{mouseLatLng?.lng?.toFixed(5)}}</span> Zoom:
-    <span class="strong">{{zoomDisplay}}</span>
-  </div-->
+
+  <google-map
+    id="overviewMap"
+    width="175px"
+    height="175px"
+    (mapMousemove)="onMapMouseMove($event)"
+    [options]="overviewMapOptions"
+    (mapInitialized)="onOverviewMapInitialized($event)"
+  >
+  </google-map>
+  <!--
+    [zoom]="zoom"
+    div id="overviewMap2">OVERVIEW MAP!!!!!!!!!</div-->
 </div>
 <br />
 

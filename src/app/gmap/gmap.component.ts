@@ -59,8 +59,10 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {   
   // https://stackblitz.com/edit/angular-9-google-maps-5v2cu8?file=src%2Fapp%2Fapp.component.ts
 
 
-  @ViewChild(GoogleMap, { static: false }) ngMap!: GoogleMap // MapInfoWindow even needed?
-  @ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
+  @ViewChild(GoogleMap, { static: false }) ngMap!: GoogleMap
+  @ViewChild(GoogleMap, { static: false }) overviewNgMap!: GoogleMap
+  // MapInfoWindow is tooltip over a map: https://developers.google.com/maps/documentation/javascript/infowindows
+  //@ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
 
   public override id = 'Google Map Component'
   public override title = 'Google Map'
@@ -90,6 +92,13 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {   
     //heading: 90,
   }
 
+  overviewMapOptions: google.maps.MapOptions = {
+    ...this.mapOptions,
+    disableDefaultUI: true,
+    gestureHandling: "none",
+    zoomControl: false,
+    mapTypeId: 'terrain',
+  }
 
   infowindow = new google.maps.InfoWindow({
     maxwidth: "150px",
@@ -128,11 +137,8 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {   
     this.displayReports = true
     this.hasSelectedReports = true
 
-
     // https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
     // this.markerPositions = []; evil angular wrapper
-
-
 
     // https://github.com/googlemaps/js-markerclusterer
     // use default algorithm and renderer
@@ -181,19 +187,37 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   // })
   // }
 
-  apiLoadedCallbackUNUSED() {
-    this.log.verbose("got apiLoadedCallback()", this.id)
-    this.apiLoaded = true
-  }
 
   override ngOnInit() {
     super.ngOnInit()
     this.log.excessive("ngOnInit()", this.id)
 
     this.initMainMap()
-    this.updateFieldReports()
-  }
 
+    if (this.displayReports) {
+      this.log.excessive("into getAndDisplayFieldReports()", this.id)
+      this.getAndDisplayFieldReports() // REVIEW: Works with NO Markers?
+
+      // https://github.com/googlemaps/js-markerclusterer
+      // https://newbedev.com/google-markerclusterer-decluster-markers-below-a-certain-zoom-level
+      this.markerCluster = new GMC.MarkerClusterer({
+        map: this.gMap,
+        markers: this.markers,
+        // algorithm?: Algorithm,
+        // renderer?: Renderer,
+        // onClusterClick?: onClusterClickHandler,
+      })
+      this.log.excessive("into updateFieldReports()", this.id)
+
+      this.updateFieldReports()
+    }
+    this.log.excessive("into initOverViewMap()", this.id)
+    this.initOverViewMap()
+
+
+    this.log.excessive("done with ngOnInit()", this.id)
+
+  }
 
 
   override initMainMap() {
@@ -221,47 +245,47 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     this.zoom = this.settings ? this.settings.google.defZoom : 15
     this.zoomDisplay = this.settings ? this.settings.google.defZoom : 15
 
-    if (this.displayReports) {
-      this.getAndDisplayFieldReports() // REVIEW: Works with NO Markers?
+    this.log.verbose(`Setting G map Center= lat:${this.settings ? this.settings.defLat : 0}, lng: ${this.settings ? this.settings.defLng : 0}, zoom: ${this.settings ? this.settings.google.defZoom : 15}`, this.id)
 
-      // https://github.com/googlemaps/js-markerclusterer
-      // https://newbedev.com/google-markerclusterer-decluster-markers-below-a-certain-zoom-level
-      this.markerCluster = new GMC.MarkerClusterer({
-        map: this.gMap,
-        markers: this.markers,
-        // algorithm?: Algorithm,
-        // renderer?: Renderer,
-        // onClusterClick?: onClusterClickHandler,
-      })
+    if (this.gMap) {
+      /*
+      ERROR TypeError: Cannot read properties of undefined (reading 'setCenter')
+      at GmapComponent.initMainMap (gmap.component.ts:237:15)
+      */
 
-      this.log.verbose(`Setting G map Center= lat:${this.settings ? this.settings.defLat : 0}, lng: ${this.settings ? this.settings.defLng : 0}, zoom: ${this.settings ? this.settings.google.defZoom : 15}`, this.id)
       this.gMap.setCenter({ lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 })
       this.gMap.setZoom(this.settings ? this.settings.google.defZoom : 15)
       this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports!.bounds))
     }
+  }
 
 
-    // ---------------- Init Overview Map -----------------
-
+  // ---------------- Init Overview Map -----------------
+  initOverViewMap() {
     if (this.hasOverviewMap) {
+      this.log.excessive(`initOverViewMap()`, this.id)
+
+      /*let mapElement = document.getElementById("overviewMap") //as HTMLElement
+
+      if (!mapElement) {
+        this.log.error(`initOverViewMap() could not find Id of overviewMap`, this.id)
+        //return
+      }
+
       // Overview map: https://developers.google.com/maps/documentation/javascript/examples/inset-map
       this.overviewGMap = new google.maps.Map(
-        document.getElementById("overview") as HTMLElement,
-        {
-          ...this.mapOptions,
-          disableDefaultUI: true,
-          gestureHandling: "none",
-          zoomControl: false,
-          mapTypeId: 'terrain',
-        }
+        document.getElementById("overviewMap") as HTMLElement,
+        this.overviewMapOptions
       )
+*/
 
       if (!this.overviewGMap) {
-        this.log.error(`Could not create overview map!!!`, this.id)
+        this.log.error(`Did not find (/create) overview map!`, this.id)
         return
       }
 
       this.overviewMap = this.overviewGMap // REVIEW: this creates another reference (used by abstract class..) - NOT a copy that evolves seperately - right?!.
+      this.log.excessive(`initOverViewMap()  2`, this.id)
 
       // cycle through map types when map is clicked
       this.overviewGMap.addListener("click", () => {
@@ -270,27 +294,18 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
         this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
       })
 
-      this.overviewGMap.addListener("mousemove", ($event: any) => { // TODO: Only do while mouse is over map for efficiency?!
-        if (this.zoomDisplay && this.overviewGMap) {
-          this.zoomDisplay = this.overviewGMap.getZoom()!
-        }
-        if ($event.latLng) {
-          this.mouseLatLng = $event.latLng.toJSON()
-        }
-        //this.log.verbose(`Overview map at ${JSON.stringify(this.mouseLatLng)}`, this.id)
-        //infowindow.setContent(`${JSON.stringify(latlng)}`)
-      })
+      // this.overviewGMap.addListener("mousemove", ($event: any) => { // TODO: Only do while mouse is over map for efficiency?!
+      //   if (this.zoomDisplay && this.overviewGMap) {
+      //     this.zoomDisplay = this.overviewGMap.getZoom()!
+      //   }
+      //   if ($event.latLng) {
+      //     this.mouseLatLng = $event.latLng.toJSON()
+      //   }
+      //   //this.log.verbose(`Overview map at ${JSON.stringify(this.mouseLatLng)}`, this.id)
+      //   //infowindow.setContent(`${JSON.stringify(latlng)}`)
+      // })
 
-      this.gMap.addListener("bounds_changed", () => {
-        this.overviewGMap.setCenter(this.gMap.getCenter()!);
-        this.overviewGMap.setZoom(
-          this.clamp(
-            this.gMap.getZoom()! - this.settings!.google.overviewDifference,
-            this.settings!.google.overviewMinZoom,
-            this.settings!.google.overviewMaxZoom
-          )
-        );
-      })
+
     }
   }
 
@@ -316,7 +331,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
 
     // This event is ONLY registered for the main map, not overview
     this.gMap = mappy
-
+    this.captureGMoveAndZoom(this.gMap)
 
     /* TODO: Emit update for subscribers: instead of always reloading at init stage...
         this.fieldReportArray = this.fieldReportService.getFieldReports().valueChanges.subscribe(x => {
@@ -325,8 +340,32 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
         */
   }
 
+  onOverviewMapInitialized(mappy: google.maps.Map) {
+    this.log.verbose(`onOverviewMapInitialized()`, this.id)
 
-  // ------------------------------------  Markers  ---------------------------------------
+    // This event is ONLY registered for the overview map
+    this.overviewGMap = mappy
+    this.captureGMoveAndZoom(this.overviewGMap)
+
+    this.gMap.addListener("bounds_changed", () => {
+      this.overviewGMap.setCenter(this.gMap.getCenter()!);
+      this.overviewGMap.setZoom(
+        this.clamp(
+          this.gMap.getZoom()! - this.settings!.google.overviewDifference,
+          this.settings!.google.overviewMinZoom,
+          this.settings!.google.overviewMaxZoom
+        )
+      );
+    })
+
+  }
+
+  apiLoadedCallbackUNUSED() {
+    this.log.verbose("got apiLoadedCallback()", this.id)
+    this.apiLoaded = true
+  }
+
+  // -----------------------------------  Markers  --------------------------------------
 
 
   override clearMarkers() {

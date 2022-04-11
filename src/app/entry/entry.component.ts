@@ -370,9 +370,9 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   ngOnDestroy() {
-    this.locationSubscription.unsubscribe()
-    this.rangersSubscription.unsubscribe()
-    this.settingsSubscription.unsubscribe()
-    this.timeSubscription.unsubscribe()
+    this.locationSubscription?.unsubscribe()
+    this.rangersSubscription?.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
+    this.timeSubscription?.unsubscribe()
   }
 }
