@@ -156,15 +156,19 @@
         </li>
       </ul>
     </details>
+
     <div class="input-group">
       <span class="strong">Latitude: &nbsp;</span>
       <input
         [class.border-danger]="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.invalid"
         type="number"
         formControlName="defLat"
+        step=".01"
+        min="-89.99"
+        max="89.99"
         placeholder="{{settings?.defLat?.toFixed(4)}}"
         value="{{settings?.defLat?.toFixed(4)}}"
-        [style.width.px]="60"
+        [style.width.px]="75"
         data-lpignore="true"
       />
       <div
@@ -181,8 +185,11 @@
         [class.border-danger]="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.invalid"
         type="number"
         formControlName="defLng"
+        step=".01"
+        min="-179.99"
+        max="179.99"
         placeholder="{{settings!.defLng?.toFixed(4)}}"
-        [style.width.px]="60"
+        [style.width.px]="75"
         data-lpignore="true"
       />
       <div
@@ -232,14 +239,13 @@
     <h2>Maps</h2>
 
     <div class="input-group">
-      <span class="strong">Markers: </span>
+      <div class="strong">Markers: </div>
       <input
         type="checkbox"
         formControlName="allowManualPinDrops"
         placeholder="allowManualPinDrops"
       />
-      Should clicks on Google & Leaflet <br />
-      Maps show up as new markers?
+      Clicks on Google & Leaflet maps should make new markers - but won't be saved
     </div>
     <br />
 
@@ -255,6 +261,8 @@
           formControlName="defZoom"
           placeholder="15"
           type="number"
+        min="1"
+        max="22"
           [style.width.px]="50"
         />
       </div>
@@ -269,6 +277,8 @@
           [style.width.px]="50"
           formControlName="overviewDifference"
           placeholder="5"
+          min="1"
+          max="10"
         />
         <div
           *ngIf="settingsEditorForm.get('overviewDifference')?.touched && settingsEditorForm.get('overviewDifference')?.hasError('required')"
@@ -285,7 +295,8 @@
           type="number"
           formControlName="overviewMinZoom"
           placeholder="5"
-        />
+          min="1"
+          max="10"        />
         <div
           *ngIf="settingsEditorForm.get('overviewMinZoom')?.touched && settingsEditorForm.get('overviewMinZoom')?.hasError('required')"
           class="text-sm text-danger"
@@ -302,6 +313,8 @@
           [style.width.px]="50"
           formControlName="overviewMaxZoom"
           placeholder="21"
+          min="3"
+        max="22"
         />
         <div
           *ngIf="settingsEditorForm.get('overviewMaxZoom')?.touched && settingsEditorForm.get('overviewMaxZoom')?.hasError('required')"
@@ -326,7 +339,8 @@
           [style.width.px]="50"
           formControlName="defZoom"
           placeholder="15"
-        />
+          min="3"
+        max="22"        />
         <div
           *ngIf="settingsEditorForm.get('defZoom')?.touched && settingsEditorForm.get('defZoom')?.hasError('required')"
           class="text-sm text-danger"
@@ -345,6 +359,8 @@
           [style.width.px]="50"
           formControlName="overviewDifference"
           placeholder="5"
+               min="1"
+          max="10"
         />
         <div
           *ngIf="settingsEditorForm.get('overviewDifference')?.touched && settingsEditorForm.get('overviewDifference')?.hasError('required')"
@@ -362,7 +378,8 @@
           [style.width.px]="50"
           formControlName="overviewMinZoom"
           placeholder="5"
-        />
+               min="1"
+          max="10"        />
         <div
           *ngIf="settingsEditorForm.get('overviewMinZoom')?.touched && settingsEditorForm.get('overviewMinZoom')?.hasError('required')"
           class="text-sm text-danger"
@@ -379,6 +396,8 @@
           [style.width.px]="50"
           formControlName="overviewMaxZoom"
           placeholder="21"
+          min="3"
+          max="22"
         />
         <div
           *ngIf="settingsEditorForm.get('overviewMaxZoom')?.touched && settingsEditorForm.get('overviewMaxZoom')?.hasError('required')"
