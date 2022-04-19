@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./x404.component.scss']
 })
 export class X404Component implements OnInit {
-
+  public title = 'You are seeking a web page that does not yet exist!'
   constructor() { }
 
   ngOnInit(): void {

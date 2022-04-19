@@ -1,23 +1,27 @@
-import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core'
-import { DOCUMENT, JsonPipe } from '@angular/common'
-import { HttpClient } from '@angular/common/http';
 
-import "leaflet.markercluster"
+
+// also: https://github.com/onthegomap/planetiler
+//import { openDB, deleteDB, wrap, unwrp } from 'idb'
+import 'leaflet.markercluster'
+import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
+
 import * as L from 'leaflet'
-//import { LatLng } from 'leaflet';
+import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
+import { throwError } from 'rxjs'
 
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
-import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
-import { Context } from 'ag-grid-community';
+import { DOCUMENT } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 
+import { AbstractMap } from '../shared/map'
+import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
-// °°°°
 // Markers are copied into project via virtue of angular.json: search it for leaflet!!!
 
-const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png';
-const iconUrl = 'assets/imgs/marker-icon.png';
-const shadowUrl = 'assets/imgs/marker-shadow.png';
+const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
+const iconUrl = 'assets/imgs/marker-icon.png'
+const shadowUrl = 'assets/imgs/marker-shadow.png'
 const iconDefault = L.icon({
   iconRetinaUrl,
   iconUrl,
@@ -27,143 +31,440 @@ const iconDefault = L.icon({
   popupAnchor: [1, -34],
   tooltipAnchor: [16, -28],
   shadowSize: [41, 41]
-});
+})
+const markerIcon = L.icon({
+  iconSize: [20, 25],
+  iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png'
+})
 L.Marker.prototype.options.icon = iconDefault;
+//type LatLng = { lat: number, lng: number }
 
-export type addressType = {
-  title: string;
-  num: number
-}
+// From package.json
+//  "leaflet.markercluster": "^1.5.3",
+//    "leaflet.offline": "^2.1.0"
 
-type LatLng = { lat: number, lng: number }
+// devedependencies:  "@types/leaflet": "^1.7.9",
+//    "@types/leaflet.markercluster": "^1.4.6",
+
+/* Angular.json: Styles
+
+"./node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css",
+              "./node_modules/leaflet.markercluster/dist/MarkerCluster.css",
+              "./node_modules/leaflet/dist/leaflet.css",
+              */
 
 @Component({
   selector: 'rangertrak-lmap',
   templateUrl: './lmap.component.html',
   styleUrls: [
-    './lmap.component.scss',
-    "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css", // REVIEW: also added to angular.json: needed there?
-    '../../../node_modules/leaflet/dist/leaflet.css', // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)
+    './lmap.component.scss'
+    //,     "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.css", // REVIEW: also added to angular.json: needed there?
+    // "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css" // (not needed if you use your own iconCreateFunction instead of the default one)
+    //'../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)
   ],
   providers: [SettingsService]
 })
-export class LmapComponent implements AfterViewInit {  //OnInit,
+export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
-  //const L = window['L'];
-  title = 'Leaflet Map'
-  lmap?: L.Map
-  markers: google.maps.Marker[] = []
-  zoom: number
-  center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
-  mouseLatLng = this.center
-  fieldReports: FieldReportType[] = []
-  //settings
+  public override id = 'Leaflet Map Component'
+  public override title = 'Leaflet Map'
+  private lMap!: L.Map
+  private overviewLMap!: L.Map
 
-  constructor(private settingsService: SettingsService,
-    private fieldReportService: FieldReportService,
-    private httpClient: HttpClient,
-    @Inject(DOCUMENT) private document: Document) {
+  // TODO: Leaflet's version of following?
+  overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
 
-    this.fieldReportService = fieldReportService
-    this.zoom = SettingsService.Settings.defZoom
-    this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
-    //this.settings = SettingsService.Settings
+  mymarkers = L.markerClusterGroup()
+  mapOptions = ""
+
+  markerClusterGroup: L.MarkerClusterGroup // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
+  markerClusterData = []
+
+  constructor(
+    settingsService: SettingsService,
+    fieldReportService: FieldReportService,
+    httpClient: HttpClient,
+    log: LogService,
+    @Inject(DOCUMENT) protected override document: Document
+  ) {
+    super(settingsService,
+      fieldReportService,
+      httpClient,
+      log,
+      document)
+
+    this.log.verbose(`Constructing Leaflet Map, using https://www.LeafletJS.com version ${L.version}`, this.id)
+
+    this.hasOverviewMap = true
+    this.displayReports = true
+    this.hasSelectedReports = true
+
+    this.markerClusterGroup = L.markerClusterGroup({ removeOutsideVisibleBounds: true });
   }
 
-  ngOnInit_UNUSED() {
-    //https://www.npmjs.com/package/leaflet.markercluster
+  // override ngOnInit() {
+  //   super.ngOnInit()
+  //   this.log.excessive("ngOnInit()", this.id)
+  // }
+
+  override ngOnInit() {
+    super.ngOnInit()
+    this.log.excessive("ngOnInit()", this.id)
+
+    this.initMainMap()
+
+    if (this.hasOverviewMap) {
+      this.initOverviewMap()
+
+      let rectangle = L.rectangle(this.lMap.getBounds(), { color: 'Blue', fillOpacity: 0.07, weight: 1 })
+      rectangle.addTo(this.overviewLMap)
+
+      this.lMap.on("move", () => {
+        //if (this.overviewLMap instanceof L.Map) {
+        this.overviewLMap.setView(this.lMap.getCenter()!,
+          this.clamp(
+            this.lMap.getZoom() -
+            (this.settings.leaflet.overviewDifference),
+            (this.settings.leaflet.overviewMinZoom),
+            (this.settings.leaflet.overviewMaxZoom)
+          ))
+        rectangle.setBounds(this.lMap.getBounds())
+      }
+        //}
+      )
+    }
+
+    if (this.displayReports && this.fieldReports) {
+      // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
+      this.displayMarkers()
+      //! BUG: this.lMap.fitBounds(this.fieldReports.bounds)
+      //this.lMap.fitBounds(: L.LatLngBoundsExpression)
+    }
+
+    // ! Following is duplicate of that above?!
+    this.updateFieldReports()
   }
 
-  ngAfterViewInit() {
-    this.initMap();
+  override initMainMap() {
+    //this.log.excessive("initMap()  pre-super", this.id)
+    super.initMainMap()
+    this.log.excessive("initMap() post-super", this.id)
 
-    /* https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
-    this.markerService.makeCapitalCircleMarkers(this.map);
-    this.shapeService.getStateShapes().subscribe(states => {
-      this.states = states;
-      this.initStatesLayer(); //create a new GeoJSON layer and adds it to the map
-    });
-    */
-  }
 
-  private initMap() {
-    console.log("Init Leaflet Map..........")
+    // ! Repeat of the guards in super:
+    if (this.settings === null) {
+      this.log.error(`Settings still NULL! while initializing the Leaflet Map!`, this.id)
+      return
+    }
+    this.log.excessive("initMap() post null check", this.id)
 
-    this.lmap = L.map('lmap', {
-      center: [SettingsService.Settings.defLat, SettingsService.Settings.defLng],
-      zoom: SettingsService.Settings.defZoom
-    })
+    if (this.settings === undefined) {
+      this.log.error(`Settings still UNDEFINED! while initializing the Leaflet Map!`, this.id)
+      return
+    }
+
+    if (this.displayReports && !this.fieldReports) { //! or displayedFieldReportArray
+      this.log.error(`fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
+      return
+    }
+
+    this.mymarkers = L.markerClusterGroup()
+
+
+    // ---------------- Init Main Map -----------------
+
+
+    //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
+
+    this.zoom = this.settings ? this.settings.leaflet.defZoom : 15
+    this.zoomDisplay = this.settings ? this.settings.leaflet.defZoom : 15
+
+    // this.log.excessive("initMap()  3", this.id)
+
+    this.lMap = L.map('map', {
+      center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
+      zoom: this.settings ? this.settings.leaflet.defZoom : 15
+    }) // Default view set at map creation
+
+    if (!this.lMap) {
+      this.log.error(`this.lMap not created!`, this.id)
+      return
+    }
+
+    // map can be either Leaflet or Google Map (in the abstract class) -
+    // But we know it is JUST Leaflet map in this file!
+    // Doing this avoids lots of type guards/hassles.
+    this.map = this.lMap
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 21,
+      maxZoom: 21,  // REVIEW: put into settings?
       minZoom: 3,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
-    tiles.addTo(this.lmap)
-    this.displayAllMarkers()
-    this.fitBounds()
+    tiles.addTo(this.lMap)
 
-    this.lmap?.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
-      if (this.zoom && this.lmap) {
-        this.zoom = this.lmap.getZoom()
-      }
-      //this.zoom! = this.lmap?.getZoom()
+    //! this.fieldReports.bounds.getEast is not a function
+    //!this.log.info(`E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
+
+    /*
+          core.mjs:6485 ERROR Error: Bounds are not valid.
+        at NewClass.fitBounds (leaflet-src.js:3254:12)
+        at LmapComponent.initMap (lmap.component.ts:216:17)
+        at LmapComponent.ngOnInit (lmap.component.ts:162:10)
+        */
+    // bnd: L.latLngBounds = this.fieldReports.bounds
+    // ! displayedFieldReportArray
+
+    this.captureLMoveAndZoom(this.lMap)
+
+    // this.lMap.on('moveend', ($event: L.LeafletEvent) => {
+    //   rectangle.setBounds(this.lMap.getBounds())
+    // })
+  }
+
+  /**
+   *   ---------------- Init OverView Map -----------------
+   *
+   */
+  initOverviewMap() {
+    //! No super.initOverviewMap(), correct?!
+
+    // TODO: Add a light grey rectangle on overview map to show extend/bounods of main map
+
+
+
+    // instantiate the overview map without controls
+    // https://leafletjs.com/reference.html#map-example
+    this.overviewLMap = L.map('overview', {
+      center: [this.settings.defLat, this.settings.defLng],
+      zoom: this.settings.leaflet.defZoom,
+      zoomControl: false,
+      keyboard: false,
+      scrollWheelZoom: false,
+      dragging: false,
     })
 
-    this.lmap?.on('mousemove', (event: L.LeafletMouseEvent) => {
-      this.mouseLatLng = event.latlng
+    this.overviewMap = this.overviewLMap
+
+    const overviewTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: this.settings.leaflet.overviewMaxZoom,
+      minZoom: this.settings.leaflet.overviewMinZoom,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
-    this.lmap.on('click', (ev: L.LeafletMouseEvent) => {
-      if (ev.latlng.lat) {
-        console.log(`Click at lat: ${ev.latlng.lat}, lng: ${ev.latlng.lng}`)
-      }
-    })
+    overviewTiles.addTo(this.overviewLMap)
+
+    // if (this.overviewLMap === null || this.overviewLMap === undefined) {
+    //   this.log.error(`Could not create overview map!`, this.id)
+    //   return
+    // }
+    // if (this.lMap == null || this.lMap == undefined) {
+    //   this.log.error(`map doesn't exist when creating overview map!`, this.id)
+    //   return
+    // }
+
+    // TODO: Switch map type on click on the overview map
+    /* this.overviewLMap.addListener("click", () => {
+      let mapId = this.overviewMapType.cur++ % 4
+      this.overviewLMap.setMapTypeId(this.overviewMapType.types.type[mapId])
+      this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
+    })*/
+
+    // const infowindow = new google.maps.InfoWindow({
+    //   content: "Mouse location...",
+    //   position: { lat: this.settings.defLat, lng: this.settings.defLng },
+    // })
+    //infowindow.open(this.overviewLMap);
+
+    this.captureLMoveAndZoom(this.overviewLMap)
+
+    // this.overviewLMap.on("bounds_changed", () => {
+    //   this.overviewLMap!.setView(this.lMap.getCenter(), this.clamp(
+    //     this.lMap!.getZoom()! - (this.settings.leaflet.overviewDifference),
+    //     (this.settings.leaflet.overviewMaxZoom),
+    //     (this.settings.leaflet.overviewMinZoom)
+    //   ))
+    // })
+  }
+
+  onMapReady(ev: any) {
+    this.log.verbose(`OnMapReady()`, this.id)
   }
 
 
-  fitBounds() {
-    this.fieldReportService.recalcFieldBounds()
-    let bound = this.fieldReportService.getFieldReportBound()  // { east: east, north: north, south: south, west: west } //e,n,s,w
-    console.log(`Fitting bounds= :${JSON.stringify(bound)}`)
 
-    this.lmap?.fitBounds([
-      [bound.east, bound.north],
-      [bound.west, bound.south]
-    ]);
-  }
+  override refreshMap() {
+    // Try map.remove(); before you try to reload the map. This removes the previous map element using Leaflet's library
+    if (this.lMap) {
+      this.lMap.invalidateSize() // https://github.com/Leaflet/Leaflet/issues/690
+      //or
+      // this.lMap.off()
+      // this.lMap.remove() // removing ALSO destroys the div id reference, so then rebuild the map div
+      // this.initMap() // ?????????? Need testing!!!!
+      // or
+      /*
+      for (i=0;i<points.length;i++) {
+        map.removeLayer(points[i]);
+      }
+      points=[];
+      */
+      // or
+      /* for angular: https://stackoverflow.com/a/50386028/18004414
+        $scope.$on('$locationChangeStart', function( event ) {
+          if(map != undefined)
+          {
+            map.remove();
+            map = undefined
+            document.getElementById('mapLayer').innerHTML = "";
+          }
+      });
+      Without document.getElementById('mapLayer').innerHTML = "" the map was not displayed on the next page.
 
-  displayAllMarkers() {
-    this.fieldReports = this.fieldReportService.getFieldReports()
-    for (let i = 0; i < this.fieldReports.length; i++) {
-      this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
+      This helped me. I am using Angular 6 and changing the map depending on locations the user clicks on. I just have a method to create a new map which return the map object. When I update the map, I pass the existing map object in and do the above without the innerHTML part.
+      */
+      //or tiles.redraw();
     }
   }
 
-  onMapMouseMove(event: L.LeafletEvent) {  // MouseEvent) { //google.maps.MapMouseEvent) {
-    // if (event.lat) {
-    //this.mouseLatLng = { lat: event.lat, lng: event.lng }
-    //}
+
+  // ------------------------------------  Markers  ---------------------------------------
+
+  override hideMarkers() {
+    //! unimplemented
   }
 
-  zoomed() {
-    if (this.zoom && this.lmap) {
-      this.zoom = this.lmap.getZoom()
+  override clearMarkers() {
+    //!this.mymarkers = []
+  }
+
+  override displayMarkers() {
+    super.displayMarkers()
+
+    // REVIEW: wipes out any manually dropped markers. Could save 'em, but no request for that...
+    //! This needs to be rerun & ONLY display selected rows/markers: i.e., to use  displayedFieldReportArray
+    if (!this.displayedFieldReportArray) {
+      this.log.error(`displayAllMarkers did not find field reports to display`, this.id)
+      return
     }
+    this.log.verbose(`displayMarkers: all ${this.displayedFieldReportArray.length} of 'em`, this.id)
+    this.displayedFieldReportArray.forEach(i => {
+      if (i.lat && i.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
+        let title = `${i.callsign} at ${i.date} with ${i.status}`
+        this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
+
+        let marker = L.marker(new L.LatLng(i.lat, i.lng), { title: title })
+        marker.bindPopup(title)
+        this.mymarkers.addLayer(marker);
+      } else {
+        console.warn(`displayAllMarkers: skipping report # ${i.id}; bad lat/lng: ${i}: ${JSON.stringify(i)}`)
+      }
+    })
+
+    this.lMap.addLayer(this.mymarkers);
+
+    // to refresh markers that have changed:
+    // https://github.com/Leaflet/Leaflet.markercluster#refreshing-the-clusters-icon
   }
 
-  addMarker(lat: number, lng: number, status: string = '') {
-    //console.log(`addMarker at ${lat}. ${lng}, ${status}`)
-    if (!lat || !lng || !this.lmap) {
-      console.error(`bad lat: ${lat} or lng: ${lng} or lmap: ${this.lmap}`)
+  override onSwitchSelectedFieldReports() {
+    super.onSwitchSelectedFieldReports()
+    this.log.excessive(`onSwitchSelectedFieldReports()`, this.id)
+
+  }
+
+
+  // displayAMarker() {
+  //   this.addMarker(this.settings ? this.settings.defLat : 0 - 0.001, this.settings ? this.settings.defLng : 0 - 0.001, "Home Base")
+  // }
+
+  // override displayAllMarkers() {
+  //   // this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
+  // }
+
+
+  // https://blog.mestwin.net/leaflet-angular-marker-clustering/
+  private getDefaultIcon() {
+    return L.icon({
+      iconSize: [25, 41],
+      iconAnchor: [13, 41],
+      iconUrl: './../../assets/icons/marker-icon.png'
+    })
+  }
+
+  createMarker() {
+    const mapIcon = this.getDefaultIcon();
+    // const coordinates = latLng([this.mapPoint.latitude, this.mapPoint.longitude]);
+    // this.lastLayer = marker(coordinates).setIcon(mapIcon);
+    // this.markerClusterGroup.addLayer(this.lastLayer)
+  }
+
+  override addMarker(lat: number, lng: number, title: string = '') {
+    this.log.excessive(`addMarker at ${lat}. ${lng}, ${title}`, this.id)
+
+    if (!lat || !lng || !this.lMap) {
+      console.error(`bad lat: ${lat} or lng: ${lng} or lmap: ${this.lMap}`)
     } else {
-      let marker = new L.Marker([lat, lng])
-      marker.addTo(this.lmap)
+      let _marker = new L.Marker([lat, lng], {
+        icon: iconDefault
+        // ??: title
+      })
+      /*
+      https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
 
-      marker.addEventListener('click', this._markerOnClick);
+        _marker.bindPopup(city);
+        _marker.on('popupopen', function() {
+          this.log.excessive('open popup', this.id);
+        });
+        _marker.on('popupclose', function() {
+          this.log.excessive('close popup', this.id);
+        });
+        _marker.on('mouseout', function() {
+          this.log.excessive('close popup with mouseout', this.id);
+          _map.closePopup();
+        });
+        this.log.excessive(_map.getZoom());
+        if (_map.getZoom() > 15 && _map.hasLayer(_marker)) {
+          _map.closePopup();
+          this.log.excessive('zoom > 15 close popup', this.id);
+        }
+      */
+
+      //markerCluster.addLayer(_mar);
+      //}
+      //_map.addLayer(markerCluster);
+
+      _marker.addTo(this.lMap)
+
+      _marker.addEventListener('click', this.addManualMarkerEvent);
     }
   }
+
+  override addManualMarkerEvent(event: any) {
+    this.log.warn(`Got Marker Click!!!! event= ${JSON.stringify(event)}`, this.id)
+    if (this.settings!.allowManualPinDrops) {
+      if (event.latLng) {
+        this.addMarker(event.latLng.lat, event.latLng.lng, `Manual Marker dropped ${event.latLng.lat}, ${event.latLng.lng} at ${Date()}`)
+      } else {
+        this.log.error(`addMarker FAILED`, this.id)
+      }
+    }
+  }
+
+  private addCircle(lat: number, lng: number, status: string = '') {
+    const circle = new L.CircleMarker([lat, lng], { radius: 20 })
+    if (this.lMap) {
+      circle.addTo(this.lMap)
+    }
+  }
+
+  /* some error on map clicking
+  733786.png:1          GET https://c.tile.openstreetmap.org/21/335179/733786.png 400
+  Image (async)
+  createTile @ leaflet-src.js:11702
+  733787.png:1          GET https://a.tile.openstreetmap.org/21/335179/733787.png 400
+  */
 
   // TODO: https://stackoverflow.com/questions/30190268/leaflet-how-to-add-click-event-listener-to-popup
   /*
@@ -190,439 +491,9 @@ export class LmapComponent implements AfterViewInit {  //OnInit,
 }
 */
 
-  _markerOnClick(e: any) {
-    console.warn(`Got Marker Click!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! e= ${JSON.stringify(e)}`)
-  }
-
-  addCircle(lat: number, lng: number, status: string = '') {
-    const circle = new L.CircleMarker([lat, lng], { radius: 20 })
-    if (this.lmap) {
-      circle.addTo(this.lmap)
-    }
-  }
-
-  static scaledRadius(val: number, maxVal: number): number {
-    return 20 * (val / maxVal);
-  }
-
-  // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-marker-service
-  addCircles() {
-    //const maxPop = Math.max(...res.features.map(x => x.properties.population), 0);
-    /*
-     this.httpClient.get(this.capitals).subscribe((res: any) => {
-
-       const maxPop = Math.max(...res.features.map(x => x.properties.population), 0);
-
-       for (const c of res.features) {
-         const lon = c.geometry.coordinates[0];
-         const lat = c.geometry.coordinates[1];
-         const circle = L.circleMarker([lat, lon], {
-           radius: MarkerService.scaledRadius(c.properties.population, maxPop)
-         });
-
-          circle.bindPopup(this.popupService.makeCapitalPopup(c.properties));
-
-         circle.addTo(map);
-       }
-     });
-     */
-  }
-
-  // do this in a service??
-  makeCapitalPopup(data: any): string {
-    return `` +
-      `<div>Capital: ${data.name}</div>` +
-      `<div>State: ${data.state}</div>` +
-      `<div>Population: ${data.population}</div>`
-  }
-
-  private initStatesLayer() {
-    /* https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service Show borders of all the states in the US
-      const stateLayer = L.geoJSON(this.states, {
-        style: (feature) => ({
-          weight: 3,
-          opacity: 0.5,
-          color: '#008f68',
-          fillOpacity: 0.8,
-          fillColor: '#6DB65B'
-        }),
-        onEachFeature: (feature, layer) => (
-        layer.on({
-          mouseover: (e) => (this.highlightFeature(e)),
-          mouseout: (e) => (this.resetFeature(e)),
-        })
-      )
-      });
-
-      this.lmap!.addLayer(stateLayer);
-      */
-  }
-
-  // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
-  private highlightFeature(e: { target: any; }) {
-    const layer = e.target;
-
-    layer.setStyle({
-      weight: 10,
-      opacity: 1.0,
-      color: '#DFA612',
-      fillOpacity: 1.0,
-      fillColor: '#FAE042'
-    });
-  }
-
-  private resetFeature(e: { target: any; }) {
-    const layer = e.target;
-
-    layer.setStyle({
-      weight: 3,
-      opacity: 0.5,
-      color: '#008f68',
-      fillOpacity: 0.8,
-      fillColor: '#6DB65B'
-    });
-  }
-
-  // or on centerChanged
-  logCenter() {
-    console.log(`Map center is at ${JSON.stringify(this.lmap?.getCenter())}`)
-    this.lmap?.on("moveend", () => {
-      console.log(this.lmap?.getCenter().toString());
-    });
-  }
-
-
-  /*
-    addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP) {
-      console.log(`addMarker`)
-
-      if (infoContent == "") {
-        infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}`
-      }
-      if (title == "") {
-        title = infoContent
-      }
-      labelText = "grade"
-      //icon = "rocket"
-      fontSize = "20px"
-
-          //icon = "rocket"
-          animation = google.maps.Animation.DROP
-
-
-      let labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
-      // https://material.angular.io/components/icon/overview
-      //https://developers.google.com/fonts/docs/material_icons
-      //https://fonts.google.com/icons
-      if (latLng) {
-        let dt = new Date();
-        let time = `${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}` // :${Utility.zeroFill(dt.getMilliseconds(), 4)}`
-        * REVIEW:
-         let lat:number = event.latLng.lat  // gets:  Type '() => number' is not assignable to type 'number'.
-         let lng:number = event.latLng.lng
-         lat = Math.round(lat * 1000.0) / 1000.0
-         lng = Math.round(lng * 1000.0) / 1000.0
-         let pos = `lat: ${lat}; long: ${lng} `
-         *
-        let pos = `lat: ${latLng.lat}; long: ${latLng.lng}`
-        //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; long: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
-
-        console.log("Actually adding marker now...")
-        let m = new google.maps.Marker({
-          draggable: true,
-          animation: animation,
-          map: this.gMap,
-          position: latLng,
-          title: title,
-          //icon: icon, //"https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
-          label: {
-            // label: this.labels[this.labelIndex++ % this.labels.length],
-            text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
-            fontFamily: "Material Icons",
-            color: labelColor,
-
-            fontSize: fontSize,
-          },
-          // label: labels[labelIndex++ % labels.length],
-        })
-        // markers can only be keyboard focusable when they have click listeners
-        // open info window when marker is clicked
-        // marker.addListener("click", () => {
-        //this.infoWindow.setContent(label);
-        //this.infoWindow.open(this.map, marker);
-        // })
-
-        m.addListener("click",   // this.toggleBounce)
-          () => {
-            //this.infowindow.setContent(`${ SpecialMsg } `)
-            //`Manually dropped: ${time} at ${pos} `
-            this.infowindow.setContent(infoContent)
-            this.infowindow.open({
-              // new google.maps.InfoWindow.open({
-              //content: 'How now red cow.',
-              anchor: m,
-              //setPosition: event.latLng,
-              map: this.gMap,
-              // shouldFocus: false,
-            })
-          }
-        )
-        this.markers.push(m)
-      } else {
-        console.log("event.latLng is BAD; can not add marker..")
-      }
-      //this.refreshMarkerDisplay()
-    }
-  */
 
 
 
 
-  // https://stackblitz.com/edit/ts-leaflet-markercluster
 
-  /*
-   //console.log("ngAfterViewInit..........")
-   this.initMap()
-
-   if (this.lmap) {
-     //this.markerService.makeStationMarkers(this.lmap)
-     this.markerService.makeCapitalCircleMarkers(this.lmap)
-   }
-   // NOTE: An even better approach would be to pre-load the data in a resolver.
-   this.shapeService.getShapeShapes(this.shapeFile).subscribe((shapes: any) => {
-     this.shapes = shapes
-     this.initShapesLayer()
-   });
-  }
-
-
-  // https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-leafletjs-map
-  // https://developer.what3words.com/tutorial/combining-the-what3words-js-autosuggest-component-with-a-leafletjs-map
-
-
-  const map2 = L.map('googleMapsPlaner', {
-  center: [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR],
-  zoom: POLSKA_ZOOM,
-  zoomControl: true, layers: [tiles]
-  });
-
-  const markerIcon =
-  L.icon({
-  iconSize: [25, 41],
-  iconAnchor: [10, 41],
-  popupAnchor: [2, -40],
-  // specify the path here
-  iconUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-shadow.png"
-  })
-
-
-  const bergen = {lat:60.3948648649804, long:5.321473714945354}
-
-  const markerCluster = new L.MarkerClusterGroup();
-
-  let marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR), { title: 'my', icon: markerIcon });
-  markerCluster.addLayer(marker);
-
-  marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1), { title: 'my', icon: markerIcon });
-  markerCluster.addLayer(marker);
-
-  map2.addLayer(markerCluster);
-
-
-  marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR), { title: 'my', icon: markerIcon });
-  markerCluster.addLayer(marker);
-
-  marker = L.marker(new L.LatLng(POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1), { title: 'my', icon: markerIcon });
-  markerCluster.addLayer(marker);
-
-  map2.addLayer(markerCluster);
-
-
-
-  /*const addressPoints = [
-    [POLSKA_SZER_GEOGR, POLSKA_DL_GEOGR, '1'],
-    [POLSKA_SZER_GEOGR + 1, POLSKA_DL_GEOGR + 1, '1'],
-  ]
-  */
-  //  const markers = L.markerClusterGroup();
-
-  /*
-
-  for (let i = 0; i < addressPoints.length; i++) {
-    //if (addressPoints[i]) {      }
-    let a = addressPoints[i];
-    let title = a[2];
-    let marker = L.marker(new L.LatLng(a[0], a[1]), {
-      title: title,
-      icon: markerIcon
-    });
-    marker.bindPopup(title);
-    markers.addLayer(marker);
-  }
-  */
-  //map2.addLayer(markers);
-
-
-
-  // Create GeoJSON layer & add to map
-  // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet-shape-service
-  initShapesLayer() {
-    /*
-        const shapeLayer = L.geoJSON(this.shapes, {
-          style: (feature) => ({
-            weight: 3,
-            opacity: 0.5,
-            color: '#008f68',
-            fillOpacity: 0.8,
-            fillColor: '#6DB65B'
-          }),
-          onEachFeature: (feature, layer) => (
-            layer.on({
-              mouseover: (e) => (this.highlightFeature(e)),
-              mouseout: (e) => (this.resetFeature(e)),
-            })
-          )
-        });
-
-        if (this.lmap) {
-          this.lmap.addLayer(shapeLayer);
-        }
-        shapeLayer.bringToBack();
-      }
-
-      //  attach mouseover & mouseout events to interact with each of the (state) shapes
-      private highlightFeature(e: L.LeafletMouseEvent) {
-        const layer = e.target;
-
-        layer.setStyle({
-          weight: 10,
-          opacity: 1.0,
-          color: '#DFA612',
-          fillOpacity: 1.0,
-          fillColor: '#FAE042'
-        });
-      }
-
-      private resetFeature(e: L.LeafletMouseEvent) {
-        const layer = e.target;
-
-        layer.setStyle({
-          weight: 3,
-          opacity: 0.5,
-          color: '#008f68',
-          fillOpacity: 0.8,
-          fillColor: '#6DB65B'
-        });
-      }
-      */
-  }
 }
-
-
-
-function initShapesLayer() {
-  throw new Error('Function not implemented.');
-}
-/*
-OLD CODE from Ranger 4.2 ===============================================
-
-TODO: Abstract common code to here, unique to calling routine..
-
- initLeafletMap() {
-    // https://leaflet.github.io/Leaflet.markercluster/example/marker-clustering-zoomtobounds.html
-    // https://leafletjs.com/examples/layers-control/
-    // TODO: This needs to get moved to actual point/marker display...
-    let //p1 = L.marker([DEF_LAT, DEF_LONG]).bindPopup('Person 1 - John'),
-        //p2 = L.marker([DEF_LAT-.1, DEF_LONG-.02]).bindPopup('Person 2 - Fred'),
-        //p3 = L.marker([DEF_LAT+.02, DEF_LONG+.01]).bindPopup('Person 3 - Sally'),
-        //p4 = L.marker([DEF_LAT+.01, DEF_LONG+.02]).bindPopup('Person 4 - Bucky'),
-        //p5 = L.marker([DEF_LAT, DEF_LONG]).bindPopup('Person 5 - maryAnne'),
-        //p6 = L.marker([DEF_LAT-.13, DEF_LONG-.025]).bindPopup('Person 6 - Cathy'),
-        //p7 = L.marker([DEF_LAT+.022, DEF_LONG+.014]).bindPopup('Person 7 - Michael'),
-        p8 = L.marker([DEF_LAT+.011, DEF_LONG+.022]).bindPopup('Person 8 - Olivia');
-
-    //Instead of adding them directly to the map, you can do the following, using the LayerGroup class:
-    let Team1 = L.layerGroup([p8]); //, p2, p3, p4]);
-    let Team2 = L.layerGroup([p8]); //, p6, p7, p8]);
-
-    let grayscale = L.tileLayer(mapboxUrl, {id: 'mapId1', attribution: mapboxAttribution});
-    let streets   = L.tileLayer(mapboxUrl, {id: 'mapId2', attribution: mapboxAttribution});
-    let mstreets  = L.tileLayer(mapboxUrl, {maxZoom: 16, attribution: mapboxAttribution, id: 'mapbox.streets'})
-    let estreets = L.esri.basemapLayer('Streets');
-
-    //https://leafletjs.com/reference-1.4.0.html#control-layers
-    let baseMaps = {
-      //"<span style='color: gray'>Grayscale</span>": grayscale,    // grayscale may no longer exist??
-      //"Streets": streets
-    };
-    let overlayMaps = {
-      "Team1": Team1,
-      "Team2": Team2
-    };
-
-    bigMap   = L.map('bigLeafletMapId', {maxZoom: 20,
-      layers: [estreets] // actual layers on map   //, Team1, Team2
-    });
-    bigMap.setView([DEF_LAT, DEF_LONG], 8);
-
-
-    // Add the layer widget to the map, requires maxzoom?
-    L.control.layers(baseMaps, overlayMaps).addTo(bigMap);
-
-    //L.tileLayer(mapboxUrl, {maxZoom: 18, attribution: mapboxAttribution,id: 'mapbox.streets'}).addTo(bigMap);
-  }
-
-  initSmallMap() {
-    smallMap = L.map('smallMapId' ).setView([DEF_LAT, DEF_LONG], 12);
-    L.esri.basemapLayer('Streets').addTo(smallMap);
-
-    /*
-    L.tileLayer(mapboxUrl, {
-      maxZoom: 18,
-      attribution: mapboxAttribution,
-      id: 'mapbox.streets'
-    }).addTo(smallMap);
-    *  /
-    smallMap.setView([DEF_LAT,DEF_LONG], 12);
-
-    smallMap.on('click', onSmallMapClick);
-    // TODO: There are now 2 leaflet containers. OK?
-    $('.leaflet-container').css('cursor','crosshair'); // reset cursor with ''!
-
-    // Display coordinates if map is clicked
-    let popup2 = L.popup();
-
-    function onSmallMapClick(e) {
-      popup2
-        .setLatLng(e.latlng)
-        .setContent(e.latlng.toString())
-        .openOn(smallMap);
-    }
-  }
-
-  filterLeafletMap() {
-    dbug("filterLeafletMap...");
-    /* Sorting:
-      let points = [40, 100, 1, 5, 25, 10];
-      points.sort(function(a, b){return a - b});
-    * /
-      let team = document.getElementById("teamFilterId").value;
-      let call = document.getElementById("callFilterId").value;
-      let filters = {
-        Team: document.getElementById("teamFilterId").value,
-        CallSign: document.getElementById("callFilterId").value,
-        Minutes: document.getElementById("minuteFilterId").value,
-        BaseTime: document.getElementById("baseTimeFilterId").value
-      };
-
-      dbug("Filtering on: "
-        + filters.Team + " AND "
-        + filters.CallSign + " AND "
-        + filters.Minutes + " AND "
-        + filters.BaseTime);
-
-      filterLocations(filters);
-    }
-  */

@@ -1,0 +1,565 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/Vagrant.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content pipe">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Pipes</li>
+  <li >myUnusedPipe</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/field-reports/field-reports.component.ts</code>
+        </p>
+
+
+
+
+        <section>
+            <h3>Metadata</h3>
+            <table class="table table-sm table-hover metadata">
+                <tbody>
+                    <tr>
+                        <td class="col-md-3">Name</td>
+                        <td class="col-md-9">myUnusedPipe</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+            <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="transform"></a>
+                    <span class="name">
+                        <span ><b>transform</b></span>
+                        <a href="#transform"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>transform(val: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:9</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>val</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, Inject, Pipe, PipeTransform, OnInit } from &#x27;@angular/core&#x27;;
+import { FieldReportService, FieldReportType, FieldReportStatusType, RangerService, SettingsService, TeamService } from &#x27;../shared/services&#x27;;
+
+import { DOCUMENT, formatDate } from &#x27;@angular/common&#x27;
+import { FormBuilder, FormGroup } from &#x27;@angular/forms&#x27;;
+
+@Pipe({ name: &#x27;myUnusedPipe&#x27; })
+export class myUnusedPipe implements PipeTransform {
+  transform(val: string) {
+    return val.toUpperCase()
+  }
+}
+
+// TODO: https://blog.ag-grid.com/refresh-grid-after-data-change/
+// https://stackblitz.com/edit/ag-grid-angular-hello-world-n3aceq?file&#x3D;src%2Fapp%2Fapp.component.ts
+// https://www.ag-grid.com/javascript-data-grid/immutable-data/
+//
+/*
+onGridReady(params) {
+    this.gridApi &#x3D; params.api;
+    this.gridColumnApi &#x3D; params.columnApi;
+
+    this.http
+      .get(
+        &quot;https://raw.githubusercontent.com/ag-grid/ag-grid/master/grid-packages/ag-grid-docs/src/olympicWinnersSmall.json&quot;
+      )
+      .subscribe((data: any[]) &#x3D;&gt; {
+        data.length &#x3D; 10;
+        data &#x3D; data.map((row, index) &#x3D;&gt; {
+          return { ...row, id: index + 1 };
+        });
+        this.backupRowData &#x3D; data;
+        this.rowData &#x3D; data;
+      });
+  }
+*/
+
+@Component({
+  selector: &#x27;rangertrak-field-reports&#x27;,
+  templateUrl: &#x27;./field-reports.component.html&#x27;,
+  styleUrls: [&#x27;./field-reports.component.scss&#x27;]
+})
+export class FieldReportsComponent implements OnInit {
+
+  fieldReports: FieldReportType[] &#x3D; []
+  fieldReportStatuses: FieldReportStatusType[] &#x3D; []
+  private settings
+
+  private gridApi: any
+  private gridColumnApi
+  now: Date
+  http: any
+  numSeperatorWarnings &#x3D; 0
+  maxSeperatorWarnings &#x3D; 3
+  numFakesForm!: FormGroup
+  nFakes &#x3D; 10
+
+  // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
+  gridOptions &#x3D; {
+    // PROPERTIES
+    rowSelection: &quot;multiple&quot;,
+    // pagination: true,
+
+    // EVENT handlers
+    // onRowClicked: event &#x3D;&gt; console.log(&#x27;A row was clicked&#x27;),
+
+    // CALLBACKS
+    // getRowHeight: (params) &#x3D;&gt; 25
+  }
+
+  defaultColDef &#x3D; {
+    flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
+    minWidth: 100,
+    editable: true,
+    resizable: true,
+    sortable: true,
+    filter: true,
+    floatingFilter: true
+  }
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private fieldReportService: FieldReportService,
+    private teamService: TeamService,
+    private rangerService: RangerService,
+    private settingsService: SettingsService,
+    @Inject(DOCUMENT) private document: Document
+  ) {
+    this.now &#x3D; new Date()
+    this.gridApi &#x3D; &quot;&quot;
+    this.gridColumnApi &#x3D; &quot;&quot;
+
+    this.settings &#x3D; SettingsService
+    this.fieldReportStatuses &#x3D; settingsService.getFieldReportStatuses() // TODO: Only obtained at construction, won&#x27;t reflect an update from the settings page??? : SUBSCRIBE!!
+  }
+
+
+  myDateGetter &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
+    const weekday &#x3D; [&quot;Sun &quot;, &quot;Mon &quot;, &quot;Tue &quot;, &quot;Wed &quot;, &quot;Thu &quot;, &quot;Fri &quot;, &quot;Sat &quot;]
+    let dt &#x3D; &#x27;unknown date&#x27;
+    let d: Date &#x3D; params.data.date
+    //console.log(&#x60;Day is: ${d.toISOString()}&#x60;)
+    //console.log(&#x60;WeekDay is: ${d.getDay}&#x60;)
+
+    try {  // TODO: Use the date pipe instead?
+      //weekday[d.getDay()] +
+      dt &#x3D; formatDate(d, &#x27;M-dd HH:MM:ss&#x27;, &#x27;en-US&#x27;)
+      //console.log(&#x60;Day is: ${params.data.date.toISOString()}&#x60;)
+    } catch (error: any) {
+      dt &#x3D; &#x60;Bad date format: Error name: ${error.name}; msg: ${error.message}&#x60;
+    }
+
+    // https://www.w3schools.com/jsref/jsref_obj_date.asp
+    //console.log(&#x60;Day is: ${params.data.date.toISOString()}&#x60;)
+    /*
+        if (this.isValidDate(d)) {
+          dt &#x3D; weekday[d.getDay()] + formatDate(d, &#x27;yyyy-MM-dd HH:MM:ss&#x27;, &#x27;en-US&#x27;)
+          console.log(&#x60;Day is: ${params.data.date.toISOString()}&#x60;)
+        }
+    */
+    return dt
+  }
+
+  myMinuteGetter &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
+    // performance.now() is better - for elapsed time...
+    //let pi: number &#x3D; 3.14159265359
+    let dt &#x3D; new Date(params.data.date).getTime()
+    let milliseconds &#x3D; Date.now() - dt
+    let seconds: string &#x3D; (Math.round(milliseconds / 1000) % 60).toString().padStart(2, &#x27;0&#x27;)
+    let minutes: string &#x3D; Math.round((milliseconds / (1000 * 60)) % 60).toString().padStart(2, &#x27;0&#x27;)
+    let hours &#x3D; Math.round((milliseconds / (1000 * 60 * 60)) % 24);
+    return (&#x60;${hours}:${minutes}:${seconds}&#x60;)
+  }
+
+  columnDefs &#x3D; [
+    { headerName: &quot;ID&quot;, field: &quot;id&quot;, headerTooltip: &#x27;Is this even needed?!&#x27; }, // TODO:
+    { headerName: &quot;CallSign&quot;, field: &quot;callsign&quot;, tooltipField: &quot;team&quot; },
+    // { headerName: &quot;Team&quot;, field: &quot;team&quot; },
+    { headerName: &quot;Address&quot;, field: &quot;address&quot;, singleClickEdit: true, flex: 50 }, //, maxWidth: 200
+    { headerName: &quot;Lat&quot;, field: &quot;lat&quot;, singleClickEdit: true },
+    { headerName: &quot;Lng&quot;, field: &quot;lng&quot;, cellClass: &#x27;number-cell&#x27; },
+    {
+      headerName: &quot;Time&quot;, headerTooltip: &#x27;Report date&#x27;,
+      valueGetter: this.myDateGetter,
+    },
+    {
+      headerName: &quot;Elapsed&quot;, headerTooltip: &#x27;Hrs:Min:Sec since report&#x27;,
+      valueGetter: this.myMinuteGetter,
+    },
+    {
+      headerName: &quot;Status&quot;, field: &quot;status&quot;, flex: 50,
+      cellStyle: (params: { value: string; }) &#x3D;&gt; {
+        //this.fieldReportStatuses.forEach(function(value) { (params.value &#x3D;&#x3D;&#x3D; value.status) ? { backgroundColor: value.color }  : return(null) }
+        for (let i &#x3D; 0; i &lt; this.fieldReportStatuses.length; i++) {
+          if (params.value &#x3D;&#x3D;&#x3D; this.fieldReportStatuses[i].status) {
+            return { backgroundColor: this.fieldReportStatuses[i].color }
+          }
+        }
+        return null
+      }
+      //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
+    },
+    { headerName: &quot;Note&quot;, field: &quot;note&quot;, flex: 50 }, //, maxWidth: 300
+  ];
+
+  //https://blog.ag-grid.com/conditional-formatting-for-cells-in-ag-grid/
+  /* cellClassRules &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
+    if (params.data.status &#x3D;&#x3D; &#x27;Urgent&#x27;) {
+      return &quot;cell-pass&quot; // see stylesheet for this
+    }
+    if (params.data.status &#x3D;&#x3D; &#x27;Check-in&#x27;) {
+      return &quot;cell-pass&quot; // see stylesheet for this
+    }
+    return(&#x60;&#x60;)
+  }
+*/
+
+  ngOnInit(): void {
+    console.log(&quot;Field Report Form &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; ngInit &#x3D;&#x3D;&#x3D;&#x3D; at &quot;, Date.now)
+
+    // TODO: This doesn&#x27;t actually get the very latest field Report entries: do it by subuscription instead????
+    this.fieldReports &#x3D; this.fieldReportService.getFieldReports()
+    console.log(&#x60;Now have ${this.fieldReports.length} Field Reports retrieved from Local Storage and/or fakes generated&#x60;)
+
+    this.numFakesForm &#x3D; this.formBuilder.group({})
+
+    if (!this.settings.debugMode) {
+      console.log(&quot;running in non-debug mode&quot;)
+      // this.displayHide(&quot;enter__Fake--id&quot;) // debug mode SHOULD be ON...
+    } else {
+      console.log(&quot;running in debug mode&quot;)
+      this.displayShow(&quot;enter__Fake--id&quot;)
+    }
+
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+    } else {
+      console.log(&quot;no this.gridApi yet in ngOnInit()&quot;)
+    }
+  }
+
+  reloadPage() {
+    window.location.reload()
+  }
+
+  isValidDate(d: any) {
+    return d instanceof Date //&amp;&amp; !isNaN(d);
+    /*
+        if (Object.prototype.toString.call(d) !&#x3D;&#x3D; &quot;[object Date]&quot;) {
+          console.log(&#x60;bad date type:${Object.prototype.toString.call(d)}&#x60;)
+          return false
+        } // invalid date
+        if (isNaN(d.getTime())) {
+          console.log(&#x60;bad time&#x60;)
+          return false
+        } // d.valueOf() could also work  // invalid time
+        return true  // valid date
+        */
+  }
+
+  // filteredReports:FieldReportType[] &#x3D; this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000)) //FUTURE:
+
+  onGridReady &#x3D; (params: any) &#x3D;&gt; {
+    console.log(&quot;Field Report Form onGridReady&quot;)
+
+    this.gridApi &#x3D; params.api
+    this.gridColumnApi &#x3D; params.columnApi
+
+    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
+  }
+
+  //onFirstDataRendered(params: any) {
+  refreshGrid() {
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+      this.gridApi.sizeColumnsToFit();
+    } else {
+      console.log(&quot;no this.gridApi yet in refreshGrid()&quot;)
+    }
+  }
+
+  // following from https://ag-grid.com/javascript-data-grid/csv-export/
+  getValue(inputSelector: string) {
+    //let selector &#x3D; this.document.querySelector(inputSelector) as HTMLSelectElement
+    let selector &#x3D; this.document.getElementById(&#x27;columnSeparator&#x27;) as HTMLSelectElement
+    var sel &#x3D; selector.selectedIndex;
+    var opt &#x3D; selector.options[sel];
+    var selVal &#x3D; (&lt;HTMLOptionElement&gt;opt).value;
+    var selText &#x3D; (&lt;HTMLOptionElement&gt;opt).text
+    // console.log(&#x60;Got column seperator text:&quot;${selText}&quot;, val:&quot;${selVal}&quot;&#x60;)
+
+    switch (selVal) {
+      case &#x27;none&#x27;:
+        return;
+      case &#x27;tab&#x27;:
+        return &#x27;\t&#x27;;
+      default:
+        return selVal;
+    }
+  }
+
+  getParams() {
+    let dt &#x3D; new Date()
+    return {
+      columnSeparator: this.getValue(&#x27;columnSeparator&#x27;),
+      fileName: &#x60;FieldReportsExport.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv&#x60;,  // REVIEW: ONLY month is zero based, requires +1?!
+    }
+  }
+
+  onSeperatorChange() {
+    var params &#x3D; this.getParams();
+    if (params.columnSeparator &amp;&amp; this.numSeperatorWarnings++ &lt; this.maxSeperatorWarnings) {
+      alert(&#x60;NOTE: Excel handles comma separators best. You&#x27;ve chosen &quot;${params.columnSeparator}&quot;&#x60;)
+    }
+  }
+
+  onBtnExport() {
+    var params &#x3D; this.getParams();
+    //console.log(&#x60;Got column seperator value &quot;${params.columnSeparator}&quot;&#x60;)
+    //console.log(&#x60;Got filename of &quot;${params.fileName}&quot;&#x60;)
+    //if (params.columnSeparator) {
+    //  alert(&#x60;NOTE: Excel handles comma separators best. You&#x27;ve chosen &quot;${params.columnSeparator}&quot; Good luck!&#x60;);
+    //}
+    this.gridApi.exportDataAsCsv(params);
+  }
+
+  onBtnClearFieldReports() {
+    this.fieldReportService.deleteAllFieldReports()
+    this.reloadPage()
+  }
+
+  // Save them to localstorage &amp; update subscribers
+  onBtnUpdateFieldReports() {
+    this.fieldReportService.UpdateFieldReports()
+  }
+
+  onBtnImportFieldReports_unused() {
+    alert(&#x60;onBtnImportFieldReports is unimplemented&#x60;)
+  }
+
+  generateFakeFieldReports(num &#x3D; this.nFakes) {
+    // TODO: compare current with
+    // https://github.com/material-components/material-components-web/tree/master/packages/mdc-slider#discrete-slider
+    // https://material-components.github.io/material-components-web-catalog/#/component/slider
+    this.fieldReportService.generateFakeData(num)
+    console.log(&#x60;Generated ${num} FAKE Field Reports&#x60;)
+    this.fieldReportService.UpdateFieldReports()
+    this.fieldReports &#x3D; this.fieldReportService.getFieldReports()
+    this.refreshGrid()
+    this.reloadPage() //TODO: why aren&#x27;t above enough?!!!
+  }
+
+  displayHide(htmlElementID: string) {
+    let e &#x3D; this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility &#x3D; &quot;hidden&quot;;
+    } else {
+      console.warn(&#x60;Could not hide HTML Element ${htmlElementID}&#x60;)
+    }
+  }
+
+  displayShow(htmlElementID: string) {
+    let e &#x3D; this.document.getElementById(htmlElementID)
+    if (e) {
+      e.style.visibility &#x3D; &quot;visible&quot;;
+    } else {
+      console.warn(&#x60;Could not show HTML Element ${htmlElementID}&#x60;)
+    }
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'pipe';
+            var COMPODOC_CURRENT_PAGE_URL = 'myUnusedPipe.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

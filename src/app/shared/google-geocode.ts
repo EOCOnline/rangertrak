@@ -1,4 +1,4 @@
-import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
+//import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 
 // https://developers.google.com/maps/documentation/geocoding/overview
 // https://developers.google.com/maps/documentation/geocoding/start
@@ -42,7 +42,7 @@ export class GoogleGeocode {
   // https://developers.google.com/maps/documentation/geocoding/requests-geocoding#geocoding-lookup
   // REVIEW:
   isValidAddress(addr: string) //: { position: google.maps.LatLngLiteral | null, address: string, partial_match: string, placeId: string, plus_code: string }
-   {
+  {
     let encoded
     let err = ""
     try {
@@ -71,12 +71,13 @@ export class GoogleGeocode {
             plus_code: results[0].plus_code
           }
         } else {
-          return { position: null, address: "", partial_match: "", placeId: "", plus_code: ""}
+          return { position: null, address: "", partial_match: "", placeId: "", plus_code: "" }
         }
       })
       .catch((e) => {
         //debugger
-         err = "Geocoder failed due to: " + e })
+        err = "Geocoder failed due to: " + e
+      })
     return { position: null, address: err, partial_match: "", placeId: "", plus_code: "" }
   }
 
@@ -135,16 +136,17 @@ export class GoogleGeocode {
       })
       .catch((e) => {
         // debugger
-        err = "Geocoder failed due to: " + e })
-        /* _.KA {message: 'GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocoding reque… error. The request may succeed if you try again.', stack: 'Error: GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocodin…DPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&token=57451:1:28', name: 'MapsServerError', endpoint: 'GEOCODER_GEOCODE', code: 'UNKNOWN_ERROR'}
-        Local
-        this: undefined
-        e: _.KA {message: 'GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocoding reque… error. The request may succeed if you try again.', stack: 'Error: GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocodin…DPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&token=57451:1:28', name: 'MapsServerError', endpoint: 'GEOCODER_GEOCODE', code: 'UNKNOWN_ERROR'}
-        Closure (getLatLngAndAddressFromPlaceID)
-        Block
-        Closure (9614)
-        Window
-        Global*/
+        err = "Geocoder failed due to: " + e
+      })
+    /* _.KA {message: 'GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocoding reque… error. The request may succeed if you try again.', stack: 'Error: GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocodin…DPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&token=57451:1:28', name: 'MapsServerError', endpoint: 'GEOCODER_GEOCODE', code: 'UNKNOWN_ERROR'}
+    Local
+    this: undefined
+    e: _.KA {message: 'GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocoding reque… error. The request may succeed if you try again.', stack: 'Error: GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocodin…DPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&token=57451:1:28', name: 'MapsServerError', endpoint: 'GEOCODER_GEOCODE', code: 'UNKNOWN_ERROR'}
+    Closure (getLatLngAndAddressFromPlaceID)
+    Block
+    Closure (9614)
+    Window
+    Global*/
     return { position: null, address: err, placeId: "" }
   }
 

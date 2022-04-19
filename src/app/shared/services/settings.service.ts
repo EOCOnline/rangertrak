@@ -1,6 +1,10 @@
-import { Injectable } from '@angular/core'
-import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
+import { BehaviorSubject, Observable, throwError } from 'rxjs'
+
+import { Injectable, Optional, SkipSelf } from '@angular/core'
+
 import * as packageJson from '../../../../package.json'
+import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
+import { FieldReportStatusType, LogService, SettingsType } from './'
 
 export type SecretType = {
   "id": number,
@@ -10,167 +14,185 @@ export type SecretType = {
   "note": string
 }
 
-export type SettingsType = {
-  id: number,
-  name: string,
-  application: string,
-  version: string,
-  note: string,
-  defLat: number,
-  defLng: number,
-  defZoom: number,
-  defPlusCode: string,
-  w3wLocale: string,
-  markerSize: number,
-  markerShape: number,
-  defRangerStatus: number
-  allowManualPinDrops: boolean,
-  debugMode: boolean,
-  logToPanel: boolean,
-  logToConsole: boolean
-}
 
-export type FieldReportStatusType = { status: string, color: string, icon: string }
-
+// TODO: Make into a singleton service
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
-  static storageLocalName = 'appSettings'
-  static secrets: SecretType[]
-  static Settings: SettingsType
-  static debugMode: any;
-  static localStorageFieldReportStatusName = 'fieldReportStatuses'
-  fieldReportStatuses: FieldReportStatusType[] = []
-  static version: string
 
-  constructor() {
-    console.log("Contructing SettingsService") // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
+  private id = 'Settings Service'
+  private storageLocalName = 'appSettings'
+  static secrets: SecretType[]
+  public settings!: SettingsType
+  private settingsSubject$: BehaviorSubject<SettingsType>
+  private defOpPeriodLength = 12 // hours
+
+  constructor(@Optional() @SkipSelf() existingService: SettingsService,
+    private log: LogService
+  ) {
+    if (existingService) {
+      /**
+       * see https://angular.io/guide/singleton-services
+       * Use @Optional() @SkipSelf() in singleton constructors to ensure
+       * future modules don't provide extra copies of this singleton service
+       * per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
+       */
+      throwError(() => {
+        console.error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+        new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+      })
+    }
+
+    // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
+    //! REVIEW: Gets called twice!!
+    this.log.verbose('Constructing', this.id)
+
+    //  ------------------------- SECRETS -------------------------------
 
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
     let secretWorkaround = JSON.stringify(secrets)
     SettingsService.secrets = JSON.parse(secretWorkaround)
-    //console.log('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
+    //this.log.verbose('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
     // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key: environmental values, GitHub vault, or  encryption? https://www.doppler.com/
 
-    // populate SettingsService.Settings
-    // BUG: Use subscription/observables instead: so rest of program gets latest values - not just those present right now?
-    // Doesn't auto-update settings that are not exposed in the Settings Edit Component
-    let localStorageSettings = localStorage.getItem(SettingsService.storageLocalName)
-    let needSettings = SettingsService.Settings == undefined
+    //  ------------------------- SETTINGS -------------------------------
+
+    // populate this.settingsettings
+    // Doesn't auto-update settings that are not exposed in the Settings Edit Component (e.g., version/AppName!)
+    let localStorageSettings = localStorage.getItem(this.storageLocalName)
+    let needSettings = this.settings == undefined
     if (needSettings) {
-      console.log("Get App Settings...")
+      this.log.info("Get App Settings...", this.id)
       try {
         if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") > 0) {
-          SettingsService.Settings = JSON.parse(localStorageSettings)
-          console.log("Initialized App Settings from localstorage")
+          this.settings = JSON.parse(localStorageSettings)
+          this.log.verbose("Initialized App Settings from localstorage", this.id)
           needSettings = false
         }
       } catch (error: any) {
-        console.log(`localstorage App Settings i.e., ${localStorageSettings} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
-        // TODO: Do it!
-        // REVIEW:
-        localStorage.removeItem(SettingsService.storageLocalName)
+        this.log.verbose(`Unable to parse settings in localstorage (${localStorageSettings}), so will be renamed out of the way. Error: ${error.name}; msg: ${error.message}`, this.id);
+        // localStorage.removeItem(this.storageLocalName) /// will get overwritten anyway
+        localStorage.setItem(this.storageLocalName + '-BAD', localStorageSettings!)
       }
     }
-    if (needSettings) { SettingsService.ResetDefaults() }
+    if (needSettings) {
+      this.settings = this.initSettings()
+    }
 
-    // REVIEW: Above may come up with an old version #, so do this after the above
+    // REVIEW: Above comes up with an old version # (if loaded from localStorage), so do this after the above
     // package.json has version: https://www.npmjs.com/package/standard-version: npm run release
     let packageAsString = JSON.stringify(packageJson)
     let packageAsJson = JSON.parse(packageAsString)
     //this.version = packageAsJson.version
-    SettingsService.version = packageAsJson.version
-    SettingsService.Settings.version = packageAsJson.version
-    console.log(`Got version: ${packageAsJson.version} `)
+    //SettingsService.version = packageAsJson.version
+    this.settings.version = packageAsJson.version
+    this.log.verbose(`Got version: ${packageAsJson.version} `, this.id)
+
+    // Save & publish settings to subscribers
+    this.settingsSubject$ = new BehaviorSubject(this.settings)
+    this.updateSettings(this.settings)
+
     // REVIEW: following forces garbage collection of package.json, for security? (would happen at end of constructor too)
     packageAsString = ''
     packageAsJson = null
-
-
-    // populate Field Report Statuses
-    let localStorageFieldReportStatuses = localStorage.getItem(SettingsService.localStorageFieldReportStatusName)
-    if (localStorageFieldReportStatuses != undefined) { //|| this.fieldReportStatuses.length == 0
-      console.log("Got fieldReportStatuses from LocalStorage, parse 'em")
-      try {
-        if (localStorageFieldReportStatuses != null && localStorageFieldReportStatuses.indexOf("status") > 0) {
-          this.fieldReportStatuses = JSON.parse(localStorageFieldReportStatuses)
-          console.log("Initialized fieldreport statuses from localstorage")
-        }
-      } catch (error: any) {
-        console.error(`localstorage App Settings i.e., ${SettingsService.localStorageFieldReportStatusName} should be deleted & reset: unable to parse them. Error name: ${error.name}; msg: ${error.message}`);
-        // TODO: Do it!
-        // REVIEW:
-        localStorage.removeItem(SettingsService.localStorageFieldReportStatusName)
-      }
-    }
-    if ((this.fieldReportStatuses == undefined) || (this.fieldReportStatuses == null) || (this.fieldReportStatuses.length == 0)) {
-      this.ResetFieldReportStatusDefaults()
-    }
-    console.log("FieldReport Statuses initialized " + (SettingsService.Settings.debugMode? JSON.stringify(this.fieldReportStatuses):""))
-
   }
 
-  static ResetDefaults() {
-    //original hardcoded defaults... not saved until form is submitted... This form doesn't allow editing of all values
-    console.log("Initialize App Settings from hardcoded values")
+  /**
+   * Called by Settings Component when user wants to reset
+   */
+  public ResetDefaults(): SettingsType {
+    this.log.verbose(`Settings are being restored to their initial (hardcoded) values. Please re-enter mission info as desired.`, this.id)
+    this.settings = this.initSettings()
+    this.updateSettings(this.settings)
+    return this.settings
+  }
 
-    // TODO: Need different sets for each type of map, and perhaps various (selectable/savable) copies of 'preferences'
-    SettingsService.Settings = {
-      id: 0,  // FUTURE: allow different setts of settings (e.g., per location)???
-      name: "standard hardcoded settings",
-      application: "RangerTrak",
-      version: SettingsService.version,
-      note: "values set by code, please edit them to serve you!",
+  /**
+   *   populate Field Report Statuses
+   *
+   */
+  private initSettings() { // settings: SettingsType
+    //original hardcoded defaults... not updated until form is submitted... Settings.component.ts' form doesn't allow editing of all values
+    this.log.verbose("Initialize App Settings from hardcoded values", this.id)
+
+    let dt = new Date()
+    let endDt = new Date()
+    endDt.setHours(Number(dt.getHours()) + this.defOpPeriodLength)
+    this.log.verbose(`OpPeriod: ${dt.toLocaleString("en-US")}, plus ${this.defOpPeriodLength} hours = ${endDt.toLocaleString("en-US")} `, this.id)
+
+    return {
+      settingsName: '', // FUTURE: Use if people want to load and saveas, or have various 'templates'
+      settingsDate: dt, // when last created/edited...
+
+      mission: '',
+      event: '',
+      eventNotes: '',
+      opPeriod: '',
+      opPeriodStart: dt,
+      opPeriodEnd: endDt,
+
+      application: 'RangerTrak',
+      version: '0', // not exposed in Settingss Component, so set in constructor
+      debugMode: false,
+
       defLat: 47.4472,
       defLng: -122.4627,  // Vashon EOC!
-      defZoom: 14,
       defPlusCode: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
       w3wLocale: "Vashon, WA",
-      markerSize: 5,
-      markerShape: 1,
-      defRangerStatus: 0, // TODO: Allow editing this
       allowManualPinDrops: false,
-      debugMode: true,
-      logToPanel: true,
-      logToConsole: true
+
+      leaflet: {
+        defZoom: 17,  // or just zoom to bounds?
+        markerScheme: '',
+        overviewDifference: 5,
+        overviewMinZoom: 5,
+        overviewMaxZoom: 16
+      },
+
+      google: {
+        defZoom: 17,  // used? or just zoom to bounds?
+        markerScheme: '',
+        overviewDifference: 5,
+        overviewMinZoom: 5,
+        overviewMaxZoom: 16
+      },
+
+      defFieldReportStatus: 0, // which of the following array entries to use as the default value
+      //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
+      fieldReportStatuses: [
+        { status: 'Normal', color: '', icon: '' },
+        { status: 'Check-in', color: 'darkkhaki', icon: '' },
+        { status: 'Check-out', color: 'darkgoldenrod', icon: '' },
+        { status: 'Need Rest', color: 'chartreuse', icon: '' },
+        { status: 'Urgent', color: 'red', icon: '' }
+      ],
+      // fieldReportKeywords: [''],  // Future...could also just search notes field
     }
   }
 
-  // TODO: Use a Map instead: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map#objects_vs._maps
-  ResetFieldReportStatusDefaults() {
-    console.log("ResetFieldReportStatusDefaults................................. ")
-    this.fieldReportStatuses = [
-      { status: 'Normal', color: '', icon: '' },  // Often the default value: see SettingsService.defRangerStatus
-      { status: 'Need Rest', color: 'cce', icon: '' },
-      { status: 'Urgent', color: 'red', icon: '' },
-      { status: 'Objective Update', color: 'aqua', icon: '' },
-      { status: 'Check-in', color: 'grey', icon: '' },
-      { status: 'Check-out', color: 'dark-grey', icon: '' }
-    ]
+  /**
+  * rewrite field reports to localStorage & notify observers
+  */
+  public updateSettings(newSettings: SettingsType) {
+    // Do any needed sanity/validation here
+
+    localStorage.setItem(this.storageLocalName, JSON.stringify(newSettings))
+    this.settingsSubject$.next(this.settings)
+    this.log.verbose(`Notified subscribers of new Application Settings ${JSON.stringify(newSettings)} `, this.id)
   }
 
-  static Update(newSettings: SettingsType) {
-    // TODO: any validation...
-    localStorage.setItem(SettingsService.storageLocalName, JSON.stringify(newSettings));
-    console.log("Updated Application Settings to " + JSON.stringify(newSettings))
+  /**
+   * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
+   */
+  public getSettingsObserver(): Observable<SettingsType> {
+    return this.settingsSubject$.asObservable()
   }
 
-  public getFieldReportStatuses() {
-    return this.fieldReportStatuses
-  }
-
-  updateFieldReportStatus(newStatuses: FieldReportStatusType[]) {
-    // TODO: any validation...
-    this.fieldReportStatuses = newStatuses
-    localStorage.setItem(SettingsService.localStorageFieldReportStatusName, JSON.stringify(newStatuses));
-    console.log("Replaced FieldReport Statuses with " + JSON.stringify(newStatuses))
-  }
-
-  localStorageVoyeur() {
+  private localStorageVoyeur() {
     let key
     for (var i = 0; i < localStorage.length; i++) {
       key = localStorage.key(i)
       if (key != null) {
-        console.log(`item ${i} = ${JSON.parse(key)}`)
+        this.log.excessive(`item ${i} = ${JSON.parse(key)} `, this.id)
       }
     }
   }

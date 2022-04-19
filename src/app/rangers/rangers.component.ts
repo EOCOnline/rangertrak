@@ -1,54 +1,61 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FieldReportService, FieldReportType, RangerService, RangerType, SettingsService, TeamService } from '../shared/services/';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { FieldReportService, FieldReportType, LogService, RangerService, RangerType, SettingsService, SettingsType } from '../shared/services/';
 import { DOCUMENT } from '@angular/common'
 import { csvImport } from './csvImport'
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AlertsComponent } from '../alerts/alerts.component';
-
+import { AlertsComponent } from '../shared/alerts/alerts.component';
+import { Subscription } from 'rxjs';
 
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING
 D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'. CommonJS or AMD dependencies can cause optimization bailouts.
 For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies */
 import * as XLSX from 'xlsx';
-
+type AOA = any[][]  // array of arrays
 /* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
 // https://github.com/SheetJS/SheetJS.github.io
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\src\app\sheetjs.component.ts
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\ionic.ts
 
-type AOA = any[][]  // array of arrays
 
 @Component({
   selector: 'rangertrak-rangers',
   templateUrl: './rangers.component.html',
   styleUrls: ['./rangers.component.scss']
 })
-export class RangersComponent implements OnInit {
+export class RangersComponent implements OnInit, OnDestroy {
+
+  private id = 'Ranger Component'
+  public title = 'Rangers (CERT, ACS/ARES, etc)'
+
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
+
+  private rangersSubscription!: Subscription
+  public rangers: RangerType[] = []
 
   localUrl: any[] = []
-  //teamService
-  //rangerService //: { generateFakeData: (arg0: RangerType[]) => void; }
-  rangers: RangerType[] = []
-  //columns = { "Callsign": String, "Team": String, "Address": String, "Status": String, "Note": String }
-  private gridApi: any
-  private gridColumnApi: any
+
   alert: any
+
   numSeperatorWarnings = 0
   maxSeperatorWarnings = 3
+
   now: Date
-  settings
+
   excelData: AOA = [[1, 2, 3], [4, 5, 6]];
   excelData2: RangerType[] = [] //[[1, 2, 3], [4, 5, 6]];
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
+  private gridApi: any
+  private gridColumnApi: any
   gridOptions = {
     // PROPERTIES
     rowSelection: "multiple",
     // pagination: true,
 
     // EVENT handlers
-    // onRowClicked: event => console.log('A row was clicked'),
+    // onRowClicked: event => this.log.verbose('A row was clicked'),
 
     // CALLBACKS
     // getRowHeight: (params) => 25
@@ -82,7 +89,6 @@ export class RangersComponent implements OnInit {
     { headerName: "phone", field: "phone", singleClickEdit: true, flex: 40 },
     { headerName: "address", field: "address", singleClickEdit: true, flex: 40 },
     //{ headerName: "image", field: "image", cellRenderer: this.imageCellRenderer },
-    //{ headerName: "team", field: "team" },  // TODO: Change to string representation - within Ag-grid???
     //{ headerName: "icon", field: "icon" },  // TODO: Change to string representation - within Ag-grid???
     { headerName: "status", field: "status", flex: 40 },
     { headerName: "note", field: "note", flex: 60 },
@@ -90,27 +96,40 @@ export class RangersComponent implements OnInit {
 
   constructor(
     //private teamService: TeamService,
+    private log: LogService,
     private rangerService: RangerService,
     private settingsService: SettingsService,
     private _snackBar: MatSnackBar,
     @Inject(DOCUMENT) private document: Document
   ) {
-    console.log(`Rangers Component Construction at ${Date.now}`)
+    this.log.info(` Construction`, this.id)
 
-    this.alert = new AlertsComponent(this._snackBar, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
+    this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
     //this.teamService = teamService
     //this.rangerService = rangerService
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
 
-    this.settings = SettingsService.Settings
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
   }
 
   ngOnInit(): void {
 
-    this.rangers = this.rangerService.GetRangers()
-    console.log(`ngInit: ${this.rangers.length} Rangers retrieved from Local Storage`)
+    this.rangersSubscription = this.rangerService.getRangersObserver().subscribe({
+      next: (newRangers) => { this.rangers = newRangers },
+      error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
+      complete: () => this.log.info('Rangers Subscription complete', this.id)
+    })
+
+    this.log.verbose(`ngInit: ${this.rangers.length} Rangers retrieved from Local Storage`, this.id)
 
     if (this.rangers.length < 1) {
       this.alert.Banner("No Rangers have been entered yet. Go to the bottom & click on 'Advanced' to resolve.")
@@ -119,7 +138,7 @@ export class RangersComponent implements OnInit {
       //this.alert.OpenSnackBar(`Imported "${this.rangers.length}" rangers.`, `Nota Bene`, 1000)
     }
 
-    if (!this.settings.debugMode) {
+    if (!this.settings?.debugMode) {
       //this.displayHide("rangers__Fake")
       //this.displayHide("ranger__ImportExcel")
     }
@@ -133,7 +152,7 @@ export class RangersComponent implements OnInit {
     if (this.gridApi) {
       this.gridApi.refreshCells()
     } else {
-      console.log("no this.gridApi yet in ngOnInit()")
+      this.log.verbose("no this.gridApi yet in ngOnInit()", this.id)
     }
   }
 
@@ -142,19 +161,21 @@ export class RangersComponent implements OnInit {
     if (this.gridApi) {
       this.gridApi.refreshCells()
     } else {
-      console.log("no this.gridApi yet in ngOnInit()")
+      this.log.verbose("no this.gridApi yet in ngOnInit()", this.id)
     }
   }
 
   //--------------------------------------------------------------------------
 
-  onBtnAddRanger(formData?:string) {
-    console.log("Adding new ranger")
-    this.rangerService.AddRanger()
+  onBtnAddRanger(formData?: string) {
+    this.log.verbose("Adding new ranger", this.id)
+    this.rangerService.AddRanger()  // this calls updateLocalStorageAndPublish
+    this.refreshGrid()
+    this.reloadPage()
   }
 
   onBtnDeleteRanger(callsign: string) {
-    console.log(`Deleteing ranger with callsign: ${callsign}`)
+    this.log.verbose(`Deleteing ranger with callsign: ${callsign}`, this.id)
     this.rangerService.deleteRanger(callsign)
   }
 
@@ -164,13 +185,14 @@ export class RangersComponent implements OnInit {
   }
 
   onBtnUpdateLocalStorage() {
-    this.rangerService.UpdateLocalStorage()
+    this.rangerService.updateLocalStorageAndPublish()
   }
 
 
   //--------------------------------------------------------------------------
   onBtnImportJson(e: any): void { // PointerEvent ?!
-    console.log(`onBtnImportJson() ------------`)
+    // https://developers.google.com/maps/documentation/javascript/importing_data
+    this.log.verbose(`onBtnImportJson() `, this.id)
     // TODO: Move to RangerService...
     let Logo: string
     //debugger
@@ -189,17 +211,18 @@ export class RangersComponent implements OnInit {
       }
     }
     else {
-      console.log(`${e} &&& ${e.target}`)
+      this.log.verbose(`${e} &&& ${e.target}`, this.id)
     }
     //this.localUrl //: any[]
     //this.rangerService.LoadRangersFromJSON(e.target.files[0])
-    window.location.reload
+    this.log.verbose(`Reloading window!`, this.id)
+    this.reloadPage()
   }
 
 
   //--------------------------------------------------------------------------
   onBtnImportRangers() {
-    //console.log
+    //this.log.verbose
     alert(`onBtnImportRangers: Ranger Import from Excel file is unimoplemented currently`)
   }
   /*
@@ -223,14 +246,17 @@ export class RangersComponent implements OnInit {
   // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
   onBtnImportExcel(evt: any) {
     this.excelData2 = this.rangerService.LoadRangersFromExcel(evt.target)
-    console.log("excelData2: " + JSON.stringify(this.excelData2))
+    this.log.verbose("excelData2: " + JSON.stringify(this.excelData2), this.id)
+    this.log.verbose(`Reloading window!`, this.id)
+    this.reloadPage()
   }
 
   //--------------------------------------------------------------------------
   onBtnImportExcel2() {
-    this.rangerService.LoadRangersFromExcel2()
-    console.log(`Got excel file`)
-    window.location.reload
+    this.rangerService.loadRangersFromExcel2()
+    this.log.verbose(`Got excel file`, this.id)
+    this.log.verbose(`Reloading window!`, this.id)
+    this.reloadPage()
   }
 
   /* File Input element for browser */
@@ -244,7 +270,7 @@ export class RangersComponent implements OnInit {
       this.read(ab);
     };
     reader.readAsArrayBuffer(target.files[0]);
-    console.log(`got file name: ${target.files[0].name}`)
+    this.log.verbose(`got file name: ${target.files[0].name}`, this.id)
   };
 
   /* Import button for mobile */
@@ -315,15 +341,29 @@ export class RangersComponent implements OnInit {
 
   //--------------------------------------------------------------------------
   onBtnReloadPage() {
-    window.location.reload
+    this.reloadPage()
+  }
+
+  reloadPage() {
+    this.log.verbose(`Reloading window!`, this.id)
+    window.location.reload()
+  }
+
+  refreshGrid() {
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+      this.gridApi.sizeColumnsToFit();
+    } else {
+      this.log.verbose("no this.gridApi yet in refreshGrid()", this.id)
+    }
   }
 
   //--------------------------------------------------------------------------
   // following from https://ag-grid.com/javascript-data-grid/csv-export/
   onBtnExportToExcel() {
     var params = this.getParams();
-    //console.log(`Got column seperator value "${params.columnSeparator}"`)
-    //console.log(`Got filename of "${params.fileName}"`)
+    //this.log.verbose(`Got column seperator value "${params.columnSeparator}"`, this.id)
+    //this.log.verbose(`Got filename of "${params.fileName}"`, this.id)
     this.gridApi.exportDataAsCsv(params);
   }
 
@@ -334,7 +374,7 @@ export class RangersComponent implements OnInit {
     var opt = selector.options[sel];
     var selVal = (<HTMLOptionElement>opt).value;
     //var selText = (<HTMLOptionElement>opt).text
-    // console.log(`Got column seperator text:"${selText}", val:"${selVal}"`)
+    // this.log.verbose(`Got column seperator text:"${selText}", val:"${selVal}"`, this.id)
 
     switch (selVal) {
       case 'none':
@@ -350,7 +390,7 @@ export class RangersComponent implements OnInit {
     let dt = new Date()
     return {
       columnSeparator: this.getSeperatorValue('columnSeparator'),
-      fileName: `RangersExport.${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`, // ONLY month is zero based!
+      fileName: `RangersExport.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`, // ONLY month is zero based!
     }
   }
 
@@ -365,9 +405,10 @@ export class RangersComponent implements OnInit {
   //--------------------------------------------------------------------------
   onBtnDeleteRangers() {
     if (this.getConfirmation('REALLY delete all Rangers in LocalStorage, vs. edit the Ranger grid & Update the values in Local Storage?')) {
-      console.log("Removing all rangers from local storage...")
+      this.log.info("Removing all rangers from local storage...", this.id)
       this.rangerService.deleteAllRangers()
-      window.location.reload
+      this.refreshGrid()
+      this.reloadPage()
     }
   }
 
@@ -385,11 +426,11 @@ export class RangersComponent implements OnInit {
     this.rangerService.loadHardcodedRangers()
     // TODO: Refresh the page, or why not showing???? - until page goes thoiugh another init cycle?!
 
-    console.log("loadVashonRangers calling ngInit...")
+    this.log.verbose("loadVashonRangers calling ngInit...", this.id)
     this.ngOnInit()
 
-    console.log("loadVashonRangers calling window.location.reload...")
-    window.location.reload
+    this.log.verbose("loadVashonRangers calling window.location.reload...", this.id)
+    this.reloadPage()
   }
 
   displayHide(htmlElementID: string) {
@@ -406,6 +447,11 @@ export class RangersComponent implements OnInit {
     }
   }
 
+
+  ngOnDestroy() {
+    this.rangersSubscription.unsubscribe()
+    this.settingsSubscription.unsubscribe()
+  }
 }
 
   // works - but Unused....

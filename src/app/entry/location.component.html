@@ -1,0 +1,272 @@
+<!-- https://popper.js.org/docs/v2/tutorial/ -->
+
+<!--  TODO: onclick="onWhereInfo() -->
+<!--div id="tooltip" role="tooltip">
+  My tooltip: Instructions for how to enter location into RangerTrak: Enter Lat & Lng as
+  decimal values or DMS, OR as an address - which will update/REPLACE the coordinates!
+  <div id="arrow" data-popper-arrow></div>
+</div-->
+
+<!--
+      [class.border-danger]="location.get('latI')?.touched && location.get('latI')?.invalid"
+
+
+    Error: formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
+      directive and pass it an existing FormGroup instance (you can create one in your class).
+    Example:
+  <div [formGroup]="myGroup">
+    <input formControlName="firstName">
+  </div>
+  In your class:
+  this.myGroup = new FormGroup({
+      firstName: new FormControl()
+  });
+(change)="this.addressCtrlChanged('latI')"
+
+    [style.width.px]="20"
+    {{llat
+    |
+    number:1.0-0}}
+       latI
+       <!- formControlName="lat": MUST be element in Location Form Group!
+
+      formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
+      directive and pass it an existing FormGroup instance (you can create one in your class).
+
+    Example:
+
+
+  <div [formGroup]="myGroup">
+    <input formControlName="firstName">
+  </div>
+
+  In your class:
+
+  this.myGroup = new FormGroup({
+      firstName: new FormControl()
+  });
+    at controlParentException (forms.mjs:1474:12)
+[FormControl]="latI"
+
+
+ formControlName must be used with a parent formGroup directive.
+-->
+<div class="container enter__Where-div">
+  <div
+    appearance="filled"
+    class="timepicker__Where-input"
+    (mouseenter)="onMouseEnter()"
+    (mouseleave)="onMouseLeave()"
+  >
+    <div class="input-group" [formGroup]="locationFrmGrp">
+      <!--
+      #latI
+        name="latI"
+        placeholder="LatI"
+      -->
+      &nbsp;&nbsp;&nbsp;Latitude:
+
+      <input
+        [value]="latI"
+        type="number"
+        formControlName="lat"
+        min="-180"
+        max="180"
+        id="enter__Where-latI"
+      />
+
+      <!-- TODO: name="latitudeDDI" id="latitudeDDI" -->
+
+      <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
+    class="text-sm text-danger">lat is required
+
+      [class.border-danger]="location.get('latD')?.touched && location.get('latD')?.invalid"
+      formControlName="lat3D"
+      (change)="this.addressCtrlChanged('latD')"
+        </span-->.
+
+      <input
+        #latF
+        placeholder="LatF"
+        [value]="latF"
+        name="latitudeDDD"
+        type="number"
+        step="100"
+        min="0"
+        max="99999"
+        id="enter__Where-latF"
+        tabindex="2"
+      />
+
+      <!--
+       {{latF}}  {{latQ}}
+    span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
+    class="text-sm text-danger">Latitude is required size="1"
+    </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
+
+      <input
+        #latQ
+        name="latQ"
+        id="enter__Where-latQ"
+        type="text"
+        pattern="'e','E','w','W'"
+        title="E or W"
+        onchange="DMSCoordsChanged()"
+      />
+      <!-- Quadrant -->
+      <!-- BUG: Initialize els3ewhere!
+          value="47"
+        value=""
+        value=""
+          value="W"
+              value="122"
+                  value="N"
+          -->
+      <input
+        #latD
+        name="latD"
+        id="enter__Where-latD"
+        type="text"
+        min="0"
+        max="180"
+        onchange="DMSCoordsChanged()"
+      />°
+      <!-- TODO: Use settings.DefLat     size="2"  size="5"   {{latD}}  {{latM}} {{latS}}  -->
+      <input
+        #latM
+        name="latM"
+        id="enter__Where-latM"
+        type="text"
+        min="0"
+        max="59"
+        onchange="DMSCoordsChanged()"
+      />'
+      <input
+        #latS
+        name="latS"
+        id="enter__Where-latS"
+        type="text"
+        min="0"
+        max="59.99"
+        onchange="DMSCoordsChanged()"
+      />"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
+    </div>
+
+    <div class="input-group">
+      Longitude:
+      <input
+        #lngI
+        type="number"
+        placeholder="LngI"
+        (change)="this.addressCtrlChanged('lngI')"
+        name="lngI"
+        id="longitudeDDI"
+        min="-90"
+        max="90"
+        id="enter__Where-lngI"
+        tabindex="3"
+      />
+
+      <!-- onchange="DDCoordsChanged()"
+            {{lngI}}  {{lngF}}   {{lngQ}}
+          -->.
+
+      <input
+        #lngF
+        type="number"
+        placeholder="LngF"
+        (change)="this.addressCtrlChanged('lngF')"
+        name="latitudeDDD"
+        step="100"
+        min="0"
+        max="99999"
+        id="enter__Where-lngF"
+        tabindex="4"
+      />° <span title="Decimal Degrees">DD</span> or&nbsp;
+
+      <input
+        #lngQ
+        name="longitudeQ"
+        id="enter__Where-lngQ"
+        type="text"
+        pattern="'n','N','s','S'"
+        title="N or S"
+        onchange="DMSCoordsChanged()"
+      />
+      <input
+        name="longitudeD"
+        id="enter__Where-lngD"
+        type="text"
+        max="180"
+        onchange="DMSCoordsChanged()"
+      />°
+      <input
+        name="longitudeM"
+        id="enter__Where-lngM"
+        type="text"
+        min="0"
+        max="59"
+        onchange="DMSCoordsChanged()"
+      />'
+      <input
+        name="longitudeS"
+        id="enter__Where-lngS"
+        type="text"
+        min="0"
+        max="59.99"
+        onchange="DMSCoordsChanged()"
+      />"
+      <span title="Degrees Minute Seconds">DMS</span>
+    </div>
+
+    Street Address,
+    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>, or
+    <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>:
+    <!--   {{lngD}} {{lngM}}    {{lngS}} -->
+    <input
+      type="text"
+      formControlName="address"
+      address
+      id="enter__Where-Address"
+      tabindex="5"
+      title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
+      placeholder="Optional Address"
+      data-lpignore="true"
+      (change)="this.addressCtrlChanged('addr')"
+    />
+  </div>
+
+  <!--   {{address}}
+      formControlName="address"
+      input name="addresses" id="addresses" type="text" size="15" value=""
+      placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
+      onchange="chkAddresses()"> (optional) -->
+  <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
+
+  <span id="addressLabel" title="Normalized Address" value="">aL</span>&nbsp;&nbsp;;
+  <span title="Global (Google) Plus Code" id="pCodeGlobal">pCG</span>
+</div>
+
+<!--br-->
+
+<!--div class="input-group"><span class="strongish">Derived Addresses:</span>
+      <div id="top3wa">&nbsp;&nbsp;&nbsp;Top 3 word address match: </div>
+      <div id="coords">&nbsp;&nbsp;&nbsp;WGS84 Coordinates: </div>
+      <div id="nearest_place">&nbsp;&nbsp;&nbsp;Nearest Place: </div>
+      <div>&nbsp;&nbsp;&nbsp;Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code:
+          8VCWVF22+</span>
+      </div>
+
+  <!- -script type="module"
+    src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.esm.js"></script>
+  <script nomodule
+    src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.js?key=YOUR-API-KEY"></script- ->
+
+  <!- -form id="form" method="GET"- ->
+  <div id="what3words-autosuggest">
+    <!- -what3words-autosuggest- ->
+    &nbsp;&nbsp;&nbsp;what3words-autosuggest: <input type="text" />
+    <!- -/what3words-autosuggest- ->
+  </div>
+  <!- -/form- ->
+  </div-->

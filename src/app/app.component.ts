@@ -3,35 +3,63 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 //import { MatSnackBar } from '@material/snackbar'
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker'
 import { filter, map, switchMap } from 'rxjs'
+import { LogService } from './shared/services'
 
 @Component({
   selector: 'rangertrak-root',
-
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'rangertrak';
+
+  private id = "AppComponent"
+  title = 'RangerTrak';
+  updateEvt: any = null
 
   constructor(
     private swUpdate: SwUpdate,
+    private log: LogService,
     private snackbar: MatSnackBar) {
   }
 
   ngOnInit() {
-
-
     //https://angular.io/api/service-worker/SwUpdate
-    const updatesAvailable = this.swUpdate.versionUpdates.pipe(
-      filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
-      map(evt => ({
-        type: 'UPDATE_AVAILABLE',
-        current: evt.currentVersion,
-        available: evt.latestVersion,
-      })));
 
+    console.log(`this.swUpdate.versionUpdates: ${JSON.stringify(this.swUpdate.versionUpdates)}`)
+
+    const updatesAvailable =
+      this.swUpdate.versionUpdates.pipe(
+
+        filter(
+          (evt): evt is VersionReadyEvent => {
+            if (evt.type === 'VERSION_READY') {
+              console.log(`Version update event: ${JSON.stringify(evt)}`)
+              this.updateEvt = evt
+              return true
+            } else {
+              console.log(`NOT a Version ready event: ${JSON.stringify(evt)}`)
+              return false
+            }
+          }
+        ),
+
+        map(evt => {
+          ({
+            type: 'UPDATE_AVAILABLE',
+            current: evt.currentVersion,
+            available: evt.latestVersion,
+          })
+          //this.updateEvt = evt
+        }
+        )
+      )
 
     if (updatesAvailable) {
+      if (this.updateEvt) {
+        console.warn(`New update available: Current: ${this.updateEvt.currentVersion}; Future: ${this.updateEvt.latestVersion}`)//, this.id)
+      } else {
+        console.warn(`Version update but no this.updateEvt `)//, this.id)
+      }
       // if( confirm(`Reload the page to update from current version ${evt.currentVersion} to latest version ${evt.latestVersion}. Proceed now?`)) { //TODO:
       //if( confirm(`Reload the page to update from the current to the latest version. Proceed now?`)) { // TODO: This showed up for every page refresh!!! (Try CNTRL-F5?)
       /* BUG: Gets: Error: Uncaught (in promise): Error: Service workers are disabled or not supported by this browser
@@ -40,8 +68,8 @@ export class AppComponent implements OnInit {
         at AppComponent.ngOnInit (main.js:302:27) */
       //this.swUpdate.activateUpdate()
       // TODO: OR????
-      // window.location.reload
-      console.log(`App Updates ARE Available!  Reload page to install next version????`)
+      // window.location.reload()
+      console.warn(`App Updates ARE Available!  Reload page to install next version????`)
       //  } else {
       //    console.log(`Don't update YET...`)
       //  }
@@ -71,6 +99,7 @@ export class AppComponent implements OnInit {
       filter(result => result.dismissedByAction),
       map(() => this.swUpdate.activateUpdate().then(() => location.reload()))
     ).subscribe();
+    this.log.verbose(`Reloading window!`, this.id)
     */
   }
 }

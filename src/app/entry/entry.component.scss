@@ -7,16 +7,22 @@ with ($primary: #962f10,
 //@use "@material/banner/styles";
 // https://material.io/components/buttons/web#api
 
+$filledColor : #F0F0F0;
+
+.filled {
+  background-color: $filledColor;
+}
+
 /*
 // https://www.concretepage.com/angular-material/angular-material-radio-button#color
 .rButton {
-  border-color: blue;
+  border-color        : blue;
   // background-color: rgb(132, 151, 21); // of whole list
 }
 
    // For outer circle
    .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-    border-color: rgb(71, 223, 51);
+    border-color      : rgb(71, 223, 51);
   }
 
   // For inner circle
@@ -25,12 +31,12 @@ with ($primary: #962f10,
       background-color: rgb(132, 151, 21);
   }
 
-  ::ng-deep .mat-radio-checked .mat-radio-outer-circle {
-    border-color: rgb(13, 171, 219);
+                      ::ng-deep .mat-radio-checked .mat-radio-outer-circle {
+    border-color      : rgb(13, 171, 219);
 }
 
-::ng-deep .mat-radio-checked .mat-radio-inner-circle {
-    background-color: rgb(153, 58, 98);
+                      ::ng-deep .mat-radio-checked .mat-radio-inner-circle {
+    background-color  : rgb(153, 58, 98);
 }
 */
 
@@ -48,12 +54,15 @@ with ($primary: #962f10,
 #tooltip[data-popper-placement^='top']>#arrow {
   bottom: -4px;
 }
+
 #tooltip[data-popper-placement^='bottom']>#arrow {
   top: -4px;
 }
+
 #tooltip[data-popper-placement^='left']>#arrow {
   right: -4px;
 }
+
 #tooltip[data-popper-placement^='right']>#arrow {
   left: -4px;
 }
@@ -80,19 +89,6 @@ with ($primary: #962f10,
   transform : rotate(45deg);
 }
 
-//.map-container {
-  //height: 200px !important;
-  // "some" map-container is setting height to 500px. How to reseet/overrule?
-//}
-
-#enter__SmallMap {
-  display         : block;
-  float           : right;
-  width           : 30vw; // 30vw;
-  height          : 10vh; //200px !important; //
-  border          : 5px brown;
-  background-color: aliceblue;
-}
 
 h1,
 h2,
@@ -131,27 +127,26 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-//#latitudeDDI,
-//#longitudeDDI {
-//  width: 60//px;
-//}
-
-// #latitudeDDD,
-// #longitudeDDD {
-//   width: 180px;
-// }
-
 .small {
   font-size: 12px;
 }
 
-// #enter__Lat,
-// #enter__Lng {
-//   width: 80px;
-// }
-
-#enter__When-input {
+.timepicker_When-input {
   width: 400px;
+}
+
+.enter__Status {
+  padding           : 8px 0;
+  border-radius     : 4px;
+  //width           : 650px;
+  background-color  : $filledColor;
+}
+
+.bottomDrop {
+  //padding      : 8px 0;
+  //margin-top   : 20px;
+  margin-bottom: 8px;
+
 }
 
 .eButton {
@@ -172,7 +167,8 @@ input[type=number] {
   margin     : 0px 10px 15px;
   min-width  : 160px;
   //max-width: 300px;
-  width      : 100%;
+
+  width: 100%;
 }
 
 .enter__Callsign {
@@ -185,7 +181,7 @@ input[type=number] {
   margin-right  : 8px;
 }
 
-[dir='rtl'] .enter__Callsign-imgimg {
+[dir='rtl'] .enter__Callsign-img {
   margin-right: 0;
   margin-left : 8px;
 }
@@ -195,14 +191,14 @@ input[type=number] {
   font-size: small;
 }
 
-#enter__frm-reguritation {
+#enter__frm-reguritation2 {
   margin-right    : 35vw;
   display         : block;
   float           : right;
   height          : 50px;
   width           : 10vw;
-  border          : 1px solid brown;
-  background-color: rgb(240, 255, 250);
+  border          : 3px solid brown;
+  background-color: $filledColor;
   font            : 0.8em sans-serif;
 }
 
@@ -212,6 +208,8 @@ input[type=number] {
 
 .enter__What--area {
   border              : 1px dotted rgb(52, 28, 192);
+  border-radius       : 6px;
+  background-color    : $filledColor;
   //text-orientation: upright;
   //text-transform: capitalize;
   //float             : left;

@@ -2,7 +2,7 @@
 //import { Components as W3W  } from "@what3words/javascript-components"
 import { DOCUMENT } from '@angular/common'
 import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
-import { AlertsComponent } from '../alerts/alerts.component'
+import { AlertsComponent } from './alerts/alerts.component'
 //import { UrlHandlingStrategy } from "@angular/router";
 import { SettingsService } from "./services";
 
@@ -11,7 +11,7 @@ import { SettingsService } from "./services";
 // import what3words, { ApiVersion, What3wordsService, AutosuggestClient, AutosuggestOptions, AutosuggestResponse, ConvertToCoordinatesClient, ConvertToCoordinatesOptions, ConvertTo3waClient, ConvertTo3waOptions } from '@what3words/api';
 import what3words, * as w3w from '@what3words/api';
 //import { W3W_REGEX } from "@what3words/javascript-components/dist/types/lib/constants";
-import { GoogleMap } from '@angular/google-maps';
+//import { GoogleMap } from '@angular/google-maps';
 // <script src="https://assets.what3words.com/sdk/v3/what3words.js?key=YOUR_apiKey"></script>
 // mainly from https://developer.what3words.com/tutorial/javascript
 
@@ -252,7 +252,7 @@ export class What3Words {
               nFocusResults: 1,
               //clipTo####: ["US"], - done by default
               // TODO: cliptoboundingbox: { south_lat, west_lng, north_lat, east_lng }, // Clip prevents ANY values outside region
-              focus: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }, // Focus prioritizes words closer to this point
+              focus: { lat: this.settings.defLat, lng: this.settings.defLong }, // Focus prioritizes words closer to this point
               nResults: 1
             })
               .then(function (response: any) {
@@ -345,27 +345,27 @@ export class What3Words {
       .then((res: w3w.AutosuggestResponse) =>
         console.log(`suggestions for "${w3wSuggestion}"`, JSON.stringify(res))
       );
-      // debugger
+    // debugger
     return res
 
-/*
-"apiKey": string;
-  "autosuggest_focus": string;
-  "base_url": string;
-  "callback": string;
-  "clip_to_bounding_box": string;
-  "clip_to_circle": string;
-  "clip_to_country": string;
-  "clip_to_polygon": string;
-  "headers": string;
-  "initial_value": string;
-  "invalid_address_error_message": string;
-  "language": string;
-  "n_focus_results": number;
-  "name": string;
-  "return_coordinates": boolean;
-  "typeahead_delay": number;
-  */
+    /*
+    "apiKey": string;
+      "autosuggest_focus": string;
+      "base_url": string;
+      "callback": string;
+      "clip_to_bounding_box": string;
+      "clip_to_circle": string;
+      "clip_to_country": string;
+      "clip_to_polygon": string;
+      "headers": string;
+      "initial_value": string;
+      "invalid_address_error_message": string;
+      "language": string;
+      "n_focus_results": number;
+      "name": string;
+      "return_coordinates": boolean;
+      "typeahead_delay": number;
+      */
 
 
     /*   what3words.api.autosuggest("freshen.overlook.clo", {

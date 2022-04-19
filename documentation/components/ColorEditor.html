@@ -1,0 +1,1516 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/Vagrant.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li
+  >
+  ColorEditor</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/settings/color-editor.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>ICellEditorAngularComp</code>
+                    <code><a href="https://angular.io/api/core/AfterViewInit" target="_blank" >AfterViewInit</a></code>
+    </p>
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>editor-cell</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./color-editor-component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./color-editor-component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#b" >b</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#color" >color</a>
+                            </li>
+                            <li>
+                                <a href="#colorCntlDisabled" >colorCntlDisabled</a>
+                            </li>
+                            <li>
+                                <a href="#colorCtr" >colorCtr</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#colorPalette" >colorPalette</a>
+                            </li>
+                            <li>
+                                <a href="#g" >g</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#params" >params</a>
+                            </li>
+                            <li>
+                                <a href="#r" >r</a>
+                            </li>
+                            <li>
+                                <a href="#touchUi" >touchUi</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#agInit" >agInit</a>
+                            </li>
+                            <li>
+                                <a href="#getValue" >getValue</a>
+                            </li>
+                            <li>
+                                <a href="#isPopup" >isPopup</a>
+                            </li>
+                            <li>
+                                <a href="#ngAfterViewInit" >ngAfterViewInit</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                <a href="#onClick" >onClick</a>
+                            </li>
+                            <li>
+                                <a href="#onColorCtrClosed" >onColorCtrClosed</a>
+                            </li>
+                            <li>
+                                <a href="#onKeyDown" >onKeyDown</a>
+                            </li>
+                            <li>
+                                <a href="#onMouseDown" >onMouseDown</a>
+                            </li>
+                            <li>
+                                <a href="#setColor" >setColor</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#childItem" >childItem</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor()</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/settings/color-editor.component.ts:39</a></div>
+                            </td>
+                        </tr>
+
+            </tbody>
+        </table>
+</section>
+
+    <section>
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="childItem"></a>
+                        <b>childItem</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/settings/color-editor.component.ts:17</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="agInit"></a>
+                    <span class="name">
+                        <span ><b>agInit</b></span>
+                        <a href="#agInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>agInit(params: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="62"
+                            class="link-to-prism">src/app/settings/color-editor.component.ts:62</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getValue"></a>
+                    <span class="name">
+                        <span ><b>getValue</b></span>
+                        <a href="#getValue"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getValue()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="102"
+                            class="link-to-prism">src/app/settings/color-editor.component.ts:102</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isPopup"></a>
+                    <span class="name">
+                        <span ><b>isPopup</b></span>
+                        <a href="#isPopup"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isPopup()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="117"
+                            class="link-to-prism">src/app/settings/color-editor.component.ts:117</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngAfterViewInit"></a>
+                    <span class="name">
+                        <span ><b>ngAfterViewInit</b></span>
+                        <a href="#ngAfterViewInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngAfterViewInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">src/app/settings/color-editor.component.ts:51</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="57"
+                            class="link-to-prism">src/app/settings/color-editor.component.ts:57</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onClick"></a>
+                    <span class="name">
+                        <span ><b>onClick</b></span>
+                        <a href="#onClick"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onClick(event: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="129"
+                            class="link-to-prism">src/app/settings/color-editor.component.ts:129</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onColorCtrClosed"></a>
+                    <span class="name">
+                        <span ><b>onColorCtrClosed</b></span>
+                        <a href="#onColorCtrClosed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onColorCtrClosed()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="108"
+                            class="link-to-prism">src/app/settings/color-editor.component.ts:108</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onKeyDown"></a>
+                    <span class="name">
+                        <span ><b>onKeyDown</b></span>
+                        <a href="#onKeyDown"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onKeyDown(event: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="142"
+                            class="link-to-prism">src/app/settings/color-editor.component.ts:142</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onMouseDown"></a>
+                    <span class="name">
+                        <span ><b>onMouseDown</b></span>
+                        <a href="#onMouseDown"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onMouseDown(event: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="135"
+                            class="link-to-prism">src/app/settings/color-editor.component.ts:135</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setColor"></a>
+                    <span class="name">
+                        <span ><b>setColor</b></span>
+                        <a href="#setColor"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>setColor(color: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">src/app/settings/color-editor.component.ts:122</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>color</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="b"></a>
+                    <span class="name">
+                        <span ><b>b</b></span>
+                        <a href="#b"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/settings/color-editor.component.ts:39</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="color"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>color</b></span>
+                        <a href="#color"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;green&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/settings/color-editor.component.ts:36</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="colorCntlDisabled"></a>
+                    <span class="name">
+                        <span ><b>colorCntlDisabled</b></span>
+                        <a href="#colorCntlDisabled"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/settings/color-editor.component.ts:33</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="colorCtr"></a>
+                    <span class="name">
+                        <span ><b>colorCtr</b></span>
+                        <a href="#colorCtr"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://angular.io/api/forms/FormControl" target="_blank" >FormControl</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/settings/color-editor.component.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="colorPalette"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>colorPalette</b></span>
+                        <a href="#colorPalette"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ThemePalette</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;primary&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/app/settings/color-editor.component.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="g"></a>
+                    <span class="name">
+                        <span ><b>g</b></span>
+                        <a href="#g"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/settings/color-editor.component.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="params"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>params</b></span>
+                        <a href="#params"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/app/settings/color-editor.component.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="r"></a>
+                    <span class="name">
+                        <span ><b>r</b></span>
+                        <a href="#r"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/app/settings/color-editor.component.ts:37</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="touchUi"></a>
+                    <span class="name">
+                        <span ><b>touchUi</b></span>
+                        <a href="#touchUi"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/settings/color-editor.component.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef, } from &#x27;@angular/core&#x27;;
+import { Color } from &#x27;@angular-material-components/color-picker&#x27;;
+import { ThemePalette } from &#x27;@angular/material/core&#x27;;
+import { ICellEditorAngularComp } from &#x27;ag-grid-angular&#x27;;
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from &#x27;@angular/forms&#x27;;
+import { ArgumentOutOfRangeError } from &#x27;rxjs&#x27;;
+
+// https://www.ag-grid.com/angular-data-grid/component-cell-editor
+// TODO: Based on boolean value for icons: we need a selection from a panel of icons...
+@Component({
+  selector: &#x27;editor-cell&#x27;,
+  templateUrl: &#x27;./color-editor-component.html&#x27;,
+  styleUrls: [&#x27;./color-editor-component.scss&#x27;,],
+})
+export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
+
+  @Input() childItem &#x3D; &#x27;&#x27;;  // [childItem]&#x3D;&quot;parentItem&quot; in child.html, parentItem&#x3D;&#x27;Some string&#x27; in parent.ts
+
+  // https://stackblitz.com/edit/pputo1--run
+  // Pass an object from parent to nested component (child gets array from parent)
+  // parent.html: &lt;app-item-list [items]&#x3D;&quot;currentItems&quot;&gt;&lt;/app-item-list&gt;
+  // parent.ts: currentItems &#x3D; [{ id: 21,  name: &#x27;phone&#x27; }];
+  // child.ts: @Input() items: Item[] &#x3D; [];  type.ts: export interface Item { id: number; name: string; }
+
+  /*
+    @ViewChild(&#x27;container&#x27;, { read: ViewContainerRef })
+    public container!: ViewContainerRef;
+  */
+  private params: any;
+  //colorCtr: AbstractControl &#x3D; new FormControl(new Color(255, 243, 0), [Validators.required])
+  //colorCtr &#x3D; new FormControl(new Color(255, 30, 255), [Validators.required])  // TODO: use existing instead of a default color
+  colorCtr: FormControl
+  colorCntlDisabled &#x3D; false
+  touchUi &#x3D; false
+  public colorPalette: ThemePalette &#x3D; &#x27;primary&#x27;;
+  public color: string &#x3D; &#x27;green&#x27;
+  r: number
+  g: number
+  b: number
+  // No suitable injection token for parameter &#x27;r&#x27; of class &#x27;ColorEditor&#x27;. Consider using the @Inject decorator to specify an injection token.
+  constructor() { //r:number, g:number, b:number
+    // TODO: use existing color (obtained by @inject() ???) instead of an arbitrary default color
+    this.r &#x3D; 196
+    this.g &#x3D; 0
+    this.b &#x3D; 252
+
+    this.colorCtr &#x3D; new FormControl(new Color(this.r, this.g, this.b), [Validators.required])
+    //console.log(&#x60;constructor &#x3D; ${this.colorCtr.value.hex} from  ${this.color}&#x60;)
+  }
+  // dont use afterGuiAttached for post gui events - hook into ngAfterViewInit instead for this
+  ngAfterViewInit() {
+    window.setTimeout(() &#x3D;&gt; {
+      //  this.container.element.nativeElement.focus();
+    });
+  }
+
+  ngOnDestroy() {
+    // TODO: How to get this event from the ColorPicker?!
+    // https://angular.io/guide/lifecycle-hooks#cleaning-up-on-instance-destruction
+  }
+
+  agInit(params: any): void {
+    /*
+    agInit &#x3D; fff300 from  green
+    color-editor.component.ts:51 setValue &#x3D; {&quot;r&quot;:255,&quot;g&quot;:243,&quot;b&quot;:0,&quot;a&quot;:1,&quot;roundA&quot;:1,&quot;hex&quot;:&quot;fff300&quot;,&quot;rgba&quot;:&quot;rgba(255,243,0,1)&quot;},
+        green to brown
+    forms.mjs:5112
+      It looks like you&#x27;re using the disabled attribute with a reactive form directive. If you set disabled to true
+      when you set up this control in your component class, the disabled attribute will actually be set in the DOM for
+      you. We recommend using this approach to avoid &#x27;changed after checked&#x27; errors.
+
+      Example:
+      form &#x3D; new FormGroup({
+        first: new FormControl({value: &#x27;Nancy&#x27;, disabled: true}, Validators.required),
+        last: new FormControl(&#x27;Drew&#x27;, Validators.required)
+      });
+
+
+      onClick &#x3D; fff300 from  brown
+    color-editor.component.ts:66 setValue &#x3D; {&quot;r&quot;:255,&quot;g&quot;:243,&quot;b&quot;:0,&quot;a&quot;:1,&quot;roundA&quot;:1,&quot;hex&quot;:&quot;fff300&quot;,&quot;rgba&quot;:&quot;rgba(255,243,0,1)&quot;},
+        brown to fff300
+
+    color-editor.component.ts:99 oncolorCtrClosed &#x3D; ff00ff from  fff300
+      */
+    this.params &#x3D; params
+    console.log(&#x60;agInit &#x3D; ${this.colorCtr.value.hex} from  ${this.color}&#x60;)
+
+    //this.setColor(&#x27;green&#x27;) // default color, but causes only one color to be displayed in picker...
+    // this.colorCtr.setValue(&quot;green&quot;, {
+    //   onlySelf  : true  //  When true, each change only affects this control, and not its parent. Default is false.
+    //  })
+    /*
+           emitEvent?: true,  // When true or not supplied (the default), both the statusChanges and valueChanges observables emit events with the latest status and value when the control value is updated. When false, no events are emitted.
+           emitModelToViewChange?: true,  // When true or not supplied (the default), each change triggers an onChange event to update the view.
+            emitViewToModelChange?: true  // When true or not supplied (the default), each change triggers an ngModelChange event to update the model.
+        })
+        Configuration options that determine how the control propagates changes and emits events when the value changes. The configuration options are passed to the AbstractControl#updateValueAndValidity * updateValueAndValidity method.
+    */
+  }
+
+  // called by ag-grid
+  getValue(): any {
+    console.log(&#x60;getValue &#x3D; ${this.colorCtr}, ${this.color}&#x60;)
+    return this.color
+  }
+
+  // Gets called when color picker gets closed
+  onColorCtrClosed() {
+    console.log(&#x60;oncolorCtrClosed &#x3D; ${this.colorCtr.value.hex} from  ${this.color}&#x60;)
+    //this.color &#x3D; &#x60;x${this.colorCtr.value.hex} &#x3D; ${this.colorCtr.value.rgba}&#x60;  // pass color on to parent
+    this.color &#x3D; this.colorCtr.value.hex  // pass color on to parent
+    this.params.api.stopEditing() // close smaller inline editor
+  }
+
+  // -------------- REST OF THESE ARE EXTRANEOUS???  ----------------------------
+
+  isPopup(): boolean {
+    console.log(&#x60;isPopup &#x3D; ${this.colorCtr.value.hex} from  ${this.color}&#x60;)
+    return false;
+  }
+
+  setColor(color: string): void {
+    console.log(&#x60;setValue &#x3D; ${JSON.stringify(this.colorCtr.value)},
+    ${this.color} to ${color}&#x60;)
+    this.color &#x3D; color;
+    this.colorCtr.setValue(color &#x3D; color)
+  }
+
+  onClick(event: any) {
+    console.log(&#x60;onClick &#x3D; ${this.colorCtr.value.hex} from  ${this.color}&#x60;)
+    this.setColor(this.colorCtr.value.hex);
+    this.params.api.stopEditing();
+  }
+
+  onMouseDown(event: any): void {
+    const key &#x3D; event.key;
+    console.log(&#x60;onMouseDown &#x3D; ${this.colorCtr.value.hex} from  ${this.color}&#x60;)
+    this.setColor(this.colorCtr.value.hex);
+    event.stopPropagation();
+  }
+
+  onKeyDown(event: any): void {
+    const key &#x3D; event.key;
+    console.log(&#x60;onKeyDown (${key})&#x3D; ${this.colorCtr.value.hex} from  ${this.color}&#x60;)
+    if (
+      key &#x3D;&#x3D;&#x3D; &#x27;ArrowLeft&#x27; || // left
+      key &#x3D;&#x3D; &#x27;ArrowRight&#x27;
+    ) {
+      // right
+      // this.toggleMood();
+      event.stopPropagation();
+      // TODO: this.params.api.stopEditing();????
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;!--div #container class&#x3D;&quot;color&quot;--&gt;
+  &lt;!-- tabindex&#x3D;&quot;0&quot; (click)&#x3D;&quot;onClick($event)&quot; (mousedown)&#x3D;&quot;onMouseDown($event)&quot;  (keydown)&#x3D;&quot;onKeyDown($event)&quot; --&gt;
+
+  &lt;!-- https://h2qutc.github.io/angular-material-components/colorpicker--&gt;
+
+  &lt;!--mat-card &gt;
+     &lt;span [style.background-color]&#x3D;&quot;colorCtr.value?.rgba&quot;&gt;HEX: {{colorCtr.value?.hex}} &amp;nbsp;&amp;nbsp; RGBA: {{colorCtr.value?.rgba}}&lt;/span&gt;
+     &lt;br&gt;
+     Warning: 1) Cclick the small color palette icon on the right.&lt;br&gt;
+     2) Select your color.&lt;br&gt;
+     3) Click just a bit to to the left of the color palette to &lt;br&gt;
+     &#x27;set&#x27; the color &amp; dismiss the dialog.
+  &lt;/mat-card--&gt;
+
+  &lt;mat-card&gt;
+    &lt;mat-form-field id&#x3D;&quot;colorFormField&quot; appearance&#x3D;&quot;fill&quot;&gt;
+      &lt;!-- [disabled]&#x3D;&quot;colorCntlDisabled&quot; causes warning --&gt;
+      &lt;input matInput [ngxMatColorPicker]&#x3D;&quot;picker&quot;
+      [formControl]&#x3D;&quot;colorCtr&quot; (click)&#x3D;&quot;onClick($event)&quot; id&#x3D;&quot;colorTextField&quot;&gt;
+      &lt;ngx-mat-color-toggle matSuffix [for]&#x3D;&quot;picker&quot; id&#x3D;&quot;colorIconToggleArea&quot;&gt;&lt;/ngx-mat-color-toggle&gt;
+
+      &lt;ngx-mat-color-picker #picker [touchUi]&#x3D;&quot;touchUi&quot; [color]&#x3D;&quot;colorPalette&quot; (closed)&#x3D;&quot;onColorCtrClosed()&quot; class&#x3D;&quot;colorPickerIcon&quot; &gt; BBBBB
+        &lt;!--button &gt;howNow?!&lt;/button&gt;
+        &lt;ng-template&gt;
+          &lt;mat-icon&gt;star&lt;/mat-icon&gt;
+          &lt;span&gt;OK&lt;/span&gt;
+        &lt;/ng-template--&gt;
+      &lt;/ngx-mat-color-picker&gt;
+
+    &lt;/mat-form-field&gt;
+
+    &lt;!--hr class&#x3D;&quot;symbol&quot; [style.hr.border-color]&#x3D;&quot;colorCtr.value?.rgba&quot;--&gt;
+
+    &lt;!--span [style.background-color]&#x3D;&quot;colorCtr.value?.rgba&quot;&gt;HEX: {{colorCtr.value?.hex}} &amp;nbsp;&amp;nbsp; {{colorCtr.value?.rgba}}&lt;/span--&gt;
+  &lt;/mat-card&gt;
+  &lt;!--mat-card &gt;
+     &lt;span [style.background-color]&#x3D;&quot;colorCtr.value?.rgba&quot;&gt;HEX: {{colorCtr.value?.hex}} &amp;nbsp;&amp;nbsp; RGBA: {{colorCtr.value?.rgba}}&lt;/span&gt;
+  &lt;/mat-card--&gt;
+
+&lt;!--/div--&gt;
+
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>./color-editor-component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">
+.mat-card {
+  //transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  //display: block;
+  //position: relative;
+  padding: 0px;
+  //border-radius: 4px;
+}
+
+/*
+.mat-form-field-appearance-legacy {
+  padding:0;
+  padding-bottom: 0em;
+}
+
+.mat-form-field-wrapper {
+  padding:0;
+  padding-bottom: 0em;
+}
+
+.mat-field.form {
+  padding:0;
+  padding-bottom: 0em;
+}
+
+.colorPickerIcon {
+  padding:0;
+}
+*/
+
+/*
+.ngx-mat-colorpicker-content  {
+  background-color: red;
+  border: 6px dotted red;
+}
+.NgxMatColorToggleComponent {
+  background-color: red;
+  border: 6px dotted red;
+}
+*/
+
+/*
+#colorTextField {
+  background-color:rgb(241, 198, 141);
+  padding:0 !important;
+}
+
+#colorIconToggleArea {
+  background-color: yellow;
+  padding:0 !important;
+}
+#colorFormField{
+  background-color:rgb(187, 236, 154);
+  padding:0 !important;
+  display:inline-block;
+}
+.mat-form.field.wrapper {
+  border: 3px solid red;
+  padding:0 !important;
+}
+*/
+
+/*
+.NgxMatColorPickerContentComponent {
+  background-color: red;
+  border: 3px dotted red;
+}
+
+.NgxMatColorPaletteComponent {
+  background-color: green;
+  border: 3px dotted green;
+}
+
+.NgxMatColorCanvasComponent {
+  background-color: aqua;
+  border: 3px dotted aqua;
+}
+
+.NgxMatColorCollectionComponent {
+  background-color: yellow;
+  border: 3px dotted yellow;
+}
+*/
+
+
+
+// https://nikitahl.com/horizontal-rule-css
+/*
+hr.gradient { // broken...
+    border: none;
+    height: 4px;
+    background-image: linear-gradient (to right, rgba(0, 0, 0, 0), rgb(226, 24, 24), rgba(0, 0, 0, 0));
+}
+
+hr.symbol {
+  //border: 4px solid cornflowerblue;
+  border-width: 4px;
+  //border-color: red;
+  //position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+hr.symbol::before {
+  content: &#x27;x:&#x27;;//{{colorCtr.value.hex}}
+  position: absolute;
+ // margin: -5px;
+  //margin-top: -25px;
+  height: 20px;
+  width: 75px;
+  font-size: 14px;
+  background: white;
+}
+
+hr.box {
+  border: none;
+  height: 0px;
+  box-shadow: 0 1px 6px 1px cornflowerblue;
+}
+*/
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><!--div #container class="color"-->  <!-- tabindex="0" (click)="onClick($event)" (mousedown)="onMouseDown($event)"  (keydown)="onKeyDown($event)" -->  <!-- https://h2qutc.github.io/angular-material-components/colorpicker-->  <!--mat-card >     <span [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}} &nbsp;&nbsp; RGBA: {{colorCtr.value?.rgba}}</span>     <br>     Warning: 1) Cclick the small color palette icon on the right.<br>     2) Select your color.<br>     3) Click just a bit to to the left of the color palette to <br>     \'set\' the color & dismiss the dialog.  </mat-card-->  <mat-card>    <mat-form-field id="colorFormField" appearance="fill">      <!-- [disabled]="colorCntlDisabled" causes warning -->      <input matInput [ngxMatColorPicker]="picker"      [formControl]="colorCtr" (click)="onClick($event)" id="colorTextField">      <ngx-mat-color-toggle matSuffix [for]="picker" id="colorIconToggleArea"></ngx-mat-color-toggle>      <ngx-mat-color-picker #picker [touchUi]="touchUi" [color]="colorPalette" (closed)="onColorCtrClosed()" class="colorPickerIcon" > BBBBB        <!--button >howNow?!</button>        <ng-template>          <mat-icon>star</mat-icon>          <span>OK</span>        </ng-template-->      </ngx-mat-color-picker>    </mat-form-field>    <!--hr class="symbol" [style.hr.border-color]="colorCtr.value?.rgba"-->    <!--span [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}} &nbsp;&nbsp; {{colorCtr.value?.rgba}}</span-->  </mat-card>  <!--mat-card >     <span [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}} &nbsp;&nbsp; RGBA: {{colorCtr.value?.rgba}}</span>  </mat-card--><!--/div--></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'GmapComponent', 'selector': 'rangertrak-gmap'},{'name': 'IconComponent', 'selector': 'icon'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'ColorEditor'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'ColorEditor.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -1,5 +1,5 @@
 
-import {  CodeArea, OpenLocationCode as PC, GoogleGeocode } from '../shared/'
+import { CodeArea, OpenLocationCode as PC, GoogleGeocode } from '../shared/'
 
 // Or use Open-Location-code.tx instead???
 export class PlusCode {
@@ -55,21 +55,21 @@ export class PlusCode {
       }
 
 
-            if (PC.isValid(pCode)) {
-              if (PC.isShort) {
-                pCode = PC.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.recoverNearest
-              }
+      if (PC.isValid(pCode)) {
+        if (PC.isShort) {
+          pCode = PC.recoverNearest(pCode, this.settings.defLat, this.settings.defLong); //OpenLocationCode.recoverNearest
+        }
 
-              // Following needs a full (Global) code
-              let coord = this.decode(pCode); //OpenLocationCode.decode
-              console.log("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', long=' + coord.longitudeCenter);
+        // Following needs a full (Global) code
+        let coord = this.decode(pCode); //OpenLocationCode.decode
+        console.log("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', long=' + coord.longitudeCenter);
 
-              this.updateCoords(coord.latitudeCenter, coord.longitudeCenter);
-            }
+        this.updateCoords(coord.latitudeCenter, coord.longitudeCenter);
+      }
 
       else {
         document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: ";
-        document.getElementById("pCodeGlobal")!.innerHTML = SettingsService.Settings.defPlusCode;
+        document.getElementById("pCodeGlobal")!.innerHTML = this.settings.defPlusCode;
       }
     }
   }
@@ -217,19 +217,19 @@ function PlusCode2() {
   let pCode = document.getElementById("addresses")!.innerHTML
   //MAIN.dbug("chkPCodes got '" + pCode + "'")
   if (pCode.length != 0) {
-      if (isValid(pCode)) {
-          if (pCode.isShort) {
-              pCode = recoverNearest(pCode, DEF_LAT, DEF_LONG) //OpenLocationCode.recoverNearest
-          }
-
-          // Following needs a full (Global) code
-          let coord = decode(pCode) //OpenLocationCode.decode
-          MAIN.dbug("chkPCodes got " + pCode + " returned: lat=" + coord.latitudeCenter + ', long=' + coord.longitudeCenter)
-
-          updateCoords(coord.latitudeCenter, coord.longitudeCenter)
-      } else {
-          document.getElementById("addressLabel").innerHTML = " is <strong style='color: darkorange'>Invalid </strong> Try: "
-          document.getElementById("pCodeGlobal").innerHTML = DEF_PCODE
+    if (isValid(pCode)) {
+      if (pCode.isShort) {
+        pCode = recoverNearest(pCode, DEF_LAT, DEF_LONG) //OpenLocationCode.recoverNearest
       }
+
+      // Following needs a full (Global) code
+      let coord = decode(pCode) //OpenLocationCode.decode
+      MAIN.dbug("chkPCodes got " + pCode + " returned: lat=" + coord.latitudeCenter + ', long=' + coord.longitudeCenter)
+
+      updateCoords(coord.latitudeCenter, coord.longitudeCenter)
+    } else {
+      document.getElementById("addressLabel").innerHTML = " is <strong style='color: darkorange'>Invalid </strong> Try: "
+      document.getElementById("pCodeGlobal").innerHTML = DEF_PCODE
+    }
   }
 }

@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common'
-import { Component, enableProdMode, Inject, OnInit } from '@angular/core';
+import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FieldReportService, FieldReportStatusType, RangerService, SettingsService, SettingsType } from '../shared/services/'
+import { FieldReportService, FieldReportStatusType, LogService, RangerService, SettingsService, SettingsType } from '../shared/services/'
 import { AgGridModule } from 'ag-grid-angular'
 //import { Color } from '@angular-material-components/color-picker';
 //import { ThemePalette } from '@angular/material/core';
@@ -9,16 +9,36 @@ import { ColorEditor } from './color-editor.component';
 import { MoodEditor } from './mood-editor.component';
 import { MoodRenderer } from './mood-renderer.component';
 import { ColDef } from 'ag-grid-community';
+import { Subscription, throwError } from 'rxjs';
+import { TimePickerComponent } from '../shared/';
+
 
 @Component({
   selector: 'rangertrak-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
-  //providers: [SettingsService]
+  providers: [SettingsService]
 })
-class SettingsComponent implements OnInit {
-  settings: SettingsType
-  settingsEditorForm!: FormGroup
+export class SettingsComponent implements OnInit, OnDestroy {
+  @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
+
+  private id = 'Settings Component'
+  title = 'Application Settings'
+
+  private settingsSubscription!: Subscription
+  public settings!: SettingsType
+
+  public settingsEditorForm!: FormGroup
+  //  public leaflet!: FormGroup
+  //  public google!: FormGroup
+
+  // Get time events from <timepicker> component
+  private timeSubscriptionStart$!: Subscription
+  private timeSubscriptionEnd$!: Subscription
+  public time!: Date
+  dateCtrl = new FormControl(new Date())
+  //timepickerFormControlStart!: FormControl
+  //timepickerFormControlEnd!: FormControl
 
   private gridApi: any
   private gridColumnApi: any
@@ -38,9 +58,6 @@ class SettingsComponent implements OnInit {
     //suppressRowHoverHighlight: true, // turn OFF row hover, default:on
     //columnHoverHighlight: true, // turn ON column hover, default: off
   }// rowSelection: "multiple"}
-
-
-
 
   defaultColDef: ColDef = {
     flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
@@ -68,8 +85,9 @@ class SettingsComponent implements OnInit {
     {
       headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code",
       cellStyle: (params: { value: string; }) => {
-        //  console.log(`editor returned: ${params.value}`)
-        debugger
+        //  this.log.verbose(`editor returned: ${params.value}`)
+        // TODO: typically the colorPicker only should stay up while hovered over...we have to click away because????
+
         let newColor = params.value
         //params.node.data.color = newColor
         //params.api.rowModel.rowsToDisplay[1].data.color
@@ -110,13 +128,13 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
         // https://angular-get-selected-rows.stackblitz.io
 
-        let row = this.getSelectedRowData()
+        //let row = this.getSelectedRowData()
         //setData
 
         // iterate through every node in the grid
         //let rowNode:any //Cannot redeclare block-scoped variable 'rowNode'
         /*this.gridApi.forEachNode((rowNode: { data: string; }, index: any) => {
-          console.log('node ' + rowNode.data + ' is in the grid');
+          this.log.verbose('node ' + rowNode.data + ' is in the grid');
         });
 */
         //this.getRowNodeId = data => data.id;
@@ -129,9 +147,10 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         //rowNode.setData
         //const setData = (data: any) //=> void;
 
-        params.value = ("444" + newColor + "kkkk")
+        //params.value = ("444" + newColor + "kkkk")
 
-        this.gridApi.refreshCells()
+        //this.gridApi.refreshCells() -- breaks things!
+        this.refreshStatusGrid()
         return { backgroundColor: newColor }
       },
       //cellRenderer: ColorRenderer,
@@ -151,7 +170,17 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       } //, minWidth: "25px" }
   */
   ];
-ri = 3.141;
+  fonts = ["'Open Sans'", "Montserrat", "Roboto", "'Playfair Display'", "Lato", "Merriweather", "Helvetica", "Lora", "'PT Serif'", "Spectral", "'Times New Roman'", "'Akaya Telivigala'",
+    "'Open Sans Condensed'", "'Saira Extra Condensed'", "Boogaloo", "Anton", "'Faster One'", "'Arima Madurai'"]  //, "'Material Icons'"]  all loaded in Index.html
+  // https://en.wikipedia.org/wiki/Pangram
+  pangrams = ["Pack my box with five dozen liquor jugs",
+    "The quick brown fox jumps over the lazy dog",
+    "Glib jocks quiz nymph to vex dwarf.",
+    "Sphinx of black quartz, judge my vow.",
+    "How vexingly quick daft zebras jump!",
+    "The five boxing wizards jump quickly.",
+    "Jackdaws love my big sphinx of quartz."]
+  pangram
 
   constructor(
     private fb: FormBuilder,
@@ -159,28 +188,246 @@ ri = 3.141;
       Consider using the @Inject decorator to specify an injection token.(-992003)
       settings.component.ts(155, 17): This type does not have a value, so it cannot be used as injection token.
     */
-    private fieldReportService: FieldReportService,
-    private rangerService: RangerService,
+    //private fieldReportService: FieldReportService,
+    private log: LogService,
+    //private rangerService: RangerService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
 
-    //this.settings = settingService()
-    this.settings = SettingsService.Settings // only using static functions/values from the service...
-    console.log('Application Settings set to static values. But not initialized???')
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        //console.log(newSettings)
+        this.settings = newSettings
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
+    // timeSubscription1$ =
+    //timeSubscription2$ =
+
+    this.pangram = this.getPangram()
+    //this.log.verbose('Settings set to static values. But not initialized???', this.id)
   }
 
   ngOnInit(): void {
     if (this.settings == undefined) {
-      console.log('WARN: Application Settings need to be initialized.')
-      // TODO: SettingsService.ResetDefaults()
+      this.log.warn('Settings need to be initialized, in ngOnInit.', this.id)
     } else {
-      console.log(`SettingsComponent: Application: ${this.settings.application} -- Version: ${this.settings.version}`)
+      this.rowData = this.settings.fieldReportStatuses
+      this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
     }
 
-    this.settingsEditorForm = this.getFormArrayFromSettingsArray()
-    this.rowData = this.settingsService.getFieldReportStatuses()
+    this.settingsEditorForm = this.getFormArrayFromSettingsArray()!
+    //this.leaflet = this.settingsEditorForm.value.leaflet
+    //this.google = this.settingsEditorForm.value.google
 
-    console.log("settings component ngInit done at ", Date())
+    // BUG: Why is this new TIME activity in LOCATION function!!!
+    // BUG: Duplicated in time-picker.component - as locationFrmGrp is there...
+    // new values here bubble up as emitted events - see onNewLocation()
+    // this.timepickerFormControlStart = this._formBuilder.control(
+    //   new Date()
+    // ) // TODO: Don't need new!
+
+    this.log.verbose("ngInit done ", this.id)
+  }
+
+  onNewTimeEventStart(newTimeEvent: any) {
+    if (!this.settings) {
+      this.log.error(`this.settings is null at onNewTimeEventStart`, this.id)
+      return
+    }
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new start OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
+    this.settings.opPeriodStart = JSON.parse(newTimeEvent)
+    this.settingsEditorForm.patchValue({ timepickerFormControlStart: JSON.parse(newTimeEvent) })
+    // This then automatically gets sent to mini-map children via their @Input statements
+    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
+    // TODO: BUT, we still need to update our local copy:
+    //this.timepickerFormControl is where the Event comes up from...
+  }
+
+  onNewTimeEventEnd(newTimeEvent: any) {
+    if (!this.settings) {
+      this.log.error(`this.settings is null at onNewTimeEventEnd`, this.id)
+      return
+    }
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new end OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
+    this.settings.opPeriodEnd = JSON.parse(newTimeEvent)
+    this.settingsEditorForm.patchValue({ timepickerFormControlEnd: JSON.parse(newTimeEvent) })
+
+    // This then automatically gets sent to mini-map children via their @Input statements
+    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
+    // TODO: BUT, we still need to update our local copy:
+    //this.timepickerFormControl is where the Event comes up from...
+  }
+
+  onBtnResetDefaults() {
+    this.log.verbose(`onBtnResetDefaults: Reset Settings.`, this.id)
+    this.settings = this.settingsService.ResetDefaults() // need to refresh page?!
+    //this.reloadPage_unused()
+  }
+
+  /**
+   * Transforms Settings Array into Form Array
+   * TODO: Rename to InitSettingsForm()
+   * REVIEW: Do we need a version like entry.component.ts's resetSettingsForm()?
+   */
+  getFormArrayFromSettingsArray() {
+    this.log.verbose("running getFormArrayFromSettingsArray()", this.id)
+
+    if (!this.settings) {
+      this.log.error(`this.settings is null at getFormArrayFromSettingsArray`, this.id)
+      return
+    }
+
+    // NOTE: Form array differs some from SettingsType so need to translate back & forth
+    return this.fb.group({
+      settingsName: [this.settings.settingsName], // FUTURE: Use if people want to load and saveas, or have various 'templates'
+      settingsDate: [this.settings.settingsDate], // when last edited... // not shown for editing
+
+      mission: [this.settings.mission],
+      event: [this.settings.event],
+      eventNotes: [this.settings.eventNotes],
+      opPeriod: [this.settings.opPeriod],
+
+      // opPeriodStart: [this.settings.opPeriodStart],
+      // opPeriodEnd: [this.settings.opPeriodEnd],
+      timepickerFormControlStart: [this.settings.opPeriodStart],
+      timepickerFormControlEnd: [this.settings.opPeriodEnd],
+
+      application: [this.settings.application], // not shown for editing
+      version: [this.settings.version], // not shown for editing
+      debugMode: [this.settings.debugMode],
+
+      defLat: [this.settings.defLat, Validators.required],
+      defLng: [this.settings.defLng, Validators.required],
+      defPlusCode: [this.settings.defPlusCode],
+      w3wLocale: [this.settings.w3wLocale],
+      allowManualPinDrops: [this.settings.allowManualPinDrops],
+
+      leaflet: this.fb.group({
+        defZoom: [this.settings.leaflet.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation  // or just zoom to bounds?
+        markerScheme: [this.settings.leaflet.markerScheme],
+        overviewDifference: [this.settings.leaflet.overviewDifference],
+        overviewMinZoom: [this.settings.leaflet.overviewMinZoom],
+        overviewMaxZoom: [this.settings.leaflet.overviewMaxZoom]
+      }),
+
+      google: this.fb.group({
+        defZoom: [this.settings.google.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation    // or just zoom to bounds?
+        markerScheme: [this.settings.google.markerScheme],
+        overviewDifference: [this.settings.google.overviewDifference],
+        overviewMinZoom: [this.settings.google.overviewMinZoom],
+        overviewMaxZoom: [this.settings.google.overviewMaxZoom]
+      }),
+
+      defFieldReportStatus: [this.settings.defFieldReportStatus],
+      fieldReportStatuses: [this.settings.fieldReportStatuses]
+      // fieldReportKeywords: string[],  // Future...could also just search notes field
+    })
+  }
+
+  /**
+   * Transform back from Form Array to Settings Array that SettingsService can save
+   *
+   * @returns
+   */
+  getSettingsArrayFromFormArray() { //}: SettingsType { // Can't do with !this.settings guard...
+    this.log.verbose("getSettingsArrayFromFormArray", this.id)
+
+    if (!this.settings) {
+      this.log.error(`this.settings is null`, this.id)
+      return null
+    }
+
+    return {
+      settingsName: this.settingsEditorForm.value.settingsName, // FUTURE: Use if people want to load and saveas, or have various 'templates'
+      settingsDate: this.settingsEditorForm.value.settingsDate, // when last edited... // not shown for editing
+
+      mission: this.settingsEditorForm.value.mission,
+      event: this.settingsEditorForm.value.event,
+      eventNotes: this.settingsEditorForm.value.eventNotes,
+      opPeriod: this.settingsEditorForm.value.opPeriod,
+      opPeriodStart: this.settingsEditorForm.value.opPeriodStart,
+      opPeriodEnd: this.settingsEditorForm.value.opPeriodEnd,
+
+      application: this.settingsEditorForm.value.application, // not shown for editing
+      version: this.settingsEditorForm.value.version, // not shown for editing
+      debugMode: this.settingsEditorForm.value.debugMode,
+
+      defLat: this.settingsEditorForm.value.defLat,
+      defLng: this.settingsEditorForm.value.defLng,
+      defPlusCode: this.settingsEditorForm.value.defPlusCode,
+      w3wLocale: this.settingsEditorForm.value.w3wLocale,
+      allowManualPinDrops: this.settingsEditorForm.value.allowManualPinDrops,
+
+      google: {
+        defZoom: this.settingsEditorForm.value.google.defZoom, //, Validators.min(3), Validators.max(21), //https://www.concretepage.com/angular-2/angular-4-min-max-validation    // or just zoom to bounds?
+        markerScheme: this.settingsEditorForm.value.google.markerScheme,
+        overviewDifference: this.settingsEditorForm.value.google.overviewDifference,
+        overviewMinZoom: this.settingsEditorForm.value.google.overviewMinZoom,
+        overviewMaxZoom: this.settingsEditorForm.value.google.overviewMaxZoom
+      },
+
+      leaflet: {
+        defZoom: this.settingsEditorForm.value.leaflet.defZoom, //, Validators.min(3), Validators.max(21), //https://www.concretepage.com/angular-2/angular-4-min-max-validation  // or just zoom to bounds?
+        markerScheme: this.settingsEditorForm.value.leaflet.markerScheme,
+        overviewDifference: this.settingsEditorForm.value.leaflet.overviewDifference,
+        overviewMinZoom: this.settingsEditorForm.value.leaflet.overviewMinZoom,
+        overviewMaxZoom: this.settingsEditorForm.value.leaflet.overviewMaxZoom
+      },
+      defFieldReportStatus: this.settingsEditorForm.value.defFieldReportStatus,
+      fieldReportStatuses: this.settingsEditorForm.value.fieldReportStatuses
+      // fieldReportKeywords: string[],  // Future...could also just search notes field
+    }
+  }
+
+  onGridReady = (params: any) => {
+    this.log.verbose(" onGridReady", this.id)
+
+    this.gridApi = params.api
+    this.gridColumnApi = params.columnApi
+
+    this.refreshStatusGrid()
+    //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
+  }
+
+  onFirstDataRendered(params: any) {
+    this.refreshStatusGrid() // REVIEW: needed???
+  }
+
+  onBtnAddFRStatus() {
+    this.rowData.push({ status: 'New Status', color: '', icon: '' })
+    this.refreshStatusGrid()
+    this.log.verbose(`Reloading window!`, this.id)
+    this.reloadPage()
+  }
+
+  refreshStatusGrid() {
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+      this.gridApi.sizeColumnsToFit();
+    } else {
+      this.log.verbose("no this.gridApi yet in refreshStatusGrid()", this.id)
+    }
+    // this.log.verbose(`Reloading window!`, this.id)
+    //window.location.reload() -- reloads endlessly!
+    // TODO: try   getSelectedRowData() & then refresh row color instead - set color by row, vs cell
+    /*
+     async delayedAction() {
+    this.dbug("resetMap");
+    await this.sleep(2000);  // use delay(2000) instead
+    this.dbug("resetMap has slept");
+    this.filterLeafletMap();
+    this.dbug("resetMap complete");
+  }
+
+  this.util.sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  */
   }
 
   // https://angular-get-selected-rows.stackblitz.io
@@ -191,102 +438,22 @@ ri = 3.141;
     //      return selectedData;
   }
 
-  onBtnResetDefaults() {
-    SettingsService.ResetDefaults()
-  }
-
-  // TODO: Need different settings stored for gMap, lMap and miniMap
-  getFormArrayFromSettingsArray() {
-    console.log("into getFormArrayFromSettingsArray at ", Date())
-
-    // NOTE: Form array differs some from SettingsType so need to translate back & forth
-    return this.fb.group({
-      application: [this.settings.application], // not shown for editing
-      version: [this.settings.version], // not shown for editing
-      id: [this.settings.id],
-      name: [this.settings.name],
-      note: [this.settings.note],
-      latitude: [this.settings.defLat, Validators.required],
-      longitude: [this.settings.defLng, Validators.required],
-
-      zoom: [this.settings.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation
-
-      plusCode: [this.settings.defPlusCode],
-      w3wLocale: [this.settings.w3wLocale],
-      markerSize: [this.settings.markerSize],
-      markerShape: [this.settings.markerShape, Validators.required],
-      defRangerStatus: [this.settings.defRangerStatus],
-      allowManualPinDrops: [this.settings.allowManualPinDrops],
-      debugMode: [this.settings.debugMode],
-      logToPanel: [this.settings.logToPanel], // null or blank for unchecked 'yes'
-      logToConsole: [this.settings.logToConsole], // null or blank for unchecked 'check'
-    })
-
-  }
-
-  getSettingsArrayFromFormArray(): SettingsType {
-    return {
-      application: this.settingsEditorForm.value.application as string,
-      version: this.settingsEditorForm.value.version as string,
-      id: this.settingsEditorForm.value.id as number,
-      name: this.settingsEditorForm.value.name as string,
-      note: this.settingsEditorForm.value.note as string,
-      defLat: this.settingsEditorForm.value.latitude as number,
-      defLng: this.settingsEditorForm.value.longitude as number,
-      defZoom: this.settingsEditorForm.value.zoom as number,
-      defPlusCode: this.settingsEditorForm.value.plusCode as string,
-      w3wLocale: this.settingsEditorForm.value.w3wLocale as string,
-      markerSize: this.settingsEditorForm.value.markerSize as number,
-      markerShape: this.settingsEditorForm.value.markerShape as number,
-      defRangerStatus: this.settingsEditorForm.value.defRangerStatus as number,
-      allowManualPinDrops: this.settingsEditorForm.value.allowManualPinDrops as boolean,
-      debugMode: this.settingsEditorForm.value.debugMode as boolean,
-      logToPanel: this.settingsEditorForm.value.logToPanel as boolean,
-      logToConsole: this.settingsEditorForm.value.logToConsole as boolean,
-    }
-  }
-
-  onGridReady = (params: any) => {
-    console.log("Settings Form onGridReady")
-
-    this.gridApi = params.api
-    this.gridColumnApi = params.columnApi
-
-    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
-  }
-
-  onFirstDataRendered(params: any) {
-    params.api.sizeColumnsToFit();
-    if (this.gridApi) {
-      this.gridApi.refreshCells()
-    } else {
-      console.log("no this.gridApi yet in onFirstDataRendered()")
-    }
-  }
-
-  onBtnAddFRStatus() {
-    this.rowData.push({ status: 'New Status', color: '', icon: '' })
-
-    if (this.gridApi) {
-      this.gridApi.refreshCells()
-    } else {
-      console.log("no this.gridApi yet in onFirstDataRendered()")
-    }
-    this.gridApi.sizeColumnsToFit();
+  reloadPage() {
+    //REVIEW: Does this zap existing changes elsewhere on the page (used for reseting field statuses..)
+    this.log.verbose(`Reloading window!`, this.id)
+    window.location.reload()
   }
 
   //TODO: If user edits field report status color, need to update background: refreshCells()????
   onFormSubmit(): void {
-    console.log("Update Application Settings...")
-    let newSettings: SettingsType = this.getSettingsArrayFromFormArray()
-    SettingsService.Update(newSettings)
+    this.log.verbose("Update Settings...", this.id)
+    let newSettings: SettingsType = this.getSettingsArrayFromFormArray()!
+    this.settingsService.updateSettings(newSettings)
 
-    console.log(`Update FieldReportStatuses... ${JSON.stringify(this.rowData)}`)
-    this.settingsService.updateFieldReportStatus(this.rowData)
-
-    // TODO: Set this up as an observable, or Components that have ALREADY pulled down the values won't refresh them!!!!
     // TODO: If Debug disabled then call:
     //enableProdMode()
+    this.log.verbose(`Reloading window!`, this.id)
+    this.reloadPage()
   }
 
   displayHide(htmlElementID: string) {
@@ -305,5 +472,15 @@ ri = 3.141;
   getPlatform() {
     // TODO:
     // https://material.angular.io/cdk/platform/overview
+  }
+
+  getPangram() {
+    return this.pangrams[Math.floor(Math.random() * this.pangrams.length)]
+  }
+
+  ngOnDestroy() {
+    this.settingsSubscription.unsubscribe()
+    this.timeSubscriptionStart$.unsubscribe()
+    this.timeSubscriptionEnd$.unsubscribe()
   }
 }

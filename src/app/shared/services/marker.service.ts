@@ -1,8 +1,9 @@
 import * as L from 'leaflet';
 
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Optional, SkipSelf } from '@angular/core';
 import { PopupService } from './popup.service';
+import { throwError } from 'rxjs';
 
 export type MarkerType = {
   lat: number,
@@ -11,11 +12,27 @@ export type MarkerType = {
   draggable: boolean
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class MarkerService {
   stations: string = '/assets/data/VashonFireStations.geojson';
 
-  constructor(private http: HttpClient, private popupService: PopupService) {
+  constructor(
+    private http: HttpClient,
+    private popupService: PopupService
+    @Optional() @SkipSelf() existingService: MarkerService,
+  ) {
+    if (existingService) {
+      /**
+       * see https://angular.io/guide/singleton-services
+       * Use @Optional() @SkipSelf() in singleton constructors to ensure
+       * future modules don't provide extra copies of this singleton service
+       * per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
+       */
+      throwError(() => {
+        console.error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+        new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+      })
+    }
   }
 
   static scaledRadius(val: number, maxVal: number): number {
@@ -53,20 +70,6 @@ export class MarkerService {
     });
   }
 
-  labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  generateFakeMarkerData(markers:MarkerType[], num: number = 15) {
-    console.log("Generating " + num + " more rows of FAKE field reports!")
-    for (let i = 0; i < num; i++) {
-      markers.push(
-        {
-          lat: 45 + Math.floor(Math.random() * 2000) / 1000,
-          lng: -121 + Math.floor(Math.random() * 1000) / 1000,
-          label: this.labels[Math.floor(Math.random() * this.labels.length)],
-          draggable: true
-        }
-      )
-    }
-    //console.log("Pushed # " + numberPushed++)
-  }
+}
 }

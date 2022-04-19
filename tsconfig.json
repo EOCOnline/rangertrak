@@ -1,7 +1,10 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
+/* To learn more about this file see: https://angular.io/config/tsconfig.
+    "disableTypeScriptVersionCheck": true
+*/
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
     "outDir": "./dist/rangertrak",
     "forceConsistentCasingInFileNames": true,
@@ -22,7 +25,6 @@
       "es2020",
       "dom"
     ],
-
     "resolveJsonModule": true,
   },
   "angularCompilerOptions": {
@@ -31,5 +33,26 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true,
     "fullTemplateTypeCheck": true
+  },
+  "paths": {
+    "@shared/*": [
+      "./src/shared/*"
+    ],
+    "@services/*": [
+      "./src/shared/services/*"
+    ]
   }
+  /*
+  above from https://giancarlobuomprisco.com/typescript/writing-scalabale-typescript
+  https://www.devasking.com/issue/tsconfigjson-include-property
+  ,
+  "files": [
+    "./node_modules/picocolors/types.ts"
+  ]
+
+  ,
+  "exclude": [
+    "./node_modules/picocolors/types.ts"
+  ]
+  */
 }

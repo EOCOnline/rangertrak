@@ -1,0 +1,29 @@
+@use "@material/theme"
+with ($primary: #962f10,
+  $on-primary: #442C2E);
+@use "@material/button";
+@use "@material/button/styles";
+@use "@material/banner";
+
+
+//.map-container {
+//height: 200px !important;
+// "some" map-container is setting height to 500px. How to reseet/overrule?
+//}
+
+#enter__SmallMap {
+  display         : block;
+  float           : right;
+  width           : 30vw; // 30vw;
+  height          : 10vh; //200px !important; //
+  border          : 5px brown;
+  background-color: #F0F0F0;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+.strongish {
+  font-weight: 500;
+}

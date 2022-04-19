@@ -1,2 +1,27 @@
-<div style="background-color: rgb(230, 97, 97); font-weight: bold; padding:1em">We can't find that page: Error 404<br>
-<a href="/">Return Home</a></div>
+<div>
+  <pageHeader [parentTitle]="title">...</pageHeader>
+  <div style="background-color: rgb(230, 97, 97); font-weight: bold; padding:1em">
+    We can't find that page: Error 404<br />
+    <a href="/">Return Home</a>
+  </div>
+  <object width="1024px" height="600px">
+    <param name="movie" value="http://player.vimeo.com/video/26192400?h=85463dcf19" />
+    <param name="allowFullScreen" value="true" />
+    <param name="allowscriptaccess" value="always" />
+    <param name="autoplay" value="true" />
+
+    <embed
+      width="100%"
+      height="80vh"
+      src="http://player.vimeo.com/video/26192400?h=85463dcf19"
+      class="youtube-player"
+      type="text/html"
+      allowscriptaccess="always"
+      allowfullscreen="true"
+    />
+  </object>
+</div>
+<div>
+  Many Thanks (& laughs) for the above. Credits to Steve Lambert:
+  <a href="https://visitsteve.com/" target="_blank">Visit Steve!</a>
+</div>

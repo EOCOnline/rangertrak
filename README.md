@@ -18,10 +18,13 @@ There are a number of ways to geocode a latitude & longitude. See https://en.wik
  - Auto-lookup of Ham Radio operators by callsign
  - Google or Leaflet/ESRI maps
  - Rangers can be in Teams; both are easily edited/sorted/filters
+ - Documented using [https://compodoc.app/guides/jsdoc-tags.html]Compodoc
 
 ## Future Roadmap
 - To work with out flaws!
 - Save and reload data to local files
+- Allow loading of additinoal layers (e.g., an image of trails, local features),
+  perhaps with https://github.com/publiclab/Leaflet.DistortableImage
 - improved docs: screenshots and architectural diagrams
 - - consider https://github.com/EventEmitter2/EventEmitter2 for multi-threaded msgs with service workers
 
@@ -31,15 +34,15 @@ There are a number of ways to geocode a latitude & longitude. See https://en.wik
 - 3Word functionality (for now)
 
 ## To Run
-- (Future:) Simply visit https://www.RangerTrak.org once and the 2nd time you visit you will be given an option to 'install/download' the web page/application. That should put an icon on your homescreen or desktop that you can thereafter access without Internet access!
-  
+- (The Vision:) Simply visit https://www.RangerTrak.org once and the 2nd time you visit you will be given an option to 'install/download' the web page/application. That should put an icon on your homescreen or desktop that you can thereafter access without Internet access!
+
 ## To Build and Test
 - Grab a local copy of Github.com/eocOnline/Rangertrak
 - Install NodeJS and NPM
 - cd RangerTrak
 - npm install
 - ng serve -o
-  
+
 - or Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Running unit tests

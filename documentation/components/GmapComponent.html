@@ -1,0 +1,2457 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/Vagrant.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li
+  >
+  GmapComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/gmap/gmap.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+    </p>
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">providers</td>
+                <td class="col-md-9">
+                                <code><a href="../injectables/SettingsService.html" target="_self" >SettingsService</a></code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>rangertrak-gmap</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./gmap.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./gmap.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#apiLoaded" >apiLoaded</a>
+                            </li>
+                            <li>
+                                <a href="#center" >center</a>
+                            </li>
+                            <li>
+                                <a href="#circleCenter" >circleCenter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
+                                <a href="#fieldReports" >fieldReports</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
+                                <a href="#gMap" >gMap</a>
+                            </li>
+                            <li>
+                                <a href="#infowindow" >infowindow</a>
+                            </li>
+                            <li>
+                                <a href="#infoWindow" >infoWindow</a>
+                            </li>
+                            <li>
+                                <a href="#labelIndex" >labelIndex</a>
+                            </li>
+                            <li>
+                                <a href="#map" >map</a>
+                            </li>
+                            <li>
+                                <a href="#mapOptions" >mapOptions</a>
+                            </li>
+                            <li>
+                                <a href="#markerCluster" >markerCluster</a>
+                            </li>
+                            <li>
+                                <a href="#markerClustererImagePath" >markerClustererImagePath</a>
+                            </li>
+                            <li>
+                                <a href="#markers" >markers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
+                                <a href="#mouseLatLng" >mouseLatLng</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
+                                <a href="#overviewGMap" >overviewGMap</a>
+                            </li>
+                            <li>
+                                <a href="#overviewMapType" >overviewMapType</a>
+                            </li>
+                            <li>
+                                <a href="#radius" >radius</a>
+                            </li>
+                            <li>
+                                <a href="#title" >title</a>
+                            </li>
+                            <li>
+                                <a href="#trafficLayer" >trafficLayer</a>
+                            </li>
+                            <li>
+                                <a href="#trafficLayerVisible" >trafficLayerVisible</a>
+                            </li>
+                            <li>
+                                <a href="#zoom" >zoom</a>
+                            </li>
+                            <li>
+                                <a href="#zoomDisplay" >zoomDisplay</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#addManualMarkerEvent" >addManualMarkerEvent</a>
+                            </li>
+                            <li>
+                                <a href="#addMarker" >addMarker</a>
+                            </li>
+                            <li>
+                                <a href="#apiLoadedCallbackUNUSED" >apiLoadedCallbackUNUSED</a>
+                            </li>
+                            <li>
+                                <a href="#clamp" >clamp</a>
+                            </li>
+                            <li>
+                                <a href="#displayAllMarkers" >displayAllMarkers</a>
+                            </li>
+                            <li>
+                                <a href="#fitBounds" >fitBounds</a>
+                            </li>
+                            <li>
+                                <a href="#logCenter" >logCenter</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onMapInitialized" >onMapInitialized</a>
+                            </li>
+                            <li>
+                                <a href="#onMapMouseMove" >onMapMouseMove</a>
+                            </li>
+                            <li>
+                                <a href="#toggleTrafficLayer" >toggleTrafficLayer</a>
+                            </li>
+                            <li>
+                                <a href="#zoomed" >zoomed</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(settingsService: <a href="../injectables/SettingsService.html" target="_self">SettingsService</a>, fieldReportService: <a href="../injectables/FieldReportService.html" target="_self">FieldReportService</a>, httpClient: <a href="https://angular.io/api/common/http/HttpClient" target="_blank">HttpClient</a>, document: Document)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="129" class="link-to-prism">src/app/gmap/gmap.component.ts:129</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>settingsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SettingsService.html" target="_self" >SettingsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>fieldReportService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FieldReportService.html" target="_self" >FieldReportService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>httpClient</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/common/http/HttpClient" target="_blank" >HttpClient</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>document</td>
+                                                  
+                                                        <td>
+                                                                    <code>Document</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addManualMarkerEvent"></a>
+                    <span class="name">
+                        <span ><b>addManualMarkerEvent</b></span>
+                        <a href="#addManualMarkerEvent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>addManualMarkerEvent(event: <a href="../classes/Map.html" target="_self">google.maps.MapMouseEvent</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="300"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:300</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+                                    <td>
+                                                <code><a href="../classes/Map.html" target="_self" >google.maps.MapMouseEvent</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addMarker"></a>
+                    <span class="name">
+                        <span ><b>addMarker</b></span>
+                        <a href="#addMarker"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>addMarker(latLng: <a href="../anys/google.html" target="_self">google.maps.LatLng</a>, infoContent: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, labelText: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, title: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, labelColor: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, fontSize: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, icon: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, animation)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="310"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:310</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>latLng</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.LatLng</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>infoContent</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&quot;&quot;</code>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>labelText</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&quot;grade&quot;</code>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>title</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&quot;&quot;</code>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>labelColor</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&quot;aqua&quot;</code>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>fontSize</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&quot;12px&quot;</code>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>icon</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&quot;&quot;</code>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>animation</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>google.maps.Animation.DROP</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="apiLoadedCallbackUNUSED"></a>
+                    <span class="name">
+                        <span ><b>apiLoadedCallbackUNUSED</b></span>
+                        <a href="#apiLoadedCallbackUNUSED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>apiLoadedCallbackUNUSED()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="177"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:177</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="clamp"></a>
+                    <span class="name">
+                        <span ><b>clamp</b></span>
+                        <a href="#clamp"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>clamp(num: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, min: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, max: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="272"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:272</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>num</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>min</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>max</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayAllMarkers"></a>
+                    <span class="name">
+                        <span ><b>displayAllMarkers</b></span>
+                        <a href="#displayAllMarkers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>displayAllMarkers()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="393"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:393</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fitBounds"></a>
+                    <span class="name">
+                        <span ><b>fitBounds</b></span>
+                        <a href="#fitBounds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>fitBounds()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="276"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:276</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logCenter"></a>
+                    <span class="name">
+                        <span ><b>logCenter</b></span>
+                        <a href="#logCenter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>logCenter()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="289"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:289</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="181"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:181</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onMapInitialized"></a>
+                    <span class="name">
+                        <span ><b>onMapInitialized</b></span>
+                        <a href="#onMapInitialized"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onMapInitialized(mappy: <a href="../classes/Map.html" target="_self">google.maps.Map</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="197"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:197</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>mappy</td>
+                                    <td>
+                                                <code><a href="../classes/Map.html" target="_self" >google.maps.Map</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onMapMouseMove"></a>
+                    <span class="name">
+                        <span ><b>onMapMouseMove</b></span>
+                        <a href="#onMapMouseMove"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onMapMouseMove(event: <a href="../classes/Map.html" target="_self">google.maps.MapMouseEvent</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="451"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:451</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+                                    <td>
+                                                <code><a href="../classes/Map.html" target="_self" >google.maps.MapMouseEvent</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="toggleTrafficLayer"></a>
+                    <span class="name">
+                        <span ><b>toggleTrafficLayer</b></span>
+                        <a href="#toggleTrafficLayer"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>toggleTrafficLayer()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="457"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:457</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoomed"></a>
+                    <span class="name">
+                        <span ><b>zoomed</b></span>
+                        <a href="#zoomed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>zoomed()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="293"
+                            class="link-to-prism">src/app/gmap/gmap.component.ts:293</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="apiLoaded"></a>
+                    <span class="name">
+                        <span ><b>apiLoaded</b></span>
+                        <a href="#apiLoaded"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="123" class="link-to-prism">src/app/gmap/gmap.component.ts:123</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="center"></a>
+                    <span class="name">
+                        <span ><b>center</b></span>
+                        <a href="#center"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.LatLngLiteral</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="93" class="link-to-prism">src/app/gmap/gmap.component.ts:93</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="circleCenter"></a>
+                    <span class="name">
+                        <span ><b>circleCenter</b></span>
+                        <a href="#circleCenter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.LatLngLiteral</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="126" class="link-to-prism">src/app/gmap/gmap.component.ts:126</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fieldReports"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>fieldReports</b></span>
+                        <a href="#fieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#FieldReportType" target="_self" >FieldReportType[]</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="129" class="link-to-prism">src/app/gmap/gmap.component.ts:129</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="gMap"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>gMap</b></span>
+                        <a href="#gMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Map.html" target="_self" >google.maps.Map</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="86" class="link-to-prism">src/app/gmap/gmap.component.ts:86</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="infowindow"></a>
+                    <span class="name">
+                        <span ><b>infowindow</b></span>
+                        <a href="#infowindow"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new google.maps.InfoWindow({
+    maxwidth: &quot;150px&quot;,
+  })</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="108" class="link-to-prism">src/app/gmap/gmap.component.ts:108</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="infoWindow"></a>
+                    <span class="name">
+                        <span ><b>infoWindow</b></span>
+                        <a href="#infoWindow"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Map.html" target="_self" >MapInfoWindow</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(MapInfoWindow, {static: false})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">src/app/gmap/gmap.component.ts:77</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="labelIndex"></a>
+                    <span class="name">
+                        <span ><b>labelIndex</b></span>
+                        <a href="#labelIndex"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="121" class="link-to-prism">src/app/gmap/gmap.component.ts:121</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="map"></a>
+                    <span class="name">
+                        <span ><b>map</b></span>
+                        <a href="#map"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Map.html" target="_self" >GoogleMap</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(GoogleMap, {static: false})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">src/app/gmap/gmap.component.ts:76</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapOptions"></a>
+                    <span class="name">
+                        <span ><b>mapOptions</b></span>
+                        <a href="#mapOptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Map.html" target="_self" >google.maps.MapOptions</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    zoomControl: true,
+    scrollwheel: true,
+    disableDoubleClickZoom: true,
+    mapTypeId: &#x27;hybrid&#x27;,
+    zoom: 17,
+    maxZoom: 21,
+    minZoom: 4,
+    draggableCursor: &#x27;crosshair&#x27;, //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
+    //heading: 90,
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="96" class="link-to-prism">src/app/gmap/gmap.component.ts:96</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="markerCluster"></a>
+                    <span class="name">
+                        <span ><b>markerCluster</b></span>
+                        <a href="#markerCluster"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>GMC.MarkerClusterer</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="114" class="link-to-prism">src/app/gmap/gmap.component.ts:114</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="markerClustererImagePath"></a>
+                    <span class="name">
+                        <span ><b>markerClustererImagePath</b></span>
+                        <a href="#markerClustererImagePath"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="116" class="link-to-prism">src/app/gmap/gmap.component.ts:116</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="markers"></a>
+                    <span class="name">
+                        <span ><b>markers</b></span>
+                        <a href="#markers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.Marker[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="113" class="link-to-prism">src/app/gmap/gmap.component.ts:113</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mouseLatLng"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>mouseLatLng</b></span>
+                        <a href="#mouseLatLng"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.LatLngLiteral</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="81" class="link-to-prism">src/app/gmap/gmap.component.ts:81</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="overviewGMap"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>overviewGMap</b></span>
+                        <a href="#overviewGMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Map.html" target="_self" >google.maps.Map</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="87" class="link-to-prism">src/app/gmap/gmap.component.ts:87</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="overviewMapType"></a>
+                    <span class="name">
+                        <span ><b>overviewMapType</b></span>
+                        <a href="#overviewMapType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{ cur: 0, types: { type: [&#x27;roadmap&#x27;, &#x27;terrain&#x27;, &#x27;satellite&#x27;, &#x27;hybrid&#x27;,] } }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">src/app/gmap/gmap.component.ts:88</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="radius"></a>
+                    <span class="name">
+                        <span ><b>radius</b></span>
+                        <a href="#radius"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>10</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="127" class="link-to-prism">src/app/gmap/gmap.component.ts:127</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="title"></a>
+                    <span class="name">
+                        <span ><b>title</b></span>
+                        <a href="#title"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;Google Map&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="80" class="link-to-prism">src/app/gmap/gmap.component.ts:80</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="trafficLayer"></a>
+                    <span class="name">
+                        <span ><b>trafficLayer</b></span>
+                        <a href="#trafficLayer"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new google.maps.TrafficLayer()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="94" class="link-to-prism">src/app/gmap/gmap.component.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="trafficLayerVisible"></a>
+                    <span class="name">
+                        <span ><b>trafficLayerVisible</b></span>
+                        <a href="#trafficLayerVisible"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="95" class="link-to-prism">src/app/gmap/gmap.component.ts:95</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoom"></a>
+                    <span class="name">
+                        <span ><b>zoom</b></span>
+                        <a href="#zoom"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">src/app/gmap/gmap.component.ts:91</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoomDisplay"></a>
+                    <span class="name">
+                        <span ><b>zoomDisplay</b></span>
+                        <a href="#zoomDisplay"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="92" class="link-to-prism">src/app/gmap/gmap.component.ts:92</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MapInfoWindow, MapMarker, GoogleMap } from &#x27;@angular/google-maps&#x27;
+import { MatIconModule } from &#x27;@angular/material/icon&#x27;
+import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone } from &#x27;@angular/core&#x27;;
+import { DOCUMENT, JsonPipe } from &#x27;@angular/common&#x27;;
+import { ComponentFixture } from &#x27;@angular/core/testing&#x27;;
+import { HttpClient } from &#x27;@angular/common/http&#x27;;
+import { catchError, map, Observable, of } from &#x27;rxjs&#x27;;
+
+//import { MarkerClusterer } from &quot;@googlemaps/markerclusterer&quot;
+
+import * as GMC from &quot;@googlemaps/markerclusterer&quot;; // Current!
+import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from &#x27;../shared/services&#x27;;
+import { Map, CodeArea, OpenLocationCode, Utility } from &#x27;../shared/&#x27;
+//import { LatLng, latLng } from &#x27;leaflet&#x27;;
+
+/*
+
+https://github.com/googlemaps/js-markerclusterer - current!
+
+ https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer - Angular components doesn&#x27;t encapulate options functionality: identical clones only: ugg.
+MarkerClustererPlus Library - also old
+
+
+  https://developers.google.com/maps/support/
+  https://angular-maps.com/
+  https://github.com/atmist/snazzy-info-window#html-structure
+  https://angular-maps.com/api-docs/agm-core/interfaces/lazymapsapiloaderconfigliteral
+  https://stackblitz.com/edit/angular-google-maps-demo
+  https://github.com/googlemaps/js-markerclusterer
+  https://github.com/angular-material-extensions/google-maps-autocomplete
+
+   https://developers.google.com/maps/documentation/javascript/using-typescript
+
+ https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md
+ TODO: Allow geocoding: https://rapidapi.com/blog/google-maps-api-react/
+
+ https://timdeschryver.dev/blog/google-maps-as-an-angular-component
+ Option doc: https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions
+
+
+GoogleMapsModule exports three components that we can use:
+- GoogleMap: this is the wrapper around Google Maps, available via the google-map selector
+- MapMarker: used to add markers on the map, available via the map-marker selector
+- MapInfoWindow: the info window of a marker, available via the map-info-window selector
+*/
+
+declare const google: any
+
+// const kaanapali: google.maps.LatLngLiteral &#x3D; { lat: 20.9338, lng: -156.7168 }
+// const kahanaRidge: google.maps.LatLngLiteral &#x3D; { lat: 20.973375, lng: -156.664915 }
+// const vashon: google.maps.LatLngLiteral &#x3D; { lat: 47.4471, lng: -122.4627 }
+
+let marker: google.maps.Marker
+
+@Component({
+  selector: &#x27;rangertrak-gmap&#x27;,
+  templateUrl: &#x27;./gmap.component.html&#x27;,
+  styleUrls: [&#x27;./gmap.component.scss&#x27;],
+  providers: [SettingsService]
+})
+export class GmapComponent implements OnInit {    //extends Map
+
+  // Keep reference to map component, w/ @ViewChild decorator, allows:
+  // https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#methods-and-getters
+  // https://angular.io/api/core/ViewChild
+  // next line provides this.map!
+  //@ViewChild(google.maps.Map, { static: false }) map!: google.maps.Map
+  //@ViewChild(google.maps.InfoWindow, { static: false }) info!: google.maps.InfoWindow //| undefined
+  // following was in https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#mapinfowindow
+  // also: https://github.com/angular/components/blob/master/src/google-maps/google-map/README.md &amp;
+  // https://stackblitz.com/edit/angular-9-google-maps-5v2cu8?file&#x3D;src%2Fapp%2Fapp.component.ts
+
+
+  @ViewChild(GoogleMap, { static: false }) map!: GoogleMap // even needed?
+  @ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
+
+  // items for template
+  title &#x3D; &#x27;Google Map&#x27;
+  mouseLatLng?: google.maps.LatLngLiteral;
+  //Vashon &#x3D; new google.maps.LatLng(47.4471, -122.4627)
+  //Kaanapali &#x3D; new google.maps.LatLng(20.9338, -156.7168)
+
+  // google.maps.Map is NOT the same as GoogleMap...
+  gMap?: google.maps.Map
+  overviewGMap?: google.maps.Map
+  overviewMapType &#x3D; { cur: 0, types: { type: [&#x27;roadmap&#x27;, &#x27;terrain&#x27;, &#x27;satellite&#x27;, &#x27;hybrid&#x27;,] } }
+  // overviewGMapOptions: google.maps.MapOptions
+  // items for &lt;google-map&gt;
+  zoom // actual zoom level of main map
+  zoomDisplay // what&#x27;s displayed below main map
+  center: google.maps.LatLngLiteral
+  trafficLayer &#x3D; new google.maps.TrafficLayer()
+  trafficLayerVisible &#x3D; 0
+  mapOptions: google.maps.MapOptions &#x3D; {
+    zoomControl: true,
+    scrollwheel: true,
+    disableDoubleClickZoom: true,
+    mapTypeId: &#x27;hybrid&#x27;,
+    zoom: 17,
+    maxZoom: 21,
+    minZoom: 4,
+    draggableCursor: &#x27;crosshair&#x27;, //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
+    //heading: 90,
+  }
+
+  infowindow &#x3D; new google.maps.InfoWindow({
+    maxwidth: &quot;150px&quot;,
+  });
+
+  // Google MapMarker only wraps google.maps.LatLngLiteral (positions) - NOT google.maps.Marker: styles, behaviors, etc
+  markers: google.maps.Marker[] &#x3D; []
+  markerCluster!: GMC.MarkerClusterer
+  // markerPositions: google.maps.LatLngLiteral[] angular brain-dead wrapper
+  markerClustererImagePath &#x3D;
+    &#x27;https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m&#x27;;
+  // markerOptions &#x3D; { draggable: false }
+  // label &#x3D; &#x27;RangerTrak Label&#x27;
+
+  labelIndex &#x3D; 0;
+  // infoContent &#x3D; &#x27;&#x27;
+  apiLoaded //: Observable&lt;boolean&gt;
+
+  // next 2 even used?
+  circleCenter: google.maps.LatLngLiteral &#x3D; { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }  // this.Vashon// kahanaRidge
+  radius &#x3D; 10;
+
+  fieldReports?: FieldReportType[]
+
+  constructor(
+    private settingsService: SettingsService,
+    private fieldReportService: FieldReportService,
+    private httpClient: HttpClient,
+    @Inject(DOCUMENT) private document: Document) {
+
+    this.fieldReportService &#x3D; fieldReportService
+    this.zoom &#x3D; SettingsService.Settings.defZoom
+    this.zoomDisplay &#x3D; SettingsService.Settings.defZoom
+
+    // https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
+    // this.markerPositions &#x3D; []; evil angular wrapper
+
+
+
+    // https://github.com/googlemaps/js-markerclusterer
+    // use default algorithm and renderer
+    /*
+
+    constructor MarkerClusterer(map: google.maps.Map, markers?: google.maps.Marker[] | undefined, options?: MarkerClustererOptions | undefined): MarkerClusterer
+Class for clustering markers on a Google Map.
+
+See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.markerclusterer.html
+
+*/
+
+       // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
+    // https://developers.google.com/maps/documentation/javascript/reference/coordinates
+
+    this.center &#x3D; { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
+    // this.circleCenter: google.maps.LatLngLiteral &#x3D; {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng};
+    // https://github.com/angular/components/tree/master/src/google-maps
+    // this.apiLoaded &#x3D; httpClient.jsonp(&#x60;https://maps.googleapis.com/maps/api/js?key&#x3D;${SettingsService.secrets[3].key}&#x60;, &#x27;callback&#x27;)
+    this.apiLoaded &#x3D; true
+    /*
+    httpClient.jsonp(&#x60;https://maps.googleapis.com/maps/api/js?key&#x3D;YOUR_API_HERE&#x60;, &quot;callback&quot;)
+      .pipe(
+        map(() &#x3D;&gt; true),
+        catchError(() &#x3D;&gt; of(false)),
+      );
+    */
+    // google.maps.event.addDomListener(window, &#x27;load&#x27;, this.initMap);
+    // this.LoadMap()
+    //super(&#x27;MyName&#x27;)
+  }
+
+  apiLoadedCallbackUNUSED() {
+    console.log(&quot;got apiLoadedCallback()&quot;)
+  }
+
+  ngOnInit(): void {
+    console.log(&#x27;into ngOnInit()&#x27;)
+
+    // https://developers.google.com/maps/documentation/geolocation/overview Works - if you want map zoomed on user&#x27;s device...
+    /*
+    navigator.geolocation.getCurrentPosition((position) &#x3D;&gt; {
+      this.center &#x3D; {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      }
+    })
+    */
+
+    // gMap is still null...
+  }
+
+  onMapInitialized(mappy: google.maps.Map) {
+    console.log(&#x60;onMapInitialized()&#x60;)
+    this.gMap &#x3D; mappy
+
+    this.displayAllMarkers()
+    // REVIEW: Doesn&#x27;t work with NO Markers?
+
+
+    // https://github.com/googlemaps/js-markerclusterer
+    // use default algorithm and renderer
+    this.markerCluster &#x3D; new GMC.MarkerClusterer({
+      map: this.gMap,
+      markers: this.markers,
+      // algorithm?: Algorithm,
+      // renderer?: Renderer,
+      // onClusterClick?: onClusterClickHandler,
+    })
+
+    console.log(&#x60;Setting G map Center&#x3D; lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLng}, zoom: ${SettingsService.Settings.defZoom}&#x60;)
+    this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })
+    this.gMap.setZoom(SettingsService.Settings.defZoom)
+    this.fitBounds() // typically obviates the above set Center/Zoom
+
+
+    const OVERVIEW_DIFFERENCE &#x3D; 6
+    const OVERVIEW_MIN_ZOOM &#x3D; 5
+    const OVERVIEW_MAX_ZOOM &#x3D; 16
+    // https://developers.google.com/maps/documentation/javascript/examples/inset-map
+    // instantiate the overview map without controls
+    this.overviewGMap &#x3D; new google.maps.Map(
+      document.getElementById(&quot;overview&quot;) as HTMLElement,
+      {
+        ...this.mapOptions,
+        disableDefaultUI: true,
+        gestureHandling: &quot;none&quot;,
+        zoomControl: false,
+        mapTypeId: &#x27;terrain&#x27;, // &#x27;roadmap&#x27; https://developers.google.com/maps/documentation/javascript/maptypes
+      }
+    );
+
+    this.overviewGMap!.addListener(&quot;click&quot;, () &#x3D;&gt; {
+      let mapId &#x3D; this.overviewMapType.cur++ % 4
+      this.overviewGMap!.setMapTypeId(this.overviewMapType.types.type[mapId])
+      console.log(&#x60;Overview map set to ${this.overviewMapType.types.type[mapId]}&#x60;)
+    })
+
+    // const infowindow &#x3D; new google.maps.InfoWindow({
+    //   content: &quot;Mouse location...&quot;,
+    //   position: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng },
+    // })
+    //infowindow.open(this.overviewGMap);
+
+    this.overviewGMap!.addListener(&quot;mousemove&quot;, ($event: any) &#x3D;&gt; { // TODO: Only do while mouse is over map for efficiency?!
+      if (this.zoomDisplay &amp;&amp; this.overviewGMap) {
+        this.zoomDisplay &#x3D; this.overviewGMap.getZoom()!
+      }
+      if ($event.latLng) {
+        this.mouseLatLng &#x3D; $event.latLng.toJSON()
+      }
+      //console.log(&#x60;Overview map at ${JSON.stringify(this.mouseLatLng)}&#x60;)
+      //infowindow.setContent(&#x60;${JSON.stringify(latlng)}&#x60;)
+    })
+
+    this.gMap!.addListener(&quot;bounds_changed&quot;, () &#x3D;&gt; {
+      this.overviewGMap!.setCenter(this.gMap!.getCenter()!);
+      this.overviewGMap!.setZoom(
+        this.clamp(
+          this.gMap!.getZoom()! - OVERVIEW_DIFFERENCE,
+          OVERVIEW_MIN_ZOOM,
+          OVERVIEW_MAX_ZOOM
+        )
+      );
+    })
+  }
+
+  clamp(num: number, min: number, max: number) {
+    return Math.min(Math.max(num, min), max)
+  }
+
+  fitBounds() {
+    this.fieldReportService.recalcFieldBounds()
+    let bound &#x3D; this.fieldReportService.getFieldReportBound()
+    //console.log(&#x60;Fitting bounds&#x3D; :${JSON.stringify(bound)}&#x60;)
+    this.gMap?.fitBounds({ south: bound.south, west: bound.west, north: bound.north, east: bound.east }) //SW, NE)
+  }
+
+  // -----------------------------------------------------------
+  // Buttons
+  // consider: https://developers.google.com/maps/documentation/javascript/examples/control-custom-state
+  // https://developers.google.com/maps/documentation/javascript/examples/split-map-panes
+
+  // or on centerChanged
+  logCenter() {
+    console.log(&#x60;Map center is at ${JSON.stringify(this.map.getCenter())}&#x60;)
+  }
+
+  zoomed() {
+    if (this.zoom &amp;&amp; this.gMap) {
+      this.zoom &#x3D; this.gMap.getZoom()!
+      this.zoomDisplay &#x3D; this.gMap.getZoom()!
+    }
+  }
+
+  addManualMarkerEvent(event: google.maps.MapMouseEvent) {
+    if (SettingsService.Settings.allowManualPinDrops) {
+      if (event.latLng) {
+        this.addMarker(event.latLng)
+      } else {
+        console.log(&#x60;addMarker FAILED&#x60;)
+      }
+    }
+  }
+
+  addMarker(latLng: google.maps.LatLng, infoContent &#x3D; &quot;&quot;, labelText &#x3D; &quot;grade&quot;, title &#x3D; &quot;&quot;, labelColor &#x3D; &quot;aqua&quot;, fontSize &#x3D; &quot;12px&quot;, icon &#x3D; &quot;&quot;, animation &#x3D; google.maps.Animation.DROP) {
+    console.log(&#x60;addMarker&#x60;)
+
+    if (infoContent &#x3D;&#x3D; &quot;&quot;) {
+      infoContent &#x3D; &#x60;Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}&#x60;
+    }
+    if (title &#x3D;&#x3D; &quot;&quot;) {
+      title &#x3D; infoContent
+    }
+    labelText &#x3D; &quot;grade&quot;
+    fontSize &#x3D; &quot;16px&quot;
+    /*
+        //icon &#x3D; &quot;rocket&quot;
+        animation &#x3D; google.maps.Animation.DROP
+    */
+
+    let labels &#x3D; &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;;
+    // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
+    // https://material.angular.io/components/icon/overview
+    //https://developers.google.com/fonts/docs/material_icons
+    //https://fonts.google.com/icons
+    if (latLng) {
+      let dt &#x3D; new Date();
+      let time &#x3D; &#x60;${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}&#x60; // :${Utility.zeroFill(dt.getMilliseconds(), 4)}&#x60;
+      /* REVIEW:
+       let lat:number &#x3D; event.latLng.lat  // gets:  Type &#x27;() &#x3D;&gt; number&#x27; is not assignable to type &#x27;number&#x27;.
+       let lng:number &#x3D; event.latLng.lng
+       lat &#x3D; Math.round(lat * 1000.0) / 1000.0
+       lng &#x3D; Math.round(lng * 1000.0) / 1000.0
+       let pos &#x3D; &#x60;lat: ${lat}; lng: ${lng} &#x60;
+       */
+      let pos &#x3D; &#x60;lat: ${latLng.lat}; lng: ${latLng.lng}&#x60;
+      //let pos &#x3D; &#x60;lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; lng: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } &#x60;
+
+      console.log(&quot;Actually adding marker now...&quot;)
+      let m &#x3D; new google.maps.Marker({
+        draggable: true,
+        animation: animation,
+        // map: this.gMap,
+        position: latLng,
+        title: title,
+        icon: icon,
+        label: {
+          // label: this.labels[this.labelIndex++ % this.labels.length],
+          text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+          fontFamily: &quot;Material Icons&quot;,
+          color: labelColor,
+
+          fontSize: fontSize,
+        },
+        // label: labels[labelIndex++ % labels.length],
+      })
+      // markers can only be keyboard focusable when they have click listeners
+      // open info window when marker is clicked
+      // marker.addListener(&quot;click&quot;, () &#x3D;&gt; {
+      //this.infoWindow.setContent(label);
+      //this.infoWindow.open(this.map, marker);
+      // })
+
+      m.addListener(&quot;click&quot;,   // this.toggleBounce)
+        () &#x3D;&gt; {
+          //this.infowindow.setContent(&#x60;${ SpecialMsg } &#x60;)
+          //&#x60;Manually dropped: ${time} at ${pos} &#x60;
+          this.infowindow.setContent(infoContent)
+          this.infowindow.open({
+            // new google.maps.InfoWindow.open({
+            //content: &#x27;How now red cow.&#x27;,
+            anchor: m,
+            //setPosition: event.latLng,
+            //map: this.gMap,
+            // shouldFocus: false,
+          })
+        }
+      )
+      //this.markerPositions.push(latLng.toJSON()); evil angular wrapper
+
+      this.markers.push(m)
+    } else {
+      console.log(&quot;event.latLng is BAD; can not add marker..&quot;)
+    }
+    //this.refreshMarkerDisplay()
+  }
+
+  displayAllMarkers() {
+    let latlng
+    //let infoContent
+    let labelText
+    let title
+    let icon
+    let labelColor
+    let fr: FieldReportType
+
+    let fieldReportStatuses: FieldReportStatusType[] &#x3D; this.settingsService.getFieldReportStatuses()
+    // REVIEW: Might this mess with existing fr&#x27;s?
+    this.fieldReports &#x3D; this.fieldReportService.getFieldReports()
+    console.log(&#x60;displayAllMarkers got ${this.fieldReports.length} field reports&#x60;)
+    for (let i &#x3D; 0; i &lt; this.fieldReports.length; i++) {
+      fr &#x3D; this.fieldReports[i]
+      latlng &#x3D; new google.maps.LatLng(fr.lat, fr.lng)
+      title &#x3D; &#x60;${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, lng ${fr.lng} with &quot;${fr.note}&quot;.&#x60;
+      //title &#x3D; infoContent
+
+      switch (fr.callsign) {
+        case &quot;W7VMI&quot;:
+          //icon &#x3D; &quot;https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png&quot;
+          icon &#x3D; &quot;http://maps.gstatic.com/mapfiles/ms2/micons/sunny.png&quot;
+          break;
+        case &quot;!Team3&quot;:
+          icon &#x3D; &quot;http://maps.gstatic.com/mapfiles/ms2/micons/blue.png&quot;
+          break;
+        case &quot;!Team2&quot;:
+          icon &#x3D; &quot;http://maps.google.com/mapfiles/kml/paddle/2.png&quot;
+          break;
+        case &quot;!Team1&quot;:
+          icon &#x3D; &quot;http://maps.google.com/mapfiles/kml/paddle/1.png&quot;
+          break;
+        case &quot;KI7SWF&quot;:
+          icon &#x3D; &quot;http://maps.google.com/mapfiles/kml/shapes/capital_big_highlight.png&quot;
+          break;
+        default:
+          icon &#x3D; &#x27;&#x27;
+          break;
+      }
+
+      for (let j &#x3D; 0; j &lt; fieldReportStatuses.length; j++) {
+        if (fieldReportStatuses[j].status !&#x3D; fr.status) continue
+        labelText &#x3D; fieldReportStatuses[j].icon
+        labelColor &#x3D; fieldReportStatuses[j].color
+        break
+      }
+
+      console.log(&#x60;displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}&#x60;)
+      this.addMarker(latlng, title, labelText, title, labelColor, &quot;28px&quot;, icon)
+    }
+
+    console.log(&#x60;displayAllMarkers added ${this.fieldReports.length} markers&#x60;)
+
+    //   addMarker(latLng: google.maps.LatLng, infoContent &#x3D; &quot;InfoWindow Content&quot;, labelText &#x3D; &quot;grade&quot;, title &#x3D; &quot;RangerTitle&quot;, labelColor &#x3D; &quot;#ffffff&quot;, fontSize &#x3D; &quot;18px&quot;, icon &#x3D; &quot;rocket&quot;, animation &#x3D; google.maps.Animation.DROP)
+    // addMarker(latLng: google.maps.LatLng, infoContent &#x3D; &quot;InfoWindow Content&quot;, labelText&#x3D; &quot;grade&quot;, title&#x3D;&quot;RangerTitle&quot;, labelColor &#x3D; &quot;#ffffff&quot;, fontSize&#x3D;&quot;18px&quot;, icon &#x3D; &quot;rocket&quot;, animation&#x3D; google.maps.Animation.DROP) {
+  }
+
+  onMapMouseMove(event: google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      this.mouseLatLng &#x3D; event.latLng.toJSON()
+    }
+  }
+
+  toggleTrafficLayer() {
+    this.trafficLayer.setMap(
+      (this.trafficLayerVisible ^&#x3D; 1) ? this.gMap : null ) // trafficLayerVisible toggles between 0 &amp; 1
+    // map.setTilt(45);
+    console.log(&#x60;TrafficLayer made ${this.trafficLayerVisible ? &#x27;visible&#x27; : &#x27;hidden&#x27;}&#x60;)
+  }
+}
+
+/*
+  markerDragEnd2($event: google.maps.MouseEvent) {
+    console.log($event);
+    this.lat &#x3D; $event.coords.lat;
+    this.lng &#x3D; $event.coords.lng;
+    this.getAddress(this.latitude, this.longitude);  // TODO: Get/display Street address?!
+  }
+  */
+
+
+
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;h1&gt;{{title}}&lt;/h1&gt;
+
+&lt;details&gt;
+  &lt;summary class&#x3D;&quot;big&quot;&gt;Instructions&lt;/summary&gt;
+  This currently displays all rangers/teams without filtering. In the future more options should be available, including
+  different icons/text boxes, etc.&lt;br /&gt;
+  &lt;ul&gt;
+    &lt;li style&#x3D;&quot;color:red&quot;&gt;If most recent field reports are not displayed, please curse, then refresh the page, or try
+      switching temporarily to the Field Reports screen to ensure they were recorded. Let me know, but I believe they are getting stored.&lt;/li&gt;
+    &lt;li&gt;NOTE: per &lt;a href&#x3D;&quot;https://issuetracker.google.com/issues/35827808&quot; target&#x3D;&quot;_blank&quot;&gt;#35827808&lt;/a&gt; this map can
+      NOT be made available when offline!&lt;/li&gt;
+    &lt;li&gt;Zoom in close (in some populated areas) to display the tilt control at lower right on map: allows map tilting &amp;
+      rotation&lt;/li&gt;
+    &lt;li&gt;Display Keyboard controls with button at lower right of map&lt;/li&gt;
+    &lt;li&gt;Click or hover over marker to display coordinates and callsign&lt;/li&gt;
+    &lt;li&gt;Right-click on Map (not Satellite view) to display traffic layer&lt;/li&gt;
+    &lt;li&gt;Upper Left Map/Satellite control allows viewing Terrain or Labels as desired&lt;/li&gt;
+    &lt;li&gt;Click on the overlay map (at the lower right) to switch between the 4 amps types: roadmap, terrain, satellite &amp; hybrid&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/details&gt;
+&lt;br&gt;
+
+&lt;div *ngIf&#x3D;&quot;apiLoaded&quot; id&#x3D;&quot;container&quot;&gt;
+  &lt;!-- | async --&gt;
+  &lt;google-map id&#x3D;&quot;gMap&quot; width&#x3D;&quot;100%&quot; [center]&#x3D;&quot;center&quot; [zoom]&#x3D;&quot;zoom&quot; [options]&#x3D;&quot;mapOptions&quot;
+    (mapClick)&#x3D;&quot;addManualMarkerEvent($event)&quot; (mapMousemove)&#x3D;&quot;onMapMouseMove($event)&quot; (mapRightclick)&#x3D;&quot;toggleTrafficLayer()&quot; (zoomChanged)&#x3D;&quot;zoomed()&quot;
+    (mapInitialized)&#x3D;&quot;onMapInitialized($event)&quot; (mapMouseover)&#x3D;&quot;zoomed()&quot;&gt;
+
+    &lt;!--map-marker-clusterer [imagePath]&#x3D;&quot;markerClustererImagePath&quot;&gt;
+      &lt;map-marker *ngFor&#x3D;&quot;let markerPosition of markerPositions&quot;
+                  [position]&#x3D;&quot;markerPosition&quot;&gt;&lt;/map-marker&gt;
+    &lt;/map-marker-clusterer--&gt;
+
+    &lt;div id&#x3D;&quot;markerDiv&quot; #markerDiv *ngFor&#x3D;&quot;let marker of markers&quot;&gt;&lt;/div&gt;
+
+    &lt;!--
+      (mapClick)&#x3D;&quot;openInfoWindow($event)&quot;
+
+        [position]&#x3D;&quot;marker.position&quot;
+        [options]&#x3D;&quot;marker.options&quot;  --&gt;
+
+    &lt;map-circle [center]&#x3D;&quot;circleCenter&quot; [radius]&#x3D;&quot;radius&quot;&gt;&lt;/map-circle&gt;
+
+
+    &lt;div id&#x3D;&quot;overview&quot;&gt;
+      &lt;map-info-window&gt; infoWindowContent could go here&lt;/map-info-window&gt;
+      &lt;div&gt;Latitude: &lt;span class&#x3D;&quot;strong&quot;&gt;{{mouseLatLng?.lat | number:&#x27;1.5-5&#x27;}}&lt;/span&gt;   Longitude: &lt;span class&#x3D;&quot;strong&quot;&gt;{{mouseLatLng?.lng | number:&#x27;1.5-5&#x27;}}&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+  &lt;/google-map&gt;
+
+  &lt;!-- https://angular.io/api/common/DecimalPipe#digitsinfo --&gt;
+  &lt;div&gt;Latitude: &lt;span class&#x3D;&quot;strong&quot;&gt;{{mouseLatLng?.lat | number:&#x27;1.5-5&#x27;}}&lt;/span&gt;   Longitude: &lt;span class&#x3D;&quot;strong&quot;&gt;{{mouseLatLng?.lng | number:&#x27;1.5-5&#x27;}}&lt;/span&gt;
+    Zoom: &lt;span class&#x3D;&quot;strong&quot;&gt;{{zoomDisplay}}&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;br&gt;
+&lt;details&gt;
+  &lt;summary class&#x3D;&quot;big&quot;&gt;Advanced&lt;/summary&gt;
+  &lt;ul&gt;
+    &lt;li&gt;This might be used to set filtering options - or maybe we rely on selections made in the Field Report
+      pane/window...&lt;/li&gt;
+    &lt;li&gt;&lt;a href&#x3D;&quot;https://developers.google.com/maps/documentation/javascript/reference/map&quot;&gt;Detailed code/option
+        references&lt;/a&gt;&lt;/li&gt;
+
+  &lt;/ul&gt;
+  &lt;button (click)&#x3D;&quot;logCenter()&quot;&gt;Log center&lt;/button&gt;
+  &lt;!--button (click)&#x3D;&quot;onInfoClick()&quot;&gt;Info Window&lt;/button--&gt;
+  &lt;!--button (click)&#x3D;&quot;addMarker()&quot;&gt;Add marker&lt;/button--&gt;
+&lt;/details&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>./gmap.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">.big {
+  font-size: larger;
+  font-weight: bold;
+}
+
+#map2 {
+  background-color: azure;
+  width: 80%;
+  height: 200px;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+/* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      //  #gMap {
+      //   height: 100%;
+      // }
+
+      /* Optional: Makes the sample page fill the window. */
+      // html,
+      // body {
+      //   height: 100%;
+      //   margin: 0;
+      //   padding: 0;
+      // }
+
+      #container,
+      #gmap {
+        height: 100%;
+        width: 100%;
+      }
+
+      #gMap {
+        position: relative;
+      }
+
+      #overview {
+        //position: absolute;
+        position: relative;
+        float: right;
+        left: 0px;
+        height: 175px;
+        width: 175px;
+        bottom: 0px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><h1>{{title}}</h1><details>  <summary class="big">Instructions</summary>  This currently displays all rangers/teams without filtering. In the future more options should be available, including  different icons/text boxes, etc.<br />  <ul>    <li style="color:red">If most recent field reports are not displayed, please curse, then refresh the page, or try      switching temporarily to the Field Reports screen to ensure they were recorded. Let me know, but I believe they are getting stored.</li>    <li>NOTE: per <a href="https://issuetracker.google.com/issues/35827808" target="_blank">#35827808</a> this map can      NOT be made available when offline!</li>    <li>Zoom in close (in some populated areas) to display the tilt control at lower right on map: allows map tilting &      rotation</li>    <li>Display Keyboard controls with button at lower right of map</li>    <li>Click or hover over marker to display coordinates and callsign</li>    <li>Right-click on Map (not Satellite view) to display traffic layer</li>    <li>Upper Left Map/Satellite control allows viewing Terrain or Labels as desired</li>    <li>Click on the overlay map (at the lower right) to switch between the 4 amps types: roadmap, terrain, satellite & hybrid</li>  </ul></details><br><div *ngIf="apiLoaded" id="container">  <!-- | async -->  <google-map id="gMap" width="100%" [center]="center" [zoom]="zoom" [options]="mapOptions"    (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="toggleTrafficLayer()" (zoomChanged)="zoomed()"    (mapInitialized)="onMapInitialized($event)" (mapMouseover)="zoomed()">    <!--map-marker-clusterer [imagePath]="markerClustererImagePath">      <map-marker *ngFor="let markerPosition of markerPositions"                  [position]="markerPosition"></map-marker>    </map-marker-clusterer-->    <div id="markerDiv" #markerDiv *ngFor="let marker of markers"></div>    <!--      (mapClick)="openInfoWindow($event)"        [position]="marker.position"        [options]="marker.options"  -->    <map-circle [center]="circleCenter" [radius]="radius"></map-circle>    <div id="overview">      <map-info-window> infoWindowContent could go here</map-info-window>      <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:\'1.5-5\'}}</span>   Longitude: <span class="strong">{{mouseLatLng?.lng | number:\'1.5-5\'}}</span>      </div>    </div>  </google-map>  <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->  <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:\'1.5-5\'}}</span>   Longitude: <span class="strong">{{mouseLatLng?.lng | number:\'1.5-5\'}}</span>    Zoom: <span class="strong">{{zoomDisplay}}</span>  </div></div><br><details>  <summary class="big">Advanced</summary>  <ul>    <li>This might be used to set filtering options - or maybe we rely on selections made in the Field Report      pane/window...</li>    <li><a href="https://developers.google.com/maps/documentation/javascript/reference/map">Detailed code/option        references</a></li>  </ul>  <button (click)="logCenter()">Log center</button>  <!--button (click)="onInfoClick()">Info Window</button-->  <!--button (click)="addMarker()">Add marker</button--></details></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'GmapComponent', 'selector': 'rangertrak-gmap'},{'name': 'IconComponent', 'selector': 'icon'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'GmapComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'GmapComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -1,33 +1,28 @@
-<h1>Log</h1>
-
-<pre id="log">Event information log</pre>
-
-<!--
-<ion-header>
-  <ion-toolbar>
-    <ion-title>SheetJS Ionic Demo</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title>SheetJS Demo</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-grid>
-    <ion-row *ngFor="let row of data">
-      <ion-col *ngFor="let val of row">
-        {{val}}
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
-
-<ion-footer padding>
-  <input type="file" (change)="onFileChange($event)" multiple="false" />
-  <button ion-button color="secondary" (click)="import()">Import Data</button>
-  <button ion-button color="secondary" (click)="export()">Export Data</button>
-</ion-footer>
--->
+<pageHeader [parentTitle]="title">...</pageHeader>
+<div id="log">
+  Event information log
+</div>
+<!--div class="tiny">this is a tiny test!</div-->
+<mat-card>
+  <mat-card-content>
+    <h3>Log levels to display:</h3>
+    <section>
+      <!-- Other colors: primary, secondary, accent and warn  https://stackoverflow.com/questions/57926149/angular-material-colors -->
+      <mat-checkbox [(ngModel)]="excessive" (change)="this.redisplayLog()" color="primary"
+        >Excessive</mat-checkbox
+      >
+      <mat-checkbox [(ngModel)]="verbose" (change)="this.redisplayLog()"
+        >Verbose</mat-checkbox
+      >
+      <mat-checkbox [(ngModel)]="info" (change)="this.redisplayLog()"
+        >Informational</mat-checkbox
+      >
+      <mat-checkbox [(ngModel)]="warn" (change)="this.redisplayLog()"
+        >Warnings</mat-checkbox
+      >
+      <mat-checkbox [(ngModel)]="error" (change)="this.redisplayLog()"
+        >Errors</mat-checkbox
+      >
+    </section>
+  </mat-card-content>
+</mat-card>

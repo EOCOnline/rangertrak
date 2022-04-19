@@ -1,31 +1,79 @@
-body
-{
-	font-family: arial, helvetica, freesans, sans-serif;
-	font-size: 100%;
-	color: #333;
-	background-color: #ddd;
+#log {
+  height            : 70vh;
+  font-family       : monospace;
+  font-size         : 0.7em;
+  line-height       : 12px;
+  padding           : 2px 5px;
+  //color           : rgb(57, 34, 161);
+  background-color  : rgb(226, 238, 156);
+  border            : 1px solid #030;
+  border-radius     : 4px;
+  overflow          : auto;
 }
 
-h1
-{
-	font-size: 1.5em;
-	font-weight: normal;
-	margin: 0;
+#log .tiny {
+  font-size  : 8px;
+  font-family: 'Times New Roman', Times, serif;
+
+  color           : crimson;
+  background-color: cornflowerblue;
 }
 
-pre
-{
-	height: 10em;
-	font-family: monospace;
-	font-size: 1em;
-	padding: 2px 5px;
-	color: #0f0;
-	background-color: #111;
-	border: 1px solid #030;
-	border-radius: 4px;
-	overflow: auto;
+.tiny {
+  font-size       : 8px;
+  font-family     : 'Times New Roman', Times, serif;
+  color           : crimson !important;
+  background-color: cornflowerblue;
 }
 
-button {
-  margin-right: 8px;
+
+h3 {
+  margin            : 0px 0px;
+  //background-color: crimson;
 }
+
+.mat-checkbox {
+  margin: 0px 10px;
+}
+
+.excessive {
+  background-color: rgb(255, 121, 148);
+  color           : rgb(106, 103, 103);
+  font-size       : 8px;
+}
+
+.verbose {
+  color    : rgb(66, 65, 65);
+  font-size: 8px;
+}
+
+.Info {
+  //font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  color: rgb(7, 246, 39);
+}
+
+.info {
+  //font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  color: rgb(7, 246, 39);
+}
+
+.warn {
+  color: orange;
+}
+
+.error {
+  color: red
+}
+
+// body {
+//   font-family     : arial, helvetica, freesans, sans-serif;
+//   font-size       : 100%;
+//   color           : #333;
+//   background-color: #ddd;
+// }
+
+// h1 {
+//   font-size  : 1.5em;
+//   font-weight: normal;
+//   margin     : 0;
+// }

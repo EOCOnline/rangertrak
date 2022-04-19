@@ -1,90 +1,63 @@
-<h1>{{title}}</h1>
+<pageHeader [parentTitle]="title">...</pageHeader>
 
-<!--  https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet -->
-
-<!-- div id="mapLeafletPanel" onactivate="resetMap()">
-  <p>Click zooms to cluster's bounds or shows coordinates, scroll wheel zooms & drag mouse to move.</p>
-  <form id="mapLeafletEntry">
-    <fieldset><legend>Filter</legend>
-      <div Title="Only entries matching ALL the following filters will be displayed.">
-        Team: <input id="teamFilterId" value="" size="8" autofocus>
-        AND  Callsign: <input id="callFilterId" size="8" value="">
-        AND  Within <input id="minuteFilterId" size="5" value="0">
-        Minutes of <input id="baseTimeFilterId" size="15" value="">
-      </div>
-    </fieldset>
-    <!- -  input id="submitButton" type="button" value="Filter Map" onclick="filterLeafletMap()";>
-    <strong>← Click this button to recenter map & zoom to markers!</strong>
-    <!-input type="reset" value="Reset Map" onclick="resetMapForm()"->
-    </form>
-
-    <br>
-
-    <div id="bigLeafletMapId" style="width: 100%; height: 70vh;"></div-->
-
-
-<!--div *ngIf="apiLoaded" | async-->
-
-
+<!--div *ngIf="apiLoaded" | async -->
 
 <div class="lmap-container">
   <div class="lmap-frame">
-    <div id="lmap"></div>
-
-    <!--div id="markerDiv" #markerDiv *ngFor="let marker of markers">
-    </div-->
-
+    <div id="map" leaflet (leafletMapReady)="onMapReady($event)" ></div>
   </div>
-  <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-  <div>Latitude: <span class="strong">{{mouseLatLng?.lat | number:'1.4-5'}}</span> Longitude: <span class="strong">{{mouseLatLng?.lng | number:'1.4-5'}}</span>
-    Zoom: <span class="strong">{{zoom}}</span>
+  <div>
+    Latitude: <span class="strong">{{mouseLatLng.lat.toFixed(5)}}</span> Longitude:
+    <span class="strong">{{mouseLatLng.lng.toFixed(5)}}</span> Zoom:
+    <span class="strong">{{zoom}}</span>
   </div>
 </div>
-
-
-
+<div id="overview" overview></div>
+<br />
 
 <!--
-    <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="options"
-      (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)" (mapRightclick)="addTrafficLayer()"
-      (mapInitialized)="onMapInitialized($event)">
+  https://material.io/components/switches/web#switches
+  https://material.io/components/switches/web#api -->
+<label for="selectedFieldReports">Field reports to show: All ({{this.numAllRows}}) </label>
 
-      <div id="markerDiv" #markerDiv *ngFor="let marker of markers">
+<button
+  id="selectedFieldReports"
+  class="mdc-switch mdc-switch--unselected"
+  type="button"
+  role="switch"
+  aria-checked="false"
+  (click)="onSwitchSelectedFieldReports()"
+>
+  <div class="mdc-switch__track"></div>
+  <div class="mdc-switch__handle-track">
+    <div class="mdc-switch__handle">
+      <div class="mdc-switch__shadow">
+        <div class="mdc-elevation-overlay"></div>
       </div>
-
-      <
-        (mapClick)="openInfoWindow($event)"
-
-          [position]="marker.position"
-          [options]="marker.options"  >
-
-      <map-circle [center]="circleCenter" [radius]="radius"></map-circle>
-
-      <map-info-window>{{ infoContent }}</map-info-window>
-
-    </google-map>
-
-    <- https://angular.io/api/common/DecimalPipe#digitsinfo >
-    <div>Latitude: <span class="strong">{{display?.lat | number:'1.4-5'}}</span>   Longitude: <span class="strong">{{display?.lng | number:'1.4-5'}}</span>
+      <div class="mdc-switch__ripple"></div>
+      <div class="mdc-switch__icons">
+        <svg class="mdc-switch__icon mdc-switch__icon--on" viewBox="0 0 24 24">
+          <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z" />
+        </svg>
+        <svg class="mdc-switch__icon mdc-switch__icon--off" viewBox="0 0 24 24">
+          <path d="M20 13H4v-2h16v2z" />
+        </svg>
+      </div>
     </div>
-  </div-->
-<br>
+  </div>
+</button>
+<label for="selectedFieldReports">
+  Just those ({{this.numSelectedRows}}) selected in the Field Report panel</label
+>
 
-
-
-
-
-
+<br />
 <details>
   <summary>Instructions</summary>
   <ul>
     <li>This displays All Field Reports for All Rangers by default.</li>
-    <li>FUTURE: IF a subset of Field Reports are selected on the Field Reports page, then ONLY those can be displayed
-      here.</li>
-  </ul>>
+    <li>
+      IF a subset of Field Reports are selected on the Field Reports page, then ONLY those
+      can be displayed here.
+    </li>
+  </ul>
 </details>
-<br>
-<h2>Future functionality</h2>
-<ul>
-  <li>Allow sorting/filtering: by time, callsign, team, etc.</li>
-</ul>

@@ -1,0 +1,33 @@
+  // Flex Layout: https://tburleson-layouts-demos.firebaseapp.com/#/docs
+
+  .header_unused {
+    background: rgb(248, 251, 252);
+  }
+
+  .title {
+    font-weight: bolder;
+    font-size  : 20px;
+    font-family: Lato, 'Arial Narrow Bold', sans-serif;
+  }
+
+  .event {
+    font-weight: bold;
+    font-size  : 16px;
+    font-family: Lato, 'Arial Narrow Bold', sans-serif;
+    font-style : italic;
+    text-align : center;
+  }
+
+  .opPeriod {
+    text-align : right;
+    font-weight: bold;
+    font-size  : 14px;
+    font-family: Lato, 'Arial Narrow Bold', sans-serif;
+  }
+
+  .clock {
+    text-align : right;
+    font-weight: bold;
+    font-size  : 16px;
+    font-family: Lato, 'Arial Narrow Bold', sans-serif;
+  }

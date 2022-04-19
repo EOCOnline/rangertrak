@@ -1,0 +1,2147 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/Vagrant.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Injectables</li>
+  <li >RangerService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/shared/services/ranger.service.ts</code>
+        </p>
+
+
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#excelData" >excelData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#localStorageRangerName" >localStorageRangerName</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#nextId" >nextId</a>
+                            </li>
+                            <li>
+                                <a href="#observRangers$" >observRangers$</a>
+                            </li>
+                            <li>
+                                <a href="#rangers" >rangers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#rangersSubject" >rangersSubject</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#AddRanger" >AddRanger</a>
+                            </li>
+                            <li>
+                                <a href="#deleteAllRangers" >deleteAllRangers</a>
+                            </li>
+                            <li>
+                                <a href="#deleteRanger" >deleteRanger</a>
+                            </li>
+                            <li>
+                                <a href="#DisplayRangers" >DisplayRangers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#findIndex" >findIndex</a>
+                            </li>
+                            <li>
+                                <a href="#getRanger" >getRanger</a>
+                            </li>
+                            <li>
+                                <a href="#GetRangers" >GetRangers</a>
+                            </li>
+                            <li>
+                                <a href="#loadHardcodedRangers" >loadHardcodedRangers</a>
+                            </li>
+                            <li>
+                                <a href="#LoadRangersFromExcel" >LoadRangersFromExcel</a>
+                            </li>
+                            <li>
+                                <a href="#LoadRangersFromExcel2" >LoadRangersFromExcel2</a>
+                            </li>
+                            <li>
+                                <a href="#LoadRangersFromJSON" >LoadRangersFromJSON</a>
+                            </li>
+                            <li>
+                                <a href="#LoadRangersFromLocalStorage" >LoadRangersFromLocalStorage</a>
+                            </li>
+                            <li>
+                                <a href="#SortRangersByCallsign" >SortRangersByCallsign</a>
+                            </li>
+                            <li>
+                                <a href="#SortRangersByCallsign_unused" >SortRangersByCallsign_unused</a>
+                            </li>
+                            <li>
+                                <a href="#subscribe" >subscribe</a>
+                            </li>
+                            <li>
+                                <a href="#UpdateLocalStorage" >UpdateLocalStorage</a>
+                            </li>
+                            <li>
+                                <a href="#updateRanger" >updateRanger</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(httpClient: <a href="https://angular.io/api/common/http/HttpClient" target="_blank">HttpClient</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/shared/services/ranger.service.ts:48</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>httpClient</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/common/http/HttpClient" target="_blank" >HttpClient</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AddRanger"></a>
+                    <span class="name">
+                        <span ><b>AddRanger</b></span>
+                        <a href="#AddRanger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>AddRanger(formData: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="277"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:277</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>formData</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&quot;&quot;</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/RangerType.html" target="_self" >RangerType</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteAllRangers"></a>
+                    <span class="name">
+                        <span ><b>deleteAllRangers</b></span>
+                        <a href="#deleteAllRangers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteAllRangers()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="301"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:301</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteRanger"></a>
+                    <span class="name">
+                        <span ><b>deleteRanger</b></span>
+                        <a href="#deleteRanger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteRanger(callsign: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="270"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:270</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>callsign</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="DisplayRangers"></a>
+                    <span class="name">
+                        <span ><b>DisplayRangers</b></span>
+                        <a href="#DisplayRangers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>DisplayRangers(msg: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="238"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:238</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>msg</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findIndex"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>findIndex</b></span>
+                        <a href="#findIndex"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findIndex(callsign: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="293"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:293</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>callsign</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getRanger"></a>
+                    <span class="name">
+                        <span ><b>getRanger</b></span>
+                        <a href="#getRanger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getRanger(callsign: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="259"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:259</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>callsign</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GetRangers"></a>
+                    <span class="name">
+                        <span ><b>GetRangers</b></span>
+                        <a href="#GetRangers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>GetRangers()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="66"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:66</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>{}</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadHardcodedRangers"></a>
+                    <span class="name">
+                        <span ><b>loadHardcodedRangers</b></span>
+                        <a href="#loadHardcodedRangers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>loadHardcodedRangers()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="345"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:345</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LoadRangersFromExcel"></a>
+                    <span class="name">
+                        <span ><b>LoadRangersFromExcel</b></span>
+                        <a href="#LoadRangersFromExcel"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>LoadRangersFromExcel(eventTarget: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="187"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:187</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>eventTarget</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>{}</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LoadRangersFromExcel2"></a>
+                    <span class="name">
+                        <span ><b>LoadRangersFromExcel2</b></span>
+                        <a href="#LoadRangersFromExcel2"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>LoadRangersFromExcel2()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="249"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:249</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LoadRangersFromJSON"></a>
+                    <span class="name">
+                        <span ><b>LoadRangersFromJSON</b></span>
+                        <a href="#LoadRangersFromJSON"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>LoadRangersFromJSON(fileName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="123"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:123</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>fileName</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&#x27;../../../assets/data/Rangers.3Feb22.json&#x27;</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LoadRangersFromLocalStorage"></a>
+                    <span class="name">
+                        <span ><b>LoadRangersFromLocalStorage</b></span>
+                        <a href="#LoadRangersFromLocalStorage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>LoadRangersFromLocalStorage()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="111"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:111</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SortRangersByCallsign"></a>
+                    <span class="name">
+                        <span ><b>SortRangersByCallsign</b></span>
+                        <a href="#SortRangersByCallsign"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>SortRangersByCallsign()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="309"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:309</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SortRangersByCallsign_unused"></a>
+                    <span class="name">
+                        <span ><b>SortRangersByCallsign_unused</b></span>
+                        <a href="#SortRangersByCallsign_unused"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>SortRangersByCallsign_unused()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="321"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:321</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>{}</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="subscribe"></a>
+                    <span class="name">
+                        <span ><b>subscribe</b></span>
+                        <a href="#subscribe"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>subscribe(observer: <a href="../interfaces/RangerType.html" target="_self">Observer&lt;RangerType[]&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="72"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:72</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>observer</td>
+                                    <td>
+                                                <code><a href="../interfaces/RangerType.html" target="_self" >Observer&lt;RangerType[]&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="UpdateLocalStorage"></a>
+                    <span class="name">
+                        <span ><b>UpdateLocalStorage</b></span>
+                        <a href="#UpdateLocalStorage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>UpdateLocalStorage()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:78</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateRanger"></a>
+                    <span class="name">
+                        <span ><b>updateRanger</b></span>
+                        <a href="#updateRanger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>updateRanger(ranger: <a href="../interfaces/RangerType.html" target="_self">RangerType</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="264"
+                            class="link-to-prism">src/app/shared/services/ranger.service.ts:264</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ranger</td>
+                                    <td>
+                                                <code><a href="../interfaces/RangerType.html" target="_self" >RangerType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="excelData"></a>
+                    <span class="name">
+                        <span ><b>excelData</b></span>
+                        <a href="#excelData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>any[][]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[[1, 2, 3], [4, 5, 6]]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/shared/services/ranger.service.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="localStorageRangerName"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>localStorageRangerName</b></span>
+                        <a href="#localStorageRangerName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;rangers&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/app/shared/services/ranger.service.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="nextId"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>nextId</b></span>
+                        <a href="#nextId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/shared/services/ranger.service.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="observRangers$"></a>
+                    <span class="name">
+                        <span ><b>observRangers$</b></span>
+                        <a href="#observRangers$"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/RangerType.html" target="_self" >Observable&lt;RangerType[]&gt; | null</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>null</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/shared/services/ranger.service.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="rangers"></a>
+                    <span class="name">
+                        <span ><b>rangers</b></span>
+                        <a href="#rangers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/RangerType.html" target="_self" >RangerType[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/shared/services/ranger.service.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="rangersSubject"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>rangersSubject</b></span>
+                        <a href="#rangersSubject"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new BehaviorSubject&lt;RangerType[]&gt;([])</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/shared/services/ranger.service.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpClient } from &#x27;@angular/common/http&#x27;;
+import { Injectable, OnInit } from &#x27;@angular/core&#x27;;
+import { formatDate } from &#x27;@angular/common&#x27;;
+import { BehaviorSubject, Observable, Observer, of } from &#x27;rxjs&#x27;;
+import { csvImport } from &#x27;src/app/rangers/csvImport&#x27;;
+//import { debounceTime, map, startWith } from &#x27;rxjs/operators&#x27;
+import * as rangers from &#x27;../../../assets/data/Rangers.3Feb22.json&#x27;
+
+export interface RangerType {
+  callsign: string
+  licensee: string
+  // licenseKey: number
+  phone: string
+  address: string
+  image: string
+  team: string
+  icon: string
+  status: string
+  note: string
+}
+
+//export enum RangerStatus { &#x27;&#x27;, &#x27;Normal&#x27;, &#x27;Need Rest&#x27;, &#x27;REW&#x27;, &#x27;OnSite&#x27;, &#x27;Checked-in&#x27;, &#x27;Checked-out&#x27; }  // TODO: Allow changing list &amp; default of statuses in settings?!
+
+//
+
+/* Following gets:
+index.js:553 [webpack-dev-server] WARNING
+D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on &#x27;xlsx&#x27;. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies */
+import * as XLSX from &#x27;xlsx&#x27;;
+
+/* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
+// https://github.com/SheetJS/SheetJS.github.io
+// D:\Projects\ImportExcel\sheetjs-master\demos\angular2\src\app\sheetjs.component.ts
+type AOA &#x3D; any[][]  // array of arrays
+
+
+@Injectable({ providedIn: &#x27;root&#x27; })
+export class RangerService {
+  observRangers$: Observable&lt;RangerType[]&gt; | null &#x3D; null
+
+  rangers: RangerType[] &#x3D; []
+  //  rangers2: RangerType[] &#x3D; []
+  private nextId &#x3D; 0
+  private rangersSubject &#x3D;
+    new BehaviorSubject&lt;RangerType[]&gt;([]);  // REVIEW: Necessary?
+  private localStorageRangerName &#x3D; &#x27;rangers&#x27;
+  excelData: any[][] &#x3D; [[1, 2, 3], [4, 5, 6]];
+
+  constructor(private httpClient: HttpClient) {
+    console.log(&quot;Rangers Service Construction&quot;)
+    this.LoadRangersFromLocalStorage()
+    console.log(&#x60;Got ${this.rangers.length} from Local Storage&#x60;)
+
+    if (this.rangers.length &#x3D;&#x3D; 0) {
+      //this.LoadRangersFromJSON() // Have user use button to initiate this
+      //Better to load hardcoded folks...
+      this.loadHardcodedRangers()
+      console.log(&#x60;No Rangers in Local storage, so grabbed ${this.rangers.length} from Rangers.2Feb22.json file.&#x60;)
+    }
+
+    // Needed? Maybe to expose observable?
+    this.UpdateLocalStorage()
+  }
+
+  GetRangers() {
+    console.log(&#x60;GetRangers() returning ${this.rangers.length} Rangers&#x60;)
+    this.SortRangersByCallsign()   // TODO: Getting called too often?
+    return this.rangers
+  }
+
+  subscribe(observer: Observer&lt;RangerType[]&gt;) {
+    this.rangersSubject.subscribe(observer);
+  }
+
+  //--------------------------------------------------------------------------
+  // Update localStorage with current Rangers data &amp; Publish update for any Observers
+  UpdateLocalStorage() {
+    console.log(&#x60;RangersService: Saving ${this.rangers.length} rangers to local storage&#x60;)
+    localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
+    //localStorage.setItem(&quot;SpecialRangers&quot;, JSON.stringify(this.rangers2))
+    //console.log(&quot;Updated Rangers to &quot; + JSON.stringify(this.rangers))
+
+    this.SortRangersByCallsign()   // TODO: Getting called too often?
+
+
+    // now gets:
+    /*  Error: Uncaught (in promise): TypeError: this.rangers.map is not a function
+      TypeError: this.rangers.map is not a function
+          at RangerService.UpdateLocalStorage (ranger.service.ts:82:43)
+          at new RangerService (ranger.service.ts:60:10)
+  */
+
+    // licenseKey: ranger.licenseKey,
+    this.rangersSubject.next(this.rangers.map(
+      ranger &#x3D;&gt; ({callsign: ranger.callsign,
+        licensee: ranger.licensee,
+        phone: ranger.phone,
+        address: ranger.address,
+        image: ranger.image,
+        team: ranger.team,
+        icon: ranger.icon,
+        status: ranger.status,
+        note: ranger.note
+      })
+    ))
+
+  }
+
+  //--------------------------------------------------------------------------
+  LoadRangersFromLocalStorage() { // WARN: Replaces any existing Rangers
+    let localStorageRangers &#x3D; localStorage.getItem(this.localStorageRangerName)
+    try {
+      this.rangers &#x3D; (localStorageRangers !&#x3D; null) ? JSON.parse(localStorageRangers) : []   //TODO: clean up
+      console.log(&#x60;RangersService: Loaded ${this.rangers.length} rangers from local storage&#x60;)
+    } catch (error: any) {
+      console.log(&#x60;Unable to parse Rangers from Local Storage. Error: ${error.message}&#x60;)
+    }
+    this.SortRangersByCallsign()   // TODO: Getting called too often?
+  }
+
+  //--------------------------------------------------------------------------
+  LoadRangersFromJSON(fileName: string &#x3D; &#x27;../../../assets/data/Rangers.3Feb22.json&#x27;) {  // WARN: Replaces any existing Rangers
+    console.log(&#x60;RangerService: loading new Rangers from ${fileName}&#x60;)
+
+    //debugger
+
+    // also see secretss import as an example: Settings.ts
+
+    this.observRangers$ &#x3D; this.httpClient.get&lt;RangerType[]&gt;(fileName) // from pg 281
+
+    //this.rangers &#x3D; []
+    if (rangers !&#x3D; null) {
+      // Use JSON file imported at the top
+      // this.rangers &#x3D; JSON.parse(rangers) || []
+      // this.rangers &#x3D; rangers
+      /* TODO: Add missing fields:
+      Type &#x27;{ callsign: string; label: string; licensee: string; licenseKey: string; phone: string; team: string; icon: string; }[]&#x27; is not assignable to type &#x27;RangerType[]&#x27;.
+
+      Type &#x27;{ callsign: string; label: string; licensee: string; licenseKey: string; phone: string; team: string; icon: string; }is missing the following properties from type
+      &#x27;RangerType&#x27;: address, image, status, notets(2322)
+
+      */
+    }
+
+    // REVIEW: Workaround for &quot;Error: Should not import the named export (imported as &#x27;rangers&#x27;) from default-exporting module (only default export is available soon)&quot;
+    let rangerWorkaround &#x3D; JSON.stringify(rangers)
+    this.rangers &#x3D; JSON.parse(rangerWorkaround)
+    this.SortRangersByCallsign()   // TODO: Getting called too often?
+    console.log(&#x60;Got ${this.rangers.length} rangers from JSON file.&#x60;)
+  }
+
+  //See pg. 279...
+  //import * as data from filename;
+  //let greeting &#x3D; data.greeting;
+  /*   import {default as AAA} from &quot;VashonCallSigns&quot;;
+        AAA.targetKey
+        // this requires &#x60;&quot;resolveJsonModule&quot;: true&#x60; in tsconfig.json
+
+        import {default as yyy} from &#x27;./Rangers.3Feb22.json&#x27;
+import { HttpClient } from &#x27;@angular/common/http&#x27;;
+        yyy.primaryMain
+
+
+    ngOnInit(): void {
+
+            this.myService.getResponseData().then((value) &#x3D;&gt; {
+                //SUCCESS
+                console.log(value);
+                this.detailsdata &#x3D; value;
+
+            }, (error) &#x3D;&gt; {
+                //FAILURE
+                console.log(error);
+            })
+        }
+
+    &lt;p&gt;&lt;b&gt;sales amount:&lt;/b&gt; {{ detailsdata?.sales_amount }}&lt;/p&gt;
+    &lt;p&gt;&lt;b&gt;collection amount:&lt;/b&gt; {{ detailsdata?.collection_amount }}&lt;/p&gt;
+    &lt;p&gt;&lt;b&gt;carts amount:&lt;/b&gt; {{ detailsdata?.carts_amount }}&lt;/p&gt;
+
+    */
+
+  //--------------------------------------------------------------------------
+  // https://ag-grid.com/javascript-data-grid/excel-import/#example-excel-import&quot;
+  // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
+  LoadRangersFromExcel(eventTarget: any) {  // HTMLInputElement event:target
+
+    // TODO: https://h2qutc.github.io/angular-material-components/fileinput
+    type AOR &#x3D; RangerType[]  // array of Rangers
+
+    // wire up file reader
+    const target: DataTransfer &#x3D; &lt;DataTransfer&gt;(eventTarget);
+
+    if (target.files.length !&#x3D;&#x3D; 1) throw new Error(&#x27;Cannot use multiple files&#x27;);
+    console.log(&#x60;LoadRangersFromExcel(): About to read contents of ${target.files[0].name}&#x60;)
+    const reader: FileReader &#x3D; new FileReader();
+    reader.onload &#x3D; (e: any) &#x3D;&gt; {
+
+      // read workbook
+      const ab: ArrayBuffer &#x3D; e.target.result;
+      const wb: XLSX.WorkBook &#x3D; XLSX.read(ab);
+
+      // grab first sheet
+      const wsname: string &#x3D; wb.SheetNames[0];
+      const ws: XLSX.WorkSheet &#x3D; wb.Sheets[wsname];
+
+      // debugger
+
+      let myJson &#x3D; JSON.stringify(XLSX.utils.sheet_to_json(ws, { header: 1 }))
+
+      console.log(&#x60;myJson &#x3D; ${myJson}&#x60;)
+      let myJson2 &#x3D; JSON.parse(myJson)
+      console.log(&#x60;myJson2 &#x3D; ${myJson2}&#x60;)
+      console.log(&#x60;1 Got ${this.rangers.length} rangers from Excel file.&#x60;)
+
+      // save data
+      this.rangers &#x3D; &lt;AOR&gt;(myJson2)
+      console.log(&#x60;2 Got ${this.rangers.length} rangers from Excel file...&#x60;)
+
+      //this.rangers &#x3D; JSON.parse(myJson)
+    };
+    console.log(&#x60;3 Got ${this.rangers.length} rangers from Excel file.&#x60;)
+
+    this.DisplayRangers(&#x60;Excel import from ${target.files[0].name}&#x60;)
+    console.log(&#x60;4 Got ${this.rangers.length} rangers from Excel file.&#x60;)
+
+    reader.readAsArrayBuffer(target.files[0]);
+
+    console.log(&#x60;5 Got ${this.rangers.length} rangers from Excel file.&#x60;)
+    this.SortRangersByCallsign()
+
+    // this.UpdateLocalStorage
+    return this.rangers
+  }
+
+  //--------------------------------------------------------------------------
+  DisplayRangers(msg: string) {
+    let len &#x3D; 10
+    if (this.rangers.length &lt; len) len &#x3D; this.rangers.length
+    console.log(&#x60;${msg}: (1st ${len} rows:)&#x60;)
+    for (let i &#x3D; 0; i &lt; len; i++) {
+      console.log(&#x60;${i} as $$: ${JSON.stringify(this.rangers[i])}&#x60;)
+      //console.log(&#x60;${i} as $$: ${JSON.stringify(this.rangers[i])}&#x60;)
+    }
+  }
+
+  //--------------------------------------------------------------------------
+  LoadRangersFromExcel2() {
+    //debugger
+    let fnc &#x3D; new csvImport(document)
+    fnc.importExcel2()
+    //csvImport.importExcel2()
+    console.log(&#x60;Got excel file&#x60;)
+  }
+
+
+  //--------------------------------------------------------------------------
+  getRanger(callsign: string) {
+    const index &#x3D; this.findIndex(callsign);
+    return this.rangers[index];
+  }
+
+  updateRanger(ranger: RangerType) {
+    const index &#x3D; this.findIndex(ranger.callsign);
+    this.rangers[index] &#x3D; ranger;
+    this.UpdateLocalStorage();
+  }
+
+  deleteRanger(callsign: string) {
+    const index &#x3D; this.findIndex(callsign);
+    this.rangers.splice(index, 1);
+    this.UpdateLocalStorage();
+  }
+
+  // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
+  AddRanger(formData: string &#x3D; &quot;&quot;): RangerType {
+    console.log(&#x60;RangerService: Got new ranger: ${formData}&#x60;)
+    let newRanger: RangerType
+    if (formData !&#x3D; &quot;&quot;) {
+      newRanger &#x3D; JSON.parse(formData)
+    } else {
+      newRanger &#x3D; {callsign: &quot;!!AAA_New_Tactical&quot;, licensee: &quot;AAA_New_Name&quot;,        // licenseKey: number
+        image: &quot;  &quot;, phone: &quot;206-463-0000&quot;, address: &quot;St, Vashon, WA 98070&quot;, team: &quot;&quot;, icon: &quot;&quot;, status: &quot;&quot;, note: &#x60;Manually added at ${formatDate(Date.now(), &#x27;short&#x27;, &quot;en-US&quot;)}.&#x60; //https://angular.io/guide/i18n-common-locale-id
+      }
+    }
+    this.rangers.push(newRanger)
+
+    this.UpdateLocalStorage();
+    return newRanger;
+  }
+
+  private findIndex(callsign: string): number {
+    for (let i &#x3D; 0; i &lt; this.rangers.length; i++) {
+      if (this.rangers[i].callsign &#x3D;&#x3D;&#x3D; callsign) return i;
+    }
+    throw new Error(&#x60;Ranger with callsign ${callsign} was not found!&#x60;);
+  }
+
+  //--------------------------------------------------------------------------
+  deleteAllRangers() {
+    this.rangers &#x3D; []
+    localStorage.removeItem(&#x27;rangers&#x27;)
+    // localStorage.clear() // remove all localStorage keys &amp; values from the specific domain you are on. Javascript is unable to get localStorage values from any other domains due to CORS
+  }
+
+  // this needs be done for the autocomplete control in the enter comonent to work correctly
+    // TODO: Getting called too often?
+  SortRangersByCallsign() {
+    console.log(&#x60;SortRangersByCallsign: ${this.rangers.length} Rangers in array&#x60;)
+
+    return this.rangers.sort((n1, n2) &#x3D;&gt; {
+      if (n1.callsign &gt; n2.callsign) { return 1 }
+      if (n1.callsign &lt; n2.callsign) { return -1 }
+      return 0;
+    })
+  }
+
+
+
+  SortRangersByCallsign_unused() {
+    console.log(&#x60;SortRangersByCallsign: ${this.rangers.length} Rangers in array&#x60;)
+
+    //debugger
+    //return this.rangers
+
+    if (this.rangers.length &#x3D;&#x3D; 0) {
+      return
+    }
+
+    //let sorted4 &#x3D; this.rangers
+
+    this.rangers.sort((a, b) &#x3D;&gt; {
+      if (b.callsign &gt; a.callsign) return -1
+      if (b.callsign &lt; a.callsign) return 1
+      return 0
+    })
+    //  let sorted &#x3D; this.rangers.sort((first, second) &#x3D;&gt; first.callsign &gt; second.callsign ? 1 : -1)
+
+    console.log(&quot;SortRangersByCallsign...DONE --- BUT ARE THEY REVERSED?!&quot;)
+    return this.rangers
+  }
+
+  //--------------------------------------------------------------------------
+  loadHardcodedRangers() {
+    console.log(&quot;Adding all hardcoded Rangers&quot;)
+
+    /* Following from 98070 AND 98013 zip codes, MUST be sorted by call sign!
+        https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
+  */
+
+    /* TODO: Implement better fake data and pay attention to the number to create...
+    let teams &#x3D; this.teamService.getTeams()
+    let rangers &#x3D; this.rangerService.getRangers()
+    let streets &#x3D; [&quot;Ave&quot;, &quot;St.&quot;, &quot;Pl.&quot;, &quot;Court&quot;, &quot;Circle&quot;]
+    let notes &#x3D; [&quot;Reports beautiful sunrise&quot;, &quot;Roudy Kids&quot;, &quot;Approaching Neighborhood CERT&quot;, &quot;Confused &amp; dazed in the sun&quot;,                &quot;Wow&quot;, &quot;na&quot;, &quot;Can&#x27;t hear you&quot;, &quot;Bounced via tail of a comet!&quot;, &quot;Need confidential meeting: HIPAA&quot;, &quot;Getting overrun by racoons&quot;]
+
+        for (let i &#x3D; 0; i &lt; num; i++) {
+      array.push({
+         callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
+         team: teams[Math.floor(Math.random() * teams.length)].name
+         address: (Math.floor(Math.random() * 10000)) + &quot; SW &quot; + streets[(Math.floor(Math.random() * streets.length))],
+        */
+
+         // REVIEW: push (i.e., add) vs. replace?
+    this.rangers.push(
+
+      {callsign: &quot;!CmdPost&quot;, licensee: &quot;ACS-CERT Cmd Post&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T0&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+
+      {callsign: &quot;!Team1&quot;, licensee: &quot;ACS-CERT Team 1&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T1&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;!Team2&quot;, licensee: &quot;ACS-CERT Team 2&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T1&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;!Team3&quot;, licensee: &quot;ACS-CERT Team 3&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T1&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;!Team4&quot;, licensee: &quot;ACS-CERT Team 4&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T1&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+
+
+      {callsign: &quot;CERT1&quot;, licensee: &quot;CERT 1&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T1&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;CERT2&quot;, licensee: &quot;CERT 2&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T2&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;CERT3&quot;, licensee: &quot;CERT 3&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T3&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;CERT4&quot;, licensee: &quot;CERT 4&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T4&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;CERT5&quot;, licensee: &quot;CERT 5&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T5&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;CERT6&quot;, licensee: &quot;CERT 6&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T6&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+
+      {callsign: &quot;REW1&quot;, licensee: &quot;REW 1&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T1&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;REW2&quot;, licensee: &quot;REW 2&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T1&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;REW3&quot;, licensee: &quot;REW 3&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T1&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;REW4&quot;, licensee: &quot;REW 4&quot;, phone: &quot;206-463-&quot;, address: &quot;Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;T1&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+
+
+      {callsign: &quot;AH6B&quot;, licensee: &quot;Pine, Douglas E&quot;, phone: &quot;206-463-&quot;, address: &quot;9700 Sw 285Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;AJ7T&quot;, licensee: &quot;Pinter, Robert B&quot;, phone: &quot;206-463-&quot;, address: &quot;12203 Sw 153Rd St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;AK7C&quot;, licensee: &quot;Mcdonald, Michael E&quot;, phone: &quot;206-463-&quot;, address: &quot;24107 Wax Orchard Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K7NHV&quot;, licensee: &quot;Francisco, Albert K&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K7VJJ&quot;, licensee: &quot;Gleason, Keith H&quot;, phone: &quot;206-463-&quot;, address: &quot;11423 99Th Ave, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KA2QLV&quot;, licensee: &quot;Paull, Steven&quot;, phone: &quot;206-463-&quot;, address: &quot;11610 Sw 220Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KA7DGV&quot;, licensee: &quot;Hardy, Timothy R&quot;, phone: &quot;206-463-&quot;, address: &quot;29715 128Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KA7GDT&quot;, licensee: &quot;White, Victor S&quot;, phone: &quot;206-463-&quot;, address: &quot;15314 Vermontville, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KA7IXC&quot;, licensee: &quot;Carr, David W&quot;, phone: &quot;206-463-&quot;, address: &quot;Rt 1 Box 244, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KA7THJ&quot;, licensee: &quot;Hanson, Jay R&quot;, phone: &quot;206-463-&quot;, address: &quot;12424 Sw Cove Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB0LJC&quot;, licensee: &quot;Hirsch, Justin D&quot;, phone: &quot;206-463-&quot;, address: &quot;10518 Sw 132Nd Pl, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7AOK&quot;, licensee: &quot;Perena, Jose K&quot;, phone: &quot;206-463-&quot;, address: &quot;21226 Tramp Harbor Drive Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7DQG&quot;, licensee: &quot;Ammon, Paul G&quot;, phone: &quot;206-463-&quot;, address: &quot;Rt 1 Box 1142, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7DQI&quot;, licensee: &quot;Gleb, Phillip L&quot;, phone: &quot;206-463-&quot;, address: &quot;R 3 B 427, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7EIF&quot;, licensee: &quot;Ammon, Virginia M&quot;, phone: &quot;206-463-&quot;, address: &quot;Rt 1 Box 1142, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7IHS&quot;, licensee: &quot;Gregory, Arthur J&quot;, phone: &quot;206-463-&quot;, address: &quot;Rt 3 Box 279, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7IMA&quot;, licensee: &quot;Fultz, Howard T&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7NDW&quot;, licensee: &quot;Hacker, Richard M&quot;, phone: &quot;206-463-&quot;, address: &quot;25407 Wax Orchard Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7OXU&quot;, licensee: &quot;Weir, Janet J&quot;, phone: &quot;206-463-&quot;, address: &quot;8115 Sw Klahanie Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7OXV&quot;, licensee: &quot;Weir, Robert D&quot;, phone: &quot;206-463-&quot;, address: &quot;8115 Sw Klahanie Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7QFF&quot;, licensee: &quot;Lindgren, Clifford W&quot;, phone: &quot;206-463-&quot;, address: &quot;27405 99Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7YYM&quot;, licensee: &quot;Mermoud Babbott, Leslie R&quot;, phone: &quot;206-463-&quot;, address: &quot;8131 Sw Dilworth Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KC2ELS&quot;, licensee: &quot;Twilley, John M&quot;, phone: &quot;206-463-&quot;, address: &quot;10210 Sw 210Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KC7AUT&quot;, licensee: &quot;Nishiyori, Kenneth W&quot;, phone: &quot;206-463-&quot;, address: &quot;17520 115Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KC7AUY&quot;, licensee: &quot;Blichfeldt, Bent&quot;, phone: &quot;206-463-&quot;, address: &quot;26620 99Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KC7IXZ&quot;, licensee: &quot;Harrigan, Sparky&quot;, phone: &quot;206-463-&quot;, address: &quot;14609 Bethel Ln Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KC7IYA&quot;, licensee: &quot;Carr, Marvin E&quot;, phone: &quot;206-463-&quot;, address: &quot;8923 Sw Qtrmstr Dr, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KC7JMQ&quot;, licensee: &quot;Hardy, Denise L&quot;, phone: &quot;206-463-&quot;, address: &quot;29715 128Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KC7JOH&quot;, licensee: &quot;Ferch, Carol A&quot;, phone: &quot;206-463-&quot;, address: &quot;10977 Pt Vashon Dr Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KC7ZOX&quot;, licensee: &quot;Hanusa, Mark M&quot;, phone: &quot;206-463-&quot;, address: &quot;23910 51St Ln Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KC7ZOY&quot;, licensee: &quot;Carpenter, Mary L&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7AYE&quot;, licensee: &quot;Ruzicka, David L&quot;, phone: &quot;206-463-&quot;, address: &quot;15117 119Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7BUR&quot;, licensee: &quot;Hill, Gerald C&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7CEK&quot;, licensee: &quot;Hill, Melinda R&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7DQO&quot;, licensee: &quot;Silver, Lowell E&quot;, phone: &quot;206-463-&quot;, address: &quot;22916 107Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7FWQ&quot;, licensee: &quot;Hill, Joseph V&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE6OOQ&quot;, licensee: &quot;Rockwell, Neil I&quot;, phone: &quot;206-463-&quot;, address: &quot;12233 Sw Cove Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE6WXA&quot;, licensee: &quot;Garrison, Elizabeth B&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7CM&quot;, licensee: &quot;Galus, John F&quot;, phone: &quot;206-463-&quot;, address: &quot;19323 Westside Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7UQ&quot;, licensee: &quot;Willsie, Howard D&quot;, phone: &quot;206-463-&quot;, address: &quot;10977 Pt Vashon Dr Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7MM&quot;, licensee: &quot;Babbott Iii, Frank L&quot;, phone: &quot;206-463-&quot;, address: &quot;8131 Sw Dilworth Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N6QIV&quot;, licensee: &quot;Goard, Carolyn S&quot;, phone: &quot;206-463-&quot;, address: &quot;10613 Sw 133Rd St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N6SCM&quot;, licensee: &quot;Valencia, Jane K&quot;, phone: &quot;206-463-&quot;, address: &quot;16917 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N7DZD&quot;, licensee: &quot;Vornbrock, John T&quot;, phone: &quot;206-463-&quot;, address: &quot;13617 Sw 235 St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N7EUL&quot;, licensee: &quot;Konecki, John T&quot;, phone: &quot;206-463-&quot;, address: &quot;17904 Westside Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N7KOC&quot;, licensee: &quot;Gee, E Howard&quot;, phone: &quot;206-463-&quot;, address: &quot;Rt 3 Box 287, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N7MSN&quot;, licensee: &quot;Dreisbach, Ezra M&quot;, phone: &quot;206-463-&quot;, address: &quot;Rt 5 Box 436 Bank Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N7PAE&quot;, licensee: &quot;Tousley, Jeffrey L&quot;, phone: &quot;206-463-&quot;, address: &quot;11020 Sw 232 St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W5RCO&quot;, licensee: &quot;Gregory, John R&quot;, phone: &quot;206-463-&quot;, address: &quot;11120 Sw Sylvan Beach Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7ATK&quot;, licensee: &quot;Benzon, Frank A&quot;, phone: &quot;206-463-&quot;, address: &quot;10709 Sw 238 St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7AY&quot;, licensee: &quot;Cruse, Wilke E&quot;, phone: &quot;206-463-&quot;, address: &quot;11506 105Th Pl Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7IDF&quot;, licensee: &quot;Cole, Edwin K&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7KYI&quot;, licensee: &quot;Merrell, Stanton C&quot;, phone: &quot;206-463-&quot;, address: &quot;24186 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7PPA&quot;, licensee: &quot;Hickox, Ernest C&quot;, phone: &quot;206-463-&quot;, address: &quot;6113 Sw 240Th St., Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7TSD&quot;, licensee: &quot;Allen, Bruce B&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7WS&quot;, licensee: &quot;Williams, Jerry B&quot;, phone: &quot;206-463-&quot;, address: &quot;22317 Dockton Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;WA6VJQ&quot;, licensee: &quot;Garland, Earl E&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;WA7EAW&quot;, licensee: &quot;Mc Farlane, Claude L&quot;, phone: &quot;206-463-&quot;, address: &quot;9127 Sw Bayview Drive, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;WA7HJJ&quot;, licensee: &quot;Kellum, Donald F&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;WA7KYI&quot;, licensee: &quot;Tharp, James C&quot;, phone: &quot;206-463-&quot;, address: &quot;9236 Sw 274Th, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;WA7SVS&quot;, licensee: &quot;Ball Jr, Lemuel B&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;WB5PSV&quot;, licensee: &quot;Bardwell, Randall D&quot;, phone: &quot;206-463-&quot;, address: &quot;25236 107Th Ave Se, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;WB6RRU&quot;, licensee: &quot;Valencia, Andrew J&quot;, phone: &quot;206-463-&quot;, address: &quot;16245 Westside Hwy, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;WB7FCH&quot;, licensee: &quot;Vogel, Keith W&quot;, phone: &quot;206-463-&quot;, address: &quot;9230 Sw 192Nd St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;WB7QIJ&quot;, licensee: &quot;Linden, George M&quot;, phone: &quot;206-463-&quot;, address: &quot;8768 Sw 190 St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;WB7VKE&quot;, licensee: &quot;Sullivan, Timothy X&quot;, phone: &quot;206-463-&quot;, address: &quot;23515 Kingsbury Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7GMW&quot;, licensee: &quot;Hill, Deborah&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD5JYQ&quot;, licensee: &quot;Lund, David W&quot;, phone: &quot;206-463-&quot;, address: &quot;9525 Sw 288Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7JWH&quot;, licensee: &quot;Kovarik, Krejimir&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7JWI&quot;, licensee: &quot;Bajramovic, Nermin&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7JWJ&quot;, licensee: &quot;Corsi, Pietro&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K5CRO&quot;, licensee: &quot;Kovarik, Kresimir&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7MUB&quot;, licensee: &quot;Clemens, Barry M&quot;, phone: &quot;206-463-&quot;, address: &quot;10330 Sw Bank Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG6IGC&quot;, licensee: &quot;Vashon-Maury Island Radio Club&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7OPX&quot;, licensee: &quot;Vashon-Maury Island Radio Club&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PAZ&quot;, licensee: &quot;Miller, Lee A&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PBA&quot;, licensee: &quot;Zook, Phillip D&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PBB&quot;, licensee: &quot;Miller, Joan A&quot;, phone: &quot;206-463-&quot;, address: &quot;8931 Sw Quartermaster Dr, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PBC&quot;, licensee: &quot;Kremer, Richard H&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PBD&quot;, licensee: &quot;Treese, F Mitch A&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PBE&quot;, licensee: &quot;Loveness, Gary R&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PBF&quot;, licensee: &quot;Loveness, Ghyrn W&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PBG&quot;, licensee: &quot;Sommers, Gayle&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PFA&quot;, licensee: &quot;Frye, Leslie G&quot;, phone: &quot;206-463-&quot;, address: &quot;22829 107Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PFB&quot;, licensee: &quot;Frye, Richard D&quot;, phone: &quot;206-463-&quot;, address: &quot;22829 107Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PMV&quot;, licensee: &quot;Lickfelt, Kevin R&quot;, phone: &quot;206-463-&quot;, address: &quot;9857 Sw 148Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PMW&quot;, licensee: &quot;Clemens, Lauren M&quot;, phone: &quot;206-463-&quot;, address: &quot;10330 Sw Bank Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7PMX&quot;, licensee: &quot;Silver, Nancy R&quot;, phone: &quot;206-463-&quot;, address: &quot;22916 107Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7QAM&quot;, licensee: &quot;Richards, John A&quot;, phone: &quot;206-463-&quot;, address: &quot;9133 Sw 274Th, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7QEX&quot;, licensee: &quot;Snow, Brett S&quot;, phone: &quot;206-463-&quot;, address: &quot;10809 Sw 204Th, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N7GRL&quot;, licensee: &quot;Loveness, Gary R&quot;, phone: &quot;206-463-&quot;, address: &quot;14122 Sw 220Th Street, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7GWL&quot;, licensee: &quot;Loveness, Ghyrn W&quot;, phone: &quot;206-463-&quot;, address: &quot;14122 Sw 220Th Street, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7CXB&quot;, licensee: &quot;Richards, John M&quot;, phone: &quot;206-463-&quot;, address: &quot;9133 Sw 274Th, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K3QNQ&quot;, licensee: &quot;Treese, F Mitch A&quot;, phone: &quot;206-463-&quot;, address: &quot;15024 107Th Way Sw Express Mail Only, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7PDZ&quot;, licensee: &quot;Zook, Phillip D&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7TRH&quot;, licensee: &quot;Hardy, Timothy R&quot;, phone: &quot;206-463-&quot;, address: &quot;29715 128Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7RWJ&quot;, licensee: &quot;Nelson, Jack H&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KU0W&quot;, licensee: &quot;Frye, Richard D&quot;, phone: &quot;206-463-&quot;, address: &quot;22829 107Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7SMI&quot;, licensee: &quot;Griswold, James E&quot;, phone: &quot;206-463-&quot;, address: &quot;5724 Sw 244Th, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7VMI&quot;, licensee: &quot;Vashon-Maury Island Radio Club&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7VSA&quot;, licensee: &quot;Givotovsky, Alan&quot;, phone: &quot;206-463-&quot;, address: &quot;23607 49Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7ZOW&quot;, licensee: &quot;Tabscott, Robert L&quot;, phone: &quot;206-463-&quot;, address: &quot;14215 Sw 283Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7ZPH&quot;, licensee: &quot;Carson, Polly M&quot;, phone: &quot;206-463-&quot;, address: &quot;14215 Sw 283Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7ZVK&quot;, licensee: &quot;Rollo, Jack W&quot;, phone: &quot;206-463-&quot;, address: &quot;9733 Sw Harbor Dr, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7ZYJ&quot;, licensee: &quot;De Steiguer, Allen L&quot;, phone: &quot;206-463-&quot;, address: &quot;17615 Mclean Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7AJY&quot;, licensee: &quot;Boardman, James H&quot;, phone: &quot;206-463-&quot;, address: &quot;10619 Sw Cowan Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7AKA&quot;, licensee: &quot;Coldeen, Chris A&quot;, phone: &quot;206-463-&quot;, address: &quot;16103 Westside Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7AKB&quot;, licensee: &quot;Turner, Ed&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7AKC&quot;, licensee: &quot;Wolczko Dvm, Donald P&quot;, phone: &quot;206-463-&quot;, address: &quot;8819 S.W. 198Th St., Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ1MBO&quot;, licensee: &quot;Boardman, James H&quot;, phone: &quot;206-463-&quot;, address: &quot;10619 Sw Cowan Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7AWP&quot;, licensee: &quot;Tharp, Adam J&quot;, phone: &quot;206-463-&quot;, address: &quot;9236 Sw 274Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7BGK&quot;, licensee: &quot;Powell, Robert D&quot;, phone: &quot;206-463-&quot;, address: &quot;19917 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K7AJT&quot;, licensee: &quot;Tharp, Adam J&quot;, phone: &quot;206-463-&quot;, address: &quot;9236 Sw 274Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N7RDP&quot;, licensee: &quot;Powell, Robert D&quot;, phone: &quot;206-463-&quot;, address: &quot;19917 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K7VMI&quot;, licensee: &quot;De Steiguer, Allen L&quot;, phone: &quot;206-463-&quot;, address: &quot;17615 Mclean Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7DEO&quot;, licensee: &quot;Harshman, Clifford E&quot;, phone: &quot;206-463-&quot;, address: &quot;9522 Sw 268Th Street, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KO7P&quot;, licensee: &quot;Pine, Douglas E&quot;, phone: &quot;206-463-&quot;, address: &quot;9700 Sw 285Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7HBX&quot;, licensee: &quot;Karusaitis, Rhoda B&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7HBY&quot;, licensee: &quot;Cooper, David F&quot;, phone: &quot;206-463-&quot;, address: &quot;8763 Sw 190Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7HBZ&quot;, licensee: &quot;Danielson, Sharon J&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7HCA&quot;, licensee: &quot;Stanton, John S&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7HCB&quot;, licensee: &quot;Bentley, Michael B&quot;, phone: &quot;206-463-&quot;, address: &quot;17823 Mclean Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7HFF&quot;, licensee: &quot;Morse, Marsha E&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7HFG&quot;, licensee: &quot;Fitzpatrick, Walton R&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7HFH&quot;, licensee: &quot;Kaufer, Tom M&quot;, phone: &quot;206-463-&quot;, address: &quot;11725 Sw Cedarhurst Dr, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K6AJV&quot;, licensee: &quot;Valencia, Andrew J&quot;, phone: &quot;206-463-&quot;, address: &quot;16917 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7KDQ&quot;, licensee: &quot;Cornelison, John&quot;, phone: &quot;206-463-&quot;, address: &quot;10506 Sw 132Nd Pl, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7KDV&quot;, licensee: &quot;Danielson, Richard A&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7LER&quot;, licensee: &quot;Brown, Steven A&quot;, phone: &quot;206-463-&quot;, address: &quot;5213 Sw Point Robinson Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7MTN&quot;, licensee: &quot;Schueler, Dan F&quot;, phone: &quot;206-463-&quot;, address: &quot;21917 131St Pl Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7OTE&quot;, licensee: &quot;Way, Steve C&quot;, phone: &quot;206-463-&quot;, address: &quot;13129 Sw 248Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;NH6ZA&quot;, licensee: &quot;Pine, Douglas E&quot;, phone: &quot;206-463-&quot;, address: &quot;4904 Sw Luana Ln, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7RXD&quot;, licensee: &quot;Kellogg, Loren B&quot;, phone: &quot;206-463-&quot;, address: &quot;18223 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K7KMS&quot;, licensee: &quot;Paull, Steven&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7VNA&quot;, licensee: &quot;Nelson, William C&quot;, phone: &quot;206-463-&quot;, address: &quot;15655 94Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K7DGL&quot;, licensee: &quot;Luechtefeld, Daniel&quot;, phone: &quot;206-463-&quot;, address: &quot;9727 Sw Summerhurst Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7YLI&quot;, licensee: &quot;Leblanc, Christopher A&quot;, phone: &quot;206-463-&quot;, address: &quot;26220 99Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7CBK&quot;, licensee: &quot;Wojcik, Peter A&quot;, phone: &quot;206-463-&quot;, address: &quot;27436 90Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7FDK&quot;, licensee: &quot;Joffray, Flynn T&quot;, phone: &quot;206-463-&quot;, address: &quot;11312 Sw 232Nd St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7GPM&quot;, licensee: &quot;Van Egmond, Raynier A&quot;, phone: &quot;206-463-&quot;, address: &quot;10104 Sw 153Rd St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K7RDB&quot;, licensee: &quot;Bardwell, Randall D&quot;, phone: &quot;206-463-&quot;, address: &quot;12215 Sw Shawnee Road, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7JCT&quot;, licensee: &quot;Underwood, Robert S&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7NCS&quot;, licensee: &quot;Staczek, Jason L&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7NYC&quot;, licensee: &quot;Hamaker, James R&quot;, phone: &quot;206-463-&quot;, address: &quot;8903 Bayview Dr, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7OKQ&quot;, licensee: &quot;Wallace, Rick&quot;, phone: &quot;206-463-&quot;, address: &quot;23817 104Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W0RIK&quot;, licensee: &quot;Wallace, Rick&quot;, phone: &quot;206-463-&quot;, address: &quot;23817 104Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;AE7MW&quot;, licensee: &quot;Smueles, Robert E&quot;, phone: &quot;206-463-&quot;, address: &quot;11909 Sw 232Nd St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7QCE&quot;, licensee: &quot;Cochrane, Michael L&quot;, phone: &quot;206-463-&quot;, address: &quot;5313 Sw Pt Robinson Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7QCF&quot;, licensee: &quot;Durrett, Erin A&quot;, phone: &quot;206-463-&quot;, address: &quot;6002 Sw Pt Robinson Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7QCH&quot;, licensee: &quot;Rogers, Catherine A&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7QCJ&quot;, licensee: &quot;Blichfeldt Cooper, Ulla&quot;, phone: &quot;206-463-&quot;, address: &quot;8763 Sw 190Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7QCK&quot;, licensee: &quot;Stratton, Rex B&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;AE7SD&quot;, licensee: &quot;Danielson, Sharon J&quot;, phone: &quot;206-463-&quot;, address: &quot;23528 Landers Rd. Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;AE7TH&quot;, licensee: &quot;Hardy, Timothy R&quot;, phone: &quot;206-463-&quot;, address: &quot;29715 128Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K1SAB&quot;, licensee: &quot;Brown, Steven A&quot;, phone: &quot;206-463-&quot;, address: &quot;5213 Sw Point Robinson Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7VDA&quot;, licensee: &quot;Galus, Georgia A&quot;, phone: &quot;206-463-&quot;, address: &quot;19323 Westside Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7VVR&quot;, licensee: &quot;Ellison-Taylor, John M&quot;, phone: &quot;206-463-&quot;, address: &quot;29746 128Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KF7WOQ&quot;, licensee: &quot;Hyde Iv, James F&quot;, phone: &quot;206-463-&quot;, address: &quot;6109 Sw Pt Robinson Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSE&quot;, licensee: &quot;Blackstone, Robert A&quot;, phone: &quot;206-463-&quot;, address: &quot;4409 Sw Pt Robinson Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSF&quot;, licensee: &quot;Woods, Melodie&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSG&quot;, licensee: &quot;Cochrane, Catherine S&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSH&quot;, licensee: &quot;Edwards, Shelby T&quot;, phone: &quot;206-463-&quot;, address: &quot;10806 Sw Cemetery Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSI&quot;, licensee: &quot;Moore, Wanda L&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSJ&quot;, licensee: &quot;Kennedy Taylor, Alison K&quot;, phone: &quot;206-463-&quot;, address: &quot;29746 128Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSK&quot;, licensee: &quot;King, Lori J&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSL&quot;, licensee: &quot;Lyell, William E&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSM&quot;, licensee: &quot;Symonds, Penni J&quot;, phone: &quot;206-463-&quot;, address: &quot;15626 91St Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSN&quot;, licensee: &quot;Blackstone, Randee C&quot;, phone: &quot;206-463-&quot;, address: &quot;4409 Sw Pt Robinson Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSQ&quot;, licensee: &quot;Lyell, Jan R&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSR&quot;, licensee: &quot;Sussman, Stephen M&quot;, phone: &quot;206-463-&quot;, address: &quot;15626 91St Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7CFG&quot;, licensee: &quot;O&#x27;Brien, Truman E&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7CFH&quot;, licensee: &quot;Stone, Nancy E&quot;, phone: &quot;206-463-&quot;, address: &quot;15502 91St Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7CFI&quot;, licensee: &quot;Nelson, Mary E&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7CFJ&quot;, licensee: &quot;O&#x27;Brien, Mary A&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7CFK&quot;, licensee: &quot;Hayes, Ira A&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7MCW&quot;, licensee: &quot;Woods, Melodie&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7AKT&quot;, licensee: &quot;Kennedy Taylor, Alison K&quot;, phone: &quot;206-463-&quot;, address: &quot;29746 128Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7EQW&quot;, licensee: &quot;Lecky, Ned&quot;, phone: &quot;206-463-&quot;, address: &quot;24427 Wax Orchard Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7JIQ&quot;, licensee: &quot;Beles, Lynette B&quot;, phone: &quot;206-463-&quot;, address: &quot;18823 Robinwood Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7JIR&quot;, licensee: &quot;Danielsen, Jacob M&quot;, phone: &quot;206-463-&quot;, address: &quot;16400 Vashon Hwy, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7JIS&quot;, licensee: &quot;Hauser, James W&quot;, phone: &quot;206-463-&quot;, address: &quot;21713 Highland Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7JIT&quot;, licensee: &quot;Goebel, David A&quot;, phone: &quot;206-463-&quot;, address: &quot;12412 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7JIU&quot;, licensee: &quot;Cain, Lidunn O&quot;, phone: &quot;206-463-&quot;, address: &quot;9130 Sw Cemetery Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7JIV&quot;, licensee: &quot;York, Randy K&quot;, phone: &quot;206-463-&quot;, address: &quot;27909 140Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7JIX&quot;, licensee: &quot;De Monterey Richoux, Victoria&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7JIY&quot;, licensee: &quot;Freiling, Beth Anne&quot;, phone: &quot;206-463-&quot;, address: &quot;12412 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7JJA&quot;, licensee: &quot;Jones, Aaron&quot;, phone: &quot;206-463-&quot;, address: &quot;10411 Sw Cemetery Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7LMS&quot;, licensee: &quot;Bush, Gregory M&quot;, phone: &quot;206-463-&quot;, address: &quot;14830 Glen Acres Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7NCF&quot;, licensee: &quot;Gagner, Craig A&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7PNB&quot;, licensee: &quot;Meyer, Michael T&quot;, phone: &quot;206-463-&quot;, address: &quot;25814 78Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7RTH&quot;, licensee: &quot;Hennessey, Shannon M&quot;, phone: &quot;206-463-&quot;, address: &quot;14605 107Th Way Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7MTM&quot;, licensee: &quot;Meyer, Michael T&quot;, phone: &quot;206-463-&quot;, address: &quot;25814 78Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7TAN&quot;, licensee: &quot;James, Lawrence C&quot;, phone: &quot;206-463-&quot;, address: &quot;23632 71St Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UAY&quot;, licensee: &quot;Allen, Thomas M&quot;, phone: &quot;206-463-&quot;, address: &quot;25812 76Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UAZ&quot;, licensee: &quot;Bossom, Eden A&quot;, phone: &quot;206-463-&quot;, address: &quot;20318 81St Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UBA&quot;, licensee: &quot;Sussman, Carole E&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UBB&quot;, licensee: &quot;Wilber, Maurice E&quot;, phone: &quot;206-463-&quot;, address: &quot;12057 Sw 208Th Street, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UBC&quot;, licensee: &quot;Los, Shango&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UBD&quot;, licensee: &quot;Clark, Brad S&quot;, phone: &quot;206-463-&quot;, address: &quot;19103 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UBF&quot;, licensee: &quot;Fairchild, Josephine B&quot;, phone: &quot;206-463-&quot;, address: &quot;6919 Sw 248Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UBG&quot;, licensee: &quot;Larson, Rachel A&quot;, phone: &quot;206-463-&quot;, address: &quot;29428 129Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UBH&quot;, licensee: &quot;Maurer, Michele L&quot;, phone: &quot;206-463-&quot;, address: &quot;12889 Burma Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UBI&quot;, licensee: &quot;Kutscher, Susan H&quot;, phone: &quot;206-463-&quot;, address: &quot;16212 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UBJ&quot;, licensee: &quot;Davidson, Edward D&quot;, phone: &quot;206-463-&quot;, address: &quot;23310 Landers Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7UBK&quot;, licensee: &quot;Milovsoroff, Peter&quot;, phone: &quot;206-463-&quot;, address: &quot;8225 Sw Van Olinda Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7RAL&quot;, licensee: &quot;Larson, Rachel A&quot;, phone: &quot;206-463-&quot;, address: &quot;29428 129Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7AAY&quot;, licensee: &quot;Rentfro, Samuel J&quot;, phone: &quot;206-463-&quot;, address: &quot;10924 Sw Cove Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOA&quot;, licensee: &quot;Proffit, Spencer L&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOB&quot;, licensee: &quot;Hubbard, Suzanne F&quot;, phone: &quot;206-463-&quot;, address: &quot;9131 Sw Gorsuch, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOC&quot;, licensee: &quot;Brown, Paul S&quot;, phone: &quot;206-463-&quot;, address: &quot;9131 Sw Gorsuch Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOD&quot;, licensee: &quot;Guerena, Ed R&quot;, phone: &quot;206-463-&quot;, address: &quot;9731 Sw Elisha Lane, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOE&quot;, licensee: &quot;Cressman, Miriam S&quot;, phone: &quot;206-463-&quot;, address: &quot;20704 Old Mill Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOF&quot;, licensee: &quot;Douvier, Ann B&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOG&quot;, licensee: &quot;Williams Jr, Morris C&quot;, phone: &quot;206-463-&quot;, address: &quot;25913 99Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOH&quot;, licensee: &quot;Wallace, Thomas C&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOI&quot;, licensee: &quot;Lilje, James J&quot;, phone: &quot;206-463-&quot;, address: &quot;9631 Sw 288Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOJ&quot;, licensee: &quot;Beles, Craig C&quot;, phone: &quot;206-463-&quot;, address: &quot;18823 Robinwood Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOK&quot;, licensee: &quot;Graham, L Jill&quot;, phone: &quot;206-463-&quot;, address: &quot;8805 Sw Dilworth Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOL&quot;, licensee: &quot;Thayer, Roaxanne B&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EOM&quot;, licensee: &quot;Sager, Virginia&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7EON&quot;, licensee: &quot;Shepard, Meredith A&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;AE7RW&quot;, licensee: &quot;York, Randy K&quot;, phone: &quot;206-463-&quot;, address: &quot;27909 140Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7GZO&quot;, licensee: &quot;Wilks, Nicholas T&quot;, phone: &quot;206-463-&quot;, address: &quot;11623 Sw Bank Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N0WNW&quot;, licensee: &quot;Wilks, Nicholas T&quot;, phone: &quot;206-463-&quot;, address: &quot;11623 Sw Bank Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7HQI&quot;, licensee: &quot;Allen, Steven B&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7SBA&quot;, licensee: &quot;Allen, Steven B&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7KLO&quot;, licensee: &quot;Luckett, Peter G&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7LBB&quot;, licensee: &quot;Marshall, Jourdan S&quot;, phone: &quot;206-463-&quot;, address: &quot;9032 Sw Soper Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7MLU&quot;, licensee: &quot;Templeman, Michael L&quot;, phone: &quot;206-463-&quot;, address: &quot;22715 Carey Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7MMD&quot;, licensee: &quot;Wanzel, Eric W&quot;, phone: &quot;206-463-&quot;, address: &quot;11410 103Rd Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7PHG&quot;, licensee: &quot;Gagner, Craig A&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7RYQ&quot;, licensee: &quot;Stead, Daniel E&quot;, phone: &quot;206-463-&quot;, address: &quot;19009 Beall Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7RYY&quot;, licensee: &quot;Carlson, Robert E&quot;, phone: &quot;206-463-&quot;, address: &quot;11309 Sw Cedarhurst Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KV3SPA&quot;, licensee: &quot;Marshall, Jourdan S&quot;, phone: &quot;206-463-&quot;, address: &quot;9032 Sw Soper Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7SLB&quot;, licensee: &quot;Solon, Denna E&quot;, phone: &quot;206-463-&quot;, address: &quot;8216 Sw Quartermaster Dr, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7SWF&quot;, licensee: &quot;Rowan, Jonathan P&quot;, phone: &quot;206-463-&quot;, address: &quot;29410 129Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7REC&quot;, licensee: &quot;Carlson, Robert E&quot;, phone: &quot;206-463-&quot;, address: &quot;11309 Sw Cedarhurst Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7TYW&quot;, licensee: &quot;Rousseau, Susan&quot;, phone: &quot;206-463-&quot;, address: &quot;15314 Vermontville Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7TYX&quot;, licensee: &quot;Mitcham, Kevin&quot;, phone: &quot;206-463-&quot;, address: &quot;15314 Vermontville Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7UQK&quot;, licensee: &quot;Lindgren, Clifford W&quot;, phone: &quot;206-463-&quot;, address: &quot;23117 111Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KI7WYU&quot;, licensee: &quot;Herridge, Brook E&quot;, phone: &quot;206-463-&quot;, address: &quot;15324 Vermontville Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7PII&quot;, licensee: &quot;Lindgren, Clifford W&quot;, phone: &quot;206-463-&quot;, address: &quot;23117 111Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7CJP&quot;, licensee: &quot;Cohen, Jeffrey A&quot;, phone: &quot;206-463-&quot;, address: &quot;16203 91St Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7DYP&quot;, licensee: &quot;Will, Bryce M&quot;, phone: &quot;206-463-&quot;, address: &quot;23304 115Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCE&quot;, licensee: &quot;Harmon, Corinne C&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCF&quot;, licensee: &quot;Satori, Jessika&quot;, phone: &quot;206-463-&quot;, address: &quot;20211 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCG&quot;, licensee: &quot;West, Charles W&quot;, phone: &quot;206-463-&quot;, address: &quot;13318 Sw 261St Place, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCH&quot;, licensee: &quot;Gomez, Erica L&quot;, phone: &quot;206-463-&quot;, address: &quot;19722 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCI&quot;, licensee: &quot;Strasz, Rachel A&quot;, phone: &quot;206-463-&quot;, address: &quot;25833 75Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCJ&quot;, licensee: &quot;Hosticka, Eric&quot;, phone: &quot;206-463-&quot;, address: &quot;18109 Thorsen Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCK&quot;, licensee: &quot;Macewan, Allison A&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCL&quot;, licensee: &quot;Piston, Robert E&quot;, phone: &quot;206-463-&quot;, address: &quot;23720 97Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCM&quot;, licensee: &quot;Piston, Jane W&quot;, phone: &quot;206-463-&quot;, address: &quot;23720 97Th Ave Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCO&quot;, licensee: &quot;Shepherd, William B&quot;, phone: &quot;206-463-&quot;, address: &quot;17912 Mclean Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCP&quot;, licensee: &quot;Cain, Lars O&quot;, phone: &quot;206-463-&quot;, address: &quot;9130 Sw Cemetary Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCQ&quot;, licensee: &quot;Hudson Iv, Thomas F&quot;, phone: &quot;206-463-&quot;, address: &quot;19722 Vashon Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FCR&quot;, licensee: &quot;Pierson Jr, Edward L&quot;, phone: &quot;206-463-&quot;, address: &quot;9724 Sw 268Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7FDJ&quot;, licensee: &quot;Hosticka, Nancy J&quot;, phone: &quot;206-463-&quot;, address: &quot;18109 Thorsen Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KN7ELP&quot;, licensee: &quot;Pierson Jr, Edward L&quot;, phone: &quot;206-463-&quot;, address: &quot;9724 Sw 268Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7KIF&quot;, licensee: &quot;Etley, Stephanie A&quot;, phone: &quot;206-463-&quot;, address: &quot;12350 Sw 266Th Ln, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7KSZ&quot;, licensee: &quot;Van Holde, David J&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7ISL&quot;, licensee: &quot;Van Holde, David J&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KV7AMS&quot;, licensee: &quot;Luckett, Fr. Peter G&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7MXH&quot;, licensee: &quot;Witmer, Michael D&quot;, phone: &quot;206-463-&quot;, address: &quot;4927 Sw Pt Robinson Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;WD3B&quot;, licensee: &quot;Boardman, James H&quot;, phone: &quot;206-463-&quot;, address: &quot;10619 Sw Cowan Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;K7NC&quot;, licensee: &quot;Boardman, James H&quot;, phone: &quot;206-463-&quot;, address: &quot;10619 Sw Cowan Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7QFF&quot;, licensee: &quot;Clemons, Timothy S&quot;, phone: &quot;206-463-&quot;, address: &quot;10134 Sw 280Th St, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W2PEE&quot;, licensee: &quot;Eivy, Adam D&quot;, phone: &quot;206-463-&quot;, address: &quot;15130 Glen Acres Rd Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KJ7TTU&quot;, licensee: &quot;Harris, Kevin&quot;, phone: &quot;206-463-&quot;, address: &quot;16633 Westside Hwy Sw, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N7RLV&quot;, licensee: &quot;Horsch, Robert&quot;, phone: &quot;206-463-&quot;, address: &quot;9216 Southwest Harbor Drive, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KK7BRI&quot;, licensee: &quot;Cunningham, Jeremy&quot;, phone: &quot;206-463-&quot;, address: &quot;9225 Sw Summerhurst Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KK7CEL&quot;, licensee: &quot;Chiswell, Thomas J&quot;, phone: &quot;206-463-&quot;, address: &quot;7613 Sw 258Th Ct, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;AI7KV&quot;, licensee: &quot;Cunningham, Jeremy&quot;, phone: &quot;206-463-&quot;, address: &quot;9225 Sw Summerhurst Rd, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7GMW&quot;, licensee: &quot;Hill, Deborah&quot;, phone: &quot;206-463-&quot;, address: &quot;, Vashon, WA 98070&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KB7ANI&quot;, licensee: &quot;Gordon, Frances M&quot;, phone: &quot;206-463-&quot;, address: &quot;, Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N7KZQ&quot;, licensee: &quot;Gordon, Richard S&quot;, phone: &quot;206-463-&quot;, address: &quot;, Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N7OUW&quot;, licensee: &quot;Malone, Sean C&quot;, phone: &quot;206-463-&quot;, address: &quot;26026 120Th Ln. S. W., Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7CHY&quot;, licensee: &quot;Champion, Frank G&quot;, phone: &quot;206-463-&quot;, address: &quot;, Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KD7ZYI&quot;, licensee: &quot;Straube, Dave D&quot;, phone: &quot;206-463-&quot;, address: &quot;, Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7HCC&quot;, licensee: &quot;Burke, John J&quot;, phone: &quot;206-463-&quot;, address: &quot;, Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;W7CPN&quot;, licensee: &quot;Burke, John J&quot;, phone: &quot;206-463-&quot;, address: &quot;, Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7KDT&quot;, licensee: &quot;Milligan, Douglas S&quot;, phone: &quot;206-463-&quot;, address: &quot;, Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KE7KDU&quot;, licensee: &quot;Milligan, Janet L&quot;, phone: &quot;206-463-&quot;, address: &quot;, Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;N0VYO&quot;, licensee: &quot;Greer, David J&quot;, phone: &quot;206-463-&quot;, address: &quot;876 Curtis St, 2508, Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7BSP&quot;, licensee: &quot;Nelson, Kimberley A&quot;, phone: &quot;206-463-&quot;, address: &quot;, Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;},
+      {callsign: &quot;KG7JIW&quot;, licensee: &quot;Tuttle, Holly K&quot;, phone: &quot;206-463-&quot;, address: &quot;, Burton, WA 98013&quot;, image: &quot;./assets/imgs/REW/male.png&quot;, team: &quot;t999&quot;, icon: &quot; &quot;, status: &quot;Licensed&quot;, note: &quot;-&quot;}
+
+    )
+
+    //console.log(&#x60;Next: update LocalStorage: ${this.localStorageRangerName}&#x60;)
+    this.SortRangersByCallsign()
+    this.UpdateLocalStorage();
+    //console.log(&#x60;returned from: updating LocalStorage: ${this.localStorageRangerName}&#x60;)
+  }
+
+  // TODO:  getActiveRangers() {
+  // filter for Ranger.status &#x3D;&#x3D; &#x27;checked in&#x27; ?
+  // return this.rangers }
+
+  /* Needed?!
+  sortRangersByTeam() {
+    return this.rangers.sort((n1, n2) &#x3D;&gt; {
+      if (n1.team &gt; n2.team) { return 1 }
+      if (n1.team &lt; n2.team) { return -1 }
+      return 0;
+    })
+  }
+*/
+}
+
+
+/*
+export class Ranger {
+
+  static nextId &#x3D; 1;
+  id: Number;
+  date: Date;
+  callSign: string;
+  licensee: string;
+
+  constructor(callSign: string, name: string, licensee: string, team: string, licenseKey: string, phone: string, email: string, icon: string, note: string) {
+    this.id &#x3D; Ranger.nextId++; // TODO: OK if user restarts app during SAME mission #?
+    this.date &#x3D; new Date();
+    this.callSign &#x3D; callSign;
+    this.licensee &#x3D; licensee;
+
+    // add validation code here?! or in forms code?
+  }
+
+}*/
+
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'RangerService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -1,0 +1,46 @@
+<!-- https://material.io/components/menus
+ mdc-top-app-bar
+ -->
+
+<nav class="main-nav">
+  <span title="RangerTrak" style="margin-right:2em;">
+    <a href="http://www.RangerTrak.org" title="http://RangerTrack.org" target="_blank">
+      <!--fa-icon [icon]="faMapMarkedAlt" class="fa-lg"></fa-icon-->
+    </a>
+  </span>
+
+  <ul>
+    <li>
+      <a
+        [routerLink]="['/']"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact:
+      true}"
+        >Home</a
+      >
+    </li>
+    <li><a [routerLink]="['/gmap']" routerLinkActive="active">Google</a></li>
+    <li><a [routerLink]="['/lmap']" routerLinkActive="active">Leaflet</a></li>
+    <li><a [routerLink]="['/reports']" routerLinkActive="active">Reports</a></li>
+    <li><a [routerLink]="['/rangers']" routerLinkActive="active">Rangers</a></li>
+    <li><a [routerLink]="['/settings']" routerLinkActive="active">Settings</a></li>
+    <li><a [routerLink]="['/about']" routerLinkActive="active">About</a></li>
+    <li><a [routerLink]="['/log']" routerLinkActive="active">Log</a></li>
+  </ul>
+
+  <a
+    href="https://github.com/EOCOnline/rangertrak"
+    target="_blank"
+    title="See ya at GitHub"
+    class="git"
+  >
+    <img src="../../assets/icons/GitHub-Mark-32px.png" id="git" title="See ya at GitHub"
+  /></a>
+
+  <form>
+    <input type="search" placeholder="(Future) Search" />
+    <button>Go</button>
+    <!--button (click)="Search()" type="search" placeholder="(Future) Search"> (Future) Search</button-->
+  </form>
+</nav>
+<!--script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script-->

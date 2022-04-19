@@ -1,0 +1,25 @@
+@use "@material/theme"
+with ($primary: #962f10,
+  $on-primary: #442C2E);
+@use "@material/button";
+@use "@material/button/styles";
+@use "@material/banner";
+
+$filledColor : #F0F0F0;
+
+.filled {
+  background-color: $filledColor;
+}
+
+.bordered {
+  border: 2 px solid rgb(62, 189, 189);
+}
+
+.timepicker__When-input {
+  width: 400px;
+}
+
+.elegant {
+  margin-top   : 25px;
+  margin-bottom: 0px;
+}

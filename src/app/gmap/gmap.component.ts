@@ -1,62 +1,57 @@
 /// <reference types="@types/google.maps" />
+import { LatLng, LatLngBounds } from 'leaflet'
+import { catchError, map, Observable, of, Subscription } from 'rxjs'
 
-import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
-import { MatIconModule } from '@angular/material/icon'
-import { Component, ElementRef, Inject, OnInit, ViewChild, NgZone } from '@angular/core';
-import { DOCUMENT, JsonPipe } from '@angular/common';
-import { ComponentFixture } from '@angular/core/testing';
-import { HttpClient } from '@angular/common/http';
-import { catchError, map, Observable, of } from 'rxjs';
+import { DOCUMENT, JsonPipe } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
+import { Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps'
+import * as GMC from '@googlemaps/markerclusterer'
+// Map
+import { MDCSwitch } from '@material/switch'
 
-//import { MarkerClusterer } from "@google-maps/markerclusterer";
-import { SettingsService, FieldReportService, FieldReportType, FieldReportStatusType } from '../shared/services';
-import { Map, CodeArea, OpenLocationCode, Utility } from '../shared/'
-//import { LatLng } from 'leaflet';
+import { CodeArea, OpenLocationCode, Utility } from '../shared/'
+import { AbstractMap } from '../shared/map'
+import {
+    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
+    SettingsService, SettingsType
+} from '../shared/services'
 
 /*
+google-maps: OLD
+google.maps: BEST
+
   https://developers.google.com/maps/support/
   https://angular-maps.com/
   https://github.com/atmist/snazzy-info-window#html-structure
   https://angular-maps.com/api-docs/agm-core/interfaces/lazymapsapiloaderconfigliteral
-  https://stackblitz.com/edit/angular-google-maps-demo
-  https://github.com/googlemaps/js-markerclusterer
-  https://github.com/angular-material-extensions/google-maps-autocomplete
-
-   https://developers.google.com/maps/documentation/javascript/using-typescript
- TODO: https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
  https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md
  TODO: Allow geocoding: https://rapidapi.com/blog/google-maps-api-react/
-
- https://timdeschryver.dev/blog/google-maps-as-an-angular-component
  Option doc: https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions
 
-
-GoogleMapsModule exports three components that we can use:
+GoogleMapsModule (their Angular wrapper) exports three components that we can use:
 - GoogleMap: this is the wrapper around Google Maps, available via the google-map selector
 - MapMarker: used to add markers on the map, available via the map-marker selector
 - MapInfoWindow: the info window of a marker, available via the map-info-window selector
 */
 
 declare const google: any
-
-const kaanapali: google.maps.LatLngLiteral = { lat: 20.9338, lng: -156.7168 }
-const kahanaRidge: google.maps.LatLngLiteral = { lat: 20.973375, lng: -156.664915 }
-const vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
-
 let marker: google.maps.Marker
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'rangertrak-gmap',
   templateUrl: './gmap.component.html',
   styleUrls: ['./gmap.component.scss'],
   providers: [SettingsService]
 })
-export class GmapComponent implements OnInit {    //extends Map
+export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {    //extends Map, OnInit,
 
   // Keep reference to map component, w/ @ViewChild decorator, allows:
   // https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#methods-and-getters
   // https://angular.io/api/core/ViewChild
-  // next line provides this.map!
+  // next line provides this.gMap!
   //@ViewChild(google.maps.Map, { static: false }) map!: google.maps.Map
   //@ViewChild(google.maps.InfoWindow, { static: false }) info!: google.maps.InfoWindow //| undefined
   // following was in https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#mapinfowindow
@@ -64,31 +59,45 @@ export class GmapComponent implements OnInit {    //extends Map
   // https://stackblitz.com/edit/angular-9-google-maps-5v2cu8?file=src%2Fapp%2Fapp.component.ts
 
 
-  @ViewChild(GoogleMap, { static: false }) map!: GoogleMap // even needed?
-  @ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
+  @ViewChild(GoogleMap, { static: false }) ngMap!: GoogleMap
+  @ViewChild(GoogleMap, { static: false }) overviewNgMap!: GoogleMap
+  // MapInfoWindow is tooltip over a map: https://developers.google.com/maps/documentation/javascript/infowindows
+  //@ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
+
+  public override id = 'Google Map Component'
+  public override title = 'Google Map'
 
   // items for template
-  title = 'Google Map'
-  mouseLatLng?: google.maps.LatLngLiteral;
-  Vashon = new google.maps.LatLng(47.4471, -122.4627)
-  Kaanapali = new google.maps.LatLng(20.9338, -156.7168)
+  override mouseLatLng!: google.maps.LatLngLiteral;
 
-  // google.maps.Map is NOT the same as GoogleMap...
-  gMap?: google.maps.Map
-
+  // this.ngMap: GoogleMap (Angular wrapper for the same underlying map!)
+  // this.gMap: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
+  gMap!: google.maps.Map
+  overviewGMap!: google.maps.Map
+  overviewMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
+  // overviewGMapOptions: google.maps.MapOptions
   // items for <google-map>
-  zoom
-  center: google.maps.LatLngLiteral
-  options: google.maps.MapOptions = {
+  trafficLayer = new google.maps.TrafficLayer()
+  trafficLayerVisible = 0
+
+  mapOptions: google.maps.MapOptions = {
     zoomControl: true,
     scrollwheel: true,
     disableDoubleClickZoom: true,
     mapTypeId: 'hybrid',
-    zoom: 17,
+    zoom: 18,
     maxZoom: 21,
     minZoom: 4,
     draggableCursor: 'crosshair', //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
     //heading: 90,
+  }
+
+  overviewMapOptions: google.maps.MapOptions = {
+    ...this.mapOptions,
+    disableDefaultUI: true,
+    gestureHandling: "none",
+    zoomControl: false,
+    mapTypeId: 'terrain',
   }
 
   infowindow = new google.maps.InfoWindow({
@@ -97,35 +106,58 @@ export class GmapComponent implements OnInit {    //extends Map
 
   // Google MapMarker only wraps google.maps.LatLngLiteral (positions) - NOT google.maps.Marker: styles, behaviors, etc
   markers: google.maps.Marker[] = []
+  markerCluster!: GMC.MarkerClusterer
+  // markerPositions: google.maps.LatLngLiteral[] angular brain-dead wrapper
+  markerClustererImagePath =
+    'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
   // markerOptions = { draggable: false }
   // label = 'RangerTrak Label'
 
   labelIndex = 0;
   // infoContent = ''
-  apiLoaded //: Observable<boolean>
+  apiLoaded //: Observable<boolean> // used by template
 
-  // next 2 even used?
-  circleCenter: google.maps.LatLngLiteral = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }  // this.Vashon// kahanaRidge
-  radius = 10;
-
-  fieldReports?: FieldReportType[]
 
   constructor(
-    private settingsService: SettingsService,
-    private fieldReportService: FieldReportService,
-    private httpClient: HttpClient,
-    @Inject(DOCUMENT) private document: Document) {
+    settingsService: SettingsService,
+    fieldReportService: FieldReportService,
+    httpClient: HttpClient,
+    log: LogService,
+    @Inject(DOCUMENT) protected override document: Document
+  ) {
+    super(settingsService,
+      fieldReportService,
+      httpClient,
+      log,
+      document)
 
-    this.fieldReportService = fieldReportService
-    this.zoom = SettingsService.Settings.defZoom
+    this.log.verbose(`Constructing Google Map, using version ${google.maps.version}`, this.id)
+
+    this.hasOverviewMap = true
+    this.displayReports = true
+    this.hasSelectedReports = true
+
+    // https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer
+    // this.markerPositions = []; evil angular wrapper
+
+    // https://github.com/googlemaps/js-markerclusterer
+    // use default algorithm and renderer
+    /*
+
+    constructor MarkerClusterer(map: google.maps.Map, markers?: google.maps.Marker[] | undefined, options?: MarkerClustererOptions | undefined): MarkerClusterer
+Class for clustering markers on a Google Map.
+
+See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.markerclusterer.html
+
+*/
+
     // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
-    this.center = { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng }
-    // this.circleCenter: google.maps.LatLngLiteral = {lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng};
+    // this.circleCenter: google.maps.LatLngLiteral = {lat: this.settings.defLat, lng: this.settings.defLng};
     // https://github.com/angular/components/tree/master/src/google-maps
     // this.apiLoaded = httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=${SettingsService.secrets[3].key}`, 'callback')
-    this.apiLoaded = true
+    // this.apiLoaded = true
     /*
     httpClient.jsonp(`https://maps.googleapis.com/maps/api/js?key=YOUR_API_HERE`, "callback")
       .pipe(
@@ -136,228 +168,273 @@ export class GmapComponent implements OnInit {    //extends Map
     // google.maps.event.addDomListener(window, 'load', this.initMap);
     // this.LoadMap()
     //super('MyName')
+    this.apiLoaded = true  //! bogus...
+  }
+
+
+  // override ngOnInit(): void {
+  //   super.ngOnInit()
+
+  //   this.log.excessive('ngOnInit()', this.id)
+
+  // https://developers.google.com/maps/documentation/geolocation/overview
+  // Works - *if* you want map zoomed on user's device...
+  // navigator.geolocation.getCurrentPosition((position) => {
+  //   this.center = {
+  //     lat: position.coords.latitude,
+  //     lng: position.coords.longitude
+  //   }
+  // })
+  // }
+
+
+  override ngOnInit() {
+    super.ngOnInit()
+    this.log.excessive("ngOnInit()", this.id)
+
+    // Following just sets zoom...
+    // this.initMainMap()
+
+    if (this.displayReports) {
+      this.log.excessive("into getAndDisplayFieldReports()", this.id)
+      this.getAndDisplayFieldReports() // REVIEW: Works with NO Markers?
+
+      // https://github.com/googlemaps/js-markerclusterer
+      // https://newbedev.com/google-markerclusterer-decluster-markers-below-a-certain-zoom-level
+      this.markerCluster = new GMC.MarkerClusterer({
+        map: this.gMap,
+        markers: this.markers,
+        // algorithm?: Algorithm,
+        // renderer?: Renderer,
+        // onClusterClick?: onClusterClickHandler,
+      })
+      this.log.excessive("into updateFieldReports()", this.id)
+
+      this.updateFieldReports()
+    }
+
+    this.log.excessive("done with ngOnInit()", this.id)
+
+  }
+
+  // ---------------- Init Main Map -----------------
+  override initMainMap() {
+    super.initMainMap()
+
+    this.log.excessive("initMap()", this.id)
+
+    // ! Repeat of the guards in super:
+    if (!this.settings) {
+      this.log.error(`Settings not yet initialized while in initMap()!`, this.id)
+      return
+    }
+
+    //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
+
+    this.zoom = this.settings ? this.settings.google.defZoom : 15
+    this.zoomDisplay = this.settings ? this.settings.google.defZoom : 15
+
+    this.log.verbose(`Setting G map Center= lat:${this.settings ? this.settings.defLat : 0}, lng: ${this.settings ? this.settings.defLng : 0}, zoom: ${this.settings ? this.settings.google.defZoom : 15}`, this.id)
+
+    if (this.gMap) {
+      /*
+      ERROR TypeError: Cannot read properties of undefined (reading 'setCenter')
+      at GmapComponent.initMainMap (gmap.component.ts:237:15)
+      */
+
+      this.gMap.setCenter({ lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 })
+      this.gMap.setZoom(this.settings ? this.settings.google.defZoom : 15)
+      this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports!.bounds))
+    }
+  }
+
+  override onMapZoomed() {
+    super.onMapZoomed()
+    if (this.zoom && this.gMap) {
+      this.zoom = this.gMap.getZoom()!
+      this.zoomDisplay = this.gMap.getZoom()!
+    }
+  }
+
+  onMapMouseMove(event: google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      this.mouseLatLng = event.latLng.toJSON()
+    }
+  }
+
+
+  // this.ngMap: GoogleMap (Angular wrapper for the same underlying map!)
+  // this.gMap: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
+  onMapInitialized(mappy: google.maps.Map) {
+    this.log.verbose(`onMapInitialized()`, this.id)
+
+    // This event is ONLY registered for the main map, not overview
+    this.gMap = mappy
+    this.captureGMoveAndZoom(this.gMap)
+    if (this.displayReports) {
+      // gets: core.mjs:6485 ERROR TypeError: bounds.getEast is not a function at FieldReportService.boundsToBound (field-report.service.ts:193:56)
+      // this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports!.bounds))
+    }
+    /* TODO: Emit update for subscribers: instead of always reloading at init stage...
+        this.fieldReportArray = this.fieldReportService.getFieldReports().valueChanges.subscribe(x => {
+          this.log.verbose(`Subscription to location got: ${x}`, this.id)
+        })
+        */
+  }
+
+  onOverviewMapInitialized(mappy: google.maps.Map) {
+    this.log.verbose(`onOverviewMapInitialized()`, this.id)
+
+    // This event is ONLY registered for the overview map
+    this.overviewGMap = mappy
+    this.overviewMap = this.overviewGMap // REVIEW: this creates another reference (used by abstract class..) - NOT a copy that evolves seperately - right?!.
+    this.captureGMoveAndZoom(this.overviewGMap)
+
+    let rectangle = new google.maps.Rectangle({
+      strokeColor: 'blue',
+      strokeOpacity: 0.8,
+      strokeWeight: 1,
+      fillColor: 'blue',
+      fillOpacity: 0.07,
+      map: this.overviewGMap,
+      bounds: this.gMap.getBounds()
+    })
+
+    this.gMap.addListener("bounds_changed", () => {
+      this.overviewGMap.setCenter(this.gMap.getCenter()!);
+      this.overviewGMap.setZoom(
+        this.clamp(
+          this.gMap.getZoom()! - this.settings!.google.overviewDifference,
+          this.settings!.google.overviewMinZoom,
+          this.settings!.google.overviewMaxZoom
+        )
+      )
+      rectangle.LatLngBounds =
+        rectangle.setOptions({
+          bounds: this.gMap.getBounds() as google.maps.LatLngBounds
+        })
+    })
+
+    // cycle through map types when map is clicked
+    this.overviewGMap.addListener("click", () => {
+      let mapId = this.overviewMapType.cur++ % 4
+      this.overviewGMap.setMapTypeId(this.overviewMapType.types.type[mapId])
+      this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
+    })
+
   }
 
   apiLoadedCallbackUNUSED() {
-    console.log("got apiLoadedCallback()")
+    this.log.verbose("got apiLoadedCallback()", this.id)
+    this.apiLoaded = true
   }
 
-  ngOnInit(): void {
-    console.log('into ngOnInit()')
-    // https://developers.google.com/maps/documentation/geolocation/overview
-    navigator.geolocation.getCurrentPosition((position) => {
-      this.center = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      }
-    })
-    // https://github.com/angular/components/tree/master/src/google-maps
-    /* if (this.map == null) {
-       console.log("This.map is null")
-     } else {
-       console.log(`this.map zoom =${this.map.getZoom()}`)
-     }*/
-    // gMap is still null...
+  // -----------------------------------  Markers  --------------------------------------
+
+
+  override clearMarkers() {
+    this.markers = []
   }
-
-  onMapInitialized(mappy: google.maps.Map) {
-    console.log(`onMapInitialized()`)
-    this.gMap = mappy
-
-    /*
-    if (this.gMap == null) {
-      console.log("onMapInitialized(): This.gMap is null")
-    } else {
-      console.log(`onMapInitialized(): this.gMap zoom =${this.gMap.getZoom()}`)
-    }
-*/
-
-    //  this.initZoomControl(this.gMap) gets...
-    /* BUG:
-    core.mjs:6461 ERROR TypeError: Cannot set properties of null (setting 'onclick')
-      at GmapComponent.initZoomControl (gmap.component.ts:197:72)
-      at GmapComponent.onMapInitialized (gmap.component.ts:177:10)
-      at GmapComponent_div_26_Template_google_map_mapInitialized_1_listener (gmap.component.html:25:23)
-      at executeListenerWithErrorHandling (core.mjs:14952:1)
-      at Object.wrapListenerIn_markDirtyAndPreventDefault [as next] (core.mjs:14990:1)
-      at Object.next (Subscriber.js:110:1)
-      at SafeSubscriber._next (Subscriber.js:60:1)
-      at SafeSubscriber.next (Subscriber.js:31:1)
-      at Subject.js:31:1
-      at errorContext (errorContext.js:19:1)
-      */
-    this.displayAllMarkers()
-    // REVIEW: Doesn't work with NO Markers?
-    console.log(`Setting Center= lat:${SettingsService.Settings.defLat}, lng: ${SettingsService.Settings.defLng}, zoom: ${SettingsService.Settings.defZoom}`)
-    this.gMap.setCenter({ lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLng })
-    this.gMap.setZoom(SettingsService.Settings.defZoom)
-    this.fitBounds()
-  }
-
-  fitBounds() {
-    //let reportBounds = this.fieldReportService.getFieldReportBounds()
-    //var southWest = new google.maps.LatLng(reportBounds, reportBounds.west);
-    //var northEast = new google.maps.LatLng(reportBounds.north,reportBounds.east);
-    //var bounds = new google.maps.LatLngBounds(southWest,northEast);
-    this.fieldReportService.recalcFieldBounds()
-    let bounds = this.fieldReportService.getFieldReportBounds()
-    console.log(`Fitting bounds= :${JSON.stringify(bounds)}`)
-    this.gMap?.fitBounds(bounds)
-  }
-
-  // -----------------------------------------------------------
-  // Buttons
-  // TODO: Use mouse wheel to control zoom? Unused currently...
-  // consider: https://developers.google.com/maps/documentation/javascript/examples/control-custom-state
-  // https://developers.google.com/maps/documentation/javascript/examples/split-map-panes
-  // https://developers.google.com/maps/documentation/javascript/examples/inset-map
 
   /*
-  // from https://developers.google.com/maps/documentation/javascript/examples/control-replacement
-  initZoomControl(map: google.maps.Map) {
-    console.log('starting initZoomControl()');
-    // TODO: Doesn't work...
+  https://github.com/googlemaps/js-markerclusterer - current!
+https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer - Angular components doesn't encapulate options functionality: identical clones only: ugg.
+MarkerClustererPlus Library - also old
+    refreshMap() {
+      let data
+      if (this.markerCluster) {
+        this.markerCluster.clearMarkers();
+      }
+      var markers = [];
 
-    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
-      document.querySelector(".zoom-control") as HTMLElement
-    );
+      var markerImage = new google.maps.MarkerImage(imageUrl,
+        new google.maps.Size(24, 32));
 
-    (document.querySelector(".zoom-control-in") as HTMLElement).onclick =
-      function () {
-        map.setZoom(map.getZoom()! + 1);
-      };
+      for (var i = 0; i < data.photos.length; ++i) {
+        markers.push(new marker());
+      }
+      var zoom = parseInt(document.getElementById('zoom').value, 10);
+      var size = parseInt(document.getElementById('size').value, 10);
+      var style = parseInt(document.getElementById('style').value, 10);
+      zoom = zoom === -1 ? null : zoom;
+      size = size === -1 ? null : size;
+      style = style === -1 ? null : style;
 
-    (document.querySelector(".zoom-control-out") as HTMLElement).onclick =
-      function () {
-        map.setZoom(map.getZoom()! - 1);
-      };
-  }
-
-  initZoomControl2() {
-    if (this.gMap) {
-      console.log('try initZoomControl()')
-      this.initZoomControl(this.gMap)
-    } else {
-      console.log('gMap is null, so no initZoomControl()')
+      markerClusterer = new MarkerClusterer(map, markers, {
+        maxZoom: zoom,
+        gridSize: size,
+        styles: styles[style],
+        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+      });
     }
-  }
-
-  zoomIn() {
-    if (this.options.maxZoom != null) {
-      if (this.zoom < this.options.maxZoom) this.zoom++
-    }
-  }
-
-  zoomOut() {
-    if (this.options.minZoom != null) {
-      if (this.zoom > this.options.minZoom) this.zoom--
-    }
-  }
-*/
-  // or on centerChanged
-  logCenter() {
-    console.log(`Map center is at ${JSON.stringify(this.map.getCenter())}`)
-  }
-
-  zoomed() {
-    if (this.zoom && this.gMap) {
-      this.zoom = this.gMap.getZoom()!
-    }
-  }
+  */
 
   addManualMarkerEvent(event: google.maps.MapMouseEvent) {
-    if (SettingsService.Settings.allowManualPinDrops) {
+    if (this.settings!.allowManualPinDrops) {
       if (event.latLng) {
-        this.addMarker(event.latLng)
+        this.addMarker(event.latLng.lat(), event.latLng.lng(), `Manual Marker dropped ${event.latLng.lat}, ${event.latLng.lng} at ${Date()}`)
       } else {
-        console.log(`addMarker FAILED`)
+        this.log.error(`addMarker FAILED`, this.id)
       }
     }
   }
 
-  addMarker(latLng: google.maps.LatLng, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "18px", icon = "", animation = google.maps.Animation.DROP) {
-    console.log(`addMarker`)
 
-    if (infoContent == "") {
-      infoContent = `Manual Marker dropped ${JSON.stringify(latLng)} at ${new Date()}`
-    }
-    if (title == "") {
-      title = infoContent
-    }
-    labelText = "grade"
+  override onSwitchSelectedFieldReports() {
+    super.onSwitchSelectedFieldReports()
+    this.log.excessive(`onSwitchSelectedFieldReports()`, this.id)
 
-    fontSize = "20px"
-    /*
-        //icon = "rocket"
-        animation = google.maps.Animation.DROP
-    */
-
-    let labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
-    // https://material.angular.io/components/icon/overview
-    //https://developers.google.com/fonts/docs/material_icons
-    //https://fonts.google.com/icons
-    if (latLng) {
-      let dt = new Date();
-      let time = `${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}` // :${Utility.zeroFill(dt.getMilliseconds(), 4)}`
-      /* REVIEW:
-       let lat:number = event.latLng.lat  // gets:  Type '() => number' is not assignable to type 'number'.
-       let lng:number = event.latLng.lng
-       lat = Math.round(lat * 1000.0) / 1000.0
-       lng = Math.round(lng * 1000.0) / 1000.0
-       let pos = `lat: ${lat}; lng: ${lng} `
-       */
-      let pos = `lat: ${latLng.lat}; lng: ${latLng.lng}`
-      //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; lng: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
-
-      console.log("Actually adding marker now...")
-      let m = new google.maps.Marker({
-        draggable: true,
-        animation: animation,
-        map: this.gMap,
-        position: latLng,
-        title: title,
-        icon: icon,
-        label: {
-          // label: this.labels[this.labelIndex++ % this.labels.length],
-          text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
-          fontFamily: "Material Icons",
-          color: labelColor,
-
-          fontSize: fontSize,
-        },
-        // label: labels[labelIndex++ % labels.length],
-      })
-      // markers can only be keyboard focusable when they have click listeners
-      // open info window when marker is clicked
-      // marker.addListener("click", () => {
-      //this.infoWindow.setContent(label);
-      //this.infoWindow.open(this.map, marker);
-      // })
-
-      m.addListener("click",   // this.toggleBounce)
-        () => {
-          //this.infowindow.setContent(`${ SpecialMsg } `)
-          //`Manually dropped: ${time} at ${pos} `
-          this.infowindow.setContent(infoContent)
-          this.infowindow.open({
-            // new google.maps.InfoWindow.open({
-            //content: 'How now red cow.',
-            anchor: m,
-            //setPosition: event.latLng,
-            map: this.gMap,
-            // shouldFocus: false,
-          })
-        }
-      )
-      this.markers.push(m)
-    } else {
-      console.log("event.latLng is BAD; can not add marker..")
-    }
-    //this.refreshMarkerDisplay()
+    this.getAndDisplayFieldReports() // REVIEW: !!!!
   }
 
-  displayAllMarkers() {
+
+  getAndDisplayFieldReports() {
+    //super.onSwitchSelectedFieldReports()
+
+    if (!this.filterSwitch || !this.filterSwitch.selected) {
+      this.log.verbose(`Displaying ALL ${this.fieldReportArray.length} field Reports`, this.id)
+    } else {
+      this.fieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
+      this.log.verbose(`Displaying ${this.fieldReportArray.length} SELECTED field Reports`, this.id)
+    }
+    this.displayMarkers()
+    // this.markerCluster.clearMarkers()
+    // this.markerCluster.addMarkers(this.markers)
+
+    // TODO: Duplicate code as in InitMap: move to a new routine...
+    /*this.markerCluster = new GMC.MarkerClusterer({
+      map: this.gMap,
+      markers: this.markers,
+      // algorithm?: Algorithm,
+      // renderer?: Renderer,
+      // onClusterClick?: onClusterClickHandler,
+    })*/
+  }
+
+  // Removes the markers from the map, but keeps them in the array.
+  override hideMarkers(): void {
+    this.markers.forEach((i) => i.setMap(null))
+  }
+
+  // Shows any markers currently in the array.
+  showMarkers(): void {
+    if (!this.gMap) {
+      this.log.error(`showMarkers() got null gMap`, this.id)
+      return
+    }
+    this.markers.forEach((i) => i.setMap(this.gMap))
+  }
+
+  // Deletes all markers in the array by removing references to them.
+  override removeAllMarkers() {
+    this.log.verbose(`removeAllMarkers()`, this.id)
+    this.hideMarkers()
+    this.markers = []
+    // this.gMap.clear();
+    // this.markerCluster.clearMarkers()
+  }
+
+  override displayMarkers() {
     let latlng
     //let infoContent
     let labelText
@@ -366,14 +443,24 @@ export class GmapComponent implements OnInit {    //extends Map
     let labelColor
     let fr: FieldReportType
 
-    let fieldReportStatuses: FieldReportStatusType[] = this.settingsService.getFieldReportStatuses()
+    let fieldReportStatuses: FieldReportStatusType[] = this.settings!.fieldReportStatuses
     // REVIEW: Might this mess with existing fr's?
-    this.fieldReports = this.fieldReportService.getFieldReports()
-    console.log(`displayAllMarkers got ${this.fieldReports.length} field reports`)
-    for (let i = 0; i < this.fieldReports.length; i++) {
-      fr = this.fieldReports[i]
+    this.log.verbose(`displayAllMarkers got ${this.fieldReportArray.length} field reports`, this.id)
+
+    //! TODO: Start by hiding/clearing existing markers & rebuilding....
+    this.removeAllMarkers()
+
+    //if (!this.fieldReportArray.length) {
+    //this.removeAllMarkers()
+    //this.markerCluster.removeMarkers(this.markers)
+    //}
+
+    // this.markerCluster.addMarkers(this.markers)
+
+    for (let i = 0; i < this.fieldReportArray.length; i++) {
+      fr = this.fieldReportArray[i]
       latlng = new google.maps.LatLng(fr.lat, fr.lng)
-      title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, lng ${fr.lng} with "${fr.note}".`
+      title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, lng ${fr.lng} with "${fr.notes}".`
       //title = infoContent
 
       switch (fr.callsign) {
@@ -405,68 +492,121 @@ export class GmapComponent implements OnInit {    //extends Map
         break
       }
 
-      console.log(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`)
-      this.addMarker(latlng, title, labelText, title, labelColor, "28px", icon)
+      this.log.excessive(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`, this.id)
+
+      this.addMarker(latlng.lat(), latlng.lng(), title, labelText, title, labelColor, "28px", icon)
     }
 
-    console.log(`displayAllMarkers added ${this.fieldReports.length} markers`)
-
-    //   addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText = "grade", title = "RangerTitle", labelColor = "#ffffff", fontSize = "18px", icon = "rocket", animation = google.maps.Animation.DROP)
-    // addMarker(latLng: google.maps.LatLng, infoContent = "InfoWindow Content", labelText= "grade", title="RangerTitle", labelColor = "#ffffff", fontSize="18px", icon = "rocket", animation= google.maps.Animation.DROP) {
+    this.log.verbose(`displayAllMarkers added ${this.fieldReportArray.length} markers`, this.id)
   }
 
-  onMapMouseMove(event: google.maps.MapMouseEvent) {
-    if (event.latLng) {
-      this.mouseLatLng = event.latLng.toJSON()
+  override addMarker(lat: number, lng: number, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP, msDelay = 100) {
+    //this.log.excessive(`addMarker`, this.id)
+
+    if (infoContent == "") {
+      infoContent = `Manual Marker dropped ${lat}, ${lng} at ${Date()}`
     }
-  }
-
-  addTrafficLayer() {
+    if (title == "") {
+      title = infoContent
+    }
+    labelText = "grade"
+    fontSize = "16px"
     /*
-      MapTypes:
-      roadmap - displays the default road map view. This is the default map type.
-      satellite - displays Google Earth satellite images.
-      hybrid - displays a mixture of normal and satellite views.
-      terrain - displays a physical map based on terrain information.
+        //icon = "rocket"
+        animation = google.maps.Animation.DROP
     */
-    console.log(`addTrafficLayer(): this.map: ${this.map} `)
-    console.log(`addTrafficLayer(): this.map.center: ${this.map.center} `)
-    const trafficLayer = new google.maps.TrafficLayer();
-    trafficLayer.setMap(this.gMap);
 
-    // https://developers.google.com/maps/documentation/javascript/maptypes
+    let labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
+    // https://material.angular.io/components/icon/overview
+    //https://developers.google.com/fonts/docs/material_icons
+    //https://fonts.google.com/icons
+    if (lat && lng) {
+      let dt = new Date();
+      let time = `${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}` // :${Utility.zeroFill(dt.getMilliseconds(), 4)}`
+      /* REVIEW:
+       let lat:number = event.latLng.lat  // gets:  Type '() => number' is not assignable to type 'number'.
+       let lng:number = event.latLng.lng
+       lat = Math.round(lat * 1000.0) / 1000.0
+       lng = Math.round(lng * 1000.0) / 1000.0
+       let pos = `lat: ${lat}; lng: ${lng} `
+       */
+      let pos = `lat: ${lat}; lng: ${lng}`
+      //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; lng: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
+
+      // this.log.excessive("Actually adding marker now...", this.id)
+
+      let m = new google.maps.Marker({
+        draggable: true,
+        animation: animation,
+        // map: this.gMap,
+        position: { lat: lat, lng: lng },
+        title: title,
+        icon: icon,
+        label: {
+          // label: this.labels[this.labelIndex++ % this.labels.length],
+          text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+          fontFamily: "Material Icons",
+          color: labelColor,
+
+          fontSize: fontSize,
+        },
+        // label: labels[labelIndex++ % labels.length],
+      })
+
+      // markers can only be keyboard focusable when they have click listeners
+      // open info window when marker is clicked
+      // marker.addListener("click", () => {
+      //this.infoWindow.setContent(label);
+      //this.infoWindow.open(this.gMap, marker);
+      // })
+
+      m.addListener("click",   // this.toggleBounce)
+        () => {
+          //this.infowindow.setContent(`${ SpecialMsg } `)
+          //`Manually dropped: ${time} at ${pos} `
+          this.infowindow.setContent(infoContent)
+          this.infowindow.open({
+            // new google.maps.InfoWindow.open({
+            //content: 'How now red cow.',
+            anchor: m,
+            //setPosition: event.latLng,
+            //map: this.gMap,
+            // shouldFocus: false,
+          })
+        }
+      )
+      //this.markerPositions.push(latLng.toJSON()); evil angular wrapper
+
+      // Drop each marker - potentially with a bit of delay to create an anination effect
+      //window.setTimeout(() => {
+
+      this.markers.push(m)
+
+      //}, msDelay)
+
+    } else {
+      this.log.error("event.latLng is BAD; can not add marker..", this.id)
+    }
+    //this.refreshMarkerDisplay()
+  }
+
+
+  // -----------------------------------------------------------
+  // Buttons
+  // consider: https://developers.google.com/maps/documentation/javascript/examples/control-custom-state
+  // https://developers.google.com/maps/documentation/javascript/examples/split-map-panes
+
+  // or on centerChanged
+  logCenter() {
+    this.log.verbose(`Map center is at ${JSON.stringify(this.ngMap.getCenter())}`, this.id)
+  }
+
+
+  toggleTrafficLayer() {
+    this.trafficLayer.setMap(
+      (this.trafficLayerVisible ^= 1) ? this.gMap : null) // toggle trafficLayerVisible to 0 or 1
     // map.setTilt(45);
+    this.log.info(`TrafficLayer made ${this.trafficLayerVisible ? 'visible' : 'hidden'}`, this.id)
   }
-
-
-  // ---------------------------------------------------------------------------------------------------
-  // Google PlusCodes: Open Location Code
-  // https://github.com/tspoke/typescript-open-location-code
-  // https://github.com/google/open-location-code
-
-
-
-
 }
-
-
-/*
-
-
-markerDragEnd(m: marker, $event: google.maps.MouseEvent) {
-  console.log('dragEnd', m, $event);
-  this.latitude = $event.latLng.lat();
-  this.longitude = $event.latLng.lng();
-  this.getAddress(this.latitude, this.longitude);
-}
-  markerDragEnd2($event: google.maps.MouseEvent) {
-    console.log($event);
-    this.lat = $event.coords.lat;
-    this.lng = $event.coords.lng;
-    this.getAddress(this.latitude, this.longitude);
-  }
-  */
-    // TODO: Add a marker clusterer to manage the markers.
-    // new MarkerClusterer({ markers, map });
-
-
