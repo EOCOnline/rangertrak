@@ -45,7 +45,8 @@ import { MiniGMapComponent } from './entry/mini-gmap.component'
 import { MiniLMapComponent } from './entry/mini-lmap.component'
 import { HeaderComponent } from './shared/'
 import { TimePickerComponent } from './shared/time-picker/time-picker.component'
-import { IconsComponent } from './shared/icons/icons.component'
+import { IconsComponent } from './shared/icons/icons.component';
+import { CircleHatchingComponent } from './settings/circle-hatching/circle-hatching.component'
 // REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
 // https://angular.io/guide/build#configuring-commonjs-dependencies
 
@@ -112,7 +113,8 @@ import { IconsComponent } from './shared/icons/icons.component'
     MiniLMapComponent,
     HeaderComponent,
     TimePickerComponent,
-    IconsComponent
+    IconsComponent,
+    CircleHatchingComponent
   ],
 
   // Define any required @Injectables. Any sub-components or modules can get the

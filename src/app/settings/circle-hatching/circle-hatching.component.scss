@@ -1,0 +1,24 @@
+// cute: Circle Hatching from https://codepen.io/JohnsPen/pen/jOYvOOq
+#hatchRect {
+  display            : block;
+  float              : right;
+  margin             : 5px;
+  padding            : 0;
+  height             : 40vh;
+  width              : 20hv;
+  overflow           : hidden;
+  //display        : flex;
+  //align-items      : center;
+  //justify-content  : center;
+  background         : black;
+}
+
+.hatchRect-frame {
+  border  : 2px solid black;
+  //height: 20vh; //100%;
+  width   : 100%;
+}
+
+// #map {
+//   height: 35vh; //100%;
+// }
