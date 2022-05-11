@@ -1,52 +1,61 @@
-import { FieldReportSource, FieldReportStatusType, FieldReportType, RangerType, SettingsType } from './shared/services/'
-//import { ClockService, FieldReportService, PopupService, RangerService, SettingsService} from './shared/services/' // instead singleton services use "providedIn: 'root'""
-
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { AgGridModule } from 'ag-grid-angular'
-import { ColorEditor } from './settings/color-editor.component'
-import { MoodEditor } from './settings/mood-editor.component'
-import { MoodRenderer } from './settings/mood-renderer.component'
-//import { AgmCoreModule } from '@agm/core'
-import { AlertsComponent } from './shared/alerts/alerts.component'
-import { AppComponent } from './app.component'
-import { AppRoutingModule } from './app-routing.module'
-import { FlexLayoutModule } from '@angular/flex-layout'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { BrowserModule } from '@angular/platform-browser'
-import { CommonModule } from '@angular/common'
-// import { DayjsModule } from 'ngx-dayjs'
-import { EntryComponent } from './entry/entry.component'
-import { FieldReportsComponent } from './field-reports/field-reports.component'
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
-import { FooterComponent } from './shared/footer/footer.component'
-import { GmapComponent } from './gmap/gmap.component'
-import { GoogleMapsModule } from '@angular/google-maps'
-import { HttpClientModule } from '@angular/common/http'
-import { LazyModule } from './lazy/lazy.module'
-import { LmapComponent } from './lmap/lmap.component'
-import { LogComponent } from './log/log.component'
+
+import {
+    MAT_COLOR_FORMATS, NGX_MAT_COLOR_FORMATS, NgxMatColorPickerModule
+} from '@angular-material-components/color-picker'
 //import { MatDatepickerModule } from '@matheo/datepicker'
 //import { MatNativeDateModule } from '@matheo/datepicker/core'
-import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker'
-import { MAT_COLOR_FORMATS, NgxMatColorPickerModule, NGX_MAT_COLOR_FORMATS } from '@angular-material-components/color-picker'
-import { MDCBanner } from '@material/banner'
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar'
-import { MaterialModule } from './material.module'
-
-import { NavbarComponent } from './shared/navbar/navbar.component'
+import {
+    NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule
+} from '@angular-material-components/datetime-picker'
+import { CommonModule } from '@angular/common'
+import { HttpClientModule } from '@angular/common/http'
 import { NgModule } from '@angular/core'
-import { RangersComponent } from './rangers/rangers.component'
-import { SettingsComponent } from './settings/settings.component'
-import { X404Component } from './x404/x404.component'
+import { FlexLayoutModule } from '@angular/flex-layout'
+//import { ClockService, FieldReportService, PopupService, RangerService, SettingsService} from './shared/services/' // instead singleton services use "providedIn: 'root'""
+import {
+    FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators
+} from '@angular/forms'
+import { GoogleMapsModule } from '@angular/google-maps'
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar'
+import { BrowserModule } from '@angular/platform-browser'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { ServiceWorkerModule } from '@angular/service-worker'
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
+import { MDCBanner } from '@material/banner'
+
 import { environment } from '../environments/environment'
+import { AppRoutingModule } from './app-routing.module'
+import { AppComponent } from './app.component'
+// import { DayjsModule } from 'ngx-dayjs'
+import { EntryComponent } from './entry/entry.component'
 import { LocationComponent } from './entry/location.component'
 import { MiniGMapComponent } from './entry/mini-gmap.component'
 import { MiniLMapComponent } from './entry/mini-lmap.component'
+import { FieldReportsComponent } from './field-reports/field-reports.component'
+import { GmapComponent } from './gmap/gmap.component'
+import { LazyModule } from './lazy/lazy.module'
+import { LmapComponent } from './lmap/lmap.component'
+import { LogComponent } from './log/log.component'
+import { MaterialModule } from './material.module'
+import { RangersComponent } from './rangers/rangers.component'
+import { ColorEditor } from './settings/color-editor.component'
+import { MoodEditor } from './settings/mood-editor.component'
+import { MoodRenderer } from './settings/mood-renderer.component'
+import { SettingsComponent } from './settings/settings.component'
 import { HeaderComponent } from './shared/'
+//import { AgmCoreModule } from '@agm/core'
+import { AlertsComponent } from './shared/alerts/alerts.component'
+import { FooterComponent } from './shared/footer/footer.component'
+import { IconsComponent } from './shared/icons/icons.component'
+import { NavbarComponent } from './shared/navbar/navbar.component'
+import {
+    FieldReportSource, FieldReportStatusType, FieldReportType, RangerType, SettingsType
+} from './shared/services/'
 import { TimePickerComponent } from './shared/time-picker/time-picker.component'
-import { IconsComponent } from './shared/icons/icons.component';
-import { CircleHatchingComponent } from './settings/circle-hatching/circle-hatching.component'
+import { X404Component } from './x404/x404.component'
+
+//import { CircleHatchingComponent } from './settings/circle-hatching/circle-hatching.component'
 // REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
 // https://angular.io/guide/build#configuring-commonjs-dependencies
 
@@ -113,8 +122,9 @@ import { CircleHatchingComponent } from './settings/circle-hatching/circle-hatch
     MiniLMapComponent,
     HeaderComponent,
     TimePickerComponent,
-    IconsComponent,
-    CircleHatchingComponent
+    IconsComponent
+    //,
+    //CircleHatchingComponent
   ],
 
   // Define any required @Injectables. Any sub-components or modules can get the
