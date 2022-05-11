@@ -1,17 +1,23 @@
-import { DOCUMENT } from '@angular/common'
-import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FieldReportService, FieldReportStatusType, LogService, RangerService, SettingsService, SettingsType } from '../shared/services/'
 import { AgGridModule } from 'ag-grid-angular'
+import { ColDef } from 'ag-grid-community'
+import { Subscription, throwError } from 'rxjs'
+
+import { DOCUMENT } from '@angular/common'
+import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import {
+    AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators
+} from '@angular/forms'
+
+import { TimePickerComponent } from '../shared/'
+import {
+    FieldReportService, FieldReportStatusType, LogService, RangerService, SettingsService,
+    SettingsType
+} from '../shared/services/'
 //import { Color } from '@angular-material-components/color-picker';
 //import { ThemePalette } from '@angular/material/core';
-import { ColorEditor } from './color-editor.component';
-import { MoodEditor } from './mood-editor.component';
-import { MoodRenderer } from './mood-renderer.component';
-import { ColDef } from 'ag-grid-community';
-import { Subscription, throwError } from 'rxjs';
-import { TimePickerComponent } from '../shared/';
-
+import { ColorEditor } from './color-editor.component'
+import { MoodEditor } from './mood-editor.component'
+import { MoodRenderer } from './mood-renderer.component'
 
 @Component({
   selector: 'rangertrak-settings',
@@ -70,6 +76,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     //floatingFilter: true
   }
 
+  //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
   columnDefs = [
     {
       headerName: "Status", field: "status", flex: 50,
@@ -292,8 +299,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       eventNotes: [this.settings.eventNotes],
       opPeriod: [this.settings.opPeriod],
 
-      // opPeriodStart: [this.settings.opPeriodStart],
-      // opPeriodEnd: [this.settings.opPeriodEnd],
+      opPeriodStart: [this.settings.opPeriodStart],
+      opPeriodEnd: [this.settings.opPeriodEnd],
       timepickerFormControlStart: [this.settings.opPeriodStart],
       timepickerFormControlEnd: [this.settings.opPeriodEnd],
 

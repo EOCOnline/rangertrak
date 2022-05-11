@@ -104,6 +104,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       this.log.error(`this.settings was null in constructor`, this.id)
     }
 
+    //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
     this.columnDefs = [
       { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1 }, // TODO:
       { headerName: "CallSign", field: "callsign", tooltipField: "team", flex: 2 },

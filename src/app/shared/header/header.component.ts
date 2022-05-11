@@ -1,7 +1,9 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { interval, map, Observable, Subscription } from 'rxjs';
-import { ClockService, SettingsService, LogService, SettingsType } from '../services'
-import { FlexLayoutModule } from '@angular/flex-layout';
+import { interval, map, Observable, Subscription } from 'rxjs'
+
+import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { FlexLayoutModule } from '@angular/flex-layout'
+
+import { ClockService, LogService, SettingsService, SettingsType } from '../services'
 
 /**
  * HaaderComponent
@@ -26,6 +28,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private settings!: SettingsType
 
   public eventInfo = ''
+  public eventDetails = ''
   public opPeriod = ''
 
   public opPeriodStart = new Date()
@@ -53,7 +56,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.timeCurrent = this.clockService.getCurrentTime()
 
     // consuming components should include their name, e.g.
-    this.parentTitle = 'parent componeents title'
+    this.parentTitle = 'parent component`s title'
   }
 
   ngOnInit(): void {
@@ -68,8 +71,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.settings = newSettings
 
-    this.eventInfo = `${this.settings.mission}; ${this.settings.event}`
-    this.opPeriod = this.settings.opPeriod
+    this.eventInfo = `#${this.settings.mission}: ${this.settings.event}`
+    this.eventDetails = `Mission #: ${this.settings.mission}; Mission Name: ${this.settings.event}; Notes: ${this.settings.eventNotes}`
+    this.opPeriod = `${this.settings.opPeriod}`
 
     // if (!this.settings.opPeriodStart) {
     //   console.error(`OpPeriod had no Start time! Reset to 2 hours ago...`, this.id)
