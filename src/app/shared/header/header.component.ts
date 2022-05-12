@@ -94,7 +94,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.timeLeft$ = interval(1000)
       .pipe(map(() => {
         let ms = msEndTime - new Date().getTime()
-        return (`${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.round((ms / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(Math.round(ms / 1000) % 60).toString().padStart(2, '0')}`)
+        return (`${-Math.round((ms / (1000 * 60 * 60)) % 24)}:${-Math.round((ms / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(-Math.round(ms / 1000) % 60).toString().padStart(2, '0')}`)
       }
       ))
   }

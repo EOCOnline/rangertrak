@@ -97,7 +97,7 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
 
 
   redisplayLog() {
-    console.log(`Redisplay log with only ${this.verbose ? 'verbose, ' : ''}${this.info ? 'info, ' : ''}${this.warn ? 'warnings, ' : ''}${this.error ? 'errors ' : ''}`)
+    console.log(`Display log with ${this.excessive ? 'excessive, ' : 'only '}${this.verbose ? 'verbose, ' : ''}${this.info ? 'info, ' : ''}${this.warn ? 'warnings, ' : ''}${this.error ? 'errors ' : ''}`)
     this.gotNewLog(this.latestLog)
   }
 

@@ -170,8 +170,10 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
     if (this.map instanceof L.Map) {
       // leaflet map
+      // TODO
     } else if (this.map instanceof google.maps.Map) {
       // google map
+      // TODO
     } else {
       this.log.warn(`InitMap(): map not a leaflet or google map - ignoring as uninitialized?`, this.id)
     }

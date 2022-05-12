@@ -1,15 +1,14 @@
-
 #AboutBody {
   //display: inline-block;
   //background-image: './src/assets/imgs/AlpineMarmot.png' !important;
   //height: 650 px;
-  color: black;
-  background-image: linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(8, 8, 8, 0.5)), url("../../../assets/imgs/AlpineMarmot.png") ;
+  color             : black;
+  background-image  : linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(8, 8, 8, 0.5)), url("../../../assets/imgs/AlpineMarmot.png");
   //color: black;
   //background-image: url("../../../assets/imgs/AlpineMarmot.png") ;
   //background-size: 100%;
   //background-size: contain;
-  background-size: cover;
+  background-size   : cover;
 }
 
 // https://dev.to/nazanin_ashrafi/how-to-darken-an-image-with-css-4f5h
@@ -23,6 +22,11 @@ filter: brightness(30%);
 // https://developer.mozilla.org/en-US/docs/Web/CSS/background-image
 //https://rapidapi.com/guides/css-painting-api
 
-.bold{
-  font-weight:bold
+.bold {
+  font-weight: bold
+}
+
+.imgCredit {
+  text-align: right;
+  font-size : x-small;
 }
