@@ -1,9 +1,12 @@
-import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef, } from '@angular/core';
-import { Color } from '@angular-material-components/color-picker';
-import { ThemePalette } from '@angular/material/core';
-import { ICellEditorAngularComp } from 'ag-grid-angular';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ArgumentOutOfRangeError } from 'rxjs';
+import { ICellEditorAngularComp } from 'ag-grid-angular'
+import { ArgumentOutOfRangeError } from 'rxjs'
+
+import { Color } from '@angular-material-components/color-picker'
+import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef } from '@angular/core'
+import {
+    AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators
+} from '@angular/forms'
+import { ThemePalette } from '@angular/material/core'
 
 // https://www.ag-grid.com/angular-data-grid/component-cell-editor
 // TODO: Based on boolean value for icons: we need a selection from a panel of icons...
@@ -108,7 +111,7 @@ export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
   onColorCtrClosed() {
     console.log(`oncolorCtrClosed = ${this.colorCtr.value.hex} from  ${this.color}`)
     //this.color = `x${this.colorCtr.value.hex} = ${this.colorCtr.value.rgba}`  // pass color on to parent
-    this.color = this.colorCtr.value.hex  // pass color on to parent
+    this.color = `#${this.colorCtr.value.hex}`  // pass color on to parent
     this.params.api.stopEditing() // close smaller inline editor
   }
 
