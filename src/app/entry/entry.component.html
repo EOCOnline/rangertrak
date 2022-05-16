@@ -78,6 +78,13 @@
     </div-->
 
     <h2 class="elegant"><mat-label>When</mat-label></h2>
+
+    <div FormControl="timepickerFormControlStart" class="filled timepicker">
+      <rangertrak-time-picker
+        (newTimeEvent)="onNewTimeEventStart($event)"
+      ></rangertrak-time-picker>
+    </div>
+
     <!--div>
       <rangertrak-time-picker (newTimeEvent)="onNewTime($event)"></rangertrak-time-picker>
     </div-->

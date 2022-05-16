@@ -142,6 +142,38 @@ export class EntryComponent implements OnInit, OnDestroy {
     //this.timepickerFormControl is where the Event comes up from...
   }
 
+
+  onNewTimeEventStart(newTimeEvent: any) {
+    if (!this.settings) {
+      this.log.error(`this.settings is null at onNewTimeEventStart`, this.id)
+      return
+    }
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new start OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
+    this.settings.opPeriodStart = JSON.parse(newTimeEvent)
+    this.entryDetailsForm.patchValue({ timepickerFormControlStart: JSON.parse(newTimeEvent) })
+    // This then automatically gets sent to mini-map children via their @Input statements
+    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
+    // TODO: BUT, we still need to update our local copy:
+    //this.timepickerFormControl is where the Event comes up from...
+  }
+
+  onNewTimeEventEnd(newTimeEvent: any) {
+    if (!this.settings) {
+      this.log.error(`this.settings is null at onNewTimeEventEnd`, this.id)
+      return
+    }
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new end OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
+    this.settings.opPeriodEnd = JSON.parse(newTimeEvent)
+    this.entryDetailsForm.patchValue({ timepickerFormControlEnd: JSON.parse(newTimeEvent) })
+
+    // This then automatically gets sent to mini-map children via their @Input statements
+    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
+    // TODO: BUT, we still need to update our local copy:
+    //this.timepickerFormControl is where the Event comes up from...
+  }
+
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
     this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
