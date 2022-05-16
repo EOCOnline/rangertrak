@@ -132,14 +132,17 @@ input[type=number] {
 }
 
 .timepicker_When-input {
-  width: 400px;
+  width: 250px;
 }
 
 .enter__Status {
-  padding           : 8px 0;
-  border-radius     : 4px;
+  padding             : 8px 0;
+  //border            : 3px solid red;
+  border-radius       : 4px;
   //width           : 650px;
-  background-color  : $filledColor;
+  background-color    : $filledColor;
+  line-height         : 35px;
+  //margin            : 20px 0;
 }
 
 .bottomDrop {

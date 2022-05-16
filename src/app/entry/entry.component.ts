@@ -144,16 +144,12 @@ export class EntryComponent implements OnInit, OnDestroy {
   }
 
 
-  onNewTimeEventStart(newTimeEvent: any) {
-    if (!this.settings) {
-      this.log.error(`this.settings is null at onNewTimeEventStart`, this.id)
-      return
-    }
+  onNewTimeEvent(newTimeEvent: any) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new start OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++ `, this.id)
-    this.settings.opPeriodStart = JSON.parse(newTimeEvent)
-    this.entryDetailsForm.patchValue({ timepickerFormControlStart: JSON.parse(newTimeEvent) })
-    // This then automatically gets sent to mini-map children via their @Input statements
+    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new Report time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++ `, this.id)
+    this.time = JSON.parse(newTimeEvent)
+    this.entryDetailsForm.patchValue({ timepickerFormControl: JSON.parse(newTimeEvent) })
+    // This then automatically could ge sent to any children (none in this case) via their @Input statements
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:
     //this.timepickerFormControl is where the Event comes up from...

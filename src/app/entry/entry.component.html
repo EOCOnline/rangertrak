@@ -9,6 +9,7 @@
     <mini-lmap [locationUpdated]="location">LMAP HERE</mini-lmap>
     <!--mini-gmap [locationUpdated]="location">GMAP HERE</mini-gmap-->
 
+    <!-- ======================================= -->
     <h2 class="elegant">
       <mat-label>Who</mat-label>
     </h2>
@@ -46,6 +47,7 @@
     <span id="enter__Callsign-upshot"></span>
     <br />
 
+    <!-- ======================================= -->
     <h2 class="elegant">
       <mat-label>Where</mat-label>&nbsp;&nbsp;<!--fa-icon
         [icon]="faInfoCircle"
@@ -77,28 +79,31 @@
       ></rangertrak-location>
     </div-->
 
+    <!-- ======================================= -->
     <h2 class="elegant"><mat-label>When</mat-label></h2>
 
-    <div FormControl="timepickerFormControlStart" class="filled timepicker">
+    <div FormControl="timepickerFormControl" class="filled timepicker timepicker_When-input">
       <rangertrak-time-picker
-        (newTimeEvent)="onNewTimeEventStart($event)"
+        (newTimeEvent)="onNewTimeEvent($event)"
       ></rangertrak-time-picker>
+      <div id="reportTime">{{time}}</div>
     </div>
 
     <!--div>
       <rangertrak-time-picker (newTimeEvent)="onNewTime($event)"></rangertrak-time-picker>
     </div-->
 
+    <!-- ======================================= -->
     <h2 class="elegant bordered">What</h2>
 
     <div class="input-group bordered">
-      <mat-label><div class="strong bottomDrop">Status:</div></mat-label>
+      <!-- mat-label><div class="strong bottomDrop">Status:</div></mat-label -->
       <mat-radio-group
         class="filled  enter__Status"
         labelPosition="after"
         formControlName="status"
         tabindex="7"
-      >
+      ><span class="strong bottomDrop">Status:&nbsp;&nbsp;</span>
         <mat-radio-button
           *ngFor="let stat of settings.fieldReportStatuses"
           value="{{stat.status}}"
@@ -121,6 +126,7 @@
       ></textarea>
     </div>
 
+    <!-- ======================================= -->
     <!-- TODO: Add h4> Keywords</h4>
     <div formArrayName="keywords">
       <div *ngIf="keywordsControls && keywordsControls.length">
@@ -138,6 +144,7 @@
 
     <br />
 
+    <!-- ======================================= -->
     <!--button (click)="onBtnUpdateLocation()">Update location</button> <br-->
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
     <button
