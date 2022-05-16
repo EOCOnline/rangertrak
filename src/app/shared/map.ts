@@ -71,6 +71,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
   protected id = 'Abstract Map Component'
   public title = 'Abstract Map'
+  public pageDescr = 'Abstract Map'
 
   protected settingsSubscription: Subscription
   protected settings!: SettingsType

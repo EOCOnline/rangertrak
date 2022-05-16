@@ -29,7 +29,9 @@ export class myUnusedPipe implements PipeTransform {
 export class FieldReportsComponent implements OnInit, OnDestroy {
 
   private id = 'Field Report'
-  public title = 'Field Reports'
+  title = 'Field Reports'
+  pageDescr = `Grid display of rangers' positions and status throughout a mission`
+
   private fieldReports: FieldReportsType | undefined
   public fieldReportArray: FieldReportType[] = []
   private fieldReportsSubscription!: Subscription

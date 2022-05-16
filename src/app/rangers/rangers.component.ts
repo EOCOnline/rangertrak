@@ -1,16 +1,21 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { FieldReportService, FieldReportType, LogService, RangerService, RangerType, SettingsService, SettingsType } from '../shared/services/';
-import { DOCUMENT } from '@angular/common'
-import { csvImport } from './csvImport'
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { AlertsComponent } from '../shared/alerts/alerts.component';
-import { Subscription } from 'rxjs';
-
+import { Subscription } from 'rxjs'
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING
 D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'. CommonJS or AMD dependencies can cause optimization bailouts.
 For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies */
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx'
+
+import { DOCUMENT } from '@angular/common'
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
+import { MatSnackBar } from '@angular/material/snack-bar'
+
+import { AlertsComponent } from '../shared/alerts/alerts.component'
+import {
+    FieldReportService, FieldReportType, LogService, RangerService, RangerType, SettingsService,
+    SettingsType
+} from '../shared/services/'
+import { csvImport } from './csvImport'
+
 type AOA = any[][]  // array of arrays
 /* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
 // https://github.com/SheetJS/SheetJS.github.io
@@ -26,7 +31,8 @@ type AOA = any[][]  // array of arrays
 export class RangersComponent implements OnInit, OnDestroy {
 
   private id = 'Ranger Component'
-  public title = 'Rangers (CERT, ACS/ARES, etc)'
+  title = 'Rangers (CERT, ACS/ARES, etc)'
+  pageDescr = `Display of rangers' on this mission`
 
   private settingsSubscription!: Subscription
   private settings!: SettingsType

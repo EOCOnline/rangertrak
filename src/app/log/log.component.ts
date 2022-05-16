@@ -22,7 +22,9 @@ import { LogLevel, LogService, LogType, SettingsService, SettingsType } from '..
 export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit {
   // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
   private id = 'Log Component'
-  public title = 'Event Summary Log'
+  title = 'Event Summary Log'
+  pageDescr = `Program internal debug information`
+
   private logPanel: HTMLElement | null = null
   private logSubscription: Subscription
   private settingsSubscription!: Subscription

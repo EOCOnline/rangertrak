@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { filter, map, switchMap } from 'rxjs'
+
+import { Component, OnInit } from '@angular/core'
+import { MatSnackBar } from '@angular/material/snack-bar'
 //import { MatSnackBar } from '@material/snackbar'
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker'
-import { filter, map, switchMap } from 'rxjs'
+
 import { LogService } from './shared/services'
 
 @Component({
@@ -13,7 +15,8 @@ import { LogService } from './shared/services'
 export class AppComponent implements OnInit {
 
   private id = "AppComponent"
-  title = 'RangerTrak';
+  title = 'RangerTrak'
+  pageDescr = `Track & map Rangers' progress & reports on a mission`
   updateEvt: any = null
 
   constructor(

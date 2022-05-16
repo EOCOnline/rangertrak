@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core'
+
 // TODO: https://bobrov.dev/blog/angular-smart-404-page/
 
 @Component({
@@ -7,7 +8,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./x404.component.scss']
 })
 export class X404Component implements OnInit {
-  public title = 'You are seeking a web page that does not yet exist!'
+  title = 'You are seeking a web page that does not yet exist!'
+  pageDescr = `Unknown page`
   constructor() { }
 
   ngOnInit(): void {

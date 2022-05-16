@@ -69,6 +69,8 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
 
   public override id = 'Leaflet Map Component'
   public override title = 'Leaflet Map'
+  public override pageDescr = 'Leaflet Map'
+
   private lMap!: L.Map
   private overviewLMap!: L.Map
 

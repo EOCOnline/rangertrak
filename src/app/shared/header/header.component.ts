@@ -10,9 +10,10 @@ import { ClockService, LogService, SettingsService, SettingsType } from '../serv
  * Displays a consistent line just below the NavBar, and above the component's main content
  *
  * Usage: To display this in your component add the following line to your (parent) template:
- *    <pageHeader [parentTitle]="title">...</pageHeader>
+ *    <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
  * And the following in the parent component:
- *    public title = 'Name of the (parent) Component'
+ *   title = 'Name of the (parent) Component'
+ *   pageDescr = `Description of this page & purpose`
  */
 @Component({
   selector: 'pageHeader',
@@ -21,6 +22,7 @@ import { ClockService, LogService, SettingsService, SettingsType } from '../serv
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @Input() parentTitle: string
+  @Input() pageDescription: string
 
   private id = 'Header component'
 
@@ -57,6 +59,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     // consuming components should include their name, e.g.
     this.parentTitle = 'parent component`s title'
+    this.pageDescription = 'parent component`s title'
   }
 
   ngOnInit(): void {
