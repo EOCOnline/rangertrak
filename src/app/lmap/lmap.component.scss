@@ -34,4 +34,11 @@
   width     : 175px;
   bottom    : 0px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor    : crosshair;
 }
+
+.leaflet-container.crosshair-cursor-enabled {
+  cursor: crosshair;
+}
+
+// https://www.w3.org/TR/CSS21/ui.html#propdef-cursor

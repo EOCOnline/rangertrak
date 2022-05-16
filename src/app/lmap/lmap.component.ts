@@ -73,7 +73,18 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
   private overviewLMap!: L.Map
 
   // TODO: Leaflet's version of following?
-  overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
+  overviewLMapType = { cur: 2, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
+
+  // https://leafletjs.com/reference.html#icon
+  mapCursor = L.icon({
+    iconUrl: '../../assets/icons/my-icon.png',
+    //iconSize: [38, 95],
+    //iconAnchor: [22, 94],
+    //popupAnchor: [-3, -76],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+  })
 
   mymarkers = L.markerClusterGroup()
   mapOptions = ""
@@ -182,6 +193,8 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
 
     // this.log.excessive("initMap()  3", this.id)
 
+    // TODO: Allow centering map on user's position (geolocation): https://leafletjs.com/reference.html#locate-options
+    // https://leafletjs.com/reference.html#map-locate
     this.lMap = L.map('map', {
       center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
       zoom: this.settings ? this.settings.leaflet.defZoom : 15
@@ -191,6 +204,13 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
       this.log.error(`this.lMap not created!`, this.id)
       return
     }
+
+    // https://stackoverflow.com/questions/14106687/how-do-i-change-the-default-cursor-in-leaflet-maps
+    L.DomUtil.addClass(this.lMap.getContainer(), 'crosshair-cursor-enabled')  //  Enable crosshairs
+    // L.DomUtil.removeClass(map._container,'crosshair-cursor-enabled') // Disable crosshairs
+
+    // gmap: draggableCursor: 'crosshair', //https://www.w3.org/TR/CSS21/ui.html#propdef-cursor has others...
+    //L.marker([50.505, 30.57], { icon: this.mapCursor }).addTo(this.lMap)
 
     // map can be either Leaflet or Google Map (in the abstract class) -
     // But we know it is JUST Leaflet map in this file!
@@ -255,6 +275,8 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
     })
 
     overviewTiles.addTo(this.overviewLMap)
+
+    L.DomUtil.addClass(this.overviewLMap.getContainer(), 'crosshair-cursor-enabled')  //  Enable crosshairs
 
     // if (this.overviewLMap === null || this.overviewLMap === undefined) {
     //   this.log.error(`Could not create overview map!`, this.id)

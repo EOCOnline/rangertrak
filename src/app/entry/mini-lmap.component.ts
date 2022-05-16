@@ -203,6 +203,7 @@ Ensure that there are no changes to the bindings in the template after change de
       //this.lMap.fitBounds()
     }
 
+    L.DomUtil.addClass(this.lMap.getContainer(), 'crosshair-cursor-enabled')  //  Enable crosshairs
 
     this.lMap.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
       if (this.zoomDisplay && this.lMap) {
