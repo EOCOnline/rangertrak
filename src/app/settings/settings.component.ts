@@ -1,6 +1,6 @@
 import { AgGridModule } from 'ag-grid-angular'
 import { ColDef } from 'ag-grid-community'
-import { Subscription, throwError } from 'rxjs'
+import { delay, Subscription, throwError } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
@@ -44,8 +44,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private timeSubscriptionEnd$!: Subscription
   public time!: Date
   dateCtrl = new FormControl(new Date())
-  //timepickerFormControlStart!: FormControl
-  //timepickerFormControlEnd!: FormControl
+  timepickerFormControlStart!: FormControl
+  timepickerFormControlEnd!: FormControl
 
   private gridApi: any
   private gridColumnApi: any
@@ -240,32 +240,35 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     this.log.verbose("ngInit done ", this.id)
   }
 
-  onNewTimeEventStart(newTimeEvent: any) {
+  onNewTimeEventStart(newTime: Date) {
     if (!this.settings) {
       this.log.error(`this.settings is null at onNewTimeEventStart`, this.id)
       return
     }
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new start OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
-    this.settings.opPeriodStart = JSON.parse(newTimeEvent)
-    this.settingsEditorForm.patchValue({ timepickerFormControlStart: JSON.parse(newTimeEvent) })
-    // This then automatically gets sent to mini-map children via their @Input statements
+    this.log.verbose(`Got new start OpPeriod time: ${(newTime)}`, this.id)
+    this.settings.opPeriodStart = newTime
+    this.settingsEditorForm.patchValue({ timepickerFormControlStart: newTime })
+    this.settingsEditorForm.patchValue({ opPeriodStart: newTime })
+    //opPeriodStart: this.settingsEditorForm.value.opPeriodStart,
+    // This then automatically gets sent to (any) children via their @Input statements
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:
     //this.timepickerFormControl is where the Event comes up from...
   }
 
-  onNewTimeEventEnd(newTimeEvent: any) {
+  onNewTimeEventEnd(newTime: Date) {
     if (!this.settings) {
       this.log.error(`this.settings is null at onNewTimeEventEnd`, this.id)
       return
     }
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new end OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
-    this.settings.opPeriodEnd = JSON.parse(newTimeEvent)
-    this.settingsEditorForm.patchValue({ timepickerFormControlEnd: JSON.parse(newTimeEvent) })
+    this.log.verbose(`Got new end OpPeriod time: ${newTime}`, this.id)
+    this.settings.opPeriodEnd = newTime
+    this.settingsEditorForm.patchValue({ timepickerFormControlEnd: newTime })
+    this.settingsEditorForm.patchValue({ opPeriodEnd: newTime })
 
-    // This then automatically gets sent to mini-map children via their @Input statements
+    // This then automatically gets sent to (any)) children via their @Input statements
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:
     //this.timepickerFormControl is where the Event comes up from...
@@ -346,9 +349,13 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     this.log.verbose("getSettingsArrayFromFormArray", this.id)
 
     if (!this.settings) {
+
       this.log.error(`this.settings is null`, this.id)
       return null
     }
+
+    //  this.log.error(`Saving: opPeriodStart = ${this.settingsEditorForm.value.opPeriodStart},
+    //  opPeriodEnd = ${this.settingsEditorForm.value.opPeriodEnd}`, this.id)
 
     return {
       settingsName: this.settingsEditorForm.value.settingsName, // FUTURE: Use if people want to load and saveas, or have various 'templates'

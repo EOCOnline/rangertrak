@@ -31,10 +31,16 @@ export const undefinedAddressFlag = 'NOT_SET_YET'
 })
 export class EntryComponent implements OnInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
-
+  // @Input() price = 100
   private id = 'Entry Form'
   title = 'Field Report Entry'
   pageDescr = `Enter data associated with ranger's name, location, status for tracking on maps & spreadsheets`
+
+
+  test = "TeStInG"
+  // "2022-05-17T17:15:07.551Z"
+
+
 
   // Get location events from <location> component
   private locationSubscription!: Subscription
@@ -62,6 +68,13 @@ export class EntryComponent implements OnInit, OnDestroy {
   locationFrmGrp!: FormGroup
   dateCtrl = new FormControl(new Date())
   //timepickerFormControl!: FormControl
+  initialTime = new Date()
+  minDate = new Date()
+
+  //user$ = "katy"
+
+
+
 
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
@@ -119,7 +132,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   onNewLocationParent(newLocation: LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`Parent got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address} `, this.id)
+    this.log.error(`Parent Entry Form got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address} `, this.id)
     //From Entry Form - Parent got new location: {"lat":47.4472,"lng":-122.4627,"address":""}
 
     // Children (with @Input stmts - i.e., mini-map) automatically gets the updated location
@@ -131,41 +144,13 @@ export class EntryComponent implements OnInit, OnDestroy {
     })
   }
 
-  onNewTime(newTimeEvent: any) {
+  onNewTimeEvent(newTime: Date) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++ `, this.id)
-    this.time = JSON.parse(newTimeEvent)
-    this.entryDetailsForm.patchValue({ timepickerFormControl: JSON.parse(newTimeEvent) })
-
-    // This then automatically gets sent to mini-map children via their @Input statements
-    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
-    // TODO: BUT, we still need to update our local copy:
-    //this.timepickerFormControl is where the Event comes up from...
-  }
-
-
-  onNewTimeEvent(newTimeEvent: any) {
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new Report time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++ `, this.id)
-    this.time = JSON.parse(newTimeEvent)
-    this.entryDetailsForm.patchValue({ timepickerFormControl: JSON.parse(newTimeEvent) })
+    this.log.error(`Got new Report time: ${newTime}`, this.id)
+    this.time = newTime
+    // patch entryForm object - as THAT is what gets saved with on form submit
+    this.entryDetailsForm.patchValue({ timepickerFormControl: newTime })
     // This then automatically could ge sent to any children (none in this case) via their @Input statements
-    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
-    // TODO: BUT, we still need to update our local copy:
-    //this.timepickerFormControl is where the Event comes up from...
-  }
-
-  onNewTimeEventEnd(newTimeEvent: any) {
-    if (!this.settings) {
-      this.log.error(`this.settings is null at onNewTimeEventEnd`, this.id)
-      return
-    }
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new end OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++ `, this.id)
-    this.settings.opPeriodEnd = JSON.parse(newTimeEvent)
-    this.entryDetailsForm.patchValue({ timepickerFormControlEnd: JSON.parse(newTimeEvent) })
-
-    // This then automatically gets sent to mini-map children via their @Input statements
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:
     //this.timepickerFormControl is where the Event comes up from...

@@ -1,11 +1,29 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { ThemePalette } from '@angular/material/core';
-import dayjs from 'dayjs';
-import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
-import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, SettingsType, LocationType } from '../services/'
-import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker' // already in app.module.ts
+import dayjs from 'dayjs'
+import {
+    debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
+} from 'rxjs'
+
+import {
+    NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule
+} from '@angular-material-components/datetime-picker' // already in app.module.ts
+import { DOCUMENT } from '@angular/common'
+import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core'
+import {
+    FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators
+} from '@angular/forms'
+import { ThemePalette } from '@angular/material/core'
+
+import {
+    FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
+    SettingsService, SettingsType
+} from '../services/'
+
+// https://blog.briebug.com/blog/5-ways-to-pass-data-into-child-components-in-angular
+
+
+// www.freakyjolly.com/angular-material-109-datepicker-timepicker-tutorial
+// www.thecodehubs.com/how-to-implement-material-datepicker-and-timepicker-in-angular/
+// https://www.concretepage.com/angular-material/angular-material-datepicker-change-event
 
 @Component({
   selector: 'rangertrak-time-picker',
@@ -18,6 +36,11 @@ export class TimePickerComponent implements OnInit {
   //@Input() public timepickerFormControl: FormControl // input from entry.component.ts
   @Output() newTimeEvent = new EventEmitter<Date>()
   // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
+
+  @Input() price = 100
+  @Input() initialDate: null | Date | string = new Date()
+
+  //@Input() var2: string | null = "John"
 
   private id = "DateTime Picker"
 
@@ -62,6 +85,7 @@ export class TimePickerComponent implements OnInit {
     private _formBuilder: FormBuilder,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info(`timepicker construction`, this.id)
+    this.log.info(`Price = ${this.price}`, this.id)
 
     // BUG: maybe should be in EntryComponent.ts instead? as locationFrmGrp is there...
     // new values here bubble up as emitted events - see onNewLocation()
@@ -85,20 +109,26 @@ export class TimePickerComponent implements OnInit {
 
   ngOnInit(): void {
     this.date = dayjs()
+    this.log.info(`Price = ${this.price} in ngInit`, this.id)
+    this.log.error(`initialDate = ${this.initialDate} in ngInit`, this.id)
   }
 
-  onNewTime(newTime: Date) {
+  onNewTime(newTime: any) {
     // Do any needed sanity/validation here
     // Based on listing 8.8 in TS dev w/ TS, pg 188
+
     // todo : validate min/max time?
-    this.log.excessive(`Got new time: ${newTime}. Emitting!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`, this.id)
-    this.time = newTime
+    this.log.error(`Got new time: ${newTime.value}: Emitting!`, this.id)
+
+    this.time = newTime.value
     //if (! (
     this.newTimeEvent.emit(this.time)
     //) {
     // this.log.warn(`New time event had no listeners!`, this.id) }
     // REVIEW: Let parent update the form fields & other data as necessary...
     //this.timeFrmGrp
+
+    this.log.info(`Price = ${this.price} in onNewTime`, this.id)
   }
 
   toggleMinDate(evt: any) {

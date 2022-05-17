@@ -73,28 +73,35 @@
     <!-- from Majd Asab in Medium.com...
    [(ngModel)]="extLocation" name="extLocationVal" #validations=""ngModel"-->
 
-    <!--div>
+    <div>
       <rangertrak-location
         (newLocationEvent)="onNewLocationParent($event)"
       ></rangertrak-location>
-    </div-->
+    </div>
 
-    <!-- ======================================= -->
+    <!-- =======================================
+            [initialTime]="initialTime"
+                  [var2]="user$ | async"
+                  "2022-05-11T20:53:38.017Z"
+          -->
     <h2 class="elegant"><mat-label>When</mat-label></h2>
 
     <div FormControl="timepickerFormControl" class="filled timepicker timepicker_When-input">
-      <rangertrak-time-picker
+      <rangertrak-time-picker #picker
+
+
+      [price]="500"
+      [initialDate] = "test"
+
+
+
+        title="Report Time"
         (newTimeEvent)="onNewTimeEvent($event)"
       ></rangertrak-time-picker>
-      <div id="reportTime">{{time}}</div>
     </div>
 
-    <!--div>
-      <rangertrak-time-picker (newTimeEvent)="onNewTime($event)"></rangertrak-time-picker>
-    </div-->
-
     <!-- ======================================= -->
-    <h2 class="elegant bordered">What</h2>
+    <h2 class="elegant bordered"><mat-label>What</mat-label></h2>
 
     <div class="input-group bordered">
       <!-- mat-label><div class="strong bottomDrop">Status:</div></mat-label -->
@@ -103,7 +110,7 @@
         labelPosition="after"
         formControlName="status"
         tabindex="7"
-      ><span class="strong bottomDrop">Status:&nbsp;&nbsp;</span>
+      ><span class="bottomDrop">Status:&nbsp;&nbsp;</span>
         <mat-radio-button
           *ngFor="let stat of settings.fieldReportStatuses"
           value="{{stat.status}}"

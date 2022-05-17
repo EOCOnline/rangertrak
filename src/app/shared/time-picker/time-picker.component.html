@@ -1,7 +1,9 @@
-<div class="container enter__Where-div">
-  <div appearance="filled" class="timepicker__Where-input">
+<!-- div class="container" -->
+  <div appearance="filled" >
     <div class="input-group" [formGroup]="timepickerFormGroup">
       <!--
+        enter__Where-div
+        class="timepicker__Where-input"
          [formControl]="dateCtrl"
 
          for $(datePicker) explaination:  https://stackoverflow.com/questions/64826483/ngxmatdatetimepicker-is-not-assignable-to-type-matdatepickerbase
@@ -13,6 +15,9 @@
         No value accessor for form control with unspecified name attribute
 
 [formControl]="time"
+
+          [price]="500"
+          [var2]="user$ | async"
       -->
       <mat-form-field appearance="fill">
         <mat-label>Report time</mat-label>
@@ -21,12 +26,17 @@
           [ngxMatDatetimePicker]="$any(datePicker)"
           [min]="minDate"
           [max]="maxDate"
+
+
+
+
           formControlName="time"
           type="datetime"
           placeholder="date"
           class="timepicker__When-input"
           data-lpignore="true"
           tabindex="6"
+          (dateChange)="onNewTime($event)"
         />
 
         <mat-datepicker-toggle
@@ -58,4 +68,4 @@
       </mat-form-field>
     </div>
   </div>
-</div>
+<!--/div -->
