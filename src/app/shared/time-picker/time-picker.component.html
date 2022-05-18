@@ -16,6 +16,11 @@
 
 [formControl]="time"
 
+          [min]="minDate"
+          [max]="maxDate"
+
+
+
           [price]="500"
           [var2]="user$ | async"
       -->
@@ -26,15 +31,13 @@
           [ngxMatDatetimePicker]="$any(datePicker)"
 
 
-          [min]="minDate"
-          [max]="maxDate"
-
+          [value] = "initialDate"
 
 
 
           formControlName="time"
           type="datetime"
-          placeholder="date"
+          placeholder="ENTER ze date"
           class="timepicker__When-input"
           data-lpignore="true"
           tabindex="6"

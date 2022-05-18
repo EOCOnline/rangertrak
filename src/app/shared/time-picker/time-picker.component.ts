@@ -21,8 +21,8 @@ import {
 // https://blog.briebug.com/blog/5-ways-to-pass-data-into-child-components-in-angular
 
 
-// www.freakyjolly.com/angular-material-109-datepicker-timepicker-tutorial
-// www.thecodehubs.com/how-to-implement-material-datepicker-and-timepicker-in-angular/
+// https://www.freakyjolly.com/angular-material-109-datepicker-timepicker-tutorial
+// https://www.thecodehubs.com/how-to-implement-material-datepicker-and-timepicker-in-angular/
 // https://www.concretepage.com/angular-material/angular-material-datepicker-change-event
 
 @Component({
@@ -38,7 +38,7 @@ export class TimePickerComponent implements OnInit {
   // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
 
   @Input() price = 100
-  @Input() initialDate: null | Date | string = new Date()
+  @Input() initialDate = new Date(2018, 11, 24, 10, 33, 30, 0)
 
   //@Input() var2: string | null = "John"
 
@@ -48,7 +48,7 @@ export class TimePickerComponent implements OnInit {
   // https://ng-matero.github.io/extensions/components/datetimepicker/overview (nice)
   // https://vlio20.github.io/angular-datepicker/timeInline (unused)
   // https://h2qutc.github.io/angular-material-components - IN USE HERE!
-  public date: dayjs.Dayjs = dayjs()
+  public date = new Date()  //dayjs.Dayjs = dayjs()
 
 
   /*  It looks like you're using the disabled attribute with a reactive form directive.
@@ -108,8 +108,12 @@ export class TimePickerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.date = dayjs()
-    this.log.info(`Price = ${this.price} in ngInit`, this.id)
+    if (this.initialDate) {
+      this.date = this.initialDate //dayjs()
+      this.log.error(`date set to = ${this.date} in ngInit`, this.id)
+    }
+
+    // this.log.info(`Price = ${this.price} in ngInit`, this.id)
     this.log.error(`initialDate = ${this.initialDate} in ngInit`, this.id)
   }
 
