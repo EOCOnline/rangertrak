@@ -1,11 +1,6 @@
 <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
 <div class="container">
-  <form
-    #frm="ngForm"
-    [formGroup]="entryDetailsForm"
-    (ngSubmit)="onFormSubmit(frm.value)"
-    class="enter__form"
-  >
+  <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
     <mini-lmap [locationUpdated]="location">LMAP HERE</mini-lmap>
     <!--mini-gmap [locationUpdated]="location">GMAP HERE</mini-gmap-->
 
@@ -19,25 +14,12 @@
     <mat-form-field class="enter__Callsign" appearance="fill">
       <mat-label>CallSign</mat-label>
 
-      <input
-        matInput
-        [formControl]="callsignCtrl"
-        type="text"
-        placeholder="Pick one"
-        aria-label="Callsigns"
-        formControlName="callsign"
-        [matAutocomplete]="auto"
-        (change)="this.callsignCtrlChanged()"
-        id="enter__Callsign-input"
-        tabindex="1"
-        data-lpignore="true"
-      />
+      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
+        formControlName="callsign" [matAutocomplete]="auto" (change)="this.callsignCtrlChanged()"
+        id="enter__Callsign-input" tabindex="1" data-lpignore="true" />
 
       <mat-autocomplete #auto="matAutocomplete">
-        <mat-option
-          *ngFor="let ranger of filteredRangers | async"
-          [value]="ranger.callsign"
-        >
+        <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
           <!--img class="enter__Callsign-img" aria-hidden [src]="ranger.image" height="40"-->
           <span>{{ranger.callsign}}</span> |
           <small> {{ranger.licensee}} | {{ranger.phone}}</small>
@@ -49,18 +31,16 @@
 
     <!-- ======================================= -->
     <h2 class="elegant">
-      <mat-label>Where</mat-label>&nbsp;&nbsp;<!--fa-icon
+      <mat-label>Where</mat-label>&nbsp;&nbsp;
+      <!--fa-icon
         [icon]="faInfoCircle"
         id="button"
         aria-describedby="tooltip"
         title="Click info icon for info!"
         alt="info icon"
       ></fa-icon -->
-      <span class="small">(updates map to the right)</span><img
-        src="../../assets/icons/information-outline.png"
-        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds"
-        alt="info icon"
-      />
+      <span class="small">(updates map to the right)</span><img src="../../assets/icons/information-outline.png"
+        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" />
     </h2>
     <!--onchange="DDCoordsChanged()
 
@@ -74,68 +54,40 @@
    [(ngModel)]="extLocation" name="extLocationVal" #validations=""ngModel"-->
 
     <div>
-      <rangertrak-location
-        (newLocationEvent)="onNewLocationParent($event)"
-      ></rangertrak-location>
+      <rangertrak-location (newLocationEvent)="onNewLocationParent($event)"></rangertrak-location>
     </div>
 
     <!-- =======================================
-            [initialTime]="initialTime"
-                  [var2]="user$ | async"
-                  "2022-05-11T20:53:38.017Z"
-title="PLEASE enter a Report Time"
-
-                      [initialDate] = "initialTime"
-
+        optional:  [initialDate] = "initialTime"
           -->
-    <h2 class="elegant"><mat-label>When</mat-label></h2>
+    <h2 class="elegant">
+      <mat-label>When</mat-label>
+    </h2>
 
     <div FormControl="timepickerFormControl" class="filled timepicker timepicker_When-input">
-      <rangertrak-time-picker #picker
-
-
-
-      [initialDate] = "initialTime"
-      [datePickerLabel]="timePickerLabel"
-
-        (newTimeEvent)="onNewTimeEvent($event)"
-      ></rangertrak-time-picker>
+      <rangertrak-time-picker #picker [datePickerLabel]="timePickerLabel" (newTimeEvent)="onNewTimeEvent($event)">
+      </rangertrak-time-picker>
     </div>
 
-
-
-
     <!-- ======================================= -->
-    <h2 class="elegant bordered"><mat-label>What</mat-label></h2>
+    <h2 class="elegant bordered">
+      <mat-label>What</mat-label>
+    </h2>
 
     <div class="input-group bordered">
       <!-- mat-label><div class="strong bottomDrop">Status:</div></mat-label -->
-      <mat-radio-group
-        class="filled  enter__Status"
-        labelPosition="after"
-        formControlName="status"
-        tabindex="7"
-      ><span class="bottomDrop">Status:&nbsp;&nbsp;</span>
-        <mat-radio-button
-          *ngFor="let stat of settings.fieldReportStatuses"
-          value="{{stat.status}}"
-          class="rButton"
-          ><span style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
+      <mat-radio-group class="filled  enter__Status" labelPosition="after" formControlName="status" tabindex="7"><span
+          class="bottomDrop">Status:&nbsp;&nbsp;</span>
+        <mat-radio-button *ngFor="let stat of settings.fieldReportStatuses" value="{{stat.status}}" class="rButton">
+          <span style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
           <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
         </mat-radio-button>
       </mat-radio-group>
       <br />
       <br />
 
-      <textarea
-        class="input-group enter__What--area"
-        formControlName="notes"
-        id="enter__What--area"
-        cols="80"
-        rows="5"
-        placeholder="Enter Any Notes"
-        tabindex="8"
-      ></textarea>
+      <textarea class="input-group enter__What--area" formControlName="notes" id="enter__What--area" cols="80" rows="5"
+        placeholder="Enter Any Notes" tabindex="8"></textarea>
     </div>
 
     <!-- ======================================= -->
@@ -159,21 +111,11 @@ title="PLEASE enter a Report Time"
     <!-- ======================================= -->
     <!--button (click)="onBtnUpdateLocation()">Update location</button> <br-->
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
-    <button
-      (click)="resetEntryForm()"
-      title="Reset all form fields to their defaults"
-      class="eButton"
-      type="button"
-    >
+    <button (click)="resetEntryForm()" title="Reset all form fields to their defaults" class="eButton" type="button">
       Reset
     </button>
 
-    <button
-      class="enter__Submit-button eButton"
-      [disabled]="entryDetailsForm.invalid"
-      type="submit"
-      tabindex="9"
-    >
+    <button class="enter__Submit-button eButton" [disabled]="entryDetailsForm.invalid" type="submit" tabindex="9">
       Submit
     </button>
 

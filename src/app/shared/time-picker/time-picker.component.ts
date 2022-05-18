@@ -38,9 +38,7 @@ export class TimePickerComponent implements OnInit {
   // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
 
   @Input() datePickerLabel = "Enter Date & Time"
-  @Input() initialDate = new Date()
-
-  //@Input() var2: string | null = "John"
+  @Input() initialDate = new Date() // overwritten if html has [initialDate] = "initialTime"
 
   private id = "DateTime Picker"
 
@@ -85,13 +83,9 @@ export class TimePickerComponent implements OnInit {
     private _formBuilder: FormBuilder,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info(`timepicker construction`, this.id)
-    //this.log.info(`Price = ${this.price}`, this.id)
 
     // BUG: maybe should be in EntryComponent.ts instead? as locationFrmGrp is there...
     // new values here bubble up as emitted events - see onNewLocation()
-
-    // formControlName must be used with a parent formGroup directive
-    //    this.timepickerFormControl = this._formBuilder.control([this.time])
 
     this.timepickerFormGroup = this._formBuilder.group({
       time: [this.time]
@@ -101,22 +95,12 @@ export class TimePickerComponent implements OnInit {
     // TODO: These should get passed in
     this._setMinDate(10) // no times early than 10 hours ago
     this._setMaxDate(1)  // no times later than 1 hours from now
-
-    // this.timepickerFormGroup = _formBuilder.group({
-    //   time: [new Date()]
-    // })
   }
 
   ngOnInit(): void {
-    // if (this.initialDate) {
-    //this.date = this.initialDate //dayjs()
     this.timepickerFormGroup = this._formBuilder.group({
       time: [this.initialDate]
     })
-    this.log.error(`date set to = ${this.initialDate} in ngInit`, this.id)
-    //}
-
-    // this.log.info(`Price = ${this.price} in ngInit`, this.id)
     this.log.error(`initialDate = ${this.initialDate} in ngInit`, this.id)
   }
 
@@ -134,8 +118,6 @@ export class TimePickerComponent implements OnInit {
     // this.log.warn(`New time event had no listeners!`, this.id) }
     // REVIEW: Let parent update the form fields & other data as necessary...
     //this.timeFrmGrp
-
-    //this.log.info(`Price = ${this.price} in onNewTime`, this.id)
   }
 
   toggleMinDate(evt: any) {

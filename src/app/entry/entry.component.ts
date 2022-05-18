@@ -31,20 +31,17 @@ export const undefinedAddressFlag = 'NOT_SET_YET'
 })
 export class EntryComponent implements OnInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
-  // @Input() price = 100
   private id = 'Entry Form'
   title = 'Field Report Entry'
   pageDescr = `Enter data associated with ranger's name, location, status for tracking on maps & spreadsheets`
 
 
-  initialTime = new Date(2020, 1, 1, 10, 30, 30, 0) //"TeStInG"
-  // "2022-05-17T17:15:07.551Z"
+  // Not needed for this component: initialTime = new Date(2020, 1, 1, 10, 30, 30, 0)
   timePickerLabel = "Enter Report Date/Time"
 
-
-  today = new Date()
-  SelectedDate = `${this.today.getFullYear()}-${this.today.getMonth() + 1}-${this.today.getDate()}`
-  getDate = new Date(this.SelectedDate);
+  // today = new Date()
+  // SelectedDate = `${this.today.getFullYear()}-${this.today.getMonth() + 1}-${this.today.getDate()}`
+  // getDate = new Date(this.SelectedDate);
 
   // Get location events from <location> component
   private locationSubscription!: Subscription
@@ -68,17 +65,9 @@ export class EntryComponent implements OnInit, OnDestroy {
   public entryDetailsForm!: FormGroup
   callsignCtrl = new FormControl()
 
-  //myForm!: FormGroup
   locationFrmGrp!: FormGroup
   dateCtrl = new FormControl(new Date())
-  //timepickerFormControl!: FormControl
-  //initialTime = new Date()
   minDate = new Date()
-
-  //user$ = "katy"
-
-
-
 
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
