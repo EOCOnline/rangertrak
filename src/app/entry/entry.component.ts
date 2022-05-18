@@ -37,7 +37,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   pageDescr = `Enter data associated with ranger's name, location, status for tracking on maps & spreadsheets`
 
 
-  test = "TeStInG"
+  initialTime = new Date() //"TeStInG"
   // "2022-05-17T17:15:07.551Z"
 
 
