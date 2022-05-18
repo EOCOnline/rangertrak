@@ -37,8 +37,8 @@ export class TimePickerComponent implements OnInit {
   @Output() newTimeEvent = new EventEmitter<Date>()
   // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
 
-  @Input() price = 100
-  @Input() initialDate = new Date(2018, 11, 24, 10, 33, 30, 0)
+  @Input() datePickerLabel = "Enter Date & Time"
+  @Input() initialDate = new Date()
 
   //@Input() var2: string | null = "John"
 
@@ -48,7 +48,7 @@ export class TimePickerComponent implements OnInit {
   // https://ng-matero.github.io/extensions/components/datetimepicker/overview (nice)
   // https://vlio20.github.io/angular-datepicker/timeInline (unused)
   // https://h2qutc.github.io/angular-material-components - IN USE HERE!
-  public date = new Date()  //dayjs.Dayjs = dayjs()
+  //public date = new Date()  //dayjs.Dayjs = dayjs()
 
 
   /*  It looks like you're using the disabled attribute with a reactive form directive.
@@ -62,19 +62,19 @@ export class TimePickerComponent implements OnInit {
       last: new FormControl('Drew', Validators.required)
     });
   */
-  public time!: Date
-  public disabled = false;
-  public showSpinners = true;
-  public showSeconds = false; // only affects display in timePicker
-  public touchUi = false;
-  public enableMeridian = false; // 24 hr clock
+  public time = new Date()
+  public disabled = false
+  public showSpinners = true
+  public showSeconds = false // only affects display in timePicker
+  public touchUi = false
+  public enableMeridian = false // 24 hr clock
 
   minDate!: dayjs.Dayjs | null
   maxDate!: dayjs.Dayjs | null
-  public stepHour = 1;
-  public stepMinute = 1;
-  public stepSecond = 1;
-  public color: ThemePalette = 'primary';
+  public stepHour = 1
+  public stepMinute = 1
+  public stepSecond = 1
+  public color: ThemePalette = 'primary'
   disableMinute = false
   hideTime = false
   //dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
@@ -85,7 +85,7 @@ export class TimePickerComponent implements OnInit {
     private _formBuilder: FormBuilder,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info(`timepicker construction`, this.id)
-    this.log.info(`Price = ${this.price}`, this.id)
+    //this.log.info(`Price = ${this.price}`, this.id)
 
     // BUG: maybe should be in EntryComponent.ts instead? as locationFrmGrp is there...
     // new values here bubble up as emitted events - see onNewLocation()
@@ -102,16 +102,19 @@ export class TimePickerComponent implements OnInit {
     this._setMinDate(10) // no times early than 10 hours ago
     this._setMaxDate(1)  // no times later than 1 hours from now
 
-    this.timepickerFormGroup = _formBuilder.group({
-      time: [new Date()]
-    })
+    // this.timepickerFormGroup = _formBuilder.group({
+    //   time: [new Date()]
+    // })
   }
 
   ngOnInit(): void {
-    if (this.initialDate) {
-      this.date = this.initialDate //dayjs()
-      this.log.error(`date set to = ${this.date} in ngInit`, this.id)
-    }
+    // if (this.initialDate) {
+    //this.date = this.initialDate //dayjs()
+    this.timepickerFormGroup = this._formBuilder.group({
+      time: [this.initialDate]
+    })
+    this.log.error(`date set to = ${this.initialDate} in ngInit`, this.id)
+    //}
 
     // this.log.info(`Price = ${this.price} in ngInit`, this.id)
     this.log.error(`initialDate = ${this.initialDate} in ngInit`, this.id)
@@ -132,7 +135,7 @@ export class TimePickerComponent implements OnInit {
     // REVIEW: Let parent update the form fields & other data as necessary...
     //this.timeFrmGrp
 
-    this.log.info(`Price = ${this.price} in onNewTime`, this.id)
+    //this.log.info(`Price = ${this.price} in onNewTime`, this.id)
   }
 
   toggleMinDate(evt: any) {

@@ -83,6 +83,10 @@
             [initialTime]="initialTime"
                   [var2]="user$ | async"
                   "2022-05-11T20:53:38.017Z"
+title="PLEASE enter a Report Time"
+
+                      [initialDate] = "initialTime"
+
           -->
     <h2 class="elegant"><mat-label>When</mat-label></h2>
 
@@ -90,10 +94,10 @@
       <rangertrak-time-picker #picker
 
 
-      [price]="500"
-      [initialDate] = "initialTime"
 
-        title="PLEASE enter a Report Time"
+      [initialDate] = "initialTime"
+      [datePickerLabel]="timePickerLabel"
+
         (newTimeEvent)="onNewTimeEvent($event)"
       ></rangertrak-time-picker>
     </div>

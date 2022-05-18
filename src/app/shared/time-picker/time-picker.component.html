@@ -20,18 +20,15 @@
           [max]="maxDate"
 
 
+     [value] = "initialDate"
 
-          [price]="500"
           [var2]="user$ | async"
       -->
       <mat-form-field appearance="fill">
-        <mat-label>Report time</mat-label>
+        <mat-label>{{datePickerLabel}}</mat-label>
         <input
           matInput
           [ngxMatDatetimePicker]="$any(datePicker)"
-
-
-          [value] = "initialDate"
 
 
 

@@ -39,7 +39,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   initialTime = new Date(2020, 1, 1, 10, 30, 30, 0) //"TeStInG"
   // "2022-05-17T17:15:07.551Z"
-
+  timePickerLabel = "Enter Report Date/Time"
 
 
   today = new Date()
