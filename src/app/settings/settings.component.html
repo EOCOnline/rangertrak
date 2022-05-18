@@ -45,7 +45,8 @@
         <li>
           Change font size using CTRL+mouse wheel or your browser's view size settings.
         </li>
-        <li>FUTURE: <div id="hatchRect">Circle Hatching from https://codepen.io/JohnsPen/pen/jOYvOOq ?</div></li>
+        <li>FUTURE: <div id="hatchRect">Circle Hatching from https://codepen.io/JohnsPen/pen/jOYvOOq ?</div>
+        </li>
       </ul>
     </details>
     <br />
@@ -54,88 +55,41 @@
     <h2>Event Information</h2>
     <div class="input-group">
       <span class="strong">Mission: </span>
-      <input
-        formControlName="mission"
-        placeholder="Mission #"
-        [style.width.px]="100"
-        type="text"
-        data-lpignore="true"
-      />
+      <input formControlName="mission" placeholder="Mission #" [style.width.px]="100" type="text"
+        data-lpignore="true" />
     </div>
 
     <div class="input-group">
       <span class="strong">Event Name: </span>
-      <input
-        formControlName="event"
-        placeholder="Event Name"
-        [style.width.px]="100"
-        type="text"
-        data-lpignore="true"
-      />
+      <input formControlName="event" placeholder="Event Name" [style.width.px]="100" type="text" data-lpignore="true" />
     </div>
 
     <div class="input-group">
       <span class="strong">Event Notes: </span><br />
-      <textarea
-        appearance="fill"
-        formControlName="eventNotes"
-        id=""
-        cols="60"
-        rows="4"
-        placeholder="Event description, if needed"
-      ></textarea>
+      <textarea appearance="fill" formControlName="eventNotes" id="" cols="60" rows="4"
+        placeholder="Event description, if needed"></textarea>
     </div>
 
     <!-- ======================================= -->
     <div class="input-group">
-      <span class="strong">OpPeriod Name: </span>
-      <input
-        formControlName="opPeriod"
-        placeholder="Operational Period"
-        [style.width.px]="120"
-        type="text"
-        data-lpignore="true"
-      />
+      <h2>Operational Period</h2>
+      Name: <input formControlName="opPeriod" placeholder="Operational Period" [style.width.px]="120" type="text"
+        data-lpignore="true" />
     </div>
 
     <!-- ======================================= -->
-    <span class="strong">OpPeriod Start: </span>
+    <!--span class="strong">OpPeriod Start: </span-->
     <div FormControl="timepickerFormControlStart" class="filled timepicker">
-      <rangertrak-time-picker
-        (newTimeEvent)="onNewTimeEventStart($event)"
-      ></rangertrak-time-picker>
+      <rangertrak-time-picker [initialDate]="opPeriodStart" [datePickerLabel]="timePickerLabelStart"
+        (newTimeEvent)="onNewTimeEventStart($event)">
+      </rangertrak-time-picker>
     </div>
 
-    <span class="strong">OpPeriod End: </span>
+    <!--span class="strong">OpPeriod End: </span -->
     <div FormControl="timepickerFormControlEnd" class="filled timepicker">
-      <rangertrak-time-picker
-        (newTimeEvent)="onNewTimeEventEnd($event)"
-      ></rangertrak-time-picker>
+      <rangertrak-time-picker [initialDate]="opPeriodEnd" [datePickerLabel]="timePickerLabelEnd"
+        (newTimeEvent)="onNewTimeEventEnd($event)"></rangertrak-time-picker>
     </div>
-
-    <!-- ======================================= -->
-    <!--div class="input-group">
-      <span class="strong">OpPeriod Start: </span>
-      <input
-        formControlName="opPeriodStart"
-        placeholder="Start Time"
-        [style.width.px]="100"
-        type="text"
-        data-lpignore="true"
-      />
-    </div>
-
-    <div class="input-group">
-      <span class="strong">OpPeriod End: </span>
-      <input
-        formControlName="opPeriodEnd"
-        placeholder="Ending Time"
-        [style.width.px]="100"
-        type="text"
-        data-lpignore="true"
-      />
-    </div-->
-    <br />
 
     <!-- ======================================= -->
     <h2>Location Defaults</h2>
@@ -160,20 +114,11 @@
       <span class="strong">Latitude: &nbsp;</span>
       <input
         [class.border-danger]="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.invalid"
-        type="number"
-        formControlName="defLat"
-        step=".01"
-        min="-89.99"
-        max="89.99"
-        placeholder="{{settings?.defLat?.toFixed(4)}}"
-        value="{{settings?.defLat?.toFixed(4)}}"
-        [style.width.px]="75"
-        data-lpignore="true"
-      />
-      <div
-        *ngIf="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.hasError('required')"
-        class="text-sm text-danger"
-      >
+        type="number" formControlName="defLat" step=".01" min="-89.99" max="89.99"
+        placeholder="{{settings?.defLat?.toFixed(4)}}" value="{{settings?.defLat?.toFixed(4)}}" [style.width.px]="75"
+        data-lpignore="true" />
+      <div *ngIf="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.hasError('required')"
+        class="text-sm text-danger">
         latitude is required
       </div>
     </div>
@@ -182,19 +127,10 @@
       <span class="strong">Longitude: </span>
       <input
         [class.border-danger]="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.invalid"
-        type="number"
-        formControlName="defLng"
-        step=".01"
-        min="-179.99"
-        max="179.99"
-        placeholder="{{settings!.defLng?.toFixed(4)}}"
-        [style.width.px]="75"
-        data-lpignore="true"
-      />
-      <div
-        *ngIf="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.hasError('required')"
-        class="text-sm text-danger"
-      >
+        type="number" formControlName="defLng" step=".01" min="-179.99" max="179.99"
+        placeholder="{{settings!.defLng?.toFixed(4)}}" [style.width.px]="75" data-lpignore="true" />
+      <div *ngIf="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.hasError('required')"
+        class="text-sm text-danger">
         longitude is required
       </div>
     </div>
@@ -203,16 +139,11 @@
       <span class="strong">Plus Code: </span>
       <input
         [class.border-danger]="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.invalid"
-        type="text"
-        formControlName="defPlusCode"
-        placeholder="84VVCGWP+VW"
-        [style.width.px]="100"
-        data-lpignore="true"
-      />
+        type="text" formControlName="defPlusCode" placeholder="84VVCGWP+VW" [style.width.px]="100"
+        data-lpignore="true" />
       <div
         *ngIf="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.hasError('required')"
-        class="text-sm text-danger"
-      >
+        class="text-sm text-danger">
         plusCode is required
       </div>
     </div>
@@ -221,16 +152,10 @@
       <span class="strong">w3wLocale: </span>
       <input
         [class.border-danger]="settingsEditorForm.get('w3wLocale')?.touched && settingsEditorForm.get('w3wLocale')?.invalid"
-        type="text"
-        formControlName="w3wLocale"
-        placeholder="Vashon, WA"
-        [style.width.px]="100"
-        data-lpignore="true"
-      />
+        type="text" formControlName="w3wLocale" placeholder="Vashon, WA" [style.width.px]="100" data-lpignore="true" />
       <div
         *ngIf="settingsEditorForm.get('w3wLocale')?.touched && settingsEditorForm.get('w3wLocale')?.hasError('required')"
-        class="text-sm text-danger"
-      >
+        class="text-sm text-danger">
         plusCode is required
       </div>
     </div>
@@ -240,11 +165,7 @@
     <h2>Maps</h2>
     <div class="input-group">
       <div class="strong">Markers: </div>
-      <input
-        type="checkbox"
-        formControlName="allowManualPinDrops"
-        placeholder="allowManualPinDrops"
-      />
+      <input type="checkbox" formControlName="allowManualPinDrops" placeholder="allowManualPinDrops" />
       Clicks on Google & Leaflet maps should make new markers - but won't be saved
     </div>
     <br />
@@ -256,14 +177,7 @@
       <div class="input-group">
         <span class="strong">Default Zoom: </span>
 
-        <input
-          formControlName="defZoom"
-          placeholder="15"
-          type="number"
-        min="1"
-        max="22"
-          [style.width.px]="50"
-        />
+        <input formControlName="defZoom" placeholder="15" type="number" min="1" max="22" [style.width.px]="50" />
       </div>
 
       <!-- markerScheme - unused for now -->
@@ -272,17 +186,10 @@
         <span class="strong">Overview Map Zoom Difference: </span>
         <input
           [class.border-danger]="settingsEditorForm.get('overviewDifference')?.touched && settingsEditorForm.get('overviewDifference')?.invalid"
-          type="number"
-          [style.width.px]="50"
-          formControlName="overviewDifference"
-          placeholder="5"
-          min="1"
-          max="10"
-        />
+          type="number" [style.width.px]="50" formControlName="overviewDifference" placeholder="5" min="1" max="10" />
         <div
           *ngIf="settingsEditorForm.get('overviewDifference')?.touched && settingsEditorForm.get('overviewDifference')?.hasError('required')"
-          class="text-sm text-danger"
-        >
+          class="text-sm text-danger">
           overviewDifference is required
         </div>
       </div>
@@ -291,15 +198,10 @@
         <span class="strong">Overview Map Min Zoom: </span>
         <input
           [class.border-danger]="settingsEditorForm.get('overviewMinZoom')?.touched && settingsEditorForm.get('overviewMinZoom')?.invalid"
-          type="number"
-          formControlName="overviewMinZoom"
-          placeholder="5"
-          min="1"
-          max="10"        />
+          type="number" formControlName="overviewMinZoom" placeholder="5" min="1" max="10" />
         <div
           *ngIf="settingsEditorForm.get('overviewMinZoom')?.touched && settingsEditorForm.get('overviewMinZoom')?.hasError('required')"
-          class="text-sm text-danger"
-        >
+          class="text-sm text-danger">
           overviewMinZoom is required
         </div>
       </div>
@@ -308,17 +210,10 @@
         <span class="strong">Overview Map Max Zoom: </span>
         <input
           [class.border-danger]="settingsEditorForm.get('overviewMaxZoom')?.touched && settingsEditorForm.get('overviewMaxZoom')?.invalid"
-          type="number"
-          [style.width.px]="50"
-          formControlName="overviewMaxZoom"
-          placeholder="21"
-          min="3"
-        max="22"
-        />
+          type="number" [style.width.px]="50" formControlName="overviewMaxZoom" placeholder="21" min="3" max="22" />
         <div
           *ngIf="settingsEditorForm.get('overviewMaxZoom')?.touched && settingsEditorForm.get('overviewMaxZoom')?.hasError('required')"
-          class="text-sm text-danger"
-        >
+          class="text-sm text-danger">
           overviewMaxZoom is required
         </div>
       </div>
@@ -333,16 +228,10 @@
         <span class="strong">Default Zoom: </span>
         <input
           [class.border-danger]="settingsEditorForm.get('defZoom')?.touched && settingsEditorForm.get('defZoom')?.invalid"
-          type="number"
-          [style.width.px]="50"
-          formControlName="defZoom"
-          placeholder="15"
-          min="3"
-        max="22"        />
+          type="number" [style.width.px]="50" formControlName="defZoom" placeholder="15" min="3" max="22" />
         <div
           *ngIf="settingsEditorForm.get('defZoom')?.touched && settingsEditorForm.get('defZoom')?.hasError('required')"
-          class="text-sm text-danger"
-        >
+          class="text-sm text-danger">
           zoom is required
         </div>
       </div>
@@ -353,17 +242,10 @@
         <span class="strong">Overview Map Zoom Difference: </span>
         <input
           [class.border-danger]="settingsEditorForm.get('overviewDifference')?.touched && settingsEditorForm.get('overviewDifference')?.invalid"
-          type="number"
-          [style.width.px]="50"
-          formControlName="overviewDifference"
-          placeholder="5"
-               min="1"
-          max="10"
-        />
+          type="number" [style.width.px]="50" formControlName="overviewDifference" placeholder="5" min="1" max="10" />
         <div
           *ngIf="settingsEditorForm.get('overviewDifference')?.touched && settingsEditorForm.get('overviewDifference')?.hasError('required')"
-          class="text-sm text-danger"
-        >
+          class="text-sm text-danger">
           overviewDifference is required
         </div>
       </div>
@@ -372,16 +254,10 @@
         <span class="strong">Overview Map Min Zoom: </span>
         <input
           [class.border-danger]="settingsEditorForm.get('overviewMinZoom')?.touched && settingsEditorForm.get('overviewMinZoom')?.invalid"
-          type="number"
-          [style.width.px]="50"
-          formControlName="overviewMinZoom"
-          placeholder="5"
-               min="1"
-          max="10"        />
+          type="number" [style.width.px]="50" formControlName="overviewMinZoom" placeholder="5" min="1" max="10" />
         <div
           *ngIf="settingsEditorForm.get('overviewMinZoom')?.touched && settingsEditorForm.get('overviewMinZoom')?.hasError('required')"
-          class="text-sm text-danger"
-        >
+          class="text-sm text-danger">
           overviewMinZoom is required
         </div>
       </div>
@@ -390,17 +266,10 @@
         <span class="strong">Overview Map Max Zoom: </span>
         <input
           [class.border-danger]="settingsEditorForm.get('overviewMaxZoom')?.touched && settingsEditorForm.get('overviewMaxZoom')?.invalid"
-          type="number"
-          [style.width.px]="50"
-          formControlName="overviewMaxZoom"
-          placeholder="21"
-          min="3"
-          max="22"
-        />
+          type="number" [style.width.px]="50" formControlName="overviewMaxZoom" placeholder="21" min="3" max="22" />
         <div
           *ngIf="settingsEditorForm.get('overviewMaxZoom')?.touched && settingsEditorForm.get('overviewMaxZoom')?.hasError('required')"
-          class="text-sm text-danger"
-        >
+          class="text-sm text-danger">
           overviewMaxZoom is required
         </div>
       </div>
@@ -414,15 +283,8 @@
     been used for this event.<br />
     Add new statuses anytime.)
 
-    <ag-grid-angular
-      class="ag-theme-alpine"
-      (gridReady)="onGridReady($event)"
-      [gridOptions]="gridOptions"
-      [defaultColDef]="defaultColDef"
-      [tooltipShowDelay]="500"
-      [rowData]="rowData"
-      [columnDefs]="columnDefs"
-    >
+    <ag-grid-angular class="ag-theme-alpine" (gridReady)="onGridReady($event)" [gridOptions]="gridOptions"
+      [defaultColDef]="defaultColDef" [tooltipShowDelay]="500" [rowData]="rowData" [columnDefs]="columnDefs">
     </ag-grid-angular>
 
     <button (click)="onBtnAddFRStatus()" title="Add a new Field Report Status">
@@ -456,18 +318,14 @@
     <!-- ======================================= -->
     <details>
       <summary><span class="big">Advanced Options</span></summary>
-      <span class="strong"
-        >At the start of a new Incident or Exercise edit the settings above, <br />
+      <span class="strong">At the start of a new Incident or Exercise edit the settings above, <br />
         or just reset all settings to their default value:
       </span>
       <button (click)="onBtnResetDefaults()">Reset Settings</button><br />
       <br />
       <h2>
-        <a
-          href="https://fonts.google.com/share?selection.family=Open+Sans%7CMontserrat%7CRoboto%7CPlayfair+Display%7CLato%7CMerriweather%7CHelvetica%7CLora%7CPT+Serif%7CSpectral%7CTimes+New+Roman%7CAkaya+Telivigala%7COpen+Sans+Condensed%7CSaira+Extra+Condensed%7CBoogaloo%7CAnton%7CFaster+One%7CArima+Madurai"
-          target="_blank"
-          >Font Explorium</a
-        >
+        <a href="https://fonts.google.com/share?selection.family=Open+Sans%7CMontserrat%7CRoboto%7CPlayfair+Display%7CLato%7CMerriweather%7CHelvetica%7CLora%7CPT+Serif%7CSpectral%7CTimes+New+Roman%7CAkaya+Telivigala%7COpen+Sans+Condensed%7CSaira+Extra+Condensed%7CBoogaloo%7CAnton%7CFaster+One%7CArima+Madurai"
+          target="_blank">Font Explorium</a>
       </h2>
       <ul style="font-size: large;">
         <li *ngFor="let font of fonts">

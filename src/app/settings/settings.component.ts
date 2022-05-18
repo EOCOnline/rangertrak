@@ -47,6 +47,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
   timepickerFormControlStart!: FormControl
   timepickerFormControlEnd!: FormControl
 
+  opPeriodStart = new Date()
+  opPeriodEnd = new Date()
+  timePickerLabelStart = 'Operational Period Start Time'
+  timePickerLabelEnd = 'Operational Period End Time'
+
   private gridApi: any
   private gridColumnApi: any
   rowData: FieldReportStatusType[] = []
@@ -206,6 +211,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       next: (newSettings) => {
         //console.log(newSettings)
         this.settings = newSettings
+        this.opPeriodStart = this.settings.opPeriodStart
+        this.opPeriodEnd = this.settings.opPeriodEnd
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
@@ -248,6 +255,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.verbose(`Got new start OpPeriod time: ${(newTime)}`, this.id)
     this.settings.opPeriodStart = newTime
+    this.opPeriodStart = newTime
+
     this.settingsEditorForm.patchValue({ timepickerFormControlStart: newTime })
     this.settingsEditorForm.patchValue({ opPeriodStart: newTime })
     //opPeriodStart: this.settingsEditorForm.value.opPeriodStart,
@@ -265,6 +274,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.verbose(`Got new end OpPeriod time: ${newTime}`, this.id)
     this.settings.opPeriodEnd = newTime
+    this.opPeriodEnd = newTime
     this.settingsEditorForm.patchValue({ timepickerFormControlEnd: newTime })
     this.settingsEditorForm.patchValue({ opPeriodEnd: newTime })
 

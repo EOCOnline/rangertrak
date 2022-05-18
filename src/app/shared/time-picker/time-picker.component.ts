@@ -37,8 +37,9 @@ export class TimePickerComponent implements OnInit {
   @Output() newTimeEvent = new EventEmitter<Date>()
   // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
 
-  @Input() datePickerLabel = "Enter Date & Time"
-  @Input() initialDate = new Date() // overwritten if html has [initialDate] = "initialTime"
+  // next 2 can be overriden in parent's html: [initialDate] = "initialTime"
+  @Input() datePickerLabel = "Enter Date & Time" // [datePickerLabel] = "Enter Date & Time of the Big Bang"
+  @Input() initialDate = new Date() //  [initialDate] = "initialTime"
 
   private id = "DateTime Picker"
 
