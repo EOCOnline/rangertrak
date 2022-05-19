@@ -37,7 +37,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
 
   // Not needed for this component: initialTime = new Date(2020, 1, 1, 10, 30, 30, 0)
-  timePickerLabel = "Enter Report Date/Time"
+  timePickerLabel = "Enter Report Date, Time"
 
   // today = new Date()
   // SelectedDate = `${this.today.getFullYear()}-${this.today.getMonth() + 1}-${this.today.getDate()}`

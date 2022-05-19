@@ -7,9 +7,14 @@ with ($primary: #962f10,
 
 $filledColor : #F0F0F0;
 
-.enter__Where-div2 {
-  //background-color: $filledColor;
-  width: 600px;
+
+.filled {
+  background-color: $filledColor;
+}
+
+.enter__Where-div {
+  background-color: $filledColor;
+  width           : 500px;
 }
 
 .enter__Where-input {
@@ -69,4 +74,13 @@ input[type=number] {
 
 .small {
   font-size: 12px;
+}
+
+.bordered {
+  border: 2 px solid rgb(62, 189, 189);
+}
+
+.elegant {
+  margin-top   : 25px;
+  margin-bottom: 0px;
 }

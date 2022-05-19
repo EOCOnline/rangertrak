@@ -313,11 +313,32 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
     // })
   }
 
+  /**
+   *
+   * @param ev
+   */
   onMapReady(ev: any) {
     this.log.verbose(`OnMapReady()`, this.id)
   }
 
-
+  /**
+   * Store Lat/Lng in Clipboard (if enabled in html...)
+   * @param ev
+   */
+  onMouseClick(ev: MouseEvent) {
+    if (!this.lMap) {
+      this.log.error(`Leaflet map not created, so can't get lat & lng`, this.id)
+      return
+    }
+    let latlng = this.lMap.mouseEventToLatLng(ev)
+    navigator.clipboard.writeText(`${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`)
+      .then(() => {
+        this.log.excessive(`${latlng} copied to clipboard`, this.id)
+      })
+      .catch(err => {
+        this.log.error(`latlng NOT copied to clipboard, error: ${err}`, this.id)
+      })
+  }
 
   override refreshMap() {
     // Try map.remove(); before you try to reload the map. This removes the previous map element using Leaflet's library

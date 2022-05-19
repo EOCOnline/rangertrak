@@ -52,12 +52,7 @@
  formControlName must be used with a parent formGroup directive.
 -->
 <div class="container enter__Where-div">
-  <div
-    appearance="filled"
-    class="timepicker__Where-input"
-    (mouseenter)="onMouseEnter()"
-    (mouseleave)="onMouseLeave()"
-  >
+  <div appearance="filled" class="timepicker__Where-input" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
     <div class="input-group" [formGroup]="locationFrmGrp">
       <!--
       #latI
@@ -66,14 +61,7 @@
       -->
       &nbsp;&nbsp;&nbsp;Latitude:
 
-      <input
-        [value]="latI"
-        type="number"
-        formControlName="lat"
-        min="-180"
-        max="180"
-        id="enter__Where-latI"
-      />
+      <input [value]="latI" type="number" formControlName="lat" min="-180" max="180" id="enter__Where-latI" />
 
       <!-- TODO: name="latitudeDDI" id="latitudeDDI" -->
 
@@ -85,18 +73,8 @@
       (change)="this.addressCtrlChanged('latD')"
         </span-->.
 
-      <input
-        #latF
-        placeholder="LatF"
-        [value]="latF"
-        name="latitudeDDD"
-        type="number"
-        step="100"
-        min="0"
-        max="99999"
-        id="enter__Where-latF"
-        tabindex="2"
-      />
+      <input #latF placeholder="LatF" [value]="latF" name="latitudeDDD" type="number" step="100" min="0" max="99999"
+        id="enter__Where-latF" tabindex="2" />
 
       <!--
        {{latF}}  {{latQ}}
@@ -104,15 +82,8 @@
     class="text-sm text-danger">Latitude is required size="1"
     </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
 
-      <input
-        #latQ
-        name="latQ"
-        id="enter__Where-latQ"
-        type="text"
-        pattern="'e','E','w','W'"
-        title="E or W"
-        onchange="DMSCoordsChanged()"
-      />
+      <input #latQ name="latQ" id="enter__Where-latQ" type="text" pattern="'e','E','w','W'" title="E or W"
+        onchange="DMSCoordsChanged()" />
       <!-- Quadrant -->
       <!-- BUG: Initialize els3ewhere!
           value="47"
@@ -122,100 +93,31 @@
               value="122"
                   value="N"
           -->
-      <input
-        #latD
-        name="latD"
-        id="enter__Where-latD"
-        type="text"
-        min="0"
-        max="180"
-        onchange="DMSCoordsChanged()"
-      />°
+      <input #latD name="latD" id="enter__Where-latD" type="text" min="0" max="180" onchange="DMSCoordsChanged()" />°
       <!-- TODO: Use settings.DefLat     size="2"  size="5"   {{latD}}  {{latM}} {{latS}}  -->
-      <input
-        #latM
-        name="latM"
-        id="enter__Where-latM"
-        type="text"
-        min="0"
-        max="59"
-        onchange="DMSCoordsChanged()"
-      />'
-      <input
-        #latS
-        name="latS"
-        id="enter__Where-latS"
-        type="text"
-        min="0"
-        max="59.99"
-        onchange="DMSCoordsChanged()"
-      />"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
+      <input #latM name="latM" id="enter__Where-latM" type="text" min="0" max="59" onchange="DMSCoordsChanged()" />'
+      <input #latS name="latS" id="enter__Where-latS" type="text" min="0" max="59.99"
+        onchange="DMSCoordsChanged()" />"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
     </div>
 
     <div class="input-group">
       Longitude:
-      <input
-        #lngI
-        type="number"
-        placeholder="LngI"
-        (change)="this.addressCtrlChanged('lngI')"
-        name="lngI"
-        id="longitudeDDI"
-        min="-90"
-        max="90"
-        id="enter__Where-lngI"
-        tabindex="3"
-      />
+      <input #lngI type="number" placeholder="LngI" (change)="this.addressCtrlChanged('lngI')" name="lngI"
+        id="longitudeDDI" min="-90" max="90" id="enter__Where-lngI" tabindex="3" />
 
       <!-- onchange="DDCoordsChanged()"
             {{lngI}}  {{lngF}}   {{lngQ}}
           -->.
 
-      <input
-        #lngF
-        type="number"
-        placeholder="LngF"
-        (change)="this.addressCtrlChanged('lngF')"
-        name="latitudeDDD"
-        step="100"
-        min="0"
-        max="99999"
-        id="enter__Where-lngF"
-        tabindex="4"
-      />° <span title="Decimal Degrees">DD</span> or&nbsp;
+      <input #lngF type="number" placeholder="LngF" (change)="this.addressCtrlChanged('lngF')" name="latitudeDDD"
+        step="100" min="0" max="99999" id="enter__Where-lngF" tabindex="4" />° <span title="Decimal Degrees">DD</span>
+      or&nbsp;
 
-      <input
-        #lngQ
-        name="longitudeQ"
-        id="enter__Where-lngQ"
-        type="text"
-        pattern="'n','N','s','S'"
-        title="N or S"
-        onchange="DMSCoordsChanged()"
-      />
-      <input
-        name="longitudeD"
-        id="enter__Where-lngD"
-        type="text"
-        max="180"
-        onchange="DMSCoordsChanged()"
-      />°
-      <input
-        name="longitudeM"
-        id="enter__Where-lngM"
-        type="text"
-        min="0"
-        max="59"
-        onchange="DMSCoordsChanged()"
-      />'
-      <input
-        name="longitudeS"
-        id="enter__Where-lngS"
-        type="text"
-        min="0"
-        max="59.99"
-        onchange="DMSCoordsChanged()"
-      />"
+      <input #lngQ name="longitudeQ" id="enter__Where-lngQ" type="text" pattern="'n','N','s','S'" title="N or S"
+        onchange="DMSCoordsChanged()" />
+      <input name="longitudeD" id="enter__Where-lngD" type="text" max="180" onchange="DMSCoordsChanged()" />°
+      <input name="longitudeM" id="enter__Where-lngM" type="text" min="0" max="59" onchange="DMSCoordsChanged()" />'
+      <input name="longitudeS" id="enter__Where-lngS" type="text" min="0" max="59.99" onchange="DMSCoordsChanged()" />"
       <span title="Degrees Minute Seconds">DMS</span>
     </div>
 
@@ -223,17 +125,9 @@
     <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>, or
     <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>:
     <!--   {{lngD}} {{lngM}}    {{lngS}} -->
-    <input
-      type="text"
-      formControlName="address"
-      address
-      id="enter__Where-Address"
-      tabindex="5"
-      title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
-      placeholder="Optional Address"
-      data-lpignore="true"
-      (change)="this.addressCtrlChanged('addr')"
-    />
+    <input type="text" formControlName="address" address id="enter__Where-Address" tabindex="5"
+      title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." placeholder="Optional Address"
+      data-lpignore="true" (change)="this.addressCtrlChanged('addr')" />
   </div>
 
   <!--   {{address}}

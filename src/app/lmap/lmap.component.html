@@ -4,7 +4,7 @@
 
 <div class="lmap-container">
   <div class="lmap-frame">
-    <div id="map" leaflet (leafletMapReady)="onMapReady($event)" ></div>
+    <div id="map" leaflet (leafletMapReady)="onMapReady($event)" (click)="onMouseClick($event)"></div>
   </div>
   <div>
     Latitude: <span class="strong">{{mouseLatLng.lat.toFixed(5)}}</span> Longitude:
@@ -20,14 +20,8 @@
   https://material.io/components/switches/web#api -->
 <label for="selectedFieldReports">Field reports to show: All ({{this.numAllRows}}) </label>
 
-<button
-  id="selectedFieldReports"
-  class="mdc-switch mdc-switch--unselected"
-  type="button"
-  role="switch"
-  aria-checked="false"
-  (click)="onSwitchSelectedFieldReports()"
->
+<button id="selectedFieldReports" class="mdc-switch mdc-switch--unselected" type="button" role="switch"
+  aria-checked="false" (click)="onSwitchSelectedFieldReports()">
   <div class="mdc-switch__track"></div>
   <div class="mdc-switch__handle-track">
     <div class="mdc-switch__handle">
@@ -47,8 +41,7 @@
   </div>
 </button>
 <label for="selectedFieldReports">
-  Just those ({{this.numSelectedRows}}) selected in the Field Report panel</label
->
+  Just those ({{this.numSelectedRows}}) selected in the Field Report panel</label>
 
 <br />
 <details>
@@ -58,6 +51,8 @@
     <li>
       If a subset of Field Reports are selected on the Field Reports page, then those
       {{this.numSelectedRows}} reports can be displayed, with the switch just above.
+    </li>Click on the main leaflet map to store the lat/long coordinates in the clipboard.
+    <li>
     </li>
   </ul>
 </details>
