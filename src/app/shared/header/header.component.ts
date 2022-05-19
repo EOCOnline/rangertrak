@@ -32,6 +32,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public eventInfo = ''
   public eventDetails = ''
   public opPeriod = ''
+  public opPeriodDetails = ''
 
   public opPeriodStart = new Date()
 
@@ -73,10 +74,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.log.verbose(`New settings received`, this.id)
 
     this.settings = newSettings
-
+    // debugger
     this.eventInfo = `#${this.settings.mission}: ${this.settings.event}`
     this.eventDetails = `Mission #: ${this.settings.mission}; Mission Name: ${this.settings.event}; Notes: ${this.settings.eventNotes}`
     this.opPeriod = `${this.settings.opPeriod}`
+    //   let start: Date = this.settings.opPeriodStart
+    // let end: Date = this.settings.opPeriodEnd
+    //  let s: string = start.toDateString()
+    //  let e: string = end.toDateString()
+    this.opPeriodDetails = `${this.settings.opPeriod}: ${this.settings.opPeriodStart} to ${this.settings.opPeriodEnd}`
 
     // if (!this.settings.opPeriodStart) {
     //   console.error(`OpPeriod had no Start time! Reset to 2 hours ago...`, this.id)
@@ -85,19 +91,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // }
     // this.log.verbose(`OpPeriodStart = ${JSON.stringify(this.settings.opPeriodStart)}`, this.id)
 
-    const msStartTime = new Date(this.settings.opPeriodStart).getTime()
+    let msStartTime = new Date(this.settings.opPeriodStart).getTime()
     this.timeElapsed$ = interval(1000)
       .pipe(map(() => {
         let ms = new Date().getTime() - msStartTime
-        return (`${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.round((ms / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(Math.round(ms / 1000) % 60).toString().padStart(2, '0')}`)
+        let d = -Math.round((ms / (1000 * 60 * 60 * 24)))
+        return (`${d ? d + ' days, ' : ''}${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.abs(Math.round((ms / (1000 * 60)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`)
       }
       ))
 
-    const msEndTime = new Date(this.settings.opPeriodEnd).getTime()
+    let msEndTime = new Date(this.settings.opPeriodEnd).getTime()
     this.timeLeft$ = interval(1000)
       .pipe(map(() => {
         let ms = msEndTime - new Date().getTime()
-        return (`${-Math.round((ms / (1000 * 60 * 60)) % 24)}:${-Math.round((ms / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(-Math.round(ms / 1000) % 60).toString().padStart(2, '0')}`)
+        let d = Math.round((ms / (1000 * 60 * 60 * 24)))
+
+        return (`${d ? d + ' days, ' : ''}${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.abs(Math.round((ms / (1000 * 60)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`)
+        //   min:${Math.round(ms / 60000)} hrs:${(Math.round(ms / (60000 * 60)))}
       }
       ))
   }
