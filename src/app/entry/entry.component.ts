@@ -13,7 +13,7 @@ import {
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
-import { AlertsComponent, TimePickerComponent } from '../shared/'
+import { AlertsComponent, DDToDDM, TimePickerComponent } from '../shared/'
 import {
     FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
     SettingsService, SettingsType

@@ -11,7 +11,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { faInfoCircle, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 
-import { CodeArea, DDToDMS, GoogleGeocode, OpenLocationCode } from '../shared/'
+import { CodeArea, DDToDDM, DDToDMS, GoogleGeocode, OpenLocationCode } from '../shared/'
 //import { MatIconRegistry } from '@angular/material/icon';
 import { LocationType, LogService, SettingsService, SettingsType } from '../shared/services'
 
@@ -237,6 +237,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
    */
   public newLocationToFormAndEmit(latDD: number, lngDD: number) {
     // todo: need to repeatedly update this.locationFrmGrp - keep in sync w/ vals?
+    // https://www.cumulations.com/blog/latitude-and-longitude/
 
     // Any location change should drive to a new latDD & LngDD & sent here
     this.log.info(`newLocation with lat: ${latDD}, lng: ${lngDD}`, this.id);
@@ -284,6 +285,20 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // this.setCtrl("longitudeD", lngDMS.deg)
     // this.setCtrl("longitudeM", lngDMS.min)
     // this.setCtrl("longitudeS", lngDMS.sec)
+
+
+
+
+    //! Need to do rest of this!
+
+    let latDDM = DDToDDM(latDD, true)
+
+    let lngDDM = DDToDDM(lngDD, true)
+
+
+
+
+
 
     // TODO: this.location.address =""
     /*
