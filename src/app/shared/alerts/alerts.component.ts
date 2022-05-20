@@ -1,13 +1,14 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar'
-import { NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs'
 
+import { DOCUMENT } from '@angular/common'
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
+import { MatSnackBar } from '@angular/material/snack-bar'
+import { NavigationEnd } from '@angular/router'
 //import { MatFormFieldModule } from '@angular/material/form-field';
-import { MDCBanner } from '@material/banner';
-import { Subscription } from 'rxjs';
-import { SettingsService, SettingsType } from '../services';
-import { LogService } from '../services/log.service';
+import { MDCBanner } from '@material/banner'
+
+import { SettingsService, SettingsType } from '../services'
+import { LogService } from '../services/log.service'
 
 @Component({
   selector: 'rangertrak-alerts',
@@ -32,6 +33,7 @@ export class AlertsComponent implements OnInit, OnDestroy {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)

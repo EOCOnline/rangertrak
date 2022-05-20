@@ -1,7 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription } from 'rxjs'
+
+import { Component, OnDestroy, OnInit } from '@angular/core'
+
 import { SettingsService, SettingsType } from '../services'
-import { LogService } from '../services/log.service';
+import { LogService } from '../services/log.service'
 
 /**
  * Footer component
@@ -27,6 +29,7 @@ export class FooterComponent implements OnInit, OnDestroy {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)

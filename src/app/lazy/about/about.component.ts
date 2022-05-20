@@ -1,8 +1,9 @@
 
-import { Component, Inject, OnInit, ViewChild, isDevMode, OnDestroy } from '@angular/core'
 import { Subscription } from 'rxjs'
 
-import { SettingsService, ClockService, SettingsType, LogService } from '../../shared/services'
+import { Component, Inject, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core'
+
+import { ClockService, LogService, SettingsService, SettingsType } from '../../shared/services'
 
 @Component({
   selector: 'rangertrak-about',
@@ -26,6 +27,7 @@ export class AboutComponent implements OnDestroy {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)

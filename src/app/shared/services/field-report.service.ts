@@ -1,10 +1,16 @@
+import L, { LatLngBounds } from 'leaflet'
 import { BehaviorSubject, Observable, Observer, of, Subscription, throwError } from 'rxjs'
-import { Injectable, OnInit, Pipe, PipeTransform, OnDestroy, SkipSelf, Optional } from '@angular/core';
-import { RangerService, SettingsService, SettingsType, LogService, FieldReportsType, FieldReportType, FieldReportStatusType } from './' // , TeamService
+
 import { HttpClient } from '@angular/common/http'
-import L from 'leaflet'
-import { LatLngBounds } from 'leaflet';
-import { RangerType } from './ranger.interface';
+import {
+    Injectable, OnDestroy, OnInit, Optional, Pipe, PipeTransform, SkipSelf
+} from '@angular/core'
+
+import {
+    FieldReportStatusType, FieldReportsType, FieldReportType, LogService, RangerService,
+    SettingsService, SettingsType
+} from './' // , TeamService
+import { RangerType } from './ranger.interface'
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
@@ -56,6 +62,7 @@ export class FieldReportService implements OnDestroy {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)

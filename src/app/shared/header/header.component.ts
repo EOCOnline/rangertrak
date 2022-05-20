@@ -51,6 +51,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.onNewSettings(newSettings)
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.warn('Settings Subscription complete', this.id)

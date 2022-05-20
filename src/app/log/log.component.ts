@@ -62,6 +62,7 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
+        console.log('Received new Settings via subscription.', this.id)
       },
       error: (e) => console.error('Settings Subscription got:' + e, this.id),
       complete: () => console.info('Settings Subscription complete', this.id)

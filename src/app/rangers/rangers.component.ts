@@ -120,6 +120,7 @@ export class RangersComponent implements OnInit, OnDestroy {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
@@ -130,7 +131,10 @@ export class RangersComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     this.rangersSubscription = this.rangerService.getRangersObserver().subscribe({
-      next: (newRangers) => { this.rangers = newRangers },
+      next: (newRangers) => {
+        this.rangers = newRangers
+        this.log.verbose('Received new Rangers via subscription.', this.id)
+      },
       error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
       complete: () => this.log.info('Rangers Subscription complete', this.id)
     })

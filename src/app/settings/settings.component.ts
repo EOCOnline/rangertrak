@@ -213,6 +213,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         this.settings = newSettings
         this.opPeriodStart = this.settings.opPeriodStart
         this.opPeriodEnd = this.settings.opPeriodEnd
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
