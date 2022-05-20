@@ -52,10 +52,10 @@ There are a number of ways to geocode a latitude & longitude. See https://en.wik
 Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
 ## To update Version
-npm run release which will update version # in Package.json & Package-lock.json
-Some details in service/settings.service.ts &
-https://www.npmjs.com/package/standard-version which has been replaced by
-https://github.com/googleapis/release-please
+stage any changes (or add '--allow-empty' to the following), then
+git commit -m "Release-As: 0.11.39"
+which *SHOULD* (but doesn't?) update version # in Package.json & Package-lock.json
+Some details in service/settings.service.ts & app.component.ts
 https://github.com/googleapis/release-please#how-do-i-change-the-version-number
 
 ## Architecture
