@@ -56,6 +56,7 @@ npm run release which will update version # in Package.json & Package-lock.json
 Some details in service/settings.service.ts &
 https://www.npmjs.com/package/standard-version which has been replaced by
 https://github.com/googleapis/release-please
+https://github.com/googleapis/release-please#how-do-i-change-the-version-number
 
 ## Architecture
 <img src="./src/docs/PlantUML-Class Diagram.png" alt="PlantUML-Class Diagram" style="height:300px; width:100%; align:right;"/>
