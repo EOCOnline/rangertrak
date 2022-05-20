@@ -58,21 +58,17 @@
    [(ngModel)]="extLocation" name="extLocationVal" #validations=""ngModel"-->
 
     <div>
-      <rangertrak-location #location (newLocationEvent)="onNewLocationParent($event)" [initialLat]="initialLat"
-        [initialLng]="initialLng">
-
-      </rangertrak-location>
+      <rangertrak-location #location (newLocationEvent)="onNewLocationParent($event)"></rangertrak-location>
     </div>
 
-    <!-- =======================================
-        optional:  [initialDate] = "initialTime"
-          -->
+    <!-- ======================================= -->
     <h2 class="elegant">
       <mat-label>When</mat-label>
     </h2>
 
     <div FormControl="timepickerFormControl" class="filled timepicker timepicker_When-input">
       <rangertrak-time-picker #picker [datePickerLabel]="timePickerLabel" (newTimeEvent)="onNewTimeEvent($event)">
+        <!-- [initialDate] = "initialTime" -->
       </rangertrak-time-picker>
     </div>
 
