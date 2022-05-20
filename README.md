@@ -49,19 +49,22 @@ There are a number of ways to geocode a latitude & longitude. See https://en.wik
 - Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
 ## Running end-to-end tests
-
 Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+
+## To update Version
+npm run release which will update version # in Package.json & Package-lock.json
+Some details in service/settings.service.ts &
+https://www.npmjs.com/package/standard-version which has been replaced by
+https://github.com/googleapis/release-please
 
 ## Architecture
 <img src="./src/docs/PlantUML-Class Diagram.png" alt="PlantUML-Class Diagram" style="height:300px; width:100%; align:right;"/>
 ![This architecural diagram is unimplemented yet]( .\src\docs\RangerTrak.png "Future architectural diagram")
 
 ## Further help
-
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
 ## eoc.online
-
-eoc.online provides free tools for Emergency Operations Centers and emergency services. For more information and to report issues please visit http://eoc.online.
+http://eoc.online provides free tools for Emergency Operations Centers and emergency services. For more information and to report issues please visit http://eoc.online.
 
 ©2022 eoc.online, under the MIT License

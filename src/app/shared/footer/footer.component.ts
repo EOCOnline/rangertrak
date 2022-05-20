@@ -2,8 +2,7 @@ import { Subscription } from 'rxjs'
 
 import { Component, OnDestroy, OnInit } from '@angular/core'
 
-import { SettingsService, SettingsType } from '../services'
-import { LogService } from '../services/log.service'
+import { LogService, SettingsService, SettingsType } from '../services'
 
 /**
  * Footer component

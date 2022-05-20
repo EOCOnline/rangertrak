@@ -210,10 +210,12 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       })
 
       // TODO: NOt working yet...
-      this.log.excessive(`addressCtrl.valueChanges`, this.id)
+      //this.log.excessive(`addressCtrl.valueChanges`, this.id)
       // TODO: No formControlName="addressCtrl"!!!!
       // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
       //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
+    } else {
+      this.log.warn(`locationFrmGrp not available yet in ngOnInit`, this.id)
     }
 
     this.log.verbose("out of ngOnInit", this.id)
@@ -327,10 +329,15 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
             //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
           }
     */
-    this.onNewLocation(this.location) // Emit new location event to parent
+    this.emitNewLocation(this.location) // Emit new location event to parent
   }
 
-  public onNewLocation(newLocation: LocationType) { // Or LocationEvent?!
+  /**
+   * onNewLocation:
+   * @param newLocation
+   *
+   */
+  public emitNewLocation(newLocation: LocationType) { // Or LocationEvent?!
     // Do any needed sanity/validation here
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
