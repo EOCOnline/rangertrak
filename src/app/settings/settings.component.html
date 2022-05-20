@@ -52,22 +52,22 @@
     <br />
 
     <!-- ======================================= -->
-    <h2>Event Information</h2>
+    <h2>Mission</h2>
     <div class="input-group">
-      <span class="strong">Mission: </span>
+      <span class="strong">ID or #: </span>
       <input formControlName="mission" placeholder="Mission #" [style.width.px]="100" type="text"
         data-lpignore="true" />
     </div>
 
     <div class="input-group">
-      <span class="strong">Event Name: </span>
+      <span class="strong">Name: </span>
       <input formControlName="event" placeholder="Event Name" [style.width.px]="100" type="text" data-lpignore="true" />
     </div>
 
     <div class="input-group">
-      <span class="strong">Event Notes: </span><br />
-      <textarea appearance="fill" formControlName="eventNotes" id="" cols="60" rows="4"
-        placeholder="Event description, if needed"></textarea>
+      <span class="strong">Notes: </span><br />
+      <textarea appearance="fill" formControlName="eventNotes" class="input-group settings__OpPeriod--notes" cols="60"
+        rows="4" placeholder="Event description, if needed"></textarea>
     </div>
 
     <!-- ======================================= -->
@@ -97,14 +97,15 @@
     <details>
       <summary><span class="strong">Location Guidance</span></summary>
       <ul>
-        <li>This sets initial (default) values for lat & long in the entry form.</li>
+        <li>Enter Lat & Long, which will be used as initial/default values in the entry form.</li>
+        <li><a href="https://maps.google.com/pluscodes/" target="_blank">PlusCodes</a> uses the Plus Code value
+          entered for converting short to full/global codes.</li>
         <li>
-          What3Words uses this to set the focus, prioritizing suggested results (for
-          incorrect words) by proximity to this point.
+          <a href="https://www.What3Words.com" target="_blank">What3Words</a> uses the 'w3wLocale' to set the focus,
+          prioritizing suggested results (for incorrect words) by proximity to this point.
         </li>
-        <li>PlusCodes uses this for converting short to full/global codes.</li>
         <li>
-          Maps do not use this. They are auto-centered on the bounding coordinates
+          Maps do not use any of these. Maps are auto-centered on the bounding coordinates
           centroid of all points entered and the map is then zoomed to show all points.
         </li>
       </ul>
@@ -166,7 +167,8 @@
     <div class="input-group">
       <div class="strong">Markers: </div>
       <input type="checkbox" formControlName="allowManualPinDrops" placeholder="allowManualPinDrops" />
-      Clicks on Google & Leaflet maps should make new markers - but won't be saved
+      Clicking on Google & Leaflet maps should make new markers - but won't be saved.<br />
+      (Default on Leaflet maps: clicking saves Lat/Long to clipboard.)
     </div>
     <br />
 
@@ -310,7 +312,9 @@
     <br />
 
     <span class="strong">Save above settings: </span>
-    <button [disabled]="settingsEditorForm.invalid" type="submit">Save</button>
+    <button [disabled]="settingsEditorForm.invalid" class="settings__Save-button eButton" type="submit">Save</button>
+    <!-- button tabindex="9" -->
+
 
     <br />
     <br />

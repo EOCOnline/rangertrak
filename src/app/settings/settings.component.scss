@@ -26,6 +26,22 @@ $filledColor : #F0F0F0;
   margin  : 10px 0px;
 }
 
+.settings__Save-button {
+  margin-left     : 10px;
+  margin-top      : 0px;
+  margin-bottom   : 10px;
+  background-color: rgb(236, 252, 4);
+}
+
+.eButton {
+  //display: inline-block;
+  width             : 80px;
+  font-weight       : bold;
+  //background-color: red;
+  margin            : 30 px;
+  //padding: 10px;
+}
+
 // https://www.codingtag.com/remove-arrows-from-input-type-number
 // to hide spinners
 /* Chrome, Safari, Edge, Opera /
@@ -40,6 +56,18 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 */
+
+.settings__OpPeriod--notes {
+  border              : 1px dotted rgb(52, 28, 192);
+  border-radius       : 6px;
+  background-color    : $filledColor;
+  //text-orientation: upright;
+  //text-transform: capitalize;
+  //float             : left;
+  //margin-left       : 75px;
+  //position          : absolute;
+  //bottom:40px;
+}
 
 label {
   font-weight   : bold;

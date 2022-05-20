@@ -32,6 +32,7 @@
     <!-- ======================================= -->
     <h2 class="elegant">
       <mat-label>Where</mat-label>&nbsp;&nbsp;
+
       <!--fa-icon
         [icon]="faInfoCircle"
         id="button"
@@ -39,9 +40,12 @@
         title="Click info icon for info!"
         alt="info icon"
       ></fa-icon -->
+
       <span class="small">(updates map to the right)</span><img src="../../assets/icons/information-outline.png"
-        title="Enter the longitude either in degrees decmal or as Degrees Minutes & Seconds" alt="info icon" />
+        title="Enter the longitude either in Degrees Decmal or as Degrees & Minutes Decimal or as Degrees Minutes & Seconds"
+        alt="info icon" />
     </h2>
+
     <!--onchange="DDCoordsChanged()
 
       "FormControl="timepickerFrmControl"
@@ -54,7 +58,10 @@
    [(ngModel)]="extLocation" name="extLocationVal" #validations=""ngModel"-->
 
     <div>
-      <rangertrak-location (newLocationEvent)="onNewLocationParent($event)"></rangertrak-location>
+      <rangertrak-location #location (newLocationEvent)="onNewLocationParent($event)" [initialLat]="initialLat"
+        [initialLng]="initialLng">
+
+      </rangertrak-location>
     </div>
 
     <!-- =======================================
