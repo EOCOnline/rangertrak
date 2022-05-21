@@ -14,12 +14,12 @@ $filledColor : #F0F0F0;
 
 .enter__Where-div {
   background-color: $filledColor;
-  width           : 500px;
+  width           : 625px;
 }
 
 .enter__Where-input {
-  background-color: $filledColor;
-  width           : 600px;
+  background-color  : $filledColor;
+  //width           : 700px;
 }
 
 #enter__Where-latI,
@@ -33,27 +33,35 @@ $filledColor : #F0F0F0;
 }
 
 #enter__Where-latQ,
-#enter__Where-lngQ {
+#enter__Where-lngQ,
+#enter__Where-latQ1,
+#enter__Where-lngQ1 {
   width: 15px;
 }
 
 #enter__Where-latD,
-#enter__Where-lngD {
+#enter__Where-lngD,
+#enter__Where-latDM,
+#enter__Where-lngDM {
   width: 15px;
 }
 
 #enter__Where-latM,
-#enter__Where-lngM {
+#enter__Where-lngM,
+#enter__Where-latMI,
+#enter__Where-lngMI {
   width: 15px;
 }
 
 #enter__Where-latS,
-#enter__Where-lngS {
+#enter__Where-lngS,
+#enter__Where-latMF,
+#enter__Where-lngMF {
   width: 40px;
 }
 
 #enter__Where-address {
-  width: 120px;
+  width: 240px;
 }
 
 

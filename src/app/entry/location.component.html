@@ -98,6 +98,15 @@
       <input #latM name="latM" id="enter__Where-latM" type="text" min="0" max="59" onchange="DMSCoordsChanged()" />'
       <input #latS name="latS" id="enter__Where-latS" type="text" min="0" max="59.99"
         onchange="DMSCoordsChanged()" />"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
+
+      <span class="strong"> or</span>&nbsp;
+
+      <input #latQ name="latitudeQ1" id="enter__Where-latQ1" type="text" pattern="'n','N','s','S'" title="N or S"
+        onchange="DMSCoordsChanged()" />
+      <input name="latitudeDM" id="enter__Where-latDM" type="text" max="180" onchange="DMSCoordsChanged()" />°
+      <input name="latitudeMI" id="enter__Where-latMI" type="text" min="0" max="59" onchange="DMSCoordsChanged()" />'
+      <input name="latitudeMF" id="enter__Where-latMF" type="text" min="0" max="9999" onchange="DMSCoordsChanged()" />"
+      <span title="Digital Degrees Minutes">DDM</span>
     </div>
 
     <div class="input-group">
@@ -111,7 +120,7 @@
 
       <input #lngF type="number" placeholder="LngF" (change)="this.addressCtrlChanged('lngF')" name="latitudeDDD"
         step="100" min="0" max="99999" id="enter__Where-lngF" tabindex="4" />° <span title="Decimal Degrees">DD</span>
-      or&nbsp;
+      <span class="strong"> or</span>&nbsp;
 
       <input #lngQ name="longitudeQ" id="enter__Where-lngQ" type="text" pattern="'n','N','s','S'" title="N or S"
         onchange="DMSCoordsChanged()" />
@@ -119,6 +128,15 @@
       <input name="longitudeM" id="enter__Where-lngM" type="text" min="0" max="59" onchange="DMSCoordsChanged()" />'
       <input name="longitudeS" id="enter__Where-lngS" type="text" min="0" max="59.99" onchange="DMSCoordsChanged()" />"
       <span title="Degrees Minute Seconds">DMS</span>
+
+      <span class="strong"> or</span>&nbsp;
+
+      <input #lngQ name="longitudeQ1" id="enter__Where-lngQ1" type="text" pattern="'n','N','s','S'" title="N or S"
+        onchange="DMSCoordsChanged()" />
+      <input name="longitudeDM" id="enter__Where-lngDM" type="text" max="180" onchange="DMSCoordsChanged()" />°
+      <input name="longitudeMI" id="enter__Where-lngMI" type="text" min="0" max="59" onchange="DMSCoordsChanged()" />'
+      <input name="longitudeMF" id="enter__Where-lngMF" type="text" min="0" max="9999" onchange="DMSCoordsChanged()" />"
+      <span title="Digital Degrees Minutes">DDM</span>
     </div>
 
     Street Address,
