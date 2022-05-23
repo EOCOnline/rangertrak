@@ -35,18 +35,6 @@ export class EntryComponent implements OnInit, OnDestroy {
   title = 'Field Report Entry'
   pageDescr = `Enter data associated with ranger's name, location, status for tracking on maps & spreadsheets`
 
-
-  // Not needed for this component: initialTime = new Date(2020, 1, 1, 10, 30, 30, 0)
-  timePickerLabel = "Enter Report Date, Time"
-
-  // today = new Date()
-  // SelectedDate = `${this.today.getFullYear()}-${this.today.getMonth() + 1}-${this.today.getDate()}`
-  // getDate = new Date(this.SelectedDate);
-
-  // Get location events from <location> component
-  private locationSubscription!: Subscription
-  public location: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
-
   private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
   filteredRangers: Observable<RangerType[]>
@@ -54,9 +42,14 @@ export class EntryComponent implements OnInit, OnDestroy {
   private settingsSubscription!: Subscription
   public settings!: SettingsType
 
+  // Get location events from <location> component
+  private locationSubscription!: Subscription
+  public location: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
+
   // Get time events from <timepicker> component
   private timeSubscription!: Subscription
-  public time = new Date(2017, 1, 1, 10, 30, 30, 0)
+  time = new Date()
+  timePickerLabel = "Enter Report Date, Time"
 
   alert: any
 
@@ -65,6 +58,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   public entryDetailsForm!: FormGroup
   callsignCtrl = new FormControl()
 
+  // REVIEW: Duplicate or extra locationFrmGrp - or passed in and actually *used*?!
   locationFrmGrp!: FormGroup
   dateCtrl = new FormControl(new Date())
   minDate = new Date()
@@ -97,8 +91,12 @@ export class EntryComponent implements OnInit, OnDestroy {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
+    // TODO: Move callSign input to new component?
     this.rangersSubscription = rangerService.getRangersObserver().subscribe({
-      next: (newRangers) => { this.rangers = newRangers },
+      next: (newRangers) => {
+        this.rangers = newRangers
+        this.log.excessive('Received new Rangers via subscription.', this.id)
+      },
       error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
       complete: () => this.log.info('Rangers Subscription complete', this.id)
     })
@@ -110,7 +108,7 @@ export class EntryComponent implements OnInit, OnDestroy {
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
 
     if (this.rangers.length < 1) {
-      this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page.', 'Go to Rangers page', 'Ignore')
+      this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page & then review items in the Settings Page.', 'Go to Rangers, then Settings pages', 'Ignore')
       //this.alert.OpenSnackBar(`No Rangers exist.Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
       //TODO: Force navigation to /Rangers?
     }
@@ -299,9 +297,9 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
     this.callInfo = this.document.getElementById("enter__Callsign-upshot")
     if (this.callInfo) {
-      this.log.verbose(`EntryForm CallsignChanged looking for ${callsign}`, this.id)
+      this.log.verbose(`EntryForm callsignChanged looking for ${callsign}`, this.id)
       //let ranger = this.rangers[this.findIndex(callsign)]
-      let ranger = this.rangerService.getRanger(callsign)  // REVIEW is this.rangers here & service in sync?
+      let ranger = this.rangerService.getRanger(callsign)
       this.callInfo.innerHTML = `< span > ${ranger.callsign} < /span> | <small> ${ranger.licensee} | ${ranger.phone}</small > `
       //< img class= "enter__Callsign-img" aria-hidden src = "${ranger.image}" height = "50" >
     } else {

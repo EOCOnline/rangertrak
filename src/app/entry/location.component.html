@@ -7,16 +7,7 @@
   <div id="arrow" data-popper-arrow></div>
 </div-->
 
-<!-- Error: formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
-      directive and pass it an existing FormGroup instance (you can create one in your class).
-    Example:
-  <div [formGroup]="myGroup">
-    <input formControlName="firstName">
-  </div>
-  In your class:
-  this.myGroup = new FormGroup({
-      firstName: new FormControl()
-  });
+<!--
 (change)="this.addressCtrlChanged('latI')"
 
     [style.width.px]="20"
@@ -25,16 +16,8 @@
     number:1.0-0}}
        latI
        <!- formControlName="lat": MUST be element in Location Form Group!
-
-       <div [formGroup]="myGroup">
-    <input formControlName="firstName">
-  </div>
-
-  this.myGroup = new FormGroup({
-      firstName: new FormControl()
-  });
-
-[FormControl]="latI"  -->
+[FormControl]="latI"
+-->
 <div class="container enter__Where-div">
   <div appearance="filled" class="timepicker__Where-input" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
     <div class="input-group" [formGroup]="locationFrmGrp">
@@ -45,7 +28,7 @@
       -->
       &nbsp;&nbsp;&nbsp;Latitude:
 
-      <input [value]="latI" type="number" formControlName="lat" min="-180" max="180" id="enter__Where-latI" />
+      <input [valueAsNumber]="latI" type="number" formControlName="lat" min="-180" max="180" id="enter__Where-latI" />
 
       <!-- TODO: name="latitudeDDI" id="latitudeDDI" -->
 
@@ -69,7 +52,7 @@
       <input #latQ name="latQ" id="enter__Where-latQ" type="text" pattern="'e','E','w','W'" title="E or W"
         onchange="DMSCoordsChanged()" />
       <!-- Quadrant -->
-      <!-- BUG: Initialize els3ewhere!
+      <!-- BUG: Initialize elsewhere!
           value="47"
         value=""
         value=""

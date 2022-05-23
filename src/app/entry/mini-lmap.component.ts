@@ -3,7 +3,7 @@ import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 
 import * as L from 'leaflet'
 import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
-import { throwError } from 'rxjs'
+import { delay, throwError } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
@@ -52,7 +52,8 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, OnDestroy 
         this.log.verbose(pc.red(`Parent ejected a premature location event to child: ${undefinedAddressFlag} - ignoring...`), this.id)
       } else {
         this.log.verbose(pc.red(`Parent sent on a location event to child: ${JSON.stringify(newLocation)}`), this.id)
-        //! Gets hit - BUT spits out 'undefined'
+        //OLD: Gets hit - BUT spits out 'undefined'
+        // now: 'Leaflet MiniMap Component: Parent sent on a location event to child: {"lat":48.4472,"lng":-122.4627,"address":""}'
         this.onNewLocationChild(newLocation)
       }
     } else {
@@ -319,9 +320,22 @@ Ensure that there are no changes to the bindings in the template after change de
       return
     }
     let latlng = this.lMap.mouseEventToLatLng(ev)
-    navigator.clipboard.writeText(`${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`)
+    let msg = `${Math.round(latlng.lat * 1000) / 1000}, ${Math.round(latlng.lng * 1000) / 1000}`
+    navigator.clipboard.writeText(msg)
       .then(() => {
-        this.log.excessive(`${latlng} copied to clipboard`, this.id)
+        // TODO: or put up a tooltip for ~2 seconds...
+        let status = document.getElementById('Entry__Minimap-status')
+        if (status) {
+          status.innerText = `${msg} copied to clipboard`
+        } else {
+          this.log.info(`Entry__Minimap-status not found!`, this.id)
+        }
+        this.log.excessive(`${msg} copied to clipboard`, this.id)
+        // TODO: after 3 seconds auto clear status...
+        if (status) {
+          delay(3000)
+          status.innerText = ``
+        }
       })
       .catch(err => {
         this.log.error(`latlng NOT copied to clipboard, error: ${err}`, this.id)
@@ -382,7 +396,12 @@ Ensure that there are no changes to the bindings in the template after change de
       }
       this.addMarker(this.location.lat, this.location.lng, this.location.address)
       this.addCircle(this.location.lat, this.location.lng, this.location.address)
-
+      /*
+      let status = document.getElementById('Entry__Minimap-status')
+              if (status) {
+                status.innerHTML = "`${latlng} copied to clipboard`"
+              }
+      */
     } else {
       this.log.error(`Bad location passed in to onNewLocationChild(): ${JSON.stringify(newLocation)}`, this.id)
     }
@@ -513,5 +532,5 @@ Ensure that there are no changes to the bindings in the template after change de
   addManualMarkerEvent(event: any): void {
     //throw new Error('Method not implemented.')
   }
-
 }
+

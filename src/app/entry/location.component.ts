@@ -30,45 +30,25 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 })
 export class LocationComponent implements OnInit, OnDestroy {
   // Grab reference to location portion of parent's entry form
-  @Input() public locationFrmGrp: FormGroup // input from entry.component.ts
-  //
-  // We emit following event & per parent's template:
-  // (newLocationEvent)="onNewLocation($event)" their proceedure gets called.
-  // They pass this, via binding, to any other children that need it...
+  @Input() public locationFrmGrp!: FormGroup // input from entry.component.ts
+
+  // We emit following event to parent,
+  // parent's template has: (newLocationEvent)="onNewLocation($event)"
+  // Parent's onNewLocation($event) gets called.
+  // Parent then passes the new location (via binding), to any children as needed
   @Output() newLocationEvent = new EventEmitter<LocationType>()
-  /*
-  LocationComponent - out of ngOnInit
-core.mjs:6485 ERROR Error: formControlName must be used with a
-parent formGroup directive.  You'll want to add a formGroup
-directive and pass it an existing FormGroup instance
-(you can create one in your class).
-    Example:
-  <div [formGroup]="myGroup">
-    <input formControlName="firstName">
-  </div>
-  In your class:
-  this.myGroup = new FormGroup({
-      firstName: new FormControl()
-  });
-    at controlParentException (forms.mjs:1474:12)
-    at FormControlName._checkParentType (forms.mjs:5906:23)
 
-    at refreshComponent (core.mjs:10655:1)
-defaultErrorLogger @ core.mjs:6485
-
-mini-lmap.component.ts:70 Init Leaflet minimap..........
-*/
-  //@Input('location') location: FormGroup;
-  //@Input('group') location: FormGroup;
-
-
-  //@Input() location: FormGroup// | null = null //location: FormGroup;
+  // @Input('location') location: FormGroup;
+  // @Input('group') location: FormGroup;
+  // @Input() location: FormGroup// | null = null //location: FormGroup;
   // public locationForm!: FormGroup
-  //  public location2: FormGroup
-  //locationCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
-  //@Input() group: FormGroup;
+  // public location2: FormGroup
+  // locationCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
 
+
+  public myLat = 56.7890
   private id = "Location Component"
+
   // Grab reference to #elements in template (vs. getElementById)
   // TODO: Remove all these! Per bottom pg 137, go to [FormControl]="nameToUse"
   @ViewChild('latI') elLatI: any
@@ -137,23 +117,12 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    // TODO: Give up the thread/sleep(500) to let the values come though?!
-    this.location = {
-      lat: this.settings ? this.settings.defLat : 0,
-      lng: this.settings ? this.settings.defLng : 0,
-      address: ''
-    }
+    // this.locationFrmGrp = _formBuilder.group({
+    //   lat: [],
+    //   lng: [],
+    //   address: []
+    // })
 
-    // BUG: duplicate of locationFrmGrp creation in EntryComponent.ts
-    // new values here bubble up as emitted events - see onNewLocation()
-    this.locationFrmGrp = this._formBuilder.group({
-      lat: [this.location.lat],
-      lng: [this.location.lng],
-      address: [this.location.address, Validators.required]
-    });
-
-    // showNewLocation ALSO updates location.address & emits new location event to parent
-    this.newLocationToFormAndEmit(this.location.lat, this.location.lng)
     this.log.verbose("Out of constructor", this.id)
   }
 
@@ -173,6 +142,26 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       this.log.error(`this.settings was null in ngOnInit`, this.id)
       return
     }
+
+    // TODO: Give up the thread/sleep(500) to let the values come though?!
+    this.location = {
+      lat: this.settings ? this.settings.defLat : 0,
+      lng: this.settings ? this.settings.defLng : 0,
+      address: ''
+    }
+
+    // BUG: duplicate of locationFrmGrp creation in EntryComponent.ts
+    // new values here bubble up as emitted events - see onNewLocation()
+    this.locationFrmGrp = this._formBuilder.group({
+      lat: [this.location.lat],
+      lng: [this.location.lng],
+      address: [this.location.address, Validators.required]
+    })
+
+    // showNewLocation ALSO updates location.address & emits new location event to parent
+    this.newLocationToFormAndEmit(this.location.lat, this.location.lng)
+
+
 
     //!Following also done in constructor: only need 1!
     //this.newLocationToFormAndEmit(this.settings.defLat, this.settings.defLng)

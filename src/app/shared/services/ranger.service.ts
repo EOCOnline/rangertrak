@@ -20,6 +20,23 @@ import { LogService, RangerType } from './'
 type AOA = any[][]  // array of arrays
 
 
+/* BUG: Why are the following called TWICE?!
+
+Ranger Service: Construction
+Ranger Service: Loaded 301 rangers from local storage
+Ranger Service: SortRangersByCallsign: 301 Rangers in array
+Ranger Service: Got 301 from Local Storage
+Ranger Service: New set of 301 rangers. Save to local storage & publish
+Ranger Service: SortRangersByCallsign: 301 Rangers in array
+
+Ranger Service: Construction
+Ranger Service: Loaded 301 rangers from local storage
+Ranger Service: SortRangersByCallsign: 301 Rangers in array
+Ranger Service: Got 301 from Local Storage
+Ranger Service: New set of 301 rangers. Save to local storage & publish
+Ranger Service: SortRangersByCallsign: 301 Rangers in array
+*/
+
 @Injectable({ providedIn: 'root' })
 export class RangerService {
   observeRangers$: Observable<RangerType[]> | null = null
