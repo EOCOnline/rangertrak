@@ -7,11 +7,7 @@
   <div id="arrow" data-popper-arrow></div>
 </div-->
 
-<!--
-      [class.border-danger]="location.get('latI')?.touched && location.get('latI')?.invalid"
-
-
-    Error: formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
+<!-- Error: formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
       directive and pass it an existing FormGroup instance (you can create one in your class).
     Example:
   <div [formGroup]="myGroup">
@@ -30,27 +26,15 @@
        latI
        <!- formControlName="lat": MUST be element in Location Form Group!
 
-      formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
-      directive and pass it an existing FormGroup instance (you can create one in your class).
-
-    Example:
-
-
-  <div [formGroup]="myGroup">
+       <div [formGroup]="myGroup">
     <input formControlName="firstName">
   </div>
-
-  In your class:
 
   this.myGroup = new FormGroup({
       firstName: new FormControl()
   });
-    at controlParentException (forms.mjs:1474:12)
-[FormControl]="latI"
 
-
- formControlName must be used with a parent formGroup directive.
--->
+[FormControl]="latI"  -->
 <div class="container enter__Where-div">
   <div appearance="filled" class="timepicker__Where-input" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
     <div class="input-group" [formGroup]="locationFrmGrp">
@@ -143,11 +127,15 @@
     <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>, or
     <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>:
     <!--   {{lngD}} {{lngM}}    {{lngS}} -->
-    <input type="text" formControlName="address" address id="enter__Where-Address" tabindex="5"
+
+    <!-- formControlName="address" Needs parent FormControl -->
+    <input type="text" address id="enter__Where-Address" tabindex="5"
       title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." placeholder="Optional Address"
       data-lpignore="true" (change)="this.addressCtrlChanged('addr')" />
   </div>
+</div>
 
+<div class="enter__Where-Results">
   <!--   {{address}}
       formControlName="address"
       input name="addresses" id="addresses" type="text" size="15" value=""
@@ -156,7 +144,7 @@
   <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
 
   <span id="addressLabel" title="Normalized Address" value="">aL</span>&nbsp;&nbsp;;
-  <span title="Global (Google) Plus Code" id="pCodeGlobal">pCG</span>
+  <span id="pCodeGlobal" title="Global (Google) Plus Code">pCG</span>
 </div>
 
 <!--br-->

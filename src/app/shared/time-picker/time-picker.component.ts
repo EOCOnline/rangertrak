@@ -83,7 +83,7 @@ export class TimePickerComponent implements OnInit {
     private log: LogService,
     private _formBuilder: FormBuilder,
     @Inject(DOCUMENT) private document: Document) {
-    this.log.info(`timepicker construction`, this.id)
+    this.log.excessive(`timepicker construction`, this.id)
 
     // BUG: maybe should be in EntryComponent.ts instead? as locationFrmGrp is there...
     // new values here bubble up as emitted events - see onNewLocation()
@@ -102,7 +102,7 @@ export class TimePickerComponent implements OnInit {
     this.timepickerFormGroup = this._formBuilder.group({
       time: [this.initialDate]
     })
-    this.log.error(`initialDate = ${this.initialDate} in ngInit`, this.id)
+    this.log.verbose(`initialDate = ${this.initialDate} in ngInit`, this.id)
   }
 
   onNewTime(newTime: any) {
@@ -110,7 +110,7 @@ export class TimePickerComponent implements OnInit {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
 
     // todo : validate min/max time?
-    this.log.error(`Got new time: ${newTime.value}: Emitting!`, this.id)
+    this.log.verbose(`Got new time: ${newTime.value}: Emitting!`, this.id)
 
     this.time = newTime.value
     //if (! (
