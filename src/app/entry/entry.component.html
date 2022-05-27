@@ -43,7 +43,7 @@
 
       <span class="small">(updates map to the right)</span><img src="../../assets/icons/information-outline.png"
         title="Enter the longitude either in Degrees Decmal or as Degrees & Minutes Decimal or as Degrees Minutes & Seconds"
-        alt="info icon" />
+        height="16px" width="16px" alt="info icon" />
     </h2>
 
     <!--onchange="DDCoordsChanged()
@@ -58,7 +58,8 @@
    [(ngModel)]="extLocation" name="extLocationVal" #validations=""ngModel"-->
 
     <div>
-      <rangertrak-location (newLocationEvent)="onNewLocationParent($event)"></rangertrak-location>
+      <rangertrak-location (newLocationEvent)="onNewLocationParent($event)" [initialLoc]="initialLocation">
+      </rangertrak-location>
     </div>
 
     <!-- ======================================= -->

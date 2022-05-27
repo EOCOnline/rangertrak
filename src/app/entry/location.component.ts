@@ -13,7 +13,9 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 
 import { CodeArea, DDToDDM, DDToDMS, GoogleGeocode, OpenLocationCode } from '../shared/'
 //import { MatIconRegistry } from '@angular/material/icon';
-import { LocationType, LogService, SettingsService, SettingsType } from '../shared/services'
+import {
+    LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag
+} from '../shared/services'
 
 /*
 https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
@@ -31,6 +33,8 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 export class LocationComponent implements OnInit, OnDestroy {
   // Grab reference to location portion of parent's entry form
   @Input() public locationFrmGrp!: FormGroup // input from entry.component.ts
+  @Input() public initialLoc: LocationType = { lat: 0, lng: 0, address:}
+  // input from entry.component.ts
 
   // We emit following event to parent,
   // parent's template has: (newLocationEvent)="onNewLocation($event)"
@@ -144,10 +148,16 @@ export class LocationComponent implements OnInit, OnDestroy {
     }
 
     // TODO: Give up the thread/sleep(500) to let the values come though?!
-    this.location = {
-      lat: this.settings ? this.settings.defLat : 0,
-      lng: this.settings ? this.settings.defLng : 0,
-      address: ''
+    if (this.initialLoc.lat != 10 && this.initialLoc.lng != 10) {
+      // Use initial Location values passed from parent's html form
+      this.location = this.initialLoc
+    } else {
+      // Use defaults in parent' didn't pass any in
+      this.location = {
+        lat: this.settings ? this.settings.defLat : 0,
+        lng: this.settings ? this.settings.defLng : 0,
+        address: ''
+      }
     }
 
     // BUG: duplicate of locationFrmGrp creation in EntryComponent.ts

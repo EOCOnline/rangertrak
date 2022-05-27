@@ -16,12 +16,12 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { AlertsComponent, DDToDDM, TimePickerComponent } from '../shared/'
 import {
     FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
-    SettingsService, SettingsType
+    SettingsService, SettingsType, undefinedAddressFlag
 } from '../shared/services/'
 
 // IDEA: use https://material.angular.io/components/badge/ ???
 
-export const undefinedAddressFlag = 'NOT_SET_YET'
+
 
 @Component({
   selector: 'rangertrak-entry',
@@ -45,6 +45,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   // Get location events from <location> component
   private locationSubscription!: Subscription
   public location: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
+  initialLocation: LocationType = { lat: 10, lng: 10, address: undefinedAddressFlag }
 
   // Get time events from <timepicker> component
   private timeSubscription!: Subscription
@@ -131,6 +132,8 @@ export class EntryComponent implements OnInit, OnDestroy {
 
     // Children (with @Input stmts - i.e., mini-map) automatically gets the updated location
     this.location = newLocation
+    //REVIEW:
+    this.initialLocation = newLocation
 
     // REVIEW: patch entryForm object - as THAT is what gets saved with on form submit
     this.entryDetailsForm.patchValue({

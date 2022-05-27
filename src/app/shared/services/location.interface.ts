@@ -7,3 +7,4 @@ export interface LocationType {
   address: string
 }
 
+export const undefinedAddressFlag = 'NO_LOCATION_SET_YET'
