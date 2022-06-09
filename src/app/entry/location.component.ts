@@ -4,7 +4,7 @@ import { DOCUMENT } from '@angular/common'
 import {
     AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild
 } from '@angular/core'
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
+import { UntypedFormBuilder, FormControl, UntypedFormGroup, Validators } from '@angular/forms'
 // import * as P from '@popperjs/core';
 ///import { createPopper } from '@popperjs/core';
 // import type { StrictModifiers } from '@popperjs/core';
@@ -30,7 +30,7 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 })
 export class LocationComponent implements OnInit, OnDestroy {
   // Grab reference to location portion of parent's entry form
-  @Input() public locationFrmGrp: FormGroup // input from entry.component.ts
+  @Input() public locationFrmGrp: UntypedFormGroup // input from entry.component.ts
   //
   // We emit following event & per parent's template:
   // (newLocationEvent)="onNewLocation($event)" their proceedure gets called.
@@ -123,7 +123,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
 
   constructor(
     private settingsService: SettingsService,
-    private _formBuilder: FormBuilder,
+    private _formBuilder: UntypedFormBuilder,
     private log: LogService,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("Construction", this.id)

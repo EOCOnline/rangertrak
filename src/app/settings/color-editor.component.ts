@@ -2,7 +2,7 @@ import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef, } from '@
 import { Color } from '@angular-material-components/color-picker';
 import { ThemePalette } from '@angular/material/core';
 import { ICellEditorAngularComp } from 'ag-grid-angular';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, UntypedFormControl, FormGroup, Validators } from '@angular/forms';
 import { ArgumentOutOfRangeError } from 'rxjs';
 
 // https://www.ag-grid.com/angular-data-grid/component-cell-editor
@@ -29,7 +29,7 @@ export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
   private params: any;
   //colorCtr: AbstractControl = new FormControl(new Color(255, 243, 0), [Validators.required])
   //colorCtr = new FormControl(new Color(255, 30, 255), [Validators.required])  // TODO: use existing instead of a default color
-  colorCtr: FormControl
+  colorCtr: UntypedFormControl
   colorCntlDisabled = false
   touchUi = false
   public colorPalette: ThemePalette = 'primary';
@@ -44,7 +44,7 @@ export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
     this.g = 0
     this.b = 252
 
-    this.colorCtr = new FormControl(new Color(this.r, this.g, this.b), [Validators.required])
+    this.colorCtr = new UntypedFormControl(new Color(this.r, this.g, this.b), [Validators.required])
     //console.log(`constructor = ${this.colorCtr.value.hex} from  ${this.color}`)
   }
   // dont use afterGuiAttached for post gui events - hook into ngAfterViewInit instead for this

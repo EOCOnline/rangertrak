@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { UntypedFormBuilder, FormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core';
 import dayjs from 'dayjs';
 import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
@@ -13,7 +13,7 @@ import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerMod
   styleUrls: ['./time-picker.component.scss']
 })
 export class TimePickerComponent implements OnInit {
-  @Input() public timepickerFormGroup: FormGroup // input from entry.component.ts
+  @Input() public timepickerFormGroup: UntypedFormGroup // input from entry.component.ts
   //  @Input() public timepickerFormControl: FormControl // input from entry.component.ts
   //@Input() public timepickerFormControl: FormControl // input from entry.component.ts
   @Output() newTimeEvent = new EventEmitter<Date>()
@@ -59,7 +59,7 @@ export class TimePickerComponent implements OnInit {
 
   constructor(
     private log: LogService,
-    private _formBuilder: FormBuilder,
+    private _formBuilder: UntypedFormBuilder,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info(`timepicker construction`, this.id)
 
