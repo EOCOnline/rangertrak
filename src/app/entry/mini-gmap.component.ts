@@ -93,6 +93,7 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
     // this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
     //   next: (newSettings) => {
     //     this.settings = newSettings
+    //     this.log.excessive('Received new Settings via subscription.', this.id)
     //   },
     //   error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
     //   complete: () => this.log.info('Settings Subscription complete', this.id)

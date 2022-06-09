@@ -66,6 +66,7 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {   
 
   public override id = 'Google Map Component'
   public override title = 'Google Map'
+  public override pageDescr = 'Google Map'
 
   // items for template
   override mouseLatLng!: google.maps.LatLngLiteral;

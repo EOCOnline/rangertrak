@@ -29,7 +29,9 @@ export class myUnusedPipe implements PipeTransform {
 export class FieldReportsComponent implements OnInit, OnDestroy {
 
   private id = 'Field Report'
-  public title = 'Field Reports'
+  title = 'Field Reports'
+  pageDescr = `Grid display of rangers' positions and status throughout a mission`
+
   private fieldReports: FieldReportsType | undefined
   public fieldReportArray: FieldReportType[] = []
   private fieldReportsSubscription!: Subscription
@@ -93,6 +95,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
@@ -104,6 +107,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       this.log.error(`this.settings was null in constructor`, this.id)
     }
 
+    //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
     this.columnDefs = [
       { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1 }, // TODO:
       { headerName: "CallSign", field: "callsign", tooltipField: "team", flex: 2 },

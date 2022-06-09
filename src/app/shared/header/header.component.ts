@@ -1,16 +1,19 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { interval, map, Observable, Subscription } from 'rxjs';
-import { ClockService, SettingsService, LogService, SettingsType } from '../services'
-import { FlexLayoutModule } from '@angular/flex-layout';
+import { interval, map, Observable, Subscription } from 'rxjs'
+
+import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { FlexLayoutModule } from '@angular/flex-layout'
+
+import { ClockService, LogService, SettingsService, SettingsType } from '../services'
 
 /**
  * HaaderComponent
  * Displays a consistent line just below the NavBar, and above the component's main content
  *
  * Usage: To display this in your component add the following line to your (parent) template:
- *    <pageHeader [parentTitle]="title">...</pageHeader>
+ *    <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
  * And the following in the parent component:
- *    public title = 'Name of the (parent) Component'
+ *   title = 'Name of the (parent) Component'
+ *   pageDescr = `Description of this page & purpose`
  */
 @Component({
   selector: 'pageHeader',
@@ -19,6 +22,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @Input() parentTitle: string
+  @Input() pageDescription: string
 
   private id = 'Header component'
 
@@ -26,7 +30,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private settings!: SettingsType
 
   public eventInfo = ''
+  public eventDetails = ''
   public opPeriod = ''
+  public opPeriodDetails = ''
 
   public opPeriodStart = new Date()
 
@@ -45,6 +51,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.onNewSettings(newSettings)
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.warn('Settings Subscription complete', this.id)
@@ -53,7 +60,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.timeCurrent = this.clockService.getCurrentTime()
 
     // consuming components should include their name, e.g.
-    this.parentTitle = 'parent componeents title'
+    this.parentTitle = 'parent component`s title'
+    this.pageDescription = 'parent component`s title'
   }
 
   ngOnInit(): void {
@@ -67,9 +75,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.log.verbose(`New settings received`, this.id)
 
     this.settings = newSettings
-
-    this.eventInfo = `${this.settings.mission}; ${this.settings.event}`
-    this.opPeriod = this.settings.opPeriod
+    // debugger
+    this.eventInfo = `#${this.settings.mission}: ${this.settings.event}`
+    this.eventDetails = `Mission #: ${this.settings.mission}; Mission Name: ${this.settings.event}; Notes: ${this.settings.eventNotes}`
+    this.opPeriod = `${this.settings.opPeriod}`
+    //   let start: Date = this.settings.opPeriodStart
+    // let end: Date = this.settings.opPeriodEnd
+    //  let s: string = start.toDateString()
+    //  let e: string = end.toDateString()
+    this.opPeriodDetails = `${this.settings.opPeriod}: ${this.settings.opPeriodStart} to ${this.settings.opPeriodEnd}`
 
     // if (!this.settings.opPeriodStart) {
     //   console.error(`OpPeriod had no Start time! Reset to 2 hours ago...`, this.id)
@@ -78,19 +92,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // }
     // this.log.verbose(`OpPeriodStart = ${JSON.stringify(this.settings.opPeriodStart)}`, this.id)
 
-    const msStartTime = new Date(this.settings.opPeriodStart).getTime()
+    let msStartTime = new Date(this.settings.opPeriodStart).getTime()
     this.timeElapsed$ = interval(1000)
       .pipe(map(() => {
         let ms = new Date().getTime() - msStartTime
-        return (`${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.round((ms / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(Math.round(ms / 1000) % 60).toString().padStart(2, '0')}`)
+        let d = -Math.round((ms / (1000 * 60 * 60 * 24)))
+        return (`${d ? d + ' days, ' : ''}${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.abs(Math.round((ms / (1000 * 60)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`)
       }
       ))
 
-    const msEndTime = new Date(this.settings.opPeriodEnd).getTime()
+    let msEndTime = new Date(this.settings.opPeriodEnd).getTime()
     this.timeLeft$ = interval(1000)
       .pipe(map(() => {
         let ms = msEndTime - new Date().getTime()
-        return (`${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.round((ms / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(Math.round(ms / 1000) % 60).toString().padStart(2, '0')}`)
+        let d = Math.round((ms / (1000 * 60 * 60 * 24)))
+
+        return (`${d ? d + ' days, ' : ''}${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.abs(Math.round((ms / (1000 * 60)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`)
+        //   min:${Math.round(ms / 60000)} hrs:${(Math.round(ms / (60000 * 60)))}
       }
       ))
   }

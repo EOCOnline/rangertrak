@@ -1,17 +1,23 @@
-import { DOCUMENT } from '@angular/common'
-import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { FieldReportService, FieldReportStatusType, LogService, RangerService, SettingsService, SettingsType } from '../shared/services/'
 import { AgGridModule } from 'ag-grid-angular'
+import { ColDef } from 'ag-grid-community'
+import { delay, Subscription, throwError } from 'rxjs'
+
+import { DOCUMENT } from '@angular/common'
+import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import {
+    AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators
+} from '@angular/forms'
+
+import { TimePickerComponent } from '../shared/'
+import {
+    FieldReportService, FieldReportStatusType, LogService, RangerService, SettingsService,
+    SettingsType
+} from '../shared/services/'
 //import { Color } from '@angular-material-components/color-picker';
 //import { ThemePalette } from '@angular/material/core';
-import { ColorEditor } from './color-editor.component';
-import { MoodEditor } from './mood-editor.component';
-import { MoodRenderer } from './mood-renderer.component';
-import { ColDef } from 'ag-grid-community';
-import { Subscription, throwError } from 'rxjs';
-import { TimePickerComponent } from '../shared/';
-
+import { ColorEditor } from './color-editor.component'
+import { MoodEditor } from './mood-editor.component'
+import { MoodRenderer } from './mood-renderer.component'
 
 @Component({
   selector: 'rangertrak-settings',
@@ -24,6 +30,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   private id = 'Settings Component'
   title = 'Application Settings'
+  pageDescr = `Set various defaults and values for use in the program`
 
   private settingsSubscription!: Subscription
   public settings!: SettingsType
@@ -36,9 +43,14 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private timeSubscriptionStart$!: Subscription
   private timeSubscriptionEnd$!: Subscription
   public time!: Date
-  dateCtrl = new UntypedFormControl(new Date())
-  //timepickerFormControlStart!: FormControl
-  //timepickerFormControlEnd!: FormControl
+  dateCtrl = new FormControl(new Date())
+  timepickerFormControlStart!: FormControl
+  timepickerFormControlEnd!: FormControl
+
+  opPeriodStart = new Date()
+  opPeriodEnd = new Date()
+  timePickerLabelStart = 'Operational Period Start Time'
+  timePickerLabelEnd = 'Operational Period End Time'
 
   private gridApi: any
   private gridColumnApi: any
@@ -70,6 +82,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     //floatingFilter: true
   }
 
+  //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
   columnDefs = [
     {
       headerName: "Status", field: "status", flex: 50,
@@ -198,6 +211,9 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       next: (newSettings) => {
         //console.log(newSettings)
         this.settings = newSettings
+        this.opPeriodStart = this.settings.opPeriodStart
+        this.opPeriodEnd = this.settings.opPeriodEnd
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
@@ -232,32 +248,38 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     this.log.verbose("ngInit done ", this.id)
   }
 
-  onNewTimeEventStart(newTimeEvent: any) {
+  onNewTimeEventStart(newTime: Date) {
     if (!this.settings) {
       this.log.error(`this.settings is null at onNewTimeEventStart`, this.id)
       return
     }
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new start OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
-    this.settings.opPeriodStart = JSON.parse(newTimeEvent)
-    this.settingsEditorForm.patchValue({ timepickerFormControlStart: JSON.parse(newTimeEvent) })
-    // This then automatically gets sent to mini-map children via their @Input statements
+    this.log.verbose(`Got new start OpPeriod time: ${(newTime)}`, this.id)
+    this.settings.opPeriodStart = newTime
+    this.opPeriodStart = newTime
+
+    this.settingsEditorForm.patchValue({ timepickerFormControlStart: newTime })
+    this.settingsEditorForm.patchValue({ opPeriodStart: newTime })
+    //opPeriodStart: this.settingsEditorForm.value.opPeriodStart,
+    // This then automatically gets sent to (any) children via their @Input statements
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:
     //this.timepickerFormControl is where the Event comes up from...
   }
 
-  onNewTimeEventEnd(newTimeEvent: any) {
+  onNewTimeEventEnd(newTime: Date) {
     if (!this.settings) {
       this.log.error(`this.settings is null at onNewTimeEventEnd`, this.id)
       return
     }
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new end OpPeriod time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
-    this.settings.opPeriodEnd = JSON.parse(newTimeEvent)
-    this.settingsEditorForm.patchValue({ timepickerFormControlEnd: JSON.parse(newTimeEvent) })
+    this.log.verbose(`Got new end OpPeriod time: ${newTime}`, this.id)
+    this.settings.opPeriodEnd = newTime
+    this.opPeriodEnd = newTime
+    this.settingsEditorForm.patchValue({ timepickerFormControlEnd: newTime })
+    this.settingsEditorForm.patchValue({ opPeriodEnd: newTime })
 
-    // This then automatically gets sent to mini-map children via their @Input statements
+    // This then automatically gets sent to (any)) children via their @Input statements
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:
     //this.timepickerFormControl is where the Event comes up from...
@@ -292,8 +314,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       eventNotes: [this.settings.eventNotes],
       opPeriod: [this.settings.opPeriod],
 
-      // opPeriodStart: [this.settings.opPeriodStart],
-      // opPeriodEnd: [this.settings.opPeriodEnd],
+      opPeriodStart: [this.settings.opPeriodStart],
+      opPeriodEnd: [this.settings.opPeriodEnd],
       timepickerFormControlStart: [this.settings.opPeriodStart],
       timepickerFormControlEnd: [this.settings.opPeriodEnd],
 
@@ -338,9 +360,13 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     this.log.verbose("getSettingsArrayFromFormArray", this.id)
 
     if (!this.settings) {
+
       this.log.error(`this.settings is null`, this.id)
       return null
     }
+
+    //  this.log.error(`Saving: opPeriodStart = ${this.settingsEditorForm.value.opPeriodStart},
+    //  opPeriodEnd = ${this.settingsEditorForm.value.opPeriodEnd}`, this.id)
 
     return {
       settingsName: this.settingsEditorForm.value.settingsName, // FUTURE: Use if people want to load and saveas, or have various 'templates'

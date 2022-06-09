@@ -8,12 +8,13 @@ import {
     AfterViewInit, Component, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
 } from '@angular/core'
 import {
-    UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule, Validators
+    FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
+    UntypedFormControl, UntypedFormGroup, Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
-import { AlertsComponent, TimePickerComponent } from '../shared/'
+import { AlertsComponent, DDToDDM, TimePickerComponent } from '../shared/'
 import {
     FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
     SettingsService, SettingsType
@@ -31,9 +32,17 @@ export const undefinedAddressFlag = 'NOT_SET_YET'
 })
 export class EntryComponent implements OnInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
-
   private id = 'Entry Form'
-  public title = 'Field Report Entry'
+  title = 'Field Report Entry'
+  pageDescr = `Enter data associated with ranger's name, location, status for tracking on maps & spreadsheets`
+
+
+  // Not needed for this component: initialTime = new Date(2020, 1, 1, 10, 30, 30, 0)
+  timePickerLabel = "Enter Report Date, Time"
+
+  // today = new Date()
+  // SelectedDate = `${this.today.getFullYear()}-${this.today.getMonth() + 1}-${this.today.getDate()}`
+  // getDate = new Date(this.SelectedDate);
 
   // Get location events from <location> component
   private locationSubscription!: Subscription
@@ -48,7 +57,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   // Get time events from <timepicker> component
   private timeSubscription!: Subscription
-  public time!: Date
+  public time = new Date(2017, 1, 1, 10, 30, 30, 0)
 
   alert: any
 
@@ -57,10 +66,9 @@ export class EntryComponent implements OnInit, OnDestroy {
   public entryDetailsForm!: UntypedFormGroup
   callsignCtrl = new UntypedFormControl()
 
-  //myForm!: FormGroup
-  locationFrmGrp!: UntypedFormGroup
-  dateCtrl = new UntypedFormControl(new Date())
-  //timepickerFormControl!: FormControl
+  locationFrmGrp!: FormGroup
+  dateCtrl = new FormControl(new Date())
+  minDate = new Date()
 
   submitInfo: HTMLElement | null = null
   callInfo: HTMLElement | null = null
@@ -82,7 +90,10 @@ export class EntryComponent implements OnInit, OnDestroy {
     this.log.excessive(`Constructing!`, this.id)
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => { this.settings = newSettings },
+      next: (newSettings) => {
+        this.settings = newSettings
+        this.log.excessive('Received new Settings via subscription.', this.id)
+      },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
@@ -101,7 +112,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
     if (this.rangers.length < 1) {
       this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page.', 'Go to Rangers page', 'Ignore')
-      //this.alert.OpenSnackBar(`No Rangers exist. Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
+      //this.alert.OpenSnackBar(`No Rangers exist.Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
       //TODO: Force navigation to /Rangers?
     }
 
@@ -110,7 +121,7 @@ export class EntryComponent implements OnInit, OnDestroy {
       startWith(''),
       map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
     )
-    log.verbose(`constructor: got new callsign: [does endless loop:] {JSON.stringify(this.filteredRangers)}`, this.id)
+    log.verbose(`constructor: got new callsign: [does endless loop: ] { JSON.stringify(this.filteredRangers) } `, this.id)
 
     // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
     // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
@@ -118,7 +129,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   onNewLocationParent(newLocation: LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`Parent got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address}`, this.id)
+    this.log.error(`Parent Entry Form got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address} `, this.id)
     //From Entry Form - Parent got new location: {"lat":47.4472,"lng":-122.4627,"address":""}
 
     // Children (with @Input stmts - i.e., mini-map) automatically gets the updated location
@@ -130,25 +141,25 @@ export class EntryComponent implements OnInit, OnDestroy {
     })
   }
 
-  onNewTime(newTimeEvent: any) {
+  onNewTimeEvent(newTime: Date) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`FORMATTING OF NEW TIME!!!!! Got new time: ${JSON.stringify(newTimeEvent)} +++++++++++++++++++++++++++++++++++++++++`, this.id)
-    this.time = JSON.parse(newTimeEvent)
-    this.entryDetailsForm.patchValue({ timepickerFormControl: JSON.parse(newTimeEvent) })
-
-    // This then automatically gets sent to mini-map children via their @Input statements
+    this.log.error(`Got new Report time: ${newTime}`, this.id)
+    this.time = newTime
+    // patch entryForm object - as THAT is what gets saved with on form submit
+    this.entryDetailsForm.patchValue({ timepickerFormControl: newTime })
+    // This then automatically could ge sent to any children (none in this case) via their @Input statements
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:
     //this.timepickerFormControl is where the Event comes up from...
   }
 
   ngOnInit(): void {
-    this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
+    this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
     this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
 
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
-    this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version}`, this.id)  // verifies Settings has been loaded
+    this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)  // verifies Settings has been loaded
 
     /* i.e., entryDetailsForm probably constructed at wrong time?!
     Move the component creation to ngOnInit hook
@@ -165,7 +176,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     this.initEntryForm()
     // subscribe to addresses value changes?  NO. It bubles up through newLocATION INSTEAD!!!
     // this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
-    //   this.log.verbose(`Subscription to locationFrmGrp got: ${x}`, this.id);
+    //   this.log.verbose(`Subscription to locationFrmGrp got: ${ x } `, this.id);
     // })
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
@@ -217,7 +228,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   private _filterRangers(value: string): RangerType[] {
-    this.log.excessive(`_filterRangers  value changed: ${value}`, this.id)
+    this.log.excessive(`_filterRangers  value changed: ${value} `, this.id)
 
     const filterValue = value.toLowerCase()
     this.entryDetailsForm.value.callsign = filterValue
@@ -292,10 +303,10 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       this.log.verbose(`EntryForm CallsignChanged looking for ${callsign}`, this.id)
       //let ranger = this.rangers[this.findIndex(callsign)]
       let ranger = this.rangerService.getRanger(callsign)  // REVIEW is this.rangers here & service in sync?
-      this.callInfo.innerHTML = `<span>${ranger.callsign} </span> | <small> ${ranger.licensee} | ${ranger.phone}</small > `
+      this.callInfo.innerHTML = `< span > ${ranger.callsign} < /span> | <small> ${ranger.licensee} | ${ranger.phone}</small > `
       //< img class= "enter__Callsign-img" aria-hidden src = "${ranger.image}" height = "50" >
     } else {
-      this.log.warn(`EntryForm CallsignChanged did not find enter__Callsign-upshot`, this.id)
+      this.log.warn(`EntryForm CallsignChanged did not find enter__Callsign - upshot`, this.id)
     }
   }
 
@@ -304,7 +315,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     return
     let callSign: string = (this.document.getElementById("enter__Callsign-input") as HTMLInputElement).value
     if (callSign) {
-      this.log.excessive(`CallsignCtrlChanged() call= ${callSign}`)
+      this.log.excessive(`CallsignCtrlChanged() call = ${callSign} `)
       this.callsignChanged(callSign)
     }
 
@@ -338,13 +349,13 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
     if (this.submitInfo) {
       // Display fading confirmation to right of Submit button
-      this.submitInfo.innerText = `Entry id # ${newReport.id} Saved. ${formData}`
+      this.submitInfo.innerText = `Entry id # ${newReport.id} Saved.${formData} `
       this.resetMaterialFadeAnimation(this.submitInfo)
     }
     else {
       this.log.error("Submit Info field not found. Could not display report confirmation confirmation", this.id)
     }
-    this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData}`, `Entry id # ${newReport.id}`, 2000)
+    this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData} `, `Entry id # ${newReport.id} `, 2000)
 
     this.resetEntryForm()  // std reset just blanks values, doesn't initialize them...
   }

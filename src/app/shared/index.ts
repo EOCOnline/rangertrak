@@ -1,7 +1,7 @@
 export { CodeArea, OpenLocationCode } from "./open-location-code"  // HAD TO REMMOVE default KEYWORD????
 export { GoogleGeocode } from "./google-geocode"
 export { Utility } from "./utility"
-export { DDToDMS } from "./coordinate"
+export { DDToDMS, DDToDDM } from "./coordinate"
 export { AlertsComponent } from "./alerts/alerts.component"
 export { HeaderComponent } from "./header/header.component"
 export { IconsComponent } from "./icons/icons.component"

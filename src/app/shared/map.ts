@@ -71,6 +71,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
   protected id = 'Abstract Map Component'
   public title = 'Abstract Map'
+  public pageDescr = 'Abstract Map'
 
   protected settingsSubscription: Subscription
   protected settings!: SettingsType
@@ -114,6 +115,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
       next: (newSettings) => {
         // REVIEW: Any new settings just ripple thru, or does anything need pushing?!
         this.settings = newSettings
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
@@ -170,8 +172,10 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
     if (this.map instanceof L.Map) {
       // leaflet map
+      // TODO
     } else if (this.map instanceof google.maps.Map) {
       // google map
+      // TODO
     } else {
       this.log.warn(`InitMap(): map not a leaflet or google map - ignoring as uninitialized?`, this.id)
     }

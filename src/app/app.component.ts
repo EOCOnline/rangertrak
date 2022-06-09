@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { filter, map, switchMap } from 'rxjs'
+
+import { Component, OnInit } from '@angular/core'
+import { MatSnackBar } from '@angular/material/snack-bar'
 //import { MatSnackBar } from '@material/snackbar'
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker'
-import { filter, map, switchMap } from 'rxjs'
+
 import { LogService } from './shared/services'
 
 @Component({
@@ -13,7 +15,8 @@ import { LogService } from './shared/services'
 export class AppComponent implements OnInit {
 
   private id = "AppComponent"
-  title = 'RangerTrak';
+  title = 'RangerTrak'
+  pageDescr = `Track & map Rangers' progress & reports on a mission`
   updateEvt: any = null
 
   constructor(
@@ -23,7 +26,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    //https://angular.io/api/service-worker/SwUpdate
+    // https://angular.io/api/service-worker/SwUpdate
+    // https://angular.io/guide/service-worker-communications#swupdate-service
 
     console.log(`this.swUpdate.versionUpdates: ${JSON.stringify(this.swUpdate.versionUpdates)}`)
 
@@ -54,6 +58,9 @@ export class AppComponent implements OnInit {
         )
       )
 
+
+    // See also version setting in service/settings.ts
+    // https://www.npmjs.com/package/standard-version: npm run release
     if (updatesAvailable) {
       if (this.updateEvt) {
         console.warn(`New update available: Current: ${this.updateEvt.currentVersion}; Future: ${this.updateEvt.latestVersion}`)//, this.id)

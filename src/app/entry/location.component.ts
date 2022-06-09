@@ -11,7 +11,7 @@ import { UntypedFormBuilder, FormControl, UntypedFormGroup, Validators } from '@
 import { faInfoCircle, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 
-import { CodeArea, DDToDMS, GoogleGeocode, OpenLocationCode } from '../shared/'
+import { CodeArea, DDToDDM, DDToDMS, GoogleGeocode, OpenLocationCode } from '../shared/'
 //import { MatIconRegistry } from '@angular/material/icon';
 import { LocationType, LogService, SettingsService, SettingsType } from '../shared/services'
 
@@ -131,6 +131,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
+        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
@@ -209,10 +210,12 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
       })
 
       // TODO: NOt working yet...
-      this.log.excessive(`addressCtrl.valueChanges`, this.id)
+      //this.log.excessive(`addressCtrl.valueChanges`, this.id)
       // TODO: No formControlName="addressCtrl"!!!!
       // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
       //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
+    } else {
+      this.log.warn(`locationFrmGrp not available yet in ngOnInit`, this.id)
     }
 
     this.log.verbose("out of ngOnInit", this.id)
@@ -237,6 +240,7 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
    */
   public newLocationToFormAndEmit(latDD: number, lngDD: number) {
     // todo: need to repeatedly update this.locationFrmGrp - keep in sync w/ vals?
+    // https://www.cumulations.com/blog/latitude-and-longitude/
 
     // Any location change should drive to a new latDD & LngDD & sent here
     this.log.info(`newLocation with lat: ${latDD}, lng: ${lngDD}`, this.id);
@@ -285,6 +289,20 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
     // this.setCtrl("longitudeM", lngDMS.min)
     // this.setCtrl("longitudeS", lngDMS.sec)
 
+
+
+
+    //! Need to do rest of this!
+
+    let latDDM = DDToDDM(latDD, true)
+
+    let lngDDM = DDToDDM(lngDD, true)
+
+
+
+
+
+
     // TODO: this.location.address =""
     /*
         let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
@@ -311,10 +329,15 @@ mini-lmap.component.ts:70 Init Leaflet minimap..........
             //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
           }
     */
-    this.onNewLocation(this.location) // Emit new location event to parent
+    this.emitNewLocation(this.location) // Emit new location event to parent
   }
 
-  public onNewLocation(newLocation: LocationType) { // Or LocationEvent?!
+  /**
+   * onNewLocation:
+   * @param newLocation
+   *
+   */
+  public emitNewLocation(newLocation: LocationType) { // Or LocationEvent?!
     // Do any needed sanity/validation here
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)

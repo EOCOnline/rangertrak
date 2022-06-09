@@ -22,7 +22,9 @@ import { LogLevel, LogService, LogType, SettingsService, SettingsType } from '..
 export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit {
   // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
   private id = 'Log Component'
-  public title = 'Event Summary Log'
+  title = 'Event Summary Log'
+  pageDescr = `Program internal debug information`
+
   private logPanel: HTMLElement | null = null
   private logSubscription: Subscription
   private settingsSubscription!: Subscription
@@ -60,6 +62,7 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
+        console.log('Received new Settings via subscription.', this.id)
       },
       error: (e) => console.error('Settings Subscription got:' + e, this.id),
       complete: () => console.info('Settings Subscription complete', this.id)
@@ -97,7 +100,7 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
 
 
   redisplayLog() {
-    console.log(`Redisplay log with only ${this.verbose ? 'verbose, ' : ''}${this.info ? 'info, ' : ''}${this.warn ? 'warnings, ' : ''}${this.error ? 'errors ' : ''}`)
+    console.log(`Display log with ${this.excessive ? 'excessive, ' : 'only '}${this.verbose ? 'verbose, ' : ''}${this.info ? 'info, ' : ''}${this.warn ? 'warnings, ' : ''}${this.error ? 'errors ' : ''}`)
     this.gotNewLog(this.latestLog)
   }
 

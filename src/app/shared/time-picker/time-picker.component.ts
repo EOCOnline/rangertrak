@@ -1,11 +1,29 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, FormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { ThemePalette } from '@angular/material/core';
-import dayjs from 'dayjs';
-import { Observable, debounceTime, map, startWith, switchMap, subscribeOn, Subscription } from 'rxjs'
-import { FieldReportService, FieldReportStatusType, RangerService, LogService, RangerType, SettingsService, SettingsType, LocationType } from '../services/'
-import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker' // already in app.module.ts
+import dayjs from 'dayjs'
+import {
+    debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
+} from 'rxjs'
+
+import {
+    NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule
+} from '@angular-material-components/datetime-picker' // already in app.module.ts
+import { DOCUMENT } from '@angular/common'
+import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core'
+import {
+    FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators
+} from '@angular/forms'
+import { ThemePalette } from '@angular/material/core'
+
+import {
+    FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
+    SettingsService, SettingsType
+} from '../services/'
+
+// https://blog.briebug.com/blog/5-ways-to-pass-data-into-child-components-in-angular
+
+
+// https://www.freakyjolly.com/angular-material-109-datepicker-timepicker-tutorial
+// https://www.thecodehubs.com/how-to-implement-material-datepicker-and-timepicker-in-angular/
+// https://www.concretepage.com/angular-material/angular-material-datepicker-change-event
 
 @Component({
   selector: 'rangertrak-time-picker',
@@ -19,13 +37,17 @@ export class TimePickerComponent implements OnInit {
   @Output() newTimeEvent = new EventEmitter<Date>()
   // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
 
+  // next 2 can be overriden in parent's html: [initialDate] = "initialTime"
+  @Input() datePickerLabel = "Enter Date & Time" // [datePickerLabel] = "Enter Date & Time of the Big Bang"
+  @Input() initialDate = new Date() //  [initialDate] = "initialTime"
+
   private id = "DateTime Picker"
 
   // https://github.com/angular/components/issues/5648
   // https://ng-matero.github.io/extensions/components/datetimepicker/overview (nice)
   // https://vlio20.github.io/angular-datepicker/timeInline (unused)
   // https://h2qutc.github.io/angular-material-components - IN USE HERE!
-  public date: dayjs.Dayjs = dayjs()
+  //public date = new Date()  //dayjs.Dayjs = dayjs()
 
 
   /*  It looks like you're using the disabled attribute with a reactive form directive.
@@ -39,19 +61,19 @@ export class TimePickerComponent implements OnInit {
       last: new FormControl('Drew', Validators.required)
     });
   */
-  public time!: Date
-  public disabled = false;
-  public showSpinners = true;
-  public showSeconds = false; // only affects display in timePicker
-  public touchUi = false;
-  public enableMeridian = false; // 24 hr clock
+  public time = new Date()
+  public disabled = false
+  public showSpinners = true
+  public showSeconds = false // only affects display in timePicker
+  public touchUi = false
+  public enableMeridian = false // 24 hr clock
 
   minDate!: dayjs.Dayjs | null
   maxDate!: dayjs.Dayjs | null
-  public stepHour = 1;
-  public stepMinute = 1;
-  public stepSecond = 1;
-  public color: ThemePalette = 'primary';
+  public stepHour = 1
+  public stepMinute = 1
+  public stepSecond = 1
+  public color: ThemePalette = 'primary'
   disableMinute = false
   hideTime = false
   //dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
@@ -66,9 +88,6 @@ export class TimePickerComponent implements OnInit {
     // BUG: maybe should be in EntryComponent.ts instead? as locationFrmGrp is there...
     // new values here bubble up as emitted events - see onNewLocation()
 
-    // formControlName must be used with a parent formGroup directive
-    //    this.timepickerFormControl = this._formBuilder.control([this.time])
-
     this.timepickerFormGroup = this._formBuilder.group({
       time: [this.time]
     })
@@ -77,22 +96,23 @@ export class TimePickerComponent implements OnInit {
     // TODO: These should get passed in
     this._setMinDate(10) // no times early than 10 hours ago
     this._setMaxDate(1)  // no times later than 1 hours from now
-
-    this.timepickerFormGroup = _formBuilder.group({
-      time: [new Date()]
-    })
   }
 
   ngOnInit(): void {
-    this.date = dayjs()
+    this.timepickerFormGroup = this._formBuilder.group({
+      time: [this.initialDate]
+    })
+    this.log.error(`initialDate = ${this.initialDate} in ngInit`, this.id)
   }
 
-  onNewTime(newTime: Date) {
+  onNewTime(newTime: any) {
     // Do any needed sanity/validation here
     // Based on listing 8.8 in TS dev w/ TS, pg 188
+
     // todo : validate min/max time?
-    this.log.excessive(`Got new time: ${newTime}. Emitting!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`, this.id)
-    this.time = newTime
+    this.log.error(`Got new time: ${newTime.value}: Emitting!`, this.id)
+
+    this.time = newTime.value
     //if (! (
     this.newTimeEvent.emit(this.time)
     //) {

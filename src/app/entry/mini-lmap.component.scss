@@ -21,3 +21,9 @@
 .strong {
   font-weight: bold;
 }
+
+.leaflet-container.crosshair-cursor-enabled {
+  cursor: crosshair;
+}
+
+// https://www.w3.org/TR/CSS21/ui.html#propdef-cursor

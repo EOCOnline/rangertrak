@@ -5,6 +5,7 @@
 // https://developers.google.com/maps/documentation/javascript/coordinates
 // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
+const id = "Coordinate Utility"
 
 export enum DirEnum {
   E = 'East',
@@ -20,6 +21,7 @@ class PointSample {
     private _lastName: string) {
   }
 
+  /*
   public get age() {
     return this._age;
   }
@@ -43,6 +45,7 @@ class PointSample {
     this._firstName = parts[0];
     this._lastName = parts[1];
   }
+  */
 }
 
 export class Coordinate {
@@ -76,6 +79,56 @@ export class Coordinate {
   }
 }
 
+
+// Get object {deg:, min:, sec:, dir:}
+// sec truncated to two digits (e.g. 3.14)
+// dir returns S or N if lng = false (for latitudes)
+// dir returns E or W if lng (longitude) = true
+// N.B.: may not work for angles between -1° and 0°
+// from www.stackoverflow.com/questions/5786025
+export function DDToDMS(D: number, lng: boolean = false) {
+  /*
+  if (!D) {
+      this.log.verbose("Invalid number received for Decimal Degrees!", this.id)
+      return Number.NaN
+  }
+  */
+  /*
+    this.log.verbose("DDtoDMS: D=" + D + " lng=" + lng, this.id)
+    let dirr = D<0?lng?'W':'S':lng?'E':'N'
+    let degg = 0|(D<0?D=-D:D)
+    let minn = 0|D%1*60
+    let secc = (0|D*60%1*6000)/100
+    this.log.verbose("DDtoDMS: dir=" + dirr + " deg=" + degg + " min" + minn + " sec=" + secc, this.id)
+  */
+  return {
+    deg: 0 | (D < 0 ? D = -D : D),
+    min: 0 | D % 1 * 60,
+    sec: (0 | D * 60 % 1 * 6000) / 100,
+    dir: D < 0 ? lng ? 'W' : 'S' : lng ? 'E' : 'N'
+  }
+}
+
+/**
+ * Convert DMS to Deg and Decimal minutes
+ * Get object {deg:, min:, dir:}
+ * min truncated to 3 digits (e.g. 3.143)
+ * dir returns S or N if lng = false (for latitudes)
+ * dir returns E or W if lng (longitude) = true
+ * from https://www.cumulations.com/blog/latitude-and-longitude/
+ * @param D
+ * @param lng
+ * @returns
+ */
+
+export function DDToDDM(D: number, lng: boolean = false) {
+  return {
+    deg: 0 | (D < 0 ? D = -D : D),
+    min: Math.round((D % 1) * 60000) / 1000,
+    dir: D < 0 ? lng ? 'W' : 'S' : lng ? 'E' : 'N'
+  }
+}
+
 // REVIEW: Duplicate of one in Utility class...
 export function strToLatLng(str: string) {
   const latlngStr = str.split(",", 2);
@@ -91,10 +144,10 @@ class Coord {
       if (isNaN(coord)) throw "Coordinate is not a number"
       if (coord < -180) throw "Coordinate under -180 degrees."
       if (coord > 180) throw "Coordinate over 180 degrees."
-      // MAIN.dbug("Coordinate passed range check...")
+      // this.log.excessive("Coordinate passed range check...", this.id)
     }
     catch (err: unknown) {
-      // MAIN.dbug("Bad Coordinate at Coord(): " + err.message)
+      // this.log.verbose("Bad Coordinate at Coord(): " + err.message, this.id)
     }
   }
   // Get object {deg:, min:, sec:, dir:}
@@ -112,38 +165,11 @@ class Coord {
       (0 | this.coord * 60 % 1 * 6000) / 100
     )
   }
-  //ToNumber(): number {
-  //    return this.coord
-  //}
+
+  ToNumber(): number {
+     return this.coord
+  }
 
   */
 }
 
-// Get object {deg:, min:, sec:, dir:}
-// sec truncated to two digits (e.g. 3.14)
-// dir returns S or N if lng = false (for latitudes)
-// dir returns E or W if lng (longitude) = true
-// N.B.: may not work for angles between -1° and 0°
-// from www.stackoverflow.com/questions/5786025
-export function DDToDMS(D: number, lng: boolean = false) {
-  /*
-  if (!D) {
-      // MAIN.dbug("Invalid number received for Decimal Degrees!")
-      return Number.NaN
-  }
-  */
-  /*
-    // MAIN.dbug("DDtoDMS: D=" + D + " lng=" + lng)
-    let dirr = D<0?lng?'W':'S':lng?'E':'N'
-    let degg = 0|(D<0?D=-D:D)
-    let minn = 0|D%1*60
-    let secc = (0|D*60%1*6000)/100
-    // MAIN.dbug("DDtoDMS: dir=" + dirr + " deg=" + degg + " min" + minn + " sec=" + secc)
-  */
-  return {
-    deg: 0 | (D < 0 ? D = -D : D),
-    min: 0 | D % 1 * 60,
-    sec: (0 | D * 60 % 1 * 6000) / 100,
-    dir: D < 0 ? lng ? 'W' : 'S' : lng ? 'E' : 'N'
-  }
-}

@@ -334,21 +334,28 @@ import { HttpClient } from '@angular/common/http';
       { callsign: "!CmdPost", licensee: "ACS-CERT Cmd Post", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T0", icon: " ", status: "Licensed", note: "-" },
 
       { callsign: "!Team1", licensee: "ACS-CERT Team 1", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
-      { callsign: "!Team2", licensee: "ACS-CERT Team 2", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "!Team2", licensee: "ACS-CERT Team 2", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/female.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
       { callsign: "!Team3", licensee: "ACS-CERT Team 3", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
-      { callsign: "!Team4", licensee: "ACS-CERT Team 4", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "!Team4", licensee: "ACS-CERT Team 4", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/female.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
 
+
+      { callsign: "MERT1", licensee: "MERT 1", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "MERT2", licensee: "MERT 2", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/female.png", team: "T2", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "MERT3", licensee: "MERT 3", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T3", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "MERT4", licensee: "MERT 4", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/female.png", team: "T4", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "MERT5", licensee: "MERT 5", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T5", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "MERT6", licensee: "MERT 6", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/female.png", team: "T6", icon: " ", status: "Licensed", note: "-" },
 
       { callsign: "CERT1", licensee: "CERT 1", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
-      { callsign: "CERT2", licensee: "CERT 2", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T2", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "CERT2", licensee: "CERT 2", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/female.png", team: "T2", icon: " ", status: "Licensed", note: "-" },
       { callsign: "CERT3", licensee: "CERT 3", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T3", icon: " ", status: "Licensed", note: "-" },
-      { callsign: "CERT4", licensee: "CERT 4", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T4", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "CERT4", licensee: "CERT 4", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/female.png", team: "T4", icon: " ", status: "Licensed", note: "-" },
       { callsign: "CERT5", licensee: "CERT 5", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T5", icon: " ", status: "Licensed", note: "-" },
-      { callsign: "CERT6", licensee: "CERT 6", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T6", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "CERT6", licensee: "CERT 6", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/female.png", team: "T6", icon: " ", status: "Licensed", note: "-" },
 
-      { callsign: "REW1", licensee: "REW 1", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "REW1", licensee: "REW 1", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/female.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
       { callsign: "REW2", licensee: "REW 2", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
-      { callsign: "REW3", licensee: "REW 3", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
+      { callsign: "REW3", licensee: "REW 3", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/female.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
       { callsign: "REW4", licensee: "REW 4", phone: "206-463-", address: "Vashon, WA 98070", image: "./assets/imgs/REW/male.png", team: "T1", icon: " ", status: "Licensed", note: "-" },
 
 

@@ -17,7 +17,7 @@
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[html]": {
-        "editor.defaultFormatter": "numso.prettier-standard-vscode"
+        "editor.defaultFormatter": "vscode.html-language-features"
     },
     "explorer.openEditors.visible": 0,
     "files.trimTrailingWhitespace": true,
@@ -32,5 +32,8 @@
     "gitlens.menus": {
         "editorGroup": false
     },
-    "ng-evergreen.upgradeChannel": "Latest"
+    "ng-evergreen.upgradeChannel": "Latest",
+    "[markdown]": {
+        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
+    }
 }
