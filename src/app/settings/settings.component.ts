@@ -35,7 +35,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private settingsSubscription!: Subscription
   public settings!: SettingsType
 
-  public settingsEditorForm!: UntypedFormGroup
+  public settingsEditorForm!: FormGroup
   //  public leaflet!: FormGroup
   //  public google!: FormGroup
 
@@ -196,7 +196,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   pangram
 
   constructor(
-    private fb: UntypedFormBuilder,
+    private fb: FormBuilder,
     /*  No suitable injection token for parameter 'fb' of class 'SettingsComponent'.
       Consider using the @Inject decorator to specify an injection token.(-992003)
       settings.component.ts(155, 17): This type does not have a value, so it cannot be used as injection token.

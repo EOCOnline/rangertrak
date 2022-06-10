@@ -31,7 +31,7 @@ import {
   styleUrls: ['./time-picker.component.scss']
 })
 export class TimePickerComponent implements OnInit {
-  @Input() public timepickerFormGroup: UntypedFormGroup // input from entry.component.ts
+  @Input() public timepickerFormGroup: FormGroup // input from entry.component.ts
   //  @Input() public timepickerFormControl: FormControl // input from entry.component.ts
   //@Input() public timepickerFormControl: FormControl // input from entry.component.ts
   @Output() newTimeEvent = new EventEmitter<Date>()
@@ -81,7 +81,7 @@ export class TimePickerComponent implements OnInit {
 
   constructor(
     private log: LogService,
-    private _formBuilder: UntypedFormBuilder,
+    private _formBuilder: FormBuilder,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info(`timepicker construction`, this.id)
 
