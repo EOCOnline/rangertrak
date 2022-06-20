@@ -33,7 +33,7 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 export class LocationComponent implements OnInit, OnDestroy {
   // Grab reference to location portion of parent's entry form
   @Input() public locationFrmGrp!: FormGroup // input from entry.component.ts
-  @Input() public initialLoc: LocationType = { lat: 0, lng: 0, address:}
+  @Input() public initialLoc: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
   // input from entry.component.ts
 
   // We emit following event to parent,

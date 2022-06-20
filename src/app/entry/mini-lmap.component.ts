@@ -10,8 +10,9 @@ import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 
 import { AbstractMap } from '../shared/map'
-import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
-import { undefinedAddressFlag } from './entry.component'
+import {
+    FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag
+} from '../shared/services'
 
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
 const iconUrl = 'assets/imgs/marker-icon.png'
