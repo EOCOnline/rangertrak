@@ -6,7 +6,7 @@ import { DOCUMENT, formatDate } from '@angular/common'
 import {
     AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform
 } from '@angular/core'
-import { FormBuilder, FormGroup } from '@angular/forms'
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms'
 
 import {
     FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
@@ -48,7 +48,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   private http: any
   private numSeperatorWarnings = 0
   private maxSeperatorWarnings = 3
-  public numFakesForm!: FormGroup
+  public numFakesForm!: UntypedFormGroup
   public nFakes = 10
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
@@ -79,7 +79,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   private rowData: any[] = []
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private fieldReportService: FieldReportService,
     private log: LogService,
     // private teamService: TeamService,

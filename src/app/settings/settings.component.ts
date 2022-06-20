@@ -5,7 +5,7 @@ import { delay, Subscription, throwError } from 'rxjs'
 import { DOCUMENT } from '@angular/common'
 import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import {
-    AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators
+    AbstractControl, FormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators
 } from '@angular/forms'
 
 import { TimePickerComponent } from '../shared/'
@@ -35,7 +35,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private settingsSubscription!: Subscription
   public settings!: SettingsType
 
-  public settingsEditorForm!: FormGroup
+  public settingsEditorForm!: UntypedFormGroup
   //  public leaflet!: FormGroup
   //  public google!: FormGroup
 
@@ -43,9 +43,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private timeSubscriptionStart$!: Subscription
   private timeSubscriptionEnd$!: Subscription
   public time!: Date
-  dateCtrl = new FormControl(new Date())
-  timepickerFormControlStart!: FormControl
-  timepickerFormControlEnd!: FormControl
+  dateCtrl = new UntypedFormControl(new Date())
+  timepickerFormControlStart!: UntypedFormControl
+  timepickerFormControlEnd!: UntypedFormControl
 
   opPeriodStart = new Date()
   opPeriodEnd = new Date()
@@ -196,7 +196,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   pangram
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     /*  No suitable injection token for parameter 'fb' of class 'SettingsComponent'.
       Consider using the @Inject decorator to specify an injection token.(-992003)
       settings.component.ts(155, 17): This type does not have a value, so it cannot be used as injection token.

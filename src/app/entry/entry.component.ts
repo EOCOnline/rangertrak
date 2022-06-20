@@ -8,7 +8,7 @@ import {
     AfterViewInit, Component, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
 } from '@angular/core'
 import {
-    FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators
+    UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule, Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
@@ -56,12 +56,12 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   // --------------- ENTRY FORM -----------------
   // control creation in a component class = immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
-  public entryDetailsForm!: FormGroup
-  callsignCtrl = new FormControl()
+  public entryDetailsForm!: UntypedFormGroup
+  callsignCtrl = new UntypedFormControl()
 
   // REVIEW: Duplicate or extra locationFrmGrp - or passed in and actually *used*?!
-  locationFrmGrp!: FormGroup
-  dateCtrl = new FormControl(new Date())
+  locationFrmGrp!: UntypedFormGroup
+  dateCtrl = new UntypedFormControl(new Date())
   minDate = new Date()
 
   submitInfo: HTMLElement | null = null
@@ -71,7 +71,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   // TODO: Consider for tracking ValueChanges: https://angular.io/guide/observables-in-angular#reactive-forms
 
   constructor(
-    private _formBuilder: FormBuilder,
+    private _formBuilder: UntypedFormBuilder,
     private rangerService: RangerService,
     private fieldReportService: FieldReportService,
     private log: LogService,
