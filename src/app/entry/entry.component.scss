@@ -212,16 +212,17 @@ input[type=number] {
 }
 */
 
-#enter__frm-reguritation2 {
-  visibility      : hidden;
-  margin-right    : 35vw;
-  display         : block;
-  float           : right;
-  height          : 50px;
-  width           : 10vw;
-  border          : 3px solid brown;
-  background-color: $filledColor;
-  font            : 0.8em sans-serif;
+#enter__frm-reguritation {
+  visibility        : hidden;
+  //margin-right    : 35vw;
+  display           : block;
+  float             : right;
+  height            : 250px;
+  width             : 15vw;
+  border            : 3px solid brown;
+  background-color  : $filledColor;
+  padding           : 10px;
+  font              : 0.8em sans-serif;
 }
 
 .enter__What--note {

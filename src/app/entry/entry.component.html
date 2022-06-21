@@ -125,10 +125,11 @@
 
     <span id="enter__Submit-info"></span>
 
-    <div class="margin-20">
-      <div>entryForm details:-</div>
-      <pre>Is entryForm valid?: <br>{{entryDetailsForm.valid | json}}</pre>
-      <pre>form value: <br>{{entryDetailsForm.value | json}}</pre>
+    <div id="enter__frm-reguritation">
+      <!-- class="margin-20" -->
+      <h4>Entry Form Details:</h4>
+      <pre><strong>EntryForm valid:</strong> {{entryDetailsForm.valid | json}}</pre>
+      <pre><strong>EntryForm value:</strong> {{entryDetailsForm.value | json}}</pre>
     </div>
   </form>
 </div>
@@ -164,7 +165,3 @@
       <br>
     </fieldset>
 -->
-
-<!--div id="enter__frm-reguritation">
-      <pre>{{ frm.value |json}}</pre>
-    </div-->
