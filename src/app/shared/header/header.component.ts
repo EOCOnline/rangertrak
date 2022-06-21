@@ -97,7 +97,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .pipe(map(() => {
         let ms = new Date().getTime() - msStartTime
         let d = -Math.round((ms / (1000 * 60 * 60 * 24)))
-        return (`${d ? d + ' days, ' : ''}${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.abs(Math.round((ms / (1000 * 60)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`)
+        return (`${d ? (d + ' day(s), ') : " "}${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.abs(Math.round((ms / (1000 * 60)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`)
       }
       ))
 
@@ -107,7 +107,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         let ms = msEndTime - new Date().getTime()
         let d = Math.round((ms / (1000 * 60 * 60 * 24)))
 
-        return (`${d ? d + ' days, ' : ''}${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.abs(Math.round((ms / (1000 * 60)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`)
+        return (`${d ? d + ' day(s), ' : ''}${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.abs(Math.round((ms / (1000 * 60)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`)
         //   min:${Math.round(ms / 60000)} hrs:${(Math.round(ms / (60000 * 60)))}
       }
       ))

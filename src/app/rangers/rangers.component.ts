@@ -11,8 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import {
-    FieldReportService, FieldReportType, LogService, RangerService, RangerType, SettingsService,
-    SettingsType
+    FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
+    SettingsService, SettingsType
 } from '../shared/services/'
 import { csvImport } from './csvImport'
 
@@ -22,6 +22,7 @@ type AOA = any[][]  // array of arrays
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\src\app\sheetjs.component.ts
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\ionic.ts
 
+const ImgDir = "./assets/imgs/REW/"
 
 @Component({
   selector: 'rangertrak-rangers',
@@ -78,9 +79,10 @@ export class RangersComponent implements OnInit, OnDestroy {
   }
 
   // ToDo: On hovering, display a larger image!
+  // ${SettingsService.secrets[6].key + params.data.image}:
   imageCellRenderer = (params: { data: RangerType }) => {
-    return `<img class="licenseImg" style="height:40px; width=40px;" alt= "${params.data.licensee}" title="${params.data.callsign} : ${params.data.licensee}"
-    src= "${params.data.image}">`
+    return `<img class="licenseImg" style="height:40px; width=40px;" alt= "${params.data.licensee}" title="${params.data.callsign} ? ${params.data.callsign} : ${params.data.licensee}"
+    src= "${ImgDir}${params.data.image}">`
   }
 
   callsignCellRenderer = (params: { data: RangerType }) => {
@@ -90,12 +92,13 @@ export class RangersComponent implements OnInit, OnDestroy {
   }
 
   columnDefs = [
-    { headerName: "callsign", field: "callsign", cellRenderer: this.callsignCellRenderer },
-    { headerName: "licensee", field: "licensee", tooltipField: "team" },
+    { headerName: "callsign", field: "callsign", cellRenderer: this.callsignCellRenderer, flex: 10 },
+    { headerName: "licensee", field: "licensee", tooltipField: "team", flex: 10 },
     { headerName: "phone", field: "phone", singleClickEdit: true, flex: 40 },
     { headerName: "address", field: "address", singleClickEdit: true, flex: 40 },
-    //{ headerName: "image", field: "image", cellRenderer: this.imageCellRenderer },
-    //{ headerName: "icon", field: "icon" },  // TODO: Change to string representation - within Ag-grid???
+    { headerName: "REW", field: "rew", singleClickEdit: true, flex: 10 },
+    { headerName: "image", field: "image", cellRenderer: this.imageCellRenderer, flex: 5 },
+    //{ headerName: "icon", field: "icon", flex: 10 },  // TODO: Change to string representation - within Ag-grid???
     { headerName: "status", field: "status", flex: 40 },
     { headerName: "note", field: "note", flex: 60 },
   ];

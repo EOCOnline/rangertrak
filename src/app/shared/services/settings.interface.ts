@@ -1,4 +1,4 @@
-import { FieldReportStatusType } from "./field-report.interface"
+import { FieldReportStatusType } from './field-report.interface'
 
 /**
  * This has 'all' event data (aside from Rangers & Field Reports)
@@ -41,7 +41,7 @@ export type SettingsType = {
     overviewMaxZoom: number
   },
 
-  defFieldReportStatus: number
+  defFieldReportStatus: number,
   fieldReportStatuses: FieldReportStatusType[],
   // fieldReportKeywords: string[],  // Future...could also just search notes field
 }
