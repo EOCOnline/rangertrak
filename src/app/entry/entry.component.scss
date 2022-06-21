@@ -113,16 +113,16 @@ h3 {
   font-weight: 500;
 }
 
+// hide spinners
 // https://www.codingtag.com/remove-arrows-from-input-type-number
-// to hide spinners
-/* Chrome, Safari, Edge, Opera */
+// Chrome, Safari, Edge, Opera
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin            : 0;
 }
 
-/* Specilly used for Firefox */
+// Specilly used for Firefox
 input[type=number] {
   -moz-appearance: textfield;
 }
@@ -170,8 +170,7 @@ input[type=number] {
   margin     : 0px 10px 15px;
   min-width  : 160px;
   //max-width: 300px;
-
-  width: 100%;
+  width      : 100%;
 }
 
 .enter__Callsign {
@@ -179,22 +178,42 @@ input[type=number] {
   width    : 35%;
 }
 
-.enter__Callsign-img {
-  vertical-align: middle;
-  margin-right  : 8px;
+#enter__Callsign-image {
+  margin   : 0 10px;
+  font-size: small;
+  display  : inline-block;
 }
 
+// Following doesn't work: do it in entry.component.ts!!!
+.enter__Callsign-img {
+  //height       : 50px;
+  margin-bottom: -15px;
+}
+
+//@at-root   - matche the document's root element
+#enter__Callsign-upshot {
+  font-size: smaller;
+  display  : inline-block;
+}
+
+.enter__Callsign-info {
+  //display               : inline-block;
+  width                     : 125px;
+  //height                  : 160px;
+  //margin-top          : 25px;
+  //margin-bottom         : -25px;
+  //padding               : 18px;
+}
+
+/*
 [dir='rtl'] .enter__Callsign-img {
   margin-right: 0;
   margin-left : 8px;
 }
-
-#enter__Callsign-upshot {
-  margin   : 10px;
-  font-size: small;
-}
+*/
 
 #enter__frm-reguritation2 {
+  visibility      : hidden;
   margin-right    : 35vw;
   display         : block;
   float           : right;

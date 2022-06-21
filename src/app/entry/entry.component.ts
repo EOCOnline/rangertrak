@@ -8,7 +8,8 @@ import {
     AfterViewInit, Component, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
 } from '@angular/core'
 import {
-    UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule, Validators
+    FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup,
+    Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
@@ -65,6 +66,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   minDate = new Date()
 
   submitInfo: HTMLElement | null = null
+  callImg: HTMLElement | null = null
   callInfo: HTMLElement | null = null
 
   // https://github.com/h2qutc/angular-material-components
@@ -294,24 +296,25 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     //this.entryDetailsForm.markAsUntouched();
   }
 
-  // TODO: NOt working yet...
   callsignChanged(callsign: string) { // Just serves timer for input field - post interaction
     this.log.excessive(`EntryForm CallsignChanged()`, this.id)
 
+    this.callImg = this.document.getElementById("enter__Callsign-image")
     this.callInfo = this.document.getElementById("enter__Callsign-upshot")
-    if (this.callInfo) {
+    if (this.callImg && this.callInfo) {
       this.log.verbose(`EntryForm callsignChanged looking for ${callsign}`, this.id)
-      //let ranger = this.rangers[this.findIndex(callsign)]
+
       let ranger = this.rangerService.getRanger(callsign)
-      this.callInfo.innerHTML = `< span > ${ranger.callsign} < /span> | <small> ${ranger.licensee} | ${ranger.phone}</small > `
-      //< img class= "enter__Callsign-img" aria-hidden src = "${ranger.image}" height = "50" >
+      this.callImg.innerHTML = `<img style="height:60px; margin-bottom:-15px;" text="${ranger.licensee}" aria-hidden src="${ranger.image}"/>`
+      this.callInfo.innerHTML = `<span class="enter__Callsign-info">${ranger.licensee}<br> ${ranger.phone}<br>${ranger.rew ? ranger.rew : "No REW!"}</span>`
+
     } else {
-      this.log.warn(`EntryForm CallsignChanged did not find enter__Callsign - upshot`, this.id)
+      this.log.warn(`EntryForm CallsignChanged did not find enter__Callsign-image or enter__Callsign-upshot`, this.id)
     }
   }
 
   callsignCtrlChanged() { // NOTE: NEVER CALLED (my error, maybe does now..)!!!, so use workaround above...
-    this.log.error(`callsignCtrlChanged() called!!!!!!!!!!!!!!!!!!`, this.id)
+    this.log.error(`callsignCtrlChanged() called!!!`, this.id)
     return
     let callSign: string = (this.document.getElementById("enter__Callsign-input") as HTMLInputElement).value
     if (callSign) {
