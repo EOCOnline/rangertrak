@@ -76,28 +76,33 @@ export class RangersComponent implements OnInit, OnDestroy {
     floatingFilter: true
   }
 
-  // ToDo: On hovering, display a larger image!
+  // On hovering, display a larger image!
   // ${SettingsService.secrets[6].key + params.data.image}:
   imageCellRenderer = (params: { data: RangerType }) => {
-    return `<img class="licenseImg" style="height:40px; width=40px;" alt= "${params.data.fullName}" title="${params.data.callsign} ? ${params.data.callsign} : ${params.data.fullName}"
-    src= "${this.settings.imageDirectory}${params.data.image}">`
+    return `<span class="tooltip">
+      <img class="licenseImg" style="height:40px; width=40px;" alt= "${params.data.fullName}"
+      src= "${this.settings.imageDirectory}${params.data.image}">
+      <span class="tooltiphtml">my TOOLTIP!</span>
+      </span>`
   }
 
+  // title="${params.data.callsign} ? ${params.data.callsign} : ${params.data.fullName}"
+
   callsignCellRenderer = (params: { data: RangerType }) => {
-    // let title = `<img src="${params.data.image}" height="40"> | <small> ${params.data.fullName} | ${params.data.phone}</small>` // TODO: Possible to get HTML into a tooltip?
+    // let title = `<img src="${params.data.image}" height="40"> | <small> ${params.data.fullName} | ${params.data.phone}</small>`
     let title = `${params.data.fullName} | ${params.data.phone}`
     return `<span aria-hidden title="${title}"> ${params.data.callsign}</span>`
   }
 
   columnDefs = [
-    { headerName: "callsign", field: "callsign", cellRenderer: this.callsignCellRenderer, flex: 10 },
-    { headerName: "fullName", field: "fullName", tooltipField: "FCC Licensee Name", flex: 10 },
-    { headerName: "phone", field: "phone", singleClickEdit: true, flex: 40 },
-    { headerName: "address", field: "address", singleClickEdit: true, flex: 40 },
+    { headerName: "Call Sign", field: "callsign", cellRenderer: this.callsignCellRenderer, flex: 10 },
+    { headerName: "Full Name", field: "fullName", tooltipField: "FCC Licensee Name", flex: 10 },
+    { headerName: "Phone", field: "phone", singleClickEdit: true, flex: 40 },
+    { headerName: "Address", field: "address", singleClickEdit: true, flex: 40 },
     { headerName: "REW", field: "rew", singleClickEdit: true, flex: 10 },
-    { headerName: "image", field: "image", cellRenderer: this.imageCellRenderer, flex: 5 },
-    { headerName: "status", field: "status", flex: 40 },
-    { headerName: "note", field: "note", flex: 60 },
+    { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, flex: 5 },
+    { headerName: "Role", field: "role", flex: 40 },
+    { headerName: "Notes", field: "note", flex: 60 },
   ];
 
   constructor(
