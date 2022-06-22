@@ -20,9 +20,9 @@
 
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
-          <!--img class="enter__Callsign-img" aria-hidden [src]="ranger.image" height="40"-->
+          <img class="enter__Callsign-img" aria-hidden [src]="ranger.image" height="40">
           <span>{{ranger.callsign}}</span> |
-          <small> {{ranger.licensee}} | {{ranger.phone}}</small>
+          <small> {{ranger.fullName}} | {{ranger.phone}}</small>
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>

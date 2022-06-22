@@ -81,19 +81,19 @@ export class RangersComponent implements OnInit, OnDestroy {
   // ToDo: On hovering, display a larger image!
   // ${SettingsService.secrets[6].key + params.data.image}:
   imageCellRenderer = (params: { data: RangerType }) => {
-    return `<img class="licenseImg" style="height:40px; width=40px;" alt= "${params.data.licensee}" title="${params.data.callsign} ? ${params.data.callsign} : ${params.data.licensee}"
+    return `<img class="licenseImg" style="height:40px; width=40px;" alt= "${params.data.fullName}" title="${params.data.callsign} ? ${params.data.callsign} : ${params.data.fullName}"
     src= "${ImgDir}${params.data.image}">`
   }
 
   callsignCellRenderer = (params: { data: RangerType }) => {
-    // let title = `<img src="${params.data.image}" height="40"> | <small> ${params.data.licensee} | ${params.data.phone}</small>` // TODO: Possible to get HTML into a tooltip?
-    let title = `${params.data.licensee} | ${params.data.phone}`
+    // let title = `<img src="${params.data.image}" height="40"> | <small> ${params.data.fullName} | ${params.data.phone}</small>` // TODO: Possible to get HTML into a tooltip?
+    let title = `${params.data.fullName} | ${params.data.phone}`
     return `<span aria-hidden title="${title}"> ${params.data.callsign}</span>`
   }
 
   columnDefs = [
     { headerName: "callsign", field: "callsign", cellRenderer: this.callsignCellRenderer, flex: 10 },
-    { headerName: "licensee", field: "licensee", tooltipField: "team", flex: 10 },
+    { headerName: "fullName", field: "fullName", tooltipField: "team", flex: 10 },
     { headerName: "phone", field: "phone", singleClickEdit: true, flex: 40 },
     { headerName: "address", field: "address", singleClickEdit: true, flex: 40 },
     { headerName: "REW", field: "rew", singleClickEdit: true, flex: 10 },

@@ -305,8 +305,8 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       this.log.verbose(`EntryForm callsignChanged looking for ${callsign}`, this.id)
 
       let ranger = this.rangerService.getRanger(callsign)
-      this.callImg.innerHTML = `<img style="height:60px; margin-bottom:-15px;" text="${ranger.licensee}" aria-hidden src="${ranger.image}"/>`
-      this.callInfo.innerHTML = `<span class="enter__Callsign-info">${ranger.licensee}<br> ${ranger.phone}<br>${ranger.rew ? ranger.rew : "No REW!"}</span>`
+      this.callImg.innerHTML = `<img style="height:60px; margin-bottom:-15px;" text="${ranger.fullName}" aria-hidden src="${ranger.image}"/>`
+      this.callInfo.innerHTML = `<span class="enter__Callsign-info">${ranger.fullName}<br> ${ranger.phone}<br>${ranger.rew ? ranger.rew : "No REW!"}</span>`
 
     } else {
       this.log.warn(`EntryForm CallsignChanged did not find enter__Callsign-image or enter__Callsign-upshot`, this.id)

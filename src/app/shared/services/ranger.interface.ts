@@ -1,6 +1,6 @@
 export interface RangerType {
   callsign: string
-  licensee: string
+  fullName: string
   // licenseKey: number
   phone: string
   address: string
