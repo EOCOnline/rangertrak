@@ -51,6 +51,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   opPeriodEnd = new Date()
   timePickerLabelStart = 'Operational Period Start Time'
   timePickerLabelEnd = 'Operational Period End Time'
+  imgDir = "./assets/imgs/"  //! NOTE: Hardcoded, not possible to edit & potential security risk?!
 
   private gridApi: any
   private gridColumnApi: any
@@ -345,6 +346,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         overviewMaxZoom: [this.settings.google.overviewMaxZoom]
       }),
 
+      imageDirectory: [this.settings.imageDirectory],
       defFieldReportStatus: [this.settings.defFieldReportStatus],
       fieldReportStatuses: [this.settings.fieldReportStatuses]
       // fieldReportKeywords: string[],  // Future...could also just search notes field
@@ -404,6 +406,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         overviewMinZoom: this.settingsEditorForm.value.leaflet.overviewMinZoom,
         overviewMaxZoom: this.settingsEditorForm.value.leaflet.overviewMaxZoom
       },
+      imageDirectory: this.imgDir,  //! SECURITY: BUGBUG: Hardcoded image directory: should this be confidential/encrypted for security?
       defFieldReportStatus: this.settingsEditorForm.value.defFieldReportStatus,
       fieldReportStatuses: this.settingsEditorForm.value.fieldReportStatuses
       // fieldReportKeywords: string[],  // Future...could also just search notes field

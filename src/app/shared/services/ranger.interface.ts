@@ -7,7 +7,6 @@ export interface RangerType {
   image: string
   rew: string   // WA's Registered Emergency Worker number
   team: string
-  icon: string
   status: string
   note: string
 }

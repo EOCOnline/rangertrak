@@ -41,10 +41,8 @@
       to a CSV file.
     </li>
     <li>
-      <span style="color:red;"
-        >Edits HAVE to be MANUALLY saved by selecting the "Save Data" button in the
-        Advanced section below.</span
-      >
+      <span style="color:red;">Edits HAVE to be MANUALLY saved by selecting the "Save Data" button in the
+        Advanced section below.</span>
     </li>
     <li>Click on a column heading to sort by that field.</li>
     <li>Click & Drag on a column heading to move columns</li>
@@ -52,9 +50,7 @@
     <li>Icons at the top right of each column allows filtering on the value</li>
     <li>
       Export Rangers will save data as a CSV file for Excel. For
-      <a href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank"
-        >details</a
-      >
+      <a href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank">details</a>
     </li>
     <li>
       FUTURE: Import Excel button currently brings in the data - but due to imporoper
@@ -65,20 +61,9 @@
 <br />
 
 <div id="rangersgrid">
-  <ag-grid-angular
-    #rangerGrid
-    rowAnimation
-    pagination
-    paginationAutoPageSize
-    style="width: 100%; height: 60vh;"
-    (gridReady)="onGridReady($event)"
-    [gridOptions]="gridOptions"
-    class="ag-theme-alpine"
-    [rowData]="rangers"
-    [columnDefs]="columnDefs"
-    [defaultColDef]="defaultColDef"
-    [tooltipShowDelay]="500"
-  >
+  <ag-grid-angular #rangerGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 60vh;"
+    (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="rangers"
+    [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [tooltipShowDelay]="500">
     <!--
           (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1
 
@@ -103,10 +88,8 @@
   <button (click)="onDeselectAll()">Clear Selection</button>
   <br />
   <br />
-  <button
-    (click)="onBtnAddRanger()"
-    title="Add a new Ranger, or a new CERT, or a new Team Tactical sign: they're considered identically"
-  >
+  <button (click)="onBtnAddRanger()"
+    title="Add a new Ranger, or a new CERT, or a new Team Tactical sign: they're considered identically">
     Add new tactical sign
   </button>
   <br />
@@ -139,15 +122,11 @@
       time this web page is opened on this browser & device
     </p>
     Save Rangers to Local Storage:
-    <button
-      (click)="onBtnUpdateLocalStorage()"
-      style="margin-bottom: 5px"
-      title="Preserve the edits above to the Rangers stored on this browser"
-    >
-      Save Rangers</button
-    ><br />
+    <button (click)="onBtnUpdateLocalStorage()" style="margin-bottom: 5px"
+      title="Preserve the edits above to the Rangers stored on this browser">
+      Save Rangers</button><br />
 
-    Delete ALL Rangers from Local Storage:
+    Delete ALL Rangers from Local Storage (NOTE: they will immediately get replaced with the hardcoded names!):
     <button (click)="onBtnDeleteRangers()">Delete Rangers</button><br />
 
     <div id="rangers__Fake">
@@ -165,22 +144,12 @@
     <ul>
       <li>
         FUTURE: Import Rangers from a JSON file:
-        <button
-          (click)="onBtnImportJson($event)"
-          style="margin-bottom: 5px"
-          title="Import Rangers from JSON file"
-        >
-          Import Rangers (JSON)</button
-        ><br />, or
+        <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">
+          Import Rangers (JSON)</button><br />, or
       </li>
       <li>
         FUTURE: Replace existing Rangers with those from an Excel file:
-        <input
-          type="file"
-          (change)="onBtnImportExcel($event)"
-          multiple="false"
-          accept=".csv, .xls, .xslt"
-        />
+        <input type="file" (change)="onBtnImportExcel($event)" multiple="false" accept=".csv, .xls, .xslt" />
         Then SAVE RANGERS below and then REFRESH PAGE!
       </li>
     </ul>
@@ -233,9 +202,8 @@
       Code from <a href="http://sheetjs.com" target="_blank">http://sheetjs.com</a>,
       specifically
       <a href="https://oss.sheetjs.com/" target="_blank">https://oss.sheetjs.com/</a> &
-      <a href="https://github.com/SheetJS/SheetJS.github.io/" target="_blank"
-        >https://github.com/SheetJS/SheetJS.github.io/</a
-      >
+      <a href="https://github.com/SheetJS/SheetJS.github.io/"
+        target="_blank">https://github.com/SheetJS/SheetJS.github.io/</a>
     </div>
   </details>
 </div>

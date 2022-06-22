@@ -156,6 +156,7 @@ export class SettingsService {
         overviewMaxZoom: 16
       },
 
+      imageDirectory: "./assets/imgs/",    //! WARNING: Hardcoded & potential SECURITY risk.
       defFieldReportStatus: 0, // which of the following array entries to use as the default value
       //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
       fieldReportStatuses: [

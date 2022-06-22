@@ -41,6 +41,7 @@ export type SettingsType = {
     overviewMaxZoom: number
   },
 
+  imageDirectory: string,
   defFieldReportStatus: number,
   fieldReportStatuses: FieldReportStatusType[],
   // fieldReportKeywords: string[],  // Future...could also just search notes field

@@ -22,8 +22,6 @@ type AOA = any[][]  // array of arrays
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\src\app\sheetjs.component.ts
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\ionic.ts
 
-const ImgDir = "./assets/imgs/REW/"
-
 @Component({
   selector: 'rangertrak-rangers',
   templateUrl: './rangers.component.html',
@@ -82,7 +80,7 @@ export class RangersComponent implements OnInit, OnDestroy {
   // ${SettingsService.secrets[6].key + params.data.image}:
   imageCellRenderer = (params: { data: RangerType }) => {
     return `<img class="licenseImg" style="height:40px; width=40px;" alt= "${params.data.fullName}" title="${params.data.callsign} ? ${params.data.callsign} : ${params.data.fullName}"
-    src= "${ImgDir}${params.data.image}">`
+    src= "${this.settings.imageDirectory}${params.data.image}">`
   }
 
   callsignCellRenderer = (params: { data: RangerType }) => {
@@ -93,12 +91,11 @@ export class RangersComponent implements OnInit, OnDestroy {
 
   columnDefs = [
     { headerName: "callsign", field: "callsign", cellRenderer: this.callsignCellRenderer, flex: 10 },
-    { headerName: "fullName", field: "fullName", tooltipField: "team", flex: 10 },
+    { headerName: "fullName", field: "fullName", tooltipField: "FCC Licensee Name", flex: 10 },
     { headerName: "phone", field: "phone", singleClickEdit: true, flex: 40 },
     { headerName: "address", field: "address", singleClickEdit: true, flex: 40 },
     { headerName: "REW", field: "rew", singleClickEdit: true, flex: 10 },
     { headerName: "image", field: "image", cellRenderer: this.imageCellRenderer, flex: 5 },
-    //{ headerName: "icon", field: "icon", flex: 10 },  // TODO: Change to string representation - within Ag-grid???
     { headerName: "status", field: "status", flex: 40 },
     { headerName: "note", field: "note", flex: 60 },
   ];
