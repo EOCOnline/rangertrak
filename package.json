@@ -35,7 +35,7 @@
     "@angular/google-maps": "^14.0.2",
     "@angular/material": "^14.0.2",
     "@angular/platform-browser": "^14.0.2",
-    "@angular/platform-browser-dynamic": "^14.0.2",
+    "@angular/platform-browser-dynamic": "^14.0.3",
     "@angular/router": "^14.0.2",
     "@angular/service-worker": "^14.0.2",
     "@fortawesome/angular-fontawesome": "^0.11.1",
