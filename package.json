@@ -78,7 +78,7 @@
     "zone.js": "~0.11.6"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^14.0.2",
+    "@angular-devkit/build-angular": "^14.0.3",
     "@angular/compiler-cli": "^14.0.3",
     "@types/google.maps": "^3.49.2",
     "@types/jasmine": "^4.0.3",
