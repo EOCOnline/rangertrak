@@ -60,9 +60,37 @@
 </details>
 <br />
 
-<div class="tooltip">Test Tooltip (ignore)
-  <span class="tooltiphtml">KE7KDQ - <img src="https://www.w3schools.com/favicon.ico" /> John Cornelison</span>
+
+
+
+<div tooltip="<p>Hello i'm a <strong>bold</strong> text!</p>">
+  Tooltip with HTML content
 </div>
+<br>
+<br>
+
+<button placement="top" tooltip="<p>Hello i'm a <strong>bold</strong> text!</p>">
+  Ex 1: Tooltip with HTML content
+</button>
+
+<ng-template #HtmlContent>
+  <p>Hello i'm a <strong>bold</strong> text!</p>
+</ng-template>
+
+<!--button [tooltip]="HtmlContent" contentType="template">
+  Ex 2: Tooltip with template content
+</button-->
+
+<br>
+<br>
+
+<div class="tooltip2">Test Tooltip (ignore)
+  <span class="tooltiphtml">KE7KDQ <img src="./assets/imgs/rew/VI-0038.jpg" height="60px" /><br> John
+    Cornelison</span>
+</div>
+<br>
+<br>
+
 
 
 <div id="rangersgrid">

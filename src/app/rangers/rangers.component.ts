@@ -1,3 +1,4 @@
+import { TooltipModule } from 'ng2-tooltip-directive'
 import { Subscription } from 'rxjs'
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING

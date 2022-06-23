@@ -55,13 +55,13 @@ label {
 
 // from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_tooltip
 // https://www.w3schools.com/howto/howto_css_tooltip.asp
-.tooltip {
+.tooltip2 {
   position     : relative;
   display      : inline-block;
   border-bottom: 1px dotted black;
 }
 
-.tooltip .tooltiphtml {
+.tooltip2 .tooltiphtml {
   visibility      : hidden;
   width           : 120px;
   background-color: #555;
@@ -78,7 +78,7 @@ label {
   transition      : opacity 0.3s;
 }
 
-.tooltip .tooltiphtml::after {
+.tooltip2 .tooltiphtml::after {
   content     : "";
   position    : absolute;
   top         : 100%;
@@ -89,7 +89,7 @@ label {
   border-color: #555 transparent transparent transparent;
 }
 
-.tooltip:hover .tooltiphtml {
+.tooltip2:hover .tooltiphtml {
   visibility: visible;
   opacity   : 1;
 }
