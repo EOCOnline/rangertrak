@@ -53,7 +53,7 @@
     "@ngx-pwa/local-storage": "^13.0.3",
     "@popperjs/core": "^2.11.5",
     "@types/leaflet": "^1.7.11",
-    "@types/leaflet.markercluster": "^1.5.0",
+    "@types/leaflet.markercluster": "^1.5.1",
     "@what3words/api": "^4.0.7",
     "acorn": "^8.7.1",
     "ag-grid-angular": "^27.3.0",
