@@ -83,7 +83,7 @@ export class RangersComponent implements OnInit, OnDestroy {
     return `<span class="tooltip">
       <img class="licenseImg" style="height:40px; width=40px;" alt= "${params.data.fullName}"
       src= "${this.settings.imageDirectory}${params.data.image}">
-      <span class="tooltiphtml">my TOOLTIP!</span>
+      <span class="tooltiphtml">Nasty Wart...</span>
       </span>`
   }
 

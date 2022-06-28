@@ -359,7 +359,7 @@ import { HttpClient } from '@angular/common/http';
 
       { callsign: "MERT1", fullName: "MERT 1", phone: "206-463-", address: "Vashon, WA 98070", image: "yacht_red.png", rew: "", team: "MERT1", role: "Licensed", note: "-" },
       { callsign: "MERT2", fullName: "MERT 2", phone: "206-463-", address: "Vashon, WA 98070", image: "MERT_green.png", rew: "", team: "MERT2", role: "Licensed", note: "-" },
-      { callsign: "MERT3", fullName: "MERT 3", phone: "206-463-", address: "Vashon, WA 98070", image: "yacht_magenta.png", rew: "", team: "MERT3", role: "Licensed", note: "-" },
+      { callsign: "MERT3", fullName: "MERT 3", phone: "206-463-", address: "Vashon, WA 98070", image: "yacht_green.png", rew: "", team: "MERT3", role: "Licensed", note: "-" },
       { callsign: "MERT4", fullName: "MERT 4", phone: "206-463-", address: "Vashon, WA 98070", image: "MERT_orange.png", rew: "", team: "MERT4", role: "Licensed", note: "-" },
       { callsign: "MERT5", fullName: "MERT 5", phone: "206-463-", address: "Vashon, WA 98070", image: "yacht_yellow.png", rew: "", team: "MERT5", role: "Licensed", note: "-" },
       { callsign: "MERT6", fullName: "MERT 6", phone: "206-463-", address: "Vashon, WA 98070", image: "MERT_blue.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
