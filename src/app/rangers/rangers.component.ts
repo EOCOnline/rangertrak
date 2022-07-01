@@ -1,3 +1,4 @@
+import { ColDef, GridOptions } from 'ag-grid-community'
 import { TooltipModule } from 'ng2-tooltip-directive'
 import { Subscription } from 'rxjs'
 /* Following gets:
@@ -16,6 +17,7 @@ import {
     SettingsService, SettingsType
 } from '../shared/services/'
 import { csvImport } from './csvImport'
+import { CustomTooltip } from './customTooltip'
 
 type AOA = any[][]  // array of arrays
 /* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
@@ -55,7 +57,8 @@ export class RangersComponent implements OnInit, OnDestroy {
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   private gridApi: any
   private gridColumnApi: any
-  gridOptions = {
+
+  gridOptions: GridOptions = {
     // PROPERTIES
     rowSelection: "multiple",
     // pagination: true,
@@ -65,28 +68,40 @@ export class RangersComponent implements OnInit, OnDestroy {
 
     // CALLBACKS
     // getRowHeight: (params) => 25
-  }
+    //},
 
-  defaultColDef = {
-    flex: 1,
-    minWidth: 100,
-    editable: true,
-    resizable: true,
-    sortable: true,
-    filter: true,
-    floatingFilter: true
-  }
+    defaultColDef: {
+      flex: 1,
+      minWidth: 100,
+      editable: true,
+      resizable: true,
+      sortable: true,
+      filter: true,
+      floatingFilter: true,
+      tooltipComponent: CustomTooltip,
+    },
+    tooltipShowDelay: 0,
+    tooltipHideDelay: 2000,
+
+    // set rowData to null or undefined to show loading panel by default
+    rowData: null,
+  };
 
   // On hovering, display a larger image!
   // ${SettingsService.secrets[6].key + params.data.image}:
-  imageCellRenderer = (params: { data: RangerType }) => {
-    return `<span class="tooltip">
-      <img class="licenseImg" style="height:40px; width=40px;" alt= "${params.data.fullName}"
-      src= "${this.settings.imageDirectory}${params.data.image}">
-      <span class="tooltiphtml">Nasty Wart...</span>
-      </span>`
-  }
 
+  /*    return `<span class="tooltip2" placement="top">
+        <img class="licenseImg" style="height:40px; width:40px;" alt= "${params.data.fullName}"
+        src= "${this.settings.imageDirectory}${params.data.image}">
+        <span class="tooltiphtml">W</span>
+        </span>`
+        */
+
+  imageCellRenderer = (params: { data: RangerType }) => {
+    return `<img class="licenseImg" style="height:40px; width:40px;" alt= "Image of ${params.data.fullName}"
+      src= "${this.settings.imageDirectory}${params.data.image}">`
+  }
+  //<strong>art</strong>
   // title="${params.data.callsign} ? ${params.data.callsign} : ${params.data.fullName}"
 
   callsignCellRenderer = (params: { data: RangerType }) => {
@@ -95,16 +110,16 @@ export class RangersComponent implements OnInit, OnDestroy {
     return `<span aria-hidden title="${title}"> ${params.data.callsign}</span>`
   }
 
-  columnDefs = [
+  columnDefs: ColDef[] = [
     { headerName: "Call Sign", field: "callsign", cellRenderer: this.callsignCellRenderer, flex: 10 },
     { headerName: "Full Name", field: "fullName", tooltipField: "FCC Licensee Name", flex: 10 },
     { headerName: "Phone", field: "phone", singleClickEdit: true, flex: 40 },
     { headerName: "Address", field: "address", singleClickEdit: true, flex: 40 },
     { headerName: "REW", field: "rew", singleClickEdit: true, flex: 10 },
-    { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, flex: 5 },
+    { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, tooltipField: "image", tooltipComponentParams: { color: '#ececec' }, flex: 5 },
     { headerName: "Role", field: "role", flex: 40 },
     { headerName: "Notes", field: "note", flex: 60 },
-  ];
+  ]
 
   constructor(
     //private teamService: TeamService,

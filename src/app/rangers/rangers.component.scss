@@ -56,26 +56,26 @@ label {
 // from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_tooltip
 // https://www.w3schools.com/howto/howto_css_tooltip.asp
 .tooltip2 {
-  position     : relative;
-  display      : inline-block;
-  border-bottom: 1px dotted black;
+  position   : relative;
+  display    : inline-block;
+  // border  : 1px dotted black;
 }
 
 .tooltip2 .tooltiphtml {
-  visibility      : hidden;
-  width           : 120px;
-  background-color: #555;
-  color           : #fff;
-  text-align      : center;
-  border-radius   : 6px;
-  padding         : 5px 0;
-  position        : absolute;
-  z-index         : 1;
-  bottom          : 125%;
-  left            : 50%;
-  margin-left     : -60px;
-  opacity         : 0;
-  transition      : opacity 0.3s;
+  //visibility      : hidden;
+  width              : 120px;
+  background-color   : #555;
+  color              : #fff;
+  text-align         : center;
+  border-radius      : 6px;
+  padding            : 5px 0;
+  position           : absolute;
+  z-index            : 1;
+  bottom             : 125%;
+  left               : 50%;
+  // margin-left     : -60px;
+  opacity            : 0;
+  transition         : opacity 0.5s;
 }
 
 .tooltip2 .tooltiphtml::after {
@@ -92,4 +92,31 @@ label {
 .tooltip2:hover .tooltiphtml {
   visibility: visible;
   opacity   : 1;
+}
+
+
+.my-image {
+  display: none;
+}
+
+/* ag-grid adds ag-row-hover class on row hover */
+.ag-row-hover .my-image {
+  display: initial;
+}
+
+// from https://www.ag-grid.com/javascript-data-grid/component-tooltip/
+.custom-tooltip {
+  width   : 150px;
+  height  : 150px;
+  border  : 2px solid cornflowerblue;
+  overflow: hidden;
+}
+
+.custom-tooltip p {
+  margin     : 5px;
+  white-space: nowrap;
+}
+
+.custom-tooltip p:first-of-type {
+  font-weight: bold;
 }
