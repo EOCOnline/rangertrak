@@ -4,7 +4,7 @@ import { DOCUMENT } from '@angular/common'
 import {
     AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild
 } from '@angular/core'
-import { UntypedFormBuilder, FormControl, UntypedFormGroup, Validators } from '@angular/forms'
+import { FormControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms'
 // import * as P from '@popperjs/core';
 ///import { createPopper } from '@popperjs/core';
 // import type { StrictModifiers } from '@popperjs/core';
@@ -22,7 +22,7 @@ https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-compo
 https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-driven-forms-in-angular-2
 https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 */
-
+const magicTempNumber = 12  // BUG: same as magicNumber2 in entryComponent.ts: i.e., "undefined"
 
 @Component({
   //moduleId: module.id,
@@ -33,7 +33,7 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 export class LocationComponent implements OnInit, OnDestroy {
   // Grab reference to location portion of parent's entry form
   @Input() public locationFrmGrp!: UntypedFormGroup // input from entry.component.ts
-  @Input() public initialLoc: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
+  @Input() public initialLoc: LocationType = { lat: magicTempNumber, lng: magicTempNumber, address: undefinedAddressFlag }
   // input from entry.component.ts
 
   // We emit following event to parent,
@@ -50,7 +50,7 @@ export class LocationComponent implements OnInit, OnDestroy {
   // locationCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
 
 
-  public myLat = 56.7890
+  public myLat = 56.7890 // BUG:
   private id = "Location Component"
 
   // Grab reference to #elements in template (vs. getElementById)
@@ -148,11 +148,11 @@ export class LocationComponent implements OnInit, OnDestroy {
     }
 
     // TODO: Give up the thread/sleep(500) to let the values come though?!
-    if (this.initialLoc.lat != 10 && this.initialLoc.lng != 10) {
+    if (this.initialLoc.lat != magicTempNumber && this.initialLoc.lng != magicTempNumber) {
       // Use initial Location values passed from parent's html form
       this.location = this.initialLoc
     } else {
-      // Use defaults in parent' didn't pass any in
+      // Use defaults if parent didn't pass any in
       this.location = {
         lat: this.settings ? this.settings.defLat : 0,
         lng: this.settings ? this.settings.defLng : 0,

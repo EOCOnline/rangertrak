@@ -40,10 +40,13 @@
       (change)="this.addressCtrlChanged('latD')"
         </span-->.
 
-      <input #latF placeholder="LatF" [value]="latF" name="latitudeDDD" type="number" step="100" min="0" max="99999"
+      <!--input [valueAsNumber]="latF" type="number" formControlName="lat2" min="0" max="99999" id="enter__Where-latF" /-->
+
+
+      <input placeholder="LatF" [valueAsNumber]="latF" name="latitudeDDD" type="number" step="100" min="0" max="99999"
         id="enter__Where-latF" tabindex="2" />
 
-      <!--
+      <!-- #latF above fails!!!
        {{latF}}  {{latQ}}
     span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
     class="text-sm text-danger">Latitude is required size="1"

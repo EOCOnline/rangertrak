@@ -20,9 +20,9 @@ import {
     SettingsService, SettingsType, undefinedAddressFlag
 } from '../shared/services/'
 
-// IDEA: use https://material.angular.io/components/badge/ ???
+// TODO: IDEA: use https://material.angular.io/components/badge/ ???
 
-
+const magicNumber2 = 12 // BUG: 12?!
 
 @Component({
   selector: 'rangertrak-entry',
@@ -46,7 +46,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   // Get location events from <location> component
   private locationSubscription!: Subscription
   public location: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
-  initialLocation: LocationType = { lat: 10, lng: 10, address: undefinedAddressFlag }
+  initialLocation: LocationType = { lat: magicNumber2, lng: magicNumber2, address: undefinedAddressFlag }
 
   // Get time events from <timepicker> component
   private timeSubscription!: Subscription
