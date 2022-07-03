@@ -28,9 +28,11 @@
       -->
       &nbsp;&nbsp;&nbsp;Latitude:
 
-      <input [valueAsNumber]="latI" type="number" formControlName="lat" min="-180" max="180" id="enter__Where-latI" />
+      <input [valueAsNumber]="latI" type="number" min="-180" max="180" id="enter__Where-latI" />
 
-      <!-- TODO: name="latitudeDDI" id="latitudeDDI" -->
+      <!-- TODO:
+        formControlName="lat"
+        name="latitudeDDI" id="latitudeDDI" -->
 
       <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
     class="text-sm text-danger">lat is required
@@ -43,18 +45,22 @@
       <!--input [valueAsNumber]="latF" type="number" formControlName="lat2" min="0" max="99999" id="enter__Where-latF" /-->
 
 
-      <input placeholder="LatF" [valueAsNumber]="latF" name="latitudeDDD" type="number" step="100" min="0" max="99999"
-        id="enter__Where-latF" tabindex="2" />
+      <input [valueAsNumber]="latF" type="number" step="100" min="0" max="99999" id="enter__Where-latF" tabindex="2" />
 
-      <!-- #latF above fails!!!
+      <!--
+        placeholder="LatF"
+          name="latitudeDDD"
+
+        #latF above fails!!!
        {{latF}}  {{latQ}}
+       {{latF | number:'1.4-5'}}
     span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
     class="text-sm text-danger">Latitude is required size="1"
     </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
 
-      <input #latQ name="latQ" id="enter__Where-latQ" type="text" pattern="'e','E','w','W'" title="E or W"
-        onchange="DMSCoordsChanged()" />
-      <!-- Quadrant -->
+      <input [value]="latQ" id="enter__Where-latQ" type="text" pattern="'e','E','w','W'" title="E or W" />
+      <!-- #latQ  onchange="DMSCoordsChanged()"
+        Quadrant -->
       <!-- BUG: Initialize elsewhere!
           value="47"
         value=""
@@ -62,50 +68,64 @@
           value="W"
               value="122"
                   value="N"
+                  #latD
           -->
-      <input #latD name="latD" id="enter__Where-latD" type="text" min="0" max="180" onchange="DMSCoordsChanged()" />°
-      <!-- TODO: Use settings.DefLat     size="2"  size="5"   {{latD}}  {{latM}} {{latS}}  -->
-      <input #latM name="latM" id="enter__Where-latM" type="text" min="0" max="59" onchange="DMSCoordsChanged()" />'
-      <input #latS name="latS" id="enter__Where-latS" type="text" min="0" max="59.99"
-        onchange="DMSCoordsChanged()" />"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
+      <input [valueAsNumber]="latD" id="enter__Where-latD" type="number" min="0" max="180" />°
+      <!-- onchange="DMSCoordsChanged()" #latM name
+        TODO: Use settings.DefLat     size="2"  size="5"   {{latD}}  {{latM}} {{latS}}  -->
+      <input [valueAsNumber]="latM" id="enter__Where-latM" type="number" min="0" max="59"
+        onchange="DMSCoordsChanged()" />'
+      <input [valueAsNumber]="latS" id="enter__Where-latS" type="number" min="0" max="59.99"
+        onchange="DMSCoordsChanged()" size="4" />"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
 
       <span class="strong"> or</span>&nbsp;
 
-      <input #latQ name="latitudeQ1" id="enter__Where-latQ1" type="text" pattern="'n','N','s','S'" title="N or S"
-        onchange="DMSCoordsChanged()" />
-      <input name="latitudeDM" id="enter__Where-latDM" type="text" max="180" onchange="DMSCoordsChanged()" />°
-      <input name="latitudeMI" id="enter__Where-latMI" type="text" min="0" max="59" onchange="DMSCoordsChanged()" />'
-      <input name="latitudeMF" id="enter__Where-latMF" type="text" min="0" max="9999" onchange="DMSCoordsChanged()" />"
+      <input [value]="latDDMQ" id="enter__Where-latQ1" type="text" pattern="'n','N','s','S'" title="N or S" />
+      <input [valueAsNumber]="latDDMD" id="enter__Where-latDM" type="number" max="180" onchange="DMSCoordsChanged()" />°
+      <input [valueAsNumber]="latDDMM" id="enter__Where-latMI" type="number" min="0" max="59"
+        onchange="DMSCoordsChanged()" size="5" />'
       <span title="Digital Degrees Minutes">DDM</span>
     </div>
 
     <div class="input-group">
       Longitude:
-      <input #lngI type="number" placeholder="LngI" (change)="this.addressCtrlChanged('lngI')" name="lngI"
-        id="longitudeDDI" min="-90" max="90" id="enter__Where-lngI" tabindex="3" />
+
+      <input [valueAsNumber]="lngI" type="number" min="-180" max="180" id="enter__Where-lngI" tabindex="3" />.
+      <input [valueAsNumber]="lngF" type="number" step="100" min="0" max="99999" id="enter__Where-lngF" tabindex="4" />
+
+
+      <!--
+        input #lngI type="number" placeholder="LngI" (change)="this.addressCtrlChanged('lngI')" name="lngI"
+        id="longitudeDDI" min="-90" max="90" id="enter__Where-lngI" tabindex="3" / -->
 
       <!-- onchange="DDCoordsChanged()"
             {{lngI}}  {{lngF}}   {{lngQ}}
-          -->.
+          -->
 
-      <input #lngF type="number" placeholder="LngF" (change)="this.addressCtrlChanged('lngF')" name="latitudeDDD"
-        step="100" min="0" max="99999" id="enter__Where-lngF" tabindex="4" />° <span title="Decimal Degrees">DD</span>
+
+      <!--input #lngF type="number" placeholder="LngF" (change)="this.addressCtrlChanged('lngF')" name="latitudeDDD"
+      step="100" min="0" max="99999" id="enter__Where-lngF" tabindex="4" / -->° <span title="Decimal Degrees">DD</span>
       <span class="strong"> or</span>&nbsp;
 
-      <input #lngQ name="longitudeQ" id="enter__Where-lngQ" type="text" pattern="'n','N','s','S'" title="N or S"
-        onchange="DMSCoordsChanged()" />
-      <input name="longitudeD" id="enter__Where-lngD" type="text" max="180" onchange="DMSCoordsChanged()" />°
-      <input name="longitudeM" id="enter__Where-lngM" type="text" min="0" max="59" onchange="DMSCoordsChanged()" />'
-      <input name="longitudeS" id="enter__Where-lngS" type="text" min="0" max="59.99" onchange="DMSCoordsChanged()" />"
+      <input [value]="lngQ" id="enter__Where-lngQ" type="text" pattern="'n','N','s','S'" title="N or S" />
+      <!--
+          #lngQ    onchange="DMSCoordsChanged()"
+
+        -->
+      <input [valueAsNumber]="lngD" id="enter__Where-lngD" type="number" max="180" onchange="DMSCoordsChanged()" />°
+      <input [valueAsNumber]="lngM" id="enter__Where-lngM" type="number" min="0" max="59"
+        onchange="DMSCoordsChanged()" />'
+      <input [valueAsNumber]="lngS" id="enter__Where-lngS" type="number" min="0" max="59.99"
+        onchange="DMSCoordsChanged()" />"
       <span title="Degrees Minute Seconds">DMS</span>
-
       <span class="strong"> or</span>&nbsp;
 
-      <input #lngQ name="longitudeQ1" id="enter__Where-lngQ1" type="text" pattern="'n','N','s','S'" title="N or S"
+      <input [value]="lngDDMQ" id="enter__Where-lngQ1" type="text" pattern="'n','N','s','S'" title="N or S"
         onchange="DMSCoordsChanged()" />
-      <input name="longitudeDM" id="enter__Where-lngDM" type="text" max="180" onchange="DMSCoordsChanged()" />°
-      <input name="longitudeMI" id="enter__Where-lngMI" type="text" min="0" max="59" onchange="DMSCoordsChanged()" />'
-      <input name="longitudeMF" id="enter__Where-lngMF" type="text" min="0" max="9999" onchange="DMSCoordsChanged()" />"
+      <input [valueAsNumber]="lngDDMD" id="enter__Where-lngDM" type="number" max="180" onchange="DMSCoordsChanged()" />°
+      <input [valueAsNumber]="lngDDMM" id="enter__Where-lngMI" type="number" min="0" max="59"
+        onchange="DMSCoordsChanged()" size="4" />'
+
       <span title="Digital Degrees Minutes">DDM</span>
     </div>
 
@@ -129,8 +149,8 @@
       onchange="chkAddresses()"> (optional) -->
   <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
 
-  <span id="addressLabel" title="Normalized Address" value="">aL</span>&nbsp;&nbsp;;
-  <span id="pCodeGlobal" title="Global (Google) Plus Code">pCG</span>
+  <span id="addressLabel" title="Normalized Address" value="">addressLabel</span>&nbsp;&nbsp;;
+  <span id="pCodeGlobal" title="Global (Google) Plus Code">pCodeGlobal</span>
 </div>
 
 <!--br-->

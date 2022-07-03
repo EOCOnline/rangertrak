@@ -102,10 +102,10 @@ export function DDToDMS(D: number, lng: boolean = false) {
     this.log.verbose("DDtoDMS: dir=" + dirr + " deg=" + degg + " min" + minn + " sec=" + secc, this.id)
   */
   return {
+    dir: D < 0 ? lng ? 'W' : 'S' : lng ? 'E' : 'N',
     deg: 0 | (D < 0 ? D = -D : D),
     min: 0 | D % 1 * 60,
-    sec: (0 | D * 60 % 1 * 6000) / 100,
-    dir: D < 0 ? lng ? 'W' : 'S' : lng ? 'E' : 'N'
+    sec: (0 | D * 60 % 1 * 6000) / 100
   }
 }
 
@@ -123,9 +123,9 @@ export function DDToDMS(D: number, lng: boolean = false) {
 
 export function DDToDDM(D: number, lng: boolean = false) {
   return {
+    dir: D < 0 ? lng ? 'W' : 'S' : lng ? 'E' : 'N',
     deg: 0 | (D < 0 ? D = -D : D),
-    min: Math.round((D % 1) * 60000) / 1000,
-    dir: D < 0 ? lng ? 'W' : 'S' : lng ? 'E' : 'N'
+    min: Math.round((D % 1) * 60000) / 1000
   }
 }
 

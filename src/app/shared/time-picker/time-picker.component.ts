@@ -9,7 +9,7 @@ import {
 import { DOCUMENT } from '@angular/common'
 import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core'
 import {
-    UntypedFormBuilder, FormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule, Validators
+    FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 
@@ -31,7 +31,7 @@ import {
   styleUrls: ['./time-picker.component.scss']
 })
 export class TimePickerComponent implements OnInit {
-  @Input() public timepickerFormGroup: UntypedFormGroup // input from entry.component.ts
+  @Input() public timepickerFormGroup!: UntypedFormGroup // input from entry.component.ts
   //  @Input() public timepickerFormControl: FormControl // input from entry.component.ts
   //@Input() public timepickerFormControl: FormControl // input from entry.component.ts
   @Output() newTimeEvent = new EventEmitter<Date>()
@@ -78,6 +78,7 @@ export class TimePickerComponent implements OnInit {
   hideTime = false
   //dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!
 
+  defaultOpPeriod = 10 // hours
 
   constructor(
     private log: LogService,
@@ -87,10 +88,11 @@ export class TimePickerComponent implements OnInit {
 
     // BUG: maybe should be in EntryComponent.ts instead? as locationFrmGrp is there...
     // new values here bubble up as emitted events - see onNewLocation()
-
-    this.timepickerFormGroup = this._formBuilder.group({
-      time: [this.time]
-    })
+    // ! Same code just below too
+    // this version just to avoid not-defined error...
+    // this.timepickerFormGroup = this._formBuilder.group({
+    //   time: [this.time]
+    // })
 
     // REVIEW: Min/Max times ignored?!
     // TODO: These should get passed in
@@ -99,6 +101,7 @@ export class TimePickerComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // ! REVIEW: this duplicates code just above AND in parent!!!
     this.timepickerFormGroup = this._formBuilder.group({
       time: [this.initialDate]
     })
@@ -141,12 +144,12 @@ export class TimePickerComponent implements OnInit {
   //   this timePicker.cancel();
   // }
 
-  private _setMinDate(hours: number = 10) {
+  private _setMinDate(hours: number = this.defaultOpPeriod) {
     const now = dayjs();
     this.minDate = now.subtract(hours, 'hours');
   }
 
-  private _setMaxDate(hours: number = 10) {
+  private _setMaxDate(hours: number = this.defaultOpPeriod) {
     const now = dayjs();
     this.maxDate = now.add(hours, 'hours');
   }

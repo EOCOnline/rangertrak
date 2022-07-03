@@ -55,21 +55,21 @@ export class LocationComponent implements OnInit, OnDestroy {
 
   // Grab reference to #elements in template (vs. getElementById)
   // TODO: Remove all these! Per bottom pg 137, go to [FormControl]="nameToUse"
-  @ViewChild('latI') elLatI: any
-  @ViewChild('latF') elLatF!: HTMLInputElement
+  // @ViewChild('latI') elLatI!: HTMLInputElement
+  // @ViewChild('latF') elLatF!: HTMLInputElement
 
-  @ViewChild('latQ') elLatQ!: HTMLInputElement
-  @ViewChild('latD') elLatD!: HTMLInputElement
-  @ViewChild('latM') elLatM!: HTMLInputElement
-  @ViewChild('latS') elLatS!: HTMLInputElement
+  // @ViewChild('latQ') elLatQ!: HTMLInputElement
+  // @ViewChild('latD') elLatD!: HTMLInputElement
+  // @ViewChild('latM') elLatM!: HTMLInputElement
+  // @ViewChild('latS') elLatS!: HTMLInputElement
 
-  @ViewChild('lngF') elLngF!: HTMLInputElement
-  @ViewChild('lngI') elLngI!: HTMLInputElement
+  // @ViewChild('lngF') elLngF!: HTMLInputElement
+  // @ViewChild('lngI') elLngI!: HTMLInputElement
 
-  @ViewChild('lngQ') elLngQ!: HTMLInputElement
-  @ViewChild('lngD') elLngD!: HTMLInputElement
-  @ViewChild('lngM') elLngM!: HTMLInputElement
-  @ViewChild('lngS') elLngS!: HTMLInputElement
+  // @ViewChild('lngQ') elLngQ!: HTMLInputElement
+  // @ViewChild('lngD') elLngD!: HTMLInputElement
+  // @ViewChild('lngM') elLngM!: HTMLInputElement
+  // @ViewChild('lngS') elLngS!: HTMLInputElement
 
   public geocoder = new GoogleGeocode
   //w3w = new What3Words()
@@ -78,17 +78,27 @@ export class LocationComponent implements OnInit, OnDestroy {
 
   public latI = 0 // Integer portion
   public latF = 0 // Float portion
+
   public latQ = "N" // Quadrant
   public latD = 0 // Degrees
   public latM = 0 // Minutes
   public latS = 0 // Seconds
 
+  public latDDMQ = "N" // Quadrant
+  public latDDMD = 0 // Degrees
+  public latDDMM = 0 // Minutes
+
   public lngI = 0
   public lngD = 0
+
   public lngF = 0
   public lngM = 0
   public lngQ = "E"
   public lngS = 0
+
+  public lngDDMQ = "N" // Quadrant
+  public lngDDMD = 0 // Degrees
+  public lngDDMM = 0 // Minutes
 
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
   // button: HTMLButtonElement | undefined
@@ -121,7 +131,9 @@ export class LocationComponent implements OnInit, OnDestroy {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    // this.locationFrmGrp = _formBuilder.group({
+    // this.locationFrmGrp = _formBuilder.group(LocationType)
+
+    //{
     //   lat: [],
     //   lng: [],
     //   address: []
@@ -162,11 +174,11 @@ export class LocationComponent implements OnInit, OnDestroy {
 
     // BUG: duplicate of locationFrmGrp creation in EntryComponent.ts
     // new values here bubble up as emitted events - see onNewLocation()
-    this.locationFrmGrp = this._formBuilder.group({
-      lat: [this.location.lat],
-      lng: [this.location.lng],
-      address: [this.location.address, Validators.required]
-    })
+    // this.locationFrmGrp = this._formBuilder.group({
+    //   lat: [this.location.lat],
+    //   lng: [this.location.lng],
+    //   address: [this.location.address, Validators.required]
+    // })
 
     // showNewLocation ALSO updates location.address & emits new location event to parent
     this.newLocationToFormAndEmit(this.location.lat, this.location.lng)
@@ -199,10 +211,13 @@ export class LocationComponent implements OnInit, OnDestroy {
     // On Location/Address Change subscriptions  // TODO: USE THESE - or not???
     if (this.locationFrmGrp) {
       this.locationFrmGrp.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        this.log.excessive('########  latitude value changed: ' + x, this.id)
+        this.log.excessive('########  latitude int value changed: ' + x, this.id)
       })
       this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         this.log.excessive('########## lat float value changed: ' + x, this.id)
+      })
+      this.locationFrmGrp.get("lngI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+        this.log.excessive('#######  lng Int value changed: ' + x), this.id
       })
       this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
         this.log.excessive('#######  lng Float value changed: ' + x), this.id
@@ -242,31 +257,29 @@ export class LocationComponent implements OnInit, OnDestroy {
     // https://www.cumulations.com/blog/latitude-and-longitude/
 
     // Any location change should drive to a new latDD & LngDD & sent here
-    this.log.info(`newLocation with lat: ${latDD}, lng: ${lngDD}`, this.id);
+    this.log.info(`new DD Location: ${latDD}° lat; ${lngDD}° lng`, this.id);
 
     this.location.lat = latDD
     this.location.lng = lngDD
 
     this.latI = Math.floor(latDD)
+    //this.latF = (latDD - this.latI).toFixed(4)
+    this.latF = Math.round((latDD - this.latI) * 10000)
     // {{latI}} shows [object HTMLInputElement]
-    this.lngI = Math.floor(lngDD)
     //this.elLatI.innerText = this.latI.toString()  // BUG: .value fails or
     //     Uncaught (in promise): TypeError: Cannot set properties of undefined (setting 'innerText')
     // TypeError: Cannot set properties of undefined (setting 'innerText')
     //     at LocationComponent.newLocation (location.component.ts:237:5)
 
-
-    //this.latF = (latDD - this.latI).toFixed(4)
-    this.latF = Math.round((latDD - this.latI) * 10000)
+    this.lngI = Math.floor(lngDD)
     this.lngF = Math.round((lngDD - this.lngI) * 10000)
+
     // this.setCtrl("enter__Where-LatI", this.latI)
     // this.setCtrl("enter__Where-LatD", this.latF)
     // this.setCtrl("enter__Where-LngI", this.lngI)
     // this.setCtrl("enter__Where-LngD", this.lngF)
 
-    let latDMS = DDToDMS(latDD, false)
-    this.log.excessive(`newLocation with lat: ${latDMS.dir}, ${latDMS.deg}, ${latDMS.min}, ${latDMS.sec}`, this.id)
-
+    let latDMS = DDToDMS(latDD)
     this.latQ = latDMS.dir
     this.latD = latDMS.deg
     this.latM = latDMS.min
@@ -277,8 +290,7 @@ export class LocationComponent implements OnInit, OnDestroy {
     // this.setCtrl("latitudeS", latDMS.sec)
 
     let lngDMS = DDToDMS(lngDD, true)
-    this.log.excessive(`newLocation with lng: ${lngDMS.dir}, ${lngDMS.deg}, ${lngDMS.min}, ${lngDMS.sec}`, this.id);
-
+    this.log.excessive(`new DMS Location: ${latDMS.dir} ${latDMS.deg}° ${latDMS.min}' ${latDMS.sec}" lat; ${lngDMS.dir} ${lngDMS.deg}° ${lngDMS.min}' ${lngDMS.sec}" lng`, this.id);
     this.lngQ = lngDMS.dir
     this.lngD = lngDMS.deg
     this.lngM = lngDMS.min
@@ -288,18 +300,16 @@ export class LocationComponent implements OnInit, OnDestroy {
     // this.setCtrl("longitudeM", lngDMS.min)
     // this.setCtrl("longitudeS", lngDMS.sec)
 
-
-
-
-    //! Need to do rest of this!
-
-    let latDDM = DDToDDM(latDD, true)
+    let latDDM = DDToDDM(latDD)
+    this.latDDMQ = latDDM.dir
+    this.latDDMD = latDDM.deg
+    this.latDDMM = latDDM.min
 
     let lngDDM = DDToDDM(lngDD, true)
-
-
-
-
+    this.log.excessive(`new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min}' lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min}' lng`, this.id);
+    this.lngDDMQ = lngDDM.dir
+    this.lngDDMD = lngDDM.deg
+    this.lngDDMM = lngDDM.min
 
 
     // TODO: this.location.address =""

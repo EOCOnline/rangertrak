@@ -129,7 +129,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   onNewLocationParent(newLocation: LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.error(`Parent Entry Form got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address} `, this.id)
+    this.log.info(`Parent Entry Form got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address} as address.`, this.id)
     //From Entry Form - Parent got new location: {"lat":47.4472,"lng":-122.4627,"address":""}
 
     // Children (with @Input stmts - i.e., mini-map) automatically gets the updated location
@@ -138,6 +138,7 @@ export class EntryComponent implements OnInit, OnDestroy {
     this.initialLocation = newLocation
 
     // REVIEW: patch entryForm object - as THAT is what gets saved with on form submit
+    // ! REVIEW: Are there 2 locationFrmGrp's ??? -- see this.initLocation() -- Is this the right one?
     this.entryDetailsForm.patchValue({
       locationFrmGrp: newLocation
     })
@@ -176,7 +177,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
  [...]
  */
     this.initEntryForm()
-    // subscribe to addresses value changes?  NO. It bubles up through newLocATION INSTEAD!!!
+    // subscribe to addresses value changes?  NO. It bubles up through newLocation INSTEAD!!!
     // this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
     //   this.log.verbose(`Subscription to locationFrmGrp got: ${ x } `, this.id);
     // })
