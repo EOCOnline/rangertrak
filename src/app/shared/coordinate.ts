@@ -112,9 +112,9 @@ export function DDToDMS(D: number, lng: boolean = false) {
 /**
  * Convert DMS to Deg and Decimal minutes
  * Get object {deg:, min:, dir:}
- * min truncated to 3 digits (e.g. 3.143)
- * dir returns S or N if lng = false (for latitudes)
- * dir returns E or W if lng (longitude) = true
+ * min truncated to 4 digits (e.g. 3.1432)
+ * dir returns S or N if lng = false (i.e., latitudes)
+ * dir returns E or W if lng = true  (a longitude)
  * from https://www.cumulations.com/blog/latitude-and-longitude/
  * @param D
  * @param lng
@@ -125,7 +125,7 @@ export function DDToDDM(D: number, lng: boolean = false) {
   return {
     dir: D < 0 ? lng ? 'W' : 'S' : lng ? 'E' : 'N',
     deg: 0 | (D < 0 ? D = -D : D),
-    min: Math.round((D % 1) * 60000) / 1000
+    min: 0 | Math.round((D % 1) * 60000) / 10
   }
 }
 

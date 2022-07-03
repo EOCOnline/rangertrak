@@ -40,11 +40,12 @@
       [class.border-danger]="location.get('latD')?.touched && location.get('latD')?.invalid"
       formControlName="lat3D"
       (change)="this.addressCtrlChanged('latD')"
-        </span-->.
+        </span-->
+
 
       <!--input [valueAsNumber]="latF" type="number" formControlName="lat2" min="0" max="99999" id="enter__Where-latF" /-->
 
-
+      <strong>.</strong>
       <input [valueAsNumber]="latF" type="number" step="100" min="0" max="99999" id="enter__Where-latF" tabindex="2" />
 
       <!--
@@ -55,8 +56,8 @@
        {{latF}}  {{latQ}}
        {{latF | number:'1.4-5'}}
     span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
-    class="text-sm text-danger">Latitude is required size="1"
-    </span-->° <span title="Decimal Degrees">DD</span> or&nbsp;
+    class="text-sm text-danger">Latitude is required
+    </span--><strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span> or&nbsp;
 
       <input [value]="latQ" id="enter__Where-latQ" type="text" pattern="'e','E','w','W'" title="E or W" />
       <!-- #latQ  onchange="DMSCoordsChanged()"
@@ -70,27 +71,30 @@
                   value="N"
                   #latD
           -->
-      <input [valueAsNumber]="latD" id="enter__Where-latD" type="number" min="0" max="180" />°
+      <input [valueAsNumber]="latD" id="enter__Where-latD" type="number" min="0" max="180" /><strong>° </strong>
       <!-- onchange="DMSCoordsChanged()" #latM name
-        TODO: Use settings.DefLat     size="2"  size="5"   {{latD}}  {{latM}} {{latS}}  -->
+        TODO: Use settings.DefLat     {{latD}}  {{latM}} {{latS}}  -->
       <input [valueAsNumber]="latM" id="enter__Where-latM" type="number" min="0" max="59"
-        onchange="DMSCoordsChanged()" />'
+        onchange="DMSCoordsChanged()" /><strong>' </strong>
       <input [valueAsNumber]="latS" id="enter__Where-latS" type="number" min="0" max="59.99"
-        onchange="DMSCoordsChanged()" size="4" />"&nbsp;<span title="Degrees Minute Seconds">DMS</span>
+        onchange="DMSCoordsChanged()" /><strong>" </strong>
+      <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
 
       <span class="strong"> or</span>&nbsp;
 
       <input [value]="latDDMQ" id="enter__Where-latQ1" type="text" pattern="'n','N','s','S'" title="N or S" />
-      <input [valueAsNumber]="latDDMD" id="enter__Where-latDM" type="number" max="180" onchange="DMSCoordsChanged()" />°
+      <input [valueAsNumber]="latDDMD" id="enter__Where-latDM" type="number" max="180"
+        onchange="DMSCoordsChanged()" /><strong>° </strong>
       <input [valueAsNumber]="latDDMM" id="enter__Where-latMI" type="number" min="0" max="59"
-        onchange="DMSCoordsChanged()" size="5" />'
-      <span title="Digital Degrees Minutes">DDM</span>
+        onchange="DMSCoordsChanged()" /><strong>' </strong>
+      <span title="Digital Degrees Minutes"><strong>DDM</strong></span>
     </div>
 
     <div class="input-group">
       Longitude:
 
-      <input [valueAsNumber]="lngI" type="number" min="-180" max="180" id="enter__Where-lngI" tabindex="3" />.
+      <input [valueAsNumber]="lngI" type="number" min="-180" max="180" id="enter__Where-lngI"
+        tabindex="3" /><strong>.</strong>
       <input [valueAsNumber]="lngF" type="number" step="100" min="0" max="99999" id="enter__Where-lngF" tabindex="4" />
 
 
@@ -104,7 +108,8 @@
 
 
       <!--input #lngF type="number" placeholder="LngF" (change)="this.addressCtrlChanged('lngF')" name="latitudeDDD"
-      step="100" min="0" max="99999" id="enter__Where-lngF" tabindex="4" / -->° <span title="Decimal Degrees">DD</span>
+      step="100" min="0" max="99999" id="enter__Where-lngF" tabindex="4" / -->° <span
+        title="Decimal Degrees"><strong>DD</strong></span>
       <span class="strong"> or</span>&nbsp;
 
       <input [value]="lngQ" id="enter__Where-lngQ" type="text" pattern="'n','N','s','S'" title="N or S" />
@@ -112,21 +117,23 @@
           #lngQ    onchange="DMSCoordsChanged()"
 
         -->
-      <input [valueAsNumber]="lngD" id="enter__Where-lngD" type="number" max="180" onchange="DMSCoordsChanged()" />°
+      <input [valueAsNumber]="lngD" id="enter__Where-lngD" type="number" max="180"
+        onchange="DMSCoordsChanged()" /><strong>° </strong>
       <input [valueAsNumber]="lngM" id="enter__Where-lngM" type="number" min="0" max="59"
-        onchange="DMSCoordsChanged()" />'
+        onchange="DMSCoordsChanged()" /><strong>' </strong>
       <input [valueAsNumber]="lngS" id="enter__Where-lngS" type="number" min="0" max="59.99"
-        onchange="DMSCoordsChanged()" />"
-      <span title="Degrees Minute Seconds">DMS</span>
+        onchange="DMSCoordsChanged()" /><strong>" </strong>
+      <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
       <span class="strong"> or</span>&nbsp;
 
       <input [value]="lngDDMQ" id="enter__Where-lngQ1" type="text" pattern="'n','N','s','S'" title="N or S"
         onchange="DMSCoordsChanged()" />
-      <input [valueAsNumber]="lngDDMD" id="enter__Where-lngDM" type="number" max="180" onchange="DMSCoordsChanged()" />°
+      <input [valueAsNumber]="lngDDMD" id="enter__Where-lngDM" type="number" max="180"
+        onchange="DMSCoordsChanged()" /><strong>° </strong>
       <input [valueAsNumber]="lngDDMM" id="enter__Where-lngMI" type="number" min="0" max="59"
-        onchange="DMSCoordsChanged()" size="4" />'
+        onchange="DMSCoordsChanged()" /><strong>' </strong>
 
-      <span title="Digital Degrees Minutes">DDM</span>
+      <span title="Digital Degrees Minutes"><strong>DDM</strong></span>
     </div>
 
     Street Address,
@@ -144,7 +151,7 @@
 <div class="enter__Where-Results">
   <!--   {{address}}
       formControlName="address"
-      input name="addresses" id="addresses" type="text" size="15" value=""
+      input name="addresses" id="addresses" type="text" value=""
       placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
       onchange="chkAddresses()"> (optional) -->
   <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->

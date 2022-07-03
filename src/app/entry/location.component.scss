@@ -23,40 +23,39 @@ $filledColor : #F0F0F0;
 }
 
 #enter__Where-latI,
-#enter__Where-lngI {
-  width: 50px;
+#enter__Where-lngI,
+#enter__Where-latD,
+#enter__Where-lngD,
+#enter__Where-latDM,
+#enter__Where-lngDM {
+  width     : 30px;
+  text-align: right;
 }
 
 #enter__Where-latF,
 #enter__Where-lngF {
-  width: 40px;
+  width: 35px;
 }
 
 #enter__Where-latQ,
 #enter__Where-lngQ,
 #enter__Where-latQ1,
 #enter__Where-lngQ1 {
-  width: 15px;
-}
-
-#enter__Where-latD,
-#enter__Where-lngD,
-#enter__Where-latDM,
-#enter__Where-lngDM {
-  width: 15px;
+  width       : 12px;
+  margin-right: 3px;
 }
 
 #enter__Where-latM,
-#enter__Where-lngM,
-#enter__Where-latMI,
-#enter__Where-lngMI {
-  width: 15px;
+#enter__Where-lngM {
+  width: 18px;
 }
 
 #enter__Where-latS,
 #enter__Where-lngS,
 #enter__Where-latMF,
-#enter__Where-lngMF {
+#enter__Where-lngMF,
+#enter__Where-latMI,
+#enter__Where-lngMI {
   width: 40px;
 }
 
