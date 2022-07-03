@@ -211,16 +211,23 @@ export class LocationComponent implements OnInit, OnDestroy {
     // On Location/Address Change subscriptions  // TODO: USE THESE - or not???
     if (this.locationFrmGrp) {
       this.locationFrmGrp.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        this.log.excessive('########  latitude int value changed: ' + x, this.id)
+        this.log.info('########  latitude int value changed: ' + x, this.id)
       })
-      this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        this.log.excessive('########## lat float value changed: ' + x, this.id)
-      })
+      let latf = this.locationFrmGrp.get("latF")
+      if (latf) {
+        this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+          this.log.info('########## lat float value changed: ' + x, this.id)
+        })
+        this.log.warn('########## lat float value WAS FOUND!!!!', this.id)
+      }
+      else {
+        this.log.error('########## lat float value NOT FOUND!!!!', this.id)
+      }
       this.locationFrmGrp.get("lngI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        this.log.excessive('#######  lng Int value changed: ' + x), this.id
+        this.log.info('#######  lng Int value changed: ' + x), this.id
       })
       this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        this.log.excessive('#######  lng Float value changed: ' + x), this.id
+        this.log.info('#######  lng Float value changed: ' + x), this.id
       })
 
       // TODO: NOt working yet...
@@ -229,7 +236,7 @@ export class LocationComponent implements OnInit, OnDestroy {
       // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
       //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
     } else {
-      this.log.warn(`locationFrmGrp not available yet in ngOnInit`, this.id)
+      this.log.error(`locationFrmGrp not available yet in ngOnInit`, this.id)
     }
 
     this.log.verbose("out of ngOnInit", this.id)

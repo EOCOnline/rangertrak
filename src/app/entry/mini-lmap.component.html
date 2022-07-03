@@ -1,5 +1,6 @@
 <div class="lmap-container">
-  <h2>Current Location</h2>
+  <h2>Current Location<span id="Entry__GMinimap-subhead">Reflects 'where' field to the
+      left </span></h2>
   <div class="lmap-frame">
     <div id="map" (leafletMapReady)="onMapReady($event)" (click)="onMouseClick($event)"></div>
   </div>
@@ -10,5 +11,5 @@
     <span class="strong">{{mouseLatLng?.lng?.toFixed(5)}}</span> Zoom:
     <span class="strong">{{zoom}}</span>
   </div>
-  <div id="Entry__Minimap-status">AAA</div>
+  <div id="Entry__Minimap-status">Entry__Minimap-status</div>
 </div>

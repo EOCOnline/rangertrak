@@ -86,6 +86,9 @@ export class Coordinate {
 // dir returns E or W if lng (longitude) = true
 // N.B.: may not work for angles between -1° and 0°
 // from www.stackoverflow.com/questions/5786025
+// https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/
+// https://www.earthref.org/content/where-world-are-you-degrees-vs-degrees-minutes-and-seconds
+// https://www.fcc.gov/media/radio/dms-decimal
 export function DDToDMS(D: number, lng: boolean = false) {
   /*
   if (!D) {
@@ -116,6 +119,9 @@ export function DDToDMS(D: number, lng: boolean = false) {
  * dir returns S or N if lng = false (i.e., latitudes)
  * dir returns E or W if lng = true  (a longitude)
  * from https://www.cumulations.com/blog/latitude-and-longitude/
+ * https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/
+ * https://www.earthref.org/content/where-world-are-you-degrees-vs-degrees-minutes-and-seconds
+ * https://www.fcc.gov/media/radio/dms-decimal
  * @param D
  * @param lng
  * @returns

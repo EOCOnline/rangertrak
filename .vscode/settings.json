@@ -35,5 +35,7 @@
     "ng-evergreen.upgradeChannel": "Latest",
     "[markdown]": {
         "editor.defaultFormatter": "yzhang.markdown-all-in-one"
-    }
+    },
+    "printcode.paperSize": "letter",
+    "printcode.printFilePath": "full"
 }

@@ -48,7 +48,7 @@
       <strong>.</strong>
       <input [valueAsNumber]="latF" type="number" step="100" min="0" max="99999" id="enter__Where-latF" tabindex="2" />
 
-      <!--
+      <!-- #latF
         placeholder="LatF"
           name="latitudeDDD"
 
@@ -74,27 +74,22 @@
       <input [valueAsNumber]="latD" id="enter__Where-latD" type="number" min="0" max="180" /><strong>° </strong>
       <!-- onchange="DMSCoordsChanged()" #latM name
         TODO: Use settings.DefLat     {{latD}}  {{latM}} {{latS}}  -->
-      <input [valueAsNumber]="latM" id="enter__Where-latM" type="number" min="0" max="59"
-        onchange="DMSCoordsChanged()" /><strong>' </strong>
-      <input [valueAsNumber]="latS" id="enter__Where-latS" type="number" min="0" max="59.99"
-        onchange="DMSCoordsChanged()" /><strong>" </strong>
+      <input [valueAsNumber]="latM" id="enter__Where-latM" type="number" min="0" max="59" /><strong>' </strong>
+      <input [valueAsNumber]="latS" id="enter__Where-latS" type="number" min="0" max="59.99" /><strong>" </strong>
       <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
 
       <span class="strong"> or</span>&nbsp;
 
       <input [value]="latDDMQ" id="enter__Where-latQ1" type="text" pattern="'n','N','s','S'" title="N or S" />
-      <input [valueAsNumber]="latDDMD" id="enter__Where-latDM" type="number" max="180"
-        onchange="DMSCoordsChanged()" /><strong>° </strong>
-      <input [valueAsNumber]="latDDMM" id="enter__Where-latMI" type="number" min="0" max="59"
-        onchange="DMSCoordsChanged()" /><strong>' </strong>
-      <span title="Digital Degrees Minutes"><strong>DDM</strong></span>
+      <input [valueAsNumber]="latDDMD" id="enter__Where-latDM" type="number" max="180" /><strong>° </strong>
+      <input [valueAsNumber]="latDDMM" id="enter__Where-latMI" type="number" min="0" max="59" /><strong>' </strong>
+      <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
     </div>
 
     <div class="input-group">
       Longitude:
 
-      <input [valueAsNumber]="lngI" type="number" min="-180" max="180" id="enter__Where-lngI"
-        tabindex="3" /><strong>.</strong>
+      <input [valueAsNumber]="lngI" type="number" min="-180" max="180" id="enter__Where-lngI" /><strong>.</strong>
       <input [valueAsNumber]="lngF" type="number" step="100" min="0" max="99999" id="enter__Where-lngF" tabindex="4" />
 
 
@@ -117,23 +112,17 @@
           #lngQ    onchange="DMSCoordsChanged()"
 
         -->
-      <input [valueAsNumber]="lngD" id="enter__Where-lngD" type="number" max="180"
-        onchange="DMSCoordsChanged()" /><strong>° </strong>
-      <input [valueAsNumber]="lngM" id="enter__Where-lngM" type="number" min="0" max="59"
-        onchange="DMSCoordsChanged()" /><strong>' </strong>
-      <input [valueAsNumber]="lngS" id="enter__Where-lngS" type="number" min="0" max="59.99"
-        onchange="DMSCoordsChanged()" /><strong>" </strong>
+      <input [valueAsNumber]="lngD" id="enter__Where-lngD" type="number" max="180" /><strong>° </strong>
+      <input [valueAsNumber]="lngM" id="enter__Where-lngM" type="number" min="0" max="59" /><strong>' </strong>
+      <input [valueAsNumber]="lngS" id="enter__Where-lngS" type="number" min="0" max="59.99" /><strong>" </strong>
       <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
       <span class="strong"> or</span>&nbsp;
 
-      <input [value]="lngDDMQ" id="enter__Where-lngQ1" type="text" pattern="'n','N','s','S'" title="N or S"
-        onchange="DMSCoordsChanged()" />
-      <input [valueAsNumber]="lngDDMD" id="enter__Where-lngDM" type="number" max="180"
-        onchange="DMSCoordsChanged()" /><strong>° </strong>
-      <input [valueAsNumber]="lngDDMM" id="enter__Where-lngMI" type="number" min="0" max="59"
-        onchange="DMSCoordsChanged()" /><strong>' </strong>
+      <input [value]="lngDDMQ" id="enter__Where-lngQ1" type="text" pattern="'n','N','s','S'" title="N or S" />
+      <input [valueAsNumber]="lngDDMD" id="enter__Where-lngDM" type="number" max="180" /><strong>° </strong>
+      <input [valueAsNumber]="lngDDMM" id="enter__Where-lngMI" type="number" min="0" max="59" /><strong>' </strong>
 
-      <span title="Digital Degrees Minutes"><strong>DDM</strong></span>
+      <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
     </div>
 
     Street Address,
