@@ -249,11 +249,13 @@ input[type=number] {
 }
 
 #enter__Submit-info {
-  margin       : 10px;
-  border       : 1px rgb(204, 212, 90) solid;
-  border-radius: 5px;
-  opacity      : 0;
-  animation    : fadeout 20s ease-out;
+  margin              : 10px;
+  border              : 1px rgb(204, 212, 90) solid;
+  //background-color  : aqua;
+  //width           : 200px;
+  border-radius       : 5px;
+  opacity             : 0;
+  animation           : fadeout 20s ease-out;
 }
 
 @keyframes fadeout {

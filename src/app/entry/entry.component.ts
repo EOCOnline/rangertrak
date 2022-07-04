@@ -336,7 +336,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     https://gist.github.com/paulirish/5d52fb081b3570c81e3a
   */
   //MOved to Utility class
-  // resetMaterialFadeAnimation(element: HTMLElement) {
+  // resetMaterialFadeAnimation2(element: HTMLElement) {
   //   this.log.excessive(`Fade Animation reset`, this.id)
   //   element.style.animation = 'none';
   //   element.offsetHeight; // trigger reflow
@@ -356,6 +356,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       // Display fading confirmation to right of Submit button
       this.submitInfo.innerText = `Entry id # ${newReport.id} Saved.${formData} `
       Utility.resetMaterialFadeAnimation(this.submitInfo)
+      //this.resetMaterialFadeAnimation2(this.submitInfo)
     }
     else {
       this.log.error("Submit Info field not found. Could not display report confirmation confirmation", this.id)
