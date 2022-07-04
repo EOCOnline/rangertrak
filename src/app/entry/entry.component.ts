@@ -14,7 +14,7 @@ import {
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
-import { AlertsComponent, DDToDDM, TimePickerComponent } from '../shared/'
+import { AlertsComponent, DDToDDM, TimePickerComponent, Utility } from '../shared/'
 import {
     FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
     SettingsService, SettingsType, undefinedAddressFlag
@@ -335,12 +335,13 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     https://css-tricks.com/restart-css-animation/
     https://gist.github.com/paulirish/5d52fb081b3570c81e3a
   */
-  resetMaterialFadeAnimation(element: HTMLElement) {
-    this.log.excessive(`Fade Animation reset`, this.id)
-    element.style.animation = 'none';
-    element.offsetHeight; // trigger reflow
-    element.style.animation = "";
-  }
+  //MOved to Utility class
+  // resetMaterialFadeAnimation(element: HTMLElement) {
+  //   this.log.excessive(`Fade Animation reset`, this.id)
+  //   element.style.animation = 'none';
+  //   element.offsetHeight; // trigger reflow
+  //   element.style.animation = "";
+  // }
 
   onFormSubmit(formData1: string): void {
     this.log.excessive(`Submit Form`, this.id)
@@ -354,7 +355,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     if (this.submitInfo) {
       // Display fading confirmation to right of Submit button
       this.submitInfo.innerText = `Entry id # ${newReport.id} Saved.${formData} `
-      this.resetMaterialFadeAnimation(this.submitInfo)
+      Utility.resetMaterialFadeAnimation(this.submitInfo)
     }
     else {
       this.log.error("Submit Info field not found. Could not display report confirmation confirmation", this.id)

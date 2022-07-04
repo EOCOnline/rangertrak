@@ -2,6 +2,7 @@ export { CodeArea, OpenLocationCode } from "./open-location-code"  // HAD TO REM
 export { GoogleGeocode } from "./google-geocode"
 export { Utility } from "./utility"
 export { DDToDMS, DDToDDM } from "./coordinate"
+export { AbstractMap } from "./map"
 export { AlertsComponent } from "./alerts/alerts.component"
 export { HeaderComponent } from "./header/header.component"
 export { IconsComponent } from "./icons/icons.component"

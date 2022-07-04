@@ -9,7 +9,7 @@ import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 
-import { AbstractMap } from '../shared/map'
+import { AbstractMap, Utility } from '../shared'
 import {
     FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag
 } from '../shared/services'
@@ -328,15 +328,19 @@ Ensure that there are no changes to the bindings in the template after change de
         let status = document.getElementById('Entry__Minimap-status')
         if (status) {
           status.innerText = `${coords} copied to clipboard`
+          // reset fade effect
+          Utility.resetMaterialFadeAnimation(status)
         } else {
           this.log.info(`Entry__Minimap-status not found!`, this.id)
         }
         this.log.excessive(`${coords} copied to clipboard`, this.id)
-        // TODO: after 2 seconds auto clear status...
-        if (status) {
-          delay(2000)
-          status.innerText = ``
-        }
+
+
+        // TODO: after 2 seconds auto clear status...Do it in CSS!
+        // if (status) {
+        //   delay(2000)
+        //   //status.innerText = ``
+        // }
       })
       .catch(err => {
         this.log.error(`latlng NOT copied to clipboard, error: ${err}`, this.id)
