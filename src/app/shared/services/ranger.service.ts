@@ -37,9 +37,6 @@ Ranger Service: New set of 301 rangers. Save to local storage & publish
 Ranger Service: SortRangersByCallsign: 301 Rangers in array
 */
 
-// https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
-
-
 
 @Injectable({ providedIn: 'root' })
 export class RangerService {

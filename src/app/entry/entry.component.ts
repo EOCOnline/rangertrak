@@ -29,7 +29,7 @@ const magicNumber2 = 12 // BUG: get rid of any magic numbers!
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
-  providers: [RangerService, FieldReportService, SettingsService] //, TeamService
+  providers: [RangerService, FieldReportService, SettingsService] //, TeamService    // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!      // per https://angular.io/guide/singleton-services
 })
 export class EntryComponent implements OnInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/

@@ -1,8 +1,9 @@
 
-import { Injectable, Optional, SkipSelf } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import * as L from 'leaflet';
-import { throwError } from 'rxjs';
+import * as L from 'leaflet'
+import { throwError } from 'rxjs'
+
+import { HttpClient } from '@angular/common/http'
+import { Injectable, Optional, SkipSelf } from '@angular/core'
 
 @Injectable({ providedIn: 'root' })
 export class PopupService {

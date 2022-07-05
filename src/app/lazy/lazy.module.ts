@@ -1,12 +1,12 @@
+import { CommonModule } from '@angular/common' // vs. BrowserModule that App imports
 import { NgModule } from '@angular/core'
-import { CommonModule } from '@angular/common'  // vs. BrowserModule that App imports
-// import { RouterModule } from '@angular/router'
-
-import { LazyRoutingModule } from './lazy-routing.module';
-import { LazyComponent } from "./lazy.component";
 
 //import { HeaderComponent } from '../shared';
-import { AboutComponent } from './about/about.component';
+import { AboutComponent } from './about/about.component'
+// import { RouterModule } from '@angular/router'
+import { LazyRoutingModule } from './lazy-routing.module'
+import { LazyComponent } from './lazy.component'
+
 //import { FlexLayoutModule } from '@angular/flex-layout';
 
 // https://malcoded.com/posts/angular-fundamentals-modules/ is good

@@ -1,9 +1,10 @@
-import * as L from 'leaflet';
+import * as L from 'leaflet'
+import { throwError } from 'rxjs'
 
-import { HttpClient } from '@angular/common/http';
-import { Injectable, Optional, SkipSelf } from '@angular/core';
-import { PopupService } from './popup.service';
-import { throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http'
+import { Injectable, Optional, SkipSelf } from '@angular/core'
+
+import { PopupService } from './popup.service'
 
 export type MarkerType = {
   lat: number,

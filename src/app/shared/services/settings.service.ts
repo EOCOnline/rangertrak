@@ -15,10 +15,6 @@ export type SecretType = {
 }
 
 
-// TODO: Make into a singleton service
-// https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
-
-
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
 

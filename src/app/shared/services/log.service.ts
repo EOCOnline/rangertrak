@@ -19,7 +19,6 @@ export class LogService {
   //const colors = require('colors/safe');
   readonly hotStylin = 'background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;'
 
-  // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
 
   constructor(
     @Optional() @SkipSelf() existingService: LogService,
