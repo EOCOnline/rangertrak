@@ -132,7 +132,7 @@ export class LocationComponent implements OnInit, OnDestroy {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    // this.locationFrmGrp = _formBuilder.group(LocationType)
+    //this.locationFrmGrp = _formBuilder.group(LocationType)
 
     //{
     //   lat: [],
@@ -237,6 +237,7 @@ export class LocationComponent implements OnInit, OnDestroy {
       // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
       //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
     } else {
+      // ! ***************************** next line getting hit!
       this.log.error(`locationFrmGrp not available yet in ngOnInit`, this.id)
     }
 

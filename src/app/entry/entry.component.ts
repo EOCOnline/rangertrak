@@ -24,6 +24,7 @@ import {
 
 const magicNumber2 = 12 // BUG: get rid of any magic numbers!
 
+
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',

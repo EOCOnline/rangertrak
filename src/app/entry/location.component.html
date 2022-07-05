@@ -17,8 +17,23 @@
     <div class="input-group" [formGroup]="locationFrmGrp">
 
       &nbsp;&nbsp;&nbsp;Latitude:
-      <input [valueAsNumber]="latI" type="number" min="-180" max="180" id="enter__Where-latI" />
+      <input [valueAsNumber]="latI" type="number" min="-180" max="180" id="enter__Where-latI" formControlName="test" />
+      <!-- above gets:
+ERROR Error: NG01052: formGroup expects a FormGroup instance. Please pass one in.
 
+      Example:
+
+
+  <div [formGroup]="myGroup">
+    <input formControlName="firstName">
+  </div>
+
+  In your class:
+
+  this.myGroup = new FormGroup({
+      firstName: new FormControl()
+  });
+-->
       <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
     class="text-sm text-danger">lat is required
 

@@ -38,6 +38,8 @@ export class FieldReportService implements OnDestroy {
   private serverUri = 'http://localhost:4000/products' // FUTURE:
   private boundsMargin = 0.0025
 
+  // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
+
   constructor(
     private rangerService: RangerService,
     private settingsService: SettingsService,
