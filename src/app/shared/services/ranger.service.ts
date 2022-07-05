@@ -37,6 +37,8 @@ Ranger Service: New set of 301 rangers. Save to local storage & publish
 Ranger Service: SortRangersByCallsign: 301 Rangers in array
 */
 
+// TODO: Update server with new/deleted Rangers:  https://angular.io/tutorial/toh-pt6#heroes-and-http
+
 
 @Injectable({ providedIn: 'root' })
 export class RangerService {

@@ -14,6 +14,8 @@ import { RangerType } from './ranger.interface'
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
+// TODO: Update server with new reports:  https://angular.io/tutorial/toh-pt6#heroes-and-http
+
 
 @Injectable({ providedIn: 'root' })
 export class FieldReportService implements OnDestroy {
