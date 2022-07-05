@@ -1,15 +1,16 @@
 <div class="lmap-container">
-  <h2>Current Location<span id="Entry__GMinimap-subhead">Reflects 'where' field to the
+  <h2 class="Entry__LMap-head">Current Location<span id="Entry__LMinimap-subhead">Reflects 'where' field to the
       left </span></h2>
   <div class="lmap-frame">
     <div id="map" (leafletMapReady)="onMapReady($event)" (click)="onMouseClick($event)"></div>
   </div>
 
   <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
-  <div>
+  <div class="Entry__LMap-footer">
     Latitude: <span class="strong">{{mouseLatLng?.lat?.toFixed(5)}}</span> Longitude:
     <span class="strong">{{mouseLatLng?.lng?.toFixed(5)}}</span> Zoom:
     <span class="strong">{{zoom}}</span>
+
+    <div id="Entry__Minimap-status"></div>
   </div>
-  <div id="Entry__Minimap-status">Entry__Minimap-status</div>
 </div>
