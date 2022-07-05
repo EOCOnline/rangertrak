@@ -92,6 +92,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     this.gridApi = ""
     this.gridColumnApi = ""
 
+    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings

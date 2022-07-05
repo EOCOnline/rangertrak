@@ -49,6 +49,7 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
     @Inject(DOCUMENT) private document: Document) {
     console.log(`Constructing log component`)
 
+    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
     this.logSubscription = logService.getLogObserver().subscribe({
       next: (log) => {
         //console.log(`LogPanel got: ${JSON.stringify(log)}`)

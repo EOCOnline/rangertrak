@@ -22,7 +22,7 @@ import {
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
 
-const magicNumber2 = 12 // BUG: 12?!
+const magicNumber2 = 12 // BUG: get rid of any magic numbers!
 
 @Component({
   selector: 'rangertrak-entry',
@@ -85,6 +85,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
     this.log.excessive(`Constructing!`, this.id)
 
+    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings

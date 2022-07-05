@@ -321,26 +321,18 @@ Ensure that there are no changes to the bindings in the template after change de
       return
     }
     let latlng = this.lMap.mouseEventToLatLng(ev)
-    let coords = `${Math.round(latlng.lat * 1000) / 1000}, ${Math.round(latlng.lng * 1000) / 1000}`
+    let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
     navigator.clipboard.writeText(coords)
       .then(() => {
         // TODO: or put up a tooltip for ~2 seconds...
         let status = document.getElementById('Entry__Minimap-status')
         if (status) {
           status.innerText = `${coords} copied to clipboard`
-          // reset fade effect
           Utility.resetMaterialFadeAnimation(status)
         } else {
           this.log.info(`Entry__Minimap-status not found!`, this.id)
         }
         this.log.excessive(`${coords} copied to clipboard`, this.id)
-
-
-        // TODO: after 2 seconds auto clear status...Do it in CSS!
-        // if (status) {
-        //   delay(2000)
-        //   //status.innerText = ``
-        // }
       })
       .catch(err => {
         this.log.error(`latlng NOT copied to clipboard, error: ${err}`, this.id)

@@ -122,6 +122,7 @@ export class LocationComponent implements OnInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("Construction", this.id)
 
+    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
