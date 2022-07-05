@@ -9,76 +9,39 @@
 
 <!--
 (change)="this.addressCtrlChanged('latI')"
-
-    [style.width.px]="20"
-    {{llat
-    |
-    number:1.0-0}}
-       latI
-       <!- formControlName="lat": MUST be element in Location Form Group!
+<!- formControlName="lat": MUST be element in Location Form Group!
 [FormControl]="latI"
 -->
 <div class="container enter__Where-div">
   <div appearance="filled" class="timepicker__Where-input" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
     <div class="input-group" [formGroup]="locationFrmGrp">
-      <!--
-      #latI
-        name="latI"
-        placeholder="LatI"
-      -->
+
       &nbsp;&nbsp;&nbsp;Latitude:
-
       <input [valueAsNumber]="latI" type="number" min="-180" max="180" id="enter__Where-latI" />
-
-      <!-- TODO:
-        formControlName="lat"
-        name="latitudeDDI" id="latitudeDDI" -->
 
       <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
     class="text-sm text-danger">lat is required
 
       [class.border-danger]="location.get('latD')?.touched && location.get('latD')?.invalid"
-      formControlName="lat3D"
       (change)="this.addressCtrlChanged('latD')"
         </span-->
-
-
-      <!--input [valueAsNumber]="latF" type="number" formControlName="lat2" min="0" max="99999" id="enter__Where-latF" /-->
 
       <strong>.</strong>
       <input [valueAsNumber]="latF" type="number" step="100" min="0" max="99999" id="enter__Where-latF" tabindex="2" />
 
-      <!-- #latF
-        placeholder="LatF"
-          name="latitudeDDD"
-
-        #latF above fails!!!
-       {{latF}}  {{latQ}}
-       {{latF | number:'1.4-5'}}
-    span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
+      <!-- span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
     class="text-sm text-danger">Latitude is required
-    </span--><strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span> or&nbsp;
+    </span-->
+      <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
 
       <input [value]="latQ" id="enter__Where-latQ" type="text" pattern="'e','E','w','W'" title="E or W" />
       <!-- #latQ  onchange="DMSCoordsChanged()"
         Quadrant -->
-      <!-- BUG: Initialize elsewhere!
-          value="47"
-        value=""
-        value=""
-          value="W"
-              value="122"
-                  value="N"
-                  #latD
-          -->
+
       <input [valueAsNumber]="latD" id="enter__Where-latD" type="number" min="0" max="180" /><strong>° </strong>
-      <!-- onchange="DMSCoordsChanged()" #latM name
-        TODO: Use settings.DefLat     {{latD}}  {{latM}} {{latS}}  -->
       <input [valueAsNumber]="latM" id="enter__Where-latM" type="number" min="0" max="59" /><strong>' </strong>
       <input [valueAsNumber]="latS" id="enter__Where-latS" type="number" min="0" max="59.99" /><strong>" </strong>
-      <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
-
-      <span class="strong"> or</span>&nbsp;
+      <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;
 
       <input [value]="latDDMQ" id="enter__Where-latQ1" type="text" pattern="'n','N','s','S'" title="N or S" />
       <input [valueAsNumber]="latDDMD" id="enter__Where-latDM" type="number" max="180" /><strong>° </strong>
@@ -103,30 +66,23 @@
 
 
       <!--input #lngF type="number" placeholder="LngF" (change)="this.addressCtrlChanged('lngF')" name="latitudeDDD"
-      step="100" min="0" max="99999" id="enter__Where-lngF" tabindex="4" / -->° <span
-        title="Decimal Degrees"><strong>DD</strong></span>
-      <span class="strong"> or</span>&nbsp;
+      step="100" min="0" max="99999" id="enter__Where-lngF" tabindex="4" / -->
+      <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
 
       <input [value]="lngQ" id="enter__Where-lngQ" type="text" pattern="'n','N','s','S'" title="N or S" />
-      <!--
-          #lngQ    onchange="DMSCoordsChanged()"
-
-        -->
       <input [valueAsNumber]="lngD" id="enter__Where-lngD" type="number" max="180" /><strong>° </strong>
       <input [valueAsNumber]="lngM" id="enter__Where-lngM" type="number" min="0" max="59" /><strong>' </strong>
       <input [valueAsNumber]="lngS" id="enter__Where-lngS" type="number" min="0" max="59.99" /><strong>" </strong>
-      <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
-      <span class="strong"> or</span>&nbsp;
+      <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;
 
       <input [value]="lngDDMQ" id="enter__Where-lngQ1" type="text" pattern="'n','N','s','S'" title="N or S" />
       <input [valueAsNumber]="lngDDMD" id="enter__Where-lngDM" type="number" max="180" /><strong>° </strong>
       <input [valueAsNumber]="lngDDMM" id="enter__Where-lngMI" type="number" min="0" max="59" /><strong>' </strong>
-
       <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
     </div>
 
     Street Address,
-    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>, or
+    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>,&nbsp; or &nbsp;
     <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>:
     <!--   {{lngD}} {{lngM}}    {{lngS}} -->
 

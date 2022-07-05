@@ -7,8 +7,7 @@ import { Injectable, Optional, SkipSelf } from '@angular/core'
 import { Utility } from '../utility'
 import { LogLevel, LogType } from './'
 
-//const colors = require('colors/safe');
-const hotStylin = 'background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;'
+// Additional ideas: https://www.codemag.com/Article/1711021/Logging-in-Angular-Applications
 
 @Injectable({ providedIn: 'root' })
 export class LogService {
@@ -17,6 +16,9 @@ export class LogService {
   private logSubject$: BehaviorSubject<LogType[]>
   private defaultSource = 'Unknown'
   static nextId = 1
+  //const colors = require('colors/safe');
+  readonly hotStylin = 'background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;'
+
 
   constructor(
     @Optional() @SkipSelf() existingService: LogService,
