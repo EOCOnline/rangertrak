@@ -11,10 +11,10 @@
 
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview
     https://www.wufoo.com/html5/tabindex-attribute/ -->
-    <mat-form-field class="enter__Callsign" appearance="fill">
+    <mat-form-field class="enter__Callsign filled">
       <mat-label>CallSign</mat-label>
 
-      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
+      <input matInput [formControl]=" callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
         formControlName="callsign" [matAutocomplete]="auto" (change)="this.callsignCtrlChanged()"
         id="enter__Callsign-input" tabindex="1" data-lpignore="true" />
 

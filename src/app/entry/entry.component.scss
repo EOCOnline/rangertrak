@@ -138,7 +138,8 @@ input[type=number] {
 .enter__Status {
   padding             : 8px 0;
   //border            : 3px solid red;
-  border-radius       : 4px;
+  border-radius       : 5px;
+  padding-left        : 5px;
   //width           : 650px;
   background-color    : $filledColor;
   line-height         : 35px;
@@ -174,8 +175,11 @@ input[type=number] {
 }
 
 .enter__Callsign {
-  min-width: 350px;
-  width    : 35%;
+  width             : 35%;
+  min-width         : 350px;
+  padding           : 5px 5px;
+  border-radius     : 5px;
+  //background-color: aqua;
 }
 
 #enter__Callsign-image {
@@ -231,7 +235,7 @@ input[type=number] {
 
 .enter__What--area {
   border              : 1px dotted rgb(52, 28, 192);
-  border-radius       : 6px;
+  border-radius       : 5px;
   background-color    : $filledColor;
   //text-orientation: upright;
   //text-transform: capitalize;

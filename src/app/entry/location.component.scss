@@ -14,10 +14,12 @@ $filledColor : #F0F0F0;
 
 .enter__Where-div {
   background-color: $filledColor;
-  width           : 625px;
+  width           : 600px;
+  padding         : 4px 0 2px 5px;
+  border-radius   : 5px;
 }
 
-.enter__Where-input {
+.enter__Where-input_unused {
   background-color  : $filledColor;
   //width           : 700px;
 }

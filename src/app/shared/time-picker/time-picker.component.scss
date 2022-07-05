@@ -7,16 +7,30 @@ with ($primary: #962f10,
 
 $filledColor : #F0F0F0;
 
+.rounded {
+  border-radius: 5px;
+}
+
+.innerElement {
+  //background-color: palevioletred;
+  margin : 5px 0px -5px 10px;
+  padding: 0 14px;
+}
+
 .filled {
   background-color: $filledColor;
 }
 
 .bordered {
-  border: 2 px solid rgb(62, 189, 189);
+  border                      : 2 px solid rgb(62, 189, 189);
+  //padding               : 4px;
+  //  border-radius           : 5px;
 }
 
 .timepicker__When-input {
-  width: 400px;
+  width                     : 400px;
+  //padding               : 4px;
+  //border-radius           : 5px;
 }
 
 .elegant {
