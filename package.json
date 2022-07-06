@@ -82,7 +82,7 @@
     "@angular/compiler-cli": "^14.0.4",
     "@types/google.maps": "^3.49.2",
     "@types/jasmine": "^4.0.3",
-    "@types/node": "^18.0.1",
+    "@types/node": "^18.0.3",
     "@types/supercluster": "^7.1.0",
     "cross-conf-env": "^1.2.1",
     "dev-norms": "^1.7.1",
