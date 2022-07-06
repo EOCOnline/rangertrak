@@ -149,6 +149,7 @@ export class RangersComponent implements OnInit, OnDestroy {
 
   }
 
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   ngOnInit(): void {
 
     this.rangersSubscription = this.rangerService.getRangersObserver().subscribe({

@@ -153,6 +153,7 @@ export class LocationComponent implements OnInit, OnDestroy {
 
   // #region Public Methods (11)
 
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   public ngOnInit(): void {
     this.log.info("ngOnInit", this.id)
     if (!this.settings) {

@@ -153,6 +153,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   }
 */
 
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   ngOnInit(): void {
     this.log.verbose("ngInit", this.id)
 

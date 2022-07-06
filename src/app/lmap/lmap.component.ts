@@ -121,6 +121,7 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
   //   this.log.excessive("ngOnInit()", this.id)
   // }
 
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   override ngOnInit() {
     super.ngOnInit()
     this.log.excessive("ngOnInit()", this.id)

@@ -158,6 +158,7 @@ export class EntryComponent implements OnInit, OnDestroy {
     //this.timepickerFormControl is where the Event comes up from...
   }
 
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
     this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)

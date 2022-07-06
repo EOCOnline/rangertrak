@@ -188,7 +188,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   // })
   // }
 
-
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   override ngOnInit() {
     super.ngOnInit()
     this.log.excessive("ngOnInit()", this.id)
