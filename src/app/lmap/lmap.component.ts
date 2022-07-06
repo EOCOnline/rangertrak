@@ -13,7 +13,7 @@ import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 
-import { AbstractMap } from '../shared/map'
+import { AbstractMap } from '../shared'
 import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
@@ -38,21 +38,7 @@ const markerIcon = L.icon({
   shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png'
 })
 L.Marker.prototype.options.icon = iconDefault;
-//type LatLng = { lat: number, lng: number }
 
-// From package.json
-//  "leaflet.markercluster": "^1.5.3",
-//    "leaflet.offline": "^2.1.0"
-
-// devedependencies:  "@types/leaflet": "^1.7.9",
-//    "@types/leaflet.markercluster": "^1.4.6",
-
-/* Angular.json: Styles
-
-"./node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css",
-              "./node_modules/leaflet.markercluster/dist/MarkerCluster.css",
-              "./node_modules/leaflet/dist/leaflet.css",
-              */
 
 @Component({
   selector: 'rangertrak-lmap',
@@ -227,6 +213,24 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
     })
 
     tiles.addTo(this.lMap)
+
+    // TODO: Consider allowing addition of SVG overlay (of known trails and other overlays): https://leafletjs.com/reference.html#svgoverlay
+    // TODO: ...or add D3 too: http://bl.ocks.org/xEviL/4921fff1d70f5601d159, w/ GeoJson: http://bl.ocks.org/xEviL/0c4f628645c6c21c8b3a https://github.com/topojson/us-atlas
+    // https://www.w3schools.com/graphics/svg_examples.asp & https://commons.wikimedia.org/wiki/SVG_examples
+
+    // https://plnkr.co/edit/zK6Ync2o23viZxSugBoX?preview
+    // let svgElement = document.createElementNS("src/assets/data/King_County_Washington_Incorporated_and_Unincorporated_areas_Burien_Highlighted.svg", "svg") as SVGElement
+    /*
+      let svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg") as SVGElement
+      svgElement.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+      svgElement.setAttribute('viewBox', "0 0 200 200");
+      svgElement.innerHTML = '<rect width="200" height="200"/><rect x="75" y="23" width="50" height="50" style="fill:red"/><rect x="75" y="123" width="50" height="50" style="fill:#0013ff"/>';
+      svgElement.innerHTML = '<rect x="80" y="60" width="250" height="250" rx="20" fill="#F00"/> <rect x="140" y="120" width="250" height="250" rx="40" fill="#00F" fill-opacity=".7"/>';
+      L.svgOverlay(svgElement, [[0, 0], [1024, 1152]]).addTo(this.lMap);
+
+      // let svgElementBounds = [[32, -130], [13, -100]]  // as number[][]
+      // L.svgOverlay(svgElement, svgElementBounds).addTo(this.lMap);
+  */
 
     //! this.fieldReports.bounds.getEast is not a function
     //!this.log.info(`E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)

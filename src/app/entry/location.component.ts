@@ -31,14 +31,14 @@ const magicTempNumber = 12  // BUG: same as magicNumber2 in entryComponent.ts: i
   styleUrls: ['./location.component.scss']
 })
 export class LocationComponent implements OnInit, OnDestroy {
-  // Grab reference to location portion of parent's entry form
+  // Grab reference to location portion of parent's entry form  // BUG: Not really happening is it?
   @Input() public locationFrmGrp!: UntypedFormGroup // input from entry.component.ts
   @Input() public initialLoc: LocationType = { lat: magicTempNumber, lng: magicTempNumber, address: undefinedAddressFlag }
   // input from entry.component.ts
 
-  // We emit following event to parent,
-  // parent's template has: (newLocationEvent)="onNewLocation($event)"
-  // Parent's onNewLocation($event) gets called.
+  // Using mediation pattern (pg 188), this child component emits following event to parent,
+  // parent's template has: (newLocationEvent)="onNewLocationParent($event)"
+  // Parent's onNewLocationParent($event) gets called.
   // Parent then passes the new location (via binding), to any children as needed
   @Output() newLocationEvent = new EventEmitter<LocationType>()
 

@@ -60,6 +60,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   // control creation in a component class = immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
   public entryDetailsForm!: UntypedFormGroup
   callsignCtrl = new UntypedFormControl()
+  readonly imagePath = "'./assets/imgs/'" // not yet used by *.html
 
   // REVIEW: Duplicate or extra locationFrmGrp - or passed in and actually *used*?!
   locationFrmGrp!: UntypedFormGroup
@@ -137,7 +138,7 @@ export class EntryComponent implements OnInit, OnDestroy {
     // Children (with @Input stmts - i.e., mini-map) automatically gets the updated location
     this.location = newLocation
     //REVIEW:
-    this.initialLocation = newLocation
+    //this.initialLocation = newLocation
 
     // REVIEW: patch entryForm object - as THAT is what gets saved with on form submit
     // ! REVIEW: Are there 2 locationFrmGrp's ??? -- see this.initLocation() -- Is this the right one?
@@ -150,6 +151,8 @@ export class EntryComponent implements OnInit, OnDestroy {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.error(`Got new Report time: ${newTime}`, this.id)
     this.time = newTime
+
+    //! Does this duplicate OnFormSubmit()'s setting value of date?
     // patch entryForm object - as THAT is what gets saved with on form submit
     this.entryDetailsForm.patchValue({ timepickerFormControl: newTime })
     // This then automatically could ge sent to any children (none in this case) via their @Input statements
@@ -346,10 +349,23 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   //   element.style.animation = "";
   // }
 
+  // Create a deep copy of the form-model, if it were to continue to be used - we just rest it
+  // result.entryDetailsForm = Object.assign({}, result.entryDetailsForm)
+
   onFormSubmit(formData1: string): void {
     this.log.excessive(`Submit Form`, this.id)
     //this.date=this.dateCtrl.value // TODO:
+
+
+    //! next line should already have happened by patch, in
     this.entryDetailsForm.value.date = this.dateCtrl.value
+
+
+
+    //! BUG: ALSO need to get location data into the form...
+
+
+
     let formData = JSON.stringify(this.entryDetailsForm.value)
 
     let newReport = this.fieldReportService.addfieldReport(formData)

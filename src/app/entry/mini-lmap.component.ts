@@ -43,27 +43,21 @@ L.Marker.prototype.options.icon = iconDefault;
     '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
   providers: [SettingsService]
 })
-export class MiniLMapComponent extends AbstractMap implements OnInit, OnDestroy { // OnInit,
+export class MiniLMapComponent extends AbstractMap implements OnInit, OnDestroy {
 
-  //@Input() set locationUpdated(newLocation: LocationType) {
-  // ! Entry form hasn't received new location yet???
-  @Input() set locationUpdated(newLocation: LocationType) { // ! Or might this be an event???????????????????
+  // Use setter get notification of new locations from parent entry form (pg 182 & 188)
+  @Input() set locationUpdated(newLocation: LocationType) {
     if ((newLocation && newLocation.lat) != undefined) {
       if (newLocation.address == undefinedAddressFlag) {
-        this.log.verbose(pc.red(`Parent ejected a premature location event to child: ${undefinedAddressFlag} - ignoring...`), this.id)
+        this.log.verbose(pc.red(`Entry form has no address yet:  ${undefinedAddressFlag} - ignoring...`), this.id)
       } else {
-        this.log.verbose(pc.red(`Parent sent on a location event to child: ${JSON.stringify(newLocation)}`), this.id)
-        //OLD: Gets hit - BUT spits out 'undefined'
-        // now: 'Leaflet MiniMap Component: Parent sent on a location event to child: {"lat":48.4472,"lng":-122.4627,"address":""}'
-        this.onNewLocationChild(newLocation)
+        this.log.verbose(pc.red(`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
+        this.onNewLocation(newLocation)
       }
     } else {
       this.log.error(pc.red(`DRATS: Parent sent undefined location event to child`), this.id)
     }
   }
-  // @Input() set locationUpdated(value: LocationType) {
-  //   this.onNewLocation(value)
-  // }
 
   override id = 'Leaflet MiniMap Component'
   override title = 'Leaflet MiniMap'
@@ -101,18 +95,6 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, OnDestroy 
     this.markerClusterGroup = L.markerClusterGroup({
       removeOutsideVisibleBounds: true
     })
-
-    /*
-    this.locationSubscription = this.locationService.getSettingsObserver().subscribe({
-      next: (newLocation) => {
-        console.log(`Got newLocation: ${JSON.stringify(newLocation)}`)
-        this.location = newLocation
-      },
-      error: (e) => this.log.error('Location Subscription got:' + e, this.id),
-      complete: () => this.log.info('Location Subscription complete', this.id)
-    })
-*/
-
   }
 
   // override ngOnInit() {
@@ -170,8 +152,6 @@ Ensure that there are no changes to the bindings in the template after change de
 
 
     // ---------------- Init Map -----------------
-
-
     //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
     this.lMap = L.map('map', {
       center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
@@ -195,6 +175,16 @@ Ensure that there are no changes to the bindings in the template after change de
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
+    // TODO: Consider allowing addition of SVG overlay (of known trails and other overlays): https://leafletjs.com/reference.html#svgoverlay
+    /*
+      var svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svgElement.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+      svgElement.setAttribute('viewBox', "0 0 200 200");
+      svgElement.innerHTML = '<rect width="200" height="200"/><rect x="75" y="23" width="50" height="50" style="fill:red"/><rect x="75" y="123" width="50" height="50" style="fill:#0013ff"/>';
+      var svgElementBounds = [ [ 32, -130 ], [ 13, -100 ] ];
+      L.svgOverlay(svgElement, svgElementBounds).addTo(map);
+    */
+
     tiles.addTo(this.lMap)
 
     if (this.displayReports && this.fieldReports) {
@@ -217,7 +207,6 @@ Ensure that there are no changes to the bindings in the template after change de
         this.zoomDisplay = z
       }
     })
-
 
     if (this.hasOverviewMap) {
       this.initOverviewMap()
@@ -375,14 +364,10 @@ Ensure that there are no changes to the bindings in the template after change de
 
   // ------------------------------------  Markers  ---------------------------------------
 
-
-
-
   // TODO: Just rename MoveExistingMarker(), or AddNewMarker()?
-  // !From Leaflet MiniMap - new location passed in undefined
-  // @Input statement (above) catches parents update of 'this.location' & sends it to us
-  // Based on listing 8.8 in TS dev w/ TS, pg 188
-  public onNewLocationChild(newLocation: LocationType) {
+  // Act on new location from parent (i.e., the entry form)
+  // Based on Mediator pattern: listing 8.8 in TS dev w/ TS, pg 188
+  public onNewLocation(newLocation: LocationType) {
     this.log.verbose(`new location received in ${JSON.stringify(newLocation)}`, this.id)
 
     if (newLocation && newLocation != undefined) {
@@ -391,16 +376,11 @@ Ensure that there are no changes to the bindings in the template after change de
         lng: newLocation.lng,
         address: newLocation.address
       }
+      // TODO: Consider displaying previous points too - not just the new one?
       this.addMarker(this.location.lat, this.location.lng, this.location.address)
-      this.addCircle(this.location.lat, this.location.lng, this.location.address)
-      /*
-      let status = document.getElementById('Entry__Minimap-status')
-              if (status) {
-                status.innerHTML = "`${latlng} copied to clipboard`"
-              }
-      */
+      //this.addCircle(this.location.lat, this.location.lng, this.location.address)
     } else {
-      this.log.error(`Bad location passed in to onNewLocationChild(): ${JSON.stringify(newLocation)}`, this.id)
+      this.log.error(`Bad location passed in to onNewLocation(): ${JSON.stringify(newLocation)}`, this.id)
     }
   }
 
@@ -492,8 +472,8 @@ Ensure that there are no changes to the bindings in the template after change de
 
       //markerCluster.addLayer(_mar);
       //}
-      //_map.addLayer(markerCluster);
-
+      // _map.addLayer(markerCluster);
+      // _marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup()
 
       _marker.addTo(this.lMap)
 

@@ -17,19 +17,15 @@
     <div class="input-group" [formGroup]="locationFrmGrp">
 
       &nbsp;&nbsp;&nbsp;Latitude:
-      <input [valueAsNumber]="latI" type="number" min="-180" max="180" id="enter__Where-latI" formControlName="test" />
-      <!-- above gets:
-ERROR Error: NG01052: formGroup expects a FormGroup instance. Please pass one in.
-
-      Example:
+      <input [valueAsNumber]="latI" type="number" min="-180" max="180" id="enter__Where-latI" />
+      <!--
+        [formControl]="latI3"
 
 
-  <div [formGroup]="myGroup">
-    <input formControlName="firstName">
-  </div>
-
+        formControlName="test" above gets:
+      ERROR Error: NG01052: formGroup expects a FormGroup instance. Please pass one in.
+  <div [formGroup]="myGroup">   <input formControlName="firstName">  </div>
   In your class:
-
   this.myGroup = new FormGroup({
       firstName: new FormControl()
   });
