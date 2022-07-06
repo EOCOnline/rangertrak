@@ -136,14 +136,19 @@ input[type=number] {
 }
 
 .enter__Status {
-  padding             : 8px 0;
-  //border            : 3px solid red;
-  border-radius       : 5px;
-  padding-left        : 5px;
+  padding               : 8px 0;
+  //border              : 1px solid red;
+  border-radius         : 5px;
+  padding-left          : 5px;
   //width           : 650px;
-  background-color    : $filledColor;
-  line-height         : 35px;
+  background-color      : $filledColor;
+  line-height           : 35px;
   //margin            : 20px 0;
+}
+
+.Enter__status-value {
+  // TODO: Better contrast: https://codepen.io/facundocorradini/pen/LBVvyq & https://css-tricks.com/switch-font-color-for-different-backgrounds-with-css/
+  text-shadow: 1px 3px 8px grey;
 }
 
 .bottomDrop {
