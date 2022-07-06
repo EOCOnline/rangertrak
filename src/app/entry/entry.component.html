@@ -8,16 +8,13 @@
     <h2 class="elegant">
       <mat-label>Who</mat-label>
     </h2>
-
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview
     https://www.wufoo.com/html5/tabindex-attribute/ -->
     <mat-form-field class="enter__Callsign filled">
       <mat-label>CallSign</mat-label>
-
       <input matInput [formControl]=" callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
         formControlName="callsign" [matAutocomplete]="auto" (change)="this.callsignCtrlChanged()"
         id="enter__Callsign-input" tabindex="1" data-lpignore="true" />
-
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
           <img class="enter__Callsign-img" aria-hidden [src]="'./assets/imgs/'+(ranger.image)" height="40">
@@ -30,32 +27,12 @@
     <span id="enter__Callsign-upshot"> </span>
 
     <!-- ======================================= -->
-    <h2 class="elegant">
+    <h2 class="elegant"
+      title="Enter position using  Degrees Decmal (DD)  or  Degrees, Minutes & Seconds (DMS)  or  Degrees Minutes & Seconds (DDM)">
       <mat-label>Where</mat-label>&nbsp;&nbsp;
-
-      <!--fa-icon
-        [icon]="faInfoCircle"
-        id="button"
-        aria-describedby="tooltip"
-        title="Click info icon for info!"
-        alt="info icon"
-      ></fa-icon -->
-
       <span class="small">(updates map to the right)</span><img src="../../assets/icons/information-outline.png"
-        title="Enter the longitude either in Degrees Decmal or as Degrees & Minutes Decimal or as Degrees Minutes & Seconds"
         height="16px" width="16px" alt="info icon" />
     </h2>
-
-    <!--onchange="DDCoordsChanged()
-
-      "FormControl="timepickerFrmControl"
-      formGroupName="locationFrmGrp"
-
-      {{lat | number:'1.4-5'}}
-      {{entryDetailsForm.get(lat) | number:'1.4-5'}} -->
-
-    <!-- from Majd Asab in Medium.com...
-   [(ngModel)]="extLocation" name="extLocationVal" #validations=""ngModel"-->
 
     <div>
       <rangertrak-location (newLocationEvent)="onNewLocationParent($event)" [initialLoc]="initialLocation">
@@ -66,7 +43,6 @@
     <h2 class="elegant">
       <mat-label>When</mat-label>
     </h2>
-
     <div FormControl="timepickerFormControl" class="filled timepicker timepicker_When-input">
       <rangertrak-time-picker #picker [datePickerLabel]="timePickerLabel" (newTimeEvent)="onNewTimeEvent($event)">
         <!-- [initialDate] = "initialTime" -->
@@ -77,7 +53,6 @@
     <h2 class="elegant bordered">
       <mat-label>What</mat-label>
     </h2>
-
     <div class="input-group bordered">
       <!-- mat-label><div class="strong bottomDrop">Status:</div></mat-label -->
       <mat-radio-group class="filled  enter__Status" labelPosition="after" formControlName="status" tabindex="7"><span
@@ -109,11 +84,9 @@
         </div>
       </div>
     </div-->
-
     <br />
 
     <!-- ======================================= -->
-    <!--button (click)="onBtnUpdateLocation()">Update location</button> <br-->
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
     <button (click)="resetEntryForm()" title="Reset all form fields to their defaults" class="eButton" type="button">
       Reset
@@ -126,42 +99,9 @@
     <span id="enter__Submit-info"> </span>
 
     <div id="enter__frm-reguritation">
-      <!-- class="margin-20" -->
       <h4>Entry Form Details:</h4>
       <pre><strong>EntryForm valid:</strong> {{entryDetailsForm.valid | json}}</pre>
       <pre><strong>EntryForm value:</strong> {{entryDetailsForm.value | json}}</pre>
     </div>
   </form>
 </div>
-
-<!--
-<fieldset>
-      <legend>Where</legend>
-      Street Address, +Code, or What3Words (optional): <input name="addresses" id="addresses" type="text" size="15"
-        value="" placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
-        onchange="chkAddresses()">
-      <placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde">
-      <span id="addressLabel" value=""></span>
-      <span id="pCodeGlobal"></span>
-      <br>
-      Latitude: &nbsp;&nbsp;
-      <input name="latitudeQ" id="latitudeQ" type="text" value="N" size="1" pattern="'e','E','w','W'" title="E or W"
-        onchange="DMSCoordsChanged()"> <!- Quadrant ->
-      <input name="latitudeD" id="latitudeD" type="text" value="47" size="2" min="0" max="180" onchange="DMSCoordsChanged()">°
-      <input name="latitudeM" id="latitudeM" type="text" value="" size="2" min="0" max="59" onchange="DMSCoordsChanged()">'
-      <input name="latitudeS" id="latitudeS" type="text" value="" size="5" min="0" max="59.99" onchange="DMSCoordsChanged()">"
-      &nbsp;&nbsp; or &nbsp;&nbsp;<input name="latitudeDD" id="latitudeDD" type="text" size="7" min="-180" max="180"
-        onchange="DDCoordsChanged()">°
-      <br>
-      Longitude:
-      <input name="longitudeQ" id="longitudeQ" type="text" value="W" size="1" pattern="'n','N','s','S'" title="N or S"
-        onchange="DMSCoordsChanged()">
-      <input name="longitudeD" id="longitudeD" type="text" value="122" size="2" max="180" onchange="DMSCoordsChanged()">°
-      <input name="longitudeM" id="longitudeM" type="text" value="" size="2" min="0" max="59" onchange="DMSCoordsChanged()">'
-      <input name="longitudeS" id="longitudeS" type="text" value="" size="5" min="0" max="59.99"
-        onchange="DMSCoordsChanged()">"
-      &nbsp;&nbsp; or &nbsp;&nbsp;<input name="longitudeDD" id="longitudeDD" type="text" size="7" min="-180" max="180"
-        onchange="DDCoordsChanged()">°
-      <br>
-    </fieldset>
--->
