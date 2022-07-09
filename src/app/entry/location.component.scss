@@ -28,8 +28,8 @@ $filledColor : #F0F0F0;
 #enter__Where-lngI,
 #enter__Where-latD,
 #enter__Where-lngD,
-#enter__Where-latDM,
-#enter__Where-lngDM {
+#enter__Where-latDdmM,
+#enter__Where-lngDdmM {
   width     : 30px;
   text-align: right;
 }
@@ -41,8 +41,8 @@ $filledColor : #F0F0F0;
 
 #enter__Where-latQ,
 #enter__Where-lngQ,
-#enter__Where-latQ1,
-#enter__Where-lngQ1 {
+#enter__Where-latDdmQ,
+#enter__Where-lngDdmQ {
   width       : 12px;
   margin-right: 3px;
 }
@@ -54,10 +54,10 @@ $filledColor : #F0F0F0;
 
 #enter__Where-latS,
 #enter__Where-lngS,
-#enter__Where-latMF,
-#enter__Where-lngMF,
-#enter__Where-latMI,
-#enter__Where-lngMI {
+//#enter__Where-latDdmF,
+//#enter__Where-lngDdmF,
+#enter__Where-latDdmI,
+#enter__Where-lngDdmI {
   width: 40px;
 }
 

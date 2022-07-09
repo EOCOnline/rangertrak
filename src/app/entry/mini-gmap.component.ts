@@ -29,7 +29,8 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
       this.location = {
         lat: value.lat,
         lng: value.lng,
-        address: value.address
+        address: value.address,
+        derivedFromAddress: value.derivedFromAddress
       }
       this.log.verbose(`New location passed in ${JSON.stringify(value)}`, this.id)
     } else {

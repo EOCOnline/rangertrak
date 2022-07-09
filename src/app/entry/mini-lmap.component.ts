@@ -374,7 +374,8 @@ Ensure that there are no changes to the bindings in the template after change de
       this.location = {
         lat: newLocation.lat,
         lng: newLocation.lng,
-        address: newLocation.address
+        address: newLocation.address,
+        derivedFromAddress: newLocation.derivedFromAddress
       }
       // TODO: Consider displaying previous points too - not just the new one?
       this.addMarker(this.location.lat, this.location.lng, this.location.address)

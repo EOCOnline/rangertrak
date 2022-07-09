@@ -86,9 +86,12 @@ export class Coordinate {
 // dir returns E or W if lng (longitude) = true
 // N.B.: may not work for angles between -1° and 0°
 // from www.stackoverflow.com/questions/5786025
+// https://www.pgc.umn.edu/apps/convert/
+// https://flyandwire.com/2020/08/10/back-to-basics-latitude-and-longitude-dms-dd-ddm/
 // https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/
 // https://www.earthref.org/content/where-world-are-you-degrees-vs-degrees-minutes-and-seconds
-// https://www.fcc.gov/media/radio/dms-decimal
+// https://www.cumulations.com/blog/latitude-and-longitude/
+
 export function DDToDMS(D: number, lng: boolean = false) {
   /*
   if (!D) {

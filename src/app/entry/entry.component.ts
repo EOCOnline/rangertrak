@@ -19,6 +19,7 @@ import {
     FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
     SettingsService, SettingsType, undefinedAddressFlag
 } from '../shared/services/'
+import { undefinedLocation } from '../shared/services/location.interface'
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
 
@@ -47,8 +48,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   // Get location events from <location> component
   private locationSubscription!: Subscription
   //public curLocation: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
-  public location: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
-  initialLocation: LocationType = { lat: magicNumber2, lng: magicNumber2, address: undefinedAddressFlag }
+  public location: LocationType = undefinedLocation
 
   // Get time events from <timepicker> component
   private timeSubscription!: Subscription
