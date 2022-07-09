@@ -92,22 +92,6 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     this.gridApi = ""
     this.gridColumnApi = ""
 
-    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
-        this.log.excessive('Received new Settings via subscription.', this.id)
-      },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
-    })
-
-    if (this.settings) {
-      this.fieldReportStatuses = this.settings.fieldReportStatuses
-    } else {
-      this.log.error(`this.settings was null in constructor`, this.id)
-    }
-
     //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
     this.columnDefs = [
       { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1 }, // TODO:
@@ -156,6 +140,23 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   ngOnInit(): void {
     this.log.verbose("ngInit", this.id)
+
+    // REVIEW: Move subscribes into AfterViewInit()?
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+        this.log.excessive('Received new Settings via subscription.', this.id)
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
+
+    if (this.settings) {
+      this.fieldReportStatuses = this.settings.fieldReportStatuses
+    } else {
+      this.log.error(`this.settings was null in constructor`, this.id)
+    }
+
 
     this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
       next: (newReport) => {

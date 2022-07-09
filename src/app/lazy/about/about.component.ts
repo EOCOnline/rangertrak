@@ -24,7 +24,7 @@ export class AboutComponent implements OnDestroy {
   ) {
     console.log("AboutComponent getting constructed")
 
-    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
+    // REVIEW: Move subscribes into AfterViewInit()?
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings

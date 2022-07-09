@@ -26,7 +26,7 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
   pageDescr = `Program internal debug information`
 
   private logPanel: HTMLElement | null = null
-  private logSubscription: Subscription
+  private logSubscription!: Subscription
   private settingsSubscription!: Subscription
   private settings!: SettingsType
 
@@ -47,10 +47,18 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
     private logService: LogService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
+
     console.log(`Constructing log component`)
 
-    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
-    this.logSubscription = logService.getLogObserver().subscribe({
+  }
+
+  /**
+   * Create heading for Log Panel
+   */
+  ngOnInit(): void {
+    //console.log(`Into log component's ngInit`)
+    // REVIEW: Move subscribes into AfterViewInit()?
+    this.logSubscription = this.logService.getLogObserver().subscribe({
       next: (log) => {
         //console.log(`LogPanel got: ${JSON.stringify(log)}`)
         this.latestLog = log
@@ -68,13 +76,6 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
       error: (e) => console.error('Settings Subscription got:' + e, this.id),
       complete: () => console.info('Settings Subscription complete', this.id)
     })
-  }
-
-  /**
-   * Create heading for Log Panel
-   */
-  ngOnInit(): void {
-    //console.log(`Into log component's ngInit`)
 
     this.logPanel = this.document.getElementById("log")
     if (this.logPanel) {

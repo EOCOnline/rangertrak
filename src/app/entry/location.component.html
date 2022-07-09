@@ -13,12 +13,12 @@
 [FormControl]="latI"
 -->
 <div class="container enter__Where-div">
-  <div appearance="filled" class="timepicker__Where-input" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()"
-    [formGroup]="locationFormModel">
+  <!-- (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()" -->
+  <form appearance="filled" class="enter__Where-input" [formGroup]="locationFormModel">
     <div class="input-group">
       &nbsp;&nbsp;&nbsp;Latitude:
 
-      <span ngModelGroup="DD">
+      <span formGroupName="DD">
         <input formControlName="latI" type="number" min="-180" max="180" id="enter__Where-latI" />
 
         <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
@@ -37,7 +37,7 @@
       </span>
 
       <span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
-      <span ngModelGroup="DMS">
+      <span formGroupName="DMS">
         <input formControlName="latQ" id="enter__Where-latQ" type="text" pattern="'e','E','w','W'" title="E or W" />
         <input formControlName="latD" id="enter__Where-latD" type="number" min="0" max="90" /><strong>° </strong>
         <input formControlName="latM" id="enter__Where-latM" type="number" min="0" max="59" /><strong>' </strong>
@@ -45,7 +45,7 @@
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;
       </span>
 
-      <span ngModelGroup="DDM">
+      <span formGroupName="DDM">
         <input formControlName="latDDMQ" id="enter__Where-latDdmQ" type="text" pattern="'e','E','w','W'"
           title="E or W" />
         <input formControlName="latDDMD" id="enter__Where-latDdmD" type="number" min="0" max="90" /><strong>° </strong>
@@ -57,14 +57,14 @@
     <div class="input-group">
       Longitude:
 
-      <span ngModelGroup="DD">
+      <span formGroupName="DD">
         <input formControlName="lngI" type="number" min="-180" max="180" id="enter__Where-lngI" /><strong>.</strong>
         <input formControlName="lngF" type="number" step="100" min="0" max="99999" id="enter__Where-lngF"
           tabindex="4" />
         <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
       </span>
 
-      <span ngModelGroup="DMS">
+      <span formGroupName="DMS">
         <input formControlName="lngQ" id="enter__Where-lngQ" type="text" pattern="'n','N','s','S'" title="N or S" />
         <input formControlName="lngD" id="enter__Where-lngD" type="number" min="0" max="90" /><strong>° </strong>
         <input formControlName="lngM" id="enter__Where-lngM" type="number" min="0" max="59" /><strong>' </strong>
@@ -72,7 +72,7 @@
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;
       </span>
 
-      <span ngModelGroup="DDM">
+      <span formGroupName="DDM">
         <input formControlName="lngDDMQ" id="enter__Where-lngDdmQ" type="text" pattern="'n','N','s','S'"
           title="N or S" />
         <input formControlName="lngDDMD" id="enter__Where-lngDdmD" type="number" min="0" max="90" /><strong>° </strong>
@@ -89,7 +89,7 @@
       title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." placeholder="Optional Address"
       formControlName="address" data-lpignore="true" />
     <!-- (change)="this.addressCtrlChanged('addr')" -->
-  </div>
+  </form>
 
   <div class="enter__Where-Results">
     <!--   {{address}}

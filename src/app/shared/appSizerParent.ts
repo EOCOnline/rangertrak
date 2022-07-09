@@ -1,5 +1,7 @@
 import { Component } from '@angular/core'
 
+import { SizerComponent } from './appSizer'
+
 @Component({
   selector: 'app-root',
   template: '<h1 id="two-way">Two-way Binding</h1> \

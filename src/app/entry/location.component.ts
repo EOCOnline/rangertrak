@@ -31,8 +31,20 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   styleUrls: ['./location.component.scss']
 })
 export class LocationComponent implements OnInit, OnDestroy {
-  @Input() public location: LocationType = undefinedLocation
-  // test for object equality (of contents): _.isEqual( obj1 , obj2 ) or JSON.stringify(obj1) === JSON.stringify(obj2)
+
+  // Use setter to get immediate notification of changes to inputs (pg 182 & 188)
+  @Input() set location(location: LocationType) {
+    // are object's contents equal: _.isEqual( obj1 , obj2 ) OR JSON.stringify(obj1) === JSON.stringify(obj2)
+    if (JSON.stringify(location) === JSON.stringify(undefinedLocation)) {
+      this.log.info("Got new location, but it was 'undefined'", this.id)
+    } else {
+      this.log.info(`Got new location: ${JSON.stringify(location)}`, this.id)
+
+      // Populate form with initial (& Subsequent updates) from parent.
+      // Also reemit address changes which ultimately can get picked up by other (peer) children.
+      this.newLocationToFormAndEmit(this.location)
+    }
+  }
 
   // Using mediation pattern (pg 188), this child component emits following event to parent,
   // parent's template has: (newLocationEvent)="onNewLocationParent($event)"
@@ -40,33 +52,7 @@ export class LocationComponent implements OnInit, OnDestroy {
   // Parent then passes the new location (via binding), to any children as needed
   @Output() locationChange = new EventEmitter<LocationType>()
 
-  // @Input('location') location: FormGroup;
-  // @Input('group') location: FormGroup;
-  // @Input() location: FormGroup// | null = null //location: FormGroup;
-  // public locationForm!: FormGroup
-  // public location2: FormGroup
-  // locationCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
-
   private id = "Location Component"
-
-  // Grab reference to #elements in template (vs. getElementById)
-  // TODO: Remove all these! Per bottom pg 137, go to [FormControl]="nameToUse"
-  // @ViewChild('latI') elLatI!: HTMLInputElement
-  // @ViewChild('latF') elLatF!: HTMLInputElement
-
-  // @ViewChild('latQ') elLatQ!: HTMLInputElement
-  // @ViewChild('latD') elLatD!: HTMLInputElement
-  // @ViewChild('latM') elLatM!: HTMLInputElement
-  // @ViewChild('latS') elLatS!: HTMLInputElement
-
-  // @ViewChild('lngF') elLngF!: HTMLInputElement
-  // @ViewChild('lngI') elLngI!: HTMLInputElement
-
-  // @ViewChild('lngQ') elLngQ!: HTMLInputElement
-  // @ViewChild('lngD') elLngD!: HTMLInputElement
-  // @ViewChild('lngM') elLngM!: HTMLInputElement
-  // @ViewChild('lngS') elLngS!: HTMLInputElement
-
   public locationFormModel!: UntypedFormGroup
 
   public geocoder = new GoogleGeocode
@@ -96,6 +82,7 @@ export class LocationComponent implements OnInit, OnDestroy {
   public lngDDMD = 0 // Degrees
   public lngDDMM = 0 // Minutes
 
+
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
   // button: HTMLButtonElement | undefined
   //tooltip: HTMLHtmlElement | undefined
@@ -105,6 +92,9 @@ export class LocationComponent implements OnInit, OnDestroy {
   public faMapMarkedAlt = faMapMarkedAlt
   public mdiAccount: string = mdiAccount
   public mdiInformationOutline: string = mdiInformationOutline
+
+  //private mouseEnters = 0
+  //private mouseLeaves = 0
 
   private settingsSubscription!: Subscription
   private settings!: SettingsType
@@ -128,7 +118,7 @@ export class LocationComponent implements OnInit, OnDestroy {
     this.log.info("ngOnInit", this.id)
 
     // REVIEW: Move ALL subscribes to AfterViewInit()???
-    // Settings needed for Check PCode & What3Words...
+    // Settings only needed for Check PCode & What3Words...
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
@@ -137,11 +127,6 @@ export class LocationComponent implements OnInit, OnDestroy {
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
-
-    // Populate form with initial address from parent. Also emits the initial address.
-    this.newLocationToFormAndEmit(this.location)
-
-
 
     /// On Location/Address Change subscriptions  // TODO: USE THESE - or not???
     /// if (this.locationFrmGrp) {
@@ -170,17 +155,18 @@ export class LocationComponent implements OnInit, OnDestroy {
     this.log.verbose("out of ngOnInit", this.id)
   }
 
-
+  /**
+  * Create Form Model, so we can readily set values & respond to user input
+  * NOTE: We never have an OnSubmit() routine...
+  *
+   */
   initForm() {
-
-    // NOTE: We never have an OnSubmit() routine...
-    // Create Form Model, so we can readily set values & respond to user input
     this.locationFormModel = this._formBuilder.group({
       DD: this._formBuilder.group({
         latI: [0], // Integer portion
         latF: [0], // Float portion
         lngI: [0],
-        lngD: [0]
+        lngF: [0]
       }),
 
       // Cooordinates as Degrees, Minutes & Seconds (DMS)
@@ -189,9 +175,9 @@ export class LocationComponent implements OnInit, OnDestroy {
         latD: [0], // Degrees
         latM: [0], // Minutes
         latS: [0], // Seconds
-        lngF: [0],
-        lngM: [0],
         lngQ: ["E"],
+        lngD: [0],
+        lngM: [0],
         lngS: [0]
       }),
 
@@ -315,23 +301,10 @@ export class LocationComponent implements OnInit, OnDestroy {
             }
       */
     }
-    this.emitNewLocation(this.location) // Emit new location event to parent
-  }
 
-  /**
-   * onNewLocation:
-   * @param newLocation
-   *
-   */
-  public emitNewLocation(newLocation: LocationType) {
-    // Do any needed sanity/validation here
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    // Emit new location event to parent: so it & any children can react
     this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
-
     this.locationChange.emit(this.location)
-    //   /*if (! {
-    //     this.log.warn(`New location event had no listeners!`, this.id)
-    //   }*/
   }
 
 
@@ -347,22 +320,20 @@ export class LocationComponent implements OnInit, OnDestroy {
   // }
 
 
-  // This is a floosy way to capture user input: get rid of it!
-  // See Ang Cookbook, pg 349ff
-  onMouseEnter() {
-    let count = 0
-    if (!(count++ % 10)) {
-      this.log.verbose(`Mouse Entered Locationform $(count) times`, this.id)
-    }
-    // TODO: establish events & control updates?
-  }
-  onMouseLeave() {
-    let count = 0
-    if (!(count++ % 10)) {
-      this.log.verbose(`Mouse Left Location form $(count) times`, this.id)
-    }
-    // TODO: tear down events & control updates?
-  }
+  // // This is a floosy way to capture user input: get rid of it!
+  // // See Ang Cookbook, pg 349ff
+  // onMouseEnter() {
+  //   if (!(this.mouseEnters++ % 10)) {
+  //     this.log.verbose(`Mouse Entered Locationform ${this.mouseEnters} times`, this.id)
+  //   }
+  //   // TODO: establish events & control updates?
+  // }
+  // onMouseLeave() {
+  //   if (!(this.mouseLeaves++ % 10)) {
+  //     this.log.verbose(`Mouse Left Location form ${this.mouseLeaves} times`, this.id)
+  //   }
+  //   // TODO: tear down events & control updates?
+  // }
 
 
   /*
@@ -724,8 +695,8 @@ export class LocationComponent implements OnInit, OnDestroy {
           this.button.addEventListener(event, this.hide);
         }
       })
-}
- */
+  }
+  */
 
   // https://bobrov.dev/angular-popper/
   // https://sergeygultyayev.medium.com/use-popper-js-in-angular-projects-7b34f18da1c

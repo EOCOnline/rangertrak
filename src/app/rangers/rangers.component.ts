@@ -131,12 +131,17 @@ export class RangersComponent implements OnInit, OnDestroy {
   ) {
     this.log.info(` Construction`, this.id)
 
-    this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
-    //this.teamService = teamService
-    //this.rangerService = rangerService
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
+  }
+
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
+  ngOnInit(): void {
+
+    this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
+    //this.teamService = teamService
+    //this.rangerService = rangerService
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
@@ -146,11 +151,6 @@ export class RangersComponent implements OnInit, OnDestroy {
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
-
-  }
-
-  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
-  ngOnInit(): void {
 
     this.rangersSubscription = this.rangerService.getRangersObserver().subscribe({
       next: (newRangers) => {

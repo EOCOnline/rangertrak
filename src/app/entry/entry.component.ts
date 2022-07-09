@@ -17,13 +17,12 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { AlertsComponent, DDToDDM, TimePickerComponent, Utility } from '../shared/'
 import {
     FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
-    SettingsService, SettingsType, undefinedAddressFlag
+    SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services/'
-import { undefinedLocation } from '../shared/services/location.interface'
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
 
-const magicNumber2 = 12 // BUG: get rid of any magic numbers!
+//const magicNumber2 = 12 // BUG: get rid of any magic numbers!
 
 
 @Component({
@@ -40,15 +39,12 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
-  filteredRangers: Observable<RangerType[]>
+  filteredRangers!: Observable<RangerType[]>
 
   private settingsSubscription!: Subscription
   public settings!: SettingsType
 
-  // Get location events from <location> component
-  private locationSubscription!: Subscription
-  //public curLocation: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
-  public location: LocationType = undefinedLocation
+
 
   // Get time events from <timepicker> component
   private timeSubscription!: Subscription
@@ -63,9 +59,10 @@ export class EntryComponent implements OnInit, OnDestroy {
   callsignCtrl = new UntypedFormControl()
   readonly imagePath = "'./assets/imgs/'" // not yet used by *.html
 
-  // REVIEW: Duplicate or extra locationFrmGrp - or passed in and actually *used*?!
-  ///locationFrmGrp!: UntypedFormGroup
-  dateCtrl = new UntypedFormControl(new Date())
+  // Get location events from <location> component
+  //public locationChange: Subscription
+  public location: LocationType = undefinedLocation
+
   minDate = new Date()
 
   submitInfo: HTMLElement | null = null
@@ -88,47 +85,8 @@ export class EntryComponent implements OnInit, OnDestroy {
 
     this.log.excessive(`Constructing!`, this.id)
 
-    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
-        this.log.excessive('Received new Settings via subscription.', this.id)
-      },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
-    })
-
-    // TODO: Move callSign input to new component?
-    this.rangersSubscription = rangerService.getRangersObserver().subscribe({
-      next: (newRangers) => {
-        this.rangers = newRangers
-        this.log.excessive('Received new Rangers via subscription.', this.id)
-      },
-      error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
-      complete: () => this.log.info('Rangers Subscription complete', this.id)
-    })
-
-    // TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
-    this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)
-
     // NOTE: workaround for onChange not working...
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
-
-    if (this.rangers.length < 1) {
-      this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page & then review items in the Settings Page.', 'Go to Rangers, then Settings pages', 'Ignore')
-      //this.alert.OpenSnackBar(`No Rangers exist.Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
-      //TODO: Force navigation to /Rangers?
-    }
-
-    // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff
-    this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
-      startWith(''),
-      map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
-    )
-    log.verbose(`constructor: got new callsign: [does endless loop: ] { JSON.stringify(this.filteredRangers) } `, this.id)
-
-    // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
-    // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
   }
 
   onNewLocationParent(newLocation: LocationType) {
@@ -167,96 +125,103 @@ export class EntryComponent implements OnInit, OnDestroy {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
     this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
 
-    // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
-    // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
-    this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)  // verifies Settings has been loaded
+    // REVIEW: Move ALL subscribes to AfterViewInit() ??
+    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) => {
+        this.settings = newSettings
+        this.log.excessive('Received new Settings via subscription.', this.id)
+      },
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('Settings Subscription complete', this.id)
+    })
 
-    /* i.e., entryDetailsForm probably constructed at wrong time?!
-    Move the component creation to ngOnInit hook
-    error can show up when you are working with ViewChild, and execute code in AfterViewInit.
-    https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
-    the binding expression changes after being checked by Angular during the change detection cycle
+    // TODO: Move callSign input to new component?
+    this.rangersSubscription = this.rangerService.getRangersObserver().subscribe({
+      next: (newRangers) => {
+        this.rangers = newRangers
+        this.log.excessive('Received new Rangers via subscription.', this.id)
+      },
+      error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
+      complete: () => this.log.info('Rangers Subscription complete', this.id)
+    })
 
-Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'null'. Current value: '{
- "id": -1,
- "callsign": "",
- "team": "T1",
- [...]
- */
-    this.initEntryForm()
-    // subscribe to addresses value changes?  NO. It bubles up through newLocation INSTEAD!!!
-    // this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
-    //   this.log.verbose(`Subscription to locationFrmGrp got: ${ x } `, this.id);
-    // })
+    // TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
+    this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)
 
-    this.submitInfo = this.document.getElementById("enter__Submit-info")
 
-    if (this.settings?.debugMode) {
-      this.displayShow("enter__frm-reguritation")
+    if (this.rangers.length < 1) {
+      this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page & then review items in the Settings Page.', 'Go to Rangers, then Settings pages', 'Ignore')
+      //this.alert.OpenSnackBar(`No Rangers exist.Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
+      //TODO: Force navigation to /Rangers?
+
+
+
+      // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff
+      this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
+        startWith(''),
+        map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+      )
+      this.log.verbose(`constructor: got new callsign: [does endless loop: ] { JSON.stringify(this.filteredRangers) } `, this.id)
+
+      // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
+      // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+
+
+
+      // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
+      // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
+      this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)  // verifies Settings has been loaded
+
+      /* i.e., entryDetailsForm probably constructed at wrong time?!
+      Move the component creation to ngOnInit hook
+      error can show up when you are working with ViewChild, and execute code in AfterViewInit.
+      https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
+      the binding expression changes after being checked by Angular during the change detection cycle
+
+  Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'null'. Current value: '{
+   "id": -1,
+   "callsign": "",
+   "team": "T1",
+   [...]
+   */
+      this.initEntryForm()
+      // subscribe to addresses value changes?  NO. It bubles up through newLocation INSTEAD!!!
+      // this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
+      //   this.log.verbose(`Subscription to locationFrmGrp got: ${ x } `, this.id);
+      // })
+
+      this.submitInfo = this.document.getElementById("enter__Submit-info")
+
+      if (this.settings?.debugMode) {
+        this.displayShow("enter__frm-reguritation")
+      }
+
+      this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
+
+      // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
+
+      this.log.excessive(` ngOnInit completed`, this.id)
     }
-
-    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
-
-    // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
-
-    this.log.excessive(` ngOnInit completed`, this.id)
   }
 
-
-  initLocation() { // TODO: moved to location.component.ts?!
-    // BUG: duplicate of locationFrmGrp creation in EntryComponent.ts
-    if (!this.settings) {
-      this.log.error(`this.settings was null in initLocation`, this.id)
-      return
-    }
-    /// this.locationFrmGrp = this._formBuilder.group({
-    ///   lat: [this.settings.defLat],
-    ///   lng: [this.settings.defLng],
-    ///   address: [''] //, Validators.required],
-    /// })
-
-    // Following is unsed!!
-    // BUG: Why is this new TIME activity in LOCATION function!!!
-    // BUG: Duplicated in time-picker.component - as locationFrmGrp is there...
-    // new values here bubble up as emitted events - see onNewLocation()
-    // this.timepickerFormControl = this._formBuilder.control(
-    //   new Date()
-    // ) // TODO: Don't need new!
-
-    /*
-    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
-    let addr = this.locationFrmGrp.get("address")
-    if (addr) {
-      addr.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
-      this.log.verbose("Made reservations!", this.id)
-    } else {
-      console.warn("could NOT Make reservations")
-    }
-    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
-    return this.locationFrmGrp
-    */
-  }
-
+  /**
+   *
+   * @param value
+   * @returns
+   */
   private _filterRangers(value: string): RangerType[] {
     this.log.excessive(`_filterRangers  value changed: ${value} `, this.id)
 
     const filterValue = value.toLowerCase()
     this.entryDetailsForm.value.callsign = filterValue
     return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
-    /* NEW:
-      this.entryDetailsForm.value.callsign = filterValue
-      return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
-    */
-    /* OLD:
-      this.entryDetailsForm.controls['ranger'].setValue(filterValue) // TODO: MAT input field not automatically set into entryForm
-      return this.rangers.filter(ranger => ranger.callsign.toLowerCase().includes(filterValue));
-    */
   }
 
   /**
    * Transforms Settings Array into Form Array
    */
   initEntryForm() {
+
     if (!this.settings) {
       this.log.error(`this.settings was null in initEntryForm`, this.id)
       return
@@ -294,7 +259,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       id: -2,
       callsign: [''],
       //team: ['T0'],
-      location: this.initLocation(),
+      //location: this.initLocation(),
       date: [new Date()],  // TODO: reset dateCtrl instead?!
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus]],
       note: ['']
@@ -340,11 +305,16 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     // Create a deep copy of the form-model, if it were to continue to be used - we just rest it
     // result.entryDetailsForm = Object.assign({}, result.entryDetailsForm)
 
-    //this.date=this.dateCtrl.value // TODO:
-    //! next line should already have happened by patch, in
-    this.entryDetailsForm.value.date = this.dateCtrl.value
+    // this.date=this.dateCtrl.value // TODO:
+    // ! next line should already have happened by patch, in
+    // this.entryDetailsForm.value.date = this.dateCtrl.value
+
+
+
 
     //! BUG: ALSO need to get location data into the form...
+
+
 
 
 
@@ -388,7 +358,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
   ngOnDestroy() {
-    this.locationSubscription?.unsubscribe()
+    //this.locationChange?.unsubscribe()
     this.rangersSubscription?.unsubscribe()
     this.settingsSubscription?.unsubscribe()
     this.timeSubscription?.unsubscribe()

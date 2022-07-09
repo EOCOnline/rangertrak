@@ -90,8 +90,14 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
     this.hasOverviewMap = false
     this.displayReports = false
     this.hasSelectedReports = false
+  }
 
-    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
+  override ngOnInit(): void {
+    super.ngOnInit()
+
+    this.log.verbose('ngOnInit()', this.id)
+
+    // REVIEW: Move subscribes into AfterViewInit()?
     // this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
     //   next: (newSettings) => {
     //     this.settings = newSettings
@@ -110,12 +116,8 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
       error: (e) => this.log.error('Location Subscription got:' + e, this.id),
       complete: () => this.log.info('Location Subscription complete', this.id)
     })*/
-  }
 
-  override ngOnInit(): void {
-    super.ngOnInit()
 
-    this.log.verbose('ngOnInit()', this.id)
 
     // displayReports = false
 
