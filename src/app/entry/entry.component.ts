@@ -46,6 +46,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   // Get location events from <location> component
   private locationSubscription!: Subscription
+  //public curLocation: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
   public location: LocationType = { lat: 0, lng: 0, address: undefinedAddressFlag }
   initialLocation: LocationType = { lat: magicNumber2, lng: magicNumber2, address: undefinedAddressFlag }
 
@@ -63,7 +64,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   readonly imagePath = "'./assets/imgs/'" // not yet used by *.html
 
   // REVIEW: Duplicate or extra locationFrmGrp - or passed in and actually *used*?!
-  locationFrmGrp!: UntypedFormGroup
+  ///locationFrmGrp!: UntypedFormGroup
   dateCtrl = new UntypedFormControl(new Date())
   minDate = new Date()
 
@@ -142,9 +143,9 @@ export class EntryComponent implements OnInit, OnDestroy {
 
     // REVIEW: patch entryForm object - as THAT is what gets saved with on form submit
     // ! REVIEW: Are there 2 locationFrmGrp's ??? -- see this.initLocation() -- Is this the right one?
-    this.entryDetailsForm.patchValue({
-      locationFrmGrp: newLocation
-    })
+    ///this.entryDetailsForm.patchValue({
+    ///locationFrmGrp: newLocation
+    ///})
   }
 
   onNewTimeEvent(newTime: Date) {
@@ -202,17 +203,17 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
 
-  initLocation() { // TODO: Shouldn't this be in location.component.ts?!
+  initLocation() { // TODO: moved to location.component.ts?!
     // BUG: duplicate of locationFrmGrp creation in EntryComponent.ts
     if (!this.settings) {
       this.log.error(`this.settings was null in initLocation`, this.id)
       return
     }
-    this.locationFrmGrp = this._formBuilder.group({
-      lat: [this.settings.defLat],
-      lng: [this.settings.defLng],
-      address: [''] //, Validators.required],
-    })
+    /// this.locationFrmGrp = this._formBuilder.group({
+    ///   lat: [this.settings.defLat],
+    ///   lng: [this.settings.defLng],
+    ///   address: [''] //, Validators.required],
+    /// })
 
     // Following is unsed!!
     // BUG: Why is this new TIME activity in LOCATION function!!!
@@ -266,7 +267,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       id: -1,
       callsign: [''],
       // team: ['T1'],
-      locationFrmGrp: this.initLocation(),
+      ///locationFrmGrp: this.initLocation(),
       timepickerFormControl: [new Date()],
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status],
       notes: ['']
@@ -332,35 +333,16 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     // TODO: update #enter__Callsign-upshot
   }
 
-  /*
-    Ideas for resetting fade: after Submit button, fade the entry details
-    https://www.sitepoint.com/css3-animation-javascript-event-handlers/
-    https://css-tricks.com/controlling-css-animations-transitions-javascript/
-    https://www.smashingmagazine.com/2013/04/css3-transitions-thank-god-specification/#a2
-    https://stackoverflow.com/questions/6268508/restart-animation-in-css3-any-better-way-than-removing-the-element
-    https://css-tricks.com/restart-css-animation/
-    https://gist.github.com/paulirish/5d52fb081b3570c81e3a
-  */
-  //MOved to Utility class
-  // resetMaterialFadeAnimation2(element: HTMLElement) {
-  //   this.log.excessive(`Fade Animation reset`, this.id)
-  //   element.style.animation = 'none';
-  //   element.offsetHeight; // trigger reflow
-  //   element.style.animation = "";
-  // }
-
-  // Create a deep copy of the form-model, if it were to continue to be used - we just rest it
-  // result.entryDetailsForm = Object.assign({}, result.entryDetailsForm)
 
   onFormSubmit(formData1: string): void {
     this.log.excessive(`Submit Form`, this.id)
+
+    // Create a deep copy of the form-model, if it were to continue to be used - we just rest it
+    // result.entryDetailsForm = Object.assign({}, result.entryDetailsForm)
+
     //this.date=this.dateCtrl.value // TODO:
-
-
     //! next line should already have happened by patch, in
     this.entryDetailsForm.value.date = this.dateCtrl.value
-
-
 
     //! BUG: ALSO need to get location data into the form...
 

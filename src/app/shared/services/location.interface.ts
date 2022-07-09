@@ -8,3 +8,9 @@ export interface LocationType {
 }
 
 export const undefinedAddressFlag = 'NO_LOCATION_SET_YET'
+export const undefinedLocation = {
+  lat: -1,
+  lng: -1,
+  address: undefinedAddressFlag
+}
+// test for object equality (of contents): _.isEqual( obj1 , obj2 ) or JSON.stringify(obj1) === JSON.stringify(obj2)

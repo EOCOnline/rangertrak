@@ -28,13 +28,13 @@
 
     <!-- ======================================= -->
     <h2 class="elegant"
-      title="Enter position using  Degrees Decmal (DD)  or  Degrees, Minutes & Seconds (DMS)  or  Degrees Minutes & Seconds (DDM)">
+      title="Enter position using  Degrees Decmal (DD)  or  Degrees, Minutes & Seconds (DMS)  or  Degrees & Decimal Minutes (DDM)">
       <mat-label>Where</mat-label>&nbsp;&nbsp;
       <span class="small">(updates map to the right)</span><img src="'../../assets/icons/'+information-outline.png"
         height="16px" width="16px" alt="info icon" />
     </h2>
     <div>
-      <rangertrak-location (newLocationEvent)="onNewLocationParent($event)" [initialLoc]="initialLocation">
+      <rangertrak-location [(location)]="location">
       </rangertrak-location>
     </div>
 

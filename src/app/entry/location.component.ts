@@ -14,7 +14,7 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 import { CodeArea, DDToDDM, DDToDMS, GoogleGeocode, OpenLocationCode } from '../shared/'
 //import { MatIconRegistry } from '@angular/material/icon';
 import {
-    LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag
+    LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services'
 
 /*
@@ -32,15 +32,17 @@ const magicTempNumber = 12  // BUG: same as magicNumber2 in entryComponent.ts: i
 })
 export class LocationComponent implements OnInit, OnDestroy {
   // Grab reference to location portion of parent's entry form  // BUG: Not really happening is it?
-  @Input() public locationFrmGrp!: UntypedFormGroup // input from entry.component.ts
-  @Input() public initialLoc: LocationType = { lat: magicTempNumber, lng: magicTempNumber, address: undefinedAddressFlag }
+  ///@Input() public locationFrmGrp!: UntypedFormGroup // input from entry.component.ts
+  ///@Input() public initialLoc: LocationType = { lat: magicTempNumber, lng: magicTempNumber, address: undefinedAddressFlag }
+  @Input() public location: LocationType = undefinedLocation
+  // test for object equality (of contents): _.isEqual( obj1 , obj2 ) or JSON.stringify(obj1) === JSON.stringify(obj2)
   // input from entry.component.ts
 
   // Using mediation pattern (pg 188), this child component emits following event to parent,
   // parent's template has: (newLocationEvent)="onNewLocationParent($event)"
   // Parent's onNewLocationParent($event) gets called.
   // Parent then passes the new location (via binding), to any children as needed
-  @Output() newLocationEvent = new EventEmitter<LocationType>()
+  @Output() locationChange = new EventEmitter<LocationType>()
 
   // @Input('location') location: FormGroup;
   // @Input('group') location: FormGroup;
@@ -49,8 +51,6 @@ export class LocationComponent implements OnInit, OnDestroy {
   // public location2: FormGroup
   // locationCtrl = new FormControl()  // TODO: No formControlName="addressCtrl"!!!!
 
-
-  public myLat = 56.7890 // BUG:
   private id = "Location Component"
 
   // Grab reference to #elements in template (vs. getElementById)
@@ -71,32 +71,35 @@ export class LocationComponent implements OnInit, OnDestroy {
   // @ViewChild('lngM') elLngM!: HTMLInputElement
   // @ViewChild('lngS') elLngS!: HTMLInputElement
 
+  public locationFrmGrp!: UntypedFormGroup
+  //public myLat = 0
+
   public geocoder = new GoogleGeocode
   //w3w = new What3Words()
 
-  public location!: LocationType
+  //public location!: LocationType
 
+  // Cooordinates as Decimal Degrees (DD)
   public latI = 0 // Integer portion
   public latF = 0 // Float portion
+  public lngI = 0
+  public lngD = 0
 
+  // Cooordinates as Degrees, Minutes & Seconds (DMS)
   public latQ = "N" // Quadrant
   public latD = 0 // Degrees
   public latM = 0 // Minutes
   public latS = 0 // Seconds
-
-  public latDDMQ = "N" // Quadrant
-  public latDDMD = 0 // Degrees
-  public latDDMM = 0 // Minutes
-
-  public lngI = 0
-  public lngD = 0
-
   public lngF = 0
   public lngM = 0
   public lngQ = "E"
   public lngS = 0
 
-  public lngDDMQ = "N" // Quadrant
+  // Cooordinates as Degrees & Decimal Minutes (DDM)
+  public latDDMQ = "N" // Quadrant
+  public latDDMD = 0 // Degrees
+  public latDDMM = 0 // Minutes
+  public lngDDMQ = "E" // Quadrant
   public lngDDMD = 0 // Degrees
   public lngDDMM = 0 // Minutes
 
@@ -110,7 +113,7 @@ export class LocationComponent implements OnInit, OnDestroy {
   public mdiAccount: string = mdiAccount
   public mdiInformationOutline: string = mdiInformationOutline
 
-  private settingsSubscription: Subscription
+  private settingsSubscription!: Subscription
   private settings!: SettingsType
   //private locationSubject$: BehaviorSubject<LocationType>
 
@@ -122,6 +125,13 @@ export class LocationComponent implements OnInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("Construction", this.id)
 
+    this.log.verbose("Out of constructor", this.id)
+  }
+
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
+  public ngOnInit(): void {
+    this.log.info("ngOnInit", this.id)
+
     //! TODO: Move ALL subscribes to AfterViewInit() !!!!
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
@@ -132,41 +142,21 @@ export class LocationComponent implements OnInit, OnDestroy {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    //this.locationFrmGrp = _formBuilder.group(LocationType)
 
-    //{
-    //   lat: [],
-    //   lng: [],
-    //   address: []
-    // })
 
-    this.log.verbose("Out of constructor", this.id)
-  }
 
-  /**
-   * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
-
-  public getLocationObserver(): Observable<LocationType> {
-    return this.locationSubject$!.asObservable()
-  }*/
-  // #endregion Constructors (1)
-
-  // #region Public Methods (11)
-
-  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
-  public ngOnInit(): void {
-    this.log.info("ngOnInit", this.id)
     if (!this.settings) {
       this.log.error(`this.settings was null in ngOnInit`, this.id)
       return
     }
 
     // TODO: Give up the thread/sleep(500) to let the values come though?!
-    if (this.initialLoc.lat != magicTempNumber && this.initialLoc.lng != magicTempNumber) {
+    if (this.curLocation.lat != magicTempNumber && this.curLocation.lng != magicTempNumber) {
       // Use initial Location values passed from parent's html form
-      this.location = this.initialLoc
+      this.location = this.curLocation
     } else {
       // Use defaults if parent didn't pass any in
+      this.initLocation() //! duplicate of the following!!!!!!!!
       this.location = {
         lat: this.settings ? this.settings.defLat : 0,
         lng: this.settings ? this.settings.defLng : 0,
@@ -210,40 +200,83 @@ export class LocationComponent implements OnInit, OnDestroy {
 
     //let keyup$ = Observable.fromEvent(this.elLatI.nativeElement, 'keyup')
 
-    // On Location/Address Change subscriptions  // TODO: USE THESE - or not???
-    if (this.locationFrmGrp) {
-      this.locationFrmGrp.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        this.log.info('########  latitude int value changed: ' + x, this.id)
-      })
-      let latf = this.locationFrmGrp.get("latF")
-      if (latf) {
-        this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-          this.log.info('########## lat float value changed: ' + x, this.id)
-        })
-        this.log.warn('########## lat float value WAS FOUND!!!!', this.id)
-      }
-      else {
-        this.log.error('########## lat float value NOT FOUND!!!!', this.id)
-      }
-      this.locationFrmGrp.get("lngI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        this.log.info('#######  lng Int value changed: ' + x), this.id
-      })
-      this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-        this.log.info('#######  lng Float value changed: ' + x), this.id
-      })
+    /// On Location/Address Change subscriptions  // TODO: USE THESE - or not???
+    /// if (this.locationFrmGrp) {
+    ///   this.locationFrmGrp.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+    ///     this.log.info('########  latitude int value changed: ' + x, this.id)
+    ///   })
+    ///   let latf = this.locationFrmGrp.get("latF")
+    ///   if (latf) {
+    ///     this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+    ///       this.log.info('########## lat float value changed: ' + x, this.id)
+    ///     })
+    ///     this.log.warn('########## lat float value WAS FOUND!!!!', this.id)
+    ///   }
+    ///   else {
+    ///     this.log.error('########## lat float value NOT FOUND!!!!', this.id)
+    ///   }
+    ///   this.locationFrmGrp.get("lngI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+    ///     this.log.info('#######  lng Int value changed: ' + x), this.id
+    ///   })
+    ///   this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+    ///     this.log.info('#######  lng Float value changed: ' + x), this.id
+    ///   })
 
-      // TODO: NOt working yet...
-      //this.log.excessive(`addressCtrl.valueChanges`, this.id)
-      // TODO: No formControlName="addressCtrl"!!!!
-      // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
-      //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
-    } else {
-      // ! ***************************** next line getting hit!
-      this.log.error(`locationFrmGrp not available yet in ngOnInit`, this.id)
-    }
+    // TODO: NOt working yet...
+    //this.log.excessive(`addressCtrl.valueChanges`, this.id)
+    // TODO: No formControlName="addressCtrl"!!!!
+    // Error: Uncaught (in promise): TypeError: Cannot read properties of null (reading 'valueChanges')  TypeError: Cannot read properties of null (reading 'valueChanges')
+    //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
+    ///} else {
+    /// ! ***************************** next line getting hit!
+    ///this.log.error(`locationFrmGrp not available yet in ngOnInit`, this.id)
+    ///}
 
     this.log.verbose("out of ngOnInit", this.id)
   }
+
+
+  initLocation() { // TODO: Shouldn't this be in location.component.ts?!
+    // BUG: duplicate of locationFrmGrp creation in EntryComponent.ts
+    if (!this.settings) {
+      this.log.error(`this.settings was null in initLocation`, this.id)
+      return
+    }
+    this.locationFrmGrp = this._formBuilder.group({
+      lat: [this.settings.defLat],
+      lng: [this.settings.defLng],
+      address: [''] //, Validators.required],
+    })
+
+    // Following is unsed!!
+    // BUG: Why is this new TIME activity in LOCATION function!!!
+    // BUG: Duplicated in time-picker.component - as locationFrmGrp is there...
+    // new values here bubble up as emitted events - see onNewLocation()
+    // this.timepickerFormControl = this._formBuilder.control(
+    //   new Date()
+    // ) // TODO: Don't need new!
+
+    /*
+    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
+    let addr = this.locationFrmGrp.get("address")
+    if (addr) {
+      addr.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
+      this.log.verbose("Made reservations!", this.id)
+    } else {
+      console.warn("could NOT Make reservations")
+    }
+    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
+    return this.locationFrmGrp
+    */
+  }
+
+
+
+
+
+
+
+
 
   // See Ang Cookbook, pg 349ff
   onMouseEnter() {
@@ -348,7 +381,8 @@ export class LocationComponent implements OnInit, OnDestroy {
             //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
           }
     */
-    this.emitNewLocation(this.location) // Emit new location event to parent
+    ///this.emitNewLocation(this.location) // Emit new location event to parent
+    this.curLocation = this.location
   }
 
   /**
@@ -356,16 +390,16 @@ export class LocationComponent implements OnInit, OnDestroy {
    * @param newLocation
    *
    */
-  public emitNewLocation(newLocation: LocationType) { // Or LocationEvent?!
-    // Do any needed sanity/validation here
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
+  // public emitNewLocation(newLocation: LocationType) { // Or LocationEvent?!
+  //   // Do any needed sanity/validation here
+  //   // Based on listing 8.8 in TS dev w/ TS, pg 188
+  //   this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
 
-    this.newLocationEvent.emit(this.location)
-    /*if (! {
-      this.log.warn(`New location event had no listeners!`, this.id)
-    }*/
-  }
+  //   this.newLocationEvent.emit(this.location)
+  //   /*if (! {
+  //     this.log.warn(`New location event had no listeners!`, this.id)
+  //   }*/
+  // }
 
 
   // public setCtrl(ctrlName: HTMLElement, value: number | string) {
