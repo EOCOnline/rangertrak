@@ -33,7 +33,7 @@ const routes: Routes = [
   { path: 'rangers', component: RangersComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'log', component: LogComponent },
-
+  // Could add Title = "PageName" // https://angular.io/guide/router#setting-the-page-title
 
 
   // LAZY Routes: preloaded right after root app module (via dynamic import module)

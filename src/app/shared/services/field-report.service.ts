@@ -7,16 +7,17 @@ import {
 } from '@angular/core'
 
 import {
-    FieldReportStatusType, FieldReportsType, FieldReportType, LogService, RangerService,
+    FieldReportStatusType, FieldReportsType, FieldReportType, LogService, RangerService, RangerType,
     SettingsService, SettingsType
 } from './' // , TeamService
-import { RangerType } from './ranger.interface'
+
+//import {  } from './ranger.interface'
 
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
 // TODO: Update server with new reports:  https://angular.io/tutorial/toh-pt6#heroes-and-http
 
-
+//, deps: [LogService, RangerService, LogService]
 @Injectable({ providedIn: 'root' })
 export class FieldReportService implements OnInit, OnDestroy {
 
