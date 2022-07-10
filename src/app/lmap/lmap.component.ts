@@ -51,7 +51,9 @@ L.Marker.prototype.options.icon = iconDefault;
   ],
   providers: [SettingsService]
 })
-export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  //OnInit,
+export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {  //OnInit,
+
+
 
   public override id = 'Leaflet Map Component'
   public override title = 'Leaflet Map'
@@ -144,6 +146,13 @@ export class LmapComponent extends AbstractMap implements OnInit, OnDestroy {  /
 
     // ! Following is duplicate of that above?!
     this.updateFieldReports()
+  }
+
+  /**
+     * Called once all HTML elements have been created
+     */
+  ngAfterViewInit() {
+
   }
 
   override initMainMap() {

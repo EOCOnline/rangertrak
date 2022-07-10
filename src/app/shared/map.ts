@@ -111,7 +111,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
     this.log.excessive(`Constructing Abstract Map`, this.id)
 
-
   }
 
 

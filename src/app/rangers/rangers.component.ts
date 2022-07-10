@@ -30,7 +30,8 @@ type AOA = any[][]  // array of arrays
   templateUrl: './rangers.component.html',
   styleUrls: ['./rangers.component.scss']
 })
-export class RangersComponent implements OnInit, OnDestroy {
+export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
+
 
   private id = 'Ranger Component'
   title = 'Rangers (CERT, ACS/ARES, etc)'
@@ -174,6 +175,13 @@ export class RangersComponent implements OnInit, OnDestroy {
       //this.displayHide("rangers__Fake")
       //this.displayHide("ranger__ImportExcel")
     }
+  }
+
+  /**
+   * Called once all HTML elements have been created
+   */
+  ngAfterViewInit() {
+
   }
 
   onGridReady = (params: any) => {

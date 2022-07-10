@@ -30,7 +30,9 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   templateUrl: './location.component.html',
   styleUrls: ['./location.component.scss']
 })
-export class LocationComponent implements OnInit, OnDestroy {
+export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
+
+
 
   // Use setter to get immediate notification of changes to inputs (pg 182 & 188)
   @Input() set location(location: LocationType) {
@@ -152,6 +154,13 @@ export class LocationComponent implements OnInit, OnDestroy {
     //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
 
     this.log.verbose("out of ngOnInit", this.id)
+  }
+
+  /**
+     * Called once all HTML elements have been created
+     */
+  ngAfterViewInit() {
+
   }
 
   /**

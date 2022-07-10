@@ -8,8 +8,8 @@ import {
     AfterViewInit, Component, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
 } from '@angular/core'
 import {
-    FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup,
-    Validators
+    FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
+    UntypedFormControl, UntypedFormGroup, Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
@@ -31,7 +31,7 @@ import {
   styleUrls: ['./entry.component.scss'],
   providers: [RangerService, FieldReportService, SettingsService] //, TeamService    // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!      // per https://angular.io/guide/singleton-services
 })
-export class EntryComponent implements OnInit, OnDestroy {
+export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
   private id = 'Entry Form'
   title = 'Field Report Entry'
@@ -55,8 +55,8 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   // --------------- ENTRY FORM -----------------
   // control creation in a component class = immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
-  public entryDetailsForm!: UntypedFormGroup
-  callsignCtrl = new UntypedFormControl()
+  public entryDetailsForm!: FormGroup //UntypedFormGroup
+  callsignCtrl = new FormControl() //Untyped
   readonly imagePath = "'./assets/imgs/'" // not yet used by *.html
 
   // Get location events from <location> component
@@ -202,6 +202,14 @@ export class EntryComponent implements OnInit, OnDestroy {
 
       this.log.excessive(` ngOnInit completed`, this.id)
     }
+  }
+
+
+  /**
+   * Called once all HTML elements have been created
+   */
+  ngAfterViewInit() {
+
   }
 
   /**

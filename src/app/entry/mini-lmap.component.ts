@@ -43,7 +43,9 @@ L.Marker.prototype.options.icon = iconDefault;
     '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
   providers: [SettingsService]
 })
-export class MiniLMapComponent extends AbstractMap implements OnInit, OnDestroy {
+export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {
+
+
 
   // Use setter get notification of new locations from parent entry form (pg 182 & 188)
   @Input() set locationUpdated(newLocation: LocationType) {
@@ -133,6 +135,12 @@ Ensure that there are no changes to the bindings in the template after change de
     this.updateFieldReports()
   }
 
+  /**
+   * Called once all HTML elements have been created
+   */
+  ngAfterViewInit() {
+
+  }
 
   override initMainMap() {
     super.initMainMap()
