@@ -19,12 +19,14 @@ export class FooterComponent implements OnInit, OnDestroy {
   private id = 'Footer Component'
 
   today = new Date()
-  version
+  version!: string
 
   constructor(
     private log: LogService,
     private settingsService: SettingsService) {
+  }
 
+  ngOnInit(): void {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
@@ -35,9 +37,6 @@ export class FooterComponent implements OnInit, OnDestroy {
     })
 
     this.version = this.settings?.version
-  }
-
-  ngOnInit(): void {
   }
 
   ngOnDestroy() {

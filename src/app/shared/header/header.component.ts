@@ -48,6 +48,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private settingsService: SettingsService,
   ) {
 
+    this.timeCurrent = this.clockService.getCurrentTime()
+
+    // consuming components should include their name, e.g.
+    this.parentTitle = 'parent component`s title'
+    this.pageDescription = 'parent component`s title'
+  }
+
+  ngOnInit(): void {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.onNewSettings(newSettings)
@@ -57,14 +65,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       complete: () => this.log.warn('Settings Subscription complete', this.id)
     })
 
-    this.timeCurrent = this.clockService.getCurrentTime()
-
-    // consuming components should include their name, e.g.
-    this.parentTitle = 'parent component`s title'
-    this.pageDescription = 'parent component`s title'
-  }
-
-  ngOnInit(): void {
     if (!this.settings) {
       this.log.warn(`Settings not yet available in OnInit()`, this.id)
       return

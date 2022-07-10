@@ -2,7 +2,7 @@ import * as L from 'leaflet'
 import { throwError } from 'rxjs'
 
 import { HttpClient } from '@angular/common/http'
-import { Injectable, Optional, SkipSelf } from '@angular/core'
+import { Injectable, OnInit, Optional, SkipSelf } from '@angular/core'
 
 import { PopupService } from './popup.service'
 
@@ -14,7 +14,7 @@ export type MarkerType = {
 }
 
 @Injectable({ providedIn: 'root' })
-export class MarkerService {
+export class MarkerService implements OnInit {
   stations: string = '/assets/data/VashonFireStations.geojson';
 
   constructor(
@@ -35,6 +35,12 @@ export class MarkerService {
       })
     }
   }
+
+  ngOnInit() {
+
+
+  }
+
 
   static scaledRadius(val: number, maxVal: number): number {
     return 20 * (val / maxVal);

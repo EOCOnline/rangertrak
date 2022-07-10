@@ -18,12 +18,12 @@ export enum FieldReportSource { Voice, Packet, APRS, Email }
 
 
 @Injectable({ providedIn: 'root' })
-export class FieldReportService implements OnDestroy {
+export class FieldReportService implements OnInit, OnDestroy {
 
   private id = 'Field Report Service'
 
   private fieldReports!: FieldReportsType
-  private fieldReportsSubject$: BehaviorSubject<FieldReportsType>
+  private fieldReportsSubject$!: BehaviorSubject<FieldReportsType>
 
   // REVIEW: No need to enable subscription to selectedFieldReports as they are
   // auto-saved on evey selection and user is single-threaded, needs to do that,
@@ -61,8 +61,10 @@ export class FieldReportService implements OnDestroy {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    log.verbose("Contruction: once or repeatedly?!--------------", this.id)
+    this.log.verbose("Contruction: once or repeatedly?!--------------", this.id)
+  }
 
+  ngOnInit() {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
@@ -74,14 +76,16 @@ export class FieldReportService implements OnDestroy {
 
     this.fieldReports = this.LoadFieldReportsFromLocalStorage()
 
-    log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
+    this.log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
 
     //this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
     this.fieldReportsSubject$ = new BehaviorSubject(this.fieldReports)
     this.updateFieldReportsAndPublish()
   }
 
+
   /**
+   *
    * Try to load existing FieldReports from browser's Local Storage
    * @returns
    */

@@ -1,6 +1,6 @@
 import { BehaviorSubject, Observable, throwError } from 'rxjs'
 
-import { Injectable, Optional, SkipSelf } from '@angular/core'
+import { Injectable, OnInit, Optional, SkipSelf } from '@angular/core'
 
 import * as packageJson from '../../../../package.json'
 import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
@@ -16,7 +16,7 @@ export type SecretType = {
 
 
 @Injectable({ providedIn: 'root' })
-export class SettingsService {
+export class SettingsService implements OnInit {
 
   private id = 'Settings Service'
   private storageLocalName = 'appSettings'
@@ -86,14 +86,20 @@ export class SettingsService {
     this.settings.version = packageAsJson.version
     this.log.verbose(`Got version: ${packageAsJson.version} `, this.id)
 
-    // Save & publish settings to subscribers
+    // Save settings
     this.settingsSubject$ = new BehaviorSubject(this.settings)
+    // publish settings to subscribers
     this.updateSettings(this.settings)
 
     // REVIEW: following forces garbage collection of package.json, for security? (would happen at end of constructor too)
     packageAsString = ''
     packageAsJson = null
   }
+
+  ngOnInit() {
+
+  }
+
 
   /**
    * Called by Settings Component when user wants to reset

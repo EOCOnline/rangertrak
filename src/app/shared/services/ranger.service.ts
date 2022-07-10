@@ -41,7 +41,7 @@ Ranger Service: SortRangersByCallsign: 301 Rangers in array
 
 
 @Injectable({ providedIn: 'root' })
-export class RangerService {
+export class RangerService implements OnInit {
   observeRangers$: Observable<RangerType[]> | null = null
 
   id = 'Ranger Service'
@@ -86,6 +86,10 @@ export class RangerService {
     }
 
     this.rangersSubject$ = new BehaviorSubject(this.rangers)
+
+  }
+
+  ngOnInit() {
     this.updateLocalStorageAndPublish()
   }
 

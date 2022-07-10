@@ -30,6 +30,12 @@ export class AlertsComponent implements OnInit, OnDestroy {
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
 
+    this.isAlertHidden = true;
+  }
+
+  ngOnInit(): void {
+    console.log('AlertComponent.ngInit')
+
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
@@ -38,12 +44,6 @@ export class AlertsComponent implements OnInit, OnDestroy {
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
-
-    this.isAlertHidden = true;
-  }
-
-  ngOnInit(): void {
-    console.log('AlertComponent.ngInit')
 
     this.alertBanner = this.document.querySelector('.mdc-banner')
     if (this.alertBanner == null) {
