@@ -97,7 +97,7 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
 
     this.log.verbose('ngOnInit()', this.id)
 
-    // REVIEW: Move subscribes into AfterViewInit()?
+    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     // this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
     //   next: (newSettings) => {
     //     this.settings = newSettings

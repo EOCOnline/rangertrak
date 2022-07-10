@@ -24,7 +24,7 @@ export class AboutComponent implements OnDestroy {
   ) {
     console.log("AboutComponent getting constructed")
 
-    // REVIEW: Move subscribes into AfterViewInit()?
+    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings

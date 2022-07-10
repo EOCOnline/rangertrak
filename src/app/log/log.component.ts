@@ -57,7 +57,7 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
    */
   ngOnInit(): void {
     //console.log(`Into log component's ngInit`)
-    // REVIEW: Move subscribes into AfterViewInit()?
+    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     this.logSubscription = this.logService.getLogObserver().subscribe({
       next: (log) => {
         //console.log(`LogPanel got: ${JSON.stringify(log)}`)

@@ -113,11 +113,10 @@ export class LocationComponent implements OnInit, OnDestroy {
   }
 
   // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
-
   public ngOnInit(): void {
     this.log.info("ngOnInit", this.id)
 
-    // REVIEW: Move ALL subscribes to AfterViewInit()???
+    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     // Settings only needed for Check PCode & What3Words...
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {

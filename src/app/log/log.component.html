@@ -8,21 +8,11 @@
     <h3>Log levels to display:</h3>
     <section>
       <!-- Other colors: primary, secondary, accent and warn  https://stackoverflow.com/questions/57926149/angular-material-colors -->
-      <mat-checkbox [(ngModel)]="excessive" (change)="this.redisplayLog()" color="primary"
-        >Excessive</mat-checkbox
-      >
-      <mat-checkbox [(ngModel)]="verbose" (change)="this.redisplayLog()"
-        >Verbose</mat-checkbox
-      >
-      <mat-checkbox [(ngModel)]="info" (change)="this.redisplayLog()"
-        >Informational</mat-checkbox
-      >
-      <mat-checkbox [(ngModel)]="warn" (change)="this.redisplayLog()"
-        >Warnings</mat-checkbox
-      >
-      <mat-checkbox [(ngModel)]="error" (change)="this.redisplayLog()"
-        >Errors</mat-checkbox
-      >
+      <mat-checkbox [(ngModel)]="excessive" (change)="this.redisplayLog()">Excessive</mat-checkbox>
+      <mat-checkbox [(ngModel)]="verbose" (change)="this.redisplayLog()" color="primary">Verbose</mat-checkbox>
+      <mat-checkbox [(ngModel)]="info" (change)="this.redisplayLog()" color="primary">Informational</mat-checkbox>
+      <mat-checkbox [(ngModel)]="warn" (change)="this.redisplayLog()" color="primary">Warnings</mat-checkbox>
+      <mat-checkbox [(ngModel)]="error" (change)="this.redisplayLog()" color="primary">Errors</mat-checkbox>
     </section>
   </mat-card-content>
 </mat-card>

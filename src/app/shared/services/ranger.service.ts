@@ -70,8 +70,11 @@ export class RangerService implements OnInit {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    //! REVIEW: Gets called twice!!
     this.log.verbose("Construction", this.id)
+
+    //! REVIEW: Gets called twice!!
+    this.log.verbose(`Constructor call stack: ${new Error().stack}`, this.id)
+
     this.LoadRangersFromLocalStorage()
     this.log.verbose(`Got ${this.rangers.length} from Local Storage`, this.id)
 
@@ -86,7 +89,6 @@ export class RangerService implements OnInit {
     }
 
     this.rangersSubject$ = new BehaviorSubject(this.rangers)
-
   }
 
   ngOnInit() {
@@ -103,6 +105,8 @@ export class RangerService implements OnInit {
   /**
     * Update localStorage with new rangers & notify observers
     * REVIEW: ALSO called from RangerComponent with new updates!
+    *
+    * TODO: Should new rangers be anparameter/argum,ent?!
     */
   public updateLocalStorageAndPublish() {
     // Do any needed sanity/validation here

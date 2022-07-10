@@ -61,7 +61,9 @@ export class FieldReportService implements OnInit, OnDestroy {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    this.log.verbose("Contruction: once or repeatedly?!--------------", this.id)
+    this.log.verbose("Contruction", this.id)
+    //! REVIEW: Gets called twice!!
+    this.log.verbose(`Constructor call stack: ${new Error().stack}`, this.id)
   }
 
   ngOnInit() {

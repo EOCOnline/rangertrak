@@ -141,7 +141,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.log.verbose("ngInit", this.id)
 
-    // REVIEW: Move subscribes into AfterViewInit()?
+    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
