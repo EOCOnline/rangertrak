@@ -8,7 +8,7 @@ For more info see: https://angular.io/guide/build#configuring-commonjs-dependenc
 import * as XLSX from 'xlsx'
 
 import { DOCUMENT } from '@angular/common'
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { AlertsComponent } from '../shared/alerts/alerts.component'

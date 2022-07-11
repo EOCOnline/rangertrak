@@ -11,7 +11,7 @@ import { throwError } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 
 import { AbstractMap } from '../shared'
 import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
