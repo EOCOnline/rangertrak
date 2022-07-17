@@ -263,7 +263,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let enteredLocation = {
       lat: 47.444,
-      lng: -122.444,
+      lng: -122.555,
       address: "10506 sw 132nd pl, vashon, wa, 98070",
       derivedFromAddress: false
     }
@@ -305,17 +305,17 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       //lngDD = newLocation.lng
     }
 
-    this.latI = Math.floor(latDD)
+    this.latI = Math.trunc(latDD)
 
-    this.locationFormModel.patchValue({
-      latI: Math.floor(latDD)
-    })
+    //    this.locationFormModel.patchValue({
+    //     latI: Math.floor(latDD)
+    //  })
 
 
     //this.latF = (latDD - this.latI).toFixed(4)
     this.latF = Math.round((latDD - this.latI) * 10000)
 
-    this.lngI = Math.floor(lngDD)
+    this.lngI = Math.trunc(lngDD)
     this.lngF = Math.round((lngDD - this.lngI) * 10000)
 
     let latDMS = DDToDMS(latDD)
@@ -374,26 +374,35 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.locationFormModel.setValue({
-      latI: this.latI,
-      latF: this.lngF,
 
-      latQ: this.latQ,
-      latD: this.latD,
-      latM: this.latM,
-      latS: this.latS,
+      DD: {
+        latI: this.latI,
+        latF: this.latF,
+        lngI: this.lngI,
+        lngF: this.lngF,
+      },
 
-      lngQ: this.lngQ,
-      lngD: this.lngD,
-      lngM: this.lngM,
-      lngS: this.lngS,
+      DMS: {
+        latQ: this.latQ,
+        latD: this.latD,
+        latM: this.latM,
+        latS: this.latS,
 
-      latDDMQ: this.latDDMQ,
-      latDDMD: this.latDDMD,
-      latDDMM: this.latDDMM,
+        lngQ: this.lngQ,
+        lngD: this.lngD,
+        lngM: this.lngM,
+        lngS: this.lngS,
+      },
 
-      lngDDMQ: this.lngDDMQ,
-      lngDDMD: this.lngDDMD,
-      lngDDMM: this.lngDDMM,
+      DDM: {
+        latDDMQ: this.latDDMQ,
+        latDDMD: this.latDDMD,
+        latDDMM: this.latDDMM,
+
+        lngDDMQ: this.lngDDMQ,
+        lngDDMD: this.lngDDMD,
+        lngDDMM: this.lngDDMM,
+      },
       address: "123 Elm St."
     })
 
