@@ -50,15 +50,8 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
 
     console.log(`Constructing log component`)
 
-  }
-
-  /**
-   * Create heading for Log Panel
-   */
-  ngOnInit(): void {
-    //console.log(`Into log component's ngInit`)
-    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
-    this.logSubscription = this.logService.getLogObserver().subscribe({
+    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
+    this.logSubscription = logService.getLogObserver().subscribe({
       next: (log) => {
         //console.log(`LogPanel got: ${JSON.stringify(log)}`)
         this.latestLog = log
@@ -76,6 +69,13 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
       error: (e) => console.error('Settings Subscription got:' + e, this.id),
       complete: () => console.info('Settings Subscription complete', this.id)
     })
+  }
+
+  /**
+   * Create heading for Log Panel
+   */
+  ngOnInit(): void {
+    //console.log(`Into log component's ngInit`)
 
     this.logPanel = this.document.getElementById("log")
     if (this.logPanel) {

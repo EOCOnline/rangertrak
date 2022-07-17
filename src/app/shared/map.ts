@@ -111,16 +111,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
     this.log.excessive(`Constructing Abstract Map`, this.id)
 
-  }
-
-
-  /**
-   *
-   */
-  ngOnInit() {
-    this.log.verbose("ngOnInit()", this.id)
-    //   this.log.verbose(`ngOnInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
-
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         // REVIEW: Any new settings just ripple thru, or does anything need pushing?!
@@ -139,6 +129,15 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
         error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
         complete: () => this.log.info('Field Reports Subscription complete', this.id)
       })
+  }
+
+
+  /**
+   *
+   */
+  ngOnInit() {
+    this.log.verbose("ngOnInit()", this.id)
+    //   this.log.verbose(`ngOnInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
 
     if (!this.settings) {
       this.log.error(`this.settings not yet established in ngOnInit()`, this.id)

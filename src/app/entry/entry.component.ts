@@ -37,13 +37,13 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'Field Report Entry'
   pageDescr = `Enter data associated with ranger's name, location, status for tracking on maps & spreadsheets`
 
+  // REVIEW: do async auto-subscriptions from the HTML side instead?
   private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
   filteredRangers!: Observable<RangerType[]>
 
   private settingsSubscription!: Subscription
   public settings!: SettingsType
-
 
 
   // Get time events from <timepicker> component
@@ -84,46 +84,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document) {
 
     this.log.excessive(`Constructing!`, this.id)
-
-    // NOTE: workaround for onChange not working...
-    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
-  }
-
-  onNewLocationParent(newLocation: LocationType) {
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.info(`Parent Entry Form got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address} as address.`, this.id)
-    //From Entry Form - Parent got new location: {"lat":47.4472,"lng":-122.4627,"address":""}
-
-    // Children (with @Input stmts - i.e., mini-map) automatically gets the updated location
-    this.location = newLocation
-    //REVIEW:
-    //this.initialLocation = newLocation
-
-    // REVIEW: patch entryForm object - as THAT is what gets saved with on form submit
-    // ! REVIEW: Are there 2 locationFrmGrp's ??? -- see this.initLocation() -- Is this the right one?
-    ///this.entryDetailsForm.patchValue({
-    ///locationFrmGrp: newLocation
-    ///})
-  }
-
-  onNewTimeEvent(newTime: Date) {
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.error(`Got new Report time: ${newTime}`, this.id)
-    this.time = newTime
-
-    //! Does this duplicate OnFormSubmit()'s setting value of date?
-    // patch entryForm object - as THAT is what gets saved with on form submit
-    this.entryDetailsForm.patchValue({ timepickerFormControl: newTime })
-    // This then automatically could ge sent to any children (none in this case) via their @Input statements
-    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
-    // TODO: BUT, we still need to update our local copy:
-    //this.timepickerFormControl is where the Event comes up from...
-  }
-
-  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
-  ngOnInit(): void {
-    this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
-    this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
@@ -167,42 +127,83 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
 
 
-
-      // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
-      // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
-      this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)  // verifies Settings has been loaded
-
-      /* i.e., entryDetailsForm probably constructed at wrong time?!
-      Move the component creation to ngOnInit hook
-      error can show up when you are working with ViewChild, and execute code in AfterViewInit.
-      https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
-      the binding expression changes after being checked by Angular during the change detection cycle
-
-  Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'null'. Current value: '{
-   "id": -1,
-   "callsign": "",
-   "team": "T1",
-   [...]
-   */
-      this.initEntryForm()
-      // subscribe to addresses value changes?  NO. It bubles up through newLocation INSTEAD!!!
-      // this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
-      //   this.log.verbose(`Subscription to locationFrmGrp got: ${ x } `, this.id);
-      // })
-
-      this.submitInfo = this.document.getElementById("enter__Submit-info")
-
-      if (this.settings?.debugMode) {
-        this.displayShow("enter__frm-reguritation")
-      }
-
+      // NOTE: workaround for onChange not working...
       this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
-
-      // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
-
-      this.log.excessive(` ngOnInit completed`, this.id)
     }
   }
+
+  onNewLocationParent(newLocation: LocationType) {
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.info(`Parent Entry Form got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address} as address.`, this.id)
+    //From Entry Form - Parent got new location: {"lat":47.4472,"lng":-122.4627,"address":""}
+
+    // Children (with @Input stmts - i.e., mini-map) automatically gets the updated location
+    this.location = newLocation
+    //REVIEW:
+    //this.initialLocation = newLocation
+
+    // REVIEW: patch entryForm object - as THAT is what gets saved with on form submit
+    // ! REVIEW: Are there 2 locationFrmGrp's ??? -- see this.initLocation() -- Is this the right one?
+    ///this.entryDetailsForm.patchValue({
+    ///locationFrmGrp: newLocation
+    ///})
+  }
+
+  onNewTimeEvent(newTime: Date) {
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.error(`Got new Report time: ${newTime}`, this.id)
+    this.time = newTime
+
+    //! Does this duplicate OnFormSubmit()'s setting value of date?
+    // patch entryForm object - as THAT is what gets saved with on form submit
+    this.entryDetailsForm.patchValue({ timepickerFormControl: newTime })
+    // This then automatically could ge sent to any children (none in this case) via their @Input statements
+    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
+    // TODO: BUT, we still need to update our local copy:
+    //this.timepickerFormControl is where the Event comes up from...
+  }
+
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
+  ngOnInit(): void {
+    this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
+    this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
+
+
+    // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
+    // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
+    this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)  // verifies Settings has been loaded
+
+    /* i.e., entryDetailsForm probably constructed at wrong time?!
+    Move the component creation to ngOnInit hook
+    error can show up when you are working with ViewChild, and execute code in AfterViewInit.
+    https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
+    the binding expression changes after being checked by Angular during the change detection cycle
+
+Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'null'. Current value: '{
+ "id": -1,
+ "callsign": "",
+ "team": "T1",
+ [...]
+ */
+    this.initEntryForm()
+    // subscribe to addresses value changes?  NO. It bubles up through newLocation INSTEAD!!!
+    // this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
+    //   this.log.verbose(`Subscription to locationFrmGrp got: ${ x } `, this.id);
+    // })
+
+    this.submitInfo = this.document.getElementById("enter__Submit-info")
+
+    if (this.settings?.debugMode) {
+      this.displayShow("enter__frm-reguritation")
+    }
+
+    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
+
+    // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
+
+    this.log.excessive(` ngOnInit completed`, this.id)
+  }
+
 
 
   /**

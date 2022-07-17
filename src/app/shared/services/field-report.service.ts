@@ -65,9 +65,7 @@ export class FieldReportService implements OnInit, OnDestroy {
     this.log.verbose("Contruction", this.id)
     //! REVIEW: Gets called twice!!
     this.log.verbose(`Constructor call stack: ${new Error().stack}`, this.id)
-  }
 
-  ngOnInit() {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
@@ -84,6 +82,10 @@ export class FieldReportService implements OnInit, OnDestroy {
     //this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
     this.fieldReportsSubject$ = new BehaviorSubject(this.fieldReports)
     this.updateFieldReportsAndPublish()
+  }
+
+
+  ngOnInit() {
   }
 
 
