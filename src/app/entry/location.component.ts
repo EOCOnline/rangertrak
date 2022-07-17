@@ -44,7 +44,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Populate form with initial (& Subsequent updates) from parent.
       // Also reemit address changes which ultimately can get picked up by other (peer) children.
-      this.newLocationToFormAndEmit(this.location)
+      // this.newLocationToFormAndEmit(this.location)
     }
   }
 
@@ -101,6 +101,8 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   private settingsSubscription!: Subscription
   private settings!: SettingsType
 
+  private formUpdating = false
+
 
   constructor(
     private settingsService: SettingsService,
@@ -108,15 +110,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     private log: LogService,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("Construction", this.id)
-
-    this.initForm() // creates blank locationFormModel
-
-    this.log.verbose("Out of constructor", this.id)
-  }
-
-  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
-  public ngOnInit(): void {
-    this.log.info("ngOnInit", this.id)
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     // Settings only needed for Check PCode & What3Words...
@@ -129,27 +122,43 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    /// On Location/Address Change subscriptions  // TODO: USE THESE - or not???
-    /// if (this.locationFrmGrp) {
-    ///   this.locationFrmGrp.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-    ///     this.log.info('########  latitude int value changed: ' + x, this.id)
-    ///   })
-    ///   let latf = this.locationFrmGrp.get("latF")
-    ///   if (latf) {
-    ///     this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-    ///       this.log.info('########## lat float value changed: ' + x, this.id)
-    ///     })
-    ///     this.log.warn('########## lat float value WAS FOUND!!!!', this.id)
-    ///   }
-    ///   else {
-    ///     this.log.error('########## lat float value NOT FOUND!!!!', this.id)
-    ///   }
-    ///   this.locationFrmGrp.get("lngI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-    ///     this.log.info('#######  lng Int value changed: ' + x), this.id
-    ///   })
-    ///   this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-    ///     this.log.info('#######  lng Float value changed: ' + x), this.id
-    ///   })
+    this.initForm() // creates blank locationFormModel
+
+    this.log.verbose("Out of constructor", this.id)
+  }
+
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
+  public ngOnInit(): void {
+    this.log.info("ngOnInit", this.id)
+
+    // On Location/Address Change subscriptions  // TODO: USE THESE - or not???
+    // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
+    if (this.locationFormModel) {
+      //this.locationFormModel.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      this.locationFormModel.valueChanges.pipe(debounceTime(800)).subscribe(x => {
+        //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
+        if (!this.formUpdating) {
+          // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
+          this.valueChanges(x)
+        }
+
+      })
+      ///   let latf = this.locationFrmGrp.get("latF")
+      ///   if (latf) {
+      ///     this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      ///       this.log.info('########## lat float value changed: ' + x, this.id)
+      ///     })
+      ///     this.log.warn('########## lat float value WAS FOUND!!!!', this.id)
+      ///   }
+      ///   else {
+      ///     this.log.error('########## lat float value NOT FOUND!!!!', this.id)
+      ///   }
+      ///   this.locationFrmGrp.get("lngI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      ///     this.log.info('#######  lng Int value changed: ' + x), this.id
+      ///   })
+      ///   this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      ///     this.log.info('#######  lng Float value changed: ' + x), this.id
+    }
 
     //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
 
@@ -204,6 +213,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     /*
+    https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
     this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
     let addr = this.locationFrmGrp.get("address")
     if (addr) {
@@ -215,6 +225,51 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
     return this.locationFrmGrp
     */
+  }
+
+  formSubscribe_unused() {
+    this.locationFormModel.valueChanges.pipe(debounceTime(2000)).subscribe(x => {
+      //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
+      if (!this.formUpdating) {
+        // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
+        this.valueChanges(x)
+      }
+    })
+  }
+
+  formUnsubscribe() {
+
+    // this.locationFormModel.valueChanges = null
+  }
+
+  /**
+   * Gets called on any changes to Location Component fields
+   * Need to figure out what changed, and if the change makes a 'sensible' address:
+   * If so, update via event any subscribers: (i.e., the parent compoennt & map)
+   */
+  /* Gets: {
+    "DD":{"latI":40,"latF":0,"lngI":0,"lngF":0},
+    "DMS":{"latQ":"N","latD":0,"latM":0,"latS":0,"lngQ":"E","lngD":0,"lngM":0,"lngS":0},
+    "DDM":{"latDDMQ":"N","latDDMD":0,"latDDMM":0,"lngDDMQ":"E","lngDDMD":0,"lngDDMM":0},
+    "address":""
+  }
+  */
+  public valueChanges(e: any) {
+    this.log.info(`locationFormModel value changed: ${JSON.stringify(e)}`, this.id)
+
+    //let enteredLocation = undefinedLocation
+
+    // Verify changes are 'done': make sense & are valid
+
+    let enteredLocation = {
+      lat: 47.444,
+      lng: -122.444,
+      address: "10506 sw 132nd pl, vashon, wa, 98070",
+      derivedFromAddress: false
+    }
+
+    //
+    this.newLocationToFormAndEmit(enteredLocation)
   }
 
 
@@ -231,8 +286,10 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Any location change should drive to a new latDD & LngDD & sent here
     this.log.info(`new Location recieved: ${JSON.stringify(newLocation)}`, this.id);
+    this.formUpdating = true
+    // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
 
-    this.location = newLocation // REVIEW: Should caller just do this & NOT bother passing as a parameter?
+    //!                                                               this.location = newLocation // REVIEW: Should caller just do this & NOT bother passing as a parameter?
     // REVIEW: should we validate values or has that already been done?
 
     let latDD = newLocation.lat
@@ -249,6 +306,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.latI = Math.floor(latDD)
+
+    this.locationFormModel.patchValue({
+      latI: Math.floor(latDD)
+    })
+
+
     //this.latF = (latDD - this.latI).toFixed(4)
     this.latF = Math.round((latDD - this.latI) * 10000)
 
@@ -310,9 +373,37 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       */
     }
 
+    this.locationFormModel.setValue({
+      latI: this.latI,
+      latF: this.lngF,
+
+      latQ: this.latQ,
+      latD: this.latD,
+      latM: this.latM,
+      latS: this.latS,
+
+      lngQ: this.lngQ,
+      lngD: this.lngD,
+      lngM: this.lngM,
+      lngS: this.lngS,
+
+      latDDMQ: this.latDDMQ,
+      latDDMD: this.latDDMD,
+      latDDMM: this.latDDMM,
+
+      lngDDMQ: this.lngDDMQ,
+      lngDDMD: this.lngDDMD,
+      lngDDMM: this.lngDDMM,
+      address: "123 Elm St."
+    })
+
+
+
     // Emit new location event to parent: so it & any children can react
     this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
     this.locationChange.emit(this.location)
+
+    this.formUpdating = false // reenable subscription to location updates
   }
 
 
