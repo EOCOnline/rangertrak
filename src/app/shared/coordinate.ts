@@ -1,6 +1,8 @@
 //import { Injectable, OnInit } from '@angular/core';
 //import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 
+import { UpperCasePipe } from '@angular/common'
+
 // REVIEW: Much of this is overlap with:
 // https://developers.google.com/maps/documentation/javascript/coordinates
 // https://developers.google.com/maps/documentation/javascript/reference/coordinates
@@ -48,8 +50,9 @@ class PointSample {
   */
 }
 
-export class Coordinate {
+export class Coordinate_Unused {
   constructor(private _lat: number, private _long: number) {
+    // TODO: Force all values to X%180 or Y%90 ?
     if (_lat < -180 || _lat > 180)
       throw new Error('latatude is over 180 or under -180 degrees.')
     if (_long < -180 || _long > 180)
@@ -138,14 +141,62 @@ export function DDToDDM(D: number, lng: boolean = false) {
   }
 }
 
+
+/**
+ * Convert DMS to Deg and Decimal minutes
+ * Get object {deg:, min:, dir:}
+ * min truncated to 4 digits (e.g. 3.1432)
+ * dir returns S or N if lng = false (i.e., latitudes)
+ * dir returns E or W if lng = true  (a longitude)
+ * https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/
+ * @param D
+ * @param lng
+ * @returns
+ */
+
+export function DMSToDD(Q: string, D: number, M: number, S: number) {
+  return
+  ((Q.toLowerCase() == 'w' || Q.toLowerCase() == 's') ? -1 : 1) * D
+    + Math.round((M / 60 + S / 6000) * 10 ^ 4) / 10 ^ 4 // float portion to 4 decimals
+}
+
+/**
+ * Convert DDM to Deg and Decimal minutes
+ * Get object {deg:, min:, dir:}
+ * min truncated to 4 digits (e.g. 3.1432)
+ * dir returns S or N if lng = false (i.e., latitudes)
+ * dir returns E or W if lng = true  (a longitude)
+ * https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/
+ * @param D
+ * @param lng
+ * @returns
+ */
+
+export function DDMToDD(Q: string, D: number, M: number) {
+  return
+  ((Q.toLowerCase() == 'w' || Q.toLowerCase() == 's') ? -1 : 1) * D
+    + Math.round((M / 60) * 10 ^ 4) / 10 ^ 4 // float portion to 4 decimals
+}
+
+
+
+export function AddressToDD(newAddress: string) {
+  let lat = 0
+  let lng = 0
+
+  return { lat: lat, lng: lng }
+}
+
+
+
 // REVIEW: Duplicate of one in Utility class...
-export function strToLatLng(str: string) {
+export function strToLatLng_Unused(str: string) {
   const latlngStr = str.split(",", 2);
   return new google.maps.LatLng(parseFloat(latlngStr[0]), parseFloat(latlngStr[1]))
 }
 
 // Coord is a lat or lng in decimal degrees
-class Coord {
+class Coord_Unused {
   constructor(public coord: number) {
     try {
       // TODO: Could map larger/smaller values using modulus
@@ -178,7 +229,6 @@ class Coord {
   ToNumber(): number {
      return this.coord
   }
-
   */
 }
 

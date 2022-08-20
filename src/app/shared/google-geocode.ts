@@ -4,6 +4,7 @@
 // https://developers.google.com/maps/documentation/geocoding/start
 // TODO: https://developers-dot-devsite-v2-prod.appspot.com/maps/documentation/utils/geocoder
 
+//!BUG: None of these available if offline!!!
 export class GoogleGeocode {
 
   static geocoder = new google.maps.Geocoder
@@ -57,6 +58,7 @@ export class GoogleGeocode {
     }
 
     // debugger
+    // BUG: Needs a promise!
     // BUG: Following hasn't even been tried yet!...
     GoogleGeocode.geocoder
       .geocode({ address: encoded })

@@ -71,6 +71,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // https://github.com/h2qutc/angular-material-components
   // TODO: Consider for tracking ValueChanges: https://angular.io/guide/observables-in-angular#reactive-forms
+  // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
 
   constructor(
     private _formBuilder: UntypedFormBuilder,
@@ -109,29 +110,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)
 
 
-    if (this.rangers.length < 1) {
-      this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page & then review items in the Settings Page.', 'Go to Rangers, then Settings pages', 'Ignore')
-      //this.alert.OpenSnackBar(`No Rangers exist.Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
-      //TODO: Force navigation to /Rangers?
 
-
-
-      // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff
-      this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
-        startWith(''),
-        map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
-      )
-      this.log.verbose(`constructor: got new callsign: [does endless loop: ] { JSON.stringify(this.filteredRangers) } `, this.id)
-
-      // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
-      // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
-
-
-      // NOTE: workaround for onChange not working...
-      this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
-    }
   }
 
+  /*
   onNewLocationParent(newLocation: LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.info(`Parent Entry Form got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address} as address.`, this.id)
@@ -148,6 +130,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     ///locationFrmGrp: newLocation
     ///})
   }
+*/
 
   onNewTimeEvent(newTime: Date) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
@@ -187,6 +170,15 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
  */
     this.initEntryForm()
     // subscribe to addresses value changes?  NO. It bubles up through newLocation INSTEAD!!!
+
+
+
+
+    //! Neither!!! It now is double bound: [(location)] (& uses a setter at the top???)
+
+
+
+
     // this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
     //   this.log.verbose(`Subscription to locationFrmGrp got: ${ x } `, this.id);
     // })
@@ -197,7 +189,31 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       this.displayShow("enter__frm-reguritation")
     }
 
+
+    if (this.rangers.length < 1) {
+      this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page & then review items in the Settings Page.', 'Go to Rangers, then Settings pages', 'Ignore')
+      //this.alert.OpenSnackBar(`No Rangers exist.Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
+      //TODO: Force navigation to /Rangers?
+
+      // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
+      this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
+        startWith(''),
+        map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+      )
+      this.log.verbose(`constructor: got new callsign: [does endless loop: ] { JSON.stringify(this.filteredRangers) } `, this.id)
+
+      // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
+      // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+
+
+      // NOTE: workaround for onChange not working...
+      // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
+    }
+
+
+    // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
+    //this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
 
     // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
 
