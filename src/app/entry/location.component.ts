@@ -1,7 +1,5 @@
 import { BehaviorSubject, debounceTime, fromEvent, Observable, Subscription } from 'rxjs'
 
-//import { MatIconRegistry } from '@angular/material/icon';
-//import { import } from '{ Coordinate }'
 import { DOCUMENT } from '@angular/common'
 import {
     AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild
@@ -13,9 +11,8 @@ import { FormControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@
 import { faInfoCircle, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 
-import {
-    CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GoogleGeocode, OpenLocationCode
-} from '../shared/'
+import { CodeArea, DDToDDM, DDToDMS, GoogleGeocode, OpenLocationCode } from '../shared/'
+//import { MatIconRegistry } from '@angular/material/icon';
 import {
     LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services'
@@ -47,7 +44,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Populate form with initial (& Subsequent updates) from parent.
       // Also reemit address changes which ultimately can get picked up by other (peer) children.
-      // this.newLocationToFormAndEmit(this.location)
+      this.newLocationToFormAndEmit(this.location)
     }
   }
 
@@ -126,6 +123,45 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     this.initForm() // creates blank locationFormModel
+<<<<<<< HEAD
+=======
+
+    this.log.verbose("Out of constructor", this.id)
+  }
+
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
+  public ngOnInit(): void {
+    this.log.info("ngOnInit", this.id)
+
+    // On Location/Address Change subscriptions  // TODO: USE THESE - or not???
+    // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
+    if (this.locationFormModel) {
+      //this.locationFormModel.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      this.locationFormModel.valueChanges.pipe(debounceTime(800)).subscribe(x => {
+        //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
+        if (!this.formUpdating) {
+          // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
+          this.valueChanges(x)
+        }
+
+      })
+      ///   let latf = this.locationFrmGrp.get("latF")
+      ///   if (latf) {
+      ///     this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      ///       this.log.info('########## lat float value changed: ' + x, this.id)
+      ///     })
+      ///     this.log.warn('########## lat float value WAS FOUND!!!!', this.id)
+      ///   }
+      ///   else {
+      ///     this.log.error('########## lat float value NOT FOUND!!!!', this.id)
+      ///   }
+      ///   this.locationFrmGrp.get("lngI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      ///     this.log.info('#######  lng Int value changed: ' + x), this.id
+      ///   })
+      ///   this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      ///     this.log.info('#######  lng Float value changed: ' + x), this.id
+    }
+>>>>>>> b1965e1c6aedccf5de104820d15db1a8471fb7ab
 
     this.log.verbose("Out of constructor", this.id)
   }
@@ -232,6 +268,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     */
   }
 
+<<<<<<< HEAD
   //! Unimplemented!
   DDToAddress(lat: number, lng: number) {
     return "DDToAddress returning Uninplemented Address"
@@ -319,6 +356,8 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+=======
+>>>>>>> b1965e1c6aedccf5de104820d15db1a8471fb7ab
   formSubscribe_unused() {
     this.locationFormModel.valueChanges.pipe(debounceTime(2000)).subscribe(x => {
       //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
