@@ -232,6 +232,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //! Unimplemented!
   DDToAddress(lat: number, lng: number) {
+    this.log.error("DDToAddress returning Uninplemented Address", this.id)
     return "DDToAddress returning Uninplemented Address"
   }
 

@@ -1,3 +1,4 @@
+// TODO: import { CSV_FILE, exportFile } from 'fs-browsers'
 import { Subscription, switchMap } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
@@ -8,7 +9,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import { Utility } from '../shared'
-import { LogLevel, LogService, LogType, SettingsService, SettingsType } from '../shared/services/'
+import {
+    LogHeadings, LogLevel, LogService, LogType, SettingsService, SettingsType
+} from '../shared/services/'
 
 /**
  * Update the Log Panel pane with notifications
@@ -151,9 +154,12 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
     // TODO: rebuilds entire log panel, instead of just pushing last few entries onto it...
     this.logPanel.innerHTML = ''
 
+
+    i = 0
     log.forEach(entry => {
       let time = entry.date.getHours().toString().padStart(2, '0') + ":" + entry.date.getMinutes().toString().padStart(2, '0') + ":" + entry.date.getSeconds().toString().padStart(2, '0') + "." + entry.date.getMilliseconds().toString().padStart(3, '0')
-      let preface = `<span class="tiny">${entry.source}: </span>` //`<span class="tiny"> ${time} - ${entry.source}:  </span>`
+      //let preface = `<span class="tiny">${entry.source}: </span>`
+      let preface = `<span class="tiny"> ${i++}) ${time} - ${entry.source}:  </span>`
 
       if (!this.logPanel) { return }
 
@@ -200,6 +206,15 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
     if (ot > 0) this.logPanel.scrollTop = ot
   }
 
+  onBtnSaveLog() {
+    // https://github.com/ItamarSmirra/Fs-Browsers#readme
+    let dt = new Date()
+    let fileName = `RangerTrak.log.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`
+
+    //exportFile(this.latestLog, { type: CSV_FILE, headings: LogHeadings, fileName: fileName });
+
+    console.error(`UNIMPLEMENTED!  Saving Log to file xxxxxxxxxx with ${this.latestLog.length} entries`)
+  }
 
   ngOnDestroy() {
     this.settingsSubscription.unsubscribe()

@@ -198,6 +198,8 @@ import { HttpClient } from '@angular/common/http';
   // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
   LoadRangersFromExcel(eventTarget: any) {  // HTMLInputElement event:target
 
+    // TODO: look at: https://www.npmjs.com/package/fs-browsers
+
     // TODO: https://h2qutc.github.io/angular-material-components/fileinput
     type AOR = RangerType[]  // array of Rangers
 

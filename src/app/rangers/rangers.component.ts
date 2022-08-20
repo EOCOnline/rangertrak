@@ -15,7 +15,7 @@ import { AlertsComponent } from '../shared/alerts/alerts.component'
 import {
     FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
     SettingsService, SettingsType
-} from '../shared/services/'
+} from '../shared/services'
 import { csvImport } from './csvImport'
 import { CustomTooltip } from './customTooltip'
 
@@ -264,6 +264,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   onBtnImportRangers() {
     //this.log.verbose
     alert(`onBtnImportRangers: Ranger Import from Excel file is unimoplemented currently`)
+    // TODO: look at: https://www.npmjs.com/package/fs-browsers
   }
   /*
   from https://blog.ag-grid.com/refresh-grid-after-data-change/
@@ -285,6 +286,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // https://ag-grid.com/javascript-data-grid/excel-import/#example-excel-import"
   // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
   onBtnImportExcel(evt: any) {
+    // TODO: look at: https://www.npmjs.com/package/fs-browsers
     this.excelData2 = this.rangerService.LoadRangersFromExcel(evt.target)
     this.log.verbose("excelData2: " + JSON.stringify(this.excelData2), this.id)
     this.log.verbose(`Reloading window!`, this.id)
