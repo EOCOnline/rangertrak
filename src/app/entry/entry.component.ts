@@ -130,7 +130,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     ///locationFrmGrp: newLocation
     ///})
   }
-*/
+  */
 
   onNewTimeEvent(newTime: Date) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
@@ -155,6 +155,9 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
     this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)  // verifies Settings has been loaded
+
+
+
 
     /* i.e., entryDetailsForm probably constructed at wrong time?!
     Move the component creation to ngOnInit hook
@@ -208,7 +211,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
       // NOTE: workaround for onChange not working...
       // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
-    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
+      this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
     }
 
 
