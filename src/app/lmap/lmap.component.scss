@@ -42,3 +42,26 @@
 }
 
 // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor
+
+#Lmap-status {
+  // color    : #888;
+  opacity     : 0;
+  //visibility: hidden;
+
+  animation: fadeout 12s ease-out;
+  // TODO: Need to reset annimation see Entry form...
+}
+
+@keyframes fadeout {
+  0% {
+    opacity: 1
+  }
+
+  25% {
+    opacity: 1
+  }
+
+  100% {
+    opacity: 0
+  }
+}

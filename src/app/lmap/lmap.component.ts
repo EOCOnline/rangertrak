@@ -13,7 +13,7 @@ import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 
-import { AbstractMap } from '../shared'
+import { AbstractMap, Utility } from '../shared'
 import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
@@ -339,14 +339,26 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    * Store Lat/Lng in Clipboard (if enabled in html...)
    * @param ev
    */
-  onMouseClick(ev: MouseEvent) {
+  override onMouseClick(ev: MouseEvent) {
     if (!this.lMap) {
       this.log.error(`Leaflet map not created, so can't get lat & lng`, this.id)
       return
     }
+
+
+
     let latlng = this.lMap.mouseEventToLatLng(ev)
-    navigator.clipboard.writeText(`${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`)
+    let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
+    navigator.clipboard.writeText(coords)
       .then(() => {
+        let status = document.getElementById('Lmap-status')
+        if (status) {
+          status.innerText = `${coords} copied to clipboard`
+          //status.style.visibility = "visible"
+          Utility.resetMaterialFadeAnimation(status)
+        } else {
+          this.log.info(`Entry__Minimap-status not found!`, this.id)
+        }
         this.log.excessive(`${latlng} copied to clipboard`, this.id)
       })
       .catch(err => {

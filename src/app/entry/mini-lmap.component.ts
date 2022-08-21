@@ -312,7 +312,7 @@ Ensure that there are no changes to the bindings in the template after change de
    * Store Lat/Lng in Clipboard
    * @param ev
    */
-  onMouseClick(ev: MouseEvent) {
+  override onMouseClick(ev: MouseEvent) {
     if (!this.lMap) {
       this.log.error(`Leaflet map not created, so can't get lat & lng`, this.id)
       return

@@ -14,6 +14,7 @@ import {
     FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LocationType,
     LogService, SettingsService, SettingsType
 } from '../shared/services'
+import { Utility } from './'
 import * as C from './coordinate'
 
 //import { abstractMap } from '../shared/map'
@@ -220,6 +221,57 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
   }
 
+
+
+
+
+  /**
+  * Store Lat/Lng in Clipboard
+  * OR
+  *! Or use this event to create a new marker?!
+  *
+  *! Review: Alternative approach: Use event listeners:
+  * https://developers.google.com/maps/documentation/javascript/examples/event-click-lat lng
+  * https://developers.google.com/maps/documentation/javascript/events#EventProperties
+  *
+  * @param ev
+  */
+  onMouseClick(ev: MouseEvent) {
+    if (!this.map) {
+      this.log.error(`Map not created, so can't get lat & lng`, this.id)
+      return
+    }
+
+    if (this.isGoogleMap(this.map)) {
+
+      /*
+       ev.x
+      this.map.addListener("click", (mapsMouseEvent) => {
+        let position = mapsMouseEvent.latLng
+      })
+      //JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
+      */
+    } else {
+
+      let latlng = this.map.mouseEventToLatLng(ev)
+      let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
+      navigator.clipboard.writeText(coords)
+        .then(() => {
+          let status = document.getElementById('map-status')
+          if (status) {
+            status.innerText = `${coords} copied to clipboard`
+            //status.style.visibility = "visible"
+            Utility.resetMaterialFadeAnimation(status)
+          } else {
+            this.log.info(`Entry__Minimap-status not found!`, this.id)
+          }
+          this.log.excessive(`${coords} copied to clipboard`, this.id)
+        })
+        .catch(err => {
+          this.log.error(`latlng NOT copied to clipboard, error: ${err}`, this.id)
+        })
+    }
+  }
 
   // updateOverviewMap() {
   //   this.log.verbose(`updateOverviewMap`, this.id)
