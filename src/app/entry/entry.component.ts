@@ -5,7 +5,8 @@ import {
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
-    AfterViewInit, Component, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
+    AfterViewInit, Component, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit,
+    Output, ViewChild
 } from '@angular/core'
 import {
     FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
@@ -33,6 +34,20 @@ import {
 })
 export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
+
+
+  // mimicing TimePicker:
+  @Output() newLocationEvent = new EventEmitter<LocationType>()
+  // next 2 defaults can be overriden in parent's html: [locationLabel] = "locationLabel"
+  @Input() locationLabel = "Enter da Location"
+  @Input() initialLocationParent = {
+    lat: 47.441,
+    lng: -122.551,
+    address: "10506 sw 132nd pl, Apt B, vashon, wa, 98070",
+    derivedFromAddress: false
+  }
+
+
   private id = 'Entry Form'
   title = 'Field Report Entry'
   pageDescr = `Enter data associated with ranger's name, location, status for tracking on maps & spreadsheets`

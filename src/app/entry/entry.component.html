@@ -31,10 +31,11 @@
       title="Enter position using  Degrees Decmal (DD)  or  Degrees, Minutes & Seconds (DMS)  or  Degrees & Decimal Minutes (DDM)">
       <mat-label>Where</mat-label>&nbsp;&nbsp;
       <span class="small">(updates map to the right)</span><img src="../../assets/icons/information-outline.png"
-        height="14px" width="14px" alt="info icon" style="opacity:0.5;"/>
+        height="14px" width="14px" alt="info icon" style="opacity:0.5;" />
     </h2>
     <div>
-      <rangertrak-location [(location)]="location">
+      <rangertrak-location [(location)]="location" [initialLocationParent]="initialLocationChild"
+        [locationLabel]="locationPickerLabel" (newLocationEvent)="onNewLocationEvent($event)">
       </rangertrak-location>
     </div>
 
