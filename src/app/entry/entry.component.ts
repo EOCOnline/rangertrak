@@ -39,14 +39,15 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // mimicing TimePicker:
   @Output() newLocationEvent = new EventEmitter<LocationType>()
   // next 2 defaults can be overriden in parent's html: [locationLabel] = "locationLabel"
-  @Input() locationLabel = "Enter da Location"
-  @Input() initialLocationParent = {
+
+  @Input() initialLocationChild = {
     lat: 47.441,
     lng: -122.551,
-    address: "10506 sw 132nd pl, Apt B, vashon, wa, 98070",
+    address: "10506 sw 132nd pl, Apt C, vashon Villas, wa, 98070",
     derivedFromAddress: false
   }
-
+  //locationPickerLabel = "Enter da Location"
+  public locationPickerLabel = "myLabel"
 
   private id = 'Entry Form'
   title = 'Field Report Entry'
@@ -146,6 +147,24 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     ///})
   }
   */
+
+  // any should really be LocationType - right?!
+  onNewLocationEvent(newLocation: any) {
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.error(`Got new LocationType: ${JSON.stringify(newLocation)}`, this.id)
+    //this.time = newTime
+
+    //! Does this duplicate OnFormSubmit()'s setting value of date?
+    // patch entryForm object - as THAT is what gets saved with on form submit
+    this.entryDetailsForm.patchValue({ locationFrmGrp: newLocation })
+
+    ///! BUG: locationFrmGrp is NO LONGER part of this.entryDetailsForm!!!!
+    // locationFrmGrp: this.initLocation(),
+
+    // This then automatically could ge sent to any children (none in this case) via their @Input statements
+    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
+    // TODO: BUT, we still need to update our local copy:
+  }
 
   onNewTimeEvent(newTime: Date) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188

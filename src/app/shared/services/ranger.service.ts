@@ -114,6 +114,9 @@ export class RangerService implements OnInit {
     this.log.verbose(`New set of ${this.rangers.length} rangers. Save to local storage & publish`, this.id)
     this.SortRangersByCallsign()   // Only place this needs to be called?
 
+    //! TODO: encrypt user data (in LocalStorage or elsewhere)
+    // https://github.com/brix/crypto-js
+
     localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
 
     this.rangersSubject$.next(this.rangers)

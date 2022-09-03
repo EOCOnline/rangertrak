@@ -35,7 +35,6 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
-
   // Use setter to get immediate notification of changes to inputs (pg 182 & 188)
   @Input() set location(location: LocationType) {
     // are object's contents equal: _.isEqual( obj1 , obj2 ) OR JSON.stringify(obj1) === JSON.stringify(obj2)
@@ -49,6 +48,22 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       this.newLocationToFormAndEmit(this.location)
     }
   }
+  @Input() set initialLocationParent(loc: LocationType) {
+    this.log.info(`Got new location PARENT: ${JSON.stringify(loc)}`, this.id)
+
+    //! TODO
+
+  }
+
+  @Input() locationLabel = "Home Sweet Home"
+  //public locationLabel = "label man"
+  /*
+  @Input() set locationPickerLabel(label: string) {
+    this.log.info(`Got new location LABEL: ${label}`, this.id)
+
+    let myNewLabel = label
+    //! TODO: Persist this!
+  }*/
 
   // Using mediation pattern (pg 188), this child component emits following event to parent,
   // parent's template has: (newLocationEvent)="onNewLocationParent($event)"
@@ -57,13 +72,14 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() locationChange = new EventEmitter<LocationType>()
 
 
+
   private id = "Location Component"
   public locationFormModel!: UntypedFormGroup
 
   public geocoder = new GoogleGeocode
   //w3w = new What3Words()
 
-  public initialLocationParent: LocationType
+
 
 
   // Cooordinates as Decimal Degrees (DD)
