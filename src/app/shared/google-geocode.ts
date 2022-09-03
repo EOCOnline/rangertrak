@@ -7,11 +7,21 @@
 //!BUG: None of these available if offline!!!
 export class GoogleGeocode {
 
-  static geocoder = new google.maps.Geocoder
+  static geocoder: google.maps.Geocoder | null  //= new google.maps.Geocoder
 
-  constructor() { }
+  constructor() {
+    try {
+      GoogleGeocode.geocoder = new google.maps.Geocoder // || null
+    } catch (error) {
+      // probably offline?!
+      GoogleGeocode.geocoder = null
+    }
+  }
 
   getAddressFromLatLng(latLng: google.maps.LatLng): string {
+    if (!GoogleGeocode.geocoder)
+      return "offline"
+
     GoogleGeocode.geocoder
       .geocode({ location: latLng })
       .then((response) => {
@@ -60,6 +70,9 @@ export class GoogleGeocode {
     // debugger
     // BUG: Needs a promise!
     // BUG: Following hasn't even been tried yet!...
+    if (!GoogleGeocode.geocoder)
+      return { position: null, address: "Geocoding requires Internet", placeId: "" }
+
     GoogleGeocode.geocoder
       .geocode({ address: encoded })
       .then(({ results }) => {
@@ -121,6 +134,9 @@ export class GoogleGeocode {
   getLatLngAndAddressFromPlaceID(placeId: string) //: { position: google.maps.LatLngLiteral | null, address: string, placeId: string }
   //({position:google.maps.LatLng, address:string})
   {
+    if (!GoogleGeocode.geocoder)
+      return { position: null, address: "Geocoding requires Internet", placeId: "" }
+
     let err = ""
     GoogleGeocode.geocoder
       .geocode({ placeId: placeId })

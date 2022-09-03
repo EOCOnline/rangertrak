@@ -56,11 +56,15 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   // Parent then passes the new location (via binding), to any children as needed
   @Output() locationChange = new EventEmitter<LocationType>()
 
+
   private id = "Location Component"
   public locationFormModel!: UntypedFormGroup
 
   public geocoder = new GoogleGeocode
   //w3w = new What3Words()
+
+  public initialLocationParent: LocationType
+
 
   // Cooordinates as Decimal Degrees (DD)
   public latI = 0 // Integer portion
@@ -112,6 +116,14 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     private log: LogService,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("Construction", this.id)
+
+    this.initialLocationParent = {
+      lat: 49,
+      lng: -110,
+      address: "Vashonville",
+      derivedFromAddress: false
+    }
+
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     // Settings only needed for Check PCode & What3Words...

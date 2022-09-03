@@ -97,6 +97,11 @@ h3 {
   margin-bottom: 0px;
 }
 
+.elegant {
+  margin-top   : 25px;
+  margin-bottom: 0px;
+}
+
 .bordered {
   border: 2 px solid rgb(62, 189, 189);
 }
@@ -129,7 +134,7 @@ input[type=number] {
 
 .small {
   font-size: x-small;
-color:#AAA;
+  color    : #AAA;
 }
 
 .timepicker_When-input {
@@ -166,11 +171,6 @@ color:#AAA;
   //background-color: red;
   margin            : 30 px;
   //padding: 10px;
-}
-
-.elegant {
-  margin-top   : 25px;
-  margin-bottom: 0px;
 }
 
 .enter__form {

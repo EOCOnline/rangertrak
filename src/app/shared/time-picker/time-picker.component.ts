@@ -31,13 +31,16 @@ import {
   styleUrls: ['./time-picker.component.scss']
 })
 export class TimePickerComponent implements OnInit {
-  @Input() public timepickerFormGroup!: UntypedFormGroup // input from entry.component.ts
+  //!TODO: Is this really needed as @Input, or just a variable?!
+  //@Input()
+  public timepickerFormGroup!: UntypedFormGroup // input from entry.component.ts
   //  @Input() public timepickerFormControl: FormControl // input from entry.component.ts
   //@Input() public timepickerFormControl: FormControl // input from entry.component.ts
+
   @Output() newTimeEvent = new EventEmitter<Date>()
   // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
 
-  // next 2 can be overriden in parent's html: [initialDate] = "initialTime"
+  // next 2 defaults can be overriden in parent's html: [initialDate] = "initialTime"
   @Input() datePickerLabel = "Enter Date & Time" // [datePickerLabel] = "Enter Date & Time of the Big Bang"
   @Input() initialDate = new Date() //  [initialDate] = "initialTime"
 
