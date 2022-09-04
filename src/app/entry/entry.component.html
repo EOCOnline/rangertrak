@@ -1,7 +1,7 @@
 <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
 <div class="container">
   <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
-    <mini-lmap [locationUpdated]="location">LMAP HERE</mini-lmap>
+    <mini-lmap [locationUpdated]="locationParent">LMAP HERE</mini-lmap>
     <!--mini-gmap [locationUpdated]="location">GMAP HERE</mini-gmap-->
 
     <!-- ======================================= -->
@@ -34,9 +34,13 @@
         height="14px" width="14px" alt="info icon" style="opacity:0.5;" />
     </h2>
     <div>
-      <rangertrak-location [(location)]="location" [initialLocationParent]="initialLocationChild"
+
+
+      <rangertrak-location [(location)]="locationParent" [initialLocationParent]="initialLocationChild"
         [locationLabel]="locationPickerLabel" (newLocationEvent)="onNewLocationEvent($event)">
       </rangertrak-location>
+
+
     </div>
 
     <!-- ======================================= -->

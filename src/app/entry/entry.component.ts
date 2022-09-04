@@ -77,7 +77,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Get location events from <location> component
   //public locationChange: Subscription
-  public location: LocationType = undefinedLocation
+  public locationParent: LocationType = undefinedLocation
 
   minDate = new Date()
 
@@ -124,9 +124,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
     this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)
-
-
-
   }
 
   /*

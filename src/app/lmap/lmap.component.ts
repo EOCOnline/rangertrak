@@ -19,6 +19,8 @@ import { FieldReportService, LocationType, LogService, SettingsService } from '.
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // Markers are copied into project via virtue of angular.json: search it for leaflet!!!
 
+// TODO: Add heatmap: https://www.patrick-wied.at/static/heatmapjs/example-heatmap-leaflet.html
+
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
 const iconUrl = 'assets/imgs/marker-icon.png'
 const shadowUrl = 'assets/imgs/marker-shadow.png'
