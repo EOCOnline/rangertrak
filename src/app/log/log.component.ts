@@ -1,4 +1,8 @@
-// TODO: import { CSV_FILE, exportFile } from 'fs-browsers'
+// TODO: https://github.com/ItamarSmirra/Fs-Browsers
+//import { CSV_FILE, exportFile } from 'fs-browsers'
+// https://github.com/jimmywarting/native-file-system-adapter/
+// https://github.com/GoogleChromeLabs/browser-fs-access
+// https://web.dev/browser-fs-access/
 import { Subscription, switchMap } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
@@ -120,7 +124,7 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
     let msMaxDelay = 2000
     while (!this.logPanel) {
       setTimeout(() => {
-        console.error(`gotNewLog asked to display the logs BEFORE logPanel initialization. Delayed ${i / 10 * msMaxDelay} ms. Retrying.`) // For: \n${JSON.stringify(log.slice(-1))} `)
+        console.error(`Log Component: gotNewLog() can not display logs BEFORE logPanel initialization. Delayed ${i / 10 * msMaxDelay} ms. Retrying.`) // For: \n${JSON.stringify(log.slice(-1))} `)
         this.logPanel = this.document.getElementById("log")
       }, msMaxDelay / 10)
       if (++i > 9) {
@@ -131,23 +135,12 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
     }
 
     if (this.logPanel == null) {
-      console.error('this.logPanel is null...')
-      return
-    }
-
-    if (this.logPanel == undefined) {
-      console.error('this.logPanel is undefined...')
+      console.error('LogComponent: this.logPanel is null or undefined...')
       return
     }
 
     if (this.logPanel.innerHTML == null) {
-      console.error('this.logPanel.innerHTML is null...')
-      return
-    }
-
-
-    if (this.logPanel.innerHTML == undefined) {
-      console.error('this.logPanel.innerHTML is undefined...')
+      console.error('LogComponent: this.logPanel.innerHTML is null or undefined...')
       return
     }
 
@@ -207,11 +200,11 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
   }
 
   onBtnSaveLog() {
-    // https://github.com/ItamarSmirra/Fs-Browsers#readme
     let dt = new Date()
     let fileName = `RangerTrak.log.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`
 
-    //exportFile(this.latestLog, { type: CSV_FILE, headings: LogHeadings, fileName: fileName });
+    // https://github.com/ItamarSmirra/Fs-Browsers#readme
+    // TODO:     exportFile(this.latestLog, { type: CSV_FILE, headings: LogHeadings, fileName: fileName });
 
     console.error(`UNIMPLEMENTED!  Saving Log to file xxxxxxxxxx with ${this.latestLog.length} entries`)
   }

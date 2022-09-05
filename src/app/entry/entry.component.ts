@@ -106,6 +106,16 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
+        // REVIEW: If new Default Location, do we switch to that, or any currenlty in 'use'?
+        if (JSON.stringify(this.locationParent) === JSON.stringify(undefinedLocation)) {
+          // Local location has yet to be set
+          this.locationParent = {
+            lat: this.settings.defLat,
+            lng: this.settings.defLng,
+            address: undefinedAddressFlag,
+            derivedFromAddress: false
+          }
+        }
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -149,7 +159,12 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   onNewLocationEvent(newLocation: any) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.error(`Got new LocationType: ${JSON.stringify(newLocation)}`, this.id)
-    //this.time = newTime
+    this.locationParent = {
+      lat: this.settings.defLat,
+      lng: this.settings.defLng,
+      address: "EntryComponent: onNewLocationEvent",
+      derivedFromAddress: false
+    }
 
     //! Does this duplicate OnFormSubmit()'s setting value of date?
     // patch entryForm object - as THAT is what gets saved with on form submit
@@ -187,9 +202,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
     this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)  // verifies Settings has been loaded
 
-
-
-
     /* i.e., entryDetailsForm probably constructed at wrong time?!
     Move the component creation to ngOnInit hook
     error can show up when you are working with ViewChild, and execute code in AfterViewInit.
@@ -205,13 +217,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     this.initEntryForm()
     // subscribe to addresses value changes?  NO. It bubles up through newLocation INSTEAD!!!
 
-
-
-
     //! Neither!!! It now is double bound: [(location)] (& uses a setter at the top???)
-
-
-
 
     // this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
     //   this.log.verbose(`Subscription to locationFrmGrp got: ${ x } `, this.id);
@@ -222,7 +228,6 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     if (this.settings?.debugMode) {
       this.displayShow("enter__frm-reguritation")
     }
-
 
     if (this.rangers.length < 1) {
       this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page & then review items in the Settings Page.', 'Go to Rangers, then Settings pages', 'Ignore')
@@ -239,12 +244,10 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
       // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
 
-
       // NOTE: workaround for onChange not working...
       // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
       this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
     }
-
 
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
     //this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
@@ -323,6 +326,9 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus]],
       note: ['']
     })
+
+    // !TODO: Need to reset location: to default, or is blank fine?!
+
     // Allow getting new OnChangeUpdates - or use the subscription?!
     //this.entryDetailsForm.markAsPristine();
     //this.entryDetailsForm.markAsUntouched();
@@ -372,7 +378,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
 
     //! BUG: ALSO need to get location data into the form...
-
+    this.log.error(`Not writing locationm: ${JSON.stringify(this.locationParent)} to report!!!`, this.id)
 
 
 

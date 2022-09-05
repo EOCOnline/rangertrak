@@ -26,6 +26,24 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 */
 
 
+
+
+
+/*
+
+log.service.ts:81 417: Location Component: locationFormModel value changed: {"DD":{"latI":47,"latF":4440,"lngI":-122,"lngF":-5550},"DMS":{"latQ":"N","latD":47,"latM":26,"latS":38.4,"lngQ":"W","lngD":122,"lngM":33,"lngS":18},"DDM":{"latDDMQ":"N","latDDMD":47,"latDDMM":2664,"lngDDMQ":"W","lngDDMD":122,"lngDDMM":3330},"address":"123 Elm St."}
+log.service.ts:81 418: Location Component: new Location recieved: {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
+log.service.ts:71 419: Location Component: new DMS Location: N 47° 26' 38.4" lat; W 122° 33' 18" lng
+log.service.ts:71 420: Location Component: new DDM Location: N 47° 2664' lat; W 122° 3330' lng
+log.service.ts:77 421: Location Component: Emitting new Location {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
+log.service.ts:81 422: Location Component: locationFormModel value changed: {"DD":{"latI":47,"latF":4440,"lngI":-122,"lngF":-5550},"DMS":{"latQ":"N","latD":47,"latM":26,"latS":38.4,"lngQ":"W","lngD":122,"lngM":33,"lngS":18},"DDM":{"latDDMQ":"N","latDDMD":47,"latDDMM":2664,"lngDDMQ":"W","lngDDMD":122,"lngDDMM":3330},"address":"123 Elm St."}
+log.service.ts:81 423: Location Component: new Location recieved: {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
+log.service.ts:71 424: Location Component: new DMS Location: N 47° 26' 38.4" lat; W 122° 33' 18" lng
+log.service.ts:71 425: Location Component: new DDM Location: N 47° 2664' lat; W 122° 3330' lng
+log.service.ts:77 426: Location Component: Emitting new Location {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
+*/
+
+
 @Component({
   //moduleId: module.id,
   selector: 'rangertrak-location',
@@ -39,19 +57,27 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() set location(location: LocationType) {
     // are object's contents equal: _.isEqual( obj1 , obj2 ) OR JSON.stringify(obj1) === JSON.stringify(obj2)
     if (JSON.stringify(location) === JSON.stringify(undefinedLocation)) {
-      this.log.info("Got new location, but it was 'undefined'", this.id)
+      this.log.error("Got new location, but it still was 'undefined'", this.id)
     } else {
-      this.log.info(`Got new location: ${JSON.stringify(location)}`, this.id)
+      this.log.error(`YEAH: Got new location: ${JSON.stringify(location)}`, this.id)
+
+      // REVIEW: Initially called BEFORE ngOnInit()!!!
 
       // Populate form with initial (& Subsequent updates) from parent.
       // Also reemit address changes which ultimately can get picked up by other (peer) children.
-      this.newLocationToFormAndEmit(this.location)
+      this.newLocationToFormAndEmit(location)
     }
   }
   @Input() set initialLocationParent(loc: LocationType) {
-    this.log.info(`Got new location PARENT: ${JSON.stringify(loc)}`, this.id)
+    this.log.error(`Got new location PARENT: ${JSON.stringify(loc)} - but IGNORING`, this.id)
 
     //! TODO
+    // Gets called twice: during Location Component: Construction (wirth "lat":49,"lng":-110,"address":"Vashonville")&
+
+    // then get 'proper' call above (YEAH: Got new location) with "lat":47.43,"lng":-122.4627,"address":"NO_LOCATION_SET_YET"
+
+    // just after Leaflet miniMap initMap() - & just before location ngOnInit
+    // & a 3rd: "lat":47.441,"lng":-122.551,"address":"10506 sw 132nd pl, Apt C, vashon Villas, wa, 98070"
 
   }
 
@@ -307,7 +333,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   onDdmChg(latDDMQ: string, latDDMD: number, latDDMM: number, lngDDMQ: string, lngDDMD: number, lngDDMM: number) {
-    this.log.info(`DDM value changed`, this.id)
+
 
     let latLng = {
       lat: DDMToDD(<string>latDDMQ, latDDMD, latDDMM)!,
@@ -327,7 +353,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onAddressChg(newAddress: string) {
-
+    this.log.info(`onAddressChg got newAddress: ${JSON.stringify(newAddress)}`, this.id)
     let googleGeocode = new GoogleGeocode
     let myTuple = googleGeocode.isValidAddress(newAddress)
     // { position: null, address: err, partial_match: "", placeId: "", plus_code: "" }
@@ -404,11 +430,16 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     // https://www.cumulations.com/blog/latitude-and-longitude/
 
     // Any location change should drive to a new latDD & LngDD & sent here
+    if (newLocation == null) {
+      this.log.error(`newLocationToFormAndEmit(): new Location recieved but null or undefined.`, this.id)
+      return
+    }
     this.log.info(`new Location recieved: ${JSON.stringify(newLocation)}`, this.id);
     this.formUpdating = true
     // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
 
-    //!                                                               this.location = newLocation // REVIEW: Should caller just do this & NOT bother passing as a parameter?
+    //!  this.location = newLocation
+    // REVIEW: Should caller just do this & NOT bother passing as a parameter?
     // REVIEW: should we validate values or has that already been done?
 
     let latDD = newLocation.lat
@@ -631,7 +662,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   */
 
   public chkAddresses() {
-    this.log.verbose("LocationComponent - chkAddresses", this.id)
+    this.log.verbose("chkAddresses()", this.id)
 
     /* if JSON.stringify(addr): gets
     TypeError: Converting circular structure to JSON
