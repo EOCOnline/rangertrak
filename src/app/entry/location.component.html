@@ -42,9 +42,6 @@
       <span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
       <span formGroupName="DMS">
         <!-- BUG: why no ValueAsNumbers for these?! -->
-        <input #latQ formControlName="latQ" id="enter__Where-latQ"
-          (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-          type="text" pattern="'e','E','w','W'" title="E or W" />
         <input #latD formControlName="latD" id="enter__Where-latD"
           (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
           type="number" min="0" max="90" /><strong>° </strong>
@@ -54,19 +51,22 @@
         <input #latS formControlName="latS" id="enter__Where-latS"
           (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
           type="number" min="0" max="59.99" /><strong>" </strong>
+        <input #latQ formControlName="latQ" id="enter__Where-latQ"
+          (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
+          type="text" pattern="'e','E','w','W'" title="E or W" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;
       </span>
 
       <span formGroupName="DDM">
-        <input #latDDMQ formControlName="latDDMQ" id="enter__Where-latDdmQ"
-          (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-          type="text" pattern="'e','E','w','W'" title="E or W" />
         <input #latDDMD formControlName="latDDMD" id="enter__Where-latDdmD"
           (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
           type="number" min="0" max="90" /><strong>° </strong>
         <input #latDDMM formControlName="latDDMM" id="enter__Where-latDdmM"
           (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
           type="number" min="0" max="59" /><strong>' </strong>
+        <input #latDDMQ formControlName="latDDMQ" id="enter__Where-latDdmQ"
+          (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
+          type="text" pattern="'e','E','w','W'" title="E or W" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
       </span>
     </div>
@@ -85,9 +85,6 @@
       </span>
 
       <span formGroupName="DMS">
-        <input formControlName="lngQ" id="enter__Where-lngQ"
-          (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-          type="text" pattern="'n','N','s','S'" title="N or S" />
         <input formControlName="lngD" id="enter__Where-lngD"
           (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
           type="number" min="0" max="90" /><strong>° </strong>
@@ -97,19 +94,22 @@
         <input formControlName="lngS" id="enter__Where-lngS"
           (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
           type="number" min="0" max="59.99" /><strong>" </strong>
+        <input formControlName="lngQ" id="enter__Where-lngQ"
+          (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
+          type="text" pattern="'n','N','s','S'" title="N or S" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;
       </span>
 
       <span formGroupName="DDM">
-        <input #lngDDMQ formControlName="lngDDMQ" id="enter__Where-lngDdmQ"
-          (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-          type="text" pattern="'n','N','s','S'" title="N or S" />
         <input #lngDDMD formControlName="lngDDMD" id="enter__Where-lngDdmD"
           (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
           type="number" min="0" max="90" /><strong>° </strong>
         <input #lngDDMM formControlName="lngDDMM" id="enter__Where-lngDdmM"
           (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
           type="number" min="0" max="59" /><strong>' </strong>
+        <input #lngDDMQ formControlName="lngDDMQ" id="enter__Where-lngDdmQ"
+          (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
+          type="text" pattern="'n','N','s','S'" title="N or S" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
       </span>
     </div>

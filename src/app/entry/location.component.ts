@@ -4,17 +4,19 @@ import { DOCUMENT } from '@angular/common'
 import {
     AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild
 } from '@angular/core'
-import { FormControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms'
+import {
+    FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators
+} from '@angular/forms'
 // import * as P from '@popperjs/core';
 ///import { createPopper } from '@popperjs/core';
 // import type { StrictModifiers } from '@popperjs/core';
 import { faInfoCircle, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 
+//import { MatIconRegistry } from '@angular/material/icon'
 import {
     CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GoogleGeocode, OpenLocationCode
 } from '../shared/'
-//import { MatIconRegistry } from '@angular/material/icon';
 import {
     LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services'
@@ -25,24 +27,25 @@ https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-drive
 https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 */
 
-
-
-
-
 /*
+Endless Loop - once editing form...
 
 log.service.ts:81 417: Location Component: locationFormModel value changed: {"DD":{"latI":47,"latF":4440,"lngI":-122,"lngF":-5550},"DMS":{"latQ":"N","latD":47,"latM":26,"latS":38.4,"lngQ":"W","lngD":122,"lngM":33,"lngS":18},"DDM":{"latDDMQ":"N","latDDMD":47,"latDDMM":2664,"lngDDMQ":"W","lngDDMD":122,"lngDDMM":3330},"address":"123 Elm St."}
+
 log.service.ts:81 418: Location Component: new Location recieved: {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
+
 log.service.ts:71 419: Location Component: new DMS Location: N 47° 26' 38.4" lat; W 122° 33' 18" lng
 log.service.ts:71 420: Location Component: new DDM Location: N 47° 2664' lat; W 122° 3330' lng
+
 log.service.ts:77 421: Location Component: Emitting new Location {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
+
+
 log.service.ts:81 422: Location Component: locationFormModel value changed: {"DD":{"latI":47,"latF":4440,"lngI":-122,"lngF":-5550},"DMS":{"latQ":"N","latD":47,"latM":26,"latS":38.4,"lngQ":"W","lngD":122,"lngM":33,"lngS":18},"DDM":{"latDDMQ":"N","latDDMD":47,"latDDMM":2664,"lngDDMQ":"W","lngDDMD":122,"lngDDMM":3330},"address":"123 Elm St."}
 log.service.ts:81 423: Location Component: new Location recieved: {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
 log.service.ts:71 424: Location Component: new DMS Location: N 47° 26' 38.4" lat; W 122° 33' 18" lng
 log.service.ts:71 425: Location Component: new DDM Location: N 47° 2664' lat; W 122° 3330' lng
 log.service.ts:77 426: Location Component: Emitting new Location {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
 */
-
 
 @Component({
   //moduleId: module.id,
@@ -68,6 +71,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       this.newLocationToFormAndEmit(location)
     }
   }
+
+  // Using mediation pattern (pg 188), this child component emits following event to parent,
+  // parent's template has: (newLocationEvent)="onNewLocationParent($event)"
+  // Parent's onNewLocationParent($event) gets called.
+  // Parent then passes the new location (via binding), to any children as needed
+  @Output() locationChange = new EventEmitter<LocationType>()
+
   @Input() set initialLocationParent(loc: LocationType) {
     this.log.error(`Got new location PARENT: ${JSON.stringify(loc)} - but IGNORING`, this.id)
 
@@ -91,16 +101,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     //! TODO: Persist this!
   }*/
 
-  // Using mediation pattern (pg 188), this child component emits following event to parent,
-  // parent's template has: (newLocationEvent)="onNewLocationParent($event)"
-  // Parent's onNewLocationParent($event) gets called.
-  // Parent then passes the new location (via binding), to any children as needed
-  @Output() locationChange = new EventEmitter<LocationType>()
-
-
-
   private id = "Location Component"
-  public locationFormModel!: UntypedFormGroup
+  public locationFormModel!: FormGroup
+  // https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14
 
   public geocoder = new GoogleGeocode
   //w3w = new What3Words()
@@ -444,7 +447,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let latDD = newLocation.lat
     let lngDD = newLocation.lng
-    let address = newLocation.address
+    // let address = newLocation.address
 
     if (newLocation.derivedFromAddress) {
       // User entered an address: Try to come up with lat/long for it
@@ -461,12 +464,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     //     latI: Math.floor(latDD)
     //  })
 
-
     //this.latF = (latDD - this.latI).toFixed(4)
-    this.latF = Math.round((latDD - this.latI) * 10000)
+    this.latF = Math.abs(Math.round((latDD - this.latI) * 10000))
 
     this.lngI = Math.trunc(lngDD)
-    this.lngF = Math.round((lngDD - this.lngI) * 10000)
+    this.lngF = Math.abs(Math.round((lngDD - this.lngI) * 10000))
 
     let latDMS = DDToDMS(latDD)
     this.latQ = latDMS.dir
@@ -475,23 +477,24 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.latS = latDMS.sec
 
     let lngDMS = DDToDMS(lngDD, true)
-    this.log.excessive(`new DMS Location: ${latDMS.dir} ${latDMS.deg}° ${latDMS.min}' ${latDMS.sec}" lat; ${lngDMS.dir} ${lngDMS.deg}° ${lngDMS.min}' ${lngDMS.sec}" lng`, this.id);
     this.lngQ = lngDMS.dir
     this.lngD = lngDMS.deg
     this.lngM = lngDMS.min
     this.lngS = lngDMS.sec
 
+    this.log.excessive(`new DMS Location: ${latDMS.dir} ${latDMS.deg}° ${latDMS.min}' ${latDMS.sec}" lat; ${lngDMS.dir} ${lngDMS.deg}° ${lngDMS.min}' ${lngDMS.sec}" lng`, this.id);
+
     let latDDM = DDToDDM(latDD)
     this.latDDMQ = latDDM.dir
     this.latDDMD = latDDM.deg
-    this.latDDMM = latDDM.min
+    this.latDDMM = latDDM.min / 100
 
     let lngDDM = DDToDDM(lngDD, true)
-    this.log.excessive(`new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min}' lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min}' lng`, this.id);
     this.lngDDMQ = lngDDM.dir
     this.lngDDMD = lngDDM.deg
-    this.lngDDMM = lngDDM.min
+    this.lngDDMM = lngDDM.min / 100
 
+    this.log.excessive(`new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min}' lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min}' lng`, this.id);
 
     if (!newLocation.derivedFromAddress) {
       // TODO: User entered lat/long, so we need to come up with an approximate address
