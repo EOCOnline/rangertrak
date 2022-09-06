@@ -37,10 +37,13 @@
     <div>
 
 
-      <rangertrak-location [(location)]="locationParent" [initialLocationParent]="initialLocationChild"
-        [locationLabel]="locationPickerLabel" (newLocationEvent)="onNewLocationEvent($event)">
+      <rangertrak-location [(location)]="locationParent" (newLocationEvent)="onNewLocationEvent($event)">
       </rangertrak-location>
 
+      <!--
+        [initialLocationParent]="initialLocationChild"
+        [locationLabel]="locationPickerLabel"
+      -->
 
     </div>
 

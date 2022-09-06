@@ -47,11 +47,13 @@ export class SettingsService implements OnInit {
 
     //  ------------------------- SECRETS -------------------------------
 
+    // TODO: Add encryption to anything stored in a file...  https://github.com/digitalbazaar/forge
+    // https://stackoverflow.com/questions/48094647/nodejs-crypto-in-typescript-file
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
     let secretWorkaround = JSON.stringify(secrets)
     SettingsService.secrets = JSON.parse(secretWorkaround)
     //this.log.verbose('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
-    // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key: environmental values, GitHub vault, or  encryption? https://www.doppler.com/
+    // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key: environmental values, GitHub vault, or  encryption?
 
     //  ------------------------- SETTINGS -------------------------------
 
@@ -97,7 +99,33 @@ export class SettingsService implements OnInit {
   }
 
   ngOnInit() {
+    this.log.error(`into ngOnInit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`, this.id);
 
+
+    if (window.isSecureContext) {
+      this.log.verbose(`Application running in secure context`, this.id)
+
+      // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt
+      // https://mdn.github.io/dom-examples/web-crypto/encrypt-decrypt/index.html
+      // https://github.com/mdn/dom-examples/blob/main/web-crypto/encrypt-decrypt/index.html
+      // https://info.townsendsecurity.com/rsa-vs-aes-encryption-a-primer
+
+      // https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
+      // Page is a secure context so service workers are now available
+      //navigator.serviceWorker.register("/offline-worker.js").then(() => {  ...  })
+    }
+
+    this.sha256("hello").then(digestValue => {
+      console.error(` #################################### SECRET      Digest is: ${digestValue}`)
+    });
+
+  }
+
+  async sha256(str: string) {
+    const encoder = new TextEncoder();
+    const encdata = encoder.encode(str);
+    const buf = await crypto.subtle.digest("SHA-256", encdata);
+    return Array.prototype.map.call(new Uint8Array(buf), x => (('00' + x.toString(16)).slice(-2))).join('');
   }
 
 

@@ -115,7 +115,7 @@ export class RangerService implements OnInit {
     this.SortRangersByCallsign()   // Only place this needs to be called?
 
     //! TODO: encrypt user data (in LocalStorage or elsewhere)
-    // https://github.com/brix/crypto-js
+    // https://github.com/brix/crypto-js - requires Node.js
 
     localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
 

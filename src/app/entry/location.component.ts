@@ -55,16 +55,15 @@ log.service.ts:77 426: Location Component: Emitting new Location {"lat":47.444,"
 })
 export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
-
   // Use setter to get immediate notification of changes to inputs (pg 182 & 188)
   @Input() set location(location: LocationType) {
     // are object's contents equal: _.isEqual( obj1 , obj2 ) OR JSON.stringify(obj1) === JSON.stringify(obj2)
     if (JSON.stringify(location) === JSON.stringify(undefinedLocation)) {
       this.log.error("Got new location, but it still was 'undefined'", this.id)
     } else {
-      this.log.error(`YEAH: Got new location: ${JSON.stringify(location)}`, this.id)
+      this.log.warn(`Got new location: ${JSON.stringify(location)}`, this.id)
 
-      // REVIEW: Initially called BEFORE ngOnInit()!!!
+      // REVIEW: Initially called BEFORE ngOnInit()!!! : Do we need to store it?!
 
       // Populate form with initial (& Subsequent updates) from parent.
       // Also reemit address changes which ultimately can get picked up by other (peer) children.
@@ -75,10 +74,10 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   // Using mediation pattern (pg 188), this child component emits following event to parent,
   // parent's template has: (newLocationEvent)="onNewLocationParent($event)"
   // Parent's onNewLocationParent($event) gets called.
-  // Parent then passes the new location (via binding), to any children as needed
+  // Parent then passes the new location (via binding), to any children (e.g., mini-maps) as needed
   @Output() locationChange = new EventEmitter<LocationType>()
 
-  @Input() set initialLocationParent(loc: LocationType) {
+  /*@Input() set initialLocationParent(loc: LocationType) {
     this.log.error(`Got new location PARENT: ${JSON.stringify(loc)} - but IGNORING`, this.id)
 
     //! TODO
@@ -88,12 +87,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // just after Leaflet miniMap initMap() - & just before location ngOnInit
     // & a 3rd: "lat":47.441,"lng":-122.551,"address":"10506 sw 132nd pl, Apt C, vashon Villas, wa, 98070"
-
   }
 
   @Input() locationLabel = "Home Sweet Home"
   //public locationLabel = "label man"
-  /*
+
+  /   *
   @Input() set locationPickerLabel(label: string) {
     this.log.info(`Got new location LABEL: ${label}`, this.id)
 
@@ -162,13 +161,14 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("Construction", this.id)
 
+    /*
     this.initialLocationParent = {
       lat: 49,
       lng: -110,
       address: "Vashonville",
       derivedFromAddress: false
     }
-
+    */
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     // Settings only needed for Check PCode & What3Words...

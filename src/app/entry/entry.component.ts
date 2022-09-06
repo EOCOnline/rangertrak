@@ -40,6 +40,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() newLocationEvent = new EventEmitter<LocationType>()
   // next 2 defaults can be overriden in parent's html: [locationLabel] = "locationLabel"
 
+  /*
   @Input() initialLocationChild = {
     lat: 47.441,
     lng: -122.551,
@@ -48,6 +49,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   //locationPickerLabel = "Enter da Location"
   public locationPickerLabel = "myLabel"
+*/
 
   private id = 'Entry Form'
   title = 'Field Report Entry'
@@ -195,6 +197,15 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
+
+
+    this.log.error(`into ngOnInit!!!!!!!!!`, this.id);
+
+    this.sha256("hello").then(digestValue => {
+      console.error(` ########## SECRET      Digest is: ${digestValue}`)
+    });
+
+
     this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
 
 
@@ -258,6 +269,13 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
   }
 
 
+
+  async sha256(str: string) {
+    const encoder = new TextEncoder();
+    const encdata = encoder.encode(str);
+    const buf = await crypto.subtle.digest("SHA-256", encdata);
+    return Array.prototype.map.call(new Uint8Array(buf), x => (('00' + x.toString(16)).slice(-2))).join('');
+  }
 
   /**
    * Called once all HTML elements have been created

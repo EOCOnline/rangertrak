@@ -121,7 +121,7 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
     //console.log(`got new log with ${log.length} entries`)
 
     let i = 0
-    let msMaxDelay = 2000
+    let msMaxDelay = 5000
     while (!this.logPanel) {
       setTimeout(() => {
         console.error(`Log Component: gotNewLog() can not display logs BEFORE logPanel initialization. Delayed ${i / 10 * msMaxDelay} ms. Retrying.`) // For: \n${JSON.stringify(log.slice(-1))} `)

@@ -61,7 +61,7 @@ export class LogService {
     let dt = new Date
     let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
 
-    let preface = `${LogService.nextId++}: ` // `${time} - From `
+    let preface = `${LogService.nextId++}: `   // ${time} - From `
 
     switch (level) {
 

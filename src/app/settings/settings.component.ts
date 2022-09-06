@@ -235,6 +235,18 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
     }
 
+    if (window.isSecureContext) {
+      this.log.verbose(`Application running in secure context`, this.id)
+
+      // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt
+      // https://github.com/mdn/dom-examples/blob/main/web-crypto/encrypt-decrypt/index.html
+      // https://info.townsendsecurity.com/rsa-vs-aes-encryption-a-primer
+
+      // https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
+      // Page is a secure context so service workers are now available
+      //navigator.serviceWorker.register("/offline-worker.js").then(() => {  ...  })
+    }
+
     this.settingsEditorForm = this.getFormArrayFromSettingsArray()!
     //this.leaflet = this.settingsEditorForm.value.leaflet
     //this.google = this.settingsEditorForm.value.google
