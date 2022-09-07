@@ -217,29 +217,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
 
           https://stackoverflow.com/questions/49861281/angular-reactive-forms-valuechanges-ui-changes-only
-          You can skip emitting the valueChange event by passing the option { emitEvent: false } to the setValue call
-
-          https://angular.io/api/forms/FormControl#members
-
-          setValue(value: any, options: {
-              onlySelf?: boolean;
-              emitEvent?: boolean;
-              emitModelToViewChange?: boolean;
-              emitViewToModelChange?: boolean;
-          } = {}): void
-
-
-          If onlySelf is true, this change will only affect the validation of this FormControl and not its parent component. This defaults to false.
-
-          If emitEvent is true, this change will cause a valueChanges event on the FormControl to be emitted. This defaults to true (as it falls through to updateValueAndValidity).
-
-          If emitModelToViewChange is true, the view will be notified about the new value via an onChange event. This is the default behavior if emitModelToViewChange is not specified.
-
-          If emitViewToModelChange is true, an ngModelChange event will be fired to update the model. This is the default behavior if emitViewToModelChange is not specified.
 
 
           can use !yourFormName.pristine to detect only UI changes
-
 
           yourControl.valueChanges.pipe(
         filter(() => yourControl.touched)
@@ -275,12 +255,14 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       ///     this.log.info('#######  lng Float value changed: ' + x), this.id
     }
 */
+      // Or use dirty: https://www.usefuldev.com/post/Angular%20Forms:%20how%20to%20get%20only%20the%20changed%20values
 
 
       this.mergeForm(this.locationFormModel, '')
+        .pipe(debounceTime(700))
         .pipe(takeWhile((_) => this.alive))
         .subscribe((res: any) => {
-          this.log.warn(`CHange noted:  ${JSON.stringify(res)}`)
+          this.log.warn(`${res.name} changed to: ${res.value}`) // {"name":"DMS.latD","value":66}
         })
 
     }
