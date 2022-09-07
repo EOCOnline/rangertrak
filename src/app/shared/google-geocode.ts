@@ -17,22 +17,38 @@ export class GoogleGeocode {
       GoogleGeocode.geocoder = null
     }
   }
-
-  getAddressFromLatLng(latLng: google.maps.LatLng): string {
+  // https://developers.google.com/maps/documentation/javascript/geocoding#ReverseGeocoding
+  getAddressFromLatLng(latLng: google.maps.LatLng, UpdateAddress: any): string {
     if (!GoogleGeocode.geocoder)
-      return "offline"
+      return "Address lookup requires Internet."
+
+    console.info(`Looking up address: ${JSON.stringify(latLng)}`)
 
     GoogleGeocode.geocoder
       .geocode({ location: latLng })
       .then((response) => {
+
+        //console.error(`Found address: ${JSON.stringify(response.results)}`)
+
         if (response.results[0]) {
+          console.error(`Found address[0]: ${JSON.stringify(response.results[0].formatted_address)}`)
+
+          // Async update of address field...
+
+
+
+
+          //! BUG: FAILS to run...
+          UpdateAddress()//response.results[0].formatted_address)
+          console.error(`returned from UpdateAddress()`)
+
           return (response.results[0].formatted_address)
         } else {
-          return ("") // No results found
+          return ("No address found.") // No results found
         }
       })
       .catch((e) => { return ("Geocoder failed due to: " + e) })
-    return ("?")
+    return ("No immediate address available: await the result!")
   }
 
 

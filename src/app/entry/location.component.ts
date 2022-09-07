@@ -29,26 +29,6 @@ https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-drive
 https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 */
 
-/*
-Endless Loop - once editing form...
-
-log.service.ts:81 417: Location Component: locationFormModel value changed: {"DD":{"latI":47,"latF":4440,"lngI":-122,"lngF":-5550},"DMS":{"latQ":"N","latD":47,"latM":26,"latS":38.4,"lngQ":"W","lngD":122,"lngM":33,"lngS":18},"DDM":{"latDDMQ":"N","latDDMD":47,"latDDMM":2664,"lngDDMQ":"W","lngDDMD":122,"lngDDMM":3330},"address":"123 Elm St."}
-
-log.service.ts:81 418: Location Component: new Location recieved: {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
-
-log.service.ts:71 419: Location Component: new DMS Location: N 47° 26' 38.4" lat; W 122° 33' 18" lng
-log.service.ts:71 420: Location Component: new DDM Location: N 47° 2664' lat; W 122° 3330' lng
-
-log.service.ts:77 421: Location Component: Emitting new Location {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
-
-
-log.service.ts:81 422: Location Component: locationFormModel value changed: {"DD":{"latI":47,"latF":4440,"lngI":-122,"lngF":-5550},"DMS":{"latQ":"N","latD":47,"latM":26,"latS":38.4,"lngQ":"W","lngD":122,"lngM":33,"lngS":18},"DDM":{"latDDMQ":"N","latDDMD":47,"latDDMM":2664,"lngDDMQ":"W","lngDDMD":122,"lngDDMM":3330},"address":"123 Elm St."}
-log.service.ts:81 423: Location Component: new Location recieved: {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
-log.service.ts:71 424: Location Component: new DMS Location: N 47° 26' 38.4" lat; W 122° 33' 18" lng
-log.service.ts:71 425: Location Component: new DDM Location: N 47° 2664' lat; W 122° 3330' lng
-log.service.ts:77 426: Location Component: Emitting new Location {"lat":47.444,"lng":-122.555,"address":"10506 sw 132nd pl, vashon, wa, 98070","derivedFromAddress":false}
-*/
-
 @Component({
   //moduleId: module.id,
   selector: 'rangertrak-location',
@@ -80,38 +60,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   // Parent then passes the new location (via binding), to any children (e.g., mini-maps) as needed
   @Output() locationChange = new EventEmitter<LocationType>()
 
-  /*@Input() set initialLocationParent(loc: LocationType) {
-    this.log.error(`Got new location PARENT: ${JSON.stringify(loc)} - but IGNORING`, this.id)
-
-    //! TODO
-    // Gets called twice: during Location Component: Construction (wirth "lat":49,"lng":-110,"address":"Vashonville")&
-
-    // then get 'proper' call above (YEAH: Got new location) with "lat":47.43,"lng":-122.4627,"address":"NO_LOCATION_SET_YET"
-
-    // just after Leaflet miniMap initMap() - & just before location ngOnInit
-    // & a 3rd: "lat":47.441,"lng":-122.551,"address":"10506 sw 132nd pl, Apt C, vashon Villas, wa, 98070"
-  }
-
-  @Input() locationLabel = "Home Sweet Home"
-  //public locationLabel = "label man"
-
-  /   *
-  @Input() set locationPickerLabel(label: string) {
-    this.log.info(`Got new location LABEL: ${label}`, this.id)
-
-    let myNewLabel = label
-    //! TODO: Persist this!
-  }*/
-
   private id = "Location Component"
   public locationFormModel!: FormGroup
-  // https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14
+  // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 & https://github.com/angular/angular/pull/43834
 
   public geocoder = new GoogleGeocode
   //w3w = new What3Words()
-
-
-
 
   // Cooordinates as Decimal Degrees (DD)
   public latI = 0 // Integer portion
@@ -155,7 +109,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   private settings!: SettingsType
 
   private formUpdating = false
-
 
   constructor(
     private settingsService: SettingsService,
@@ -211,39 +164,33 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
           this.valueChanges(x)
         }
 
-
-
         /*
         https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
 
-          https://stackoverflow.com/questions/49861281/angular-reactive-forms-valuechanges-ui-changes-only
+        https://stackoverflow.com/questions/49861281/angular-reactive-forms-valuechanges-ui-changes-only
 
 
-          can use !yourFormName.pristine to detect only UI changes
+        Or use dirty: https://www.usefuldev.com/post/Angular%20Forms:%20how%20to%20get%20only%20the%20changed%20values
 
-          yourControl.valueChanges.pipe(
-        filter(() => yourControl.touched)
-    ).subscribe(() => {
-       ....
-    })
+        Or can use !yourFormName.pristine to detect only UI changes
+
+        yourControl.valueChanges.pipe(
+          filter(() => yourControl.touched)).subscribe(() => {
+            ....
+          })
 
         https://stackoverflow.com/questions/58558831/angular-reactive-form-value-changes
         use rxjs and pipeable operators
-        this.studentFormGroup.valueChanges.pipe(
-          distinctUntilChanged((prev, curr) => prev.gender !== curr.gender)), // don't emit value if gender changed
-          debounceTime(500), // allow time between keystrokes (computers are too fast sometimes)
-          takeUntil(this.destroyed$)
-        ).subscribe(() => this.saveStudentRecord());
-        *    /
-
 
       })
+
+      Or could subscribe to each element in the form...
       ///   let latf = this.locationFrmGrp.get("latF")
       ///   if (latf) {
-      ///     this.locationFrmGrp.get("latF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+      ///     latf.valueChanges.pipe(debounceTime(700)).subscribe(x => {
       ///       this.log.info('########## lat float value changed: ' + x, this.id)
       ///     })
-      ///     this.log.warn('########## lat float value WAS FOUND!!!!', this.id)
+      ///     // this.log.warn('########## lat float value WAS FOUND!!!!', this.id)
       ///   }
       ///   else {
       ///     this.log.error('########## lat float value NOT FOUND!!!!', this.id)
@@ -255,16 +202,67 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       ///     this.log.info('#######  lng Float value changed: ' + x), this.id
     }
 */
-      // Or use dirty: https://www.usefuldev.com/post/Angular%20Forms:%20how%20to%20get%20only%20the%20changed%20values
 
+
+      // https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
+      // Initial event is just for control change: NOT yet bubbled up to parent form!
+      // DO setTimeout() to allow form to catch up.
+      setTimeout(() => {
+        //console.log(this.reactiveForm.value)   //shows the latest first name
+      })
 
       this.mergeForm(this.locationFormModel, '')
-        .pipe(debounceTime(700))
+        .pipe(debounceTime(300))  // BUG: If too long, changes get skipped!
         .pipe(takeWhile((_) => this.alive))
-        .subscribe((res: any) => {
-          this.log.warn(`${res.name} changed to: ${res.value}`) // {"name":"DMS.latD","value":66}
-        })
+        .subscribe((ctrl: any) => {
+          this.log.warn(`${ctrl.name} changed to: ${ctrl.value}`, this.id)
+          switch (ctrl.name) {
 
+            // Coordinates as Decimal Degrees (DD)
+            case 'DD.latI':
+            case 'DD.latF':
+            case 'DD.lngI':
+            case 'DD.lngF':
+              {
+                this.onDdChg()
+                break
+              }
+            // Cooordinates as Degrees, Minutes & Seconds (DMS)
+            case 'DMS.latQ':
+            case 'DMS.latD':
+            case 'DMS.latM':
+            case 'DMS.latS':
+            case 'DMS.lngQ':
+            case 'DMS.lngD':
+            case 'DMS.lngM':
+            case 'DMS.lngS':
+              {
+                this.onDmsChg()
+                break
+              }
+            // Cooordinates as Degrees & Decimal Minutes (DDM)
+            case 'DDM.latDDMQ':
+            case 'DDM.latDDMD':
+            case 'DDM.latDDMM':
+            case 'DDM.lngDDMQ':
+            case 'DDM.lngDDMD':
+            case 'DDM.lngDDMM':
+              {
+                this.onDdmChg()
+                break
+              }
+
+            case 'address':
+              {
+                this.onAddressChg()
+                break
+              }
+
+            default:
+              this.log.error(`Unexpected form change: ${ctrl.name}`, this.id)
+              break;
+          }
+        })
     }
 
     //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
@@ -273,38 +271,40 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-     * Called once all HTML elements have been created
-     */
+    * Called once all HTML elements have been created
+    */
   ngAfterViewInit() {
 
   }
 
   // https://stackoverflow.com/questions/70366847/angular-on-form-change-event
-  mergeForm(form: FormGroup | FormArray, sufix: string): any {
+  mergeForm(form: FormGroup | FormArray, prefix: string): any {
     if (form instanceof FormArray) {
-      console.log(sufix)
+      // FormArray
+      console.error(`prefix is: ${prefix}`, this.id)
       const formArray = form as FormArray;
       const arr = [];
       for (let i = 0; i < formArray.controls.length; i++) {
         const control = formArray.at(i);
         arr.push(
           control instanceof FormGroup
-            ? this.mergeForm(control, sufix + i + '.')
+            ? this.mergeForm(control, prefix + i + '.')
             : control.valueChanges.pipe(
-              map((value) => ({ name: sufix + i, value: value }))
+              map((value) => ({ name: prefix + i, value: value }))
             )
         );
       }
       return merge(...arr);
     }
+    // FormGroup
     return merge(
       ...Object.keys(form.controls).map((controlName: string) => {
         const control = form.get(controlName);
         return control instanceof FormGroup || control instanceof FormArray
-          ? this.mergeForm(control, sufix + controlName + '.')
+          ? this.mergeForm(control, prefix + controlName + '.')
 
           : control!.valueChanges.pipe(
-            map((value) => ({ name: sufix + controlName, value: value }))
+            map((value) => ({ name: prefix + controlName, value: value }))
           );
       })
     );
@@ -314,11 +314,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
   * Create Form Model, so we can readily set values & respond to user input
-  * NOTE: We never have an OnSubmit() routine...
+  * NOTE: We never have an OnSubmit() routine...instead subscribing to changes
   *
    */
   initForm() {
     this.locationFormModel = this._formBuilder.group({
+
+      // Coordinates as Decimal Degrees (DD)
       DD: this._formBuilder.group({
         latI: [0], // Integer portion
         latF: [0], // Float portion
@@ -367,31 +369,41 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     */
   }
 
-  //! Unimplemented!
   DDToAddress(lat: number, lng: number) {
-    this.log.error("DDToAddress returning Uninplemented Address", this.id)
-    return "DDToAddress returning Uninplemented Address"
+    let ll = new google.maps.LatLng(lat, lng)
+    this.log.verbose(`DDToAddress() got lat:${ll.lat}, lng: ${ll.lng}`, this.id)
+
+    let // addr = this.geocoder.getAddressFromLatLng(new google.maps.LatLng(lat, lng))
+      addr = this.geocoder.getAddressFromLatLng(ll, this.UpdateAddress)
+    this.log.verbose(`DDToAddress returning address ${addr} for lat:${lat}, lng: ${lng}`, this.id)
+    return addr
   }
 
 
   // https://angular.io/guide/template-reference-variables
   onDdChg(latI = 0, latF = 0, lngI = 0, lngF = 0) {
+
+    if (!latI && !latF && !lngI && !lngF) {
+      this.log.info(`Grabbing DD value changes from locationFormModel`, this.id)
+      latI = this.locationFormModel.get("DD.latI")?.value
+      latF = this.locationFormModel.get("DD.latF")?.value
+      lngI = this.locationFormModel.get("DD.lngI")?.value
+      lngF = this.locationFormModel.get("DD.lngF")?.value
+    }
     this.log.info(`DD value changed: ${latI}.${latF}°, ${lngI}.${lngF}°`, this.id)
 
-    let latLng = {
-      lat: latI + latF / 100,
-      lng: lngI + lngF / 100
-    }
+    let lat = parseFloat(latI + "." + latF)
+    let lng = parseFloat(lngI + "." + lngF)
 
-    let derivedAddress = this.DDToAddress(latLng.lat, latLng.lng)
-
+    let derivedAddress = this.geocoder.getAddressFromLatLng(new google.maps.LatLng(lat, lng), this.UpdateAddress)
+    this.log.error(`got derived address: ${derivedAddress}`, this.id)
     let enteredLocation = {
-      lat: latLng.lat,
-      lng: latLng.lng,
+      lat: lat,
+      lng: lng,
       address: derivedAddress,
       derivedFromAddress: false
     }
-
+    this.log.info(`reset form with:${JSON.stringify(enteredLocation)}`, this.id)
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
@@ -415,7 +427,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  onDdmChg(latDDMQ: string, latDDMD: number, latDDMM: number, lngDDMQ: string, lngDDMD: number, lngDDMM: number) {
+  onDdmChg(latDDMQ: string = 'n', latDDMD: number = 0, latDDMM: number = 0, lngDDMQ: string = 'w', lngDDMD: number = 0, lngDDMM: number = 0) {
     this.log.info(`DDM value changed `, this.id)
 
     let latLng = {
@@ -428,14 +440,14 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     let enteredLocation = {
       lat: latLng.lat,
       lng: latLng.lng,
-      address: "10506 sw 132nd pl, vashon, wa, 98070",
+      address: derivedAddress,
       derivedFromAddress: false
     }
 
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
-  onAddressChg(newAddress: string) {
+  onAddressChg(newAddress: string = "undefined address") {
     this.log.info(`onAddressChg got newAddress: ${JSON.stringify(newAddress)}`, this.id)
     let googleGeocode = new GoogleGeocode
     let myTuple = googleGeocode.isValidAddress(newAddress)
@@ -460,7 +472,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
       if (!this.formUpdating) {
         // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
-        this.valueChanges(x)
+        // this.valueChanges(x)
       }
     })
   }
@@ -481,21 +493,15 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     "DDM":{"latDDMQ":"N","latDDMD":0,"latDDMM":0,"lngDDMQ":"E","lngDDMD":0,"lngDDMM":0},
     "address":""
   }
-  */
+  *
   public valueChanges(e: any) { // this.locationFormModel
     // e = form data
     this.log.info(`locationFormModel value changed: ${JSON.stringify(e)}`, this.id)
     /*
-    ocationFormModel value changed: {"DD":{"latI":47,"latF":4300,"lngI":-122,"lngF":9999},"DMS":{"latQ":"N","latD":47,"latM":25,"latS":48,"lngQ":"W","lngD":122,"lngM":27,"lngS":45.71},"DDM":{"latDDMQ":"N","latDDMD":47,"latDDMM":25.8,"lngDDMQ":"W","lngDDMD":122,"lngDDMM":27.76},"address":"123 Elm St."}
 
+    let enteredLocation = undefinedLocation
 
-    Location Component: locationFormModel value changed: {"DD":{"latI":47,"latF":4300,"lngI":-122,"lngF":4627},"DMS":{"latQ":"N","latD":47,"latM":25,"latS":48,"lngQ":"W","lngD":
-        33  - how to know this is what chnaged?!
-    ,"lngM":27,"lngS":45.71},"DDM":{"latDDMQ":"N","latDDMD":47,"latDDMM":25.8,"lngDDMQ":"W","lngDDMD":122,"lngDDMM":27.76},"address":"123 Elm St."}
-    */
-    //let enteredLocation = undefinedLocation
-
-    // Verify changes are 'done': make sense & are valid
+     Verify changes are 'done': make sense & are valid
 
     let enteredLocation = {
       lat: 47.444,
@@ -508,7 +514,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
-
+*/
 
   /**
    * Update form with new address
@@ -526,7 +532,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
     this.log.info(`newLocationToFormAndEmit() new Location recieved: ${JSON.stringify(newLocation)}`, this.id);
-    this.formUpdating = true
+    //this.formUpdating = true
     // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
 
     //!  this.location = newLocation
@@ -614,8 +620,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       */
     }
 
-
-    // REVIEW: Not patch value: doing all of them?!
     this.locationFormModel.setValue({
 
       DD: {
@@ -646,7 +650,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         lngDDMD: this.lngDDMD,
         lngDDMM: this.lngDDMM,
       },
-      address: "123 Elm St."
+      address: "geocode pending"
     },
       { emitEvent: false }  // Prevent enless loop...
       // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
@@ -660,10 +664,24 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
     this.locationChange.emit(this.location)
 
-    this.formUpdating = false // reenable subscription to location updates
+    //this.formUpdating = false // reenable subscription to location updates
   }
 
 
+  UpdateAddress(newAddress = "New Geocoded Address here") {
+
+    this.log.error(`UpdateAddress(): GOT NEW Location ${JSON.stringify(newAddress)}`, this.id)
+
+    this.locationFormModel.patchValue({ address: newAddress },
+      { emitEvent: false }  // Prevent enless loop...
+    )
+
+    this.location.address = newAddress
+
+    // Emit new location event to parent: so it & any children can react
+    this.log.error(`UpdateAddress(): Emitting new Location ${JSON.stringify(newAddress)}`, this.id)
+    // this.locationChange.emit(this.location)
+  }
   // public setCtrl(ctrlName: HTMLElement, value: number | string) {
   //   this.log.excessive(`setCtrl(${ctrlName} to ${value})`, this.id)
   //   // let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
