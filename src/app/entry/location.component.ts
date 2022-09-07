@@ -1,11 +1,13 @@
-import { BehaviorSubject, debounceTime, fromEvent, Observable, Subscription } from 'rxjs'
+import {
+    BehaviorSubject, debounceTime, fromEvent, map, merge, Observable, Subscription, takeWhile
+} from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import {
     AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild
 } from '@angular/core'
 import {
-    FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators
+    FormArray, FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators
 } from '@angular/forms'
 // import * as P from '@popperjs/core';
 ///import { createPopper } from '@popperjs/core';
@@ -54,6 +56,7 @@ log.service.ts:77 426: Location Component: Emitting new Location {"lat":47.444,"
   styleUrls: ['./location.component.scss']
 })
 export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
+  alive: boolean = true
 
   // Use setter to get immediate notification of changes to inputs (pg 182 & 188)
   @Input() set location(location: LocationType) {
@@ -194,12 +197,65 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
     if (this.locationFormModel) {
       //this.locationFormModel.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+
+      // Following works, but reacts for ALL changes: hard then to know what changed...
+      // https://stackoverflow.com/questions/70366847/angular-on-form-change-event
+
+
+      /*
       this.locationFormModel.valueChanges.pipe(debounceTime(800)).subscribe(x => {
         //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
         if (!this.formUpdating) {
+          this.log.info(`locationFormModel NOT updating: process valueChanges()`, this.id)
           // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
           this.valueChanges(x)
         }
+
+
+
+        /*
+        https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
+
+          https://stackoverflow.com/questions/49861281/angular-reactive-forms-valuechanges-ui-changes-only
+          You can skip emitting the valueChange event by passing the option { emitEvent: false } to the setValue call
+
+          https://angular.io/api/forms/FormControl#members
+
+          setValue(value: any, options: {
+              onlySelf?: boolean;
+              emitEvent?: boolean;
+              emitModelToViewChange?: boolean;
+              emitViewToModelChange?: boolean;
+          } = {}): void
+
+
+          If onlySelf is true, this change will only affect the validation of this FormControl and not its parent component. This defaults to false.
+
+          If emitEvent is true, this change will cause a valueChanges event on the FormControl to be emitted. This defaults to true (as it falls through to updateValueAndValidity).
+
+          If emitModelToViewChange is true, the view will be notified about the new value via an onChange event. This is the default behavior if emitModelToViewChange is not specified.
+
+          If emitViewToModelChange is true, an ngModelChange event will be fired to update the model. This is the default behavior if emitViewToModelChange is not specified.
+
+
+          can use !yourFormName.pristine to detect only UI changes
+
+
+          yourControl.valueChanges.pipe(
+        filter(() => yourControl.touched)
+    ).subscribe(() => {
+       ....
+    })
+
+        https://stackoverflow.com/questions/58558831/angular-reactive-form-value-changes
+        use rxjs and pipeable operators
+        this.studentFormGroup.valueChanges.pipe(
+          distinctUntilChanged((prev, curr) => prev.gender !== curr.gender)), // don't emit value if gender changed
+          debounceTime(500), // allow time between keystrokes (computers are too fast sometimes)
+          takeUntil(this.destroyed$)
+        ).subscribe(() => this.saveStudentRecord());
+        *    /
+
 
       })
       ///   let latf = this.locationFrmGrp.get("latF")
@@ -218,7 +274,16 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       ///   this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
       ///     this.log.info('#######  lng Float value changed: ' + x), this.id
     }
+*/
 
+
+      this.mergeForm(this.locationFormModel, '')
+        .pipe(takeWhile((_) => this.alive))
+        .subscribe((res: any) => {
+          this.log.warn(`CHange noted:  ${JSON.stringify(res)}`)
+        })
+
+    }
 
     //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
 
@@ -231,6 +296,39 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
 
   }
+
+  // https://stackoverflow.com/questions/70366847/angular-on-form-change-event
+  mergeForm(form: FormGroup | FormArray, sufix: string): any {
+    if (form instanceof FormArray) {
+      console.log(sufix)
+      const formArray = form as FormArray;
+      const arr = [];
+      for (let i = 0; i < formArray.controls.length; i++) {
+        const control = formArray.at(i);
+        arr.push(
+          control instanceof FormGroup
+            ? this.mergeForm(control, sufix + i + '.')
+            : control.valueChanges.pipe(
+              map((value) => ({ name: sufix + i, value: value }))
+            )
+        );
+      }
+      return merge(...arr);
+    }
+    return merge(
+      ...Object.keys(form.controls).map((controlName: string) => {
+        const control = form.get(controlName);
+        return control instanceof FormGroup || control instanceof FormArray
+          ? this.mergeForm(control, sufix + controlName + '.')
+
+          : control!.valueChanges.pipe(
+            map((value) => ({ name: sufix + controlName, value: value }))
+          );
+      })
+    );
+  }
+
+
 
   /**
   * Create Form Model, so we can readily set values & respond to user input
@@ -316,7 +414,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onDmsChg(latQ = "n", latD = 0, latM = 0, latS = 0, lngQ = "e", lngD = 0, lngM = 0, lngS = 0) {
-    this.log.info(`DMS value changed`, this.id)
+    this.log.info(`DMS value changed:  ${latD}.${latM}° ${latQ}, ${lngD}.${lngM}° ${lngQ}`, this.id)
 
     let latLng = {
       lat: DMSToDD(latQ, latD, latM, latS)!,
@@ -336,7 +434,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   onDdmChg(latDDMQ: string, latDDMD: number, latDDMM: number, lngDDMQ: string, lngDDMD: number, lngDDMM: number) {
-
+    this.log.info(`DDM value changed `, this.id)
 
     let latLng = {
       lat: DDMToDD(<string>latDDMQ, latDDMD, latDDMM)!,
@@ -402,9 +500,17 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     "address":""
   }
   */
-  public valueChanges(e: any) {
+  public valueChanges(e: any) { // this.locationFormModel
+    // e = form data
     this.log.info(`locationFormModel value changed: ${JSON.stringify(e)}`, this.id)
+    /*
+    ocationFormModel value changed: {"DD":{"latI":47,"latF":4300,"lngI":-122,"lngF":9999},"DMS":{"latQ":"N","latD":47,"latM":25,"latS":48,"lngQ":"W","lngD":122,"lngM":27,"lngS":45.71},"DDM":{"latDDMQ":"N","latDDMD":47,"latDDMM":25.8,"lngDDMQ":"W","lngDDMD":122,"lngDDMM":27.76},"address":"123 Elm St."}
 
+
+    Location Component: locationFormModel value changed: {"DD":{"latI":47,"latF":4300,"lngI":-122,"lngF":4627},"DMS":{"latQ":"N","latD":47,"latM":25,"latS":48,"lngQ":"W","lngD":
+        33  - how to know this is what chnaged?!
+    ,"lngM":27,"lngS":45.71},"DDM":{"latDDMQ":"N","latDDMD":47,"latDDMM":25.8,"lngDDMQ":"W","lngDDMD":122,"lngDDMM":27.76},"address":"123 Elm St."}
+    */
     //let enteredLocation = undefinedLocation
 
     // Verify changes are 'done': make sense & are valid
@@ -412,7 +518,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     let enteredLocation = {
       lat: 47.444,
       lng: -122.555,
-      address: "10506 sw 132nd pl, vashon, wa, 98070",
+      address: "valueChanges(): Need To extract new address from entire form (what field changed?!)",
       derivedFromAddress: false
     }
 
@@ -437,7 +543,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       this.log.error(`newLocationToFormAndEmit(): new Location recieved but null or undefined.`, this.id)
       return
     }
-    this.log.info(`new Location recieved: ${JSON.stringify(newLocation)}`, this.id);
+    this.log.info(`newLocationToFormAndEmit() new Location recieved: ${JSON.stringify(newLocation)}`, this.id);
     this.formUpdating = true
     // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
 
@@ -526,6 +632,8 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       */
     }
 
+
+    // REVIEW: Not patch value: doing all of them?!
     this.locationFormModel.setValue({
 
       DD: {
@@ -557,7 +665,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         lngDDMM: this.lngDDMM,
       },
       address: "123 Elm St."
-    })
+    },
+      { emitEvent: false }  // Prevent enless loop...
+      // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
+    )
+
+
 
 
 
