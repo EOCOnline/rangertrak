@@ -59,11 +59,11 @@
 (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
 -->
       <span formGroupName="DDM">
-        <input #latDDMD formControlName="latDDMD" id="enter__Where-latDdmD" type="number" min="0" max="90" /><strong>°
+        <input ##latDdmD formControlName="latDdmD" id="enter__Where-latDdmD" type="number" min="0" max="90" /><strong>°
         </strong>
-        <input #latDDMM formControlName="latDDMM" id="enter__Where-latDdmM" type="number" min="0" max="59" /><strong>'
+        <input ##latDdmM formControlName="latDdmM" id="enter__Where-latDdmM" type="number" min="0" max="59" /><strong>'
         </strong>
-        <input #latDDMQ formControlName="latDDMQ" id="enter__Where-latDdmQ" type="text" pattern="'e','E','w','W'"
+        <input ##latDdmQ formControlName="latDdmQ" id="enter__Where-latDdmQ" type="text" pattern="'e','E','w','W'"
           title="E or W" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
       </span>
@@ -103,11 +103,11 @@
 (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
 -->
       <span formGroupName="DDM">
-        <input #lngDDMD formControlName="lngDDMD" id="enter__Where-lngDdmD" type="number" min="0" max="90" /><strong>°
+        <input #lngDdmD formControlName="lngDdmD" id="enter__Where-lngDdmD" type="number" min="0" max="90" /><strong>°
         </strong>
-        <input #lngDDMM formControlName="lngDDMM" id="enter__Where-lngDdmM" type="number" min="0" max="59" /><strong>'
+        <input #lngDdmM formControlName="lngDdmM" id="enter__Where-lngDdmM" type="number" min="0" max="59" /><strong>'
         </strong>
-        <input #lngDDMQ formControlName="lngDDMQ" id="enter__Where-lngDdmQ" type="text" pattern="'n','N','s','S'"
+        <input #lngDdmQ formControlName="lngDdmQ" id="enter__Where-lngDdmQ" type="text" pattern="'n','N','s','S'"
           title="N or S" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
       </span>
@@ -118,14 +118,15 @@
 (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
 -->
     Street Address,
-    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>,&nbsp; or &nbsp;
+    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>,&nbsp; or
     <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>:
 
     <input #address type="text" id="enter__Where-Address" tabindex="5"
-      title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding." placeholder="Optional Address"
+      title="Optionally enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
       formControlName="address" data-lpignore="true" />
   </form>
   <!--
+
 (change)="onAddressChg(address.value)"
 -->
   <div class="enter__Where-Results">

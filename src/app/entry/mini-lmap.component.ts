@@ -51,13 +51,13 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   @Input() set locationUpdated(newLocation: LocationType) {
     if ((newLocation && newLocation.lat) != undefined) {
       if (newLocation.address == undefinedAddressFlag) {
-        this.log.verbose(pc.red(`Entry form has no address yet:  ${undefinedAddressFlag} - ignoring...`), this.id)
+        this.log.verbose(pc.bgYellow(`Entry form has no address yet:  ${undefinedAddressFlag} - ignoring...`), this.id)
       } else {
-        this.log.verbose(pc.red(`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
+        this.log.verbose(pc.bgYellow(`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
         this.onNewLocation(newLocation)
       }
     } else {
-      this.log.error(pc.red(`DRATS: Parent sent undefined location event to child`), this.id)
+      this.log.error(pc.bgYellow(`DRATS: Parent sent undefined location event to child`), this.id)
     }
   }
 

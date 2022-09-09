@@ -84,12 +84,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   public lngS = 0
 
   // Cooordinates as Degrees & Decimal Minutes (DDM)
-  public latDDMQ = "N" // Quadrant
-  public latDDMD = 0 // Degrees
-  public latDDMM = 0 // Minutes
-  public lngDDMQ = "E" // Quadrant
-  public lngDDMD = 0 // Degrees
-  public lngDDMM = 0 // Minutes
+  public latDdmQ = "N" // Quadrant
+  public latDdmD = 0 // Degrees
+  public latDdmM = 0 // Minutes
+  public lngDdmQ = "E" // Quadrant
+  public lngDdmD = 0 // Degrees
+  public lngDdmM = 0 // Minutes
 
 
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
@@ -154,7 +154,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       // Following works, but reacts for ALL changes: hard then to know what changed...
       // https://stackoverflow.com/questions/70366847/angular-on-form-change-event
 
-
+      // #region HideByDefault
       /*
       this.locationFormModel.valueChanges.pipe(debounceTime(800)).subscribe(x => {
         //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
@@ -201,7 +201,8 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       ///   this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
       ///     this.log.info('#######  lng Float value changed: ' + x), this.id
     }
-*/
+ */
+      //#endregion
 
       // Capture user's location component changes & recalc the rest of the form & update peers (i.e., mini-map)
 
@@ -211,13 +212,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => {
         //console.log(this.reactiveForm.value)   //shows the latest first name
       })
-      let alive: boolean = true // unsure why this helps...
+      let alive: boolean = true // from original sample, but unused by us
 
       this.mergeForm(this.locationFormModel, '')
         .pipe(debounceTime(400))  // BUG: If too long, changes get skipped!
         .pipe(takeWhile((_) => alive))
         .subscribe((ctrl: any) => {
-          this.log.warn(`${ctrl.name} changed to: ${ctrl.value}`, this.id)
+          this.log.verbose(`${ctrl.name} changed to: ${ctrl.value}`, this.id)
 
           switch (ctrl.name) {
 
@@ -244,12 +245,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
                 break
               }
             // Cooordinates as Degrees & Decimal Minutes (DDM)
-            case 'DDM.latDDMQ':
-            case 'DDM.latDDMD':
-            case 'DDM.latDDMM':
-            case 'DDM.lngDDMQ':
-            case 'DDM.lngDDMD':
-            case 'DDM.lngDDMM':
+            case 'DDM.latDdmQ':
+            case 'DDM.latDdmD':
+            case 'DDM.latDdmM':
+            case 'DDM.lngDdmQ':
+            case 'DDM.lngDdmD':
+            case 'DDM.lngDdmM':
               {
                 this.onDdmChg()
                 break
@@ -311,15 +312,15 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Cooordinates as Degrees & Decimal Minutes (DDM)
       DDM: this._formBuilder.group({
-        latDDMQ: ["N"], // Quadrant
-        latDDMD: [0], // Degrees
-        latDDMM: [0], // Minutes
-        lngDDMQ: ["E"],
-        lngDDMD: [0],
-        lngDDMM: [0]
+        latDdmQ: ["N"], // Quadrant
+        latDdmD: [0], // Degrees
+        latDdmM: [0], // Minutes
+        lngDdmQ: ["E"],
+        lngDdmD: [0],
+        lngDdmM: [0]
       }),
 
-      address: [''] //, Validators.required],
+      address: ['Optional Address'] //, Validators.required],
     })
 
 
@@ -423,6 +424,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * NOTE: This also updates/POSTS to the form!!!
+   * !TODO: Should it ALSO emit an updated location?!
    * @param lat
    * @param lng
    * @returns
@@ -430,6 +432,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   DDToAddress(lat: number, lng: number) {
     console.info(`Looking up address: ${lat}, ${lng}`, this.id)
 
+    //! TODO: Do we also need to update pCodeGlobal & What3Words?
     if (!LocationComponent.geocoder) {
       return "Address lookup requires Internet"
     }
@@ -438,29 +441,46 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       LocationComponent.geocoder
         .geocode({ location: latLng })
         .then((response) => {
-          // this.log.excessive(`Found address: ${JSON.stringify(response.results)}`, this.id)
+          // this.log.excessive(`Found array of addresses: ${JSON.stringify(response.results)}`, this.id)
           if (response.results[0]) {
-            this.log.info(`Found address[0]: ${JSON.stringify(response.results[0].formatted_address)}`, this.id)
+            this.log.info(`DDToAddress(): Received a new geocoded address[0]: ${JSON.stringify(response.results[0].formatted_address)}`, this.id)
 
             // Async update of address field...
-            this.location.address = response.results[0].formatted_address
+            this.log.verbose(`DDToAddress(): Going to update location.address`, this.id)
+            //debugger
+            //this.location.address = response.results[0].formatted_address
+            this.log.verbose(`DDToAddress(): Updated location.address`, this.id)
+
             this.locationFormModel.patchValue({ address: response.results[0].formatted_address }
               // , { emitEvent: false }  // Prevent enless loop...
               // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
             )
-            this.log.verbose(`Updated Address fields`, this.id)
+            this.log.verbose(`DDToAddress(): Updated locationFormModel.address`, this.id)
             return (response.results[0].formatted_address)
           } else {
             return ("No address found.") // No results found
           }
         })
         .catch((e) => { return ("Geocoder failed due to: " + e) })
-      return ("No immediate address available: await the result!")
+      return "" // ("No immediate address available: await the result!")
     }
   }
 
   onDmsChg(latQ = "n", latD = 0, latM = 0, latS = 0, lngQ = "e", lngD = 0, lngM = 0, lngS = 0) {
-    this.log.info(`DMS value changed:  ${latD}.${latM}° ${latQ}, ${lngD}.${lngM}° ${lngQ}`, this.id)
+
+    if (!latD && !latM && !lngD && !lngS && !lngM && !lngS) {
+      this.log.info(`Grabbing DMSvalue changes from locationFormModel`, this.id)
+      latD = this.locationFormModel.get("DMS.latD")?.value
+      latM = this.locationFormModel.get("DMS.latM")?.value
+      latS = this.locationFormModel.get("DMS.latS")?.value
+      latQ = this.locationFormModel.get("DMS.latQ")?.value
+      lngD = this.locationFormModel.get("DMS.lngD")?.value
+      lngM = this.locationFormModel.get("DMS.lngM")?.value
+      lngS = this.locationFormModel.get("DMS.lngS")?.value
+      lngQ = this.locationFormModel.get("DMS.lngQ")?.value
+    }
+
+    this.log.info(`DMS value changed:  ${latD}° ${latM}' ${latS}" ${latQ}, ${lngD}° ${lngM}' ${lngS}" ${lngQ}`, this.id)
 
     let latLng = {
       lat: DMSToDD(latQ, latD, latM, latS)!,
@@ -479,12 +499,23 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  onDdmChg(latDDMQ: string = 'n', latDDMD: number = 0, latDDMM: number = 0, lngDDMQ: string = 'w', lngDDMD: number = 0, lngDDMM: number = 0) {
-    this.log.info(`DDM value changed `, this.id)
+  onDdmChg(latDdmQ: string = 'n', latDdmD: number = 0, latDdmM: number = 0, lngDdmQ: string = 'w', lngDdmD: number = 0, lngDdmM: number = 0) {
+
+    if (!latDdmD && !latDdmM && !lngDdmD && !lngDdmM) {
+      this.log.info(`Grabbing DMSvalue changes from locationFormModel`, this.id)
+      latDdmD = this.locationFormModel.get("DMS.latDdmD")?.value
+      latDdmM = this.locationFormModel.get("DMS.latDdmM")?.value
+      latDdmQ = this.locationFormModel.get("DMS.latDdmQ")?.value
+      lngDdmD = this.locationFormModel.get("DMS.lngDdmD")?.value
+      lngDdmM = this.locationFormModel.get("DMS.lngDdmM")?.value
+      lngDdmQ = this.locationFormModel.get("DMS.lngDdmQ")?.value
+    }
+
+    this.log.info(`DMS value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
 
     let latLng = {
-      lat: DDMToDD(<string>latDDMQ, latDDMD, latDDMM)!,
-      lng: DDMToDD(<string>lngDDMQ, lngDDMD, lngDDMM)!
+      lat: DDMToDD(<string>latDdmQ, latDdmD, latDdmM)!,
+      lng: DDMToDD(<string>lngDdmQ, lngDdmD, lngDdmM)!
     }
 
     let derivedAddress = this.DDToAddress(latLng.lat, latLng.lng)
@@ -499,10 +530,17 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
-  onAddressChg(newAddress: string = "undefined address") {
+  onAddressChg() { //newAddress: string = "undefined address"
+
+    let newAddress = this.locationFormModel.get("address")?.value
     this.log.info(`onAddressChg got newAddress: ${JSON.stringify(newAddress)}`, this.id)
-    let googleGeocode = new GoogleGeocode
-    let myTuple = googleGeocode.isValidAddress(newAddress)
+
+    // ! TODO: Check for +Code or What3Words as we cna do this while offline...
+
+    if (!this.geocoder) {
+      this.log.error(`Google.Geocoder not available while offline from Internet. Needed to get coordinates from new address: ${JSON.stringify(newAddress)}`, this.id)
+    }
+    let myTuple = this.geocoder.isValidAddress(newAddress)
     // { position: null, address: err, partial_match: "", placeId: "", plus_code: "" }
 
     if (myTuple.position) {
@@ -519,6 +557,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /*
   formSubscribe_unused() {
     this.locationFormModel.valueChanges.pipe(debounceTime(2000)).subscribe(x => {
       //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
@@ -533,6 +572,8 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // this.locationFormModel.valueChanges = null
   }
+*/
+
 
   /**
    * Gets called on any changes to Location Component fields
@@ -572,12 +613,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
    * Update form with new address
    * ALSO updates location.address
    * also emit new location to notify parent
+   *! NOTE: gets called before ngOnInit, during parent's construction
    *
    * @param newLocation: LocationType
    */
   public newLocationToFormAndEmit(newLocation: LocationType) {
-    let derivedAddress = this.DDToAddress(newLocation.lat, newLocation.lng)
-    // https://www.cumulations.com/blog/latitude-and-longitude/
+
 
     // Any location change should drive to a new latDD & LngDD & sent here
     if (newLocation == null) {
@@ -585,8 +626,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
     this.log.info(`newLocationToFormAndEmit() new Location recieved: ${JSON.stringify(newLocation)}`, this.id);
-    //this.formUpdating = true
-    // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
+
+    let derivedAddress = this.DDToAddress(newLocation.lat, newLocation.lng)
+    // https://www.cumulations.com/blog/latitude-and-longitude/
 
     //!  this.location = newLocation
     // REVIEW: Should caller just do this & NOT bother passing as a parameter?
@@ -632,14 +674,14 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.excessive(`new DMS Location: ${latDMS.dir} ${latDMS.deg}° ${latDMS.min}' ${latDMS.sec}" lat; ${lngDMS.dir} ${lngDMS.deg}° ${lngDMS.min}' ${lngDMS.sec}" lng`, this.id);
 
     let latDDM = DDToDDM(latDD)
-    this.latDDMQ = latDDM.dir
-    this.latDDMD = latDDM.deg
-    this.latDDMM = latDDM.min / 100
+    this.latDdmQ = latDDM.dir
+    this.latDdmD = latDDM.deg
+    this.latDdmM = latDDM.min / 100
 
     let lngDDM = DDToDDM(lngDD, true)
-    this.lngDDMQ = lngDDM.dir
-    this.lngDDMD = lngDDM.deg
-    this.lngDDMM = lngDDM.min / 100
+    this.lngDdmQ = lngDDM.dir
+    this.lngDdmD = lngDDM.deg
+    this.lngDdmM = lngDDM.min / 100
 
     this.log.excessive(`new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min}' lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min}' lng`, this.id);
 
@@ -696,13 +738,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       },
 
       DDM: {
-        latDDMQ: this.latDDMQ,
-        latDDMD: this.latDDMD,
-        latDDMM: this.latDDMM,
+        latDdmQ: this.latDdmQ,
+        latDdmD: this.latDdmD,
+        latDdmM: this.latDdmM,
 
-        lngDDMQ: this.lngDDMQ,
-        lngDDMD: this.lngDDMD,
-        lngDDMM: this.lngDDMM,
+        lngDdmQ: this.lngDdmQ,
+        lngDdmD: this.lngDdmD,
+        lngDdmM: this.lngDdmM,
       },
       address: ""//derivedAddress
     },
@@ -710,126 +752,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
     )
 
-
-
-
-
     // Emit new location event to parent: so it & any children can react
     this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
     this.locationChange.emit(this.location)
 
     //this.formUpdating = false // reenable subscription to location updates
   }
-
-
-  UpdateAddress(newAddress = "New Geocoded Address here") {
-
-    this.log.error(`UpdateAddress(): GOT NEW Location ${JSON.stringify(newAddress)}`, this.id)
-
-    this.locationFormModel.patchValue({ address: newAddress },
-      { emitEvent: false }  // Prevent enless loop...
-    )
-
-    this.location.address = newAddress
-
-    // Emit new location event to parent: so it & any children can react
-    this.log.error(`UpdateAddress(): Emitting new Location ${JSON.stringify(newAddress)}`, this.id)
-    // this.locationChange.emit(this.location)
-  }
-  // public setCtrl(ctrlName: HTMLElement, value: number | string) {
-  //   this.log.excessive(`setCtrl(${ctrlName} to ${value})`, this.id)
-  //   // let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
-  //   // if (!ctrl) {
-  //   //   this.log.warn(`setCtrl(): Could not find element: ${ctrlName}`, this.id)
-  //   // } else {
-  //     ctrlName.value = value.toString()
-  //     //this.log.excessive(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`, this.id)
-  //  // }
-  // }
-
-
-  // // This is a floosy way to capture user input: get rid of it!
-  // // See Ang Cookbook, pg 349ff
-  // onMouseEnter() {
-  //   if (!(this.mouseEnters++ % 10)) {
-  //     this.log.verbose(`Mouse Entered Locationform ${this.mouseEnters} times`, this.id)
-  //   }
-  //   // TODO: establish events & control updates?
-  // }
-  // onMouseLeave() {
-  //   if (!(this.mouseLeaves++ % 10)) {
-  //     this.log.verbose(`Mouse Left Location form ${this.mouseLeaves} times`, this.id)
-  //   }
-  //   // TODO: tear down events & control updates?
-  // }
-
-
-  /*
-    // TODO: https://github.com/angular-material-extensions/google-maps-autocomplete
-    public addressCtrlChanged(what: string) {
-      this.log.verbose(`addressCtrlChanged`, this.id)
-      // TODO: No formControlName="addressCtrl"!!!!
-
-      // this.form.markAsPristine();
-      // this.form.markAsUntouched();
-      // if (this.locationFrmGrp.get('address')?.touched) {
-      //   this.log.excessive('address WAS touched', this.id)
-      //   //this.locationFrmGrp.get('address')?.markAsUntouched
-      // }
-      // if (this.locationFrmGrp.get('address')?.dirty) {
-      //   this.log.excessive('address WAS dirty', this.id)
-      //   //this.location.get('address')?.markAsPristine
-      // }
-
-      switch (what) {
-        case 'addr':
-
-          this.chkAddresses()
-          // if new PlaceId(??? or plus code or ???), then call:
-          // TODO: this.geocoder.getLatLngAndAddressFromPlaceID( PlaceID)
-
-          // https://developer.what3words.com/tutorial/javascript-autosuggest-component-v4
-          // https://developer.what3words.com/tutorial/combining-the-what3words-js-autosuggest-component-with-a-google-map
-          // https://developer.what3words.com/tutorial/javascript
-          // https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-google-map
-
-          // Get new lat-lng
-
-          break;
-        case 'lat':
-        case 'latI':
-        case 'latD':
-        case 'lng':
-        case 'lngI':
-        case 'lngD':
-
-          let llat = Number((this.document.getElementById("enter__Where-LatI") as HTMLInputElement).value)
-            + Number((this.document.getElementById("enter__Where-LatD") as HTMLInputElement).value) / 100
-          let llng = Number((this.document.getElementById("enter__Where-LngI") as HTMLInputElement).value)
-            + Number((this.document.getElementById("enter__Where-LngI") as HTMLInputElement).value) / 100
-          let ll = new google.maps.LatLng(llat, llng) // Move from Google to Leaflet!
-          let newAddress = this.geocoder.getAddressFromLatLng(ll)  // TODO: Disable!!
-          this.log.verbose(`addressCtrlChanged new latlng: ${JSON.stringify(ll)}; addr: ${newAddress}`, this.id)
-
-          this.newLocationToFormAndEmit(llat, llng)
-
-          /  *
-                  let addrLabel = this.document.getElementById("addressLabel") // as HTMLLabelElement
-                  if (addrLabel) {
-                    addrLabel.innerText = newAddress
-                    //addrLabel.markAsPristine()
-                    //addrLabel. .markAsUntouched()
-                  }
-                  *   /
-          this.newMarker({ lat: llat, lng: llng }, `Time: ${Date.now} at Lat: ${llat}, Lng: ${llng}, street: ${newAddress}`)
-          break;
-        default:
-          this.log.error(`UNEXPECTED ${what} received in AddressCtrlChanged()`, this.id)
-          break;
-      }
-      this.log.verbose('addressCtrlChanged done', this.id) // TODO: No formControlName="addressCtrl"!!!!
-    }
-  */
 
   public chkAddresses() {
     this.log.verbose("chkAddresses()", this.id)
@@ -1171,6 +1099,128 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   //   this.log.verbose("onInfoWhere", this.id)
   //   let s = "for Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds"
   // }
+
+
+
+
+
+
+
+
+
+  /*
+  UpdateAddress_UNUSED(newAddress = "New Geocoded Address here") {
+
+    this.log.error(`UpdateAddress(): GOT NEW Location ${JSON.stringify(newAddress)}`, this.id)
+
+    this.locationFormModel.patchValue({ address: newAddress },
+      { emitEvent: false }  // Prevent enless loop...
+    )
+
+    this.location.address = newAddress
+
+    // Emit new location event to parent: so it & any children can react
+    this.log.error(`UpdateAddress(): Emitting new Location ${JSON.stringify(newAddress)}`, this.id)
+    // this.locationChange.emit(this.location)
+  }
+  */
+
+
+  // public setCtrl(ctrlName: HTMLElement, value: number | string) {
+  //   this.log.excessive(`setCtrl(${ctrlName} to ${value})`, this.id)
+  //   // let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
+  //   // if (!ctrl) {
+  //   //   this.log.warn(`setCtrl(): Could not find element: ${ctrlName}`, this.id)
+  //   // } else {
+  //     ctrlName.value = value.toString()
+  //     //this.log.excessive(`setCtrl(): set ${ctrlName} to ${value}: ${ctrl.value}`, this.id)
+  //  // }
+  // }
+
+
+  // // This is a floosy way to capture user input: get rid of it!
+  // // See Ang Cookbook, pg 349ff
+  // onMouseEnter() {
+  //   if (!(this.mouseEnters++ % 10)) {
+  //     this.log.verbose(`Mouse Entered Locationform ${this.mouseEnters} times`, this.id)
+  //   }
+  //   // TODO: establish events & control updates?
+  // }
+  // onMouseLeave() {
+  //   if (!(this.mouseLeaves++ % 10)) {
+  //     this.log.verbose(`Mouse Left Location form ${this.mouseLeaves} times`, this.id)
+  //   }
+  //   // TODO: tear down events & control updates?
+  // }
+
+
+  /*
+    // TODO: https://github.com/angular-material-extensions/google-maps-autocomplete
+    public addressCtrlChanged(what: string) {
+      this.log.verbose(`addressCtrlChanged`, this.id)
+      // TODO: No formControlName="addressCtrl"!!!!
+
+      // this.form.markAsPristine();
+      // this.form.markAsUntouched();
+      // if (this.locationFrmGrp.get('address')?.touched) {
+      //   this.log.excessive('address WAS touched', this.id)
+         //this.locationFrmGrp.get('address')?.markAsUntouched
+      // }
+      // if (this.locationFrmGrp.get('address')?.dirty) {
+      //   this.log.excessive('address WAS dirty', this.id)
+         //this.location.get('address')?.markAsPristine
+      // }
+
+      switch (what) {
+        case 'addr':
+
+          this.chkAddresses()
+          // if new PlaceId(??? or plus code or ???), then call:
+          // TODO: this.geocoder.getLatLngAndAddressFromPlaceID( PlaceID)
+
+          // https://developer.what3words.com/tutorial/javascript-autosuggest-component-v4
+          // https://developer.what3words.com/tutorial/combining-the-what3words-js-autosuggest-component-with-a-google-map
+          // https://developer.what3words.com/tutorial/javascript
+          // https://developer.what3words.com/tutorial/displaying-the-what3words-grid-on-a-google-map
+
+          // Get new lat-lng
+
+          break;
+        case 'lat':
+        case 'latI':
+        case 'latD':
+        case 'lng':
+        case 'lngI':
+        case 'lngD':
+
+          let llat = Number((this.document.getElementById("enter__Where-LatI") as HTMLInputElement).value)
+            + Number((this.document.getElementById("enter__Where-LatD") as HTMLInputElement).value) / 100
+          let llng = Number((this.document.getElementById("enter__Where-LngI") as HTMLInputElement).value)
+            + Number((this.document.getElementById("enter__Where-LngI") as HTMLInputElement).value) / 100
+          let ll = new google.maps.LatLng(llat, llng) // Move from Google to Leaflet!
+          let newAddress = this.geocoder.getAddressFromLatLng(ll)  // TODO: Disable!!
+          this.log.verbose(`addressCtrlChanged new latlng: ${JSON.stringify(ll)}; addr: ${newAddress}`, this.id)
+
+          this.newLocationToFormAndEmit(llat, llng)
+
+          /  *
+                  let addrLabel = this.document.getElementById("addressLabel") // as HTMLLabelElement
+                  if (addrLabel) {
+                    addrLabel.innerText = newAddress
+                    //addrLabel.markAsPristine()
+                    //addrLabel. .markAsUntouched()
+                  }
+                  *   /
+          this.newMarker({ lat: llat, lng: llng }, `Time: ${Date.now} at Lat: ${llat}, Lng: ${llng}, street: ${newAddress}`)
+          break;
+        default:
+          this.log.error(`UNEXPECTED ${what} received in AddressCtrlChanged()`, this.id)
+          break;
+      }
+      this.log.verbose('addressCtrlChanged done', this.id) // TODO: No formControlName="addressCtrl"!!!!
+    }
+  */
+
 
   ngOnDestroy() {
     this.settingsSubscription.unsubscribe()
