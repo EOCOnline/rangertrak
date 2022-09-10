@@ -67,6 +67,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   geocoder = new GoogleGeocode()
   //w3w = new What3Words()
 
+  // Following provide access to controls in the template
   // Cooordinates as Decimal Degrees (DD)
   latI = 0 // Integer portion
   latF = 0 // Float portion
@@ -134,7 +135,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       // probably offline?!
       LocationComponent.geocoder = null
       this.log.error("Address lookup requires Internet.", this.id)
-      // TODO: How to notify user?!
+      // User notified by funky address string
     }
 
     this.log.verbose("Out of constructor", this.id)
@@ -149,6 +150,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
     if (this.locationFormModel) {
 
+
       /* Original ideas...NOT used
         this.locationFormModel.valueChanges.pipe(debounceTime(800)).subscribe(x => {
         //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
@@ -156,7 +158,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
           // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
           this.valueChanges(x)
 
-        /*
+        this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
+
+        / *
         https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
 
         https://stackoverflow.com/questions/49861281/angular-reactive-forms-valuechanges-ui-changes-only
@@ -176,17 +180,17 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
       })
 
-      Or  subscribe to each element in the form...(verbose)
-      ///   let latf = this.locationFrmGrp.get("latF")
-      ///   if (latf) {
-      ///     latf.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-      ///       this.log.info('########## lat float value changed: ' + x, this.id)
-      ///     })
-      ///     // this.log.warn('########## lat float value WAS FOUND!!!!', this.id)
-      ///   }
-      ///   else {
-      ///     this.log.error('########## lat float value NOT FOUND!!!!', this.id)
-      ///   }
+      Or subscribe to each element in the form...(verbose)
+      let latf = this.locationFrmGrp.get("latF")
+      if (latf) {
+        latf.valueChanges.pipe(debounceTime(700)).subscribe(x => {
+          this.log.info('########## lat float value changed: ' + x, this.id)
+        })
+        this.log.warn('########## lat float value WAS FOUND!!!!', this.id)
+      }
+      else {
+        this.log.error('########## lat float value NOT FOUND!!!!', this.id)
+      }
 
  */
       // https://stackoverflow.com/questions/70366847/angular-on-form-change-event
@@ -257,7 +261,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         })
     }
 
-    //this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
 
     this.log.verbose("out of ngOnInit", this.id)
   }
@@ -308,7 +311,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         lngDdmM: [0]
       }),
 
-      address: ['Optional Address'] //, Validators.required],
+      address: [''] //, Validators.required],
     })
 
 
@@ -377,7 +380,15 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     let lngI = this.locationFormModel.get("DD.lngI")?.value
     let lngF = this.locationFormModel.get("DD.lngF")?.value
     //}
-    this.log.info(`new DD values: ${latI}.${latF}°, ${lngI}.${lngF}°`, this.id)
+
+    setTimeout(() => {
+      //console.log(this.reactiveForm.value)
+    }) // Pause to let parent form get the change event bubbled up from the control
+
+
+    this.log.error(`new DD values: ${latI}.${latF}°, ${lngI}.${lngF}°`, this.id)
+    // these are not updated (yet):
+    // this.log.error(`new DD values: ${this.latI}.${this.latF}°, ${this.lngI}.${this.lngF}°`, this.id)
 
     let lat = parseFloat(latI + "." + latF)
     let lng = parseFloat(lngI + "." + lngF)
@@ -398,19 +409,19 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  onDmsChg(latQ = "n", latD = 0, latM = 0, latS = 0, lngQ = "e", lngD = 0, lngM = 0, lngS = 0) {
+  onDmsChg() { //latQ = "n", latD = 0, latM = 0, latS = 0, lngQ = "e", lngD = 0, lngM = 0, lngS = 0) {
 
-    if (!latD && !latM && !lngD && !lngS && !lngM && !lngS) {
-      this.log.info(`Grabbing DMSvalue changes from locationFormModel`, this.id)
-      latD = this.locationFormModel.get("DMS.latD")?.value
-      latM = this.locationFormModel.get("DMS.latM")?.value
-      latS = this.locationFormModel.get("DMS.latS")?.value
-      latQ = this.locationFormModel.get("DMS.latQ")?.value
-      lngD = this.locationFormModel.get("DMS.lngD")?.value
-      lngM = this.locationFormModel.get("DMS.lngM")?.value
-      lngS = this.locationFormModel.get("DMS.lngS")?.value
-      lngQ = this.locationFormModel.get("DMS.lngQ")?.value
-    }
+    //if (!latD && !latM && !lngD && !lngS && !lngM && !lngS) {
+    this.log.info(`Grabbing DMSvalue changes from locationFormModel`, this.id)
+    let latD = this.locationFormModel.get("DMS.latD")?.value
+    let latM = this.locationFormModel.get("DMS.latM")?.value
+    let latS = this.locationFormModel.get("DMS.latS")?.value
+    let latQ = this.locationFormModel.get("DMS.latQ")?.value
+    let lngD = this.locationFormModel.get("DMS.lngD")?.value
+    let lngM = this.locationFormModel.get("DMS.lngM")?.value
+    let lngS = this.locationFormModel.get("DMS.lngS")?.value
+    let lngQ = this.locationFormModel.get("DMS.lngQ")?.value
+    //}
 
     this.log.info(`DMS value changed:  ${latD}° ${latM}' ${latS}" ${latQ}, ${lngD}° ${lngM}' ${lngS}" ${lngQ}`, this.id)
 
@@ -431,17 +442,17 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  onDdmChg(latDdmQ: string = 'n', latDdmD: number = 0, latDdmM: number = 0, lngDdmQ: string = 'w', lngDdmD: number = 0, lngDdmM: number = 0) {
+  onDdmChg() { //latDdmQ: string = 'n', latDdmD: number = 0, latDdmM: number = 0, lngDdmQ: string = 'w', lngDdmD: number = 0, lngDdmM: number = 0) {
 
-    if (!latDdmD && !latDdmM && !lngDdmD && !lngDdmM) {
-      this.log.info(`Grabbing DMSvalue changes from locationFormModel`, this.id)
-      latDdmD = this.locationFormModel.get("DMS.latDdmD")?.value
-      latDdmM = this.locationFormModel.get("DMS.latDdmM")?.value
-      latDdmQ = this.locationFormModel.get("DMS.latDdmQ")?.value
-      lngDdmD = this.locationFormModel.get("DMS.lngDdmD")?.value
-      lngDdmM = this.locationFormModel.get("DMS.lngDdmM")?.value
-      lngDdmQ = this.locationFormModel.get("DMS.lngDdmQ")?.value
-    }
+    //if (!latDdmD && !latDdmM && !lngDdmD && !lngDdmM) {
+    this.log.info(`Grabbing DMSvalue changes from locationFormModel`, this.id)
+    let latDdmD = this.locationFormModel.get("DMS.latDdmD")?.value
+    let latDdmM = this.locationFormModel.get("DMS.latDdmM")?.value
+    let latDdmQ = this.locationFormModel.get("DMS.latDdmQ")?.value
+    let lngDdmD = this.locationFormModel.get("DMS.lngDdmD")?.value
+    let lngDdmM = this.locationFormModel.get("DMS.lngDdmM")?.value
+    let lngDdmQ = this.locationFormModel.get("DMS.lngDdmQ")?.value
+    //}
 
     this.log.info(`DMS value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
 
@@ -464,15 +475,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   /**
-   * Update form with new address
-   * ALSO updates location.address
+   * Update form & model with new address
    * also emit new location to notify parent
    *! NOTE: gets called before ngOnInit, during parent's construction
    *
    * @param newLocation: LocationType
    */
   newLocationToFormAndEmit(newLocation: LocationType) {
-
 
     // Any location change should drive to a new latDD & LngDD & sent here
     if (newLocation == null) {
@@ -481,25 +490,14 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.log.info(`newLocationToFormAndEmit() new Location recieved: ${JSON.stringify(newLocation)}`, this.id);
 
-    let derivedAddress = this.DDToAddress(newLocation.lat, newLocation.lng)
-    // https://www.cumulations.com/blog/latitude-and-longitude/
-
     //!  this.location = newLocation
     // REVIEW: Should caller just do this & NOT bother passing as a parameter?
     // REVIEW: should we validate values or has that already been done?
 
     let latDD = newLocation.lat
     let lngDD = newLocation.lng
-    // let address = newLocation.address
+    let address = newLocation.address
 
-    if (newLocation.derivedFromAddress) {
-      // User entered an address: Try to come up with lat/long for it
-      this.log.error(`Unimplemented logic: deriving lat/long from an address!!!!!!!`, this.id);
-
-      // ! BUG: should be:
-      //latDD = this.geocoder.getLatLngAndAddressFromPlaceID()
-      //lngDD = newLocation.lng
-    }
 
     this.latI = Math.trunc(latDD)
 
@@ -537,39 +535,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.lngDdmD = lngDDM.deg
     this.lngDdmM = lngDDM.min / 100
 
-    this.log.excessive(`new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min}' lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min}' lng`, this.id);
+    this.log.excessive(`new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min}' lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min}' lng`, this.id)
 
-    if (!newLocation.derivedFromAddress) {
-      // TODO: User entered lat/long, so we need to come up with an approximate address
-      // REVIEW: Should LocationType also store PCode/What3Words addresses?
-      /*
-          let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
-          this.log.verbose("updateCoords: Encode returned PlusCode: " + pCode, this.id)
-          let fullCode
-          if (pCode.length != 0) {
-            if (OpenLocationCode.isValid(pCode)) {
-              if (OpenLocationCode.isShort(pCode)) {
-                // Recover the full code from a short code:
-                fullCode = OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
-              } else {
-                fullCode = pCode;
-                this.log.verbose("Shorten +Codes, Global:" + fullCode + ", Lat:" + this.settings.defLat + "; lng:" + this.settings.defLng), this.id;
-                // Attempt to trim the first characters from a code; may return same innerText...
-                pCode = OpenLocationCode.shorten(fullCode, this.settings.defLat, this.settings.defLng)
-              }
-              this.log.verbose("New PlusCodes: " + pCode + "; Global: " + fullCode, this.id);
-              //(document.getElementById("addresses") as HTMLInputElement).value = pCode;
-              //document.getElementById("addressLabel").innerHTML = defPCodeLabel; // as HTMLLabelElement
-              (document.getElementById("pCodeGlobal") as HTMLLabelElement).innerHTML = " &nbsp;&nbsp; +Code: " + fullCode;
-            } else {
-              this.log.verbose("Invalid +PlusCode: " + pCode, this.id);
-              document.getElementById("pCodeGlobal")!.innerHTML = " &nbsp;&nbsp; Unable to get +Code"
-              //document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
-            }
-      */
-
-    }
-
+    // Above sets control values (but display doesn't change),
+    // below sets model values (which does update the display).
+    // REVIEW: Why aren't they automatically in sync with eachother?!
     this.locationFormModel.setValue({
 
       DD: {
@@ -608,8 +578,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Emit new location event to parent: so it & any children can react
     this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
-    this.locationChange.emit(this.location)
-
+    this.locationChange.emit(newLocation)
   }
 
   /**
@@ -655,6 +624,38 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         .catch((e) => { return ("Geocoder failed due to: " + e) })
       return "" // ("No immediate address available: await the result!")
     }
+
+    //if (!newLocation.derivedFromAddress) {
+    // TODO: User entered lat/long, so we need to come up with an approximate address
+    // REVIEW: Should LocationType also store PCode/What3Words addresses?
+    /*
+        let pCode = OpenLocationCode.encode(latDD, lngDD, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
+        this.log.verbose("updateCoords: Encode returned PlusCode: " + pCode, this.id)
+        let fullCode
+        if (pCode.length != 0) {
+          if (OpenLocationCode.isValid(pCode)) {
+            if (OpenLocationCode.isShort(pCode)) {
+              Recover the full code from a short code:
+              fullCode = OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
+            } else {
+              fullCode = pCode;
+              this.log.verbose("Shorten +Codes, Global:" + fullCode + ", Lat:" + this.settings.defLat + "; lng:" + this.settings.defLng), this.id;
+              Attempt to trim the first characters from a code; may return same innerText...
+              pCode = OpenLocationCode.shorten(fullCode, this.settings.defLat, this.settings.defLng)
+            }
+            this.log.verbose("New PlusCodes: " + pCode + "; Global: " + fullCode, this.id);
+            (document.getElementById("addresses") as HTMLInputElement).value = pCode;
+            document.getElementById("addressLabel").innerHTML = defPCodeLabel; // as HTMLLabelElement
+            (document.getElementById("pCodeGlobal") as HTMLLabelElement).innerHTML = " &nbsp;&nbsp; +Code: " + fullCode;
+          } else {
+            this.log.verbose("Invalid +PlusCode: " + pCode, this.id);
+            document.getElementById("pCodeGlobal")!.innerHTML = " &nbsp;&nbsp; Unable to get +Code"
+            document.getElementById("addressLabel").innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: "; // as HTMLLabelElement
+          }
+    */
+
+    //}
+
   }
 
   onAddressChg() { //newAddress: string = "undefined address"

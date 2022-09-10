@@ -23,33 +23,19 @@ import {
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
 
-//const magicNumber2 = 12 // BUG: get rid of any magic numbers!
-
 
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
-  providers: [RangerService, FieldReportService, SettingsService] //, TeamService    // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!      // per https://angular.io/guide/singleton-services
+  providers: [RangerService, FieldReportService, SettingsService]
+  //, TeamService
+  // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
+  // per https://angular.io/guide/singleton-services
 })
 export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
-
-
-  // mimicing TimePicker:
   @Output() newLocationEvent = new EventEmitter<LocationType>()
-  // next 2 defaults can be overriden in parent's html: [locationLabel] = "locationLabel"
-
-  /*
-  @Input() initialLocationChild = {
-    lat: 47.441,
-    lng: -122.551,
-    address: "10506 sw 132nd pl, Apt C, vashon Villas, wa, 98070",
-    derivedFromAddress: false
-  }
-  //locationPickerLabel = "Enter da Location"
-  public locationPickerLabel = "myLabel"
-*/
 
   private id = 'Entry Form'
   title = 'Field Report Entry'
@@ -63,10 +49,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   private settingsSubscription!: Subscription
   public settings!: SettingsType
 
-
   // Get time events from <timepicker> component
   private timeSubscription!: Subscription
-  time = new Date()
   timePickerLabel = "Enter Report Date, Time"
 
   alert: any
@@ -138,60 +122,37 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)
   }
 
-  /*
-  onNewLocationParent(newLocation: LocationType) {
+  /**
+   * Persist new location so when form is submitted it gets recorded...
+   * Values automatically propogate to any children (mini-map in this case) via their @Input statements
+   *
+   * @param newLocation
+   */
+  onNewLocationEvent(newLocation: any) { //LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.info(`Parent Entry Form got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address} as address.`, this.id)
-    //From Entry Form - Parent got new location: {"lat":47.4472,"lng":-122.4627,"address":""}
-
-    // Children (with @Input stmts - i.e., mini-map) automatically gets the updated location
-    this.location = newLocation
-    //REVIEW:
-    //this.initialLocation = newLocation
-
-    // REVIEW: patch entryForm object - as THAT is what gets saved with on form submit
-    // ! REVIEW: Are there 2 locationFrmGrp's ??? -- see this.initLocation() -- Is this the right one?
-    ///this.entryDetailsForm.patchValue({
-    ///locationFrmGrp: newLocation
-    ///})
-  }
-  */
-
-  // any should really be LocationType - right?!
-  onNewLocationEvent(newLocation: any) {
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.error(`Got new LocationType: ${JSON.stringify(newLocation)}`, this.id)
+    this.log.info(`Entry form (parent) got new Location: ${JSON.stringify(newLocation)}`, this.id)
     this.locationParent = {
       lat: this.settings.defLat,
       lng: this.settings.defLng,
       address: "EntryComponent: onNewLocationEvent",
       derivedFromAddress: false
     }
-
-    //! Does this duplicate OnFormSubmit()'s setting value of date?
     // patch entryForm object - as THAT is what gets saved with on form submit
-    this.entryDetailsForm.patchValue({ locationFrmGrp: newLocation })
-
-    ///! BUG: locationFrmGrp is NO LONGER part of this.entryDetailsForm!!!!
-    // locationFrmGrp: this.initLocation(),
-
-    // This then automatically could ge sent to any children (none in this case) via their @Input statements
-    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
-    // TODO: BUT, we still need to update our local copy:
+    this.entryDetailsForm.patchValue({ location: newLocation })
   }
 
+  /**
+   * Called when this.timepickerFormControl has emitted a new event
+   *
+   * Persist new time/date so when form is submitted it gets recorded...
+   *
+   * Based on listing 8.8 in TS dev w/ TS, pg 188
+   *
+   * @param newTime
+   */
   onNewTimeEvent(newTime: Date) {
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.error(`Got new Report time: ${newTime}`, this.id)
-    this.time = newTime
-
-    //! Does this duplicate OnFormSubmit()'s setting value of date?
-    // patch entryForm object - as THAT is what gets saved with on form submit
-    this.entryDetailsForm.patchValue({ timepickerFormControl: newTime })
-    // This then automatically could ge sent to any children (none in this case) via their @Input statements
-    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
-    // TODO: BUT, we still need to update our local copy:
-    //this.timepickerFormControl is where the Event comes up from...
+    this.log.verbose(`Got new Report time: ${newTime}`, this.id)
+    this.entryDetailsForm.patchValue({ date: newTime })
   }
 
   // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
@@ -199,8 +160,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
 
     /*
-     this.log.error(`into ngOnInit!!!!!!!!!`, this.id);
-
         this.sha256("hello").then(digestValue => {
           console.error(` ########## SECRET      Digest is: ${digestValue}`)
         });
@@ -210,28 +169,18 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
-    this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)  // verifies Settings has been loaded
+    this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)
+    // verifies Settings has been loaded
 
-    /* i.e., entryDetailsForm probably constructed at wrong time?!
+    /*
+    i.e., entryDetailsForm probably constructed at wrong time?!
     Move the component creation to ngOnInit hook
     error can show up when you are working with ViewChild, and execute code in AfterViewInit.
     https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
     the binding expression changes after being checked by Angular during the change detection cycle
+   */
 
-Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'null'. Current value: '{
- "id": -1,
- "callsign": "",
- "team": "T1",
- [...]
- */
     this.initEntryForm()
-    // subscribe to addresses value changes?  NO. It bubles up through newLocation INSTEAD!!!
-
-    //! Neither!!! It now is double bound: [(location)] (& uses a setter at the top???)
-
-    // this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
-    //   this.log.verbose(`Subscription to locationFrmGrp got: ${ x } `, this.id);
-    // })
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
 
@@ -240,7 +189,7 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     }
 
     if (this.rangers.length < 1) {
-      this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page & then review items in the Settings Page.', 'Go to Rangers, then Settings pages', 'Ignore')
+      this.alert.Banner('Welcome! First load your rangers (at the bottom of the Rangers page) & then review items in the Settings Page.', 'Go to Rangers, then Settings pages', 'Ignore')
       //this.alert.OpenSnackBar(`No Rangers exist.Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
       //TODO: Force navigation to /Rangers?
 
@@ -266,8 +215,6 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
 
     this.log.excessive(` ngOnInit completed`, this.id)
   }
-
-
 
   async sha256(str: string) {
     const encoder = new TextEncoder();
@@ -311,8 +258,8 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       id: -1,
       callsign: [''],
       // team: ['T1'],
-      ///locationFrmGrp: this.initLocation(),
-      timepickerFormControl: [new Date()],
+      location: this.locationParent, // NOT displayed, but what gets persisted on submit
+      date: [new Date()],
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status],
       notes: ['']
     })
@@ -338,10 +285,10 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
       id: -2,
       callsign: [''],
       //team: ['T0'],
-      //location: this.initLocation(),
+      location: this.locationParent,
       date: [new Date()],  // TODO: reset dateCtrl instead?!
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus]],
-      note: ['']
+      notes: ['']
     })
 
     // !TODO: Need to reset location: to default, or is blank fine?!
@@ -380,12 +327,20 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     // TODO: update #enter__Callsign-upshot
   }
 
-
+  /**
+   * Save entries to Reports data storage...
+   *
+   * Ensure we have obtained values from child components (timePicker & location) to persist/submit
+   *
+   * @param formData1
+   *
+   */
   onFormSubmit(formData1: string): void {
     this.log.excessive(`Submit Form`, this.id)
 
-    // Create a deep copy of the form-model, if it were to continue to be used - we just rest it
+    // We just reset the form. Otherwise if reusing the form we'd want to create a deep copy of the form-model
     // result.entryDetailsForm = Object.assign({}, result.entryDetailsForm)
+
 
     // this.date=this.dateCtrl.value // TODO:
     // ! next line should already have happened by patch, in
@@ -398,7 +353,10 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     this.log.error(`Not writing locationm: ${JSON.stringify(this.locationParent)} to report!!!`, this.id)
 
 
-
+    /* FUTURE: Allow keywords, or search Notes for semicolon delimited tokens?
+    get keywordsControls(): any {
+    return (<FormArray>this.entryDetailsForm.get('keywords')).controls
+    }   */
 
     let formData = JSON.stringify(this.entryDetailsForm.value)
 
@@ -417,12 +375,9 @@ Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has chang
     this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData} `, `Entry id # ${newReport.id} `, 2000)
 
     this.resetEntryForm()  // std reset just blanks values, doesn't initialize them...
-  }
 
-  /* FUTURE: Allow keywords, or search Notes for semicolon delimited tokens?
-  get keywordsControls(): any {
-  return (<FormArray>this.entryDetailsForm.get('keywords')).controls
-  }   */
+
+  }
 
   // ---------------- MISC HELPERS -----------------------------
   displayHide(htmlElementID: string) {
