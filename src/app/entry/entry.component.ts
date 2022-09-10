@@ -57,6 +57,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // --------------- ENTRY FORM -----------------
   // control creation in a component class = immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
+  // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 & https://github.com/angular/angular/pull/43834
   public entryDetailsForm!: FormGroup //UntypedFormGroup
   callsignCtrl = new FormControl() //Untyped
   readonly imagePath = "'./assets/imgs/'" // not yet used by *.html
@@ -216,6 +217,13 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.excessive(` ngOnInit completed`, this.id)
   }
 
+  /**
+   * Encrpyt reports before storing them?
+   * REVIEW: If so, do so in the read/writing service...not here
+   *
+   * @param str
+   * @returns
+   */
   async sha256(str: string) {
     const encoder = new TextEncoder();
     const encdata = encoder.encode(str);
@@ -258,7 +266,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       id: -1,
       callsign: [''],
       // team: ['T1'],
-      location: this.locationParent, // NOT displayed, but what gets persisted on submit
+      // Next 2 are NOT directly displayed, but are persisted on submit
+      location: this.locationParent,
       date: [new Date()],
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status],
       notes: ['']
@@ -267,10 +276,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Reinitializes Form Array values - without recrating a new object
+   *
+   * https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
+   * https://stackoverflow.com/a/54048660
    */
-  // this.myReactiveForm.reset(this.myReactiveForm.value)
-  // https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
-  // https://stackoverflow.com/a/54048660
   resetEntryForm() {
     if (!this.settings) {
       this.log.error(`this.settings was null in initEntryForm`, this.id)
@@ -279,23 +288,16 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.verbose("Resetting form...", this.id)
     this.entryDetailsForm.reset() // this clears flags on the model like touched, dirty, etc.
 
-    // this.entryDetailsForm = this._formBuilder.group({ // OLD: don't recreate the object!!
-    // NOTE: Use patchValue to update just a few
+    // !REVIEW: Should we reset locationParent to default location (from settings)?
     this.entryDetailsForm.setValue({
       id: -2,
       callsign: [''],
       //team: ['T0'],
       location: this.locationParent,
-      date: [new Date()],  // TODO: reset dateCtrl instead?!
+      date: [new Date()],
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus]],
       notes: ['']
     })
-
-    // !TODO: Need to reset location: to default, or is blank fine?!
-
-    // Allow getting new OnChangeUpdates - or use the subscription?!
-    //this.entryDetailsForm.markAsPristine();
-    //this.entryDetailsForm.markAsUntouched();
   }
 
   callsignChanged(callsign: string) { // Just serves timer for input field - post interaction

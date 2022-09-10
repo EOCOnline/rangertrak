@@ -63,25 +63,25 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   locationFormModel!: FormGroup
   // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 & https://github.com/angular/angular/pull/43834
 
-  static geocoder: google.maps.Geocoder | null  //= new google.maps.Geocoder
+  static geocoder: google.maps.Geocoder | null
   geocoder = new GoogleGeocode()
   //w3w = new What3Words()
 
-  // Following provide access to controls in the template
+  /* Following provide access to controls in the template
   // Cooordinates as Decimal Degrees (DD)
   latI = 0 // Integer portion
   latF = 0 // Float portion
   lngI = 0
-  lngD = 0
+  lngF = 0
 
   // Cooordinates as Degrees, Minutes & Seconds (DMS)
   latQ = "N" // Quadrant
   latD = 0 // Degrees
   latM = 0 // Minutes
   latS = 0 // Seconds
-  lngF = 0
-  lngM = 0
   lngQ = "E"
+  lngD = 0
+  lngM = 0
   lngS = 0
 
   // Cooordinates as Degrees & Decimal Minutes (DDM)
@@ -91,7 +91,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   lngDdmQ = "E" // Quadrant
   lngDdmD = 0 // Degrees
   lngDdmM = 0 // Minutes
-
+*/
 
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
   // button: HTMLButtonElement | undefined
@@ -429,6 +429,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       lat: DMSToDD(latQ, latD, latM, latS)!,
       lng: DMSToDD(lngQ, lngD, lngM, lngS)!
     }
+    this.log.info(`DMS converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
     let derivedAddress = this.DDToAddress(latLng.lat, latLng.lng)
 
     let enteredLocation = {
@@ -460,7 +461,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       lat: DDMToDD(<string>latDdmQ, latDdmD, latDdmM)!,
       lng: DDMToDD(<string>lngDdmQ, lngDdmD, lngDdmM)!
     }
-
+    this.log.info(`DDM converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
     let derivedAddress = this.DDToAddress(latLng.lat, latLng.lng)
 
     let enteredLocation = {
@@ -475,66 +476,48 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   /**
-   * Update form & model with new address
-   * also emit new location to notify parent
-   *! NOTE: gets called before ngOnInit, during parent's construction
+   * Any changes to the location form trigger an updated location (by callers) &
+   * now we update form & model with new location.
+   *
+   * Also emit new location to notify parent (& any peers - like a mini-map)
+   *
+   * !NOTE: gets called before ngOnInit, during parent's construction
+   * !REVIEW: should we validate values or has that already been done?
    *
    * @param newLocation: LocationType
    */
   newLocationToFormAndEmit(newLocation: LocationType) {
 
     // Any location change should drive to a new latDD & LngDD & sent here
-    if (newLocation == null) {
-      this.log.error(`newLocationToFormAndEmit(): new Location recieved but null or undefined.`, this.id)
-      return
-    }
+    //if (newLocation == null) {
+    //      this.log.error(`newLocationToFormAndEmit(): new Location recieved but null or undefined.`, this.id)
+    //    return
+    // }
     this.log.info(`newLocationToFormAndEmit() new Location recieved: ${JSON.stringify(newLocation)}`, this.id);
-
-    //!  this.location = newLocation
-    // REVIEW: Should caller just do this & NOT bother passing as a parameter?
-    // REVIEW: should we validate values or has that already been done?
 
     let latDD = newLocation.lat
     let lngDD = newLocation.lng
-    let address = newLocation.address
 
+    let address: string
+    if (newLocation.derivedFromAddress) {
+      address = newLocation.address
+    } else {
+      address = ""
+    }
 
-    this.latI = Math.trunc(latDD)
+    let latI = Math.trunc(latDD)
+    // this.latF = Math.abs(Number((latDD - this.latI).toFixed(4))) * 10000  // works too...
+    let latF = Math.abs(Math.round((latDD - latI) * 10000))
 
-    //    this.locationFormModel.patchValue({
-    //     latI: Math.floor(latDD)
-    //  })
-
-    //this.latF = (latDD - this.latI).toFixed(4)
-    this.latF = Math.abs(Math.round((latDD - this.latI) * 10000))
-
-    this.lngI = Math.trunc(lngDD)
-    this.lngF = Math.abs(Math.round((lngDD - this.lngI) * 10000))
+    let lngI = Math.trunc(lngDD)
+    let lngF = Math.abs(Math.round((lngDD - lngI) * 10000))
 
     let latDMS = DDToDMS(latDD)
-    this.latQ = latDMS.dir
-    this.latD = latDMS.deg
-    this.latM = latDMS.min
-    this.latS = latDMS.sec
-
     let lngDMS = DDToDMS(lngDD, true)
-    this.lngQ = lngDMS.dir
-    this.lngD = lngDMS.deg
-    this.lngM = lngDMS.min
-    this.lngS = lngDMS.sec
-
     this.log.excessive(`new DMS Location: ${latDMS.dir} ${latDMS.deg}° ${latDMS.min}' ${latDMS.sec}" lat; ${lngDMS.dir} ${lngDMS.deg}° ${lngDMS.min}' ${lngDMS.sec}" lng`, this.id);
 
     let latDDM = DDToDDM(latDD)
-    this.latDdmQ = latDDM.dir
-    this.latDdmD = latDDM.deg
-    this.latDdmM = latDDM.min / 100
-
     let lngDDM = DDToDDM(lngDD, true)
-    this.lngDdmQ = lngDDM.dir
-    this.lngDdmD = lngDDM.deg
-    this.lngDdmM = lngDDM.min / 100
-
     this.log.excessive(`new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min}' lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min}' lng`, this.id)
 
     // Above sets control values (but display doesn't change),
@@ -543,38 +526,52 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.locationFormModel.setValue({
 
       DD: {
-        latI: this.latI,
-        latF: this.latF,
-        lngI: this.lngI,
-        lngF: this.lngF,
+        latI: latI,
+        latF: latF,
+        lngI: lngI,
+        lngF: lngF
       },
 
       DMS: {
-        latQ: this.latQ,
-        latD: this.latD,
-        latM: this.latM,
-        latS: this.latS,
+        latQ: latDMS.dir,
+        latD: latDMS.deg,
+        latM: latDMS.min,
+        latS: latDMS.sec,
 
-        lngQ: this.lngQ,
-        lngD: this.lngD,
-        lngM: this.lngM,
-        lngS: this.lngS,
+        lngQ: lngDMS.dir,
+        lngD: lngDMS.deg,
+        lngM: lngDMS.min,
+        lngS: lngDMS.sec
+
       },
 
       DDM: {
-        latDdmQ: this.latDdmQ,
-        latDdmD: this.latDdmD,
-        latDdmM: this.latDdmM,
+        latDdmQ: latDDM.dir,
+        latDdmD: latDDM.deg,
+        latDdmM: latDDM.min / 100,
 
-        lngDdmQ: this.lngDdmQ,
-        lngDdmD: this.lngDdmD,
-        lngDdmM: this.lngDdmM,
+        lngDdmQ: lngDDM.dir,
+        lngDdmD: lngDDM.deg,
+        lngDdmM: lngDDM.min / 100
       },
-      address: ""//derivedAddress
+      address: address
     },
       { emitEvent: false }  // Prevent enless loop...
       // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
     )
+
+    // Update labels for derived locations
+    let derivedAddr = this.document.getElementById("derivedAddress")
+    if (derivedAddr) {
+      derivedAddr.innerText = newLocation.address
+
+      // ! Get & update pCodeGlobal & What3Words?
+
+    } else {
+      this.log.error(`Couldn't find Derived Address control`, this.id)
+    }
+
+
 
     // Emit new location event to parent: so it & any children can react
     this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
@@ -591,7 +588,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   DDToAddress(lat: number, lng: number) {
     console.info(`Looking up address: ${lat}, ${lng}`, this.id)
 
-    //! TODO: Do we also need to update pCodeGlobal & What3Words?
     if (!LocationComponent.geocoder) {
       return "Address lookup requires Internet"
     }

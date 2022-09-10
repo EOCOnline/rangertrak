@@ -150,14 +150,16 @@ export function DDToDDM(D: number, lng: boolean = false) {
  * dir returns E or W if lng = true  (a longitude)
  * https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/
  * @param D
- * @param lng
- * @returns
+ * @param M
+ * @param S
+ * @param Q
+ * @returns number
  */
-
-export function DMSToDD(Q: string, D: number, M: number, S: number) {
-  return
-  ((Q.toLowerCase() == 'w' || Q.toLowerCase() == 's') ? -1 : 1) * D
-    + Math.round((M / 60 + S / 6000) * 10 ^ 4) / 10 ^ 4 // float portion to 4 decimals
+export function DMSToDD(Q: string, D: number, M: number, S: number): number {
+  // console.info(`DMSToDD got:  ${D}° ${M}' ${S}" ${Q}`)
+  return (((Q.toLowerCase() == 'w' || Q.toLowerCase() == 's') ? -1 : 1) * (D
+    + Math.round((M / 60 + S / 6000) * (10 ** 4)) / (10 ** 4))) // float portion to 4 decimals
+  //+ Number(Math.round((M / 60 + S / 6000) * (10 ** 4)).toFixed(4)))  // alternatively
 }
 
 /**
@@ -168,14 +170,16 @@ export function DMSToDD(Q: string, D: number, M: number, S: number) {
  * dir returns E or W if lng = true  (a longitude)
  * https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/
  * @param D
- * @param lng
- * @returns
+ * @param M
+ * @param Q
+ *
+ * @returns number
  */
 
 export function DDMToDD(Q: string, D: number, M: number) {
-  return
-  ((Q.toLowerCase() == 'w' || Q.toLowerCase() == 's') ? -1 : 1) * D
-    + Math.round((M / 60) * 10 ^ 4) / 10 ^ 4 // float portion to 4 decimals
+  // console.info(`DDMToDD got:  ${D}° ${M} ' ${Q}`)
+  return (((Q.toLowerCase() == 'w' || Q.toLowerCase() == 's') ? -1 : 1) * (D
+    + Math.round((M / 60) * 10 ** 4) / 10 ** 4)) // float portion to 4 decimals
 }
 
 
