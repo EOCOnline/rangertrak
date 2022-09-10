@@ -60,7 +60,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() locationChange = new EventEmitter<LocationType>()
 
   private id = "Location Component"
-  public locationFormModel!: FormGroup
+  locationFormModel!: FormGroup
   // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 & https://github.com/angular/angular/pull/43834
 
   static geocoder: google.maps.Geocoder | null  //= new google.maps.Geocoder
@@ -68,28 +68,28 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   //w3w = new What3Words()
 
   // Cooordinates as Decimal Degrees (DD)
-  public latI = 0 // Integer portion
-  public latF = 0 // Float portion
-  public lngI = 0
-  public lngD = 0
+  latI = 0 // Integer portion
+  latF = 0 // Float portion
+  lngI = 0
+  lngD = 0
 
   // Cooordinates as Degrees, Minutes & Seconds (DMS)
-  public latQ = "N" // Quadrant
-  public latD = 0 // Degrees
-  public latM = 0 // Minutes
-  public latS = 0 // Seconds
-  public lngF = 0
-  public lngM = 0
-  public lngQ = "E"
-  public lngS = 0
+  latQ = "N" // Quadrant
+  latD = 0 // Degrees
+  latM = 0 // Minutes
+  latS = 0 // Seconds
+  lngF = 0
+  lngM = 0
+  lngQ = "E"
+  lngS = 0
 
   // Cooordinates as Degrees & Decimal Minutes (DDM)
-  public latDdmQ = "N" // Quadrant
-  public latDdmD = 0 // Degrees
-  public latDdmM = 0 // Minutes
-  public lngDdmQ = "E" // Quadrant
-  public lngDdmD = 0 // Degrees
-  public lngDdmM = 0 // Minutes
+  latDdmQ = "N" // Quadrant
+  latDdmD = 0 // Degrees
+  latDdmM = 0 // Minutes
+  lngDdmQ = "E" // Quadrant
+  lngDdmD = 0 // Degrees
+  lngDdmM = 0 // Minutes
 
 
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
@@ -97,18 +97,16 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   //tooltip: HTMLHtmlElement | undefined
   //popperInstance: any //typeof P.createPopper | undefined
 
-  public faInfoCircle = faInfoCircle
-  public faMapMarkedAlt = faMapMarkedAlt
-  public mdiAccount: string = mdiAccount
-  public mdiInformationOutline: string = mdiInformationOutline
+  faInfoCircle = faInfoCircle
+  faMapMarkedAlt = faMapMarkedAlt
+  mdiAccount: string = mdiAccount
+  mdiInformationOutline: string = mdiInformationOutline
 
   //private mouseEnters = 0
   //private mouseLeaves = 0
 
   private settingsSubscription!: Subscription
   private settings!: SettingsType
-
-  private formUpdating = false
 
   constructor(
     private settingsService: SettingsService,
@@ -143,26 +141,20 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
-  public ngOnInit(): void {
+  ngOnInit(): void {
     this.log.info("ngOnInit", this.id)
 
-    // On Location/Address Change subscriptions  // TODO: USE THESE - or not???
+    // Get notified when user enters various loction elements - & update the rest of the location
+
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
     if (this.locationFormModel) {
-      //this.locationFormModel.get("latI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
 
-      // Following works, but reacts for ALL changes: hard then to know what changed...
-      // https://stackoverflow.com/questions/70366847/angular-on-form-change-event
-
-      // #region HideByDefault
-      /*
-      this.locationFormModel.valueChanges.pipe(debounceTime(800)).subscribe(x => {
+      /* Original ideas...NOT used
+        this.locationFormModel.valueChanges.pipe(debounceTime(800)).subscribe(x => {
         //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
-        if (!this.formUpdating) {
           this.log.info(`locationFormModel NOT updating: process valueChanges()`, this.id)
           // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
           this.valueChanges(x)
-        }
 
         /*
         https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
@@ -184,7 +176,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
       })
 
-      Or could subscribe to each element in the form...
+      Or  subscribe to each element in the form...(verbose)
       ///   let latf = this.locationFrmGrp.get("latF")
       ///   if (latf) {
       ///     latf.valueChanges.pipe(debounceTime(700)).subscribe(x => {
@@ -195,24 +187,20 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       ///   else {
       ///     this.log.error('########## lat float value NOT FOUND!!!!', this.id)
       ///   }
-      ///   this.locationFrmGrp.get("lngI")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-      ///     this.log.info('#######  lng Int value changed: ' + x), this.id
-      ///   })
-      ///   this.locationFrmGrp.get("lngF")?.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-      ///     this.log.info('#######  lng Float value changed: ' + x), this.id
-    }
- */
-      //#endregion
 
-      // Capture user's location component changes & recalc the rest of the form & update peers (i.e., mini-map)
+ */
+      // https://stackoverflow.com/questions/70366847/angular-on-form-change-event
+      // Capture user's location component changes, then call
+      // subroutines to recalc/update the rest of the form & update parent & peers (i.e., mini-map)
 
       // https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
       // Initial event is just for control change: NOT yet bubbled up to parent form!
       // DO setTimeout() to allow form to catch up.
+      const alive: boolean = true // from original sample, but unused by us
+
       setTimeout(() => {
-        //console.log(this.reactiveForm.value)   //shows the latest first name
-      })
-      let alive: boolean = true // from original sample, but unused by us
+        //console.log(this.reactiveForm.value)
+      }) // Pause to let parent form get the change event bubbled up from the control
 
       this.mergeForm(this.locationFormModel, '')
         .pipe(debounceTime(400))  // BUG: If too long, changes get skipped!
@@ -379,30 +367,17 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  /*
-    DDToAddress(lat: number, lng: number) {
-
-      let ll = new google.maps.LatLng(lat, lng)
-      this.log.verbose(`DDToAddress() got lat:${ll.lat}, lng: ${ll.lng}`, this.id)
-
-      let // addr = this.geocoder.getAddressFromLatLng(new google.maps.LatLng(lat, lng))
-        addr = this.geocoder.getAddressFromLatLng(ll, this.UpdateAddress)
-      this.log.verbose(`DDToAddress returning address ${addr} for lat:${lat}, lng: ${lng}`, this.id)
-      return addr
-    }
-  */
-
   // https://angular.io/guide/template-reference-variables
-  onDdChg(latI = 0, latF = 0, lngI = 0, lngF = 0) {
+  onDdChg() {
 
-    if (!latI && !latF && !lngI && !lngF) {
-      this.log.info(`Grabbing DD value changes from locationFormModel`, this.id)
-      latI = this.locationFormModel.get("DD.latI")?.value
-      latF = this.locationFormModel.get("DD.latF")?.value
-      lngI = this.locationFormModel.get("DD.lngI")?.value
-      lngF = this.locationFormModel.get("DD.lngF")?.value
-    }
-    this.log.info(`DD value changed: ${latI}.${latF}°, ${lngI}.${lngF}°`, this.id)
+    //if (!latI && !latF && !lngI && !lngF) {
+    this.log.info(`Grab DD values from locationFormModel`, this.id)
+    let latI = this.locationFormModel.get("DD.latI")?.value
+    let latF = this.locationFormModel.get("DD.latF")?.value
+    let lngI = this.locationFormModel.get("DD.lngI")?.value
+    let lngF = this.locationFormModel.get("DD.lngF")?.value
+    //}
+    this.log.info(`new DD values: ${latI}.${latF}°, ${lngI}.${lngF}°`, this.id)
 
     let lat = parseFloat(latI + "." + latF)
     let lng = parseFloat(lngI + "." + lngF)
@@ -410,7 +385,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
     //let derivedAddress = GoogleGeocode.getAddressFromLatLng(new google.maps.LatLng(lat, lng), this.UpdateAddress)
     //this.log.error(`got derived address: ${derivedAddress}`, this.id)
-    let derivedAddress = this.DDToAddress(lat, lng)
+    let derivedAddress = this.DDToAddress(lat, lng)  // ! Haven't updated pCode/What3Words yet
 
     let enteredLocation = {
       lat: lat,
@@ -422,49 +397,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
-  /**
-   * NOTE: This also updates/POSTS to the form!!!
-   * !TODO: Should it ALSO emit an updated location?!
-   * @param lat
-   * @param lng
-   * @returns
-   */
-  DDToAddress(lat: number, lng: number) {
-    console.info(`Looking up address: ${lat}, ${lng}`, this.id)
-
-    //! TODO: Do we also need to update pCodeGlobal & What3Words?
-    if (!LocationComponent.geocoder) {
-      return "Address lookup requires Internet"
-    }
-    else {
-      let latLng = new google.maps.LatLng(lat, lng)
-      LocationComponent.geocoder
-        .geocode({ location: latLng })
-        .then((response) => {
-          // this.log.excessive(`Found array of addresses: ${JSON.stringify(response.results)}`, this.id)
-          if (response.results[0]) {
-            this.log.info(`DDToAddress(): Received a new geocoded address[0]: ${JSON.stringify(response.results[0].formatted_address)}`, this.id)
-
-            // Async update of address field...
-            this.log.verbose(`DDToAddress(): Going to update location.address`, this.id)
-            //debugger
-            //this.location.address = response.results[0].formatted_address
-            this.log.verbose(`DDToAddress(): Updated location.address`, this.id)
-
-            this.locationFormModel.patchValue({ address: response.results[0].formatted_address }
-              // , { emitEvent: false }  // Prevent enless loop...
-              // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
-            )
-            this.log.verbose(`DDToAddress(): Updated locationFormModel.address`, this.id)
-            return (response.results[0].formatted_address)
-          } else {
-            return ("No address found.") // No results found
-          }
-        })
-        .catch((e) => { return ("Geocoder failed due to: " + e) })
-      return "" // ("No immediate address available: await the result!")
-    }
-  }
 
   onDmsChg(latQ = "n", latD = 0, latM = 0, latS = 0, lngQ = "e", lngD = 0, lngM = 0, lngS = 0) {
 
@@ -530,84 +462,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
-  onAddressChg() { //newAddress: string = "undefined address"
-
-    let newAddress = this.locationFormModel.get("address")?.value
-    this.log.info(`onAddressChg got newAddress: ${JSON.stringify(newAddress)}`, this.id)
-
-    // ! TODO: Check for +Code or What3Words as we cna do this while offline...
-
-    if (!this.geocoder) {
-      this.log.error(`Google.Geocoder not available while offline from Internet. Needed to get coordinates from new address: ${JSON.stringify(newAddress)}`, this.id)
-    }
-    let myTuple = this.geocoder.isValidAddress(newAddress)
-    // { position: null, address: err, partial_match: "", placeId: "", plus_code: "" }
-
-    if (myTuple.position) {
-      let pos = myTuple.position
-      let enteredLocation = {
-        //! BUG: how to extract lat/lng from pos?????; use PROMISE
-        lat: -25,
-        lng: 125,
-        address: newAddress,
-        derivedFromAddress: true
-      }
-
-      this.newLocationToFormAndEmit(enteredLocation)
-    }
-  }
-
-  /*
-  formSubscribe_unused() {
-    this.locationFormModel.valueChanges.pipe(debounceTime(2000)).subscribe(x => {
-      //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
-      if (!this.formUpdating) {
-        // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
-        // this.valueChanges(x)
-      }
-    })
-  }
-
-  formUnsubscribe() {
-
-    // this.locationFormModel.valueChanges = null
-  }
-*/
-
-
-  /**
-   * Gets called on any changes to Location Component fields
-   * Need to figure out what changed, and if the change makes a 'sensible' address:
-   * If so, update via event any subscribers: (i.e., the parent compoennt & map)
-   */
-  /* Gets: {
-    "DD":{"latI":40,"latF":0,"lngI":0,"lngF":0},
-    "DMS":{"latQ":"N","latD":0,"latM":0,"latS":0,"lngQ":"E","lngD":0,"lngM":0,"lngS":0},
-    "DDM":{"latDDMQ":"N","latDDMD":0,"latDDMM":0,"lngDDMQ":"E","lngDDMD":0,"lngDDMM":0},
-    "address":""
-  }
-  *
-  public valueChanges(e: any) { // this.locationFormModel
-    // e = form data
-    this.log.info(`locationFormModel value changed: ${JSON.stringify(e)}`, this.id)
-    /*
-
-    let enteredLocation = undefinedLocation
-
-     Verify changes are 'done': make sense & are valid
-
-    let enteredLocation = {
-      lat: 47.444,
-      lng: -122.555,
-      address: "valueChanges(): Need To extract new address from entire form (what field changed?!)",
-      derivedFromAddress: false
-    }
-
-    //
-    this.newLocationToFormAndEmit(enteredLocation)
-  }
-
-*/
 
   /**
    * Update form with new address
@@ -617,7 +471,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
    *
    * @param newLocation: LocationType
    */
-  public newLocationToFormAndEmit(newLocation: LocationType) {
+  newLocationToFormAndEmit(newLocation: LocationType) {
 
 
     // Any location change should drive to a new latDD & LngDD & sent here
@@ -756,10 +610,84 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
     this.locationChange.emit(this.location)
 
-    //this.formUpdating = false // reenable subscription to location updates
   }
 
-  public chkAddresses() {
+  /**
+   * NOTE: This also updates/POSTS to the form!!!
+   * !TODO: Should it ALSO emit an updated location?!
+   * @param lat
+   * @param lng
+   * @returns
+   */
+  DDToAddress(lat: number, lng: number) {
+    console.info(`Looking up address: ${lat}, ${lng}`, this.id)
+
+    //! TODO: Do we also need to update pCodeGlobal & What3Words?
+    if (!LocationComponent.geocoder) {
+      return "Address lookup requires Internet"
+    }
+    else {
+      let latLng = new google.maps.LatLng(lat, lng)
+      // Reverse Geocode: get address from coordinates
+      LocationComponent.geocoder
+        .geocode({ location: latLng })
+        .then((response) => {
+          // this.log.excessive(`Found array of addresses: ${JSON.stringify(response.results)}`, this.id)
+          if (response.results[0]) {
+            this.log.info(`DDToAddress(): Received a new geocoded address[0]: ${JSON.stringify(response.results[0].formatted_address)}`, this.id)
+
+            // Async update of address field...
+            this.log.verbose(`DDToAddress(): Going to update location.address`, this.id)
+            //debugger
+            //this.location.address = response.results[0].formatted_address
+            this.log.verbose(`DDToAddress(): Updated location.address`, this.id)
+
+            this.locationFormModel.patchValue({ address: response.results[0].formatted_address }
+              // , { emitEvent: false }  // Prevent enless loop...
+              // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
+            )
+            this.log.verbose(`DDToAddress(): Updated locationFormModel.address`, this.id)
+            return (response.results[0].formatted_address)
+          } else {
+            return ("No address found.") // No results found
+          }
+        })
+        .catch((e) => { return ("Geocoder failed due to: " + e) })
+      return "" // ("No immediate address available: await the result!")
+    }
+  }
+
+  onAddressChg() { //newAddress: string = "undefined address"
+
+    let newAddress = this.locationFormModel.get("address")?.value
+    this.log.info(`onAddressChg got newAddress: ${JSON.stringify(newAddress)}`, this.id)
+
+    // ! TODO: Check for +Code or What3Words as we cna do this while offline...
+
+    if (!this.geocoder) {
+      this.log.error(`Google.Geocoder not available while offline from Internet. Needed to get coordinates from new address: ${JSON.stringify(newAddress)}`, this.id)
+    }
+
+    // Regular Geocode: get coordinates from address
+    let myTuple = this.geocoder.isValidAddress(newAddress)
+    // { position: null, address: err, partial_match: "", placeId: "", plus_code: "" }
+
+    if (myTuple.position) {
+      let pos = myTuple.position
+      let enteredLocation = {
+        //! BUG: how to extract lat/lng from pos?????; use PROMISE
+        lat: -25,
+        lng: 125,
+        address: newAddress,
+        derivedFromAddress: true
+      }
+
+      this.newLocationToFormAndEmit(enteredLocation)
+    }
+  }
+
+
+  chkAddresses() {
     this.log.verbose("chkAddresses()", this.id)
 
     /* if JSON.stringify(addr): gets
@@ -819,7 +747,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   // https://angular.io/guide/form-validation
   // https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
 
-  // public newMarker(loc: google.maps.LatLngLiteral, title: string = "") {  // TODO: Remove google ref
+  // newMarker(loc: google.maps.LatLngLiteral, title: string = "") {  // TODO: Remove google ref
   //   this.log.verbose("newMarker()", this.id)
 
   //   let addr = this.document.getElementById("derivedAddress")
@@ -875,7 +803,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
-  public chk3Words(tWords: string) {
+  chk3Words(tWords: string) {
     this.log.verbose("chk3Words", this.id)
     /*let settings = {
       "async": true,
@@ -942,7 +870,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  public chkPCodes(pCode: string) {
+  chkPCodes(pCode: string) {
     // REVIEW: Duplicate of code above...
     //let pCode = document.getElementById("addresses")!.innerText //value;
     this.log.verbose("chkPCodes got '" + pCode + "'", this.id);
@@ -984,7 +912,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  public chkStreetAddress(addrText: string) {
+  chkStreetAddress(addrText: string) {
     //https://developers.google.com/maps/documentation/geocoding/requests-geocoding
     this.log.verbose("Got street address to check: " + addrText, this.id)
     // Type 'GeocoderResult' must have a '[Symbol.iterator]()' method that returns an iterator.
@@ -1095,7 +1023,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }) {
     }
   */
-  // public onInfoWhere() {
+  // onInfoWhere() {
   //   this.log.verbose("onInfoWhere", this.id)
   //   let s = "for Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds"
   // }
@@ -1126,7 +1054,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   */
 
 
-  // public setCtrl(ctrlName: HTMLElement, value: number | string) {
+  // setCtrl(ctrlName: HTMLElement, value: number | string) {
   //   this.log.excessive(`setCtrl(${ctrlName} to ${value})`, this.id)
   //   // let ctrl = this.document.getElementById(ctrlName) as HTMLInputElement
   //   // if (!ctrl) {
@@ -1156,7 +1084,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /*
     // TODO: https://github.com/angular-material-extensions/google-maps-autocomplete
-    public addressCtrlChanged(what: string) {
+    addressCtrlChanged(what: string) {
       this.log.verbose(`addressCtrlChanged`, this.id)
       // TODO: No formControlName="addressCtrl"!!!!
 

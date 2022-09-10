@@ -198,16 +198,15 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
 
+    /*
+     this.log.error(`into ngOnInit!!!!!!!!!`, this.id);
 
-    this.log.error(`into ngOnInit!!!!!!!!!`, this.id);
-
-    this.sha256("hello").then(digestValue => {
-      console.error(` ########## SECRET      Digest is: ${digestValue}`)
-    });
-
+        this.sha256("hello").then(digestValue => {
+          console.error(` ########## SECRET      Digest is: ${digestValue}`)
+        });
+    */
 
     this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
-
 
     // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
