@@ -96,6 +96,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
         // REVIEW: If new Default Location, do we switch to that, or any currenlty in 'use'?
         if (JSON.stringify(this.locationParent) === JSON.stringify(undefinedLocation)) {
           // Local location has yet to be set
+
           this.locationParent = {
             lat: this.settings.defLat,
             lng: this.settings.defLng,

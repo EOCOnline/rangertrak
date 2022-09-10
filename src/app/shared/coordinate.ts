@@ -114,7 +114,7 @@ export function DDToDMS(D: number, lng: boolean = false) {
     dir: D < 0 ? lng ? 'W' : 'S' : lng ? 'E' : 'N',
     deg: 0 | (D < 0 ? D = -D : D),
     min: 0 | D % 1 * 60,
-    sec: (0 | D * 60 % 1 * 6000) / 100
+    sec: 0 | (Math.round(D * 60 % 1 * 6000) / 100)
   }
 }
 
@@ -183,14 +183,15 @@ export function DDMToDD(Q: string, D: number, M: number) {
 }
 
 
-
+/*
+Use Google.geocode instead
 export function AddressToDD(newAddress: string) {
   let lat = 0
   let lng = 0
 
   return { lat: lat, lng: lng }
 }
-
+*/
 
 
 // REVIEW: Duplicate of one in Utility class...

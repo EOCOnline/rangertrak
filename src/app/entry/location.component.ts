@@ -67,32 +67,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   geocoder = new GoogleGeocode()
   //w3w = new What3Words()
 
-  /* Following provide access to controls in the template
-  // Cooordinates as Decimal Degrees (DD)
-  latI = 0 // Integer portion
-  latF = 0 // Float portion
-  lngI = 0
-  lngF = 0
-
-  // Cooordinates as Degrees, Minutes & Seconds (DMS)
-  latQ = "N" // Quadrant
-  latD = 0 // Degrees
-  latM = 0 // Minutes
-  latS = 0 // Seconds
-  lngQ = "E"
-  lngD = 0
-  lngM = 0
-  lngS = 0
-
-  // Cooordinates as Degrees & Decimal Minutes (DDM)
-  latDdmQ = "N" // Quadrant
-  latDdmD = 0 // Degrees
-  latDdmM = 0 // Minutes
-  lngDdmQ = "E" // Quadrant
-  lngDdmD = 0 // Degrees
-  lngDdmM = 0 // Minutes
-*/
-
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
   // button: HTMLButtonElement | undefined
   //tooltip: HTMLHtmlElement | undefined
@@ -274,13 +248,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   /**
-  * Create Form Model, so we can readily set values & respond to user input
-  * NOTE: We never have an OnSubmit() routine...instead subscribing to changes
-  *
+   * Create Form Model, so we can readily set values & respond to user input
+   * NOTE: We never have an OnSubmit() routine...instead subscribing & immediately reacting to changes
    */
   initForm() {
     this.locationFormModel = this._formBuilder.group({
-
       // Coordinates as Decimal Degrees (DD)
       DD: this._formBuilder.group({
         latI: [0], // Integer portion
@@ -288,7 +260,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         lngI: [0],
         lngF: [0]
       }),
-
       // Cooordinates as Degrees, Minutes & Seconds (DMS)
       DMS: this._formBuilder.group({
         latQ: ["N"], // Quadrant
@@ -300,7 +271,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         lngM: [0],
         lngS: [0]
       }),
-
       // Cooordinates as Degrees & Decimal Minutes (DDM)
       DDM: this._formBuilder.group({
         latDdmQ: ["N"], // Quadrant
@@ -310,7 +280,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         lngDdmD: [0],
         lngDdmM: [0]
       }),
-
       address: [''] //, Validators.required],
     })
 
@@ -370,33 +339,26 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  // https://angular.io/guide/template-reference-variables
+  /**
+   * https://angular.io/guide/template-reference-variables
+   */
   onDdChg() {
-
-    //if (!latI && !latF && !lngI && !lngF) {
-    this.log.info(`Grab DD values from locationFormModel`, this.id)
+    this.log.excessive(`Grab DD values from locationFormModel`, this.id)
     let latI = this.locationFormModel.get("DD.latI")?.value
     let latF = this.locationFormModel.get("DD.latF")?.value
     let lngI = this.locationFormModel.get("DD.lngI")?.value
     let lngF = this.locationFormModel.get("DD.lngF")?.value
-    //}
 
+    /*
     setTimeout(() => {
       //console.log(this.reactiveForm.value)
     }) // Pause to let parent form get the change event bubbled up from the control
-
-
-    this.log.error(`new DD values: ${latI}.${latF}°, ${lngI}.${lngF}°`, this.id)
-    // these are not updated (yet):
-    // this.log.error(`new DD values: ${this.latI}.${this.latF}°, ${this.lngI}.${this.lngF}°`, this.id)
+*/
+    this.log.verbose(`new DD values: ${latI}.${latF}°, ${lngI}.${lngF}°`, this.id)
 
     let lat = parseFloat(latI + "." + latF)
     let lng = parseFloat(lngI + "." + lngF)
-
-
-    //let derivedAddress = GoogleGeocode.getAddressFromLatLng(new google.maps.LatLng(lat, lng), this.UpdateAddress)
-    //this.log.error(`got derived address: ${derivedAddress}`, this.id)
-    let derivedAddress = this.DDToAddress(lat, lng)  // ! Haven't updated pCode/What3Words yet
+    let derivedAddress = this.DDToAddress(lat, lng)
 
     let enteredLocation = {
       lat: lat,
@@ -404,15 +366,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       address: derivedAddress,
       derivedFromAddress: false
     }
-    this.log.info(`reset form with:${JSON.stringify(enteredLocation)}`, this.id)
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
 
-  onDmsChg() { //latQ = "n", latD = 0, latM = 0, latS = 0, lngQ = "e", lngD = 0, lngM = 0, lngS = 0) {
-
-    //if (!latD && !latM && !lngD && !lngS && !lngM && !lngS) {
-    this.log.info(`Grabbing DMSvalue changes from locationFormModel`, this.id)
+  onDmsChg() {
+    this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
     let latD = this.locationFormModel.get("DMS.latD")?.value
     let latM = this.locationFormModel.get("DMS.latM")?.value
     let latS = this.locationFormModel.get("DMS.latS")?.value
@@ -421,15 +380,14 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     let lngM = this.locationFormModel.get("DMS.lngM")?.value
     let lngS = this.locationFormModel.get("DMS.lngS")?.value
     let lngQ = this.locationFormModel.get("DMS.lngQ")?.value
-    //}
 
-    this.log.info(`DMS value changed:  ${latD}° ${latM}' ${latS}" ${latQ}, ${lngD}° ${lngM}' ${lngS}" ${lngQ}`, this.id)
+    this.log.verbose(`DMS value changed:  ${latD}° ${latM}' ${latS}" ${latQ}, ${lngD}° ${lngM}' ${lngS}" ${lngQ}`, this.id)
 
     let latLng = {
       lat: DMSToDD(latQ, latD, latM, latS)!,
       lng: DMSToDD(lngQ, lngD, lngM, lngS)!
     }
-    this.log.info(`DMS converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
+    this.log.verbose(`DMS converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
     let derivedAddress = this.DDToAddress(latLng.lat, latLng.lng)
 
     let enteredLocation = {
@@ -438,30 +396,26 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       address: derivedAddress,
       derivedFromAddress: false
     }
-
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
 
-  onDdmChg() { //latDdmQ: string = 'n', latDdmD: number = 0, latDdmM: number = 0, lngDdmQ: string = 'w', lngDdmD: number = 0, lngDdmM: number = 0) {
-
-    //if (!latDdmD && !latDdmM && !lngDdmD && !lngDdmM) {
-    this.log.info(`Grabbing DMSvalue changes from locationFormModel`, this.id)
+  onDdmChg() {
+    this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
     let latDdmD = this.locationFormModel.get("DMS.latDdmD")?.value
     let latDdmM = this.locationFormModel.get("DMS.latDdmM")?.value
     let latDdmQ = this.locationFormModel.get("DMS.latDdmQ")?.value
     let lngDdmD = this.locationFormModel.get("DMS.lngDdmD")?.value
     let lngDdmM = this.locationFormModel.get("DMS.lngDdmM")?.value
     let lngDdmQ = this.locationFormModel.get("DMS.lngDdmQ")?.value
-    //}
 
-    this.log.info(`DMS value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
+    this.log.verbose(`DMS value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
 
     let latLng = {
       lat: DDMToDD(<string>latDdmQ, latDdmD, latDdmM)!,
       lng: DDMToDD(<string>lngDdmQ, lngDdmD, lngDdmM)!
     }
-    this.log.info(`DDM converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
+    this.log.verbose(`DDM converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
     let derivedAddress = this.DDToAddress(latLng.lat, latLng.lng)
 
     let enteredLocation = {
@@ -476,7 +430,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   /**
-   * Any changes to the location form trigger an updated location (by callers) &
+   * Any user changes to the location form triggers an updated location (above) &
    * now we update form & model with new location.
    *
    * Also emit new location to notify parent (& any peers - like a mini-map)
@@ -493,7 +447,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     //      this.log.error(`newLocationToFormAndEmit(): new Location recieved but null or undefined.`, this.id)
     //    return
     // }
-    this.log.info(`newLocationToFormAndEmit() new Location recieved: ${JSON.stringify(newLocation)}`, this.id);
+    this.log.info(`newLocationToFormAndEmit() got a new Location: ${JSON.stringify(newLocation)}`, this.id);
 
     let latDD = newLocation.lat
     let lngDD = newLocation.lng
@@ -518,20 +472,18 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let latDDM = DDToDDM(latDD)
     let lngDDM = DDToDDM(lngDD, true)
-    this.log.excessive(`new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min}' lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min}' lng`, this.id)
+    this.log.excessive(`new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min / 100}' lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min / 100}' lng`, this.id)
 
     // Above sets control values (but display doesn't change),
     // below sets model values (which does update the display).
     // REVIEW: Why aren't they automatically in sync with eachother?!
     this.locationFormModel.setValue({
-
       DD: {
         latI: latI,
         latF: latF,
         lngI: lngI,
         lngF: lngF
       },
-
       DMS: {
         latQ: latDMS.dir,
         latD: latDMS.deg,
@@ -544,7 +496,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         lngS: lngDMS.sec
 
       },
-
       DDM: {
         latDdmQ: latDDM.dir,
         latDdmD: latDDM.deg,
@@ -570,8 +521,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.log.error(`Couldn't find Derived Address control`, this.id)
     }
-
-
 
     // Emit new location event to parent: so it & any children can react
     this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
