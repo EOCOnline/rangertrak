@@ -1,4 +1,4 @@
-import assert from 'assert'
+//import assert from 'assert'
 import {
     BehaviorSubject, debounceTime, fromEvent, map, merge, Observable, Subscription, takeWhile
 } from 'rxjs'
@@ -18,12 +18,13 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 
 //import { MatIconRegistry } from '@angular/material/icon'
 import {
-    CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GoogleGeocode, OpenLocationCode, What3Words
+    CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GoogleGeocode, OpenLocationCode
 } from '../shared/'
 import {
     LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services'
 
+//! import { What3Words} from '../shared/'
 /*
 https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
 https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-driven-forms-in-angular-2
@@ -64,7 +65,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
   static geocoder: google.maps.Geocoder | null
   geocoder = new GoogleGeocode()
-  w3w = new What3Words()
+  //!w3w = new What3Words()
 
   //createPopper<StrictModifiers>(referenceElement, popperElement, options)
   // button: HTMLButtonElement | undefined
