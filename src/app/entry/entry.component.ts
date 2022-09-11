@@ -97,6 +97,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
         if (JSON.stringify(this.locationParent) === JSON.stringify(undefinedLocation)) {
           // Local location has yet to be set
 
+          // Cannot get Initial Address:
+          // let derivedAddress = this.DDToAddress(lat, lng)
+          // instead do in location component - or store in Settings?!
+
           this.locationParent = {
             lat: this.settings.defLat,
             lng: this.settings.defLng,
@@ -157,7 +161,15 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.entryDetailsForm.patchValue({ date: newTime })
   }
 
-  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
+  /**
+   * Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
+   *
+   * Autocomplete must be in OnInit, once component properties initialized
+   *
+   * https://material.angular.io/components/autocomplete/examples#autocomplete-overview;
+   * also Ang Dev with TS, pg 140ff;
+   */
+  //
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
 
@@ -174,12 +186,12 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)
     // verifies Settings has been loaded
 
-    /*
-    i.e., entryDetailsForm probably constructed at wrong time?!
-    Move the component creation to ngOnInit hook
-    error can show up when you are working with ViewChild, and execute code in AfterViewInit.
-    https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
-    the binding expression changes after being checked by Angular during the change detection cycle
+    /*  if receiving the https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
+        i.e., entryDetailsForm probably constructed at wrong time...
+        Move the component creation to ngOnInit hook
+        error can show up when you are working with ViewChild, and execute code in AfterViewInit.
+
+        the binding expression changes after being checked by Angular during the change detection cycle
    */
 
     this.initEntryForm()

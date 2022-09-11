@@ -8,7 +8,8 @@ export { HeaderComponent } from "./header/header.component"
 export { IconsComponent } from "./icons/icons.component"
 export { FooterComponent } from "./footer/footer.component"
 export { NavbarComponent } from "./navbar/navbar.component"
-export { TimePickerComponent } from './time-picker/time-picker.component';
+export { TimePickerComponent } from './time-picker/time-picker.component'
+export { What3Words } from './3words'
 
 //export { What3Words } from "./3words"
 //export { Map, LayerType } from "./unused/map";

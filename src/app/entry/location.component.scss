@@ -8,6 +8,11 @@ with ($primary: #962f10,
 $filledColor : #F0F0F0;
 
 
+.elegant {
+  margin-top   : 25px;
+  margin-bottom: 0px;
+}
+
 .filled {
   background-color: $filledColor;
 }
@@ -23,7 +28,6 @@ $filledColor : #F0F0F0;
   background-color  : $filledColor;
   //width           : 700px;
 }
-
 
 #enter__Where-latI,
 #enter__Where-lngI,
@@ -67,7 +71,7 @@ $filledColor : #F0F0F0;
 #derivedAddress,
 #pCodeGlobal,
 #what3Words {
-  color: #CCC;
+  color: #962f10; //#CCC;
 }
 
 
@@ -91,9 +95,4 @@ input[type=number] {
 
 .bordered {
   border: 2 px solid rgb(62, 189, 189);
-}
-
-.elegant {
-  margin-top   : 25px;
-  margin-bottom: 0px;
 }
