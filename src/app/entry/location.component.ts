@@ -38,6 +38,8 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   styleUrls: ['./location.component.scss']
 })
 export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  /*
   //!TODO: If we do end up using this getter/setter, we should keep the _location updated elsewhere!
   private _location = undefinedLocation
 
@@ -62,12 +64,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   get location(): LocationType {
     return this._location
   }
-
+  // see pg 182 (& 188) in AngDev w/TS
+*/
   // Using mediation pattern (pg 188), this child component emits following event to parent,
   // parent's template has: (newLocationEvent)="onNewLocationParent($event)"
   // Parent's onNewLocationParent($event) gets called.
   // Parent then passes the new location (via binding), to any children (e.g., mini-maps) as needed
-  // see pg 182 (& 188) in AngDev w/TS
+  @Input() location: LocationType = undefinedLocation
   @Output() locationChange = new EventEmitter<LocationType>()
 
   private id = "Location Component"
@@ -251,14 +254,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         })
     }
-    this.log.verbose("out of ngOnInit", this.id)
   }
 
   /**
     * Called once all HTML elements have been created
     */
   ngAfterViewInit() {
-
+    this.newLocationToFormAndEmit(this.location)
   }
 
 
@@ -514,7 +516,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     )
 
     // Emit new location event to parent: so it & any children can react
-    this.log.warn(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
+    this.log.warn(`newLocationToFormAndEmit() Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
     this.locationChange.emit(newLocation)
   }
 
@@ -575,13 +577,15 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   updateDerivedLocations(location: LocationType) {
     this.log.verbose(`updateDerivedLocations()`, this.id)
 
-    if (location.derivedFromAddress == false) {
-      // Updates location.address, but asyncronously
-      let result = this.DDToAddress(location)
-      this.log.verbose(`DDToAddress returned ${result} & ${JSON.stringify(location)}`, this.id)
-    }
+    // DDToAddress already called - if needed...
+    //if (location.derivedFromAddress == false) {
+    // Updates location.address, but asyncronously
+    //let result = this.DDToAddress(location)
+    //this.log.verbose(`DDToAddress returned ${result} & ${JSON.stringify(location)}`, this.id)
+    //}
 
     //! duplicate code in ChkPCode()!
+    // Check for https://github.com/google/open-location-code (works offline!)
     let pCode = OpenLocationCode.encode(location.lat, location.lng, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
     this.log.verbose(`updateCoords: Encode returned PlusCode: ${pCode}`, this.id)
     let fullCode
@@ -627,8 +631,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
    * @returns
    */
   DDToAddress(location: LocationType) {
-    this.log.verbose(`Looking up address: ${location.lat}, ${location.lat}`, this.id)
+    this.log.verbose(`DDToAddress() Looking up address: ${location.lat}, ${location.lng}`, this.id)
     // assert(!location.derivedFromAddress)
+    if (location.derivedFromAddress) {
+      this.log.error(`DDToAddress got a primary address NOT needing derivation!`, this.id)
+    }
 
     if (!LocationComponent.geocoder) {
       this.log.warn(`DDToAddress requires Internet access`, this.id)
@@ -649,6 +656,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
             location.address = response.results[0].formatted_address
             // Async update of DERIVED address fields...
             this.updateDerivedLocations(location)
+
+            this.log.warn(`DDToAddress() Emitting new Location ${JSON.stringify(location)}`, this.id)
+            this.locationChange.emit(location)
 
             //  this.locationFormModel.patchValue({ address: response.results[0].formatted_address },
             //   { emitEvent: false }  // Prevent enless loop...

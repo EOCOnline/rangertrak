@@ -49,10 +49,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //@Output() newLocationEvent = new EventEmitter<LocationType>()
   // https://angular.io/guide/inputs-outputs & https://angular.io/guide/two-way-binding
-  @Output() locationEvent = new EventEmitter<LocationType>()
+  //@Output() locationEvent = new EventEmitter<LocationType>()
 
   // Get time events from <location> component
-  private locationSubscription!: Subscription
+  //private locationSubscription!: Subscription
 
   private id = 'Entry Form'
   title = 'Field Report Entry'
@@ -81,7 +81,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Get location events from <location> component
   //public locationChange: Subscription
-  public locationParent: LocationType = undefinedLocation
+  public locationParent = undefinedLocation
 
   minDate = new Date()
 
@@ -114,6 +114,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
         if (JSON.stringify(this.locationParent) === JSON.stringify(undefinedLocation)) {
           // Local location has yet to be set
 
+          this.log.excessive('Setting updated location based on default settings.', this.id)
           // Settings just store default lat/lng, not address.
           // Child will figure out the address...
           this.locationParent = {
