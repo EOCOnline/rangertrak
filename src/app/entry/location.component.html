@@ -118,7 +118,7 @@
 (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
 -->
     Street Address,
-    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>,&nbsp; or
+    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>, or
     <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>:
 
     <input #address type="text" id="enter__Where-Address" tabindex="5"
@@ -129,6 +129,7 @@
 
 (change)="onAddressChg(address.value)"
 -->
+  <hr>
   <div class="enter__Where-Results">
     <!--   {{address}}
       formControlName="address"
@@ -139,7 +140,7 @@
 
     <!--Derived Locations: -->
     <span id="derivedAddress" title="Normalized Address">Address:</span><br>
-    <span id="pCodeGlobal" title="Global (Google) Plus Code">pCodeGlobal:</span><br>
+    <span id="pCodes" title="Global & short (Google) Plus Codes">+Codes:</span><br>
     <span id="what3Words" title="What3Words">What3Words:</span>
   </div>
 

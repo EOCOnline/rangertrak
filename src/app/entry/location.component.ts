@@ -38,6 +38,7 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   styleUrls: ['./location.component.scss']
 })
 export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
+  //!TODO: If we do end up using this getter/setter, we should keep the _location updated elsewhere!
   private _location = undefinedLocation
 
   // Use setter to get immediate notification of changes to inputs (pg 182 & 188)
@@ -177,7 +178,17 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       else {
         this.log.error('########## lat float value NOT FOUND!!!!', this.id)
       }
+      TODO: How to subscribe to the valueChanges observable?
+        listen for changes in the form's value in the *template* using AsyncPipe or in the *component class* w/ subscribe() method
 
+        https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
+        https://angular.io/api/common/AsyncPipe
+        https://angular.io/api/forms/AbstractControl
+        https://angular.io/api/forms/NgControlStatus ARE CSS Classes.
+        https://angular.io/api/forms
+        https://www.danvega.dev/blog/2017/06/07/angular-forms-clear-input-field/
+        https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
+        https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
  */
 
       const alive: boolean = true // from original sample, but unused by us
@@ -449,7 +460,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       // Async routine to geocode from lat/lng & update location.address
       // REVIEW: Do this early in HOPES that the async geocoding routine will have returned by time we emit a new location... (though mini-map really only needs lat/long)
 
-      // DDToAddress calls updateDerivedLocations() too
+      // DDToAddress (asynchroniously) calls updateDerivedLocations() too
       this.DDToAddress(newLocation)
     }
 
@@ -513,6 +524,54 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
    *
    * @param location
    */
+
+
+  chkPCodes(pCode: string) {
+    this.log.verbose(`User entered potential pCode: '${pCode}'. Verify it.`, this.id);
+    if (pCode.length) {
+      let result = this.geocoder.getLatLngAndAddressFromPlaceID(pCode)
+      this.log.verbose(`chkPCode of ${pCode} got result:${JSON.stringify(result)}`, this.id);
+
+      //!BUG - following need review!!!!!!!!!!!!!!!!!!!!!!
+      /*result: {
+          position: null;
+          address: string;
+          placeId: string;
+      }*/
+      if (result.position) {
+        //    (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
+        (document.getElementById("enter__Where-Lat") as HTMLInputElement).value = "result.position.lat";
+        // BUG: position has type of never????!!!!
+        (document.getElementById("lng") as HTMLInputElement).value = "JSON.stringify(result.position)";
+      }
+      else {
+        this.log.warn(`chkPCode of ${pCode} got NULL result!!!`, this.id);
+      }
+
+      if (!this.settings) {
+        this.log.error(`this.settings was null in chkPCodes`, this.id)
+        return
+      }
+
+      if (OpenLocationCode.isValid(pCode)) {
+        if (OpenLocationCode.isShort(pCode)) {
+          pCode = OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
+        }
+
+        // Following needs a full (Global) code
+        let coord = OpenLocationCode.decode(pCode)
+        this.log.verbose("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', lng=' + coord.longitudeCenter, this.id);
+        //let newLocation: LocationType =
+        this.newLocationToFormAndEmit({ lat: coord.latitudeCenter, lng: coord.longitudeCenter, address: "", derivedFromAddress: false })
+      }
+
+      else {
+        //    document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: " + this.settings.defPlusCode
+        //document.getElementById("pCodeGlobal")!.innerHTML = this.settings.defPlusCode
+      }
+    }
+  }
+
   updateDerivedLocations(location: LocationType) {
     this.log.verbose(`updateDerivedLocations()`, this.id)
 
@@ -522,10 +581,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       this.log.verbose(`DDToAddress returned ${result} & ${JSON.stringify(location)}`, this.id)
     }
 
+    //! duplicate code in ChkPCode()!
     let pCode = OpenLocationCode.encode(location.lat, location.lng, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
     this.log.verbose(`updateCoords: Encode returned PlusCode: ${pCode}`, this.id)
     let fullCode
-    if (pCode.length != 0) {
+    if (pCode.length) {
       if (OpenLocationCode.isValid(pCode)) {
         if (OpenLocationCode.isShort(pCode)) {
           // Recover the full code from a short code:
@@ -539,18 +599,15 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         this.log.verbose(`New PlusCodes: ${pCode} ; Global: ${fullCode}`, this.id);
         //(document.getElementById("addresses") as HTMLInputElement).value = pCode
         //document.getElementById("defaultPCode")!.innerHTML = this.settings.defPlusCode; // as HTMLLabelElement
-        (document.getElementById("pCodeGlobal") as HTMLLabelElement).innerText = `Derived +Codes: &nbsp; +Code: ${pCode} +GlobalCode: ${fullCode}`
+        (document.getElementById("pCodes") as HTMLLabelElement).innerText = `Derived PlusCodes: +Code: ${pCode} +GlobalPCode: ${fullCode}`
       } else {
         this.log.verbose(`Invalid +PlusCode: ${pCode}`, this.id)
-        document.getElementById("pCodeGlobal")!.innerText = "Derived +Codes: &nbsp; Unable to get +Code"
+        document.getElementById("pCodes")!.innerText = "Derived +Codes: &nbsp; Unable to get +Code"
         //document.getElementById("derivedAddress")!.innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: " // as HTMLLabelElement
       }
     }
 
     this.document.getElementById("derivedAddress")!.innerText = `Derived Address: ${location.address}`
-
-    // Get & update pCodeGlobal
-    //    this.document.getElementById("pCodeGlobal")!.innerText = location.address
 
     // Get & update What3Words
     let w3w = "Not.Implemented.Yet!"
@@ -641,14 +698,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         */
       }
     }
-
-
+    // https://developers.google.com/maps/documentation/javascript/places
     //!BUG: Following needs REVIEWING!!!!!!!!!
-
     if (!this.geocoder) {
       this.log.error(`Google.Geocoder not available while offline from Internet. Needed to get coordinates from new address: ${JSON.stringify(newAddress)}`, this.id)
     }
-
     // Regular Geocode: get coordinates from address
     let myTuple = this.geocoder.isValidAddress(newAddress)
     // { position: null, address: err, partial_match: "", placeId: "", plus_code: "" }
@@ -667,122 +721,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-
-  chkAddresses() {
-    this.log.verbose("chkAddresses()", this.id)
-
-    /* if JSON.stringify(addr): gets
-    TypeError: Converting circular structure to JSON
-        --> starting at object with constructor 'TView'
-        |     property 'blueprint' -> object with constructor 'LViewBlueprint'
-        --- index 1 closes the circle
-        at JSON.stringify (<anonymous>)
-        at EntryComponent.chkAddresses (entry.component.ts:465:47)
-        at EntryComponent.addressCtrlChanged (entry.component.ts:424:14)
-        */
-    //FOLLOWING moved up to onAddressChg()!!!!!!!!!!
-    let tWords // = document.getElementById("addresses")!.innerText // as HTMLInputElement).value
-    let addr = document.getElementById("addressCtrl") as HTMLInputElement// ?.innerText
-    this.log.verbose(`Looking into address: ${addr}`, this.id)
-    if (addr == null)
-      return
-    //debugger
-    let addrText = addr.value;
-    this.log.verbose(`Got some kind of address: ${addrText}`, this.id)
-    if (addrText.length) {
-      if (addrText.includes("+")) {
-        this.log.verbose("Got PCode: " + addrText, this.id)
-        this.chkPCodes(addrText)
-      } else {
-        tWords = addrText.split(".")
-        if (tWords.length == 3) {
-          this.log.verbose("Got What 3 Words: " + addrText, this.id)
-          this.chk3Words(addrText)
-        } else {
-          let result = this.chkStreetAddress(addrText)
-          let addrLabel = document.getElementById("addressLabel") as HTMLLabelElement
-          /*
-          if (result.position) {
-            addrLabel.innerText
-              = `STREET ADDRESS: Formatted address: ${result.address}; Google PlaceID: ${result.placeId}; Position: ${result.position}; partial_match: ${result.partial_match}; placeId: ${result.placeId}; plus_code: ${result.plus_code}`
-          } else {
-            addrLabel.innerText = `STREET ADDRESS: unable to geocode. ${result.address}`
-          }
-          */
-        }
-      }
-    }
-  }
-
-  // resetForm(){}
-
   //----------------------------------------------------------------------------------------
-  // Address stuff : Move to service/utility for use by big maps?
-  // #region
+  // Address stuff
 
-  // https://developers.google.com/maps/documentation/javascript/places
-  // https://developer.what3words.com/tutorial/javascript
   // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
-  // https://askinglot.com/what-is-dirty-and-touched-in-angular
-  // https://findanyanswer.com/what-is-dirty-in-angular
-  // https://angular.io/guide/form-validation
-  // https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
-
-  // newMarker(loc: google.maps.LatLngLiteral, title: string = "") {  // TODO: Remove google ref
-  //   this.log.verbose("newMarker()", this.id)
-
-  //   let addr = this.document.getElementById("derivedAddress")
-  //   // ERROR: if (addr) { addr.innerHTML = "New What3Words goes here!" } // TODO: move to another routine...
-  //   //this.document.getElementById("enter__Where-Address-upshot").value = this.location.address
-
-
-  //   if (title == "") {
-  //     title = `${Date.now} at lat ${loc.lat}, lng ${loc.lng}.`
-  //   }
-
-  //   //BUG: UPDATE MAP!  Need to emit 'new location'!
-
-  //   console.error(`New Location ${loc} titled ${title}: Emit me to map`)
-  //   // this.displayMarker(loc, title)
-  // }
-
-
-
-  // TODO: How to subscribe to the valueChanges observable?
-  //  listen for changes in the form's value in the *template* using AsyncPipe or in the *component class* w/ subscribe() method
-
-  // https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
-  // https://angular.io/api/common/AsyncPipe
-  // this.document.getElementById("enter__Where-Lat")?.onchange
-
-  // https://angular.io/api/forms/AbstractControl
-  // https://angular.io/api/forms/NgControlStatus ARE CSS Classes.
-  // https://angular.io/api/forms
-  // https://www.danvega.dev/blog/2017/06/07/angular-forms-clear-input-field/
-
-  /*
-  https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
-
-  this.reactiveForm.get("firstname").valueChanges.subscribe(selectedValue => {
-  this.log.verbose('firstname value changed', this.id)
-  this.log.verbose(selectedValue, this.id)
-  this.log.excessive(this.reactiveForm.get("firstname").value, this.id)
-  this.log.excessive(this.reactiveForm.value, this.id)    //shows the old first name
-
-  setTimeout(() => {
-    this.log.excessive(this.reactiveForm.value, this.id)   //shows the latest first name
-  }, 1000)
-
-  For Example, the following code will result in the ValueChanges of the firstname. but not of its parent (i.e. top-level form)
-
-  this.reactiveForm.get("firstname").setValue("", { onlySelf: true });
-
-  You can use the onlySelf: true with the setValue, patchValue, markAsUntouched, markAsDirty, markAsPristine, markAsPending, disable, enable, and updateValueAndValidity methods
-  })
-  */
-
-
-
+  // https://developer.what3words.com/tutorial/javascript
   // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
   chk3Words(tWords: string) {
     this.log.verbose("chk3Words", this.id)
@@ -850,55 +793,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     // async call not returned yet
   }
 
-
-  chkPCodes(pCode: string) {
-    // REVIEW: Duplicate of code above...
-    //let pCode = document.getElementById("addresses")!.innerText //value;
-    this.log.verbose("chkPCodes got '" + pCode + "'", this.id);
-    if (pCode.length) {
-      let result = this.geocoder.getLatLngAndAddressFromPlaceID(pCode)
-      this.log.verbose(`chkPCode of ${pCode} got result:${JSON.stringify(result)}`, this.id);
-
-
-
-
-
-      //!BUG - following need review!!!!!!!!!!!!!!!!!!!!!!
-
-      if (result.position) {
-        //    (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
-        (document.getElementById("enter__Where-Lat") as HTMLInputElement).value = "result.position.lat";
-        // BUG: position has type of never????!!!!
-        (document.getElementById("lng") as HTMLInputElement).value = "JSON.stringify(result.position)";
-      }
-      else {
-        this.log.warn(`chkPCode of ${pCode} got NULL result!!!`, this.id);
-      }
-
-      if (!this.settings) {
-        this.log.error(`this.settings was null in chkPCodes`, this.id)
-        return
-      }
-
-      if (OpenLocationCode.isValid(pCode)) {
-        if (OpenLocationCode.isShort(pCode)) {
-          pCode = OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
-        }
-
-        // Following needs a full (Global) code
-        let coord = OpenLocationCode.decode(pCode)
-        this.log.verbose("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', lng=' + coord.longitudeCenter, this.id);
-        //let newLocation: LocationType =
-        this.newLocationToFormAndEmit({ lat: coord.latitudeCenter, lng: coord.longitudeCenter, address: "", derivedFromAddress: false })
-      }
-
-      else {
-        //    document.getElementById("addressLabel")!.innerHTML = " is <strong style='color: darkorange;'>Invalid </strong> Try: " + this.settings.defPlusCode
-        //document.getElementById("pCodeGlobal")!.innerHTML = this.settings.defPlusCode
-      }
-    }
-  }
-
   chkStreetAddress(addrText: string) {
     //https://developers.google.com/maps/documentation/geocoding/requests-geocoding
     this.log.verbose("Got street address to check: " + addrText, this.id)
@@ -908,13 +802,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     // TODO: this.updateCoords(lat,lng)
   }
 
-
-
   // --------------------------- POPPER ---------------------------
   /*
-    // https://popper.js.org/docs/v2/tutorial/
-    // TODO: https://popper.js.org/
-    // https://popper.js.org/docs/v2/
+    https://popper.js.org/docs/v2/tutorial/
+    TODO: https://popper.js.org/
+    https://popper.js.org/docs/v2/
 
     show() {
       if (this.tooltip) {
@@ -967,22 +859,18 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       })
   }
-  */
 
-  // https://bobrov.dev/angular-popper/
-  // https://sergeygultyayev.medium.com/use-popper-js-in-angular-projects-7b34f18da1c
-  // https://github.com/gultyaev/angular-popper-example
+  https://bobrov.dev/angular-popper/
+  https://sergeygultyayev.medium.com/use-popper-js-in-angular-projects-7b34f18da1c
+  https://github.com/gultyaev/angular-popper-example
 
-  // The hint to display
-  //  @Input() target!: HTMLElement
-  // Its positioning (check docs for available options)
-  //  @Input() placement?: string;
-  // Optional hint target if you desire using other element than
-  // specified one
-  //  @Input() appPopper?: HTMLElement;
+  The hint to display @Input() target!: HTMLElement
+  Its positioning (check docs for available options)
+  @Input() placement?: string;
+  Optional hint target if you desire using other element than specified one
+  @Input() appPopper?: HTMLElement;
 
-  // The popper instance
-  /*
+  The popper instance
   popper: popper;
   private readonly defaultConfig: PopperOptions = {
     placement: 'top',
