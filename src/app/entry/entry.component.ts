@@ -20,6 +20,7 @@ import {
     FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
     SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services/'
+import { LocationComponent } from './location.component'
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
 
@@ -34,8 +35,24 @@ import {
   // per https://angular.io/guide/singleton-services
 })
 export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
+  // following is never referenced: not really in use?!
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
-  @Output() newLocationEvent = new EventEmitter<LocationType>()
+
+  //  @ViewChild('LocationComponent') myLocationPickerInstance: any//LocationComponent;
+  /** Likely NOT needed...
+   * If we need to call any routines from location component,
+   * use ViewChild to get a reference of the actual instance we're interacting with.
+   * Component initialization shouldn't be done before AfterViewInit lifecycle hook.
+   * Queries on @ViewChild can only see elements inside the component's template.
+   * https://blog.angular-university.io/angular-viewchild/
+   */
+
+  //@Output() newLocationEvent = new EventEmitter<LocationType>()
+  // https://angular.io/guide/inputs-outputs & https://angular.io/guide/two-way-binding
+  @Output() locationEvent = new EventEmitter<LocationType>()
+
+  // Get time events from <location> component
+  private locationSubscription!: Subscription
 
   private id = 'Entry Form'
   title = 'Field Report Entry'
@@ -50,7 +67,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   public settings!: SettingsType
 
   // Get time events from <timepicker> component
-  private timeSubscription!: Subscription
+  private timeSubscription!: Subscription  //! EVER USED?!
   timePickerLabel = "Enter Report Date, Time"
 
   alert: any
@@ -97,10 +114,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
         if (JSON.stringify(this.locationParent) === JSON.stringify(undefinedLocation)) {
           // Local location has yet to be set
 
-          // Cannot get Initial Address:
-          // let derivedAddress = this.DDToAddress(lat, lng)
-          // instead do in location component - or store in Settings?!
-
+          // Settings just store default lat/lng, not address.
+          // Child will figure out the address...
           this.locationParent = {
             lat: this.settings.defLat,
             lng: this.settings.defLng,
@@ -136,7 +151,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   onNewLocationEvent(newLocation: any) { //LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.info(`Entry form (parent) got new Location: ${JSON.stringify(newLocation)}`, this.id)
+    this.log.error(`Entry form (parent) got new Location: ${JSON.stringify(newLocation)}`, this.id)
     this.locationParent = {
       lat: this.settings.defLat,
       lng: this.settings.defLng,
@@ -144,7 +159,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       derivedFromAddress: false
     }
     // patch entryForm object - as THAT is what gets saved with on form submit
-    this.entryDetailsForm.patchValue({ location: newLocation })
+    this.entryDetailsForm.patchValue({ location: newLocation }, { emitEvent: false })
+    //! NOTE: emit Event causes endless notification loop; BUT how to notify mini-map?!
   }
 
   /**

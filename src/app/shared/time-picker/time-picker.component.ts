@@ -9,7 +9,8 @@ import {
 import { DOCUMENT } from '@angular/common'
 import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core'
 import {
-    FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators
+    FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup,
+    Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 
@@ -33,7 +34,8 @@ import {
 export class TimePickerComponent implements OnInit {
   //!TODO: Is this really needed as @Input, or just a variable?!
   //@Input()
-  public timepickerFormGroup!: UntypedFormGroup // input from entry.component.ts
+  // Untyped
+  public timepickerFormGroup!: FormGroup // input from entry.component.ts
   //  @Input() public timepickerFormControl: FormControl // input from entry.component.ts
   //@Input() public timepickerFormControl: FormControl // input from entry.component.ts
 
@@ -120,7 +122,7 @@ export class TimePickerComponent implements OnInit {
 
     this.time = newTime.value
     //if (! (
-    this.newTimeEvent.emit(this.time)
+
     //) {
     // this.log.warn(`New time event had no listeners!`, this.id) }
     // REVIEW: Let parent update the form fields & other data as necessary...

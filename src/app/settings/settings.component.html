@@ -116,7 +116,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.invalid"
         type="number" formControlName="defLat" step=".01" min="-89.99" max="89.99"
-        placeholder="{{settings?.defLat?.toFixed(4)}}" value="{{settings?.defLat?.toFixed(4)}}" [style.width.px]="75"
+        placeholder="{{settings.defLat.toFixed(4)}}" value="{{settings.defLat.toFixed(4)}}" [style.width.px]="75"
         data-lpignore="true" />
       <div *ngIf="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.hasError('required')"
         class="text-sm text-danger">

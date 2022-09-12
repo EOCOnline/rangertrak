@@ -38,9 +38,15 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   styleUrls: ['./location.component.scss']
 })
 export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
+  private _location = undefinedLocation
 
   // Use setter to get immediate notification of changes to inputs (pg 182 & 188)
+  // !but also see 9.2.1 for ngOnChange() implementation...
   @Input() set location(location: LocationType) {
+    if (location !== undefined) {
+      this._location = location
+      this.log.error(`Setter got new location: ${JSON.stringify(location)}`, this.id)
+    }
     // Check if object's contents equal: _.isEqual( obj1 , obj2 ) OR JSON.stringify(obj1) === JSON.stringify(obj2)
     if (JSON.stringify(location) === JSON.stringify(undefinedLocation)) {
       this.log.error("Got new location, but it still was 'undefined'", this.id)
@@ -48,15 +54,19 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       this.log.warn(`Got new location: ${JSON.stringify(location)}`, this.id)
       // Initially called after constructor, but BEFORE ngOnInit()
       // Populate form with initial (& any subsequent updates) from parent
-      // Also reemit address changes which (via parent) can get picked up by other (peer) children.
+      // Also re-emits address changes which (via parent) can get picked up by other (peer) children.
       this.newLocationToFormAndEmit(location)
     }
+  }
+  get location(): LocationType {
+    return this._location
   }
 
   // Using mediation pattern (pg 188), this child component emits following event to parent,
   // parent's template has: (newLocationEvent)="onNewLocationParent($event)"
   // Parent's onNewLocationParent($event) gets called.
   // Parent then passes the new location (via binding), to any children (e.g., mini-maps) as needed
+  // see pg 182 (& 188) in AngDev w/TS
   @Output() locationChange = new EventEmitter<LocationType>()
 
   private id = "Location Component"
@@ -76,9 +86,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   faMapMarkedAlt = faMapMarkedAlt
   mdiAccount: string = mdiAccount
   mdiInformationOutline: string = mdiInformationOutline
-
-  //private mouseEnters = 0
-  //private mouseLeaves = 0
 
   private settingsSubscription!: Subscription
   private settings!: SettingsType
@@ -173,8 +180,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
  */
 
-      // Initial event is just for control change: NOT yet bubbled up to parent form!
-      // DO setTimeout() to allow form to catch up.
       const alive: boolean = true // from original sample, but unused by us
 
       setTimeout(() => {
@@ -351,7 +356,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let lat = parseFloat(latI + "." + latF)
     let lng = parseFloat(lngI + "." + lngF)
-    //let derivedAddress = this.DDToAddress(lat, lng)
 
     let enteredLocation = {
       lat: lat,
@@ -381,7 +385,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       lng: DMSToDD(lngQ, lngD, lngM, lngS)!
     }
     this.log.verbose(`DMS converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
-    //let derivedAddress = this.DDToAddress(latLng.lat, latLng.lng)
 
     let enteredLocation = {
       lat: latLng.lat,
@@ -409,7 +412,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       lng: DDMToDD(<string>lngDdmQ, lngDdmD, lngDdmM)!
     }
     this.log.verbose(`DDM converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
-    //let derivedAddress = this.DDToAddress(latLng.lat, latLng.lng)
 
     let enteredLocation = {
       lat: latLng.lat,
@@ -447,7 +449,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       // Async routine to geocode from lat/lng & update location.address
       // REVIEW: Do this early in HOPES that the async geocoding routine will have returned by time we emit a new location... (though mini-map really only needs lat/long)
 
-      // DDToAddress calls updateDerivedLocations()
+      // DDToAddress calls updateDerivedLocations() too
       this.DDToAddress(newLocation)
     }
 
@@ -501,7 +503,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     )
 
     // Emit new location event to parent: so it & any children can react
-    this.log.verbose(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
+    this.log.warn(`Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
     this.locationChange.emit(newLocation)
   }
 
@@ -517,7 +519,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     if (location.derivedFromAddress == false) {
       // Updates location.address, but asyncronously
       let result = this.DDToAddress(location)
-      this.log.error(`DDToAddress returned ${result} & ${JSON.stringify(location)}`, this.id)
+      this.log.verbose(`DDToAddress returned ${result} & ${JSON.stringify(location)}`, this.id)
     }
 
     let pCode = OpenLocationCode.encode(location.lat, location.lng, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
@@ -641,7 +643,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
 
-
+    //!BUG: Following needs REVIEWING!!!!!!!!!
 
     if (!this.geocoder) {
       this.log.error(`Google.Geocoder not available while offline from Internet. Needed to get coordinates from new address: ${JSON.stringify(newAddress)}`, this.id)
@@ -857,6 +859,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       let result = this.geocoder.getLatLngAndAddressFromPlaceID(pCode)
       this.log.verbose(`chkPCode of ${pCode} got result:${JSON.stringify(result)}`, this.id);
 
+
+
+
+
+      //!BUG - following need review!!!!!!!!!!!!!!!!!!!!!!
+
       if (result.position) {
         //    (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
         (document.getElementById("enter__Where-Lat") as HTMLInputElement).value = "result.position.lat";
@@ -1001,35 +1009,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       //   placement: 'top-end',
     }) {
     }
-  */
-  // onInfoWhere() {
-  //   this.log.verbose("onInfoWhere", this.id)
-  //   let s = "for Enter the latittude either in degrees decmal or as Degrees Minutes & Seconds"
-  // }
-
-
-
-
-
-
-
-
-
-  /*
-  UpdateAddress_UNUSED(newAddress = "New Geocoded Address here") {
-
-    this.log.error(`UpdateAddress(): GOT NEW Location ${JSON.stringify(newAddress)}`, this.id)
-
-    this.locationFormModel.patchValue({ address: newAddress },
-      { emitEvent: false }  // Prevent enless loop...
-    )
-
-    this.location.address = newAddress
-
-    // Emit new location event to parent: so it & any children can react
-    this.log.error(`UpdateAddress(): Emitting new Location ${JSON.stringify(newAddress)}`, this.id)
-    // this.locationChange.emit(this.location)
-  }
   */
 
   ngOnDestroy() {

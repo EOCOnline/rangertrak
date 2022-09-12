@@ -36,14 +36,10 @@
     </h2>
     <div>
 
-
-      <rangertrak-location [(location)]="locationParent" (newLocationEvent)="onNewLocationEvent($event)">
+      <rangertrak-location [(location)]="locationParent">
+        <!-- (locationChange)="onNewLocationEvent($event)"
+          (newLocationEvent)="onNewLocationEvent($event)" -->
       </rangertrak-location>
-
-      <!--
-        [initialLocationParent]="initialLocationChild"
-        [locationLabel]="locationPickerLabel"
-      -->
 
     </div>
 
@@ -53,7 +49,7 @@
     </h2>
     <div FormControl="timepickerFormControl" class="filled timepicker timepicker_When-input">
       <rangertrak-time-picker #picker [datePickerLabel]="timePickerLabel" (newTimeEvent)="onNewTimeEvent($event)">
-        <!-- [initialDate] = "initialTime" -->
+        <!-- [initialDate] = "initialTime" works, but we just use default - current time -->
       </rangertrak-time-picker>
     </div>
 

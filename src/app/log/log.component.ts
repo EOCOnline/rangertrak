@@ -84,6 +84,11 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
   ngOnInit(): void {
     //console.log(`Into log component's ngInit`)
 
+    if (this.settings) {
+      // Turn on excessive reporting by default, if in debug mode...
+      this.excessive = this.settings.debugMode
+    }
+
     this.logPanel = this.document.getElementById("log")
     if (this.logPanel) {
       // YES!
@@ -134,13 +139,8 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
       }
     }
 
-    if (this.logPanel == null) {
-      console.error('LogComponent: this.logPanel is null or undefined...')
-      return
-    }
-
-    if (this.logPanel.innerHTML == null) {
-      console.error('LogComponent: this.logPanel.innerHTML is null or undefined...')
+    if (!this.logPanel || !this.logPanel.innerHTML) {
+      console.error('LogComponent: this.logPanel (or .innerHTML) is null or undefined...')
       return
     }
 
