@@ -36,8 +36,16 @@
     </h2>
     <div>
 
-      <rangertrak-location [(location)]="locationParent">
-        <!-- (locationChange)="onNewLocationEvent($event)"
+      <rangertrak-location [(location)]="locationParent" (locationChange)="onNewLocationEvent($event)">
+        <!--
+          https://www.appsloveworld.com/angular/100/13/angular-two-way-data-binding-and-watching-for-changes-in-parent-component
+
+          https://stackoverflow.com/questions/56154917/angular-two-way-data-binding-and-watching-for-changes-in-parent-component
+
+          https://stackoverflow.com/questions/38405748/angular-2-two-way-component-binding-doesnt-call-parent-ngonchange
+
+          https://dev.to/tonyhicks20/angular-two-way-binding-between-parent-and-child-components-16kl
+
           (newLocationEvent)="onNewLocationEvent($event)" -->
       </rangertrak-location>
 
