@@ -5,7 +5,8 @@ import {
 
 import { DOCUMENT } from '@angular/common'
 import {
-    AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild
+    AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, SkipSelf,
+    ViewChild
 } from '@angular/core'
 import {
     FormArray, FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators
@@ -642,6 +643,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       return "Address lookup requires Internet"
     }
     else {
+      // Only show address in model during location emition
+      // This control ONLY shows main address if user entered it there
+      // for this control/widget: differentiate between derived & 'primary' or user entered addresses
+      this.locationFormModel.patchValue({ address: "" }, { emitEvent: false })
+      //this.locationFormModel.patchValue({ address: "" }, { emitEvent: false, onlySelf: true })
+
+
       let latLng = new google.maps.LatLng(location.lat, location.lng)
       // Reverse Geocode: get address from coordinates
       LocationComponent.geocoder
@@ -660,11 +668,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
             this.log.warn(`DDToAddress() Emitting new Location ${JSON.stringify(location)}`, this.id)
             this.locationChange.emit(location)
 
-            //  this.locationFormModel.patchValue({ address: response.results[0].formatted_address },
-            //   { emitEvent: false }  // Prevent enless loop...
+            // Only update model's address if it was what user entered: a 'primary' address
+            //this.locationFormModel.patchValue({ address: response.results[0].formatted_address },
+            //  { emitEvent: false })  // Prevent enless loop...
             // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
             //)
-            this.log.verbose(`DDToAddress(): Updated location.address`, this.id)
+            //this.log.verbose(`DDToAddress(): Updated location.address`, this.id)
             return (response.results[0].formatted_address)
           } else {
             return ("No address found.") // No results found

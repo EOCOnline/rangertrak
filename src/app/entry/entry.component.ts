@@ -67,7 +67,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   public settings!: SettingsType
 
   // Get time events from <timepicker> component
-  private timeSubscription!: Subscription  //! EVER USED?!
+  //private timeSubscription!: Subscription  //! EVER USED?!
   timePickerLabel = "Enter Report Date, Time"
 
   alert: any
@@ -430,6 +430,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     //this.locationChange?.unsubscribe()
     this.rangersSubscription?.unsubscribe()
     this.settingsSubscription?.unsubscribe()
-    this.timeSubscription?.unsubscribe()
+    //this.timeSubscription?.unsubscribe()
   }
 }
