@@ -78,7 +78,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
   protected settings!: SettingsType
 
   protected map!: Map
-  protected location!: LocationType
+  public location!: LocationType
   public center = { lat: 0, lng: 0 }
   public mouseLatLng = this.center //google.maps.LatLngLiteral |
   public zoom = 10 // actual zoom level of main map

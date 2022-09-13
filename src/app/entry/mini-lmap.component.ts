@@ -49,6 +49,8 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
   // Use setter get notification of new locations from parent entry form (pg 182 & 188)
   @Input() set locationUpdated(newLocation: LocationType) {
+    this.log.error((`LMini-Map location Setter called! ${JSON.stringify(newLocation)}`), this.id)
+
     if ((newLocation && newLocation.lat) != undefined) {
       if (newLocation.address == undefinedAddressFlag) {
         this.log.verbose(pc.bgYellow(`Entry form has no address yet:  ${undefinedAddressFlag} - ignoring...`), this.id)
@@ -63,6 +65,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
   override id = 'Leaflet MiniMap Component'
   override title = 'Leaflet MiniMap'
+  //private lMap = new L.Map("map")
   private lMap!: L.Map
   private overviewLMap!: L.Map
 
@@ -129,10 +132,21 @@ Ensure that there are no changes to the bindings in the template after change de
 
 
         */
-    this.log.excessive("exiting ngOnInit() ...", this.id)
+    // Following moved from InitMainMap to avoid: map not a leaflet or google map
+    //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
+    this.lMap = L.map('map', {
+      center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
+      zoom: this.settings ? this.settings.leaflet.defZoom : 15
+    }) // Default view set at map creation
+
+    if (!this.lMap) {
+      this.log.error(`this.lMap not created!`, this.id)
+      return
+    }
 
     this.initMainMap()
     this.updateFieldReports()
+    this.log.excessive("exiting ngOnInit() ...", this.id)
   }
 
   /**
@@ -143,6 +157,7 @@ Ensure that there are no changes to the bindings in the template after change de
   }
 
   override initMainMap() {
+    //!Gets: Leaflet MiniMap Component: InitMap(): map not a leaflet or google map - ignoring as uninitialized?  i.e., this.map is NOT yet an instance of LMap...
     super.initMainMap()
 
     this.log.excessive("initMap()", this.id)
@@ -160,16 +175,7 @@ Ensure that there are no changes to the bindings in the template after change de
 
 
     // ---------------- Init Map -----------------
-    //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
-    this.lMap = L.map('map', {
-      center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
-      zoom: this.settings ? this.settings.leaflet.defZoom : 15
-    }) // Default view set at map creation
 
-    if (!this.lMap) {
-      this.log.error(`this.lMap not created!`, this.id)
-      return
-    }
 
     // map can be either Leaflet or Google Map (in the abstract class) -
     // But we know it is JUST Leaflet map in this file!

@@ -7,10 +7,18 @@
 
   <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
   <div class="Entry__LMap-footer">
-    Latitude: <span class="strong">{{mouseLatLng?.lat?.toFixed(5)}}</span> Longitude:
-    <span class="strong">{{mouseLatLng?.lng?.toFixed(5)}}</span> Zoom:
+    Latitude: <span class="strong">{{mouseLatLng.lat.toFixed(5)}}</span> Longitude:
+    <span class="strong">{{mouseLatLng.lng.toFixed(5)}}</span> Zoom:
     <span class="strong">{{zoom}}</span>
 
     <div id="Entry__Minimap-status">Click map to copy coordinates</div>
   </div>
+  <br>
+  And meanwhile, back in the mini-map: lat:
+
+  {{location?.lat}}
+
+  <!--; lng:{{location.lat}};
+  addr:{{location.address}}; {{location.derivedFromAddress}}
+  -->
 </div>
