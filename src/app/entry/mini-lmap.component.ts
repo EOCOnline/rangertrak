@@ -11,7 +11,8 @@ import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@ang
 
 import { AbstractMap, Utility } from '../shared'
 import {
-    FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag
+    FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag,
+    undefinedLocation
 } from '../shared/services'
 
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
@@ -46,21 +47,25 @@ L.Marker.prototype.options.icon = iconDefault;
 export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {
 
 
-
+  _location = undefinedLocation
   // Use setter get notification of new locations from parent entry form (pg 182 & 188)
   @Input() set locationUpdated(newLocation: LocationType) {
     this.log.error((`LMini-Map location Setter called! ${JSON.stringify(newLocation)}`), this.id)
 
-    if ((newLocation && newLocation.lat) != undefined) {
+    if (newLocation && (newLocation.lat != undefined)) {
       if (newLocation.address == undefinedAddressFlag) {
         this.log.verbose(pc.bgYellow(`Entry form has no address yet:  ${undefinedAddressFlag} - ignoring...`), this.id)
       } else {
         this.log.verbose(pc.bgYellow(`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
+        this._location = newLocation
         this.onNewLocation(newLocation)
       }
     } else {
       this.log.error(pc.bgYellow(`DRATS: Parent sent undefined location event to child`), this.id)
     }
+  }
+  get locationUpdated(): LocationType {
+    return this._location
   }
 
   override id = 'Leaflet MiniMap Component'
@@ -384,7 +389,9 @@ Ensure that there are no changes to the bindings in the template after change de
   public onNewLocation(newLocation: LocationType) {
     this.log.verbose(`new location received in ${JSON.stringify(newLocation)}`, this.id)
 
-    if (newLocation && newLocation != undefined) {
+    if (!newLocation) {
+      this.log.error(`Bad location passed in to onNewLocation(): ${JSON.stringify(newLocation)}`, this.id)
+    } else {
       this.location = {
         lat: newLocation.lat,
         lng: newLocation.lng,
@@ -393,9 +400,7 @@ Ensure that there are no changes to the bindings in the template after change de
       }
       // TODO: Consider displaying previous points too - not just the new one?
       this.addMarker(this.location.lat, this.location.lng, this.location.address)
-      //this.addCircle(this.location.lat, this.location.lng, this.location.address)
-    } else {
-      this.log.error(`Bad location passed in to onNewLocation(): ${JSON.stringify(newLocation)}`, this.id)
+      this.addCircle(this.location.lat, this.location.lng, this.location.address)
     }
   }
 
@@ -461,8 +466,8 @@ Ensure that there are no changes to the bindings in the template after change de
       console.error(`bad lat: ${lat} or lng: ${lng} or lmap: ${this.lMap}`)
     } else {
       let _marker = new L.Marker([lat, lng], {
-        icon: iconDefault
-        // ??: title
+        icon: iconDefault,
+        title: title
       })
       /*
       https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391

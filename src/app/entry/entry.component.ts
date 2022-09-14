@@ -150,7 +150,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    *
    * @param newLocation
    */
-  onNewLocationEvent(newLocation: any) { //LocationType) {
+  onNewLocationEvent(newLocation: LocationType) { //LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.error(`Entry form (parent) got new Location: ${JSON.stringify(newLocation)}`, this.id)
     this.locationParent = newLocation
