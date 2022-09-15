@@ -42,7 +42,7 @@ export class FieldReportService implements OnInit, OnDestroy {
   private boundsMargin = 0.0025
 
   // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
-
+  //! REVIEW: Field & Ranger Services BOTH call constructors twice!!
   constructor(
     private rangerService: RangerService,
     private settingsService: SettingsService,
@@ -63,21 +63,7 @@ export class FieldReportService implements OnInit, OnDestroy {
       })
     }
     this.log.verbose("Contruction", this.id)
-    //! REVIEW: Gets called twice!!
-    this.log.verbose(`Constructor call stack (NOT an error: why called twice?): ${new Error().stack}`, this.id)
-    /* got:
-    14: Field Report Service: Constructor call stack: Error
-    at new FieldReportService (http://localhost:4200/main.js:9512:53)
-    at Object.FieldReportService_Factory [as factory] (http://localhost:4200/main.js:9825:75)
-    at R3Injector.hydrate (http://localhost:4200/vendor.js:198911:29)
-    at R3Injector.get (http://localhost:4200/vendor.js:198793:23)
-    at ChainedInjector.get (http://localhost:4200/vendor.js:213021:32)
-    at lookupTokenUsingModuleInjector (http://localhost:4200/vendor.js:191877:31)
-    at getOrCreateInjectable (http://localhost:4200/vendor.js:191929:10)
-    at Module.ɵɵdirectiveInject (http://localhost:4200/vendor.js:200112:10)
-    at NodeInjectorFactory.FieldReportsComponent_Factory [as factory] (http://localhost:4200/main.js:3315:306)
-    at getNodeInjectable (http://localhost:4200/vendor.js:192140:38)
-    */
+    //! REVIEW: this.log.verbose(`Constructor call stack (NOT an error: why called twice?): ${new Error().stack}`, this.id)
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {

@@ -70,7 +70,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   //private timeSubscription!: Subscription  //! EVER USED?!
   timePickerLabel = "Enter Report Date, Time"
 
-  alert: any
+  alert: AlertsComponent
 
   // --------------- ENTRY FORM -----------------
   // control creation in a component class = immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
@@ -140,7 +140,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       complete: () => this.log.info('Rangers Subscription complete', this.id)
     })
 
-    // TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
+    // TODO: Use Alert Service to avoid passing along doc & snackbar properties!
     this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)
   }
 
@@ -207,6 +207,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
         the binding expression changes after being checked by Angular during the change detection cycle
    */
+
 
     this.initEntryForm()
 

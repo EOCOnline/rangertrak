@@ -255,13 +255,15 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         })
     }
+    this.newLocationToFormAndEmit(this.location)
   }
 
   /**
     * Called once all HTML elements have been created
     */
   ngAfterViewInit() {
-    this.newLocationToFormAndEmit(this.location)
+    // doing emit here causes: NG0100: Expression has changed after it was checked
+    // this.newLocationToFormAndEmit(this.location)
   }
 
 

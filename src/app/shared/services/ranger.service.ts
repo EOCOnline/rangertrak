@@ -53,6 +53,7 @@ export class RangerService implements OnInit {
   private localStorageRangerName = 'rangers'
   excelData: any[][] = [[1, 2], [3, 4]]
 
+  //! REVIEW: Field & Ranger Services BOTH call constructors twice!!
   constructor(
     @Optional() @SkipSelf() existingService: RangerService,
     private httpClient: HttpClient,
@@ -72,8 +73,7 @@ export class RangerService implements OnInit {
     }
     this.log.verbose("Construction", this.id)
 
-    //! REVIEW: Gets called twice!!
-    this.log.verbose(`Constructor call stack: ${new Error().stack}`, this.id)
+    // REVIEW: this.log.verbose(`Constructor call stack: ${new Error().stack}`, this.id)
 
     this.LoadRangersFromLocalStorage()
     this.log.verbose(`Got ${this.rangers.length} from Local Storage`, this.id)
@@ -106,7 +106,7 @@ export class RangerService implements OnInit {
     * Update localStorage with new rangers & notify observers
     * REVIEW: ALSO called from RangerComponent with new updates!
     *
-    * TODO: Should new rangers be anparameter/argum,ent?!
+    * TODO: Should new rangers be a parameter/argum,ent?!
     */
   public updateLocalStorageAndPublish() {
     // Do any needed sanity/validation here
