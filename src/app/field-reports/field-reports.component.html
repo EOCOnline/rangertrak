@@ -36,10 +36,10 @@
 
 <div id="reportsgrid">
   <ag-grid-angular #reportsGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 600px;"
-    (gridReady)="onGridReady($event)" class="ag-theme-alpine" [rowData]="fieldReportArray"
-    [defaultColDef]="defaultColDef" [tooltipShowDelay]="500">
+    (gridReady)="onGridReady($event)" class="ag-theme-alpine" [rowData]="fieldReportArray" [gridOptions]="gridOptions"
+    [tooltipShowDelay]="500">
     <!--
-[gridOptions]="gridOptions"
+[defaultColDef]="defaultColDef"
 [columnDefs]="columnDefs"
 
       was :  [rowData]="fieldReports.fieldreportArray | async"

@@ -32,16 +32,15 @@ type AOA = any[][]  // array of arrays
 })
 export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
-
   private id = 'Ranger Component'
   title = 'Rangers (CERT, ACS/ARES, etc)'
-  pageDescr = `Display of rangers' on this mission`
-
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
+  pageDescr = `Grid display of rangers on this mission`
 
   private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
+
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
 
   localUrl: any[] = []
 
@@ -66,6 +65,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // EVENT handlers
     // onRowClicked: event => this.log.verbose('A row was clicked'),
+    // onSelectionChanged: (event: SelectionChangedEvent) => this.onRowSelection(event),
 
     // CALLBACKS
     // getRowHeight: (params) => 25
@@ -75,6 +75,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       flex: 1,
       minWidth: 100,
       editable: true,
+      //singleClickEdit: true,
       resizable: true,
       sortable: true,
       filter: true,
@@ -83,21 +84,11 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     },
     tooltipShowDelay: 0,
     tooltipHideDelay: 2000,
-
     // set rowData to null or undefined to show loading panel by default
     rowData: null,
   };
 
   // On hovering, display a larger image!
-  // ${SettingsService.secrets[6].key + params.data.image}:
-
-  /*    return `<span class="tooltip2" placement="top">
-        <img class="licenseImg" style="height:40px; width:40px;" alt= "${params.data.fullName}"
-        src= "${this.settings.imageDirectory}${params.data.image}">
-        <span class="tooltiphtml">W</span>
-        </span>`
-        */
-
   imageCellRenderer = (params: { data: RangerType }) => {
     return `<img class="licenseImg" style="height:40px; width:40px;" alt= "Image of ${params.data.fullName}"
       src= "${this.settings.imageDirectory}${params.data.image}">`
@@ -184,10 +175,14 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
+  //--------------------------------------------------------------------------
+
   onGridReady = (params: any) => {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
-    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
+
+    // https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
+    params.api.sizeColumnsToFit()
     // TODO: use this line, or next routine?!
     if (this.gridApi) {
       this.gridApi.refreshCells()

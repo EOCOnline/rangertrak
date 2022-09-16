@@ -12,9 +12,7 @@
     </li>
     <li>
       NOTE: per
-      <a href="https://issuetracker.google.com/issues/35827808" target="_blank"
-        >#35827808</a
-      >
+      <a href="https://issuetracker.google.com/issues/35827808" target="_blank">#35827808</a>
       this map can NOT be made available when offline. Issue is newly active as of May 2022!
     </li>
     <li>
@@ -38,19 +36,9 @@
 
   (mapMouseover)="onMapZoomed()"
 -->
-  <google-map
-    id="map"
-    width="100%"
-    [center]="center"
-    [zoom]="zoom"
-    [options]="mapOptions"
-    (mapClick)="addManualMarkerEvent($event)"
-    (mapMousemove)="onMapMouseMove($event)"
-    (mapRightclick)="toggleTrafficLayer()"
-    (zoomChanged)="onMapZoomed()"
-    (mapInitialized)="onMapInitialized($event)"
-
-  >
+  <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="mapOptions"
+    (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)"
+    (mapRightclick)="toggleTrafficLayer()" (zoomChanged)="onMapZoomed()" (mapInitialized)="onMapInitialized($event)">
     <div id="markerDiv" #markerDiv *ngFor="let marker of markers"></div>
 
     <!--map-circle [center]="circleCenter" [radius]="radius"></map-circle -->
@@ -66,14 +54,8 @@
   </google-map>
 
 
-  <google-map
-    id="overviewMap"
-    width="175px"
-    height="175px"
-    (mapMousemove)="onMapMouseMove($event)"
-    [options]="overviewMapOptions"
-    (mapInitialized)="onOverviewMapInitialized($event)"
-  >
+  <google-map id="overviewMap" width="175px" height="175px" (mapMousemove)="onMapMouseMove($event)"
+    [options]="overviewMapOptions" (mapInitialized)="onOverviewMapInitialized($event)">
   </google-map>
   <!--
     [zoom]="zoom"
@@ -87,14 +69,8 @@
   https://material.io/components/switches/web#api -->
 <label for="selectedFieldReports">Field reports to show: All ({{this.numAllRows}}) </label>
 
-<button
-  id="selectedFieldReports"
-  class="mdc-switch mdc-switch--unselected"
-  type="button"
-  role="switch"
-  aria-checked="false"
-  (click)="onSwitchSelectedFieldReports()"
->
+<button id="selectedFieldReports" class="mdc-switch mdc-switch--unselected" type="button" role="switch"
+  aria-checked="false" (click)="onSwitchSelectedFieldReports()">
   <div class="mdc-switch__track"></div>
   <div class="mdc-switch__handle-track">
     <div class="mdc-switch__handle">
@@ -114,8 +90,7 @@
   </div>
 </button>
 <label for="selectedFieldReports">
-  Just those ({{this.numSelectedRows}}) selected in the Field Report panel</label
->
+  Just those ({{this.numSelectedRows}}) selected in the Field Report panel</label>
 
 <br />
 <details>
@@ -126,9 +101,8 @@
       the Field Report pane/window...
     </li>
     <li>
-      <a href="https://developers.google.com/maps/documentation/javascript/reference/map"
-        >Detailed code/option references</a
-      >
+      <a href="https://developers.google.com/maps/documentation/javascript/reference/map" target="_blank">Detailed
+        code/option references</a>
     </li>
   </ul>
   <button (click)="logCenter()">Log center</button>
