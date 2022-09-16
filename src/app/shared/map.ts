@@ -43,17 +43,14 @@ export interface LayerType {
 
 
 /**
- *
  * per https://ozak.medium.com/stop-repeating-yourself-in-angular-how-to-create-abstract-components-9726d43c99ab,
  * do NOT use "abstract"!
  *
  * Needs template: https://stackoverflow.com/questions/62222979/angular-9-decorators-on-abstract-base-class
  *
  * https://www.tutorialsteacher.com/typescript/abstract-class
- *
  * https://www.cloudhadoop.com/angular-model-class-interface/
  * https://angular.io/guide/migration-undecorated-classes
- *
  */
 
 /**
@@ -62,13 +59,12 @@ export interface LayerType {
  * - Overview Map : boolean
  * - display fieldReports : boolean
  * - Stuff from Settings: Def_Lat/Lng/Zoom/etc.
- *
  */
 
 export type Map = L.Map | google.maps.Map
 
 @Component({ template: '' })
-export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
+export abstract class AbstractMap implements OnInit, OnDestroy {
 
   protected id = 'Abstract Map Component'
   public title = 'Abstract Map'
@@ -80,15 +76,15 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
   protected map!: Map
   public location!: LocationType
   public center = { lat: 0, lng: 0 }
-  public mouseLatLng = this.center //google.maps.LatLngLiteral |
+  public mouseLatLng = this.center // google.maps.LatLngLiteral |
   public zoom = 10 // actual zoom level of main map
   public zoomDisplay = 10 // what's displayed below main map
 
   protected displayReports = false // Guard for the following
   protected fieldReportsSubscription!: Subscription
   protected fieldReports: FieldReportsType | undefined
-  // The displayedFieldReportArray can either be all (fieldReports) or selectedReports!
   protected fieldReportArray: FieldReportType[] = []  // just the array portion of fieldReports
+  // The displayedFieldReportArray can either be all (fieldReports) or selectedReports!
   protected displayedFieldReportArray: FieldReportType[] = []
   // protected markers: clusters?
 
@@ -98,7 +94,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
   protected filterButton: HTMLButtonElement | undefined = undefined
   public numSelectedRows = 0
   public numAllRows = 0
-
 
   protected hasOverviewMap = false // Guard for overview map logic
   protected overviewMap: L.Map | google.maps.Map | undefined = undefined
@@ -110,7 +105,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
     protected log: LogService,
     @Inject(DOCUMENT) protected document: Document) {
 
-    this.log.excessive(`Constructing Abstract Map`, this.id)
+    this.log.excessive(`======== Constructor() ============ Abstract Map`, this.id)
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
@@ -132,13 +127,12 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
       })
   }
 
-
   /**
    *
    */
   ngOnInit() {
     this.log.verbose("ngOnInit()", this.id)
-    //   this.log.verbose(`ngOnInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
+    // this.log.verbose(`ngOnInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
 
     if (!this.settings) {
       this.log.error(`this.settings not yet established in ngOnInit()`, this.id)
@@ -185,7 +179,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
   captureLMoveAndZoom(map: L.Map) {
     if (!map) {
-      this.log.warn(`No map in leaflet captureMoveAndZoom()`, this.id)
+      this.log.warn(`No map in captureLMoveAndZoom()`, this.id)
       return
     }
 
@@ -196,7 +190,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
       if ($event.latlng) {
         this.mouseLatLng = $event.latlng //.toJSON()
       } else {
-        this.log.warn(`No latlng on event in leaflet captureMoveAndZoom()`, this.id)
+        this.log.warn(`No latlng on event in captureLMoveAndZoom()`, this.id)
       }
     })
   }
@@ -221,10 +215,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
 
   }
 
-
-
-
-
   /**
   * Store Lat/Lng in Clipboard
   * OR
@@ -237,39 +227,52 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
   * @param ev
   */
   onMouseClick(ev: MouseEvent) {
+    // lMap has override onMouseClick()
+
+
     if (!this.map) {
       this.log.error(`Map not created, so can't get lat & lng`, this.id)
       return
     }
-
-    if (this.isGoogleMap(this.map)) {
-
-      /*
-       ev.x
-      this.map.addListener("click", (mapsMouseEvent) => {
-        let position = mapsMouseEvent.latLng
-      })
-      //JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
-      */
+    if (this.settings.allowManualPinDrops) {
+      // Put coordinates into a new non-permanent marker & drop on to map
+      this.log.error(`onMouseClick() to create markers not implemented yet!`, this.id)
+      // call: addManualMarkerEvent(event: google.maps.MapMouseEvent)
+      // or
+      //
+      // this actualy works for one map type, just need to be wired up...
     } else {
+      // Put coordinates into clipboard
+      if (this.isGoogleMap(this.map)) {
+        this.log.error(`onMouseClick() not implemented for Google Maps yet! `, this.id)
+        /*
+         ev.x
+        this.map.addListener("click", (mapsMouseEvent) => {
+          let position = mapsMouseEvent.latLng
+        })
+        JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
+        */
+        // this.log.excessive(`${coords} copied to clipboard`, this.id)
+      } else {
 
-      let latlng = this.map.mouseEventToLatLng(ev)
-      let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
-      navigator.clipboard.writeText(coords)
-        .then(() => {
-          let status = document.getElementById('map-status')
-          if (status) {
-            status.innerText = `${coords} copied to clipboard`
-            //status.style.visibility = "visible"
-            Utility.resetMaterialFadeAnimation(status)
-          } else {
-            this.log.info(`Entry__Minimap-status not found!`, this.id)
-          }
-          this.log.excessive(`${coords} copied to clipboard`, this.id)
-        })
-        .catch(err => {
-          this.log.error(`latlng NOT copied to clipboard, error: ${err}`, this.id)
-        })
+        let latlng = this.map.mouseEventToLatLng(ev)
+        let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
+        navigator.clipboard.writeText(coords)
+          .then(() => {
+            let status = document.getElementById('map-status')
+            if (status) {
+              status.innerText = `${coords} copied to clipboard`
+              //status.style.visibility = "visible"
+              Utility.resetMaterialFadeAnimation(status)
+            } else {
+              this.log.info(`Entry__Minimap-status not found!`, this.id)
+            }
+            this.log.excessive(`${coords} copied to clipboard`, this.id)
+          })
+          .catch(err => {
+            this.log.error(`latlng NOT copied to clipboard, error: ${err}`, this.id)
+          })
+      }
     }
   }
 
@@ -297,8 +300,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {  //OnInit,
   //     this.log.warn('move(): NO event.latLng!!!!!!!!!!!!!', this.id);
   //   }
   // }
-
-
 
   isLeafletMap(map: Map): map is L.Map {
     return true;

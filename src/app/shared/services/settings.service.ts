@@ -28,6 +28,8 @@ export class SettingsService implements OnInit {
   constructor(@Optional() @SkipSelf() existingService: SettingsService,
     private log: LogService
   ) {
+    this.log.verbose(`======== constructor() ============`, this.id);
+
     if (existingService) {
       /**
        * see https://angular.io/guide/singleton-services
@@ -43,7 +45,7 @@ export class SettingsService implements OnInit {
 
     // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
     //! REVIEW: Gets called twice!!
-    this.log.verbose('Constructing', this.id)
+    this.log.verbose('======== Constructor() ============', this.id)
 
     //  ------------------------- SECRETS -------------------------------
 
@@ -99,7 +101,7 @@ export class SettingsService implements OnInit {
   }
 
   ngOnInit() {
-    this.log.error(`into ngOnInit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`, this.id);
+    this.log.error(`ngOnInit()`, this.id);
 
 
     if (window.isSecureContext) {
@@ -116,7 +118,7 @@ export class SettingsService implements OnInit {
     }
 
     this.sha256("hello").then(digestValue => {
-      console.error(` #################################### SECRET      Digest is: ${digestValue}`)
+      console.error(` #### SECRET Digest is: ${digestValue}`)
     });
 
   }

@@ -95,7 +95,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       log,
       document)
 
-    this.log.verbose(`Constructing Leaflet Map, using https://www.LeafletJS.com version ${L.version}`, this.id)
+    this.log.verbose(`======== Constructor() ============, using https://www.LeafletJS.com version ${L.version}`, this.id)
 
     this.hasOverviewMap = false
     this.displayReports = false

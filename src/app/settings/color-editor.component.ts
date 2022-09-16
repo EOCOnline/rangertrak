@@ -4,7 +4,7 @@ import { ArgumentOutOfRangeError } from 'rxjs'
 import { Color } from '@angular-material-components/color-picker'
 import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef } from '@angular/core'
 import {
-    AbstractControl, FormArray, FormBuilder, UntypedFormControl, FormGroup, Validators
+    AbstractControl, FormArray, FormBuilder, FormGroup, UntypedFormControl, Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 
@@ -48,7 +48,7 @@ export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
     this.b = 252
 
     this.colorCtr = new UntypedFormControl(new Color(this.r, this.g, this.b), [Validators.required])
-    //console.log(`constructor = ${this.colorCtr.value.hex} from  ${this.color}`)
+    //console.log(`======== Constructor() ============ = ${this.colorCtr.value.hex} from  ${this.color}`)
   }
   // dont use afterGuiAttached for post gui events - hook into ngAfterViewInit instead for this
   ngAfterViewInit() {

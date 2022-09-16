@@ -104,7 +104,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     private zone: NgZone,
     @Inject(DOCUMENT) private document: Document) {
 
-    this.log.excessive(`Constructing!`, this.id)
+    this.log.excessive(`======== constructor() ============`, this.id)
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({

@@ -1,7 +1,8 @@
 //import { XLSX } from 'xlsx'
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx'
+
+import { DOCUMENT } from '@angular/common'
 import { Inject, Injectable } from '@angular/core'
-import { DOCUMENT } from '@angular/common';
 
 // based on https://ag-grid.com/javascript-data-grid/excel-import/#example-excel-import
 // https://oss.sheetjs.com/sheetjs/
@@ -116,7 +117,7 @@ export class csvImport {
     let worksheet = workbook.Sheets[firstSheetName];
 
     // we expect the following columns to be present
-    let columns:any = {
+    let columns: any = {
       'A': 'athlete',
       'B': 'age',
       'C': 'country',
@@ -137,7 +138,7 @@ export class csvImport {
     // iterate over the worksheet pulling out the columns we're expecting
     while (worksheet['A' + rowIndex]) {
       //debugger
-      let row:any = {};
+      let row: any = {};
       Object.keys(columns).forEach((column) => {
         //console.log(` column=${column}; w=${worksheet[column + rowIndex].w}`)
         /*

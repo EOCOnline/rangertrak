@@ -10,6 +10,7 @@ export class GoogleGeocode {
   static geocoder: google.maps.Geocoder | null  //= new google.maps.Geocoder
 
   constructor() {
+    //======== Constructor() ============
     try {
       GoogleGeocode.geocoder = new google.maps.Geocoder // || null
     } catch (error) {

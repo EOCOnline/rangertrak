@@ -121,7 +121,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     private _snackBar: MatSnackBar,
     @Inject(DOCUMENT) private document: Document
   ) {
-    this.log.info(` Construction`, this.id)
+    this.log.info(`======== Constructor() ============`, this.id)
 
     this.now = new Date()
     this.gridApi = ""

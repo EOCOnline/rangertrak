@@ -84,13 +84,13 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
       log,
       document)
 
-    this.log.verbose(`MiniGMapComponent constructed with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
+    this.log.verbose(`======== Constructor() ============ with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
 
 
     this.hasOverviewMap = false
     this.displayReports = false
     this.hasSelectedReports = false
-//! TODO: Move ALL subscribes to AfterViewInit() !!!!
+    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     // this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
     //   next: (newSettings) => {
@@ -115,7 +115,7 @@ export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy 
   override ngOnInit(): void {
     super.ngOnInit()
 
-this.log.verbose('ngOnInit()',this.id)
+    this.log.verbose('ngOnInit()', this.id)
 
     // displayReports = false
 

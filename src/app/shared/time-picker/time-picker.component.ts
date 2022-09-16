@@ -89,7 +89,7 @@ export class TimePickerComponent implements OnInit {
     private log: LogService,
     private _formBuilder: UntypedFormBuilder,
     @Inject(DOCUMENT) private document: Document) {
-    this.log.excessive(`timepicker construction`, this.id)
+    this.log.excessive(`======== Constructor() ============`, this.id)
 
     // BUG: maybe should be in EntryComponent.ts instead? as locationFrmGrp is there...
     // new values here bubble up as emitted events - see onNewLocation()

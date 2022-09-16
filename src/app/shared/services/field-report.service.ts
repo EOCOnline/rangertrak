@@ -62,7 +62,9 @@ export class FieldReportService implements OnInit, OnDestroy {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    this.log.verbose("Contruction", this.id)
+
+    this.log.verbose("======== Constructor() ============", this.id)
+
     //! REVIEW: this.log.verbose(`Constructor call stack (NOT an error: why called twice?): ${new Error().stack}`, this.id)
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({

@@ -71,7 +71,7 @@ export class RangerService implements OnInit {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    this.log.verbose("Construction", this.id)
+    this.log.verbose("======== Constructor() ============", this.id)
 
     // REVIEW: this.log.verbose(`Constructor call stack: ${new Error().stack}`, this.id)
 

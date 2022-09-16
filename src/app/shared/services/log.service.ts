@@ -35,7 +35,7 @@ export class LogService {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    console.log(pc.bgGreen(`==== Log ${pc.red('Service')} ${pc.italic('Construction')} ====`))
+    console.log(pc.bgGreen(`==== Log ${pc.red('Service')} ${pc.italic('======== Constructor() ============')} ====`))
 
     let initialEntry = {
       date: new Date, msg: 'Log Service is being constructed',

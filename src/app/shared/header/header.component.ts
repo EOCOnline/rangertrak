@@ -47,7 +47,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private log: LogService,
     private settingsService: SettingsService,
   ) {
-
+    //======== Constructor() ============
     this.timeCurrent = this.clockService.getCurrentTime()
 
     // consuming components should include their name, e.g.

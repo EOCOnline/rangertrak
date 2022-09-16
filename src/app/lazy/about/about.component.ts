@@ -22,7 +22,7 @@ export class AboutComponent implements OnDestroy {
     private log: LogService,
     private settingsService: SettingsService
   ) {
-    console.log("AboutComponent getting constructed")
+    console.log("AboutComponent  ======== Constructor() ============ ")
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({

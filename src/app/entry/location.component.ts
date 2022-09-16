@@ -100,7 +100,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     private _formBuilder: UntypedFormBuilder,
     private log: LogService,
     @Inject(DOCUMENT) private document: Document) {
-    this.log.info("Construction", this.id)
+    this.log.info("======== Constructor() ============", this.id)
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     // Settings only needed for Check PCode & What3Words...

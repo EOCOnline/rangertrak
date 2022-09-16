@@ -46,23 +46,18 @@ let marker: google.maps.Marker
   styleUrls: ['./gmap.component.scss'],
   providers: [SettingsService]
 })
-export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {    //extends Map, OnInit,
+export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
 
-  // Keep reference to map component, w/ @ViewChild decorator, allows:
-  // https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#methods-and-getters
-  // https://angular.io/api/core/ViewChild
-  // next line provides this.gMap!
-  //@ViewChild(google.maps.Map, { static: false }) map!: google.maps.Map
-  //@ViewChild(google.maps.InfoWindow, { static: false }) info!: google.maps.InfoWindow //| undefined
-  // following was in https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#mapinfowindow
-  // also: https://github.com/angular/components/blob/master/src/google-maps/google-map/README.md &
-  // https://stackblitz.com/edit/angular-9-google-maps-5v2cu8?file=src%2Fapp%2Fapp.component.ts
-
-
+  // Get reference to map components, for later use
   @ViewChild(GoogleMap, { static: false }) ngMap!: GoogleMap
   @ViewChild(GoogleMap, { static: false }) overviewNgMap!: GoogleMap
-  // MapInfoWindow is tooltip over a map: https://developers.google.com/maps/documentation/javascript/infowindows
   //@ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
+  // MapInfoWindow: a map's tooltip: https://developers.google.com/maps/documentation/javascript/infowindows
+  /** Details:
+   * https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#methods-and-getters
+   * https://github.com/angular/components/blob/master/src/google-maps/google-map/README.md
+   * https://stackblitz.com/edit/angular-9-google-maps-5v2cu8?file=src%2Fapp%2Fapp.component.ts
+   */
 
   public override id = 'Google Map Component'
   public override title = 'Google Map'
@@ -105,7 +100,7 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {   
     maxwidth: "150px",
   });
 
-  // Google MapMarker only wraps google.maps.LatLngLiteral (positions) - NOT google.maps.Marker: styles, behaviors, etc
+  // Google MapMarker only wraps google.maps.LatLngLiteral (positions) - NOT google.maps.Marker: styles, behaviors, etc. -- But might be able to set marker options?
   markers: google.maps.Marker[] = []
   markerCluster!: GMC.MarkerClusterer
   // markerPositions: google.maps.LatLngLiteral[] angular brain-dead wrapper
@@ -132,7 +127,7 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {   
       log,
       document)
 
-    this.log.verbose(`Constructing Google Map, using version ${google.maps.version}`, this.id)
+    this.log.verbose(`======== Constructor() ============ Google Map, using version ${google.maps.version}`, this.id)
 
     this.hasOverviewMap = true
     this.displayReports = true
@@ -380,14 +375,12 @@ MarkerClustererPlus Library - also old
     }
   }
 
-
   override onSwitchSelectedFieldReports() {
     super.onSwitchSelectedFieldReports()
     this.log.excessive(`onSwitchSelectedFieldReports()`, this.id)
 
     this.getAndDisplayFieldReports() // REVIEW: !!!!
   }
-
 
   getAndDisplayFieldReports() {
     //super.onSwitchSelectedFieldReports()
@@ -445,10 +438,11 @@ MarkerClustererPlus Library - also old
     let fr: FieldReportType
 
     let fieldReportStatuses: FieldReportStatusType[] = this.settings!.fieldReportStatuses
-    // REVIEW: Might this mess with existing fr's?
-    this.log.verbose(`displayAllMarkers got ${this.fieldReportArray.length} field reports`, this.id)
+    // REVIEW: Might this mess with existing fr's? (User instructed NOT to rename existing statuses...)
+    this.log.verbose(`displayMarkers got ${this.fieldReportArray.length} field reports to display`, this.id)
 
     //! TODO: Start by hiding/clearing existing markers & rebuilding....
+    //this.markerCluster.clearMarkers()
     this.removeAllMarkers()
 
     //if (!this.fieldReportArray.length) {
@@ -493,16 +487,22 @@ MarkerClustererPlus Library - also old
         break
       }
 
-      this.log.excessive(`displayAllMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`, this.id)
+      this.log.excessive(`displayMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`, this.id)
 
       this.addMarker(latlng.lat(), latlng.lng(), title, labelText, title, labelColor, "28px", icon)
     }
 
-    this.log.verbose(`displayAllMarkers added ${this.fieldReportArray.length} markers`, this.id)
+    //! now all markers are in: this.markers[]  HOW TO DISPLAY/ATTACH TO MAP?!
+    this.showMarkers()
+    this.markerCluster.addMarkers(this.markers)
+    // ????
+
+
+    this.log.verbose(`displayMarkers added ${this.fieldReportArray.length} markers`, this.id)
   }
 
   override addMarker(lat: number, lng: number, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP, msDelay = 100) {
-    //this.log.excessive(`addMarker`, this.id)
+    this.log.excessive(`addMarker(G)`, this.id)
 
     if (infoContent == "") {
       infoContent = `Manual Marker dropped ${lat}, ${lng} at ${Date()}`
@@ -535,12 +535,12 @@ MarkerClustererPlus Library - also old
       let pos = `lat: ${lat}; lng: ${lng}`
       //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; lng: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
 
-      // this.log.excessive("Actually adding marker now...", this.id)
+      this.log.excessive("addMarker(G) Actually adding marker now...", this.id)
 
       let m = new google.maps.Marker({
         draggable: true,
         animation: animation,
-        // map: this.gMap,
+        map: this.gMap,
         position: { lat: lat, lng: lng },
         title: title,
         icon: icon,

@@ -207,6 +207,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     //private rangerService: RangerService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
+    this.log.verbose('======== Constructor() ============', this.id)
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
