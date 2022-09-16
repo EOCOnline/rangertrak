@@ -121,6 +121,7 @@ export class TimePickerComponent implements OnInit {
     this.log.verbose(`Got new time: ${newTime.value}: Emitting!`, this.id)
 
     this.time = newTime.value
+    this.newTimeEvent.emit(this.time)
     //if (! (
 
     //) {
