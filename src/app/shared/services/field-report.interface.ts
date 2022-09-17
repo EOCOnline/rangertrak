@@ -1,4 +1,4 @@
-import { LatLngBounds } from "leaflet"
+import { LatLngBounds } from 'leaflet'
 
 /**
  * Data to store with every field report entry
@@ -17,14 +17,13 @@ export type FieldReportType = {
 }
 
 /**
- * A packet of all field data for the op period
- * except Rangers or Settings
+ * A packet of all field data for the op period except Rangers or Settings
  */
 export type FieldReportsType = {
   version: string,
   date: Date,
   event: string,
-  bounds: L.LatLngBounds,
+  bounds: L.LatLngBounds, //!BUG: Relies on Leaflet object type
   numReport: number,
   maxId: number,
   filter: string, // All reports or not? Guard to ensure a subset never gets writen to localstorage?

@@ -365,30 +365,26 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param formData1
    *
    */
-  onFormSubmit(formData1: string): void {
+  onFormSubmit(formData: string): void {
     this.log.excessive(`Submit Form`, this.id)
 
-    // We just reset the form. Otherwise if reusing the form we'd want to create a deep copy of the form-model
+    // NOTE: Afterward, we will just reset the form. Otherwise (if reusing the form) create a deep copy of the form-model:
     // result.entryDetailsForm = Object.assign({}, result.entryDetailsForm)
 
-
-    // this.date=this.dateCtrl.value // TODO:
-    // ! next line should already have happened by patch, in
-    // this.entryDetailsForm.value.date = this.dateCtrl.value
-
-
-
-
-    //! BUG: ALSO need to get location data into the form...
-    this.log.error(`Not writing locationm: ${JSON.stringify(this.locationParent)} to report!!!`, this.id)
-
+    /* OLD:    debugger
+        // this.date=this.dateCtrl.value // TODO:
+        // ! next line should already have happened by patch, in
+        // this.entryDetailsForm.value.date = this.dateCtrl.value
+        //! BUG: ALSO need to get location data into the form...
+        this.log.error(`Not writing locationm: ${JSON.stringify(this.locationParent)} to report!!!`, this.id)
+    */
 
     /* FUTURE: Allow keywords, or search Notes for semicolon delimited tokens?
     get keywordsControls(): any {
     return (<FormArray>this.entryDetailsForm.get('keywords')).controls
     }   */
 
-    let formData = JSON.stringify(this.entryDetailsForm.value)
+    //let formData = JSON.stringify(this.entryDetailsForm.value)
 
     let newReport = this.fieldReportService.addfieldReport(formData)
     this.log.info(`Report id # ${newReport.id} has been added with: ${formData} `, this.id)
@@ -397,16 +393,13 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       // Display fading confirmation to right of Submit button
       this.submitInfo.innerText = `Entry id # ${newReport.id} Saved.${formData} `
       Utility.resetMaterialFadeAnimation(this.submitInfo)
-      //this.resetMaterialFadeAnimation2(this.submitInfo)
     }
     else {
       this.log.error("Submit Info field not found. Could not display report confirmation confirmation", this.id)
     }
     this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData} `, `Entry id # ${newReport.id} `, 2000)
 
-    this.resetEntryForm()  // std reset just blanks values, doesn't initialize them...
-
-
+    this.resetEntryForm()  // std reset just blanks values, doesn't initialize the various form fields...
   }
 
   // ---------------- MISC HELPERS -----------------------------

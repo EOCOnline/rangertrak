@@ -53,6 +53,8 @@ export class RangerService implements OnInit {
   private localStorageRangerName = 'rangers'
   excelData: any[][] = [[1, 2], [3, 4]]
 
+
+  // https://angular.io/guide/architecture-services#providing-services: singleton or multiple service instances?!
   //! REVIEW: Field & Ranger Services BOTH call constructors twice!!
   constructor(
     @Optional() @SkipSelf() existingService: RangerService,

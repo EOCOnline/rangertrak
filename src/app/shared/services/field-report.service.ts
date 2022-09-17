@@ -27,8 +27,8 @@ export class FieldReportService implements OnInit, OnDestroy {
   private fieldReportsSubject$!: BehaviorSubject<FieldReportsType>
 
   // REVIEW: No need to enable subscription to selectedFieldReports as they are
-  // auto-saved on evey selection and user is single-threaded, needs to do that,
-  // then move to maps which THEN grab the new values.
+  // auto-saved on evey selection and user is single-threaded.
+  // Otherwise move to maps which THEN grab the new values.
   private selectedFieldReports!: FieldReportsType
 
   private settingsSubscription!: Subscription
@@ -41,7 +41,7 @@ export class FieldReportService implements OnInit, OnDestroy {
   private serverUri = 'http://localhost:4000/products' // FUTURE:
   private boundsMargin = 0.0025
 
-  // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
+  // https://angular.io/guide/architecture-services#providing-services: singleton or multiple service instances?!
   //! REVIEW: Field & Ranger Services BOTH call constructors twice!!
   constructor(
     private rangerService: RangerService,
@@ -64,7 +64,6 @@ export class FieldReportService implements OnInit, OnDestroy {
     }
 
     this.log.verbose("======== Constructor() ============", this.id)
-
     //! REVIEW: this.log.verbose(`Constructor call stack (NOT an error: why called twice?): ${new Error().stack}`, this.id)
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
@@ -78,9 +77,11 @@ export class FieldReportService implements OnInit, OnDestroy {
 
     this.fieldReports = this.LoadFieldReportsFromLocalStorage()
 
+
     this.log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
 
-    //this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
+    // REVIEW: bounds actually needs to be an Object, not getting done this a waitForAsync, right?!
+    this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
     this.fieldReportsSubject$ = new BehaviorSubject(this.fieldReports)
     this.updateFieldReportsAndPublish()
   }
@@ -103,7 +104,7 @@ export class FieldReportService implements OnInit, OnDestroy {
       return this.initEmptyFieldReports()
     }
     else if (localStorageFieldReports.indexOf("version") <= 0) {
-      this.log.error(`Field Reports in Local Storage appear corrupted & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`, this.id)
+      this.log.error(`Field Reports in Local Storage appear corrupted (no version #) & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`, this.id)
       localStorage.setItem(this.storageLocalName + '-BAD', localStorageFieldReports)
       return this.initEmptyFieldReports()
     }
@@ -165,13 +166,25 @@ export class FieldReportService implements OnInit, OnDestroy {
   }
 
   public addfieldReport(formData: string) {
-    this.log.info(`Got new field report: ${formData}`, 'FieldReportService')
+    this.log.info(`Got new field report: ${JSON.stringify(formData)}`, 'FieldReportService')
 
-    let newReport: FieldReportType = JSON.parse(formData)
+    debugger
+
+    let newReport: FieldReportType = JSON.parse(formData) //"[object Object]" is not valid JSON
     newReport.id = this.fieldReports.maxId++
     this.fieldReports.fieldReportArray.push(newReport)
+
     let newPt = L.latLng(newReport.lat, newReport.lng)
-    this.fieldReports.bounds.extend(newPt)
+    //let newPt = L.latLng(newReport.lat, newReport.lng)
+    if (!newPt) {
+      this.log.error(`newPt = ${JSON.stringify(newPt)}; lat:${newReport.lat}, lng: ${newReport.lng}`)
+      // newPt is undefined, though newReport.lat, newReport.lng look good...
+      //!BUG: Not a function, entering new FR in Entry Page...
+      //debugger
+    }
+
+    this.fieldReports.bounds.extend({ lat: newReport.lat, lng: newReport.lng })
+
     this.updateFieldReportsAndPublish() // put to localStorage & update subscribers
     return newReport
   }
@@ -191,7 +204,7 @@ export class FieldReportService implements OnInit, OnDestroy {
     // TODO: Use setter & getters?, pg 452 Ang Dev w/ TS
     if (this.selectedFieldReports == null) {
       this.log.warn(`User hasn't selected any rows yet,
-      but we're trying to retrieve Selected Rows!`, this.id)
+      so we're returning an empty array for Selected Field Reports!`, this.id)
       this.selectedFieldReports = this.initEmptyFieldReports()
       this.selectedFieldReports.filter = "As selected by user"
       this.selectedFieldReports.fieldReportArray = []
@@ -272,8 +285,8 @@ export class FieldReportService implements OnInit, OnDestroy {
       this.log.info(`recalcFieldBounds BROADENED to N:${north} S:${south} `, this.id)
     }
 
-    reports.bounds = L.latLngBounds([[south, west], [north, east]])//SW, NE
-    //this.log.excessive(`New bounds: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
+    reports.bounds = new L.LatLngBounds([[south, west], [north, east]])//SW, NE
+    this.log.excessive(`New bounds: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
   }
 
   generateFakeData(num: number = 15) {
