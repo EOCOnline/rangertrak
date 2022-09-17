@@ -142,7 +142,28 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // TODO: Use Alert Service to avoid passing along doc & snackbar properties!
     this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)
+
+    //! https://material.angular.io/components/autocomplete/examples#autocomplete-overview has this in constructor!
+    // also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
+    this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
+      startWith(''),
+      map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+    )
+    this.log.verbose(`constructor: got new callsign: [does endless loop: ] { JSON.stringify(this.filteredRangers) } `, this.id)
+
+    // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
+    // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+
+    // NOTE: workaround for onChange not working...
+    // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
+    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
   }
+
+  // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
+  //this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
+
+  // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
+
 
   /**
    * Persist new location so when form is submitted it gets recorded...
@@ -222,28 +243,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       //this.alert.OpenSnackBar(`No Rangers exist.Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
       //TODO: Force navigation to /Rangers?
 
-      // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
-      this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
-        startWith(''),
-        map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
-      )
-      this.log.verbose(`constructor: got new callsign: [does endless loop: ] { JSON.stringify(this.filteredRangers) } `, this.id)
-
-      // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
-      // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
-
-      // NOTE: workaround for onChange not working...
-      // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
-      this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
+      this.log.excessive(` ngOnInit completed`, this.id)
     }
-
-    // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
-    //this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
-
-    // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
-
-    this.log.excessive(` ngOnInit completed`, this.id)
   }
+
 
   /**
    * Encrpyt reports before storing them?
@@ -267,7 +270,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   *
+   * https://material.angular.io/components/autocomplete/examples#autocomplete-optgroup
    * @param value
    * @returns
    */
