@@ -1,8 +1,7 @@
 `
 <!-- div class="container" -->
-<div appearance="filled">
-  <div class="input-group " [formGroup]="timepickerFormGroup">
-    <!--
+<div appearance="filled" class="input-group " [formGroup]="timepickerFormGroup">
+  <!--
         enter__Where-div
         class="timepicker__Where-input"
          [formControl]="dateCtrl"
@@ -20,26 +19,26 @@
           [min]="minDate"
           [max]="maxDate"
       -->
-    <mat-form-field class="innerElement">
-      <mat-label>{{datePickerLabel}}</mat-label>
-      <input matInput [ngxMatDatetimePicker]="$any(datePicker)" formControlName="time" type="datetime"
-        placeholder="Enter a date" class="timepicker__When-input" data-lpignore="true" tabindex="6"
-        (dateChange)="onNewTime($event)" />
+  <mat-form-field class="innerElement">
+    <mat-label>{{datePickerLabel}}</mat-label>
+    <input matInput [ngxMatDatetimePicker]="$any(datePicker)" formControlName="time" type="datetime"
+      placeholder="Enter a date" class="timepicker__When-input" data-lpignore="true" tabindex="6"
+      (dateChange)="onNewTime($event)" />
 
-      <mat-datepicker-toggle matSuffix [for]="$any(datePicker)" title="Click me to display a time picker">
-      </mat-datepicker-toggle>
+    <mat-datepicker-toggle matSuffix [for]="$any(datePicker)" title="Click me to display a time picker">
+    </mat-datepicker-toggle>
 
-      <ngx-mat-datetime-picker #datePicker [showSpinners]="showSpinners" [showSeconds]="showSeconds"
-        [stepHour]="stepHour" [stepMinute]="stepMinute" [stepSecond]="stepSecond" [touchUi]="touchUi" [color]="color"
-        [enableMeridian]="enableMeridian" [disableMinute]="disableMinute" [hideTime]="hideTime">
-        <!-- Custom icon or text of Apply icon -->
-        <!--ng-template>
+    <ngx-mat-datetime-picker #datePicker [showSpinners]="showSpinners" [showSeconds]="showSeconds" [stepHour]="stepHour"
+      [stepMinute]="stepMinute" [stepSecond]="stepSecond" [touchUi]="touchUi" [color]="color"
+      [enableMeridian]="enableMeridian" [disableMinute]="disableMinute" [hideTime]="hideTime">
+      <!-- Custom icon or text of Apply icon -->
+      <!--ng-template>
           <mat-icon>star</mat-icon>
           <span>OK</span>
         </ng-template-->
 
-      </ngx-mat-datetime-picker>
-    </mat-form-field>
-  </div>
+    </ngx-mat-datetime-picker>
+  </mat-form-field>
 </div>
+
 <!--/div -->

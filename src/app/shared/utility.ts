@@ -71,5 +71,37 @@ export class Utility {
         */
   }
 
+  static displayHide(htmlElement: HTMLElement) {
+    if (htmlElement) {
+      htmlElement.style.visibility = "hidden";
+    } else {
+      console.warn(`Could not hide null HTML Element`)
+    }
+  }
+
+  static displayShow(htmlElement: HTMLElement) {
+
+    // if (htmlElement.startsWith("#")) {
+    if (htmlElement) {
+      htmlElement.style.visibility = "visible";
+    } else {
+      console.warn(`Could not show null HTML Element`)
+    }
+    //   } else if(htmlElement.startsWith(".")) {
+    //   let e = Array.from(this.document.getElementsByClassName(htmlElement))
+    //   if (e) {
+    //     let i: Element
+    //     for (const i of e) {
+    //       if (i) {
+    //         i.style.visibility = "visible";
+    //       }
+    //     }
+    //   }
+    // }
+    //     else {
+    //   this.log.error("Expected 1st char of . (for Class), or # (for ID).", this.id)
+    // }
+
+  }
 
 }

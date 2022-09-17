@@ -120,6 +120,10 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       return
     }
 
+    if (this.settings?.debugMode) {
+      Utility.displayShow(this.document.getElementById("Entry__LMinimap_debug")!)
+    }
+
     /*
     ERROR Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '0.00000'. Current value: '47.44720'.. Find more at https://angular.io/errors/NG0100
         at throwErrorIfNoChangesMode (core.mjs:6733:1)

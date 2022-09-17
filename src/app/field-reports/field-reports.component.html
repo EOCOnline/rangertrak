@@ -26,18 +26,10 @@
 </details>
 <br />
 
-<!--details>
-  <summary>Future functionality</summary>
-  <ul>
-    <li></li>
-  </ul>
-</details>
-<br-->
-
 <div id="reportsgrid">
-  <ag-grid-angular #reportsGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 600px;"
-    (gridReady)="onGridReady($event)" class="ag-theme-alpine" [rowData]="fieldReportArray" [gridOptions]="gridOptions"
-    [tooltipShowDelay]="500">
+  <ag-grid-angular #reportsGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 60vh;"
+    (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="fieldReportArray"
+    [columnDefs]="columnDefs" [tooltipShowDelay]="500">
     <!--
 [defaultColDef]="defaultColDef"
 [columnDefs]="columnDefs"

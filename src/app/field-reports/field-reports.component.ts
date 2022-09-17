@@ -8,6 +8,7 @@ import {
 } from '@angular/core'
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms'
 
+import { Utility } from '../shared'
 import {
     FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
     RangerService, SettingsService, SettingsType
@@ -163,10 +164,10 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
     if (this.settings ? !this.settings.debugMode : true) {
       this.log.verbose("running in non-debug mode", this.id)
-      // this.displayHide("enter__Fake--id") // should default to hidden
+      //Utility.displayHide(this.document.getElementById("enter__Fake--id")!) // defaults to hidden
     } else {
       this.log.verbose("running in debug mode", this.id)
-      this.displayShow("enter__Fake--id")
+      Utility.displayShow(this.document.getElementById("enter__Fake--id")!)
     }
 
     if (this.gridApi) {
@@ -405,24 +406,6 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     //this.fieldReports$ = this.fieldReportService.subscribeToFieldReports()
     //this.refreshGrid()
     //this.reloadPage() //TODO: why aren't above enough?!!!
-  }
-
-  displayHide(htmlElementID: string) {
-    let e = this.document.getElementById(htmlElementID)
-    if (e) {
-      e.style.visibility = "hidden"
-    } else {
-      console.warn(`Could not hide HTML Element ${htmlElementID}`)
-    }
-  }
-
-  displayShow(htmlElementID: string) {
-    let e = this.document.getElementById(htmlElementID)
-    if (e) {
-      e.style.visibility = "visible";
-    } else {
-      console.warn(`Could not show HTML Element ${htmlElementID}`)
-    }
   }
 
   ngOnDestroy() {

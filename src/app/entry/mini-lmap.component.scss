@@ -28,6 +28,10 @@
   color    : #AAA;
 }
 
+#Entry__LMinimap_debug {
+  visibility: hidden;
+}
+
 .leaflet-container.crosshair-cursor-enabled {
   cursor: crosshair;
 }

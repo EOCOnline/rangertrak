@@ -235,7 +235,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.submitInfo = this.document.getElementById("enter__Submit-info")
 
     if (this.settings?.debugMode) {
-      this.displayShow("enter__frm-reguritation")
+      Utility.displayShow(this.document.getElementById("enter__frm-reguritation")!)
+      Utility.displayShow(this.document.getElementById("enter__where-debug")!)
     }
 
     if (this.rangers.length < 1) {
@@ -403,21 +404,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData} `, `Entry id # ${newReport.id} `, 2000)
 
     this.resetEntryForm()  // std reset just blanks values, doesn't initialize the various form fields...
-  }
-
-  // ---------------- MISC HELPERS -----------------------------
-  displayHide(htmlElementID: string) {
-    let e = this.document.getElementById(htmlElementID)
-    if (e) {
-      e.style.visibility = "hidden";
-    }
-  }
-
-  displayShow(htmlElementID: string) {
-    let e = this.document.getElementById(htmlElementID)
-    if (e) {
-      e.style.visibility = "visible";
-    }
   }
 
   ngOnDestroy() {
