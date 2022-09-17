@@ -174,12 +174,18 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   onNewLocationEvent(newLocation: LocationType) { //LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
     this.log.error(`Entry form (parent) got new Location: ${JSON.stringify(newLocation)}`, this.id)
+
+    //!BUG: The next line *should* propogate new value to all children, but only does so intermittently...
+    this.log.error(`locationParent was: ${JSON.stringify(this.locationParent)}`, this.id)
     this.locationParent = newLocation
+    this.locationParent.lat += 0.0000001  //! REMOVE ME!
+    this.log.error(`locationParent now: ${JSON.stringify(this.locationParent)}`, this.id)
+
 
     // patch entryForm object - as THAT is what gets saved with on form submit
     this.entryDetailsForm.patchValue({ location: newLocation }, { emitEvent: false })
     //! NOTE: emit Event causes endless notification loop; BUT how to notify mini-map?!
-    this.log.error(`Entry form (parent) recorded the new locationParent: ${JSON.stringify(this.locationParent)}`, this.id)
+    //this.log.error(`Entry form (parent) recorded the new locationParent: ${JSON.stringify(this.locationParent)}`, this.id)
   }
 
   /**
