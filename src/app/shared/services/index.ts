@@ -8,7 +8,7 @@ export { ClockService } from "./clock.service"
 export { FieldReportType, FieldReportsType, FieldReportStatusType } from "./field-report.interface"
 export { LocationType, undefinedAddressFlag, undefinedLocation } from "./location.interface"
 export { LogLevel, LogType, LogHeadings } from "./log.interface"
-export { RangerType } from "./ranger.interface"
+export { RangerType, UnknownRanger } from "./ranger.interface"
 export { SettingsType } from "./settings.interface"
 
 //export { ShapeService } from "../unused/shape.service"

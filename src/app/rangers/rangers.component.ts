@@ -33,8 +33,8 @@ type AOA = any[][]  // array of arrays
 export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private id = 'Ranger Component'
-  title = 'Rangers (CERT, ACS/ARES, etc)'
-  pageDescr = `Grid display of rangers on this mission`
+  title = 'Rangers & Teams'
+  pageDescr = `Grid display of rangers & teams on this mission`
 
   private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
