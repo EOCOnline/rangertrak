@@ -12,7 +12,6 @@ import { SettingsComponent } from './settings/settings.component'
 import { X404Component } from './x404/x404.component'
 
 //import { UnsavedChangesGuard } from './entry/unsavedChangesGuard ';
-
 //import { UnsavedChangesGuard } from './entry/unsavedChangesGuard'
 //import { AboutComponent } from './lazy/about/about.component';
 
