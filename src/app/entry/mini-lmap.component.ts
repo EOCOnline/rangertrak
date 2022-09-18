@@ -53,12 +53,23 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
     if (newLocation && (newLocation.lat != undefined)) {
       if (newLocation.address == undefinedAddressFlag) {
-        this.log.verbose(pc.bgYellow(`Entry form has no address yet:  ${undefinedAddressFlag} - ignoring...`), this.id)
+        this.log.verbose(pc.bgYellow(`Entry form has no address yet:  ${undefinedAddressFlag}`), this.id)
       } else {
         this.log.verbose(pc.bgYellow(`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
-        this._location = newLocation
-        this.onNewLocation(newLocation)
       }
+      // All we need to display is lat & long: address is superfluious, just used for the title
+      this._location = newLocation
+
+
+
+      if (!this.lMap) {
+        this.log.error(`Setting new location, but L.Map not yet set!!!`), this.id)
+      }
+
+      this.onNewLocation(newLocation)
+
+      //! onNewLocation may not center/fit map to show new marker?
+
     } else {
       this.log.error(pc.bgYellow(`DRATS: Parent sent undefined location event to child`), this.id)
     }
@@ -118,11 +129,24 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
     if (!this.settings) {
       this.log.error(`ngOnInit - Settings have yet to be read!`, this.id)
-      return
     }
 
+    // let i = 0
+    // let msMaxDelay = 5000
+    // while (!this.settings) {
+    //   setTimeout(() => {
+    //     this.log.error(`ngOnInit - Settings have yet to be read! Delayed ${i / 10 * msMaxDelay} ms. Retrying.`, this.id)
+    //     //this.logPanel = this.document.getElementById("log")
+    //   }, msMaxDelay / 10)
+    //   if (++i > 9) {
+    //     return
+    //   }
+    // }
+
     if (this.settings?.debugMode) {
-      Utility.displayShow(this.document.getElementById("Entry__LMinimap_debug")!)
+      Utility.displayShow(this.document.getElementById("Entry__LMinimap-debug")!)
+    } else {
+
     }
 
     // Following moved from InitMainMap to avoid: map not a leaflet or google map
@@ -239,19 +263,16 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   }
 
   forceMarker() {
-
     const myLocation = {
-      lat: 47.5,
-      lng: -120.5,
-      address: "Willoby Road, Mars",
+      lat: 47.43,
+      lng: -122.45,
+      address: "ThisMustWork Road, Pluto",
       derivedFromAddress: false
     }
 
     this.addMarker(myLocation.lat, myLocation.lng, myLocation.address)
-    this.addCircle(myLocation.lat, myLocation.lng, myLocation.address)
-
+    this.addCircle(myLocation.lat + 0.002, myLocation.lng + 0.002, myLocation.address)
   }
-
 
   /**
    *   ---------------- Init OverView Map -----------------
@@ -400,16 +421,13 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       this.location = {
         lat: newLocation.lat,
         lng: newLocation.lng,
-        address: newLocation.address,
+        address: newLocation.address,  //! might be undefinedAddressFlag!
         derivedFromAddress: newLocation.derivedFromAddress
       }
       // TODO: Consider displaying previous points too - not just the new one?
-
-      debugger
-
-
       this.addMarker(this.location.lat, this.location.lng, this.location.address)
-      this.addCircle(this.location.lat, this.location.lng, this.location.address)
+      //this.addCircle(this.location.lat, this.location.lng, this.location.address)
+      // resize map to fit?
     }
   }
 
@@ -453,16 +471,18 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
 
   // https:/ / blog.mestwin.net / leaflet - angular - marker - clustering /
-  getDefaultIcon() {
+  getIcon() {
+    const number = Math.floor(Math.random() * 6)
     return L.icon({
       iconSize: [25, 41],
       iconAnchor: [13, 41],
-      iconUrl: './../../assets/icons/marker-icon.png'
+      iconUrl: `./../../assets/icons/t${number}.png`
+      //iconUrl: `./../../assets/icons/marker-icon.png`
     })
   }
 
   createMarker() {
-    const mapIcon = this.getDefaultIcon();
+    const mapIcon = this.getIcon();
     // const coordinates = latLng([this.mapPoint.latitude, this.mapPoint.longitude]);
     // this.lastLayer = marker(coordinates).setIcon(mapIcon);
     // this.markerClusterGroup.addLayer(this.lastLayer)
