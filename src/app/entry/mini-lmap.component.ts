@@ -63,7 +63,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
 
       if (!this.lMap) {
-        this.log.error(`Setting new location, but L.Map not yet set!!!`), this.id)
+        this.log.error(`Setting new location, but L.Map not yet set!!!`, this.id)
       }
 
       this.onNewLocation(newLocation)
