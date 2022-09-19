@@ -129,7 +129,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.invalid"
         type="number" formControlName="defLng" step=".01" min="-179.99" max="179.99"
-        placeholder="{{settings!.defLng?.toFixed(4)}}" [style.width.px]="75" data-lpignore="true" />
+        placeholder="{{settings!.defLng.toFixed(4)}}" [style.width.px]="75" data-lpignore="true" />
       <div *ngIf="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.hasError('required')"
         class="text-sm text-danger">
         longitude is required
