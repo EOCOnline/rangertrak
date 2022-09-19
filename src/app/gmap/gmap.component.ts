@@ -257,14 +257,11 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
 
     // This event is ONLY registered for the main map, not overview
     this.gMap = mappy
+    // Listen in on mouse moves/zooms
     this.captureGMoveAndZoom(this.gMap)
     if (this.displayReports) {
       // gets: core.mjs:6485 ERROR TypeError: bounds.getEast is not a function at FieldReportService.boundsToBound (field-report.service.ts:193:56)
       // this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports!.bounds))
-
-      this.getAndDisplayFieldReports() // REVIEW: Works with NO Markers?
-
-      //NOTE: Following has to be done after gMap set
 
       // https://github.com/googlemaps/js-markerclusterer
       // https://newbedev.com/google-markerclusterer-decluster-markers-below-a-certain-zoom-level
@@ -275,6 +272,10 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
         // renderer?: Renderer,
         // onClusterClick?: onClusterClickHandler,
       })
+
+      this.getAndDisplayFieldReports() // REVIEW: Works with NO Markers?
+
+
       //  this.log.excessive("into updateFieldReports()", this.id)
 
       this.updateFieldReports()
@@ -509,11 +510,8 @@ MarkerClustererPlus Library - also old
       this.addMarker(latlng.lat(), latlng.lng(), title, labelText, title, labelColor, "28px", icon)
     }
 
-    //! now all markers are in: this.markers[]  HOW TO DISPLAY/ATTACH TO MAP?!
-    this.showMarkers()
+    // this.showMarkers() //! This directly adds to map - not in clusters...
     this.markerCluster.addMarkers(this.markers)
-    // ????
-
 
     this.log.verbose(`displayMarkers added ${this.fieldReportArray.length} markers`, this.id)
   }
@@ -557,7 +555,7 @@ MarkerClustererPlus Library - also old
       let m = new google.maps.Marker({
         draggable: true,
         animation: animation,
-        map: this.gMap,
+        //!map: this.gMap,
         position: { lat: lat, lng: lng },
         title: title,
         icon: icon,
