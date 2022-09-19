@@ -368,7 +368,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       })
   }
 
-  override refreshMap() {
+  refreshMap() {
     // Try map.remove(); before you try to reload the map. This removes the previous map element using Leaflet's library
     if (this.lMap) {
       this.lMap.invalidateSize() // https://github.com/Leaflet/Leaflet/issues/690

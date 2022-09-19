@@ -217,7 +217,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
 
   /**
   * Store Lat/Lng in Clipboard
-  * OR
+  *! REVIEW: AND/ OR (do both?!)
   *! Or use this event to create a new marker?!
   *
   *! Review: Alternative approach: Use event listeners:
@@ -229,11 +229,11 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   onMouseClick(ev: MouseEvent) {
     // lMap has override onMouseClick()
 
-
     if (!this.map) {
       this.log.error(`Map not created, so can't get lat & lng`, this.id)
       return
     }
+
     if (this.settings.allowManualPinDrops) {
       // Put coordinates into a new non-permanent marker & drop on to map
       this.log.error(`onMouseClick() to create markers not implemented yet!`, this.id)
@@ -319,9 +319,10 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     return Math.min(Math.max(num, min), max)
   }
 
-  refreshMap() {
-    this.log.error(`refreshMap() is unimplemented!`, this.id)
-  }
+  abstract refreshMap(): void
+  //  {
+  //   this.log.error(`refreshMap() is unimplemented!`, this.id)
+  // }
 
   // ------------------------------------  Field Reports  ---------------------------------------
 
@@ -379,6 +380,8 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         if (!this.filterSwitch) throw ("Could not find Field Report Selection Switch!")
 
       }
+    } else {
+      this.log.error(`updateFieldReports got no Selected reports`)
     }
   }
 

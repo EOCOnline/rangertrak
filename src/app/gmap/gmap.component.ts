@@ -6,7 +6,8 @@ import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps'
-import * as GMC from '@googlemaps/markerclusterer'
+//import * as GMC from '@googlemaps/markerclusterer'
+import { MarkerClusterer } from '@googlemaps/markerclusterer'
 // Map
 import { MDCSwitch } from '@material/switch'
 
@@ -21,6 +22,11 @@ import {
 google-maps: OLD
 google.maps: BEST
 
+@google/markerclusterer: OLD
+@googlemaps/markerclustererplus: OLD
+@googlemaps/markerclusterer: BEST
+
+  https://googlemaps.github.io/js-markerclusterer/
   https://developers.google.com/maps/support/
   https://angular-maps.com/
   https://github.com/atmist/snazzy-info-window#html-structure
@@ -35,8 +41,8 @@ GoogleMapsModule (their Angular wrapper) exports three components that we can us
 - MapInfoWindow: the info window of a marker, available via the map-info-window selector
 */
 
-declare const google: any
-let marker: google.maps.Marker
+declare const google: any //declare tells compiler "this variable exists (from elsewhere) & can be referenced by other code. There's no need to compile this statement"
+//let marker: google.maps.Marker
 /**
  * @ignore
  */
@@ -102,7 +108,7 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
 
   // Google MapMarker only wraps google.maps.LatLngLiteral (positions) - NOT google.maps.Marker: styles, behaviors, etc. -- But might be able to set marker options?
   markers: google.maps.Marker[] = []
-  markerCluster!: GMC.MarkerClusterer
+  markerCluster!: MarkerClusterer
   // markerPositions: google.maps.LatLngLiteral[] angular brain-dead wrapper
   markerClustererImagePath =
     'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
@@ -189,25 +195,8 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     this.log.excessive("ngOnInit()", this.id)
 
     // Following just sets zoom...
+    //! Also gMap not set yet!
     // this.initMainMap()
-
-    if (this.displayReports) {
-      this.log.excessive("into getAndDisplayFieldReports()", this.id)
-      this.getAndDisplayFieldReports() // REVIEW: Works with NO Markers?
-
-      // https://github.com/googlemaps/js-markerclusterer
-      // https://newbedev.com/google-markerclusterer-decluster-markers-below-a-certain-zoom-level
-      this.markerCluster = new GMC.MarkerClusterer({
-        map: this.gMap,
-        markers: this.markers,
-        // algorithm?: Algorithm,
-        // renderer?: Renderer,
-        // onClusterClick?: onClusterClickHandler,
-      })
-      this.log.excessive("into updateFieldReports()", this.id)
-
-      this.updateFieldReports()
-    }
 
     this.log.excessive("done with ngOnInit()", this.id)
 
@@ -230,7 +219,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     this.zoom = this.settings ? this.settings.google.defZoom : 15
     this.zoomDisplay = this.settings ? this.settings.google.defZoom : 15
 
-    this.log.verbose(`Setting G map Center= lat:${this.settings ? this.settings.defLat : 0}, lng: ${this.settings ? this.settings.defLng : 0}, zoom: ${this.settings ? this.settings.google.defZoom : 15}`, this.id)
+
 
     if (this.gMap) {
       /*
@@ -241,6 +230,8 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       this.gMap.setCenter({ lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 })
       this.gMap.setZoom(this.settings ? this.settings.google.defZoom : 15)
       this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports!.bounds))
+    } else {
+      this.log.error(`initMainMap(): this.gMap NOT INitialized yet! `, this.id)
     }
   }
 
@@ -270,6 +261,24 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     if (this.displayReports) {
       // gets: core.mjs:6485 ERROR TypeError: bounds.getEast is not a function at FieldReportService.boundsToBound (field-report.service.ts:193:56)
       // this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports!.bounds))
+
+      this.getAndDisplayFieldReports() // REVIEW: Works with NO Markers?
+
+      //NOTE: Following has to be done after gMap set
+
+      // https://github.com/googlemaps/js-markerclusterer
+      // https://newbedev.com/google-markerclusterer-decluster-markers-below-a-certain-zoom-level
+      this.markerCluster = new MarkerClusterer({
+        map: this.gMap,
+        markers: this.markers,
+        // algorithm?: Algorithm,
+        // renderer?: Renderer,
+        // onClusterClick?: onClusterClickHandler,
+      })
+      //  this.log.excessive("into updateFieldReports()", this.id)
+
+      this.updateFieldReports()
+
     }
     /* TODO: Emit update for subscribers: instead of always reloading at init stage...
         this.fieldReportArray = this.fieldReportService.getFieldReports().valueChanges.subscribe(x => {
@@ -336,34 +345,42 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   https://github.com/googlemaps/js-markerclusterer - current!
 https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer - Angular components doesn't encapulate options functionality: identical clones only: ugg.
 MarkerClustererPlus Library - also old
-    refreshMap() {
-      let data
-      if (this.markerCluster) {
-        this.markerCluster.clearMarkers();
-      }
-      var markers = [];
+*/
+  refreshMap() {
 
-      var markerImage = new google.maps.MarkerImage(imageUrl,
-        new google.maps.Size(24, 32));
+    //this.gMap.clear()
+    // google.maps.event.trigger(this.gMap, 'resize');
+    // this.gMap.setZoom(map.getZoom());
+    this.gMap.panBy(0, 0);
+    /*
+        let data
+        if (this.markerCluster) {
+          this.markerCluster.clearMarkers();
+        }
+        var markers = [];
 
-      for (var i = 0; i < data.photos.length; ++i) {
-        markers.push(new marker());
-      }
-      var zoom = parseInt(document.getElementById('zoom').value, 10);
-      var size = parseInt(document.getElementById('size').value, 10);
-      var style = parseInt(document.getElementById('style').value, 10);
-      zoom = zoom === -1 ? null : zoom;
-      size = size === -1 ? null : size;
-      style = style === -1 ? null : style;
+        var markerImage = new google.maps.MarkerImage(imageUrl,
+          new google.maps.Size(24, 32));
 
-      markerClusterer = new MarkerClusterer(map, markers, {
-        maxZoom: zoom,
-        gridSize: size,
-        styles: styles[style],
-        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
-      });
-    }
-  */
+        for (var i = 0; i < data.photos.length; ++i) {
+          markers.push(new marker());
+        }
+        var zoom = parseInt(document.getElementById('zoom').value, 10);
+        var size = parseInt(document.getElementById('size').value, 10);
+        var style = parseInt(document.getElementById('style').value, 10);
+        zoom = zoom === -1 ? null : zoom;
+        size = size === -1 ? null : size;
+        style = style === -1 ? null : style;
+
+        markerClusterer = new MarkerClusterer(map, markers, {
+          maxZoom: zoom,
+          gridSize: size,
+          styles: styles[style],
+          imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+        });
+        */
+  }
+
 
   addManualMarkerEvent(event: google.maps.MapMouseEvent) {
     if (this.settings!.allowManualPinDrops) {
@@ -396,7 +413,7 @@ MarkerClustererPlus Library - also old
     // this.markerCluster.addMarkers(this.markers)
 
     // TODO: Duplicate code as in InitMap: move to a new routine...
-    /*this.markerCluster = new GMC.MarkerClusterer({
+    /*this.markerCluster = new MarkerClusterer({
       map: this.gMap,
       markers: this.markers,
       // algorithm?: Algorithm,
@@ -502,7 +519,7 @@ MarkerClustererPlus Library - also old
   }
 
   override addMarker(lat: number, lng: number, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP, msDelay = 100) {
-    this.log.excessive(`addMarker(G)`, this.id)
+    //this.log.excessive(`addMarker(G)`, this.id)
 
     if (infoContent == "") {
       infoContent = `Manual Marker dropped ${lat}, ${lng} at ${Date()}`

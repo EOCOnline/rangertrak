@@ -166,6 +166,12 @@ this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
     this.log.excessive(`onMapInitialized done`, this.id)
   }
 
+  refreshMap() {
+
+    //this.gMap.clear()
+    //google.maps.event.trigger(this.gMap, 'resize');
+    this.gMap.panBy(0, 0);
+  }
 
   updateOverviewMap() {
     this.log.excessive(`updateOverviewMap`, this.id)
