@@ -355,13 +355,13 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
     navigator.clipboard.writeText(coords)
       .then(() => {
-        let status = document.getElementById('Entry__Minimap-status')
+        let status = document.getElementById('Entry__LMinimap-status')
         if (status) {
           status.innerText = `${coords} copied to clipboard`
           //status.style.visibility = "visible"
           Utility.resetMaterialFadeAnimation(status)
         } else {
-          this.log.info(`Entry__Minimap-status not found!`, this.id)
+          this.log.info(`Entry__LMinimap-status not found!`, this.id)
         }
         this.log.excessive(`${coords} copied to clipboard`, this.id)
       })

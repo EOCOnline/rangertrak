@@ -194,12 +194,17 @@ export class SettingsService implements OnInit {
       imageDirectory: "./assets/imgs/",    //! WARNING: Hardcoded & potential SECURITY risk.
       defFieldReportStatus: 0, // which of the following array entries to use as the default value
       //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
+      // https://en.wikipedia.org/wiki/Web_colors#Extended_colors
+      // https://en.wikipedia.org/wiki/Web_colors#Color_table
+      // https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#fully_saturated_colors
       fieldReportStatuses: [
-        { status: 'Normal', color: '', icon: '' },
-        { status: 'Check-in', color: 'darkkhaki', icon: '' },
-        { status: 'Check-out', color: 'darkgoldenrod', icon: '' },
-        { status: 'Need Rest', color: 'chartreuse', icon: '' },
-        { status: 'Urgent', color: 'red', icon: '' }
+        { status: 'Normal', color: 'LightYellow', icon: '' },
+        { status: 'Location Report', color: 'Aquamarine', icon: '' },
+        { status: 'Evidence Report', color: 'DarkGoldenrod', icon: '' },
+        { status: 'Need Rest', color: 'Chartreuse', icon: '' },
+        { status: 'Incident Check-in', color: 'Silver', icon: '' },
+        { status: 'Incident Check-out', color: 'DimGray', icon: '' },
+        { status: 'Urgent', color: 'Crimson', icon: '' }
       ],
       // fieldReportKeywords: [''],  // Future...could also just search notes field
     }
@@ -210,10 +215,15 @@ export class SettingsService implements OnInit {
   */
   public updateSettings(newSettings: SettingsType) {
     // Do any needed sanity/validation here
-
+    //debugger
     localStorage.setItem(this.storageLocalName, JSON.stringify(newSettings))
-    this.settingsSubject$.next(this.settings)
+    this.settings = newSettings
+    this.settingsSubject$.next(newSettings)
     this.log.verbose(`Notified subscribers of new Application Settings ${JSON.stringify(newSettings)} `, this.id)
+
+    //! Is this proper?!
+    this.log.verbose(`Reloading window!`, this.id)
+    //window.location.reload() creates endless cycle!
   }
 
   /**

@@ -120,6 +120,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     }
 
     //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
+    //!Future: Hover over notes to show entire (multi-line) note
     this.columnDefs = [
       { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1 }, // TODO:
       { headerName: "CallSign", field: "callsign", tooltipField: "team", flex: 2 },
@@ -133,7 +134,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
         headerName: "Lng", field: "lng", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
         valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.lng * 10000) / 10000.0 },
       },
-      { headerName: "Time", headerTooltip: 'Report date', valueGetter: this.myDateGetter, flex: 2 },
+      { headerName: "Reported", headerTooltip: 'Report date', valueGetter: this.myDateGetter, flex: 2 },
       { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, flex: 2 },
       {
         headerName: "Status", field: "status", flex: 5,
@@ -148,7 +149,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
         }
         //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
       },
-      { headerName: "Note", field: "note", flex: 50 }, //, maxWidth: 300
+      { headerName: "Notes", field: "notes", flex: 50 }, //, maxWidth: 300
     ];
 
     this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
@@ -291,13 +292,15 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     return dt
   }
 
+  //!TODO: Returns just hours:min:sec - not days!!!
   myMinuteGetter = (params: { data: FieldReportType }) => {
     let dt = new Date(params.data.date).getTime()
     let milliseconds = Date.now() - dt
     let seconds: string = (Math.round(milliseconds / 1000) % 60).toString().padStart(2, '0')
     let minutes: string = Math.round((milliseconds / (1000 * 60)) % 60).toString().padStart(2, '0')
-    let hours = Math.round((milliseconds / (1000 * 60 * 60)) % 24);
-    return (`${hours}:${minutes}:${seconds}`)
+    let hours = Math.round((milliseconds / (1000 * 60 * 60)) % 24)
+    let days = Math.floor((((milliseconds / (1000 * 60 * 60 * 24)) - hours) / 24) + 1)
+    return (`${days ? days + " days  " : ""} ${hours}:${minutes}:${seconds} `)
   }
 
   //! BUG: JUST ROUNDS THE lat, not whatever is passed in!!!!!
@@ -315,7 +318,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   //   let selectedNodes = this.gridApi.getSelectedNodes();
   //   let selectedData = selectedNodes.map((node: { data: FieldReportType; }) => node.data);
   //   this.selectedRows = selectedNodes.length
-  //   this.log.excessive(`onBtnGetSelectedRowData obtained ${selectedNodes.length} selected rows:\n${JSON.stringify(selectedData)}`, this.id)
+  //   this.log.excessive(`onBtnGetSelectedRowData obtained ${ selectedNodes.length } selected rows: \n${ JSON.stringify(selectedData) } `, this.id)
   //   this.fieldReportService.setSelectedFieldReports(selectedData)
   // }
 
@@ -327,7 +330,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     var opt = selector.options[sel];
     var selVal = (<HTMLOptionElement>opt).value;
     var selText = (<HTMLOptionElement>opt).text
-    // this.log.excessive(`Got column seperator text:"${selText}", val:"${selVal}"`, this.id)
+    // this.log.excessive(`Got column seperator text: "${selText}", val: "${selVal}"`, this.id)
 
     switch (selVal) {
       case 'none':
@@ -343,14 +346,14 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     let dt = new Date()
     return {
       columnSeparator: this.getParamValue('columnSeparator'),
-      fileName: `FieldReportsExport.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,
+      fileName: `FieldReportsExport.${dt.getFullYear()} -${dt.getMonth() + 1} -${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,
     }
   }
 
   onSeperatorChange() {
     var params = this.getParams();
     if (params.columnSeparator && this.numSeperatorWarnings++ < this.maxSeperatorWarnings) {
-      alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`)
+      alert(`NOTE: Excel handles comma separators best.You've chosen "${params.columnSeparator}"`)
     }
   }
 

@@ -235,20 +235,6 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     }
   }
 
-  override onMapZoomed() {
-    super.onMapZoomed()
-    if (this.zoom && this.gMap) {
-      this.zoom = this.gMap.getZoom()!
-      this.zoomDisplay = this.gMap.getZoom()!
-    }
-  }
-
-  onMapMouseMove(event: google.maps.MapMouseEvent) {
-    if (event.latLng) {
-      this.mouseLatLng = event.latLng.toJSON()
-    }
-  }
-
 
   // this.ngMap: GoogleMap (Angular wrapper for the same underlying map!)
   // this.gMap: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
@@ -287,6 +273,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
         })
         */
   }
+
 
   onOverviewMapInitialized(mappy: google.maps.Map) {
     this.log.verbose(`onOverviewMapInitialized()`, this.id)
@@ -329,6 +316,22 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     })
 
   }
+
+
+  override onMapZoomed() {
+    super.onMapZoomed()
+    if (this.zoom && this.gMap) {
+      this.zoom = this.gMap.getZoom()!
+      this.zoomDisplay = this.gMap.getZoom()!
+    }
+  }
+
+  onMapMouseMove(event: google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      this.mouseLatLng = event.latLng.toJSON()
+    }
+  }
+
 
   apiLoadedCallbackUNUSED() {
     this.log.verbose("got apiLoadedCallback()", this.id)
@@ -401,7 +404,8 @@ MarkerClustererPlus Library - also old
   }
 
   getAndDisplayFieldReports() {
-    //super.onSwitchSelectedFieldReports()
+    super.onSwitchSelectedFieldReports()
+    //this.onSwitchSelectedFieldReports()
 
     if (!this.filterSwitch || !this.filterSwitch.selected) {
       this.log.verbose(`Displaying ALL ${this.fieldReportArray.length} field Reports`, this.id)
@@ -443,7 +447,7 @@ MarkerClustererPlus Library - also old
     this.hideMarkers()
     this.markers = []
     // this.gMap.clear();
-    // this.markerCluster.clearMarkers()
+    this.markerCluster.clearMarkers()
   }
 
   override displayMarkers() {

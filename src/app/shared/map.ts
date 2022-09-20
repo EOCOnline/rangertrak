@@ -131,11 +131,11 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    *
    */
   ngOnInit() {
-    this.log.verbose("ngOnInit()", this.id)
+    this.log.verbose("Map: ngOnInit()", this.id)
     // this.log.verbose(`ngOnInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
 
     if (!this.settings) {
-      this.log.error(`this.settings not yet established in ngOnInit()`, this.id)
+      this.log.error(`OnInit() this.settings not yet established in ngOnInit()`, this.id)
       // REVIEW: Can initMap run OK w/ defaults, but w/o settings?
     } else {
       this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
@@ -150,21 +150,22 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    * @returns
    */
   initMainMap() {
-    this.log.verbose("initMap()", this.id)
+    this.log.verbose("initMainMap()", this.id)
 
     if (!this.settings) {
-      this.log.error(`Settings not yet initialized while initializing the abstract Map!`, this.id)
+      this.log.error(`initMainMap(): Settings not yet initialized while initializing the abstract Map!`, this.id)
       return
     }
 
     if (!this.fieldReports) { //! or displayedFieldReportArray
-      this.log.error(`fieldReports not yet initialized while initializing abstract Map!`, this.id)
+      this.log.error(`initMainMap(): fieldReports not yet initialized while initializing abstract Map!`, this.id)
       return
     }
 
     this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
     this.mouseLatLng = this.center
 
+    // Not needed, but available...
     if (this.map instanceof L.Map) {
       // leaflet map
       // TODO
@@ -172,7 +173,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       // google map
       // TODO
     } else {
-      this.log.warn(`InitMap(): map not a leaflet or google map - ignoring as uninitialized?`, this.id)
+      this.log.warn(`map initMainMap(): map not a leaflet or google map - ignoring as uninitialized?`, this.id)
     }
 
   }
@@ -230,7 +231,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     // lMap has override onMouseClick()
 
     if (!this.map) {
-      this.log.error(`Map not created, so can't get lat & lng`, this.id)
+      this.log.error(`onMouseClick: Map not created, so can't get lat & lng`, this.id)
       return
     }
 
@@ -265,12 +266,12 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
               //status.style.visibility = "visible"
               Utility.resetMaterialFadeAnimation(status)
             } else {
-              this.log.info(`Entry__Minimap-status not found!`, this.id)
+              this.log.info(`onMouseClick Entry__Minimap-status not found!`, this.id)
             }
             this.log.excessive(`${coords} copied to clipboard`, this.id)
           })
           .catch(err => {
-            this.log.error(`latlng NOT copied to clipboard, error: ${err}`, this.id)
+            this.log.error(`onMouseClick latlng NOT copied to clipboard, error: ${err}`, this.id)
           })
       }
     }
@@ -327,6 +328,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   // ------------------------------------  Field Reports  ---------------------------------------
 
   updateFieldReports() {
+    this.log.excessive(`updateFieldReports()`, this.id)
     if (this.hasSelectedReports) {
 
       if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
@@ -337,7 +339,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
           this.numSelectedRows = this.selectedReports.fieldReportArray.length
         }
       } else {
-        this.log.warn(`Could not retrieve selected Field Reports in updateFieldReports.`, this.id)
+
         this.numSelectedRows = 0
       }
 
@@ -352,7 +354,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
         this.filterSwitch = new MDCSwitch(this.filterButton)
         if (!this.filterSwitch) {
-          throw ("Found filterButton - but NOT Field Report Selection Switch!")
+          throw ("updateFieldReports(): Found filterButton - but NOT Field Report Selection Switch!")
         }
 
 
@@ -364,20 +366,20 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
           this.numSelectedRows = this.selectedReports.numReport
           if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
-            this.log.error(`ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
+            this.log.error(`updateFieldReports(): ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
             this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
             this.numSelectedRows = this.selectedReports.fieldReportArray.length
           }
         } else {
-          this.log.warn(`Could not retrieve selected Field Reports in ngOnInit.`, this.id)
+          this.log.warn(`updateFieldReports(): Could not retrieve selected Field Reportst.`, this.id)
           this.numSelectedRows = 0
         }
 
         this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
-        if (!this.filterButton) { throw ("Could not find Field Report Selection button!") }
+        if (!this.filterButton) { throw ("updateFieldReports(): Could not find Field Report Selection button!") }
 
         this.filterSwitch = new MDCSwitch(this.filterButton)
-        if (!this.filterSwitch) throw ("Could not find Field Report Selection Switch!")
+        if (!this.filterSwitch) throw ("updateFieldReports(): Could not find Field Report Selection Switch!")
 
       }
     } else {
@@ -398,7 +400,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   */
 
   gotNewFieldReports(newReports: FieldReportsType) {
-    this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`, this.id)
+    this.log.verbose(`gotNewFieldReports(): New collection of ${newReports.numReport} Field Reports observed.`, this.id)
 
     this.numAllRows = newReports.numReport
     this.fieldReports = newReports
@@ -416,12 +418,12 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   //! BUG: Resets slected reports to ALL!!!!
   onSwitchSelectedFieldReports() { //event: any) {
     if (!this.fieldReports) {
-      this.log.error(`field Reports not yet set in onSwitchSelectedFieldReports()`, this.id)
+      this.log.error(`onSwitchSelectedFieldReports(): Field Reports not yet set`, this.id)
       return
     }
 
     if (!this.filterSwitch) {
-      this.log.error(`filterSwitch not found in onSwitchSelectedFieldReports()`, this.id)
+      this.log.error(`onSwitchSelectedFieldReports(): filterSwitch not found`, this.id)
       return
     }
 
@@ -429,12 +431,12 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       this.displayedFieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
       // ! REVIEW: we did NOT grab the whole selectedFieldReports structure, JUST the report array: OK?!
       this.numSelectedRows = this.displayedFieldReportArray.length
-      this.log.verbose(`Displaying ${this.displayedFieldReportArray.length} SELECTED field Reports`, this.id)
+      this.log.verbose(`onSwitchSelectedFieldReports():Displaying ${this.displayedFieldReportArray.length} SELECTED field Reports`, this.id)
     } else {
       this.displayedFieldReportArray = this.fieldReports.fieldReportArray
-      this.log.verbose(`Displaying ALL ${this.displayedFieldReportArray.length} field Reports`, this.id)
+      this.log.verbose(`onSwitchSelectedFieldReports():Displaying ALL ${this.displayedFieldReportArray.length} field Reports`, this.id)
       if (this.numSelectedRows != this.displayedFieldReportArray.length) {
-        this.log.error(`Having to update numSelectedRows ${this.numSelectedRows} to match actual array length ${this.displayedFieldReportArray.length}`, this.id)
+        this.log.error(`onSwitchSelectedFieldReports():Having to update numSelectedRows ${this.numSelectedRows} to match actual array length ${this.displayedFieldReportArray.length}`, this.id)
 
         this.numSelectedRows = this.displayedFieldReportArray.length
       }

@@ -78,11 +78,11 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     //shadowAnchor: [22, 94]
   })
 
-  mymarkers = L.markerClusterGroup()
+  myMarkerCluster = L.markerClusterGroup()
   mapOptions = ""
 
-  markerClusterGroup: L.MarkerClusterGroup // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
-  markerClusterData = []
+  //markerClusterGroup: L.MarkerClusterGroup // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
+  //markerClusterData = []
 
   constructor(
     settingsService: SettingsService,
@@ -103,7 +103,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     this.displayReports = true
     this.hasSelectedReports = true
 
-    this.markerClusterGroup = L.markerClusterGroup({ removeOutsideVisibleBounds: true });
+    // this.markerClusterGroup = L.markerClusterGroup({ removeOutsideVisibleBounds: true });
   }
 
   // override ngOnInit() {
@@ -141,6 +141,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     if (this.displayReports && this.fieldReports) {
       // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
+      //this.onSwitchSelectedFieldReports()
       this.displayMarkers()
       //! BUG: this.lMap.fitBounds(this.fieldReports.bounds)
       //this.lMap.fitBounds(: L.LatLngBoundsExpression)
@@ -148,6 +149,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     // ! Following is duplicate of that above?!
     this.updateFieldReports()
+    this.log.excessive("out of ngOnInit()", this.id)
   }
 
   /**
@@ -158,9 +160,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   }
 
   override initMainMap() {
-    //this.log.excessive("initMap()  pre-super", this.id)
+    //this.log.excessive("initMainMap()  pre-super", this.id)
     super.initMainMap()
-    this.log.excessive("initMap() post-super", this.id)
+    this.log.excessive("initMainMap() post-super", this.id)
 
 
     // ! Repeat of the guards in super:
@@ -168,19 +170,21 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       this.log.error(`Settings still NULL! while initializing the Leaflet Map!`, this.id)
       return
     }
-    this.log.excessive("initMap() post null check", this.id)
+    this.log.excessive("initMainMap() post null check", this.id)
 
     if (this.settings === undefined) {
-      this.log.error(`Settings still UNDEFINED! while initializing the Leaflet Map!`, this.id)
+      this.log.error(`initMainMap(): Settings still UNDEFINED! while initializing the Leaflet Map!`, this.id)
       return
     }
 
     if (this.displayReports && !this.fieldReports) { //! or displayedFieldReportArray
-      this.log.error(`fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
+      this.log.error(`initMainMap():fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
       return
     }
 
-    this.mymarkers = L.markerClusterGroup()
+    // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
+    // http://leaflet.github.io/Leaflet.markercluster/
+    this.myMarkerCluster = L.markerClusterGroup({ removeOutsideVisibleBounds: true })
 
 
     // ---------------- Init Main Map -----------------
@@ -191,7 +195,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     this.zoom = this.settings ? this.settings.leaflet.defZoom : 15
     this.zoomDisplay = this.settings ? this.settings.leaflet.defZoom : 15
 
-    // this.log.excessive("initMap()  3", this.id)
+    // this.log.excessive("initMainMap(): 3", this.id)
 
     // TODO: Allow centering map on user's position (geolocation): https://leafletjs.com/reference.html#locate-options
     // https://leafletjs.com/reference.html#map-locate
@@ -201,7 +205,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     }) // Default view set at map creation
 
     if (!this.lMap) {
-      this.log.error(`this.lMap not created!`, this.id)
+      this.log.error(`initMainMap(): this.lMap not created!`, this.id)
       return
     }
 
@@ -244,8 +248,11 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   */
 
     //! this.fieldReports.bounds.getEast is not a function
-    //!this.log.info(`E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
-
+    if (!this.fieldReports) {
+      this.log.error(`initMainMap(): this.fieldReports is null/undefined!`, this.id)
+    } else {
+      this.log.info(`initMainMap() E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
+    }
     /*
           core.mjs:6485 ERROR Error: Bounds are not valid.
         at NewClass.fitBounds (leaflet-src.js:3254:12)
@@ -270,7 +277,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     //! No super.initOverviewMap(), correct?!
 
     // TODO: Add a light grey rectangle on overview map to show extend/bounods of main map
-
+    this.log.info(`initOverviewMap()`, this.id)
 
 
     // instantiate the overview map without controls
@@ -347,8 +354,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       return
     }
 
-
-
     let latlng = this.lMap.mouseEventToLatLng(ev)
     let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
     navigator.clipboard.writeText(coords)
@@ -359,16 +364,17 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
           //status.style.visibility = "visible"
           Utility.resetMaterialFadeAnimation(status)
         } else {
-          this.log.info(`Entry__Minimap-status not found!`, this.id)
+          this.log.info(`onMouseClick(): Entry__Minimap-status not found!`, this.id)
         }
-        this.log.excessive(`${latlng} copied to clipboard`, this.id)
+        this.log.excessive(`onMouseClick(): ${latlng} copied to clipboard`, this.id)
       })
       .catch(err => {
-        this.log.error(`latlng NOT copied to clipboard, error: ${err}`, this.id)
+        this.log.error(`onMouseClick(): latlng NOT copied to clipboard, error: ${err}`, this.id)
       })
   }
 
   refreshMap() {
+    this.log.info(`refreshMap()`, this.id)
     // Try map.remove(); before you try to reload the map. This removes the previous map element using Leaflet's library
     if (this.lMap) {
       this.lMap.invalidateSize() // https://github.com/Leaflet/Leaflet/issues/690
@@ -406,10 +412,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
   override hideMarkers() {
     //! unimplemented
+    this.log.error(`hideMarkers(): UNIMPLEMENTED!`, this.id)
   }
 
   override clearMarkers() {
-    //!this.mymarkers = []
+    this.log.error(`clearMarkers(): UNIMPLEMENTED!`, this.id)
+    //this.mymarkers = []
   }
 
   override displayMarkers() {
@@ -421,7 +429,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       this.log.error(`displayAllMarkers did not find field reports to display`, this.id)
       return
     }
-    this.log.verbose(`displayMarkers: all ${this.displayedFieldReportArray.length} of 'em`, this.id)
+    this.log.verbose(`displayMarkers: ${this.displayedFieldReportArray.length} of 'em`, this.id)
     this.displayedFieldReportArray.forEach(i => {
       if (i.lat && i.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${i.date} with ${i.status}`
@@ -429,13 +437,13 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
         let marker = L.marker(new L.LatLng(i.lat, i.lng), { title: title })
         marker.bindPopup(title)
-        this.mymarkers.addLayer(marker);
+        this.myMarkerCluster.addLayer(marker);
       } else {
         console.warn(`displayAllMarkers: skipping report # ${i.id}; bad lat/lng: ${i}: ${JSON.stringify(i)}`)
       }
     })
 
-    this.lMap.addLayer(this.mymarkers);
+    this.lMap.addLayer(this.myMarkerCluster);
 
     // to refresh markers that have changed:
     // https://github.com/Leaflet/Leaflet.markercluster#refreshing-the-clusters-icon

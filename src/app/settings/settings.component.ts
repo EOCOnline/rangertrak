@@ -211,8 +211,12 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
-        //console.log(newSettings)
+        this.log.excessive(`Received new Settings via subscription: ${JSON.stringify(newSettings)}`, this.id)
         this.settings = newSettings
+
+        // reset form based on new settings...
+        this.settingsEditorForm = this.getFormArrayFromSettingsArray()!
+
         this.opPeriodStart = this.settings.opPeriodStart
         this.opPeriodEnd = this.settings.opPeriodEnd
         this.log.excessive('Received new Settings via subscription.', this.id)
@@ -488,16 +492,17 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
   //TODO: If user edits field report status color, need to update background: refreshCells()????
   onFormSubmit(): void {
-    this.log.verbose("Update Settings...", this.id)
+    this.log.verbose("onFormSubmit: Update Settings...", this.id)
     let newSettings: SettingsType = this.getSettingsArrayFromFormArray()!
     this.settingsService.updateSettings(newSettings)
 
     // TODO: If Debug disabled then call:
     //enableProdMode()
-    this.log.verbose(`Reloading window!`, this.id)
+    this.log.verbose(`onFormSubmit: Reloading window!`, this.id)
     this.reloadPage()
   }
 
+  //TODO: Use Utility functions with same name...
   displayHide(htmlElementID: string) {
     let e = this.document.getElementById(htmlElementID)
     if (e) {
@@ -513,6 +518,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   }
   getPlatform() {
     // TODO:
+    this.log.error("getPlatform: UNIMPLEMENTED", this.id)
     // https://material.angular.io/cdk/platform/overview
   }
 

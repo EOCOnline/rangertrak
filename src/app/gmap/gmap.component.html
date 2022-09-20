@@ -5,7 +5,7 @@
   This currently displays all rangers/teams without filtering. In the future more options
   should be available, including different icons/text boxes, etc.<br />
   <ul>
-    <li style="color:red">
+    <li style="color:chocolate">
       If most recent field reports are not displayed, please curse, then refresh the page,
       or try switching temporarily to the Field Reports screen to ensure they were
       recorded. Let me know, but I believe they are getting stored.
@@ -21,10 +21,10 @@
     </li>
     <li>Display Keyboard controls with button at lower right of map</li>
     <li>Click or hover over marker to display coordinates and callsign</li>
-    <li>Right-click on Map (not Satellite view) to display traffic layer</li>
+    <li>Right-click on Map to display traffic layer</li>
     <li>Upper Left Map/Satellite control allows viewing Terrain or Labels as desired</li>
     <li>
-      Click on the overlay map (at the lower right) to switch between the 4 amps types:
+      Click on the overlay map (at the lower right) to switch between the 4 maps types:
       roadmap, terrain, satellite & hybrid
     </li>
   </ul>
@@ -67,7 +67,7 @@
 <!--
   https://material.io/components/switches/web#switches
   https://material.io/components/switches/web#api -->
-<label for="selectedFieldReports">Field reports to show: All ({{this.numAllRows}}) </label>
+<label for="selectedFieldReports">[Broken:] Field reports to show: All ({{this.numAllRows}}) </label>
 
 <button id="selectedFieldReports" class="mdc-switch mdc-switch--unselected" type="button" role="switch"
   aria-checked="false" (click)="onSwitchSelectedFieldReports()">
@@ -97,7 +97,7 @@
   <summary class="big">Advanced</summary>
   <ul>
     <li>
-      This might be used to set filtering options - or maybe we rely on selections made in
+      The switch just above might be used to set filtering options - or maybe we rely on selections made in
       the Field Report pane/window...
     </li>
     <li>
