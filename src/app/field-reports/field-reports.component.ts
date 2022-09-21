@@ -297,9 +297,9 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     let dt = new Date(params.data.date).getTime()
     let milliseconds = Date.now() - dt
     let seconds: string = (Math.round(milliseconds / 1000) % 60).toString().padStart(2, '0')
-    let minutes: string = Math.round((milliseconds / (1000 * 60)) % 60).toString().padStart(2, '0')
-    let hours = Math.round((milliseconds / (1000 * 60 * 60)) % 24)
-    let days = Math.floor((((milliseconds / (1000 * 60 * 60 * 24)) - hours) / 24) + 1)
+    let minutes: string = Math.floor((milliseconds / (1000 * 60)) % 60).toString().padStart(2, '0')
+    let hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24)
+    let days = Math.floor((((milliseconds / (1000 * 60 * 60 * 24)) + hours) / 24))
     return (`${days ? days + " days  " : ""} ${hours}:${minutes}:${seconds} `)
   }
 
