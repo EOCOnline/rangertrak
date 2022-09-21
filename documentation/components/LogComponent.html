@@ -69,8 +69,24 @@
 </p>
 
 
+    <p class="comment">
+        <h3>Description</h3>
+    </p>
+    <p class="comment">
+        <p>Update the Log Panel pane with notifications</p>
+
+    </p>
 
 
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+                    <code><a href="https://angular.io/api/core/OnDestroy" target="_blank" >OnDestroy</a></code>
+                    <code><a href="https://angular.io/api/core/AfterContentInit" target="_blank" >AfterContentInit</a></code>
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+    </p>
 
 
 <section>
@@ -129,7 +145,66 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#log" >log</a>
+                                    <span class="modifier">Public</span>
+                                <a href="#error" >error</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#excessive" >excessive</a>
+                            </li>
+                            <li>
+                                <a href="#faBug" >faBug</a>
+                            </li>
+                            <li>
+                                <a href="#faCircleCheck" >faCircleCheck</a>
+                            </li>
+                            <li>
+                                <a href="#faCircleExclamation" >faCircleExclamation</a>
+                            </li>
+                            <li>
+                                <a href="#faCircleInfo" >faCircleInfo</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#id" >id</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#info" >info</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#latestLog" >latestLog</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#logPanel" >logPanel</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#logSubscription" >logSubscription</a>
+                            </li>
+                            <li>
+                                <a href="#pageDescr" >pageDescr</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#settings" >settings</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#settingsSubscription" >settingsSubscription</a>
+                            </li>
+                            <li>
+                                <a href="#title" >title</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#verbose" >verbose</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#warn" >warn</a>
                             </li>
                         </ul>
                     </td>
@@ -144,13 +219,22 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#dbug_unused" >dbug_unused</a>
+                                <a href="#gotNewLog" >gotNewLog</a>
                             </li>
                             <li>
-                                <a href="#logEvent" >logEvent</a>
+                                <a href="#ngAfterContentInit" >ngAfterContentInit</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
                             </li>
                             <li>
                                 <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onBtnSaveLog" >onBtnSaveLog</a>
+                            </li>
+                            <li>
+                                <a href="#redisplayLog" >redisplayLog</a>
                             </li>
                         </ul>
                     </td>
@@ -170,12 +254,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(document: Document)</code>
+<code>constructor(logService: <a href="../injectables/LogService.html" target="_self">LogService</a>, settingsService: <a href="../injectables/SettingsService.html" target="_self">SettingsService</a>, document: Document)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/log/log.component.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/app/log/log.component.ts:51</a></div>
                             </td>
                         </tr>
 
@@ -192,6 +276,30 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>logService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LogService.html" target="_self" >LogService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>settingsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SettingsService.html" target="_self" >SettingsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>document</td>
                                                   
@@ -226,30 +334,33 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="dbug_unused"></a>
+                    <a name="gotNewLog"></a>
                     <span class="name">
-                        <span ><b>dbug_unused</b></span>
-                        <a href="#dbug_unused"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>gotNewLog</b></span>
+                        <a href="#gotNewLog"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>dbug_unused(msg: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, alerts)</code>
+<code>gotNewLog(log: <a href="../undefineds/LogType.html" target="_self">LogType[]</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">src/app/log/log.component.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="125"
+                            class="link-to-prism">src/app/log/log.component.ts:125</a></div>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                    <div class="io-description"><p>If you have to display reserved characters such as &lt;, &gt;, &amp;, &quot; within the <pre> tag,
+the characters must be escaped using their respective HTML entity.</p>
+</div>
 
                     <div class="io-description">
                         <b>Parameters :</b>
@@ -260,36 +371,19 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Optional</td>
-                                    <td>Default value</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>msg</td>
+                                    <td>log</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#LogType" target="_self" >LogType[]</a></code>
                                     </td>
 
                                     <td>
                                         No
                                     </td>
 
-                                    <td>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>alerts</td>
-                                    <td>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-                                    <td>
-                                        <code>false</code>
-                                    </td>
 
                                 </tr>
                             </tbody>
@@ -298,7 +392,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                     <div class="io-description">
@@ -312,24 +406,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="logEvent"></a>
+                    <a name="ngAfterContentInit"></a>
                     <span class="name">
-                        <span ><b>logEvent</b></span>
-                        <a href="#logEvent"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>ngAfterContentInit</b></span>
+                        <a href="#ngAfterContentInit"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>logEvent(msg: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>ngAfterContentInit()</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">src/app/log/log.component.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="102"
+                            class="link-to-prism">src/app/log/log.component.ts:102</a></div>
                 </td>
             </tr>
 
@@ -338,40 +432,45 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>msg</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
-                    <div>
-                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="212"
+                            class="link-to-prism">src/app/log/log.component.ts:212</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
-                    </div>
-                    <div class="io-description">
-                        
                     </div>
                 </td>
             </tr>
@@ -397,8 +496,47 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">src/app/log/log.component.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">src/app/log/log.component.ts:84</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Create heading for Log Panel</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onBtnSaveLog"></a>
+                    <span class="name">
+                        <span ><b>onBtnSaveLog</b></span>
+                        <a href="#onBtnSaveLog"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onBtnSaveLog()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="202"
+                            class="link-to-prism">src/app/log/log.component.ts:202</a></div>
                 </td>
             </tr>
 
@@ -407,7 +545,44 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="redisplayLog"></a>
+                    <span class="name">
+                        <span ><b>redisplayLog</b></span>
+                        <a href="#redisplayLog"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>redisplayLog()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="116"
+                            class="link-to-prism">src/app/log/log.component.ts:116</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
@@ -424,21 +599,459 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="log"></a>
+                    <a name="error"></a>
                     <span class="name">
-                        <span ><b>log</b></span>
-                        <a href="#log"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Public</span>
+                        <span ><b>error</b></span>
+                        <a href="#error"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>this.document.getElementById(&quot;log&quot;)</code>
+                        <i>Default value : </i><code>true</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/log/log.component.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/app/log/log.component.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="excessive"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>excessive</b></span>
+                        <a href="#excessive"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/log/log.component.ts:43</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="faBug"></a>
+                    <span class="name">
+                        <span ><b>faBug</b></span>
+                        <a href="#faBug"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>faBug</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/app/log/log.component.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="faCircleCheck"></a>
+                    <span class="name">
+                        <span ><b>faCircleCheck</b></span>
+                        <a href="#faCircleCheck"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>faCircleCheck</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/app/log/log.component.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="faCircleExclamation"></a>
+                    <span class="name">
+                        <span ><b>faCircleExclamation</b></span>
+                        <a href="#faCircleExclamation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>faCircleExclamation</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">src/app/log/log.component.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="faCircleInfo"></a>
+                    <span class="name">
+                        <span ><b>faCircleInfo</b></span>
+                        <a href="#faCircleInfo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>faCircleInfo</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/log/log.component.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="id"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>id</b></span>
+                        <a href="#id"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;Log Component&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/log/log.component.ts:31</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="info"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>info</b></span>
+                        <a href="#info"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/log/log.component.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="latestLog"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>latestLog</b></span>
+                        <a href="#latestLog"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#LogType" target="_self" >LogType[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/log/log.component.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logPanel"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>logPanel</b></span>
+                        <a href="#logPanel"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>HTMLElement | null</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>null</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/app/log/log.component.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>logSubscription</b></span>
+                        <a href="#logSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/log/log.component.ts:36</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pageDescr"></a>
+                    <span class="name">
+                        <span ><b>pageDescr</b></span>
+                        <a href="#pageDescr"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x60;Program internal debug information&#x60;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/log/log.component.ts:33</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settings"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>settings</b></span>
+                        <a href="#settings"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#SettingsType" target="_self" >SettingsType</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/log/log.component.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settingsSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>settingsSubscription</b></span>
+                        <a href="#settingsSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/app/log/log.component.ts:37</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="title"></a>
+                    <span class="name">
+                        <span ><b>title</b></span>
+                        <a href="#title"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;Event Summary Log&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/log/log.component.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="verbose"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>verbose</b></span>
+                        <a href="#verbose"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/log/log.component.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="warn"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>warn</b></span>
+                        <a href="#warn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/log/log.component.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -451,68 +1064,242 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DOCUMENT } from &#x27;@angular/common&#x27;;
-import { Component, Inject, OnInit } from &#x27;@angular/core&#x27;
-//import { Event } from &#x27;@angular/animations&#x27;
-//import { File } from &#x27;@ionic-native/file/ngx&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Subscription, switchMap } from &#x27;rxjs&#x27;
 
-import { SettingsService } from &quot;../shared/services&quot;
-import { Utility } from &quot;../shared&quot;
+import { DOCUMENT } from &#x27;@angular/common&#x27;
+import { AfterContentInit, Component, Inject, OnDestroy, OnInit } from &#x27;@angular/core&#x27;
+import { MatCheckboxModule } from &#x27;@angular/material/checkbox&#x27;
+import {
+    faBug, faCircleCheck, faCircleExclamation, faCircleInfo, faMapMarkedAlt
+} from &#x27;@fortawesome/free-solid-svg-icons&#x27;
 
+import { Utility } from &#x27;../shared&#x27;
+import {
+    LogHeadings, LogLevel, LogService, LogType, SettingsService, SettingsType
+} from &#x27;../shared/services/&#x27;
+
+/**
+ * Update the Log Panel pane with notifications
+ *
+ */
 @Component({
   selector: &#x27;rangertrak-log&#x27;,
-  templateUrl: &#x27;./log.component.html&#x27;, //&#x27;home.page.html&#x27;
-  styleUrls: [&#x27;./log.component.scss&#x27;] //, &#x27;home.page.scss&#x27;]
+  templateUrl: &#x27;./log.component.html&#x27;,
+  styleUrls: [&#x27;./log.component.scss&#x27;]
 })
-export class LogComponent { //implements OnInit
+export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit {
+  // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
+  private id &#x3D; &#x27;Log Component&#x27;
+  title &#x3D; &#x27;Event Summary Log&#x27;
+  pageDescr &#x3D; &#x60;Program internal debug information&#x60;
 
-  log &#x3D; this.document.getElementById(&quot;log&quot;)
+  private logPanel: HTMLElement | null &#x3D; null
+  private logSubscription!: Subscription
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
 
+  private latestLog: LogType[] &#x3D; []
 
-  //constructor(public file: File) { }
+  // https://material.angular.io/components/checkbox
+  public excessive &#x3D; false
+  public verbose &#x3D; true
+  public info &#x3D; true
+  public warn &#x3D; true
+  public error &#x3D; true
+  faCircleInfo &#x3D; faCircleInfo
+  faCircleCheck &#x3D; faCircleCheck
+  faCircleExclamation &#x3D; faCircleExclamation
+  faBug &#x3D; faBug
+
   constructor(
+    private logService: LogService,
+    private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
 
-  }
-  // src/app/log/log.component.ts:23:22 - error NG2003: No suitable injection token for parameter &#x27;file&#x27; of class &#x27;LogComponent&#x27;.
-  // Consider using the @Inject decorator to specify an injection token.
+    console.log(&#x60;Constructing log component&#x60;)
 
+    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
+    this.logSubscription &#x3D; logService.getLogObserver().subscribe({
+      next: (log) &#x3D;&gt; {
+        //console.log(&#x60;LogPanel got: ${JSON.stringify(log)}&#x60;)
+        this.latestLog &#x3D; log
+        this.gotNewLog(log)
+      },
+      error: (e) &#x3D;&gt; console.error(&#x27;Log Subscription got:&#x27; + e, this.id),
+      complete: () &#x3D;&gt; console.info(&#x27;Log Subscription complete&#x27;, this.id)
+    })
+
+    this.settingsSubscription &#x3D; this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) &#x3D;&gt; {
+        this.settings &#x3D; newSettings
+        console.log(&#x27;Received new Settings via subscription.&#x27;, this.id)
+      },
+      error: (e) &#x3D;&gt; console.error(&#x27;Settings Subscription got:&#x27; + e, this.id),
+      complete: () &#x3D;&gt; console.info(&#x27;Settings Subscription complete&#x27;, this.id)
+    })
+  }
+
+  /**
+   * Create heading for Log Panel
+   */
   ngOnInit(): void {
+    //console.log(&#x60;Into log component&#x27;s ngInit&#x60;)
 
-  }
-
-  // log event in the console
-  logEvent(msg: string) {
-    if (this.log &#x3D;&#x3D;&#x3D; null) { throw (&quot;unable to find log...&quot;) }
-    let dt &#x3D; new Date()
-    let time &#x3D; Utility.zeroFill(dt.getHours(), 2) + &quot;:&quot; + Utility.zeroFill(dt.getMinutes(), 2) + &quot;:&quot; + Utility.zeroFill(dt.getSeconds(), 2) + &quot;:&quot; + Utility.zeroFill(dt.getMilliseconds(), 4)
-    this.log.textContent +&#x3D; time + &quot;-  &amp;nbsp;&amp;nbsp;&quot; + msg + &quot;\n&quot;
-    var ot &#x3D; this.log.scrollHeight - this.log.clientHeight
-    if (ot &gt; 0) this.log.scrollTop &#x3D; ot
-  }
-
-  dbug_unused(msg: string, alerts &#x3D; false) {
-    let dt &#x3D; new Date()
-    let time &#x3D; Utility.zeroFill(dt.getHours(), 2) + &quot;:&quot; + Utility.zeroFill(dt.getMinutes(), 2) + &quot;:&quot; + Utility.zeroFill(dt.getSeconds(), 2) + &quot;:&quot; + Utility.zeroFill(dt.getMilliseconds(), 4)
-    let dbugLog &#x3D; time + &quot;-  &amp;nbsp;&amp;nbsp;&quot; + msg + &quot;&lt;br&gt;&quot; + this.log?.innerHTML
-    this.log!.innerHTML &#x3D; dbugLog
-    // TODO: Only if settings say to do this!
-    // console.log(&quot;RangerTrak: &quot; + dbugLog); // Convert dbugLog from HTML to plain text...
-    if (alerts &#x3D;&#x3D; true) {
-      alert(&quot;&lt;strong&gt;Alert!&lt;/strong&gt; &quot; + time + &quot;-  &amp;nbsp;&amp;nbsp;&quot; + msg);
-      //$(&#x27;#alerts&#x27;).fadeIn().delay(2500).fadeOut();
+    if (this.settings) {
+      // Turn on excessive reporting by default, if in debug mode...
+      this.excessive &#x3D; this.settings.debugMode
     }
+
+    this.logPanel &#x3D; this.document.getElementById(&quot;log&quot;)
+    if (this.logPanel) {
+      // YES!
+      console.log(&#x60;ngOnInit() found logPanel.&#x60;)
+      this.redisplayLog()
+    } else {
+      console.error(&#x27;logPanel not found in ngOnInit(). Move code later!&#x27;);
+    }
+  }
+
+  ngAfterContentInit() {
+    //console.log(&#x60;Into log component&#x27;s ngAfterContentInit&#x60;)
+
+    this.logPanel &#x3D; this.document.getElementById(&quot;log&quot;)
+    if (this.logPanel) {
+      // YES!
+      console.log(&#x60;ngAfterContentInit() found logPanel.&#x60;)
+      this.redisplayLog()
+    } else {
+      console.error(&#x27;logPanel not found in ngAfterContentInit(). Move code later!&#x27;);
+    }
+  }
+
+
+  redisplayLog() {
+    console.log(&#x60;Display log with ${this.excessive ? &#x27;excessive, &#x27; : &#x27;only &#x27;}${this.verbose ? &#x27;verbose, &#x27; : &#x27;&#x27;}${this.info ? &#x27;info, &#x27; : &#x27;&#x27;}${this.warn ? &#x27;warnings, &#x27; : &#x27;&#x27;}${this.error ? &#x27;errors &#x27; : &#x27;&#x27;}&#x60;)
+    this.gotNewLog(this.latestLog)
+  }
+
+  /**
+   * If you have to display reserved characters such as &lt;, &gt;, &amp;, &quot; within the &lt;pre&gt; tag,
+   * the characters must be escaped using their respective HTML entity.
+   */
+  gotNewLog(log: LogType[]) {
+    //console.log(&#x60;got new log with ${log.length} entries&#x60;)
+
+    let i &#x3D; 0
+    let msMaxDelay &#x3D; 5000
+    while (!this.logPanel) {
+      setTimeout(() &#x3D;&gt; {
+        console.error(&#x60;Log Component: gotNewLog() can not display logs BEFORE logPanel initialization. Delayed ${i / 10 * msMaxDelay} ms. Retrying.&#x60;) // For: \n${JSON.stringify(log.slice(-1))} &#x60;)
+        this.logPanel &#x3D; this.document.getElementById(&quot;log&quot;)
+      }, msMaxDelay / 10)
+      if (++i &gt; 9) {
+        return
+        //throw (&quot;log panel undefined...&quot;)
+        //break
+      }
+    }
+
+    if (!this.logPanel || !this.logPanel.innerHTML) {
+      console.error(&#x27;LogComponent: this.logPanel (or .innerHTML) is null or undefined...&#x27;)
+      return
+    }
+
+    // TODO: rebuilds entire log panel, instead of just pushing last few entries onto it...
+    this.logPanel.innerHTML &#x3D; &#x27;&#x27;
+
+
+    i &#x3D; 0
+    log.forEach(entry &#x3D;&gt; {
+      let time &#x3D; entry.date.getHours().toString().padStart(2, &#x27;0&#x27;) + &quot;:&quot; + entry.date.getMinutes().toString().padStart(2, &#x27;0&#x27;) + &quot;:&quot; + entry.date.getSeconds().toString().padStart(2, &#x27;0&#x27;) + &quot;.&quot; + entry.date.getMilliseconds().toString().padStart(3, &#x27;0&#x27;)
+      //let preface &#x3D; &#x60;&lt;span class&#x3D;&quot;tiny&quot;&gt;${entry.source}: &lt;/span&gt;&#x60;
+      let preface &#x3D; &#x60;&lt;span class&#x3D;&quot;tiny&quot;&gt; ${i++}) ${time} - ${entry.source}:  &lt;/span&gt;&#x60;
+
+      if (!this.logPanel) { return }
+
+      switch (entry.level) {
+
+        case LogLevel.Excessive:
+          if (this.excessive) {
+            // BUG: Classes and id&#x27;s show up in debugger, but font-sizes &amp; colors don&#x27;t get calculated/are ineffective!
+            this.logPanel.innerHTML +&#x3D; &#x60;&lt;i class&#x3D;&quot;fa-solid fa-circle-check&quot;&gt;&lt;/i&gt;&lt;span class&#x3D;&quot;excessive&quot;&gt;${preface}${entry.msg}&lt;/span&gt;&lt;br&gt;&#x60;
+          }
+          break;
+
+        case LogLevel.Verbose:
+          if (this.verbose) {
+            // BUG: Classes and id&#x27;s show up in debugger, but font-sizes &amp; colors don&#x27;t get calculated/are ineffective!
+            this.logPanel.innerHTML +&#x3D; &#x60;&lt;i class&#x3D;&quot;fa-solid fa-circle-check&quot;&gt;&lt;/i&gt;&lt;span class&#x3D;&quot;verbose&quot;&gt;${preface}${entry.msg}&lt;/span&gt;&lt;br&gt;&#x60;
+          }
+          break;
+
+        case LogLevel.Info:
+          if (this.info) {
+            this.logPanel.innerHTML +&#x3D; &#x60;&lt;fa-icon [icon]&#x3D;&quot;fa-circle-info&quot;&gt;&lt;/fa-icon&gt;&lt;span class&#x3D;&quot;info&quot; style&#x3D;&quot;background-color:yellow;&quot;&gt;${preface}${entry.msg}&lt;/span&gt;&lt;br&gt;&#x60;
+          }
+          break;
+
+        case LogLevel.Warn:
+          if (this.warn) {
+            this.logPanel.innerHTML +&#x3D; &#x60;&lt;i class&#x3D;&quot;fa-solid fa-circle-exclamation&quot;&gt;&lt;/i&gt;&lt;span class&#x3D;&quot;warn&quot; style&#x3D;&quot;background-color:orange;&quot;&quot;&gt;${preface}${entry.msg}&lt;/span&gt;&lt;br&gt;&#x60;
+          }
+          break;
+
+        case LogLevel.Error:
+          if (this.error) {
+            this.logPanel.innerHTML +&#x3D; &#x60;&lt;i class&#x3D;&quot;fa-solid fa-bug&quot;&gt;&lt;/i&gt;&lt;span class&#x3D;&quot;error&quot; style&#x3D;&quot;background-color:red;&quot;&gt;${preface}${entry.msg}&lt;/span&gt;&lt;br&gt;&#x60;
+          }
+          break;
+
+        default:
+          this.logPanel.innerHTML +&#x3D; &#x60;&lt;i class&#x3D;&quot;fa-solid fa-bug&quot;&gt;&lt;/i&gt;&lt;span class&#x3D;&quot;error&quot; style&#x3D;&quot;background-color:salmon;&quot;&gt;UNEXPECTED LOG TYPE: ${preface}${entry.msg}&lt;/span&gt;&lt;br&gt;&#x60;
+      }
+    })
+
+    let ot &#x3D; this.logPanel.scrollHeight - this.logPanel.clientHeight
+    if (ot &gt; 0) this.logPanel.scrollTop &#x3D; ot
+  }
+
+  onBtnSaveLog() {
+    let dt &#x3D; new Date()
+    let fileName &#x3D; &#x60;RangerTrak.log.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv&#x60;
+
+    // https://github.com/ItamarSmirra/Fs-Browsers#readme
+    // TODO:     exportFile(this.latestLog, { type: CSV_FILE, headings: LogHeadings, fileName: fileName });
+
+    console.error(&#x60;UNIMPLEMENTED!  Saving Log to file xxxxxxxxxx with ${this.latestLog.length} entries&#x60;)
+  }
+
+  ngOnDestroy() {
+    this.settingsSubscription.unsubscribe()
   }
 }
 </code></pre>
     </div>
 
     <div class="tab-pane fade " id="c-templateData">
-        <pre class="line-numbers"><code class="language-html">&lt;h1&gt;Log&lt;/h1&gt;
+        <pre class="line-numbers"><code class="language-html">&lt;pageHeader [parentTitle]&#x3D;&quot;title&quot; [pageDescription]&#x3D;&quot;pageDescr&quot;&gt;...&lt;/pageHeader&gt;
+&lt;div id&#x3D;&quot;log&quot;&gt;
+  Event information log
+&lt;/div&gt;
+&lt;!--div class&#x3D;&quot;tiny&quot;&gt;this is a tiny test!&lt;/div--&gt;
+&lt;mat-card&gt;
+  &lt;mat-card-content&gt;
+    &lt;h3&gt;Log levels to display:&lt;/h3&gt;
+    &lt;section&gt;
+      &lt;!-- Other colors: primary, secondary, accent and warn  https://stackoverflow.com/questions/57926149/angular-material-colors --&gt;
+      &lt;mat-checkbox [(ngModel)]&#x3D;&quot;excessive&quot; (change)&#x3D;&quot;this.redisplayLog()&quot;&gt;Excessive&lt;/mat-checkbox&gt;
+      &lt;mat-checkbox [(ngModel)]&#x3D;&quot;verbose&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Verbose&lt;/mat-checkbox&gt;
+      &lt;mat-checkbox [(ngModel)]&#x3D;&quot;info&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Informational&lt;/mat-checkbox&gt;
+      &lt;mat-checkbox [(ngModel)]&#x3D;&quot;warn&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Warnings&lt;/mat-checkbox&gt;
+      &lt;mat-checkbox [(ngModel)]&#x3D;&quot;error&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Errors&lt;/mat-checkbox&gt;
+    &lt;/section&gt;
+    &lt;br&gt;
 
-&lt;pre id&#x3D;&quot;log&quot;&gt;Event information log&lt;/pre&gt;
-
-&lt;!--TODO: button color&#x3D;&quot;secondary&quot; (click)&#x3D;&quot;export()&quot;&gt;Export Data&lt;/button--&gt;
+    &lt;button (click)&#x3D;&quot;onBtnSaveLog()&quot; style&#x3D;&quot;margin-bottom: 5px&quot; title&#x3D;&quot;Save Log to File&quot;&gt;
+      [Broken:] Save Log File&lt;/button&gt;&lt;br /&gt;
+  &lt;/mat-card-content&gt;
+&lt;/mat-card&gt;&lt;br&gt;
 </code></pre>
     </div>
 
@@ -520,38 +1307,85 @@ export class LogComponent { //implements OnInit
                 <p class="comment">
                     <code>./log.component.scss</code>
                 </p>
-                <pre class="line-numbers"><code class="language-scss">body
-{
-	font-family: arial, helvetica, freesans, sans-serif;
-	font-size: 100%;
-	color: #333;
-	background-color: #ddd;
+                <pre class="line-numbers"><code class="language-scss">#log {
+  height            : 70vh;
+  font-family       : monospace;
+  font-size         : 0.7em;
+  line-height       : 12px;
+  padding           : 2px 5px;
+  //color           : rgb(57, 34, 161);
+  background-color  : rgb(226, 238, 156);
+  border            : 1px solid #030;
+  border-radius     : 4px;
+  overflow          : auto;
 }
 
-h1
-{
-	font-size: 1.5em;
-	font-weight: normal;
-	margin: 0;
+#log .tiny {
+  font-size  : 8px;
+  font-family: &#x27;Times New Roman&#x27;, Times, serif;
+
+  color           : crimson;
+  background-color: cornflowerblue;
 }
 
-pre
-{
-	height: 80vh;
-	font-family: monospace;
-	font-size: 1em;
-	padding: 2px 5px;
-	color: rgb(57, 34, 161);
-	background-color: rgb(226, 238, 156);
-	border: 1px solid #030;
-	border-radius: 4px;
-	overflow: auto;
+.tiny {
+  font-size       : 8px;
+  font-family     : &#x27;Times New Roman&#x27;, Times, serif;
+  color           : crimson !important;
+  background-color: cornflowerblue;
 }
 
-button {
-  margin-right: 8px;
+
+h3 {
+  margin            : 0px 0px;
+  //background-color: crimson;
 }
-</code></pre>
+
+.mat-checkbox {
+  margin: 0px 10px;
+}
+
+.excessive {
+  background-color: rgb(255, 121, 148);
+  color           : rgb(106, 103, 103);
+  font-size       : 8px;
+}
+
+.verbose {
+  color    : rgb(66, 65, 65);
+  font-size: 8px;
+}
+
+.Info {
+  //font-family: Cambria, Cochin, Georgia, Times, &#x27;Times New Roman&#x27;, serif;
+  color: rgb(7, 246, 39);
+}
+
+.info {
+  //font-family: Cambria, Cochin, Georgia, Times, &#x27;Times New Roman&#x27;, serif;
+  color: rgb(7, 246, 39);
+}
+
+.warn {
+  color: orange;
+}
+
+.error {
+  color: red
+}
+
+// body {
+//   font-family     : arial, helvetica, freesans, sans-serif;
+//   font-size       : 100%;
+//   color           : #333;
+//   background-color: #ddd;
+// }
+
+// h1 {
+//   font-size  : 1.5em;
+//   font-weight: normal;
+//   margin     : 0;
+// }</code></pre>
     </div>
 
     <div class="tab-pane fade " id="c-tree">
@@ -579,12 +1413,13 @@ button {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><h1>Log</h1><pre id="log">Event information log</pre><!--TODO: button color="secondary" (click)="export()">Export Data</button--></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'GmapComponent', 'selector': 'rangertrak-gmap'},{'name': 'IconComponent', 'selector': 'icon'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+        var COMPONENT_TEMPLATE = '<div><pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader><div id="log">  Event information log</div><!--div class="tiny">this is a tiny test!</div--><mat-card>  <mat-card-content>    <h3>Log levels to display:</h3>    <section>      <!-- Other colors: primary, secondary, accent and warn  https://stackoverflow.com/questions/57926149/angular-material-colors -->      <mat-checkbox [(ngModel)]="excessive" (change)="this.redisplayLog()">Excessive</mat-checkbox>      <mat-checkbox [(ngModel)]="verbose" (change)="this.redisplayLog()" color="primary">Verbose</mat-checkbox>      <mat-checkbox [(ngModel)]="info" (change)="this.redisplayLog()" color="primary">Informational</mat-checkbox>      <mat-checkbox [(ngModel)]="warn" (change)="this.redisplayLog()" color="primary">Warnings</mat-checkbox>      <mat-checkbox [(ngModel)]="error" (change)="this.redisplayLog()" color="primary">Errors</mat-checkbox>    </section>    <br>    <button (click)="onBtnSaveLog()" style="margin-bottom: 5px" title="Save Log to File">      [Broken:] Save Log File</button><br />  </mat-card-content></mat-card><br></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'LogComponent'};
 </script>
 <script src="../js/tree.js"></script>
+
 
 
 

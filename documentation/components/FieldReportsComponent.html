@@ -76,6 +76,7 @@
     </p>
     <p class="comment">
                     <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+                    <code><a href="https://angular.io/api/core/OnDestroy" target="_blank" >OnDestroy</a></code>
     </p>
 
 
@@ -135,15 +136,27 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#backupRowData" >backupRowData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#columnDefs" >columnDefs</a>
                             </li>
                             <li>
-                                <a href="#defaultColDef" >defaultColDef</a>
+                                    <span class="modifier">Public</span>
+                                <a href="#fieldReportArray" >fieldReportArray</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#fieldReports" >fieldReports</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#fieldReportsSubscription" >fieldReportsSubscription</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#fieldReportStatuses" >fieldReportStatuses</a>
                             </li>
                             <li>
@@ -158,9 +171,15 @@
                                 <a href="#gridOptions" >gridOptions</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#http" >http</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#id" >id</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#maxSeperatorWarnings" >maxSeperatorWarnings</a>
                             </li>
                             <li>
@@ -170,23 +189,45 @@
                                 <a href="#myMinuteGetter" >myMinuteGetter</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#nFakes" >nFakes</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#now" >now</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#numFakesForm" >numFakesForm</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#numSeperatorWarnings" >numSeperatorWarnings</a>
                             </li>
                             <li>
                                 <a href="#onGridReady" >onGridReady</a>
                             </li>
                             <li>
+                                <a href="#pageDescr" >pageDescr</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#rowData" >rowData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#selectedRows" >selectedRows</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#settings" >settings</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#settingsSubscription" >settingsSubscription</a>
+                            </li>
+                            <li>
+                                <a href="#title" >title</a>
                             </li>
                         </ul>
                     </td>
@@ -201,22 +242,23 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#displayHide" >displayHide</a>
-                            </li>
-                            <li>
-                                <a href="#displayShow" >displayShow</a>
-                            </li>
-                            <li>
                                 <a href="#generateFakeFieldReports" >generateFakeFieldReports</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#getParams" >getParams</a>
                             </li>
                             <li>
-                                <a href="#getValue" >getValue</a>
+                                <a href="#getParamValue" >getParamValue</a>
+                            </li>
+                            <li>
+                                <a href="#gotNewFieldReports" >gotNewFieldReports</a>
                             </li>
                             <li>
                                 <a href="#isValidDate" >isValidDate</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
                             </li>
                             <li>
                                 <a href="#ngOnInit" >ngOnInit</a>
@@ -228,10 +270,16 @@
                                 <a href="#onBtnExport" >onBtnExport</a>
                             </li>
                             <li>
-                                <a href="#onBtnImportFieldReports_unused" >onBtnImportFieldReports_unused</a>
+                                <a href="#onBtnImportFieldReportsFromJSON_unused" >onBtnImportFieldReportsFromJSON_unused</a>
                             </li>
                             <li>
                                 <a href="#onBtnUpdateFieldReports" >onBtnUpdateFieldReports</a>
+                            </li>
+                            <li>
+                                <a href="#onFirstDataRendered" >onFirstDataRendered</a>
+                            </li>
+                            <li>
+                                <a href="#onRowSelection" >onRowSelection</a>
                             </li>
                             <li>
                                 <a href="#onSeperatorChange" >onSeperatorChange</a>
@@ -260,12 +308,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(formBuilder: <a href="https://angular.io/api/forms/FormBuilder" target="_blank">FormBuilder</a>, fieldReportService: <a href="../injectables/FieldReportService.html" target="_self">FieldReportService</a>, teamService: <a href="../injectables/TeamService.html" target="_self">TeamService</a>, rangerService: <a href="../injectables/RangerService.html" target="_self">RangerService</a>, settingsService: <a href="../injectables/SettingsService.html" target="_self">SettingsService</a>, document: Document)</code>
+<code>constructor(formBuilder: UntypedFormBuilder, fieldReportService: <a href="../injectables/FieldReportService.html" target="_self">FieldReportService</a>, log: <a href="../injectables/LogService.html" target="_self">LogService</a>, settingsService: <a href="../injectables/SettingsService.html" target="_self">SettingsService</a>, document: Document)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="79" class="link-to-prism">src/app/field-reports/field-reports.component.ts:79</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">src/app/field-reports/field-reports.component.ts:84</a></div>
                             </td>
                         </tr>
 
@@ -286,7 +334,7 @@
                                                         <td>formBuilder</td>
                                                   
                                                         <td>
-                                                                        <code><a href="https://angular.io/api/forms/FormBuilder" target="_blank" >FormBuilder</a></code>
+                                                                    <code>UntypedFormBuilder</code>
                                                         </td>
                                                   
                                                     <td>
@@ -307,22 +355,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>teamService</td>
+                                                        <td>log</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/TeamService.html" target="_self" >TeamService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>rangerService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/RangerService.html" target="_self" >RangerService</a></code>
+                                                                        <code><a href="../injectables/LogService.html" target="_self" >LogService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -376,144 +412,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="displayHide"></a>
-                    <span class="name">
-                        <span ><b>displayHide</b></span>
-                        <a href="#displayHide"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>displayHide(htmlElementID: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="313"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:313</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>htmlElementID</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="displayShow"></a>
-                    <span class="name">
-                        <span ><b>displayShow</b></span>
-                        <a href="#displayShow"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>displayShow(htmlElementID: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="322"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:322</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>htmlElementID</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="generateFakeFieldReports"></a>
                     <span class="name">
                         <span ><b>generateFakeFieldReports</b></span>
@@ -530,8 +428,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="301"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:301</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="406"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:406</a></div>
                 </td>
             </tr>
 
@@ -569,7 +467,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                     <div class="io-description">
@@ -585,6 +483,7 @@
                 <td class="col-md-4">
                     <a name="getParams"></a>
                     <span class="name">
+                        <span class="modifier">Private</span>
                         <span ><b>getParams</b></span>
                         <a href="#getParams"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -592,15 +491,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>getParams()</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getParams()</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="262"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:262</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="345"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:345</a></div>
                 </td>
             </tr>
 
@@ -620,24 +520,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getValue"></a>
+                    <a name="getParamValue"></a>
                     <span class="name">
-                        <span ><b>getValue</b></span>
-                        <a href="#getValue"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getParamValue</b></span>
+                        <a href="#getParamValue"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>getValue(inputSelector: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>getParamValue(inputSelector: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="243"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:243</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="327"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:327</a></div>
                 </td>
             </tr>
 
@@ -689,6 +589,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="gotNewFieldReports"></a>
+                    <span class="name">
+                        <span ><b>gotNewFieldReports</b></span>
+                        <a href="#gotNewFieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>gotNewFieldReports(newReports: <a href="../undefineds/FieldReportsType.html" target="_self">FieldReportsType</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="255"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:255</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>newReports</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#FieldReportsType" target="_self" >FieldReportsType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="isValidDate"></a>
                     <span class="name">
                         <span ><b>isValidDate</b></span>
@@ -705,8 +674,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="206"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:206</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="312"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:312</a></div>
                 </td>
             </tr>
 
@@ -758,6 +727,43 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="418"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:418</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="ngOnInit"></a>
                     <span class="name">
                         <span ><b>ngOnInit</b></span>
@@ -774,8 +780,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="178"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:178</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="102"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:102</a></div>
                 </td>
             </tr>
 
@@ -784,7 +790,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
@@ -811,8 +817,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="287"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:287</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="366"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:366</a></div>
                 </td>
             </tr>
 
@@ -821,7 +827,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
@@ -848,8 +854,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="277"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:277</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="360"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:360</a></div>
                 </td>
             </tr>
 
@@ -858,7 +864,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
@@ -869,24 +875,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="onBtnImportFieldReports_unused"></a>
+                    <a name="onBtnImportFieldReportsFromJSON_unused"></a>
                     <span class="name">
-                        <span ><b>onBtnImportFieldReports_unused</b></span>
-                        <a href="#onBtnImportFieldReports_unused"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>onBtnImportFieldReportsFromJSON_unused</b></span>
+                        <a href="#onBtnImportFieldReportsFromJSON_unused"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>onBtnImportFieldReports_unused()</code>
+<code>onBtnImportFieldReportsFromJSON_unused()</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="297"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:297</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="384"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:384</a></div>
                 </td>
             </tr>
 
@@ -895,7 +901,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
@@ -922,8 +928,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="293"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:293</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="377"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:377</a></div>
                 </td>
             </tr>
 
@@ -932,8 +938,146 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onFirstDataRendered"></a>
+                    <span class="name">
+                        <span ><b>onFirstDataRendered</b></span>
+                        <a href="#onFirstDataRendered"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onFirstDataRendered(params: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="215"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:215</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onRowSelection"></a>
+                    <span class="name">
+                        <span ><b>onRowSelection</b></span>
+                        <a href="#onRowSelection"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onRowSelection(event: SelectionChangedEvent)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="230"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:230</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+                                    <td>
+                                            <code>SelectionChangedEvent</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
                     </div>
                 </td>
             </tr>
@@ -959,8 +1103,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="270"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:270</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="353"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:353</a></div>
                 </td>
             </tr>
 
@@ -969,7 +1113,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
@@ -996,8 +1140,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="233"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:233</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="239"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:239</a></div>
                 </td>
             </tr>
 
@@ -1006,7 +1150,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
@@ -1033,8 +1177,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="202"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:202</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="249"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:249</a></div>
                 </td>
             </tr>
 
@@ -1043,7 +1187,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
@@ -1060,8 +1204,41 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="backupRowData"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>backupRowData</b></span>
+                        <a href="#backupRowData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>any[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="83" class="link-to-prism">src/app/field-reports/field-reports.component.ts:83</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="columnDefs"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>columnDefs</b></span>
                         <a href="#columnDefs"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1069,47 +1246,13 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>    <code>[]</code>
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>[
-    { headerName: &quot;ID&quot;, field: &quot;id&quot;, headerTooltip: &#x27;Is this even needed?!&#x27; }, // TODO:
-    { headerName: &quot;CallSign&quot;, field: &quot;callsign&quot;, tooltipField: &quot;team&quot; },
-    // { headerName: &quot;Team&quot;, field: &quot;team&quot; },
-    { headerName: &quot;Address&quot;, field: &quot;address&quot;, singleClickEdit: true, flex: 50 }, //, maxWidth: 200
-    { headerName: &quot;Lat&quot;, field: &quot;lat&quot;, singleClickEdit: true },
-    { headerName: &quot;Lng&quot;, field: &quot;lng&quot;, cellClass: &#x27;number-cell&#x27; },
-    {
-      headerName: &quot;Time&quot;, headerTooltip: &#x27;Report date&#x27;,
-      valueGetter: this.myDateGetter,
-    },
-    {
-      headerName: &quot;Elapsed&quot;, headerTooltip: &#x27;Hrs:Min:Sec since report&#x27;,
-      valueGetter: this.myMinuteGetter,
-    },
-    {
-      headerName: &quot;Status&quot;, field: &quot;status&quot;, flex: 50,
-      cellStyle: (params: { value: string; }) &#x3D;&gt; {
-        //this.fieldReportStatuses.forEach(function(value) { (params.value &#x3D;&#x3D;&#x3D; value.status) ? { backgroundColor: value.color }  : return(null) }
-        for (let i &#x3D; 0; i &lt; this.fieldReportStatuses.length; i++) {
-          if (params.value &#x3D;&#x3D;&#x3D; this.fieldReportStatuses[i].status) {
-            return { backgroundColor: this.fieldReportStatuses[i].color }
-          }
-        }
-        return null
-      }
-      //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
-    },
-    { headerName: &quot;Note&quot;, field: &quot;note&quot;, flex: 50 }, //, maxWidth: 300
-  ]</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="135" class="link-to-prism">src/app/field-reports/field-reports.component.ts:135</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/field-reports/field-reports.component.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -1120,49 +1263,11 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="defaultColDef"></a>
+                    <a name="fieldReportArray"></a>
                     <span class="name">
-                        <span ><b>defaultColDef</b></span>
-                        <a href="#defaultColDef"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>{
-    flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
-    minWidth: 100,
-    editable: true,
-    resizable: true,
-    sortable: true,
-    filter: true,
-    floatingFilter: true
-  }</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">src/app/field-reports/field-reports.component.ts:71</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="fieldReports"></a>
-                    <span class="name">
-                        <span ><b>fieldReports</b></span>
-                        <a href="#fieldReports"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Public</span>
+                        <span ><b>fieldReportArray</b></span>
+                        <a href="#fieldReportArray"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -1179,7 +1284,61 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/field-reports/field-reports.component.ts:45</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/field-reports/field-reports.component.ts:39</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fieldReports"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>fieldReports</b></span>
+                        <a href="#fieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#FieldReportsType" target="_self" >FieldReportsType | undefined</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/field-reports/field-reports.component.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fieldReportsSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>fieldReportsSubscription</b></span>
+                        <a href="#fieldReportsSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/field-reports/field-reports.component.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -1192,6 +1351,7 @@
                 <td class="col-md-4">
                     <a name="fieldReportStatuses"></a>
                     <span class="name">
+                            <span class="modifier">Private</span>
                         <span ><b>fieldReportStatuses</b></span>
                         <a href="#fieldReportStatuses"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1210,7 +1370,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/field-reports/field-reports.component.ts:46</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/app/field-reports/field-reports.component.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -1237,7 +1397,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/app/field-reports/field-reports.component.ts:49</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/app/field-reports/field-reports.component.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -1258,7 +1418,7 @@
             </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">src/app/field-reports/field-reports.component.ts:50</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/field-reports/field-reports.component.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -1278,7 +1438,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+                        <i>Type : </i>        <code><a href="../miscellaneous/variables.html#id" target="_self" >GridOptions</a></code>
 
                     </td>
                 </tr>
@@ -1290,16 +1450,30 @@
     // pagination: true,
 
     // EVENT handlers
-    // onRowClicked: event &#x3D;&gt; console.log(&#x27;A row was clicked&#x27;),
+    // onRowClicked: event &#x3D;&gt; this.log.verbose(&#x27;A row was clicked&#x27;),
+    onSelectionChanged: (event: SelectionChangedEvent) &#x3D;&gt; this.onRowSelection(event),
 
     // CALLBACKS
     // getRowHeight: (params) &#x3D;&gt; 25
+
+    defaultColDef: {
+      flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
+      minWidth: 80,
+      editable: true,
+      //singleClickEdit: true,
+      resizable: true,
+      sortable: true,
+      filter: true,
+      floatingFilter: true
+    },
+    // set rowData to null or undefined to show loading panel by default
+    rowData: null,
   }</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/app/field-reports/field-reports.component.ts:59</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/app/field-reports/field-reports.component.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -1312,6 +1486,7 @@
                 <td class="col-md-4">
                     <a name="http"></a>
                     <span class="name">
+                            <span class="modifier">Private</span>
                         <span ><b>http</b></span>
                         <a href="#http"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1325,7 +1500,39 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/app/field-reports/field-reports.component.ts:52</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">src/app/field-reports/field-reports.component.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="id"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>id</b></span>
+                        <a href="#id"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;Field Report&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/field-reports/field-reports.component.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -1338,6 +1545,7 @@
                 <td class="col-md-4">
                     <a name="maxSeperatorWarnings"></a>
                     <span class="name">
+                            <span class="modifier">Private</span>
                         <span ><b>maxSeperatorWarnings</b></span>
                         <a href="#maxSeperatorWarnings"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1356,7 +1564,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">src/app/field-reports/field-reports.component.ts:54</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/app/field-reports/field-reports.component.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -1381,11 +1589,36 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="98" class="link-to-prism">src/app/field-reports/field-reports.component.ts:98</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="269" class="link-to-prism">src/app/field-reports/field-reports.component.ts:269</a></div>
                         </td>
                     </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Given a fieldReport, finds the date, and returns it as &#39;Sun Jan-01 23:00:00&#39;</p>
+</div>
+                </td>
+            </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description">
+                                <b>Parameters :</b>
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            <tr>
+                                                    <td>params</td>
+                                            </tr>
+                                    </tbody>
+                                </table>
+                        </div>
+                    </td>
+                </tr>
         </tbody>
     </table>
     <table class="table table-sm table-bordered">
@@ -1406,7 +1639,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="124" class="link-to-prism">src/app/field-reports/field-reports.component.ts:124</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="296" class="link-to-prism">src/app/field-reports/field-reports.component.ts:296</a></div>
                         </td>
                     </tr>
 
@@ -1419,6 +1652,7 @@
                 <td class="col-md-4">
                     <a name="nFakes"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>nFakes</b></span>
                         <a href="#nFakes"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1437,7 +1671,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">src/app/field-reports/field-reports.component.ts:56</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">src/app/field-reports/field-reports.component.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -1450,6 +1684,7 @@
                 <td class="col-md-4">
                     <a name="now"></a>
                     <span class="name">
+                            <span class="modifier">Private</span>
                         <span ><b>now</b></span>
                         <a href="#now"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1463,7 +1698,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/app/field-reports/field-reports.component.ts:51</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/app/field-reports/field-reports.component.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -1476,6 +1711,7 @@
                 <td class="col-md-4">
                     <a name="numFakesForm"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>numFakesForm</b></span>
                         <a href="#numFakesForm"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1483,13 +1719,13 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://angular.io/api/forms/FormGroup" target="_blank" >FormGroup</a></code>
+                        <i>Type : </i>    <code>UntypedFormGroup</code>
 
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">src/app/field-reports/field-reports.component.ts:55</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">src/app/field-reports/field-reports.component.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -1502,6 +1738,7 @@
                 <td class="col-md-4">
                     <a name="numSeperatorWarnings"></a>
                     <span class="name">
+                            <span class="modifier">Private</span>
                         <span ><b>numSeperatorWarnings</b></span>
                         <a href="#numSeperatorWarnings"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1520,7 +1757,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">src/app/field-reports/field-reports.component.ts:53</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/app/field-reports/field-reports.component.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -1545,7 +1782,96 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="223" class="link-to-prism">src/app/field-reports/field-reports.component.ts:223</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="195" class="link-to-prism">src/app/field-reports/field-reports.component.ts:195</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pageDescr"></a>
+                    <span class="name">
+                        <span ><b>pageDescr</b></span>
+                        <a href="#pageDescr"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x60;Grid display of reported ranger positions and status throughout a mission&#x60;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/field-reports/field-reports.component.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="rowData"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>rowData</b></span>
+                        <a href="#rowData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>any[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">src/app/field-reports/field-reports.component.ts:84</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedRows"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>selectedRows</b></span>
+                        <a href="#selectedRows"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/field-reports/field-reports.component.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -1564,9 +1890,73 @@
                     </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#SettingsType" target="_self" >SettingsType</a></code>
+
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/app/field-reports/field-reports.component.ts:47</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/field-reports/field-reports.component.ts:43</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settingsSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>settingsSubscription</b></span>
+                        <a href="#settingsSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/field-reports/field-reports.component.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="title"></a>
+                    <span class="name">
+                        <span ><b>title</b></span>
+                        <a href="#title"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;Field Reports&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/field-reports/field-reports.component.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -1579,11 +1969,21 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, Inject, Pipe, PipeTransform, OnInit } from &#x27;@angular/core&#x27;;
-import { FieldReportService, FieldReportType, FieldReportStatusType, RangerService, SettingsService, TeamService } from &#x27;../shared/services&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { GridOptions, SelectionChangedEvent } from &#x27;ag-grid-community&#x27;
+// , TeamService
+import { Observable, subscribeOn, Subscription } from &#x27;rxjs&#x27;
 
 import { DOCUMENT, formatDate } from &#x27;@angular/common&#x27;
-import { FormBuilder, FormGroup } from &#x27;@angular/forms&#x27;;
+import {
+    AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform
+} from &#x27;@angular/core&#x27;
+import { UntypedFormBuilder, UntypedFormGroup } from &#x27;@angular/forms&#x27;
+
+import { Utility } from &#x27;../shared&#x27;
+import {
+    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
+    RangerService, SettingsService, SettingsType
+} from &#x27;../shared/services&#x27;
 
 @Pipe({ name: &#x27;myUnusedPipe&#x27; })
 export class myUnusedPipe implements PipeTransform {
@@ -1592,157 +1992,164 @@ export class myUnusedPipe implements PipeTransform {
   }
 }
 
-// TODO: https://blog.ag-grid.com/refresh-grid-after-data-change/
-// https://stackblitz.com/edit/ag-grid-angular-hello-world-n3aceq?file&#x3D;src%2Fapp%2Fapp.component.ts
-// https://www.ag-grid.com/javascript-data-grid/immutable-data/
-//
-/*
-onGridReady(params) {
-    this.gridApi &#x3D; params.api;
-    this.gridColumnApi &#x3D; params.columnApi;
-
-    this.http
-      .get(
-        &quot;https://raw.githubusercontent.com/ag-grid/ag-grid/master/grid-packages/ag-grid-docs/src/olympicWinnersSmall.json&quot;
-      )
-      .subscribe((data: any[]) &#x3D;&gt; {
-        data.length &#x3D; 10;
-        data &#x3D; data.map((row, index) &#x3D;&gt; {
-          return { ...row, id: index + 1 };
-        });
-        this.backupRowData &#x3D; data;
-        this.rowData &#x3D; data;
-      });
-  }
-*/
 
 @Component({
   selector: &#x27;rangertrak-field-reports&#x27;,
   templateUrl: &#x27;./field-reports.component.html&#x27;,
   styleUrls: [&#x27;./field-reports.component.scss&#x27;]
 })
-export class FieldReportsComponent implements OnInit {
+export class FieldReportsComponent implements OnInit, OnDestroy {
 
-  fieldReports: FieldReportType[] &#x3D; []
-  fieldReportStatuses: FieldReportStatusType[] &#x3D; []
-  private settings
+  private id &#x3D; &#x27;Field Report&#x27;
+  title &#x3D; &#x27;Field Reports&#x27;
+  pageDescr &#x3D; &#x60;Grid display of reported ranger positions and status throughout a mission&#x60;
 
+  private fieldReportsSubscription!: Subscription
+  private fieldReportStatuses: FieldReportStatusType[] &#x3D; []
+  // fieldReportStatuses!: Observable&lt;FieldReportStatusType[]&gt; //TODO:
+  public fieldReportArray: FieldReportType[] &#x3D; []
+  private fieldReports: FieldReportsType | undefined
+
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
+
+  public selectedRows &#x3D; 0
+  public columnDefs!: any
   private gridApi: any
   private gridColumnApi
-  now: Date
-  http: any
-  numSeperatorWarnings &#x3D; 0
-  maxSeperatorWarnings &#x3D; 3
-  numFakesForm!: FormGroup
-  nFakes &#x3D; 10
+  private now: Date
+  private http: any
+  private numSeperatorWarnings &#x3D; 0
+  private maxSeperatorWarnings &#x3D; 3
+  public numFakesForm!: UntypedFormGroup
+  public nFakes &#x3D; 10
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
-  gridOptions &#x3D; {
+  // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
+  gridOptions: GridOptions &#x3D; {
     // PROPERTIES
     rowSelection: &quot;multiple&quot;,
     // pagination: true,
 
     // EVENT handlers
-    // onRowClicked: event &#x3D;&gt; console.log(&#x27;A row was clicked&#x27;),
+    // onRowClicked: event &#x3D;&gt; this.log.verbose(&#x27;A row was clicked&#x27;),
+    onSelectionChanged: (event: SelectionChangedEvent) &#x3D;&gt; this.onRowSelection(event),
 
     // CALLBACKS
     // getRowHeight: (params) &#x3D;&gt; 25
-  }
 
-  defaultColDef &#x3D; {
-    flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
-    minWidth: 100,
-    editable: true,
-    resizable: true,
-    sortable: true,
-    filter: true,
-    floatingFilter: true
+    defaultColDef: {
+      flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
+      minWidth: 80,
+      editable: true,
+      //singleClickEdit: true,
+      resizable: true,
+      sortable: true,
+      filter: true,
+      floatingFilter: true
+    },
+    // set rowData to null or undefined to show loading panel by default
+    rowData: null,
   }
+  private backupRowData: any[] &#x3D; []
+  private rowData: any[] &#x3D; []
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private fieldReportService: FieldReportService,
-    private teamService: TeamService,
-    private rangerService: RangerService,
+    private log: LogService,
+    // private teamService: TeamService,
+    // private rangerService: RangerService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document
   ) {
+    this.log.info(&#x60; Construction&#x60;, this.id)
+
     this.now &#x3D; new Date()
     this.gridApi &#x3D; &quot;&quot;
     this.gridColumnApi &#x3D; &quot;&quot;
-
-    this.settings &#x3D; SettingsService
-    this.fieldReportStatuses &#x3D; settingsService.getFieldReportStatuses() // TODO: Only obtained at construction, won&#x27;t reflect an update from the settings page??? : SUBSCRIBE!!
   }
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
+  ngOnInit(): void {
 
+    this.log.verbose(&quot;ngInit&quot;, this.id)
 
-  myDateGetter &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
-    const weekday &#x3D; [&quot;Sun &quot;, &quot;Mon &quot;, &quot;Tue &quot;, &quot;Wed &quot;, &quot;Thu &quot;, &quot;Fri &quot;, &quot;Sat &quot;]
-    let dt &#x3D; &#x27;unknown date&#x27;
-    let d: Date &#x3D; params.data.date
-    //console.log(&#x60;Day is: ${d.toISOString()}&#x60;)
-    //console.log(&#x60;WeekDay is: ${d.getDay}&#x60;)
+    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
+    this.settingsSubscription &#x3D; this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) &#x3D;&gt; {
+        this.settings &#x3D; newSettings
+        this.log.excessive(&#x27;Received new Settings via subscription.&#x27;, this.id)
+      },
+      error: (e) &#x3D;&gt; this.log.error(&#x27;Settings Subscription got:&#x27; + e, this.id),
+      complete: () &#x3D;&gt; this.log.info(&#x27;Settings Subscription complete&#x27;, this.id)
+    })
 
-    try {  // TODO: Use the date pipe instead?
-      //weekday[d.getDay()] +
-      dt &#x3D; formatDate(d, &#x27;M-dd HH:MM:ss&#x27;, &#x27;en-US&#x27;)
-      //console.log(&#x60;Day is: ${params.data.date.toISOString()}&#x60;)
-    } catch (error: any) {
-      dt &#x3D; &#x60;Bad date format: Error name: ${error.name}; msg: ${error.message}&#x60;
+    if (this.settings) {
+      this.fieldReportStatuses &#x3D; this.settings.fieldReportStatuses
+    } else {
+      this.log.error(&#x60;this.settings was null in constructor&#x60;, this.id)
     }
 
-    // https://www.w3schools.com/jsref/jsref_obj_date.asp
-    //console.log(&#x60;Day is: ${params.data.date.toISOString()}&#x60;)
-    /*
-        if (this.isValidDate(d)) {
-          dt &#x3D; weekday[d.getDay()] + formatDate(d, &#x27;yyyy-MM-dd HH:MM:ss&#x27;, &#x27;en-US&#x27;)
-          console.log(&#x60;Day is: ${params.data.date.toISOString()}&#x60;)
-        }
-    */
-    return dt
-  }
-
-  myMinuteGetter &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
-    // performance.now() is better - for elapsed time...
-    //let pi: number &#x3D; 3.14159265359
-    let dt &#x3D; new Date(params.data.date).getTime()
-    let milliseconds &#x3D; Date.now() - dt
-    let seconds: string &#x3D; (Math.round(milliseconds / 1000) % 60).toString().padStart(2, &#x27;0&#x27;)
-    let minutes: string &#x3D; Math.round((milliseconds / (1000 * 60)) % 60).toString().padStart(2, &#x27;0&#x27;)
-    let hours &#x3D; Math.round((milliseconds / (1000 * 60 * 60)) % 24);
-    return (&#x60;${hours}:${minutes}:${seconds}&#x60;)
-  }
-
-  columnDefs &#x3D; [
-    { headerName: &quot;ID&quot;, field: &quot;id&quot;, headerTooltip: &#x27;Is this even needed?!&#x27; }, // TODO:
-    { headerName: &quot;CallSign&quot;, field: &quot;callsign&quot;, tooltipField: &quot;team&quot; },
-    // { headerName: &quot;Team&quot;, field: &quot;team&quot; },
-    { headerName: &quot;Address&quot;, field: &quot;address&quot;, singleClickEdit: true, flex: 50 }, //, maxWidth: 200
-    { headerName: &quot;Lat&quot;, field: &quot;lat&quot;, singleClickEdit: true },
-    { headerName: &quot;Lng&quot;, field: &quot;lng&quot;, cellClass: &#x27;number-cell&#x27; },
-    {
-      headerName: &quot;Time&quot;, headerTooltip: &#x27;Report date&#x27;,
-      valueGetter: this.myDateGetter,
-    },
-    {
-      headerName: &quot;Elapsed&quot;, headerTooltip: &#x27;Hrs:Min:Sec since report&#x27;,
-      valueGetter: this.myMinuteGetter,
-    },
-    {
-      headerName: &quot;Status&quot;, field: &quot;status&quot;, flex: 50,
-      cellStyle: (params: { value: string; }) &#x3D;&gt; {
-        //this.fieldReportStatuses.forEach(function(value) { (params.value &#x3D;&#x3D;&#x3D; value.status) ? { backgroundColor: value.color }  : return(null) }
-        for (let i &#x3D; 0; i &lt; this.fieldReportStatuses.length; i++) {
-          if (params.value &#x3D;&#x3D;&#x3D; this.fieldReportStatuses[i].status) {
-            return { backgroundColor: this.fieldReportStatuses[i].color }
+    //? FUTURE: Consider replacing &quot;Color&quot; with &quot;CSS_Style&quot; to allow more options?
+    //!Future: Hover over notes to show entire (multi-line) note
+    this.columnDefs &#x3D; [
+      { headerName: &quot;ID&quot;, field: &quot;id&quot;, headerTooltip: &#x27;Is this even needed?!&#x27;, width: 3, flex: 1 }, // TODO:
+      { headerName: &quot;CallSign&quot;, field: &quot;callsign&quot;, tooltipField: &quot;team&quot;, flex: 2 },
+      // { headerName: &quot;Team&quot;, field: &quot;team&quot; },
+      { headerName: &quot;Address&quot;, field: &quot;address&quot;, singleClickEdit: true, flex: 30 }, //, maxWidth: 200
+      {
+        headerName: &quot;Lat&quot;, field: &quot;lat&quot;, singleClickEdit: true, cellClass: &#x27;number-cell&#x27;, flex: 1,
+        valueGetter: (params: { data: FieldReportType }) &#x3D;&gt; { return Math.round(params.data.location.lat * 10000) / 10000.0 }
+      },
+      {
+        headerName: &quot;Lng&quot;, field: &quot;lng&quot;, singleClickEdit: true, cellClass: &#x27;number-cell&#x27;, flex: 1,
+        valueGetter: (params: { data: FieldReportType }) &#x3D;&gt; { return Math.round(params.data.location.lng * 10000) / 10000.0 },
+      },
+      { headerName: &quot;Reported&quot;, headerTooltip: &#x27;Report date&#x27;, valueGetter: this.myDateGetter, flex: 2 },
+      { headerName: &quot;Elapsed&quot;, headerTooltip: &#x27;Hrs:Min:Sec since report&#x27;, valueGetter: this.myMinuteGetter, flex: 2 },
+      {
+        headerName: &quot;Status&quot;, field: &quot;status&quot;, flex: 5,
+        cellStyle: (params: { value: string; }) &#x3D;&gt; {
+          //this.fieldReportStatuses.forEach(function(value) { (params.value &#x3D;&#x3D;&#x3D; value.status) ? { backgroundColor: value.color }  : return(null) }
+          for (let i &#x3D; 0; i &lt; this.fieldReportStatuses.length; i++) {
+            if (params.value &#x3D;&#x3D;&#x3D; this.fieldReportStatuses[i].status) {
+              return { backgroundColor: this.fieldReportStatuses[i].color }
+            }
           }
+          return null
         }
-        return null
-      }
-      //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
-    },
-    { headerName: &quot;Note&quot;, field: &quot;note&quot;, flex: 50 }, //, maxWidth: 300
-  ];
+        //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
+      },
+      { headerName: &quot;Notes&quot;, field: &quot;notes&quot;, flex: 50 }, //, maxWidth: 300
+    ];
+
+    this.fieldReportsSubscription &#x3D; this.fieldReportService.getFieldReportsObserver().subscribe({
+      next: (newReport) &#x3D;&gt; {
+        console.log(newReport)
+        this.gotNewFieldReports(newReport)
+      },
+      error: (e) &#x3D;&gt; this.log.error(&#x27;Field Reports Subscription got:&#x27; + e, this.id),
+      complete: () &#x3D;&gt; this.log.info(&#x27;Field Reports Subscription complete&#x27;, this.id)
+    })
+
+    this.numFakesForm &#x3D; this.formBuilder.group({})
+
+    if (this.settings ? !this.settings.debugMode : true) {
+      this.log.verbose(&quot;running in non-debug mode&quot;, this.id)
+      //Utility.displayHide(this.document.getElementById(&quot;enter__Fake--id&quot;)!) // defaults to hidden
+    } else {
+      this.log.verbose(&quot;running in debug mode&quot;, this.id)
+      Utility.displayShow(this.document.getElementById(&quot;enter__Fake--id&quot;)!)
+    }
+
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+    } else {
+      this.log.verbose(&quot;no this.gridApi yet in ngOnInit()&quot;, this.id)
+    }
+  }
+
+  //--------------------------------------------------------------------------
 
   //https://blog.ag-grid.com/conditional-formatting-for-cells-in-ag-grid/
   /* cellClassRules &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
@@ -1756,79 +2163,145 @@ export class FieldReportsComponent implements OnInit {
   }
 */
 
-  ngOnInit(): void {
-    console.log(&quot;Field Report Form &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; ngInit &#x3D;&#x3D;&#x3D;&#x3D; at &quot;, Date.now)
+  onGridReady &#x3D; (params: any) &#x3D;&gt; {
+    this.log.verbose(&quot;onGridReady()&quot;, this.id)
 
-    // TODO: This doesn&#x27;t actually get the very latest field Report entries: do it by subuscription instead????
-    this.fieldReports &#x3D; this.fieldReportService.getFieldReports()
-    console.log(&#x60;Now have ${this.fieldReports.length} Field Reports retrieved from Local Storage and/or fakes generated&#x60;)
+    this.gridApi &#x3D; params.api
+    //this.log.verbose(&#x60;onGridReady() gridApi: ${this.gridApi}&#x60;, this.id)
+    this.gridColumnApi &#x3D; params.columnApi
+    // this.log.verbose(&#x60;onGridReady() gridColumnApi: ${this.gridColumnApi}&#x60;, this.id)
 
-    this.numFakesForm &#x3D; this.formBuilder.group({})
+    // https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
+    params.api.sizeColumnsToFit()
 
-    if (!this.settings.debugMode) {
-      console.log(&quot;running in non-debug mode&quot;)
-      // this.displayHide(&quot;enter__Fake--id&quot;) // debug mode SHOULD be ON...
-    } else {
-      console.log(&quot;running in debug mode&quot;)
-      this.displayShow(&quot;enter__Fake--id&quot;)
-    }
-
+    // TODO: use this line, or next routine?!
     if (this.gridApi) {
       this.gridApi.refreshCells()
     } else {
-      console.log(&quot;no this.gridApi yet in ngOnInit()&quot;)
+      this.log.verbose(&quot;no this.gridApi yet in onGridReady()&quot;, this.id)
     }
+    //this.log.verbose(&quot;onGridReady() done&quot;, this.id)
   }
 
-  reloadPage() {
-    window.location.reload()
-  }
+  onFirstDataRendered(params: any) {
+    this.log.verbose(&quot;onFirstDataRendered()&quot;, this.id)
 
-  isValidDate(d: any) {
-    return d instanceof Date //&amp;&amp; !isNaN(d);
-    /*
-        if (Object.prototype.toString.call(d) !&#x3D;&#x3D; &quot;[object Date]&quot;) {
-          console.log(&#x60;bad date type:${Object.prototype.toString.call(d)}&#x60;)
-          return false
-        } // invalid date
-        if (isNaN(d.getTime())) {
-          console.log(&#x60;bad time&#x60;)
-          return false
-        } // d.valueOf() could also work  // invalid time
-        return true  // valid date
-        */
-  }
-
-  // filteredReports:FieldReportType[] &#x3D; this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000)) //FUTURE:
-
-  onGridReady &#x3D; (params: any) &#x3D;&gt; {
-    console.log(&quot;Field Report Form onGridReady&quot;)
-
+    // following should not be needed, duplicate of onGridReady()...
     this.gridApi &#x3D; params.api
+    //this.log.verbose(&#x60;onGridReady() gridApi: ${this.gridApi}&#x60;, this.id)
     this.gridColumnApi &#x3D; params.columnApi
 
-    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
+    //params.api.sizeColumnsToFit();
+    this.refreshGrid()
+  }
+
+  //--------------------------------------------------------------------------
+
+  // https://www.ag-grid.com/javascript-data-grid/grid-events/#reference-selection-selectionChanged
+  onRowSelection(event: SelectionChangedEvent) {
+    let selectedNodes &#x3D; this.gridApi.getSelectedNodes()
+    this.selectedRows &#x3D; selectedNodes.length
+    let selectedData &#x3D; selectedNodes.map((node: { data: FieldReportType; }) &#x3D;&gt; node.data)
+    this.log.verbose(&#x60;Selected Row Data obtained ${selectedNodes.length} selected rows&#x60;, this.id)
+    this.fieldReportService.setSelectedFieldReports(selectedData)
   }
 
   //onFirstDataRendered(params: any) {
   refreshGrid() {
+    // https://blog.ag-grid.com/refresh-grid-after-data-change/
     if (this.gridApi) {
       this.gridApi.refreshCells()
-      this.gridApi.sizeColumnsToFit();
+      this.gridApi.sizeColumnsToFit()
     } else {
-      console.log(&quot;no this.gridApi yet in refreshGrid()&quot;)
+      this.log.warn(&#x60;refreshGrid(): gridApi not established yet!&#x60;, this.id)
     }
   }
 
+  reloadPage() {
+    this.log.verbose(&#x60;Reloading window!&#x60;, this.id)
+    window.location.reload()
+  }
+
+
+  gotNewFieldReports(newReports: FieldReportsType) {
+    this.log.verbose(&#x60;New collection of ${newReports.numReport} Field Reports observed.&#x60;, this.id)
+
+    this.fieldReports &#x3D; newReports
+    this.fieldReportArray &#x3D; newReports.fieldReportArray
+    this.refreshGrid()
+    //this.reloadPage()  // TODO: needed? - creates endless loop!
+  }
+
+  /**
+   * Given a fieldReport, finds the date, and returns it as &#x27;Sun Jan-01 23:00:00&#x27;
+   * @param params
+   * @returns
+   */
+  myDateGetter &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
+    const weekday &#x3D; [&quot;Sun &quot;, &quot;Mon &quot;, &quot;Tue &quot;, &quot;Wed &quot;, &quot;Thu &quot;, &quot;Fri &quot;, &quot;Sat &quot;]
+    let dt &#x3D; &#x27;unknown date&#x27;
+    let d: Date &#x3D; params.data.date
+    //this.log.excessive(&#x60;Day is: ${d.toISOString()}&#x60;, this.id)
+    //this.log.excessive(&#x60;WeekDay is: ${d.getDay}&#x60;, this.id)
+
+    try {  // TODO: Use the date pipe instead?
+      //weekday[d.getDay()] +
+      dt &#x3D; formatDate(d, &#x27;M-dd HH:MM:ss&#x27;, &#x27;en-US&#x27;)
+      //this.log.excessive(&#x60;Day is: ${params.data.date.toISOString()}&#x60;, this.id)
+    } catch (error: any) {
+      dt &#x3D; &#x60;Bad date format: Error name: ${error.name}; msg: ${error.message}&#x60;
+    }
+
+    // https://www.w3schools.com/jsref/jsref_obj_date.asp
+    //this.log.excessive(&#x60;Day is: ${params.data.date.toISOString()}&#x60;, this.id)
+    /*
+        if (this.isValidDate(d)) {
+          dt &#x3D; weekday[d.getDay()] + formatDate(d, &#x27;yyyy-MM-dd HH:MM:ss&#x27;, &#x27;en-US&#x27;)
+          this.log.excessive(&#x60;Day is: ${params.data.date.toISOString()}&#x60;, this.id)
+        }
+    */
+    return dt
+  }
+
+  //!TODO: Returns just hours:min:sec - not days!!!
+  myMinuteGetter &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
+    let dt &#x3D; new Date(params.data.date).getTime()
+    let milliseconds &#x3D; Date.now() - dt
+    let seconds: string &#x3D; (Math.round(milliseconds / 1000) % 60).toString().padStart(2, &#x27;0&#x27;)
+    let minutes: string &#x3D; Math.floor((milliseconds / (1000 * 60)) % 60).toString().padStart(2, &#x27;0&#x27;)
+    let hours &#x3D; Math.floor((milliseconds / (1000 * 60 * 60)) % 24)
+    let days &#x3D; Math.floor((((milliseconds / (1000 * 60 * 60 * 24)) + hours) / 24))
+    return (&#x60;${days ? days + &quot; days  &quot; : &quot;&quot;} ${hours}:${minutes}:${seconds} &#x60;)
+  }
+
+  //! BUG: JUST ROUNDS THE lat, not whatever is passed in!!!!!
+  // rounder &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
+  //   let val &#x3D; Math.round(params. data.lat * 10000) / 10000.0
+  //   return val
+  // }
+
+  isValidDate(d: any) {
+    return d instanceof Date //&amp;&amp; !isNaN(d);
+  }
+
+  // filteredReports:FieldReportType[] &#x3D; this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000)) //FUTURE:
+  // onBtnSetSelectedRowData() {
+  //   let selectedNodes &#x3D; this.gridApi.getSelectedNodes();
+  //   let selectedData &#x3D; selectedNodes.map((node: { data: FieldReportType; }) &#x3D;&gt; node.data);
+  //   this.selectedRows &#x3D; selectedNodes.length
+  //   this.log.excessive(&#x60;onBtnGetSelectedRowData obtained ${ selectedNodes.length } selected rows: \n${ JSON.stringify(selectedData) } &#x60;, this.id)
+  //   this.fieldReportService.setSelectedFieldReports(selectedData)
+  // }
+
+
   // following from https://ag-grid.com/javascript-data-grid/csv-export/
-  getValue(inputSelector: string) {
-    //let selector &#x3D; this.document.querySelector(inputSelector) as HTMLSelectElement
+  getParamValue(inputSelector: string) {
     let selector &#x3D; this.document.getElementById(&#x27;columnSeparator&#x27;) as HTMLSelectElement
     var sel &#x3D; selector.selectedIndex;
     var opt &#x3D; selector.options[sel];
     var selVal &#x3D; (&lt;HTMLOptionElement&gt;opt).value;
     var selText &#x3D; (&lt;HTMLOptionElement&gt;opt).text
-    // console.log(&#x60;Got column seperator text:&quot;${selText}&quot;, val:&quot;${selVal}&quot;&#x60;)
+    // this.log.excessive(&#x60;Got column seperator text: &quot;${selText}&quot;, val: &quot;${selVal}&quot;&#x60;, this.id)
 
     switch (selVal) {
       case &#x27;none&#x27;:
@@ -1840,43 +2313,65 @@ export class FieldReportsComponent implements OnInit {
     }
   }
 
-  getParams() {
+  private getParams() {
     let dt &#x3D; new Date()
     return {
-      columnSeparator: this.getValue(&#x27;columnSeparator&#x27;),
-      fileName: &#x60;FieldReportsExport.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv&#x60;,  // REVIEW: ONLY month is zero based, requires +1?!
+      columnSeparator: this.getParamValue(&#x27;columnSeparator&#x27;),
+      fileName: &#x60;FieldReportsExport.${dt.getFullYear()} -${dt.getMonth() + 1} -${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv&#x60;,
     }
   }
 
   onSeperatorChange() {
     var params &#x3D; this.getParams();
     if (params.columnSeparator &amp;&amp; this.numSeperatorWarnings++ &lt; this.maxSeperatorWarnings) {
-      alert(&#x60;NOTE: Excel handles comma separators best. You&#x27;ve chosen &quot;${params.columnSeparator}&quot;&#x60;)
+      alert(&#x60;NOTE: Excel handles comma separators best.You&#x27;ve chosen &quot;${params.columnSeparator}&quot;&#x60;)
     }
   }
 
   onBtnExport() {
+    // TODO: Does this handle new FieldReports properly?
     var params &#x3D; this.getParams();
-    //console.log(&#x60;Got column seperator value &quot;${params.columnSeparator}&quot;&#x60;)
-    //console.log(&#x60;Got filename of &quot;${params.fileName}&quot;&#x60;)
-    //if (params.columnSeparator) {
-    //  alert(&#x60;NOTE: Excel handles comma separators best. You&#x27;ve chosen &quot;${params.columnSeparator}&quot; Good luck!&#x60;);
-    //}
     this.gridApi.exportDataAsCsv(params);
   }
 
   onBtnClearFieldReports() {
-    this.fieldReportService.deleteAllFieldReports()
-    this.reloadPage()
+    if (Utility.getConfirmation(&#x27;REALLY delete all FieldReports in LocalStorage?&#x27;)) {
+      this.log.info(&quot;Removing all field reports from local storage...&quot;, this.id)
+      this.fieldReportService.deleteAllFieldReports()
+      this.refreshGrid()
+      this.reloadPage()
+    }
   }
 
   // Save them to localstorage &amp; update subscribers
+  // REVIEW: SOMEHOW??? renaming the next to unused caused an error if slecting a row when running???
   onBtnUpdateFieldReports() {
-    this.fieldReportService.UpdateFieldReports()
+    // https://blog.ag-grid.com/refresh-grid-after-data-change/#updating-through-variable-angular
+    // BUG: Need to send the newly edited reports...with Header properties
+    alert(&#x27;onBtnUpdateFieldReports is UNIMPLEMENTED!&#x27;)
+    //this.fieldReportService.updateFieldReports()
   }
 
-  onBtnImportFieldReports_unused() {
+  onBtnImportFieldReportsFromJSON_unused() {
     alert(&#x60;onBtnImportFieldReports is unimplemented&#x60;)
+
+    // TODO: look at: https://www.npmjs.com/package/fs-browsers
+
+    // TODO: https://blog.ag-grid.com/refresh-grid-after-data-change/
+    // https://stackblitz.com/edit/ag-grid-angular-hello-world-n3aceq?file&#x3D;src%2Fapp%2Fapp.component.ts
+    // https://www.ag-grid.com/javascript-data-grid/immutable-data/
+
+    // https://github.com/ag-grid/ag-grid/issues/2450
+    this.http
+      .get(&quot;https://raw.githubusercontent.com/ag-grid/ag-grid/master/grid-packages/ag-grid-docs/src/olympicWinnersSmall.json&quot;)
+      .subscribeOn((data: any[]) &#x3D;&gt; {  // NOTE: subscribeOn() is a guess!!!
+        data.length &#x3D; 10;
+        data &#x3D; data.map((row, index) &#x3D;&gt; {
+          return { ...row, id: index + 1 };
+        })
+        this.backupRowData &#x3D; data
+        this.rowData &#x3D; data
+      })
   }
 
   generateFakeFieldReports(num &#x3D; this.nFakes) {
@@ -1884,69 +2379,59 @@ export class FieldReportsComponent implements OnInit {
     // https://github.com/material-components/material-components-web/tree/master/packages/mdc-slider#discrete-slider
     // https://material-components.github.io/material-components-web-catalog/#/component/slider
     this.fieldReportService.generateFakeData(num)
-    console.log(&#x60;Generated ${num} FAKE Field Reports&#x60;)
-    this.fieldReportService.UpdateFieldReports()
-    this.fieldReports &#x3D; this.fieldReportService.getFieldReports()
-    this.refreshGrid()
+    this.log.verbose(&#x60;Generated ${num} FAKE Field Reports&#x60;, this.id)
+    //this.fieldReportService.updateFieldReports()
+    //this.fieldReports$ &#x3D; this.fieldReportService.subscribeToFieldReports()
+    //this.refreshGrid()
     this.reloadPage() //TODO: why aren&#x27;t above enough?!!!
   }
 
-  displayHide(htmlElementID: string) {
-    let e &#x3D; this.document.getElementById(htmlElementID)
-    if (e) {
-      e.style.visibility &#x3D; &quot;hidden&quot;;
-    } else {
-      console.warn(&#x60;Could not hide HTML Element ${htmlElementID}&#x60;)
-    }
-  }
-
-  displayShow(htmlElementID: string) {
-    let e &#x3D; this.document.getElementById(htmlElementID)
-    if (e) {
-      e.style.visibility &#x3D; &quot;visible&quot;;
-    } else {
-      console.warn(&#x60;Could not show HTML Element ${htmlElementID}&#x60;)
-    }
+  ngOnDestroy() {
+    this.fieldReportsSubscription.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
 }
 </code></pre>
     </div>
 
     <div class="tab-pane fade " id="c-templateData">
-        <pre class="line-numbers"><code class="language-html">&lt;h1&gt;Field Reports&lt;/h1&gt;
-
+        <pre class="line-numbers"><code class="language-html">&lt;pageHeader [parentTitle]&#x3D;&quot;title&quot; [pageDescription]&#x3D;&quot;pageDescr&quot;&gt;...&lt;/pageHeader&gt;
 &lt;details&gt;
   &lt;summary class&#x3D;&quot;big&quot;&gt;Tips&lt;/summary&gt;
   &lt;ul&gt;
-    &lt;li style&#x3D;&quot;color: red&quot;&gt;If recent reports do NOT show up, refresh page or switch to another view &amp; back: Let me know what works!!!&lt;/li&gt;
-    &lt;li&gt;All fields are editable. (Address &amp; Lat are &#x27;single click&#x27;, others are &#x27;double click. What do you like?!)&lt;/li&gt;
+    &lt;li style&#x3D;&quot;color: red&quot;&gt;
+      If recent reports do NOT show up, refresh page or switch to another view &amp; back: Let
+      me know what works!!!
+    &lt;/li&gt;
+    &lt;li&gt;
+      All fields are editable. (Address &amp; Lat are &#x27;single click&#x27;, others are &#x27;double
+      click. What do you like?!)
+    &lt;/li&gt;
     &lt;li&gt;ONCE SAVED (to local storage) the edited data can be exported to a CSV file.&lt;/li&gt;
-    &lt;li&gt;&lt;span style&#x3D;&quot;color:red;&quot;&gt;Edits HAVE to be
-      MANUALLY saved by selecting the &quot;Save Data&quot; button in the Advanced section below.&lt;/span&gt; &lt;/li&gt;
+    &lt;li&gt;
+      &lt;span style&#x3D;&quot;color:red;&quot;&gt;Edits HAVE to be MANUALLY saved by selecting the &quot;Save Data&quot; button in the
+        Advanced section below.&lt;/span&gt;
+    &lt;/li&gt;
     &lt;li&gt;Click on a column heading to sort by that field.&lt;/li&gt;
+    &lt;li&gt;Icons at the top right of each column allows filtering on the value&lt;/li&gt;
     &lt;li&gt;Click &amp; Drag on a column heading to move columns&lt;/li&gt;
     &lt;li&gt;Move column seperators to resize columns&lt;/li&gt;
-    &lt;li&gt;Hovering over a cell (e.g., any callsign) can show additional information. &lt;/li&gt;
-    &lt;li&gt;Icons at the top right of each column allows filtering on the value&lt;/li&gt;
+    &lt;li&gt;Hovering over a cell (e.g., any callsign) can show additional information.&lt;/li&gt;
     &lt;li&gt;Save data grid to CSV file. Comma seperated works best for Excel importing.&lt;/li&gt;
     &lt;li&gt;FUTURE: Import from Excel.&lt;/li&gt;
   &lt;/ul&gt;
 &lt;/details&gt;
-&lt;br&gt;
-
-&lt;!--details&gt;
-  &lt;summary&gt;Future functionality&lt;/summary&gt;
-  &lt;ul&gt;
-    &lt;li&gt;&lt;/li&gt;
-  &lt;/ul&gt;
-&lt;/details&gt;
-&lt;br--&gt;
+&lt;br /&gt;
 
 &lt;div id&#x3D;&quot;reportsgrid&quot;&gt;
-  &lt;ag-grid-angular #reportsGrid rowAnimation pagination paginationAutoPageSize style&#x3D;&quot;width: 100%; height: 600px;&quot;
-    (gridReady)&#x3D;&quot;onGridReady($event)&quot; [gridOptions]&#x3D;&quot;gridOptions&quot; class&#x3D;&quot;ag-theme-alpine&quot; [rowData]&#x3D;&quot;fieldReports&quot;
-    [columnDefs]&#x3D;&quot;columnDefs&quot; [defaultColDef]&#x3D;&quot;defaultColDef&quot; [tooltipShowDelay]&#x3D;500&gt;
+  &lt;ag-grid-angular #reportsGrid rowAnimation pagination paginationAutoPageSize style&#x3D;&quot;width: 100%; height: 60vh;&quot;
+    (gridReady)&#x3D;&quot;onGridReady($event)&quot; [gridOptions]&#x3D;&quot;gridOptions&quot; class&#x3D;&quot;ag-theme-alpine&quot; [rowData]&#x3D;&quot;fieldReportArray&quot;
+    [columnDefs]&#x3D;&quot;columnDefs&quot; [tooltipShowDelay]&#x3D;&quot;500&quot;&gt;
     &lt;!--
+[defaultColDef]&#x3D;&quot;defaultColDef&quot;
+[columnDefs]&#x3D;&quot;columnDefs&quot;
+
+      was :  [rowData]&#x3D;&quot;fieldReports.fieldreportArray | async&quot;
       (firstDataRendered)&#x3D;&quot;onFirstDataRendered($event)&quot;
       (gridReady)&#x3D;&quot;onGridReady($event)&quot; // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1
 
@@ -1954,6 +2439,10 @@ export class FieldReportsComponent implements OnInit {
           [showToolPanel]&#x3D;&quot;showToolPanel&quot;
         --&gt;
   &lt;/ag-grid-angular&gt;
+  &lt;div&gt;
+    &lt;span class&#x3D;&quot;strong&quot;&gt;Selected Rows: {{selectedRows}}&lt;/span&gt; (Maps have a switch to
+    only show these rows)
+  &lt;/div&gt;
   &lt;br /&gt;
   &lt;!--button (click)&#x3D;&quot;onBtPrinterFriendly()&quot;&gt;Printer Friendly Layout&lt;/button&gt;
       &lt;button (click)&#x3D;&quot;onBtNormal()&quot;&gt;Normal Layout&lt;/button--&gt;
@@ -1961,7 +2450,7 @@ export class FieldReportsComponent implements OnInit {
 
   &lt;div&gt;
     &lt;button (click)&#x3D;&quot;onBtnExport()&quot;&gt;Export Field Reports&lt;/button&gt; with column separator of
-      &lt;select (change) &#x3D;&quot;onSeperatorChange()&quot; id&#x3D;&quot;columnSeparator&quot;&gt;
+    &lt;select (change)&#x3D;&quot;onSeperatorChange()&quot; id&#x3D;&quot;columnSeparator&quot;&gt;
       &lt;option value&#x3D;&quot;none&quot;&gt;comma (,)&lt;/option&gt;
       &lt;option value&#x3D;&quot;tab&quot;&gt;tab&lt;/option&gt;
       &lt;option value&#x3D;&quot;|&quot;&gt;bar (|)&lt;/option&gt;
@@ -1969,25 +2458,29 @@ export class FieldReportsComponent implements OnInit {
   &lt;/div&gt;
   &lt;!--button (click)&#x3D;&quot;this.gridApi.deselectAll()&quot;&gt;Clear Selection&lt;/button--&gt;
   &lt;!--div&gt;TODO: &lt;button (click)&#x3D;&quot;setQuickFilter()&quot;&gt;Filter Field Reports&lt;/button&gt;&lt;/div--&gt;
-  &lt;div&gt;Use page refresh to force an update of field reports: &lt;button (click)&#x3D;&quot;reloadPage()&quot;&gt;Reload Page&lt;/button&gt;&lt;/div&gt;
 
-  &lt;br&gt;
+
+  &lt;br /&gt;
   &lt;details&gt;
     &lt;summary&gt;
       &lt;span class&#x3D;&quot;big&quot; id&#x3D;&quot;Advanced&quot;&gt;Advanced&lt;/span&gt;
     &lt;/summary&gt;
-
-    &lt;button (click)&#x3D;&quot;onBtnUpdateFieldReports()&quot;&gt;Save above Field Reports to local storage&lt;/button&gt;&lt;br&gt;
-    &lt;button (click)&#x3D;&quot;onBtnClearFieldReports()&quot;&gt;Delete ALL Field Reportgs from local storage&lt;/button&gt;&lt;br&gt;
+    &lt;div&gt;
+      [To be removed - should happen automatically] Force field reports update:
+      &lt;button (click)&#x3D;&quot;reloadPage()&quot;&gt;Reload Page&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div&gt;[To be removed - should happen automatically:] Save above Field Reports (to local
+      storage) &lt;button (click)&#x3D;&quot;onBtnUpdateFieldReports()&quot;&gt;Save Reports&lt;/button&gt;&lt;/div&gt;
+    &lt;button (click)&#x3D;&quot;onBtnClearFieldReports()&quot;&gt;
+      Delete ALL Field Reports from local storage&lt;/button&gt;&lt;br /&gt;
     &lt;!--button (click)&#x3D;&quot;onBtnImportFieldReports_unused()&quot;&gt;FUTURE: Import Field Reportgs from CSV file&lt;/button&gt;&lt;br--&gt;
 
-    &lt;br&gt;&lt;br&gt;
+    &lt;br /&gt;&lt;br /&gt;
 
     &lt;!-- https://material.angular.io/components/slider/overview --&gt;
     &lt;!-- ngModel cannot be used to register form controls with a parent formGroup directive --&gt;
     &lt;div [formGroup]&#x3D;&quot;numFakesForm&quot; id&#x3D;&quot;enter__Fake--id&quot;&gt;
       &lt;section class&#x3D;&quot;enter__Fake&quot;&gt;
-
         &lt;mat-form-field class&#x3D;&quot;enter__Fake--numfield&quot; appearance&#x3D;&quot;fill&quot;&gt;
           &lt;mat-label&gt;# Fakes&lt;/mat-label&gt;
           &lt;input matInput type&#x3D;&quot;number&quot; [(ngModel)]&#x3D;&quot;nFakes&quot; [ngModelOptions]&#x3D;&quot;{standalone: true}&quot; /&gt;
@@ -1996,14 +2489,13 @@ export class FieldReportsComponent implements OnInit {
         &lt;mat-slider id&#x3D;&quot;enter__Fake--slider&quot; thumbLabel tickInterval&#x3D;&quot;10&quot; step&#x3D;&quot;5&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;100&quot;
           aria-label&#x3D;&quot;# Fake Field Reports&quot; [(ngModel)]&#x3D;&quot;nFakes&quot; [ngModelOptions]&#x3D;&quot;{standalone: true}&quot;&gt;&lt;/mat-slider&gt;
 
-        &lt;button (click)&#x3D;&quot;generateFakeFieldReports()&quot; type&#x3D;&quot;button&quot; id&#x3D;&quot;enter__Fake--button&quot;&gt;Add another
-          {{nFakes}} FAKE Field Reports&lt;/button&gt;
+        &lt;button (click)&#x3D;&quot;generateFakeFieldReports()&quot; type&#x3D;&quot;button&quot; id&#x3D;&quot;enter__Fake--button&quot;&gt;
+          Add another {{nFakes}} FAKE Field Reports ()
+        &lt;/button&gt;
         &lt;!--For Now: Click on rangers page, then back to this page to refresh view... --&gt;
       &lt;/section&gt;
     &lt;/div&gt;
-
   &lt;/details&gt;
-
 &lt;/div&gt;
 </code></pre>
     </div>
@@ -2013,59 +2505,58 @@ export class FieldReportsComponent implements OnInit {
                     <code>./field-reports.component.scss</code>
                 </p>
                 <pre class="line-numbers"><code class="language-scss">.big {
-  font-size: larger;
+  font-size  : larger;
+  font-weight: bold;
+}
+
+.strong {
   font-weight: bold;
 }
 
 .enter__Fake {
   // background-color: rgb(246, 247, 239);
   // border: 2px solid gray;
-   //display: flex;
-   //align-content: center;
-   //align-items: center;
-   //height: 205px;
+  //display: flex;
+  //align-content: center;
+  //align-items: center;
+  //height: 205px;
   // width: 350px;
 
-   //margin-right: 35vw;
-   display: block;
-   //float: right;
-   height: 120px;
-   width: 30vw;
-   border: 1px solid  brown;
-   background-color: rgb(240, 255, 250);
-   font: 0.8em sans-serif;
- }
+  //margin-right: 35vw;
+  display         : block;
+  //float: right;
+  height          : 120px;
+  width           : 30vw;
+  border          : 1px solid brown;
+  background-color: rgb(240, 255, 250);
+  font            : 0.8em sans-serif;
+}
 
 #enter__Fake--slider {
   width: 20vw;
 }
 
- .enter__Fake--numfield {
-   width: 50px;
-   height:30px;
-   margin-right: 5px;
- }
+.enter__Fake--numfield {
+  width       : 50px;
+  height      : 30px;
+  margin-right: 5px;
+}
 
- #enter__Fake--button {
-   float: right;
-   margin-right: 10px;
- }
+#enter__Fake--button {
+  float       : right;
+  margin-right: 10px;
+}
 
- .cell-fail {
-  text-align: center;
-  font-weight: bold;
+.cell-fail {
+  text-align      : center;
+  font-weight     : bold;
   background-color: #f44336;
 }
 
 .cell-pass {
-  text-align: center;
-  font-weight: bold;
+  text-align      : center;
+  font-weight     : bold;
   background-color: #4caf50;
-}
-
-.big {
-  font-size: larger;
-  font-weight: bold;
 }
 </code></pre>
     </div>
@@ -2095,12 +2586,13 @@ export class FieldReportsComponent implements OnInit {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><h1>Field Reports</h1><details>  <summary class="big">Tips</summary>  <ul>    <li style="color: red">If recent reports do NOT show up, refresh page or switch to another view & back: Let me know what works!!!</li>    <li>All fields are editable. (Address & Lat are \'single click\', others are \'double click. What do you like?!)</li>    <li>ONCE SAVED (to local storage) the edited data can be exported to a CSV file.</li>    <li><span style="color:red;">Edits HAVE to be      MANUALLY saved by selecting the "Save Data" button in the Advanced section below.</span> </li>    <li>Click on a column heading to sort by that field.</li>    <li>Click & Drag on a column heading to move columns</li>    <li>Move column seperators to resize columns</li>    <li>Hovering over a cell (e.g., any callsign) can show additional information. </li>    <li>Icons at the top right of each column allows filtering on the value</li>    <li>Save data grid to CSV file. Comma seperated works best for Excel importing.</li>    <li>FUTURE: Import from Excel.</li>  </ul></details><br><!--details>  <summary>Future functionality</summary>  <ul>    <li></li>  </ul></details><br--><div id="reportsgrid">  <ag-grid-angular #reportsGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 600px;"    (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="fieldReports"    [columnDefs]="columnDefs" [defaultColDef]="defaultColDef" [tooltipShowDelay]=500>    <!--      (firstDataRendered)="onFirstDataRendered($event)"      (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1          [columns]="columns"          [showToolPanel]="showToolPanel"        -->  </ag-grid-angular>  <br />  <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>      <button (click)="onBtNormal()">Normal Layout</button-->  <!--div><button (click)="/">Add a new Field Report</button></div-->  <div>    <button (click)="onBtnExport()">Export Field Reports</button> with column separator of      <select (change) ="onSeperatorChange()" id="columnSeparator">      <option value="none">comma (,)</option>      <option value="tab">tab</option>      <option value="|">bar (|)</option>    </select>  </div>  <!--button (click)="this.gridApi.deselectAll()">Clear Selection</button-->  <!--div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div-->  <div>Use page refresh to force an update of field reports: <button (click)="reloadPage()">Reload Page</button></div>  <br>  <details>    <summary>      <span class="big" id="Advanced">Advanced</span>    </summary>    <button (click)="onBtnUpdateFieldReports()">Save above Field Reports to local storage</button><br>    <button (click)="onBtnClearFieldReports()">Delete ALL Field Reportgs from local storage</button><br>    <!--button (click)="onBtnImportFieldReports_unused()">FUTURE: Import Field Reportgs from CSV file</button><br-->    <br><br>    <!-- https://material.angular.io/components/slider/overview -->    <!-- ngModel cannot be used to register form controls with a parent formGroup directive -->    <div [formGroup]="numFakesForm" id="enter__Fake--id">      <section class="enter__Fake">        <mat-form-field class="enter__Fake--numfield" appearance="fill">          <mat-label># Fakes</mat-label>          <input matInput type="number" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}" />        </mat-form-field>        <mat-slider id="enter__Fake--slider" thumbLabel tickInterval="10" step="5" min="0" max="100"          aria-label="# Fake Field Reports" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"></mat-slider>        <button (click)="generateFakeFieldReports()" type="button" id="enter__Fake--button">Add another          {{nFakes}} FAKE Field Reports</button>        <!--For Now: Click on rangers page, then back to this page to refresh view... -->      </section>    </div>  </details></div></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'GmapComponent', 'selector': 'rangertrak-gmap'},{'name': 'IconComponent', 'selector': 'icon'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+        var COMPONENT_TEMPLATE = '<div><pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader><details>  <summary class="big">Tips</summary>  <ul>    <li style="color: red">      If recent reports do NOT show up, refresh page or switch to another view & back: Let      me know what works!!!    </li>    <li>      All fields are editable. (Address & Lat are \'single click\', others are \'double      click. What do you like?!)    </li>    <li>ONCE SAVED (to local storage) the edited data can be exported to a CSV file.</li>    <li>      <span style="color:red;">Edits HAVE to be MANUALLY saved by selecting the "Save Data" button in the        Advanced section below.</span>    </li>    <li>Click on a column heading to sort by that field.</li>    <li>Icons at the top right of each column allows filtering on the value</li>    <li>Click & Drag on a column heading to move columns</li>    <li>Move column seperators to resize columns</li>    <li>Hovering over a cell (e.g., any callsign) can show additional information.</li>    <li>Save data grid to CSV file. Comma seperated works best for Excel importing.</li>    <li>FUTURE: Import from Excel.</li>  </ul></details><br /><div id="reportsgrid">  <ag-grid-angular #reportsGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 60vh;"    (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="fieldReportArray"    [columnDefs]="columnDefs" [tooltipShowDelay]="500">    <!--[defaultColDef]="defaultColDef"[columnDefs]="columnDefs"      was :  [rowData]="fieldReports.fieldreportArray | async"      (firstDataRendered)="onFirstDataRendered($event)"      (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1          [columns]="columns"          [showToolPanel]="showToolPanel"        -->  </ag-grid-angular>  <div>    <span class="strong">Selected Rows: {{selectedRows}}</span> (Maps have a switch to    only show these rows)  </div>  <br />  <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>      <button (click)="onBtNormal()">Normal Layout</button-->  <!--div><button (click)="/">Add a new Field Report</button></div-->  <div>    <button (click)="onBtnExport()">Export Field Reports</button> with column separator of    <select (change)="onSeperatorChange()" id="columnSeparator">      <option value="none">comma (,)</option>      <option value="tab">tab</option>      <option value="|">bar (|)</option>    </select>  </div>  <!--button (click)="this.gridApi.deselectAll()">Clear Selection</button-->  <!--div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div-->  <br />  <details>    <summary>      <span class="big" id="Advanced">Advanced</span>    </summary>    <div>      [To be removed - should happen automatically] Force field reports update:      <button (click)="reloadPage()">Reload Page</button>    </div>    <div>[To be removed - should happen automatically:] Save above Field Reports (to local      storage) <button (click)="onBtnUpdateFieldReports()">Save Reports</button></div>    <button (click)="onBtnClearFieldReports()">      Delete ALL Field Reports from local storage</button><br />    <!--button (click)="onBtnImportFieldReports_unused()">FUTURE: Import Field Reportgs from CSV file</button><br-->    <br /><br />    <!-- https://material.angular.io/components/slider/overview -->    <!-- ngModel cannot be used to register form controls with a parent formGroup directive -->    <div [formGroup]="numFakesForm" id="enter__Fake--id">      <section class="enter__Fake">        <mat-form-field class="enter__Fake--numfield" appearance="fill">          <mat-label># Fakes</mat-label>          <input matInput type="number" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}" />        </mat-form-field>        <mat-slider id="enter__Fake--slider" thumbLabel tickInterval="10" step="5" min="0" max="100"          aria-label="# Fake Field Reports" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"></mat-slider>        <button (click)="generateFakeFieldReports()" type="button" id="enter__Fake--button">          Add another {{nFakes}} FAKE Field Reports ()        </button>        <!--For Now: Click on rangers page, then back to this page to refresh view... -->      </section>    </div>  </details></div></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'FieldReportsComponent'};
 </script>
 <script src="../js/tree.js"></script>
+
 
 
 

@@ -453,7 +453,7 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DOCUMENT } from &#x27;@angular/common&#x27;
 import { Component, Inject, OnInit, ViewChild, isDevMode } from &#x27;@angular/core&#x27;
-import { AlertsComponent } from &#x27;../alerts/alerts.component&#x27;
+import { AlertsComponent } from &#x27;./alerts/alerts.component&#x27;
 //import { UrlHandlingStrategy } from &quot;@angular/router&quot;;
 import { SettingsService } from &quot;./services&quot;;
 
@@ -462,7 +462,7 @@ import { SettingsService } from &quot;./services&quot;;
 // import what3words, { ApiVersion, What3wordsService, AutosuggestClient, AutosuggestOptions, AutosuggestResponse, ConvertToCoordinatesClient, ConvertToCoordinatesOptions, ConvertTo3waClient, ConvertTo3waOptions } from &#x27;@what3words/api&#x27;;
 import what3words, * as w3w from &#x27;@what3words/api&#x27;;
 //import { W3W_REGEX } from &quot;@what3words/javascript-components/dist/types/lib/constants&quot;;
-import { GoogleMap } from &#x27;@angular/google-maps&#x27;;
+//import { GoogleMap } from &#x27;@angular/google-maps&#x27;;
 // &lt;script src&#x3D;&quot;https://assets.what3words.com/sdk/v3/what3words.js?key&#x3D;YOUR_apiKey&quot;&gt;&lt;/script&gt;
 // mainly from https://developer.what3words.com/tutorial/javascript
 
@@ -703,7 +703,7 @@ export class What3Words {
               nFocusResults: 1,
               //clipTo####: [&quot;US&quot;], - done by default
               // TODO: cliptoboundingbox: { south_lat, west_lng, north_lat, east_lng }, // Clip prevents ANY values outside region
-              focus: { lat: SettingsService.Settings.defLat, lng: SettingsService.Settings.defLong }, // Focus prioritizes words closer to this point
+              focus: { lat: this.settings.defLat, lng: this.settings.defLong }, // Focus prioritizes words closer to this point
               nResults: 1
             })
               .then(function (response: any) {
@@ -796,27 +796,27 @@ export class What3Words {
       .then((res: w3w.AutosuggestResponse) &#x3D;&gt;
         console.log(&#x60;suggestions for &quot;${w3wSuggestion}&quot;&#x60;, JSON.stringify(res))
       );
-      // debugger
+    // debugger
     return res
 
-/*
-&quot;apiKey&quot;: string;
-  &quot;autosuggest_focus&quot;: string;
-  &quot;base_url&quot;: string;
-  &quot;callback&quot;: string;
-  &quot;clip_to_bounding_box&quot;: string;
-  &quot;clip_to_circle&quot;: string;
-  &quot;clip_to_country&quot;: string;
-  &quot;clip_to_polygon&quot;: string;
-  &quot;headers&quot;: string;
-  &quot;initial_value&quot;: string;
-  &quot;invalid_address_error_message&quot;: string;
-  &quot;language&quot;: string;
-  &quot;n_focus_results&quot;: number;
-  &quot;name&quot;: string;
-  &quot;return_coordinates&quot;: boolean;
-  &quot;typeahead_delay&quot;: number;
-  */
+    /*
+    &quot;apiKey&quot;: string;
+      &quot;autosuggest_focus&quot;: string;
+      &quot;base_url&quot;: string;
+      &quot;callback&quot;: string;
+      &quot;clip_to_bounding_box&quot;: string;
+      &quot;clip_to_circle&quot;: string;
+      &quot;clip_to_country&quot;: string;
+      &quot;clip_to_polygon&quot;: string;
+      &quot;headers&quot;: string;
+      &quot;initial_value&quot;: string;
+      &quot;invalid_address_error_message&quot;: string;
+      &quot;language&quot;: string;
+      &quot;n_focus_results&quot;: number;
+      &quot;name&quot;: string;
+      &quot;return_coordinates&quot;: boolean;
+      &quot;typeahead_delay&quot;: number;
+      */
 
 
     /*   what3words.api.autosuggest(&quot;freshen.overlook.clo&quot;, {
@@ -939,6 +939,7 @@ export class What3Words {
 </code></pre>
     </div>
 </div>
+
 
 
 

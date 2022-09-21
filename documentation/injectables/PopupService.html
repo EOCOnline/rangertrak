@@ -100,15 +100,45 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor()</code>
+<code>constructor(existingService: <a href="../injectables/PopupService.html" target="_self">PopupService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">src/app/shared/services/popup.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/app/shared/services/popup.service.ts:9</a></div>
                             </td>
                         </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>existingService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/PopupService.html" target="_self" >PopupService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
             </tbody>
         </table>
 </section>
@@ -138,8 +168,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">src/app/shared/services/popup.service.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">src/app/shared/services/popup.service.ts:28</a></div>
                 </td>
             </tr>
 
@@ -193,27 +223,45 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;;
-import { HttpClient } from &#x27;@angular/common/http&#x27;;
-import * as L from &#x27;leaflet&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import * as L from &#x27;leaflet&#x27;
+import { throwError } from &#x27;rxjs&#x27;
 
-@Injectable({providedIn: &#x27;root&#x27;})
+import { HttpClient } from &#x27;@angular/common/http&#x27;
+import { Injectable, Optional, SkipSelf } from &#x27;@angular/core&#x27;
+
+@Injectable({ providedIn: &#x27;root&#x27; })
 export class PopupService {
 
-    constructor() { }
-
-    makeStationPopup(data: any): string {
-      return &#x60;&#x60; +
-        &#x60;&lt;div&gt;Station: ${ data.name }&lt;/div&gt;&#x60; +
-        &#x60;&lt;div&gt;Address: ${ data.address }&lt;/div&gt;&#x60; +
-        &#x60;&lt;div&gt;Population: ${ data.population }&lt;/div&gt;&#x60;
+  constructor(
+    @Optional() @SkipSelf() existingService: PopupService,
+  ) {
+    if (existingService) {
+      /**
+       * see https://angular.io/guide/singleton-services
+       * Use @Optional() @SkipSelf() in singleton constructors to ensure
+       * future modules don&#x27;t provide extra copies of this singleton service
+       * per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
+       */
+      throwError(() &#x3D;&gt; {
+        console.error(&#x60;This singleton service has already been provided in the application. Avoid providing it again in child modules.&#x60;)
+        new Error(&#x60;This singleton service has already been provided in the application. Avoid providing it again in child modules.&#x60;)
+      })
     }
   }
+
+  makeStationPopup(data: any): string {
+    return &#x60;&#x60; +
+      &#x60;&lt;div&gt;Station: ${data.name}&lt;/div&gt;&#x60; +
+      &#x60;&lt;div&gt;Address: ${data.address}&lt;/div&gt;&#x60; +
+      &#x60;&lt;div&gt;Population: ${data.population}&lt;/div&gt;&#x60;
+  }
+}
 
 </code></pre>
     </div>
 
 </div>
+
 
 
 

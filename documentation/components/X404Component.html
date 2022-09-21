@@ -126,6 +126,23 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#pageDescr" >pageDescr</a>
+                            </li>
+                            <li>
+                                <a href="#title" >title</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -161,7 +178,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/app/x404/x404.component.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/app/x404/x404.component.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -198,8 +215,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="13"
-                            class="link-to-prism">src/app/x404/x404.component.ts:13</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="15"
+                            class="link-to-prism">src/app/x404/x404.component.ts:15</a></div>
                 </td>
             </tr>
 
@@ -208,11 +225,73 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
             </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pageDescr"></a>
+                    <span class="name">
+                        <span ><b>pageDescr</b></span>
+                        <a href="#pageDescr"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x60;Unknown page&#x60;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/app/x404/x404.component.ts:12</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="title"></a>
+                    <span class="name">
+                        <span ><b>title</b></span>
+                        <a href="#title"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;You are seeking a web page that does not yet exist!&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/app/x404/x404.component.ts:11</a></div>
+                        </td>
+                    </tr>
+
+
         </tbody>
     </table>
 </section>
@@ -221,7 +300,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit } from &#x27;@angular/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit } from &#x27;@angular/core&#x27;
+
 // TODO: https://bobrov.dev/blog/angular-smart-404-page/
 
 @Component({
@@ -230,7 +310,8 @@
   styleUrls: [&#x27;./x404.component.scss&#x27;]
 })
 export class X404Component implements OnInit {
-
+  title &#x3D; &#x27;You are seeking a web page that does not yet exist!&#x27;
+  pageDescr &#x3D; &#x60;Unknown page&#x60;
   constructor() { }
 
   ngOnInit(): void {
@@ -241,8 +322,33 @@ export class X404Component implements OnInit {
     </div>
 
     <div class="tab-pane fade " id="c-templateData">
-        <pre class="line-numbers"><code class="language-html">&lt;div style&#x3D;&quot;background-color: rgb(230, 97, 97); font-weight: bold; padding:1em&quot;&gt;We can&#x27;t find that page: Error 404&lt;br&gt;
-&lt;a href&#x3D;&quot;/&quot;&gt;Return Home&lt;/a&gt;&lt;/div&gt;
+        <pre class="line-numbers"><code class="language-html">&lt;div&gt;
+  &lt;pageHeader [parentTitle]&#x3D;&quot;title&quot; [pageDescription]&#x3D;&quot;pageDescr&quot;&gt;...&lt;/pageHeader&gt;
+  &lt;div style&#x3D;&quot;background-color: rgb(230, 97, 97); font-weight: bold; padding:1em&quot;&gt;
+    We can&#x27;t find that page: Error 404&lt;br /&gt;
+    &lt;a href&#x3D;&quot;/&quot;&gt;Return Home&lt;/a&gt;
+  &lt;/div&gt;
+  &lt;object width&#x3D;&quot;1024px&quot; height&#x3D;&quot;600px&quot;&gt;
+    &lt;param name&#x3D;&quot;movie&quot; value&#x3D;&quot;http://player.vimeo.com/video/26192400?h&#x3D;85463dcf19&quot; /&gt;
+    &lt;param name&#x3D;&quot;allowFullScreen&quot; value&#x3D;&quot;true&quot; /&gt;
+    &lt;param name&#x3D;&quot;allowscriptaccess&quot; value&#x3D;&quot;always&quot; /&gt;
+    &lt;param name&#x3D;&quot;autoplay&quot; value&#x3D;&quot;true&quot; /&gt;
+
+    &lt;embed
+      width&#x3D;&quot;100%&quot;
+      height&#x3D;&quot;80vh&quot;
+      src&#x3D;&quot;http://player.vimeo.com/video/26192400?h&#x3D;85463dcf19&quot;
+      class&#x3D;&quot;youtube-player&quot;
+      type&#x3D;&quot;text/html&quot;
+      allowscriptaccess&#x3D;&quot;always&quot;
+      allowfullscreen&#x3D;&quot;true&quot;
+    /&gt;
+  &lt;/object&gt;
+&lt;/div&gt;
+&lt;div&gt;
+  Many Thanks (&amp; laughs) for the above. Credits to Steve Lambert:
+  &lt;a href&#x3D;&quot;https://visitsteve.com/&quot; target&#x3D;&quot;_blank&quot;&gt;Visit Steve!&lt;/a&gt;
+&lt;/div&gt;
 </code></pre>
     </div>
 
@@ -278,12 +384,13 @@ export class X404Component implements OnInit {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><div style="background-color: rgb(230, 97, 97); font-weight: bold; padding:1em">We can\'t find that page: Error 404<br><a href="/">Return Home</a></div></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'GmapComponent', 'selector': 'rangertrak-gmap'},{'name': 'IconComponent', 'selector': 'icon'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+        var COMPONENT_TEMPLATE = '<div><div>  <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>  <div style="background-color: rgb(230, 97, 97); font-weight: bold; padding:1em">    We can\'t find that page: Error 404<br />    <a href="/">Return Home</a>  </div>  <object width="1024px" height="600px">    <param name="movie" value="http://player.vimeo.com/video/26192400?h=85463dcf19" />    <param name="allowFullScreen" value="true" />    <param name="allowscriptaccess" value="always" />    <param name="autoplay" value="true" />    <embed      width="100%"      height="80vh"      src="http://player.vimeo.com/video/26192400?h=85463dcf19"      class="youtube-player"      type="text/html"      allowscriptaccess="always"      allowfullscreen="true"    />  </object></div><div>  Many Thanks (& laughs) for the above. Credits to Steve Lambert:  <a href="https://visitsteve.com/" target="_blank">Visit Steve!</a></div></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'X404Component'};
 </script>
 <script src="../js/tree.js"></script>
+
 
 
 

@@ -65,7 +65,7 @@
     <h3>File</h3>
 </p>
 <p class="comment">
-    <code>src/app/navbar/navbar.component.ts</code>
+    <code>src/app/shared/navbar/navbar.component.ts</code>
 </p>
 
 
@@ -178,7 +178,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/app/navbar/navbar.component.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/app/shared/navbar/navbar.component.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -215,8 +215,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="13"
-                            class="link-to-prism">src/app/navbar/navbar.component.ts:13</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="23"
+                            class="link-to-prism">src/app/shared/navbar/navbar.component.ts:23</a></div>
                 </td>
             </tr>
 
@@ -225,7 +225,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
@@ -252,8 +252,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">src/app/navbar/navbar.component.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">src/app/shared/navbar/navbar.component.ts:25</a></div>
                 </td>
             </tr>
 
@@ -262,7 +262,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
@@ -293,7 +293,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/app/navbar/navbar.component.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/app/shared/navbar/navbar.component.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -308,6 +308,8 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit } from &#x27;@angular/core&#x27;;
 import { faMapMarkedAlt } from &#x27;@fortawesome/free-solid-svg-icons&#x27;;
+import { MDCTopAppBar } from &#x27;@material/top-app-bar&#x27;;
+//https://material.io/components/app-bars-top/web#regular-top-app-bar
 
 @Component({
   selector: &#x27;rangertrak-navbar&#x27;,
@@ -315,44 +317,59 @@ import { faMapMarkedAlt } from &#x27;@fortawesome/free-solid-svg-icons&#x27;;
   styleUrls: [&#x27;./navbar.component.scss&#x27;]
 })
 export class NavbarComponent implements OnInit {
+
   faMapMarkedAlt &#x3D; faMapMarkedAlt;
-  constructor() { }
+
+  constructor() {
+    const topAppBarElement &#x3D; document.querySelector(&#x27;.mdc-top-app-bar&#x27;);
+    if (!topAppBarElement) {
+      return
+    }
+    const topAppBar &#x3D; new MDCTopAppBar(topAppBarElement);
+  }
 
   ngOnInit(): void {
   }
- Search() {
-   console.log (&quot;Search is unimplemented yet&quot;)
- }
+  Search() {
+    console.log(&quot;Search is unimplemented yet&quot;)
+  }
 }
 </code></pre>
     </div>
 
     <div class="tab-pane fade " id="c-templateData">
-        <pre class="line-numbers"><code class="language-html">&lt;!-- https://material.io/components/menus  --&gt;
+        <pre class="line-numbers"><code class="language-html">&lt;!-- https://material.io/components/menus
+ mdc-top-app-bar
+ --&gt;
 
 &lt;nav class&#x3D;&quot;main-nav&quot;&gt;
   &lt;span title&#x3D;&quot;RangerTrak&quot; style&#x3D;&quot;margin-right:2em;&quot;&gt;
-    &lt;a href&#x3D;&quot;http://www.RangerTrak.org&quot; title&#x3D;&quot;http://RangerTrack.org&quot; target&#x3D;&quot;_blank&quot;&gt;
-    &lt;fa-icon [icon]&#x3D;&quot;faMapMarkedAlt&quot; class&#x3D;&quot;fa-lg&quot;&gt;&lt;/fa-icon&gt;
-  &lt;/a&gt;
+    &lt;a href&#x3D;&quot;http://www.RangerTrak.org&quot; title&#x3D;&quot;http://RangerTrack.org&quot; target&#x3D;&quot;_blank&quot;&gt;RangerTrak™
+      &lt;!--fa-icon [icon]&#x3D;&quot;faMapMarkedAlt&quot; class&#x3D;&quot;fa-lg&quot;&gt;&lt;/fa-icon
+      https://en.wikipedia.org/wiki/Trademark
+    --&gt;
+    &lt;/a&gt;
   &lt;/span&gt;
 
-  &lt;ul &gt;
-    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/&#x27;]&quot; routerLinkActive &#x3D; &quot;active&quot; [routerLinkActiveOptions]&#x3D;&quot;{exact:
-      true}&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/gmap&#x27;]&quot; routerLinkActive &#x3D; &quot;active&quot;&gt;Google&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/lmap&#x27;]&quot; routerLinkActive &#x3D; &quot;active&quot;&gt;Leaflet&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/reports&#x27;]&quot; routerLinkActive &#x3D; &quot;active&quot;&gt;Reports&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/rangers&#x27;]&quot; routerLinkActive &#x3D; &quot;active&quot;&gt;Rangers&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/settings&#x27;]&quot; routerLinkActive &#x3D; &quot;active&quot;&gt;Settings&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/about&#x27;]&quot; routerLinkActive &#x3D; &quot;active&quot;&gt;About&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/log&#x27;]&quot; routerLinkActive &#x3D; &quot;active&quot;&gt;Log&lt;/a&gt;&lt;/li&gt;
+  &lt;ul&gt;
+    &lt;li&gt;
+      &lt;a [routerLink]&#x3D;&quot;[&#x27;/&#x27;]&quot; routerLinkActive&#x3D;&quot;active&quot; [routerLinkActiveOptions]&#x3D;&quot;{exact:
+      true}&quot;&gt;Home&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/gmap&#x27;]&quot; routerLinkActive&#x3D;&quot;active&quot;&gt;Google&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/lmap&#x27;]&quot; routerLinkActive&#x3D;&quot;active&quot;&gt;Leaflet&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/reports&#x27;]&quot; routerLinkActive&#x3D;&quot;active&quot;&gt;Reports&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/rangers&#x27;]&quot; routerLinkActive&#x3D;&quot;active&quot;&gt;Rangers&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/settings&#x27;]&quot; routerLinkActive&#x3D;&quot;active&quot;&gt;Settings&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/about&#x27;]&quot; routerLinkActive&#x3D;&quot;active&quot;&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a [routerLink]&#x3D;&quot;[&#x27;/log&#x27;]&quot; routerLinkActive&#x3D;&quot;active&quot;&gt;Log&lt;/a&gt;&lt;/li&gt;
   &lt;/ul&gt;
 
-  &lt;a href&#x3D;&quot;https://github.com/EOCOnline/rangertrak&quot; target&#x3D;&quot;_blank&quot; title&#x3D;&quot;See ya at GitHub&quot; class&#x3D;&quot;git&quot;&gt; &lt;img src&#x3D;&quot;../../assets/icons/GitHub-Mark-32px.png&quot; id&#x3D;&quot;git&quot; title&#x3D;&quot;See ya at GitHub&quot;/&gt;&lt;/a&gt;
+  &lt;a href&#x3D;&quot;https://github.com/EOCOnline/rangertrak&quot; target&#x3D;&quot;_blank&quot; title&#x3D;&quot;See ya at GitHub&quot; class&#x3D;&quot;git&quot;&gt;
+    &lt;img src&#x3D;&quot;../../assets/icons/GitHub-Mark-32px.png&quot; id&#x3D;&quot;git&quot; title&#x3D;&quot;See ya at GitHub&quot; /&gt;&lt;/a&gt;
 
   &lt;form&gt;
-    &lt;input type&#x3D;&quot;search&quot; placeholder&#x3D;&quot;(Future) Search&quot;&gt;
+    &lt;input type&#x3D;&quot;search&quot; placeholder&#x3D;&quot;(Future) Search&quot; /&gt;
     &lt;button&gt;Go&lt;/button&gt;
     &lt;!--button (click)&#x3D;&quot;Search()&quot; type&#x3D;&quot;search&quot; placeholder&#x3D;&quot;(Future) Search&quot;&gt; (Future) Search&lt;/button--&gt;
   &lt;/form&gt;
@@ -365,90 +382,106 @@ export class NavbarComponent implements OnInit {
                 <p class="comment">
                     <code>./navbar.component.scss</code>
                 </p>
-                <pre class="line-numbers"><code class="language-scss">  .active {
-    font-weight: bold;
-    font-style: italic;
-    // background-color: rgb(137, 208, 221);
-  }
+                <pre class="line-numbers"><code class="language-scss">@use &quot;@material/icon-button&quot;;
+@use &quot;@material/top-app-bar/mdc-top-app-bar&quot;;
+
+//@include icon-button.core-styles;
+
+.active {
+  font-weight        : bold;
+  font-style         : italic;
+  // background-color: rgb(137, 208, 221);
+}
+
+.main-nav {
+  display       : flex;
+  height        : 2em;
+  background    : rgb(183, 244, 255);
+  color         : white;
+  border-radius : 3px;
+  padding-top   : 0.5em;
+  padding-bottom: 0.15em;
+  font-family   : &#x27;Arima Madurai&#x27;, sans-serif;
+  font-size     : 1.2em;
+}
+
+.main-nav&gt;ul {
+  list-style-type: none;
+  padding        : 0;
+  margin         : 0;
+  display        : flex;
+  flex           : 8;
+}
+
+.main-nav li {
+  font-style  : un;
+  margin-right: 1em;
+}
+
+.main-nav&gt;form {
+  display        : flex;
+  justify-content: flex-end;
+  flex           : 1;
+}
+
+.git {
+  //align-self: flex-end;
+  position          : absolute;
+  right             : 10px;
+  //background-color: aquamarine;
+  //display: flex;
+  //justify-content: right;
+  //float: right;
+  //clear: both;
+}
+
+#git {
+  height      : 1.5em;
+  margin-right: 2px;
+}
+
+.main-nav input {
+  visibility  : hidden;
+  height      : 1.8em;
+  flex        : 1;
+  margin-right: 3px;
+}
+
+.main-nav button {
+  visibility   : hidden;
+  background   : white;
+  border       : 0;
+  border-radius: .8em;
+  color        : orangered;
+  height       : 1.8em;
+  padding      : 0 1em;
+  margin       : 0 1em;
+}
+
+.main-nav a {
+  margin-left    : 5px;
+  margin-right   : 5px;
+  text-decoration: none;
+  vertical-align : middle;
+}
+
+.main-nav a:hover {
+  color             : rgb(172, 80, 248);
+  //background-color: yellow;
+}
+
+// TODO: Doesn&#x27;t collapse into a hamburger!!!
+@media screen and (max-width: 575px) {
   .main-nav {
-    display: flex;
-    height: 2em;
-    background: rgb(145, 195, 204);
-    color: white;
-    border-radius: 3px;
-    padding-top: 0.5em;
-    padding-bottom: 0.15em;
-    font-family:&#x27;Arima Madurai&#x27;, sans-serif;
-    font-size: 1.2em;
-  }
-  .main-nav &gt; ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex: 8;
-  }
-  .main-nav li {
-    font-style: un;
-    margin-right: 1em;
-  }
-  .main-nav &gt; form {
-    display: flex;
-    justify-content: flex-end;
-    flex: 1;
-  }
-  .git {
-    //align-self: flex-end;
-    position:absolute;
-    right: 10px;
-    //background-color: aquamarine;
-    //display: flex;
-    //justify-content: right;
-    //float: right;
-    //clear: both;
-  }
-  #git {
-    height: 1.5em;
-    margin-right: 2px;
-  }
-  .main-nav input {
-    visibility: hidden;
-    height: 1.8em;
-    flex: 1;
-    margin-right: 3px;
-  }
-  .main-nav button {
-    visibility: hidden;
-    background: white;
-    border: 0;
-    border-radius: .8em;
-    color: orangered;
-    height: 1.8em;
-    padding: 0 1em;
-    margin: 0 1em;
-  }
-  .main-nav a {
-    margin-left: 5px;
-    margin-right: 5px;
-    text-decoration:none;
-    vertical-align: middle;
+    flex-direction: column;
   }
 
-  .main-nav a:hover {
-    color: rgb(165, 89, 228);
-    //background-color: yellow;
+  .main-nav ul {
+    flex-direction: row;
+    /* Change this to &#x27;column&#x27; to stack the links */
+    margin-bottom : 0.1em;
   }
-
-  // TODO: Doesn&#x27;t collapse into a hamburger!!!
- @media screen and (max-width: 575px) {
-   .main-nav {
-     flex-direction: column;
-   }
-   .main-nav ul {
-     flex-direction: row; /* Change this to &#x27;column&#x27; to stack the links */
-     margin-bottom: 0.1em;
-   }
-  }
+}
 </code></pre>
     </div>
 
@@ -477,12 +510,13 @@ export class NavbarComponent implements OnInit {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><!-- https://material.io/components/menus  --><nav class="main-nav">  <span title="RangerTrak" style="margin-right:2em;">    <a href="http://www.RangerTrak.org" title="http://RangerTrack.org" target="_blank">    <fa-icon [icon]="faMapMarkedAlt" class="fa-lg"></fa-icon>  </a>  </span>  <ul >    <li><a [routerLink]="[\'/\']" routerLinkActive = "active" [routerLinkActiveOptions]="{exact:      true}">Home</a></li>    <li><a [routerLink]="[\'/gmap\']" routerLinkActive = "active">Google</a></li>    <li><a [routerLink]="[\'/lmap\']" routerLinkActive = "active">Leaflet</a></li>    <li><a [routerLink]="[\'/reports\']" routerLinkActive = "active">Reports</a></li>    <li><a [routerLink]="[\'/rangers\']" routerLinkActive = "active">Rangers</a></li>    <li><a [routerLink]="[\'/settings\']" routerLinkActive = "active">Settings</a></li>    <li><a [routerLink]="[\'/about\']" routerLinkActive = "active">About</a></li>    <li><a [routerLink]="[\'/log\']" routerLinkActive = "active">Log</a></li>  </ul>  <a href="https://github.com/EOCOnline/rangertrak" target="_blank" title="See ya at GitHub" class="git"> <img src="../../assets/icons/GitHub-Mark-32px.png" id="git" title="See ya at GitHub"/></a>  <form>    <input type="search" placeholder="(Future) Search">    <button>Go</button>    <!--button (click)="Search()" type="search" placeholder="(Future) Search"> (Future) Search</button-->  </form></nav><!--script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script--></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'GmapComponent', 'selector': 'rangertrak-gmap'},{'name': 'IconComponent', 'selector': 'icon'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+        var COMPONENT_TEMPLATE = '<div><!-- https://material.io/components/menus mdc-top-app-bar --><nav class="main-nav">  <span title="RangerTrak" style="margin-right:2em;">    <a href="http://www.RangerTrak.org" title="http://RangerTrack.org" target="_blank">RangerTrak™      <!--fa-icon [icon]="faMapMarkedAlt" class="fa-lg"></fa-icon      https://en.wikipedia.org/wiki/Trademark    -->    </a>  </span>  <ul>    <li>      <a [routerLink]="[\'/\']" routerLinkActive="active" [routerLinkActiveOptions]="{exact:      true}">Home</a>    </li>    <li><a [routerLink]="[\'/gmap\']" routerLinkActive="active">Google</a></li>    <li><a [routerLink]="[\'/lmap\']" routerLinkActive="active">Leaflet</a></li>    <li><a [routerLink]="[\'/reports\']" routerLinkActive="active">Reports</a></li>    <li><a [routerLink]="[\'/rangers\']" routerLinkActive="active">Rangers</a></li>    <li><a [routerLink]="[\'/settings\']" routerLinkActive="active">Settings</a></li>    <li><a [routerLink]="[\'/about\']" routerLinkActive="active">About</a></li>    <li><a [routerLink]="[\'/log\']" routerLinkActive="active">Log</a></li>  </ul>  <a href="https://github.com/EOCOnline/rangertrak" target="_blank" title="See ya at GitHub" class="git">    <img src="../../assets/icons/GitHub-Mark-32px.png" id="git" title="See ya at GitHub" /></a>  <form>    <input type="search" placeholder="(Future) Search" />    <button>Go</button>    <!--button (click)="Search()" type="search" placeholder="(Future) Search"> (Future) Search</button-->  </form></nav><!--script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script--></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'NavbarComponent'};
 </script>
 <script src="../js/tree.js"></script>
+
 
 
 

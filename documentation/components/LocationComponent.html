@@ -1,0 +1,2862 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/Vagrant.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li
+  >
+  LocationComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/entry/location.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+                    <code><a href="https://angular.io/api/core/AfterViewInit" target="_blank" >AfterViewInit</a></code>
+                    <code><a href="https://angular.io/api/core/OnDestroy" target="_blank" >OnDestroy</a></code>
+    </p>
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>rangertrak-location</code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./location.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./location.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#faInfoCircle" >faInfoCircle</a>
+                            </li>
+                            <li>
+                                <a href="#faMapMarkedAlt" >faMapMarkedAlt</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#geocoder" >geocoder</a>
+                            </li>
+                            <li>
+                                <a href="#geocoder" >geocoder</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#id" >id</a>
+                            </li>
+                            <li>
+                                <a href="#locationFormModel" >locationFormModel</a>
+                            </li>
+                            <li>
+                                <a href="#mdiAccount" >mdiAccount</a>
+                            </li>
+                            <li>
+                                <a href="#mdiInformationOutline" >mdiInformationOutline</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#settings" >settings</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#settingsSubscription" >settingsSubscription</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#chk3Words" >chk3Words</a>
+                            </li>
+                            <li>
+                                <a href="#chkPCodes" >chkPCodes</a>
+                            </li>
+                            <li>
+                                <a href="#chkStreetAddress" >chkStreetAddress</a>
+                            </li>
+                            <li>
+                                <a href="#DDToAddress" >DDToAddress</a>
+                            </li>
+                            <li>
+                                <a href="#initForm" >initForm</a>
+                            </li>
+                            <li>
+                                <a href="#mergeForm" >mergeForm</a>
+                            </li>
+                            <li>
+                                <a href="#newLocationToFormAndEmit" >newLocationToFormAndEmit</a>
+                            </li>
+                            <li>
+                                <a href="#ngAfterViewInit" >ngAfterViewInit</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onAddressChg" >onAddressChg</a>
+                            </li>
+                            <li>
+                                <a href="#onDdChg" >onDdChg</a>
+                            </li>
+                            <li>
+                                <a href="#onDdmChg" >onDdmChg</a>
+                            </li>
+                            <li>
+                                <a href="#onDmsChg" >onDmsChg</a>
+                            </li>
+                            <li>
+                                <a href="#updateDerivedLocations" >updateDerivedLocations</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#location" >location</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#locationChange" >locationChange</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(settingsService: <a href="../injectables/SettingsService.html" target="_self">SettingsService</a>, _formBuilder: UntypedFormBuilder, log: <a href="../injectables/LogService.html" target="_self">LogService</a>, document: Document)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="96" class="link-to-prism">src/app/entry/location.component.ts:96</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>settingsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SettingsService.html" target="_self" >SettingsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>_formBuilder</td>
+                                                  
+                                                        <td>
+                                                                    <code>UntypedFormBuilder</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>log</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LogService.html" target="_self" >LogService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>document</td>
+                                                  
+                                                        <td>
+                                                                    <code>Document</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section>
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="location"></a>
+                        <b>location</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/LocationType.html" target="_self" >LocationType</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>undefinedLocation</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="74" class="link-to-prism">src/app/entry/location.component.ts:74</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section>
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="locationChange"></a>
+                        <b>locationChange</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://angular.io/api/core/EventEmitter" target="_blank" >EventEmitter</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="75" class="link-to-prism">src/app/entry/location.component.ts:75</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="chk3Words"></a>
+                    <span class="name">
+                        <span ><b>chk3Words</b></span>
+                        <a href="#chk3Words"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>chk3Words(tWords: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="751"
+                            class="link-to-prism">src/app/entry/location.component.ts:751</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>tWords</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="chkPCodes"></a>
+                    <span class="name">
+                        <span ><b>chkPCodes</b></span>
+                        <a href="#chkPCodes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>chkPCodes(pCode: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="534"
+                            class="link-to-prism">src/app/entry/location.component.ts:534</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Update labels with derived locations
+REVIEW: Should LocationType also store PCode/What3Words addresses?</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>pCode</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="chkStreetAddress"></a>
+                    <span class="name">
+                        <span ><b>chkStreetAddress</b></span>
+                        <a href="#chkStreetAddress"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>chkStreetAddress(addrText: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="817"
+                            class="link-to-prism">src/app/entry/location.component.ts:817</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>addrText</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="DDToAddress"></a>
+                    <span class="name">
+                        <span ><b>DDToAddress</b></span>
+                        <a href="#DDToAddress"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>DDToAddress(location: <a href="../interfaces/LocationType.html" target="_self">LocationType</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="636"
+                            class="link-to-prism">src/app/entry/location.component.ts:636</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>NOTE: following sets DERIVED address
+in an async manner (i.e., doesn&#39;t return an address)
+Requires Internet access!</p>
+<p>!TODO: Should it ALSO emit an updated location?!</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>location</td>
+                                    <td>
+                                                <code><a href="../interfaces/LocationType.html" target="_self" >LocationType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>: locationType</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>&quot;Address lookup requires Internet&quot; | &quot;No immediate address available: await the result!&quot;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initForm"></a>
+                    <span class="name">
+                        <span ><b>initForm</b></span>
+                        <a href="#initForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>initForm()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="274"
+                            class="link-to-prism">src/app/entry/location.component.ts:274</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Create Form Model, so we can readily set values &amp; respond to user input
+NOTE: We never have an OnSubmit() routine...instead subscribing &amp; immediately reacting to changes</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mergeForm"></a>
+                    <span class="name">
+                        <span ><b>mergeForm</b></span>
+                        <a href="#mergeForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>mergeForm(form: FormGroup | FormArray, prefix: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="329"
+                            class="link-to-prism">src/app/entry/location.component.ts:329</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Extract only form values that have changed...
+from <a href="https://stackoverflow.com/questions/70366847/angular-on-form-change-event">https://stackoverflow.com/questions/70366847/angular-on-form-change-event</a></p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>form</td>
+                                    <td>
+                                            <code>FormGroup | FormArray</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>prefix</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <ul>
+<li>unused, but allows adding a prefix to the control name</li>
+</ul>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>: controlName, value: newValue}</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newLocationToFormAndEmit"></a>
+                    <span class="name">
+                        <span ><b>newLocationToFormAndEmit</b></span>
+                        <a href="#newLocationToFormAndEmit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>newLocationToFormAndEmit(newLocation: <a href="../interfaces/LocationType.html" target="_self">LocationType</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="454"
+                            class="link-to-prism">src/app/entry/location.component.ts:454</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Any user changes to the location form triggers an updated location (above) &amp;
+now we update form &amp; model with new location.</p>
+<p>Also emit new location to notify parent (&amp; any peers - like a mini-map)</p>
+<p>NOTE: gets called before ngOnInit, during parent&#39;s construction
+!TODO: Validate values here or in calling routines?</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>newLocation</td>
+                                    <td>
+                                                <code><a href="../interfaces/LocationType.html" target="_self" >LocationType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>: LocationType</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngAfterViewInit"></a>
+                    <span class="name">
+                        <span ><b>ngAfterViewInit</b></span>
+                        <a href="#ngAfterViewInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngAfterViewInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="264"
+                            class="link-to-prism">src/app/entry/location.component.ts:264</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Called once all HTML elements have been created</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="923"
+                            class="link-to-prism">src/app/entry/location.component.ts:923</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="131"
+                            class="link-to-prism">src/app/entry/location.component.ts:131</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onAddressChg"></a>
+                    <span class="name">
+                        <span ><b>onAddressChg</b></span>
+                        <a href="#onAddressChg"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onAddressChg()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="689"
+                            class="link-to-prism">src/app/entry/location.component.ts:689</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onDdChg"></a>
+                    <span class="name">
+                        <span ><b>onDdChg</b></span>
+                        <a href="#onDdChg"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onDdChg()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="365"
+                            class="link-to-prism">src/app/entry/location.component.ts:365</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p><a href="https://angular.io/guide/template-reference-variables">https://angular.io/guide/template-reference-variables</a></p>
+</div>
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onDdmChg"></a>
+                    <span class="name">
+                        <span ><b>onDdmChg</b></span>
+                        <a href="#onDdmChg"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onDdmChg()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="415"
+                            class="link-to-prism">src/app/entry/location.component.ts:415</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onDmsChg"></a>
+                    <span class="name">
+                        <span ><b>onDmsChg</b></span>
+                        <a href="#onDmsChg"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onDmsChg()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="386"
+                            class="link-to-prism">src/app/entry/location.component.ts:386</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateDerivedLocations"></a>
+                    <span class="name">
+                        <span ><b>updateDerivedLocations</b></span>
+                        <a href="#updateDerivedLocations"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>updateDerivedLocations(location: <a href="../interfaces/LocationType.html" target="_self">LocationType</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="580"
+                            class="link-to-prism">src/app/entry/location.component.ts:580</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>location</td>
+                                    <td>
+                                                <code><a href="../interfaces/LocationType.html" target="_self" >LocationType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="faInfoCircle"></a>
+                    <span class="name">
+                        <span ><b>faInfoCircle</b></span>
+                        <a href="#faInfoCircle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>faInfoCircle</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="90" class="link-to-prism">src/app/entry/location.component.ts:90</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="faMapMarkedAlt"></a>
+                    <span class="name">
+                        <span ><b>faMapMarkedAlt</b></span>
+                        <a href="#faMapMarkedAlt"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>faMapMarkedAlt</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">src/app/entry/location.component.ts:91</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="geocoder"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>geocoder</b></span>
+                        <a href="#geocoder"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.Geocoder | null</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="81" class="link-to-prism">src/app/entry/location.component.ts:81</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="geocoder"></a>
+                    <span class="name">
+                        <span ><b>geocoder</b></span>
+                        <a href="#geocoder"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new GoogleGeocode()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="82" class="link-to-prism">src/app/entry/location.component.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="id"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>id</b></span>
+                        <a href="#id"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&quot;Location Component&quot;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">src/app/entry/location.component.ts:77</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="locationFormModel"></a>
+                    <span class="name">
+                        <span ><b>locationFormModel</b></span>
+                        <a href="#locationFormModel"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://angular.io/api/forms/FormGroup" target="_blank" >FormGroup</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/app/entry/location.component.ts:78</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mdiAccount"></a>
+                    <span class="name">
+                        <span ><b>mdiAccount</b></span>
+                        <a href="#mdiAccount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>mdiAccount</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="92" class="link-to-prism">src/app/entry/location.component.ts:92</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mdiInformationOutline"></a>
+                    <span class="name">
+                        <span ><b>mdiInformationOutline</b></span>
+                        <a href="#mdiInformationOutline"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>mdiInformationOutline</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="93" class="link-to-prism">src/app/entry/location.component.ts:93</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settings"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>settings</b></span>
+                        <a href="#settings"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#SettingsType" target="_self" >SettingsType</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="96" class="link-to-prism">src/app/entry/location.component.ts:96</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settingsSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>settingsSubscription</b></span>
+                        <a href="#settingsSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="95" class="link-to-prism">src/app/entry/location.component.ts:95</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+    BehaviorSubject, debounceTime, fromEvent, map, merge, Observable, Subscription, takeWhile
+} from &#x27;rxjs&#x27;
+
+import { DOCUMENT } from &#x27;@angular/common&#x27;
+import {
+    AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, SkipSelf,
+    ViewChild
+} from &#x27;@angular/core&#x27;
+import {
+    FormArray, FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators
+} from &#x27;@angular/forms&#x27;
+// import * as P from &#x27;@popperjs/core&#x27;;
+///import { createPopper } from &#x27;@popperjs/core&#x27;;
+// import type { StrictModifiers } from &#x27;@popperjs/core&#x27;;
+import { faInfoCircle, faMapMarkedAlt } from &#x27;@fortawesome/free-solid-svg-icons&#x27;
+import { mdiAccount, mdiInformationOutline } from &#x27;@mdi/js&#x27;
+
+//import { MatIconRegistry } from &#x27;@angular/material/icon&#x27;
+import {
+    CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GoogleGeocode, OpenLocationCode
+} from &#x27;../shared/&#x27;
+import {
+    LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
+} from &#x27;../shared/services&#x27;
+
+//! import { What3Words} from &#x27;../shared/&#x27;
+/*
+https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
+https://www.digitalocean.com/community/tutorials/how-to-build-nested-model-driven-forms-in-angular-2
+https://stackblitz.com/edit/angular-azzmhu?file&#x3D;src/app/hello.component.ts
+*/
+
+@Component({
+  //moduleId: module.id,
+  selector: &#x27;rangertrak-location&#x27;,
+  templateUrl: &#x27;./location.component.html&#x27;,
+  styleUrls: [&#x27;./location.component.scss&#x27;]
+})
+export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  /*
+  //!TODO: If we do end up using this getter/setter, we should keep the _location updated elsewhere!
+  private _location &#x3D; undefinedLocation
+
+  // Use setter to get immediate notification of changes to inputs (pg 182 &amp; 188)
+  // !but also see 9.2.1 for ngOnChange() implementation...
+  @Input() set location(location: LocationType) {
+    if (location !&#x3D;&#x3D; undefined) {
+      this._location &#x3D; location
+      this.log.error(&#x60;Setter got new location: ${JSON.stringify(location)}&#x60;, this.id)
+    }
+    // Check if object&#x27;s contents equal: _.isEqual( obj1 , obj2 ) OR JSON.stringify(obj1) &#x3D;&#x3D;&#x3D; JSON.stringify(obj2)
+    if (JSON.stringify(location) &#x3D;&#x3D;&#x3D; JSON.stringify(undefinedLocation)) {
+      this.log.error(&quot;Got new location, but it still was &#x27;undefined&#x27;&quot;, this.id)
+    } else {
+      this.log.warn(&#x60;Got new location: ${JSON.stringify(location)}&#x60;, this.id)
+      // Initially called after constructor, but BEFORE ngOnInit()
+      // Populate form with initial (&amp; any subsequent updates) from parent
+      // Also re-emits address changes which (via parent) can get picked up by other (peer) children.
+      this.newLocationToFormAndEmit(location)
+    }
+  }
+  get location(): LocationType {
+    return this._location
+  }
+  // see pg 182 (&amp; 188) in AngDev w/TS
+*/
+  // Using mediation pattern (pg 188), this child component emits following event to parent,
+  // parent&#x27;s template has: (newLocationEvent)&#x3D;&quot;onNewLocationParent($event)&quot;
+  // Parent&#x27;s onNewLocationParent($event) gets called.
+  // Parent then passes the new location (via binding), to any children (e.g., mini-maps) as needed
+  @Input() location: LocationType &#x3D; undefinedLocation
+  @Output() locationChange &#x3D; new EventEmitter&lt;LocationType&gt;()
+
+  private id &#x3D; &quot;Location Component&quot;
+  locationFormModel!: FormGroup
+  // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 &amp; https://github.com/angular/angular/pull/43834
+
+  static geocoder: google.maps.Geocoder | null
+  geocoder &#x3D; new GoogleGeocode()
+  //!w3w &#x3D; new What3Words()
+
+  //createPopper&lt;StrictModifiers&gt;(referenceElement, popperElement, options)
+  // button: HTMLButtonElement | undefined
+  //tooltip: HTMLHtmlElement | undefined
+  //popperInstance: any //typeof P.createPopper | undefined
+
+  faInfoCircle &#x3D; faInfoCircle
+  faMapMarkedAlt &#x3D; faMapMarkedAlt
+  mdiAccount: string &#x3D; mdiAccount
+  mdiInformationOutline: string &#x3D; mdiInformationOutline
+
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
+
+  constructor(
+    private settingsService: SettingsService,
+    private _formBuilder: UntypedFormBuilder,
+    private log: LogService,
+    @Inject(DOCUMENT) private document: Document) {
+    this.log.info(&quot;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Constructor() &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&quot;, this.id)
+
+    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
+    // Settings only needed for Check PCode &amp; What3Words...
+    this.settingsSubscription &#x3D; this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) &#x3D;&gt; {
+        this.settings &#x3D; newSettings
+        this.log.excessive(&#x27;Received new Settings via subscription.&#x27;, this.id)
+      },
+      error: (e) &#x3D;&gt; this.log.error(&#x27;Settings Subscription got:&#x27; + e, this.id),
+      complete: () &#x3D;&gt; this.log.info(&#x27;Settings Subscription complete&#x27;, this.id)
+    })
+
+    this.initForm() // creates blank locationFormModel
+
+    try {
+      LocationComponent.geocoder &#x3D; new google.maps.Geocoder
+    } catch (error) {
+      // probably offline?!
+      LocationComponent.geocoder &#x3D; null
+      this.log.error(&quot;Address lookup requires Internet.&quot;, this.id)
+      // User notified by funky address string
+    }
+
+    this.log.verbose(&quot;Out of constructor&quot;, this.id)
+  }
+
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
+  ngOnInit(): void {
+    this.log.info(&quot;ngOnInit&quot;, this.id)
+
+    /**
+     * Get notified when user enters various loction elements - &amp; update the rest of the location
+     *
+     * Capture user&#x27;s location component changes, then call
+     * subroutines to recalc/update the rest of the form &amp; update parent &amp; peers (i.e., mini-map)
+     *
+     * per:
+     * https://stackoverflow.com/questions/70366847/angular-on-form-change-event
+     * https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
+     */
+    if (this.locationFormModel) {
+      /* Original ideas...NOT used
+        this.locationFormModel.valueChanges.pipe(debounceTime(800)).subscribe(x &#x3D;&gt; {
+        //this.log.info(&#x60;locationFormModel value changed: ${JSON.stringify(x)}&#x60;, this.id)
+          this.log.info(&#x60;locationFormModel NOT updating: process valueChanges()&#x60;, this.id)
+          // REVIEW: If we&#x27;re updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
+          this.valueChanges(x)
+
+        this.locationFrmGrp.get(&#x27;address&#x27;)!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr &#x3D;&gt; this.addressCtrlChanged2(newAddr))
+
+        / *
+        https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
+
+        https://stackoverflow.com/questions/49861281/angular-reactive-forms-valuechanges-ui-changes-only
+
+
+        Or use dirty: https://www.usefuldev.com/post/Angular%20Forms:%20how%20to%20get%20only%20the%20changed%20values
+
+        Or can use !yourFormName.pristine to detect only UI changes
+
+        yourControl.valueChanges.pipe(
+          filter(() &#x3D;&gt; yourControl.touched)).subscribe(() &#x3D;&gt; {
+            ....
+          })
+
+        https://stackoverflow.com/questions/58558831/angular-reactive-form-value-changes
+        use rxjs and pipeable operators
+
+      })
+
+      Or subscribe to each element in the form...(verbose)
+      let latf &#x3D; this.locationFrmGrp.get(&quot;latF&quot;)
+      if (latf) {
+        latf.valueChanges.pipe(debounceTime(700)).subscribe(x &#x3D;&gt; {
+          this.log.info(&#x27;########## lat float value changed: &#x27; + x, this.id)
+        })
+        this.log.warn(&#x27;########## lat float value WAS FOUND!!!!&#x27;, this.id)
+      }
+      else {
+        this.log.error(&#x27;########## lat float value NOT FOUND!!!!&#x27;, this.id)
+      }
+      TODO: How to subscribe to the valueChanges observable?
+        listen for changes in the form&#x27;s value in the *template* using AsyncPipe or in the *component class* w/ subscribe() method
+
+        https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
+        https://angular.io/api/common/AsyncPipe
+        https://angular.io/api/forms/AbstractControl
+        https://angular.io/api/forms/NgControlStatus ARE CSS Classes.
+        https://angular.io/api/forms
+        https://www.danvega.dev/blog/2017/06/07/angular-forms-clear-input-field/
+        https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
+        https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
+ */
+
+      const alive: boolean &#x3D; true // from original sample, but unused by us
+
+      setTimeout(() &#x3D;&gt; {
+        //console.log(this.reactiveForm.value)
+      }) // Pause to let parent form get the change event bubbled up from the control
+
+      this.mergeForm(this.locationFormModel, &#x27;&#x27;)
+        .pipe(debounceTime(700))  // BUG: If too long, changes (leaving field) get skipped!
+        .pipe(takeWhile((_) &#x3D;&gt; alive))
+        .subscribe((ctrl: any) &#x3D;&gt; {
+          this.log.verbose(&#x60;${ctrl.name} changed to: ${ctrl.value}&#x60;, this.id)
+
+          switch (ctrl.name) {
+
+            // Coordinates as Decimal Degrees (DD)
+            case &#x27;DD.latI&#x27;:
+            case &#x27;DD.latF&#x27;:
+            case &#x27;DD.lngI&#x27;:
+            case &#x27;DD.lngF&#x27;:
+              {
+                this.onDdChg()
+                break
+              }
+            // Cooordinates as Degrees, Minutes &amp; Seconds (DMS)
+            case &#x27;DMS.latQ&#x27;:
+            case &#x27;DMS.latD&#x27;:
+            case &#x27;DMS.latM&#x27;:
+            case &#x27;DMS.latS&#x27;:
+            case &#x27;DMS.lngQ&#x27;:
+            case &#x27;DMS.lngD&#x27;:
+            case &#x27;DMS.lngM&#x27;:
+            case &#x27;DMS.lngS&#x27;:
+              {
+                this.onDmsChg()
+                break
+              }
+            // Cooordinates as Degrees &amp; Decimal Minutes (DDM)
+            case &#x27;DDM.latDdmQ&#x27;:
+            case &#x27;DDM.latDdmD&#x27;:
+            case &#x27;DDM.latDdmM&#x27;:
+            case &#x27;DDM.lngDdmQ&#x27;:
+            case &#x27;DDM.lngDdmD&#x27;:
+            case &#x27;DDM.lngDdmM&#x27;:
+              {
+                this.onDdmChg()
+                break
+              }
+
+            case &#x27;address&#x27;:
+              {
+                this.onAddressChg()
+                break
+              }
+
+            default:
+              this.log.error(&#x60;Unexpected form change: ${ctrl.name}&#x60;, this.id)
+              break;
+          }
+        })
+    }
+    this.newLocationToFormAndEmit(this.location)
+  }
+
+  /**
+    * Called once all HTML elements have been created
+    */
+  ngAfterViewInit() {
+    // doing emit here causes: NG0100: Expression has changed after it was checked
+    // this.newLocationToFormAndEmit(this.location)
+  }
+
+
+  /**
+   * Create Form Model, so we can readily set values &amp; respond to user input
+   * NOTE: We never have an OnSubmit() routine...instead subscribing &amp; immediately reacting to changes
+   */
+  initForm() {
+    this.locationFormModel &#x3D; this._formBuilder.group({
+      // Coordinates as Decimal Degrees (DD)
+      DD: this._formBuilder.group({
+        latI: [0], // Integer portion
+        latF: [0], // Float portion
+        lngI: [0],
+        lngF: [0]
+      }),
+      // Cooordinates as Degrees, Minutes &amp; Seconds (DMS)
+      DMS: this._formBuilder.group({
+        latQ: [&quot;N&quot;], // Quadrant
+        latD: [0], // Degrees
+        latM: [0], // Minutes
+        latS: [0], // Seconds
+        lngQ: [&quot;E&quot;],
+        lngD: [0],
+        lngM: [0],
+        lngS: [0]
+      }),
+      // Cooordinates as Degrees &amp; Decimal Minutes (DDM)
+      DDM: this._formBuilder.group({
+        latDdmQ: [&quot;N&quot;], // Quadrant
+        latDdmD: [0], // Degrees
+        latDdmM: [0], // Minutes
+        lngDdmQ: [&quot;E&quot;],
+        lngDdmD: [0],
+        lngDdmM: [0]
+      }),
+      address: [&#x27;&#x27;] //, Validators.required],
+    })
+
+
+    /*
+    https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
+    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp &#x3D;&gt; this.locationChanged_noLongerNeeded(locationFrmGrp))
+    let addr &#x3D; this.locationFrmGrp.get(&quot;address&quot;)
+    if (addr) {
+      addr.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp &#x3D;&gt; this.locationChanged_noLongerNeeded(locationFrmGrp))
+      this.log.verbose(&quot;Made reservations!&quot;, this.id)
+    } else {
+      console.warn(&quot;could NOT Make reservations&quot;)
+    }
+    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp &#x3D;&gt; this.locationChanged_noLongerNeeded(locationFrmGrp))
+    return this.locationFrmGrp
+    */
+  }
+
+  /**
+   * Extract only form values that have changed...
+   * from https://stackoverflow.com/questions/70366847/angular-on-form-change-event
+   * @param form
+   * @param prefix - unused, but allows adding a prefix to the control name
+   * @returns {name: controlName, value: newValue}
+   */
+  mergeForm(form: FormGroup | FormArray, prefix: string): any {
+    if (form instanceof FormArray) {
+      // FormArray
+      console.error(&#x60;prefix is: ${prefix}&#x60;, this.id)
+      const formArray &#x3D; form as FormArray;
+      const arr &#x3D; [];
+      for (let i &#x3D; 0; i &lt; formArray.controls.length; i++) {
+        const control &#x3D; formArray.at(i);
+        arr.push(
+          control instanceof FormGroup
+            ? this.mergeForm(control, prefix + i + &#x27;.&#x27;)
+            : control.valueChanges.pipe(
+              map((value) &#x3D;&gt; ({ name: prefix + i, value: value }))
+            )
+        );
+      }
+      return merge(...arr);
+    }
+    // FormGroup
+    return merge(
+      ...Object.keys(form.controls).map((controlName: string) &#x3D;&gt; {
+        const control &#x3D; form.get(controlName);
+        return control instanceof FormGroup || control instanceof FormArray
+          ? this.mergeForm(control, prefix + controlName + &#x27;.&#x27;)
+
+          : control!.valueChanges.pipe(
+            map((value) &#x3D;&gt; ({ name: prefix + controlName, value: value }))
+          );
+      })
+    );
+  }
+
+
+  /**
+   * https://angular.io/guide/template-reference-variables
+   */
+  onDdChg() {
+    this.log.excessive(&#x60;Grab DD values from locationFormModel&#x60;, this.id)
+    let latI &#x3D; this.locationFormModel.get(&quot;DD.latI&quot;)?.value
+    let latF &#x3D; this.locationFormModel.get(&quot;DD.latF&quot;)?.value
+    let lngI &#x3D; this.locationFormModel.get(&quot;DD.lngI&quot;)?.value
+    let lngF &#x3D; this.locationFormModel.get(&quot;DD.lngF&quot;)?.value
+    this.log.verbose(&#x60;new DD values: ${latI}.${latF}°, ${lngI}.${lngF}°&#x60;, this.id)
+
+    let lat &#x3D; parseFloat(latI + &quot;.&quot; + latF)
+    let lng &#x3D; parseFloat(lngI + &quot;.&quot; + lngF)
+
+    let enteredLocation &#x3D; {
+      lat: lat,
+      lng: lng,
+      address: undefinedAddressFlag,
+      derivedFromAddress: false
+    }
+    this.newLocationToFormAndEmit(enteredLocation)
+  }
+
+
+  onDmsChg() {
+    this.log.excessive(&#x60;Grabbing DMSvalue changes from locationFormModel&#x60;, this.id)
+    let latD &#x3D; this.locationFormModel.get(&quot;DMS.latD&quot;)?.value
+    let latM &#x3D; this.locationFormModel.get(&quot;DMS.latM&quot;)?.value
+    let latS &#x3D; this.locationFormModel.get(&quot;DMS.latS&quot;)?.value
+    let latQ &#x3D; this.locationFormModel.get(&quot;DMS.latQ&quot;)?.value
+    let lngD &#x3D; this.locationFormModel.get(&quot;DMS.lngD&quot;)?.value
+    let lngM &#x3D; this.locationFormModel.get(&quot;DMS.lngM&quot;)?.value
+    let lngS &#x3D; this.locationFormModel.get(&quot;DMS.lngS&quot;)?.value
+    let lngQ &#x3D; this.locationFormModel.get(&quot;DMS.lngQ&quot;)?.value
+
+    this.log.verbose(&#x60;DMS value changed:  ${latD}° ${latM}&#x27; ${latS}&quot; ${latQ}, ${lngD}° ${lngM}&#x27; ${lngS}&quot; ${lngQ}&#x60;, this.id)
+
+    let latLng &#x3D; {
+      lat: DMSToDD(latQ, latD, latM, latS)!,
+      lng: DMSToDD(lngQ, lngD, lngM, lngS)!
+    }
+    this.log.verbose(&#x60;DMS converted to DD: ${latLng.lat}° ${latLng.lng}°&#x60;, this.id)
+
+    let enteredLocation &#x3D; {
+      lat: latLng.lat,
+      lng: latLng.lng,
+      address: undefinedAddressFlag,
+      derivedFromAddress: false
+    }
+    this.newLocationToFormAndEmit(enteredLocation)
+  }
+
+
+  onDdmChg() {
+    this.log.excessive(&#x60;Grabbing DMSvalue changes from locationFormModel&#x60;, this.id)
+    let latDdmD &#x3D; this.locationFormModel.get(&quot;DMS.latDdmD&quot;)?.value
+    let latDdmM &#x3D; this.locationFormModel.get(&quot;DMS.latDdmM&quot;)?.value
+    let latDdmQ &#x3D; this.locationFormModel.get(&quot;DMS.latDdmQ&quot;)?.value
+    let lngDdmD &#x3D; this.locationFormModel.get(&quot;DMS.lngDdmD&quot;)?.value
+    let lngDdmM &#x3D; this.locationFormModel.get(&quot;DMS.lngDdmM&quot;)?.value
+    let lngDdmQ &#x3D; this.locationFormModel.get(&quot;DMS.lngDdmQ&quot;)?.value
+
+    this.log.verbose(&#x60;DMS value changed:  ${latDdmD}° ${latDdmM}&#x27; ${latDdmQ}, ${lngDdmD}° ${lngDdmM}&#x27; ${lngDdmQ}&#x60;, this.id)
+
+    let latLng &#x3D; {
+      lat: DDMToDD(&lt;string&gt;latDdmQ, latDdmD, latDdmM)!,
+      lng: DDMToDD(&lt;string&gt;lngDdmQ, lngDdmD, lngDdmM)!
+    }
+    this.log.verbose(&#x60;DDM converted to DD: ${latLng.lat}° ${latLng.lng}°&#x60;, this.id)
+
+    let enteredLocation &#x3D; {
+      lat: latLng.lat,
+      lng: latLng.lng,
+      address: undefinedAddressFlag,
+      derivedFromAddress: false
+    }
+
+    this.newLocationToFormAndEmit(enteredLocation)
+  }
+
+
+  /**
+   * Any user changes to the location form triggers an updated location (above) &amp;
+   * now we update form &amp; model with new location.
+   *
+   * Also emit new location to notify parent (&amp; any peers - like a mini-map)
+   *
+   * NOTE: gets called before ngOnInit, during parent&#x27;s construction
+   * !TODO: Validate values here or in calling routines?
+   *
+   * @param newLocation: LocationType
+   */
+  newLocationToFormAndEmit(newLocation: LocationType) {
+    this.log.info(&#x60;newLocationToFormAndEmit() got a new Location: ${JSON.stringify(newLocation)}&#x60;, this.id);
+
+    let latDD &#x3D; newLocation.lat
+    let lngDD &#x3D; newLocation.lng
+
+    let address &#x3D; &#x27;&#x27;
+    if (newLocation.derivedFromAddress) {
+      address &#x3D; newLocation.address
+      this.updateDerivedLocations(newLocation)
+    } else {
+      // Async routine to geocode from lat/lng &amp; update location.address
+      // REVIEW: Do this early in HOPES that the async geocoding routine will have returned by time we emit a new location... (though mini-map really only needs lat/long)
+
+      // DDToAddress (asynchroniously) calls updateDerivedLocations() too
+      this.DDToAddress(newLocation)
+    }
+
+    let latI &#x3D; Math.trunc(latDD)
+    // this.latF &#x3D; Math.abs(Number((latDD - this.latI).toFixed(4))) * 10000  // works too...
+    let latF &#x3D; Math.abs(Math.round((latDD - latI) * 10000))
+
+    let lngI &#x3D; Math.trunc(lngDD)
+    let lngF &#x3D; Math.abs(Math.round((lngDD - lngI) * 10000))
+
+    let latDMS &#x3D; DDToDMS(latDD)
+    let lngDMS &#x3D; DDToDMS(lngDD, true)
+    this.log.excessive(&#x60;new DMS Location: ${latDMS.dir} ${latDMS.deg}° ${latDMS.min}&#x27; ${latDMS.sec}&quot; lat; ${lngDMS.dir} ${lngDMS.deg}° ${lngDMS.min}&#x27; ${lngDMS.sec}&quot; lng&#x60;, this.id);
+
+    let latDDM &#x3D; DDToDDM(latDD)
+    let lngDDM &#x3D; DDToDDM(lngDD, true)
+    this.log.excessive(&#x60;new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min / 100}&#x27; lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min / 100}&#x27; lng&#x60;, this.id)
+
+    // Set model values - which updates the display &amp; is the only place the current location is kept.
+    this.locationFormModel.setValue({
+      DD: {
+        latI: latI,
+        latF: latF,
+        lngI: lngI,
+        lngF: lngF
+      },
+      DMS: {
+        latQ: latDMS.dir,
+        latD: latDMS.deg,
+        latM: latDMS.min,
+        latS: latDMS.sec,
+
+        lngQ: lngDMS.dir,
+        lngD: lngDMS.deg,
+        lngM: lngDMS.min,
+        lngS: lngDMS.sec
+      },
+      DDM: {
+        latDdmQ: latDDM.dir,
+        latDdmD: latDDM.deg,
+        latDdmM: latDDM.min / 100,
+
+        lngDdmQ: lngDDM.dir,
+        lngDdmD: lngDDM.deg,
+        lngDdmM: lngDDM.min / 100
+      },
+      address: address
+    },
+      { emitEvent: false }  // Prevent enless loop...
+      // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
+    )
+
+    // Emit new location event to parent: so it &amp; any children can react
+    this.log.warn(&#x60;newLocationToFormAndEmit() Emitting new Location ${JSON.stringify(newLocation)}&#x60;, this.id)
+    this.locationChange.emit(newLocation)
+  }
+
+  /**
+   * Update labels with derived locations
+   * REVIEW: Should LocationType also store PCode/What3Words addresses?
+   *
+   * @param location
+   */
+
+
+  chkPCodes(pCode: string) {
+    this.log.verbose(&#x60;User entered potential pCode: &#x27;${pCode}&#x27;. Verify it.&#x60;, this.id);
+    if (pCode.length) {
+      let result &#x3D; this.geocoder.getLatLngAndAddressFromPlaceID(pCode)
+      this.log.verbose(&#x60;chkPCode of ${pCode} got result:${JSON.stringify(result)}&#x60;, this.id);
+
+      //!BUG - following need review!!!!!!!!!!!!!!!!!!!!!!
+      /*result: {
+          position: null;
+          address: string;
+          placeId: string;
+      }*/
+      if (result.position) {
+        //    (document.getElementById(&quot;addressLabel&quot;) as HTMLLabelElement).innerText &#x3D; result.address;
+        (document.getElementById(&quot;enter__Where-Lat&quot;) as HTMLInputElement).value &#x3D; &quot;result.position.lat&quot;;
+        // BUG: position has type of never????!!!!
+        (document.getElementById(&quot;lng&quot;) as HTMLInputElement).value &#x3D; &quot;JSON.stringify(result.position)&quot;;
+      }
+      else {
+        this.log.warn(&#x60;chkPCode of ${pCode} got NULL result!!!&#x60;, this.id);
+      }
+
+      if (!this.settings) {
+        this.log.error(&#x60;this.settings was null in chkPCodes&#x60;, this.id)
+        return
+      }
+
+      if (OpenLocationCode.isValid(pCode)) {
+        if (OpenLocationCode.isShort(pCode)) {
+          pCode &#x3D; OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
+        }
+
+        // Following needs a full (Global) code
+        let coord &#x3D; OpenLocationCode.decode(pCode)
+        this.log.verbose(&quot;chkPCodes got &quot; + pCode + &quot;; returned: lat&#x3D;&quot; + coord.latitudeCenter + &#x27;, lng&#x3D;&#x27; + coord.longitudeCenter, this.id);
+        //let newLocation: LocationType &#x3D;
+        this.newLocationToFormAndEmit({ lat: coord.latitudeCenter, lng: coord.longitudeCenter, address: &quot;&quot;, derivedFromAddress: false })
+      }
+
+      else {
+        //    document.getElementById(&quot;addressLabel&quot;)!.innerHTML &#x3D; &quot; is &lt;strong style&#x3D;&#x27;color: darkorange;&#x27;&gt;Invalid &lt;/strong&gt; Try: &quot; + this.settings.defPlusCode
+        //document.getElementById(&quot;pCodeGlobal&quot;)!.innerHTML &#x3D; this.settings.defPlusCode
+      }
+    }
+  }
+
+  updateDerivedLocations(location: LocationType) {
+    this.log.verbose(&#x60;updateDerivedLocations()&#x60;, this.id)
+
+    // DDToAddress already called - if needed...
+    //if (location.derivedFromAddress &#x3D;&#x3D; false) {
+    // Updates location.address, but asyncronously
+    //let result &#x3D; this.DDToAddress(location)
+    //this.log.verbose(&#x60;DDToAddress returned ${result} &amp; ${JSON.stringify(location)}&#x60;, this.id)
+    //}
+
+    //! duplicate code in ChkPCode()!
+    // Check for https://github.com/google/open-location-code (works offline!)
+    let pCode &#x3D; OpenLocationCode.encode(location.lat, location.lng, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
+    this.log.verbose(&#x60;updateCoords: Encode returned PlusCode: ${pCode}&#x60;, this.id)
+    let fullCode
+    if (pCode.length) {
+      if (OpenLocationCode.isValid(pCode)) {
+        if (OpenLocationCode.isShort(pCode)) {
+          // Recover the full code from a short code:
+          fullCode &#x3D; OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
+        } else {
+          fullCode &#x3D; pCode
+          this.log.verbose(&#x60;Shorten +Codes, Global: ${fullCode}, Lat: ${this.settings.defLat}; lng: ${this.settings.defLng}&#x60;, this.id)
+          // Attempt to trim the first characters from a code; may return same innerText...
+          pCode &#x3D; OpenLocationCode.shorten(fullCode, this.settings.defLat, this.settings.defLng)
+        }
+        this.log.verbose(&#x60;New PlusCodes: ${pCode} ; Global: ${fullCode}&#x60;, this.id);
+        //(document.getElementById(&quot;addresses&quot;) as HTMLInputElement).value &#x3D; pCode
+        //document.getElementById(&quot;defaultPCode&quot;)!.innerHTML &#x3D; this.settings.defPlusCode; // as HTMLLabelElement
+        (document.getElementById(&quot;pCodes&quot;) as HTMLLabelElement).innerText &#x3D; &#x60;Derived PlusCodes: +Code: ${pCode} +GlobalPCode: ${fullCode}&#x60;
+      } else {
+        this.log.verbose(&#x60;Invalid +PlusCode: ${pCode}&#x60;, this.id)
+        document.getElementById(&quot;pCodes&quot;)!.innerText &#x3D; &quot;Derived +Codes: &amp;nbsp; Unable to get +Code&quot;
+        //document.getElementById(&quot;derivedAddress&quot;)!.innerHTML &#x3D; &quot;  is &lt;strong style&#x3D;&#x27;color: darkorange;&#x27;&gt;Invalid &lt;/strong&gt; Try: &quot; // as HTMLLabelElement
+      }
+    }
+
+    this.document.getElementById(&quot;derivedAddress&quot;)!.innerText &#x3D; &#x60;Derived Address: ${location.address}&#x60;
+
+    // Get &amp; update What3Words
+    let w3w &#x3D; &quot;Not.Implemented.Yet!&quot;
+    this.document.getElementById(&quot;what3Words&quot;)!.innerText &#x3D; &#x60;Derived What3Words Code: ${w3w}&#x60;
+
+  }
+
+
+  /**
+   * NOTE: following sets DERIVED address
+   * in an async manner (i.e., doesn&#x27;t return an address)
+   * Requires Internet access!
+   *
+   * !TODO: Should it ALSO emit an updated location?!
+   *
+   * @param location: locationType
+   * @returns
+   */
+  DDToAddress(location: LocationType) {
+    this.log.verbose(&#x60;DDToAddress() Looking up address: ${location.lat}, ${location.lng}&#x60;, this.id)
+    // assert(!location.derivedFromAddress)
+    if (location.derivedFromAddress) {
+      this.log.error(&#x60;DDToAddress got a primary address NOT needing derivation!&#x60;, this.id)
+    }
+
+    if (!LocationComponent.geocoder) {
+      this.log.warn(&#x60;DDToAddress requires Internet access&#x60;, this.id)
+      return &quot;Address lookup requires Internet&quot;
+    }
+    else {
+      // Only show address in model during location emition
+      // This control ONLY shows main address if user entered it there
+      // for this control/widget: differentiate between derived &amp; &#x27;primary&#x27; or user entered addresses
+      this.locationFormModel.patchValue({ address: &quot;&quot; }, { emitEvent: false })
+      //this.locationFormModel.patchValue({ address: &quot;&quot; }, { emitEvent: false, onlySelf: true })
+
+
+      let latLng &#x3D; new google.maps.LatLng(location.lat, location.lng)
+      // Reverse Geocode: get address from coordinates
+      LocationComponent.geocoder
+        .geocode({ location: latLng })
+        .then((response) &#x3D;&gt; {
+          // Async: likely runs after subroutine returns
+
+          // this.log.excessive(&#x60;Found array of addresses: ${JSON.stringify(response.results)}&#x60;, this.id)
+          if (response.results[0]) {
+            this.log.info(&#x60;DDToAddress(): Received a new geocoded address[0]: ${JSON.stringify(response.results[0].formatted_address)}&#x60;, this.id)
+
+            location.address &#x3D; response.results[0].formatted_address
+            // Async update of DERIVED address fields...
+            this.updateDerivedLocations(location)
+
+            this.log.warn(&#x60;DDToAddress() Emitting new Location ${JSON.stringify(location)}&#x60;, this.id)
+            this.locationChange.emit(location)
+
+            // Only update model&#x27;s address if it was what user entered: a &#x27;primary&#x27; address
+            //this.locationFormModel.patchValue({ address: response.results[0].formatted_address },
+            //  { emitEvent: false })  // Prevent enless loop...
+            // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
+            //)
+            //this.log.verbose(&#x60;DDToAddress(): Updated location.address&#x60;, this.id)
+            return (response.results[0].formatted_address)
+          } else {
+            return (&quot;No address found.&quot;) // No results found
+          }
+        })
+        .catch((e) &#x3D;&gt; { return (&quot;Geocoder failed due to: &quot; + e) })
+      return (&quot;No immediate address available: await the result!&quot;)
+    }
+  }
+
+  onAddressChg() { //newAddress: string &#x3D; &quot;undefined address&quot;
+    //let tWords // &#x3D; document.getElementById(&quot;addresses&quot;)!.innerText // as HTMLInputElement).value
+    let newAddress &#x3D; this.locationFormModel.get(&quot;address&quot;)?.value
+    this.log.verbose(&#x60;onAddressChg got newAddress: ${JSON.stringify(newAddress)}&#x60;, this.id)
+
+    if (!newAddress || !newAddress.length) {
+      this.log.error(&#x60;onAddressChggot null or undefined address&#x60;, this.id)
+      return
+    }
+
+    // Now see what kind/format of address we have and get DD
+    if (newAddress.includes(&quot;+&quot;)) {
+      this.log.verbose(&quot;Got PCode: &quot; + newAddress, this.id)
+      this.chkPCodes(newAddress)
+    } else {
+      let tWords &#x3D; newAddress.split(&quot;.&quot;)
+      if (tWords.length &#x3D;&#x3D; 3) {
+        this.log.verbose(&quot;Got What 3 Words: &quot; + newAddress, this.id)
+        this.chk3Words(newAddress)
+      } else {
+        //! UNIMPLEMENTED!
+        let geocodedAddress &#x3D; this.chkStreetAddress(newAddress)
+        //let addrLabel &#x3D; document.getElementById(&quot;addressLabel&quot;) as HTMLLabelElement
+        /*
+        if (geocodedAddress.position) {
+          addrLabel.innerText
+            &#x3D; &#x60;STREET ADDRESS: Formatted address: ${geocodedAddress.address}; Google PlaceID: ${geocodedAddress.placeId}; Position: ${geocodedAddress.position}; partial_match: ${geocodedAddress.partial_match}; placeId: ${geocodedAddress.placeId}; plus_code: ${geocodedAddress.plus_code}&#x60;
+        } else {
+          addrLabel.innerText &#x3D; &#x60;STREET ADDRESS: unable to geocode. ${geocodedAddress.address}&#x60;
+        }
+        */
+      }
+    }
+    // https://developers.google.com/maps/documentation/javascript/places
+    //!BUG: Following needs REVIEWING!!!!!!!!!
+    if (!this.geocoder) {
+      this.log.error(&#x60;Google.Geocoder not available while offline from Internet. Needed to get coordinates from new address: ${JSON.stringify(newAddress)}&#x60;, this.id)
+    }
+    // Regular Geocode: get coordinates from address
+    let myTuple &#x3D; this.geocoder.isValidAddress(newAddress)
+    // { position: null, address: err, partial_match: &quot;&quot;, placeId: &quot;&quot;, plus_code: &quot;&quot; }
+
+    if (myTuple.position) {
+      let pos &#x3D; myTuple.position
+      let enteredLocation &#x3D; {
+        //! BUG: how to extract lat/lng from pos?????; use PROMISE
+        lat: -25,
+        lng: 125,
+        address: newAddress,
+        derivedFromAddress: true
+      }
+
+      this.newLocationToFormAndEmit(enteredLocation)
+    }
+  }
+
+  //----------------------------------------------------------------------------------------
+  // Address stuff
+
+  // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
+  // https://developer.what3words.com/tutorial/javascript
+  // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
+  chk3Words(tWords: string) {
+    this.log.verbose(&quot;chk3Words&quot;, this.id)
+    /*let settings &#x3D; {
+      &quot;async&quot;: true,
+      &quot;crossDomain&quot;: true,
+      &quot;url&quot;: &quot;https://api.what3words.com/v3/autosuggest?key&#x3D;0M5I8UPF&amp;input&#x3D;index.home.r&amp;n-results&#x3D;5&amp;focus&#x3D;51.521251%2C-0.203586&amp;clip-to-country&#x3D;BE%2CGB&quot;,
+      &quot;method&quot;: &quot;GET&quot;,
+      &quot;headers&quot;: {}
+    }
+
+    $.ajax(settings).done(function (response) {
+      this.log.excessive(&quot;ddd&#x3D;&quot; +response, this.id);
+    });
+    */
+
+    // No 3 word results outside these values allowed!!
+    // south_lat &lt;&#x3D; north_lat &amp; west_lng &lt;&#x3D; east_lng
+    let south_lat &#x3D; 46.0;
+    let north_lat &#x3D; 49.0;
+    let west_lng &#x3D; -124.0;
+    let east_lng &#x3D; -120.0;
+    let errMsg &#x3D; &quot;&quot;;
+
+    // let tWords &#x3D; document.getElementById(&quot;addresses&quot;)!.innerText;// as HTMLInputElement).value
+    this.log.verbose(&#x27;chk3Words - &#x27; + tWords, this.id);
+    if (tWords.length) {
+      // soemthing entered...
+      this.log.verbose(&quot;3Words&#x3D;&#x27;&quot; + tWords + &quot;&#x27;&quot;, this.id);
+      //this.w3w.w3wAuto(tWords)
+      /* BUG:
+          this.w3w.w3wAuto.autosuggest(tWords, {
+            nFocusResults: 1,
+            //clipTo####: [&quot;US&quot;],
+            cliptoboundingbox: { south_lat, west_lng, north_lat, east_lng }, // Clip prevents ANY values outside region
+            focus: { lat: this.settings.defLat, lng: this.settings.deflng }, // Focus prioritizes words closer to this point
+            nResults: 1
+          })
+            .then((response: { suggestions: { words: any }[] }) &#x3D;&gt; {
+              const verifiedWords &#x3D; response.suggestions[0].words;
+              this.log.verbose(&quot;Verified Words&#x3D;&#x27;&quot; + verifiedWords + &quot;&#x27;&quot;, this.id);
+              if (tWords !&#x3D; verifiedWords) {
+                document.getElementById(&quot;addressLabel&quot;)!.textContent &#x3D; &quot; Verified as: &quot; + verifiedWords; // as HTMLLabelElement
+              } else {
+                document.getElementById(&quot;addressLabel&quot;)!.textContent &#x3D; &quot; Verified.&quot;;
+              }
+              // this.w3w.GetLatlngFrom3Words(verifiedWords)
+              this.w3w.convertToCoordinates(verifiedWords).then((response: { coordinates: { lat: any; lng: any }; nearestPlace: string }) &#x3D;&gt; {
+                //async call HAS returned!
+                this.updateCoords(response.coordinates.lat, response.coordinates.lng);
+                // NOTE: Not saving nearest place: too vague to be of value
+                document.getElementById(&quot;addressLabel&quot;)!.textContent +&#x3D; &quot;; Near: &quot; + response.nearestPlace; // as HTMLLabelElement
+              });
+            })
+            .catch(function (error: { code: string; message: string }) {
+              errMsg &#x3D; &quot;[code]&#x3D;&quot; + error.code + &quot;; [message]&#x3D;&quot; + error.message + &quot;.&quot;;
+              */
+
+      // TODO:       this.updateCoords(lat,lng)
+      errMsg &#x3D; &quot;&quot;
+      this.log.info(&quot;Unable to verify 3 words entered: &quot; + errMsg, this.id);
+      document.getElementById(&quot;addressLabel&quot;)!.textContent &#x3D; &quot;*** Not able to verify 3 words! ***&quot;; // as HTMLLabelElement
+      //})
+    }
+    // async call not returned yet
+  }
+
+  chkStreetAddress(addrText: string) {
+    //https://developers.google.com/maps/documentation/geocoding/requests-geocoding
+    this.log.verbose(&quot;Got street address to check: &quot; + addrText, this.id)
+    // Type &#x27;GeocoderResult&#x27; must have a &#x27;[Symbol.iterator]()&#x27; method that returns an iterator.
+    //let result:google.maps.GeocoderResult &#x3D; this.geocoder.isValidAddress(addrText)
+    //  return this.geocoder.isValidAddress(addrText)
+    // TODO: this.updateCoords(lat,lng)
+  }
+
+  // --------------------------- POPPER ---------------------------
+  /*
+    https://popper.js.org/docs/v2/tutorial/
+    TODO: https://popper.js.org/
+    https://popper.js.org/docs/v2/
+
+    show() {
+      if (this.tooltip) {
+        this.tooltip.setAttribute(&#x27;data-show&#x27;, &#x27;&#x27;);
+      }
+
+      // Enable the event listeners
+      this.popperInstance.setOptions((options: { modifiers: any }) &#x3D;&gt; ({
+        ...options,
+        modifiers: [
+          ...options.modifiers,
+          { name: &#x27;eventListeners&#x27;, enabled: true },
+        ],
+      }))
+
+      // update the tooltip position
+      if (this.popperInstance) {
+        //this.popperInstance.update();
+      }
+    }
+
+    hide() {
+      if (this.tooltip) {
+        this.tooltip.removeAttribute(&#x27;data-show&#x27;)
+      }
+
+      // Disable the event listeners
+      this.popperInstance.setOptions((options: { modifiers: any }) &#x3D;&gt; ({
+        ...options,
+        modifiers: [
+          ...options.modifiers,
+          { name: &#x27;eventListeners&#x27;, enabled: false },
+        ],
+      }))
+    }
+
+    myPop() {  // TODO: Not supposed to be hidden in a routine...
+      const showEvents &#x3D; [&#x27;mouseenter&#x27;, &#x27;focus&#x27;]
+      const hideEvents &#x3D; [&#x27;mouseleave&#x27;, &#x27;blur&#x27;]
+
+      showEvents.forEach((event) &#x3D;&gt; {
+        if (this.button) {
+          this.button.addEventListener(event, this.show)
+        }
+      })
+
+      hideEvents.forEach((event) &#x3D;&gt; {
+        if (this.button) {
+          this.button.addEventListener(event, this.hide);
+        }
+      })
+  }
+
+  https://bobrov.dev/angular-popper/
+  https://sergeygultyayev.medium.com/use-popper-js-in-angular-projects-7b34f18da1c
+  https://github.com/gultyaev/angular-popper-example
+
+  The hint to display @Input() target!: HTMLElement
+  Its positioning (check docs for available options)
+  @Input() placement?: string;
+  Optional hint target if you desire using other element than specified one
+  @Input() appPopper?: HTMLElement;
+
+  The popper instance
+  popper: popper;
+  private readonly defaultConfig: PopperOptions &#x3D; {
+    placement: &#x27;top&#x27;,
+    removeOnDestroy: true
+  };
+  constructor(private readonly el: ElementRef) {}
+  ngOnInit(): void {
+    // An element to position the hint relative to
+    const reference &#x3D; this.appPopper ? this.appPopper : this.el.nativeElement;
+    this.popper &#x3D; new Popper(reference, this.target, this.defaultConfig);
+  }
+  ngOnDestroy(): void {
+    if (!this.popper) {
+      return;
+    }
+
+    this.popper.destroy();
+  }
+
+    popcorn &#x3D; this.document.querySelector(&#x27;#popcorn&#x27;) as HTMLAnchorElement // BUG:
+    tooltip &#x3D; this.document.querySelector(&#x27;#tooltip&#x27;) as HTMLAnchorElement
+
+    createPopper(popcorn: HTMLAnchorElement, tooltip: HTMLAnchorElement, {
+      //   placement: &#x27;top-end&#x27;,
+    }) {
+    }
+  */
+
+  ngOnDestroy() {
+    this.settingsSubscription.unsubscribe()
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;!-- https://popper.js.org/docs/v2/tutorial/ --&gt;
+
+&lt;!--  TODO: onclick&#x3D;&quot;onWhereInfo() --&gt;
+&lt;!--div id&#x3D;&quot;tooltip&quot; role&#x3D;&quot;tooltip&quot;&gt;
+  My tooltip: Instructions for how to enter location into RangerTrak: Enter Lat &amp; Lng as
+  decimal values or DMS, OR as an address - which will update/REPLACE the coordinates!
+  &lt;div id&#x3D;&quot;arrow&quot; data-popper-arrow&gt;&lt;/div&gt;
+&lt;/div--&gt;
+
+&lt;!--
+(change)&#x3D;&quot;this.addressCtrlChanged(&#x27;latI&#x27;)&quot;
+&lt;!- formControlName&#x3D;&quot;lat&quot;: MUST be element in Location Form Group!
+[FormControl]&#x3D;&quot;latI&quot;
+--&gt;
+&lt;div class&#x3D;&quot;container enter__Where-div&quot;&gt;
+  &lt;!-- (mouseenter)&#x3D;&quot;onMouseEnter()&quot; (mouseleave)&#x3D;&quot;onMouseLeave()&quot; --&gt;
+  &lt;form appearance&#x3D;&quot;filled&quot; class&#x3D;&quot;enter__Where-input&quot; [formGroup]&#x3D;&quot;locationFormModel&quot;&gt;
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;
+      &amp;nbsp;&amp;nbsp;&amp;nbsp;Latitude:
+
+      &lt;span formGroupName&#x3D;&quot;DD&quot;&gt;
+        &lt;input #latI formControlName&#x3D;&quot;latI&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;-180&quot; max&#x3D;&quot;180&quot; id&#x3D;&quot;enter__Where-latI&quot; /&gt;
+
+        &lt;!--span *ngIf&#x3D;&quot;location.get(&#x27;latI&#x27;)?.touched &amp;&amp; location.get(&#x27;latI&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+    class&#x3D;&quot;text-sm text-danger&quot;&gt;lat is required
+
+      [class.border-danger]&#x3D;&quot;location.get(&#x27;latD&#x27;)?.touched &amp;&amp; location.get(&#x27;latD&#x27;)?.invalid&quot;
+      (change)&#x3D;&quot;this.addressCtrlChanged(&#x27;latD&#x27;)&quot;
+        &lt;/span--&gt;
+        &lt;strong&gt;.&lt;/strong&gt;
+        &lt;input #latF formControlName&#x3D;&quot;latF&quot; type&#x3D;&quot;number&quot; (change)&#x3D;&quot;onDdChg()&quot; step&#x3D;&quot;100&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;99999&quot;
+          id&#x3D;&quot;enter__Where-latF&quot; tabindex&#x3D;&quot;2&quot; /&gt;
+        &lt;!--
+          (change)&#x3D;&quot;onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)&quot;
+          (change)&#x3D;&quot;onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)&quot;
+
+
+          span *ngIf&#x3D;&quot;location.get(&#x27;latD&#x27;)?.touched &amp;&amp; location.get(&#x27;latD&#x27;)?.hasError(&#x27;required&#x27;)&quot;
+    class&#x3D;&quot;text-sm text-danger&quot;&gt;Latitude is required
+    &lt;/span--&gt;
+        &lt;strong&gt;° &lt;/strong&gt;
+      &lt;/span&gt;
+
+      &lt;span title&#x3D;&quot;Decimal Degrees&quot;&gt;&lt;strong&gt;DD&lt;/strong&gt;&lt;/span&gt;&amp;nbsp; or &amp;nbsp;
+      &lt;span formGroupName&#x3D;&quot;DMS&quot;&gt;
+        &lt;!-- BUG: why no ValueAsNumbers for these?! --&gt;
+        &lt;input #latD formControlName&#x3D;&quot;latD&quot; id&#x3D;&quot;enter__Where-latD&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;90&quot; /&gt;&lt;strong&gt;° &lt;/strong&gt;
+        &lt;input #latM formControlName&#x3D;&quot;latM&quot; id&#x3D;&quot;enter__Where-latM&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;59&quot; /&gt;&lt;strong&gt;&#x27; &lt;/strong&gt;
+        &lt;input #latS formControlName&#x3D;&quot;latS&quot; id&#x3D;&quot;enter__Where-latS&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;59.99&quot; /&gt;&lt;strong&gt;&quot;
+        &lt;/strong&gt;
+        &lt;input #latQ formControlName&#x3D;&quot;latQ&quot; id&#x3D;&quot;enter__Where-latQ&quot; type&#x3D;&quot;text&quot; pattern&#x3D;&quot;&#x27;e&#x27;,&#x27;E&#x27;,&#x27;w&#x27;,&#x27;W&#x27;&quot;
+          title&#x3D;&quot;E or W&quot; /&gt;
+        &lt;span title&#x3D;&quot;Degrees Minute Seconds&quot;&gt;&lt;strong&gt;DMS&lt;/strong&gt;&lt;/span&gt;&amp;nbsp; or &amp;nbsp;
+      &lt;/span&gt;
+      &lt;!--
+  (change)&#x3D;&quot;onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)&quot;
+(change)&#x3D;&quot;onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)&quot;
+(change)&#x3D;&quot;onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)&quot;
+(change)&#x3D;&quot;onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)&quot;
+--&gt;
+      &lt;span formGroupName&#x3D;&quot;DDM&quot;&gt;
+        &lt;input ##latDdmD formControlName&#x3D;&quot;latDdmD&quot; id&#x3D;&quot;enter__Where-latDdmD&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;90&quot; /&gt;&lt;strong&gt;°
+        &lt;/strong&gt;
+        &lt;input ##latDdmM formControlName&#x3D;&quot;latDdmM&quot; id&#x3D;&quot;enter__Where-latDdmM&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;59&quot; /&gt;&lt;strong&gt;&#x27;
+        &lt;/strong&gt;
+        &lt;input ##latDdmQ formControlName&#x3D;&quot;latDdmQ&quot; id&#x3D;&quot;enter__Where-latDdmQ&quot; type&#x3D;&quot;text&quot; pattern&#x3D;&quot;&#x27;e&#x27;,&#x27;E&#x27;,&#x27;w&#x27;,&#x27;W&#x27;&quot;
+          title&#x3D;&quot;E or W&quot; /&gt;
+        &lt;span title&#x3D;&quot;Degree Decimal Minutes&quot;&gt;&lt;strong&gt;DDM&lt;/strong&gt;&lt;/span&gt;
+      &lt;/span&gt;
+    &lt;/div&gt;
+    &lt;!--
+(change)&#x3D;&quot;onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)&quot;
+(change)&#x3D;&quot;onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)&quot;
+(change)&#x3D;&quot;onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)&quot;
+
+--&gt;
+    &lt;div class&#x3D;&quot;input-group&quot;&gt;
+      Longitude:
+
+      &lt;span formGroupName&#x3D;&quot;DD&quot;&gt;
+        &lt;input #lngI formControlName&#x3D;&quot;lngI&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;-180&quot; max&#x3D;&quot;180&quot;
+          id&#x3D;&quot;enter__Where-lngI&quot; /&gt;&lt;strong&gt;.&lt;/strong&gt;
+        &lt;input #lngF formControlName&#x3D;&quot;lngF&quot; type&#x3D;&quot;number&quot; step&#x3D;&quot;100&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;99999&quot; id&#x3D;&quot;enter__Where-lngF&quot;
+          tabindex&#x3D;&quot;4&quot; /&gt;
+        &lt;strong&gt;° &lt;/strong&gt;&lt;span title&#x3D;&quot;Decimal Degrees&quot;&gt;&lt;strong&gt;DD&lt;/strong&gt;&lt;/span&gt;&amp;nbsp; or &amp;nbsp;
+      &lt;/span&gt;
+      &lt;!--
+(change)&#x3D;&quot;onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)&quot;
+ (change)&#x3D;&quot;onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)&quot;
+
+--&gt;
+      &lt;span formGroupName&#x3D;&quot;DMS&quot;&gt;
+        &lt;input formControlName&#x3D;&quot;lngD&quot; id&#x3D;&quot;enter__Where-lngD&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;90&quot; /&gt;&lt;strong&gt;° &lt;/strong&gt;
+        &lt;input formControlName&#x3D;&quot;lngM&quot; id&#x3D;&quot;enter__Where-lngM&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;59&quot; /&gt;&lt;strong&gt;&#x27; &lt;/strong&gt;
+        &lt;input formControlName&#x3D;&quot;lngS&quot; id&#x3D;&quot;enter__Where-lngS&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;59.99&quot; /&gt;&lt;strong&gt;&quot; &lt;/strong&gt;
+        &lt;input formControlName&#x3D;&quot;lngQ&quot; id&#x3D;&quot;enter__Where-lngQ&quot; type&#x3D;&quot;text&quot; pattern&#x3D;&quot;&#x27;n&#x27;,&#x27;N&#x27;,&#x27;s&#x27;,&#x27;S&#x27;&quot; title&#x3D;&quot;N or S&quot; /&gt;
+        &lt;span title&#x3D;&quot;Degrees Minute Seconds&quot;&gt;&lt;strong&gt;DMS&lt;/strong&gt;&lt;/span&gt;&amp;nbsp; or &amp;nbsp;
+      &lt;/span&gt;
+      &lt;!--
+(change)&#x3D;&quot;onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)&quot;
+(change)&#x3D;&quot;onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)&quot;
+(change)&#x3D;&quot;onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)&quot;
+(change)&#x3D;&quot;onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)&quot;
+--&gt;
+      &lt;span formGroupName&#x3D;&quot;DDM&quot;&gt;
+        &lt;input #lngDdmD formControlName&#x3D;&quot;lngDdmD&quot; id&#x3D;&quot;enter__Where-lngDdmD&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;90&quot; /&gt;&lt;strong&gt;°
+        &lt;/strong&gt;
+        &lt;input #lngDdmM formControlName&#x3D;&quot;lngDdmM&quot; id&#x3D;&quot;enter__Where-lngDdmM&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;59&quot; /&gt;&lt;strong&gt;&#x27;
+        &lt;/strong&gt;
+        &lt;input #lngDdmQ formControlName&#x3D;&quot;lngDdmQ&quot; id&#x3D;&quot;enter__Where-lngDdmQ&quot; type&#x3D;&quot;text&quot; pattern&#x3D;&quot;&#x27;n&#x27;,&#x27;N&#x27;,&#x27;s&#x27;,&#x27;S&#x27;&quot;
+          title&#x3D;&quot;N or S&quot; /&gt;
+        &lt;span title&#x3D;&quot;Degree Decimal Minutes&quot;&gt;&lt;strong&gt;DDM&lt;/strong&gt;&lt;/span&gt;
+      &lt;/span&gt;
+    &lt;/div&gt;
+    &lt;!--
+(change)&#x3D;&quot;onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)&quot;
+(change)&#x3D;&quot;onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)&quot;
+(change)&#x3D;&quot;onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)&quot;
+--&gt;
+    Street Address,
+    &lt;a href&#x3D;&quot;https://maps.google.com/pluscodes/&quot; target&#x3D;&quot;_blank&quot;&gt;+Code&lt;/a&gt;, or
+    &lt;a href&#x3D;&quot;https://what3words.com/about/&quot; target&#x3D;&quot;_blank&quot;&gt;What.3.Words&lt;/a&gt;:
+
+    &lt;input #address type&#x3D;&quot;text&quot; id&#x3D;&quot;enter__Where-Address&quot; tabindex&#x3D;&quot;5&quot;
+      title&#x3D;&quot;Optionally enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding.&quot;
+      formControlName&#x3D;&quot;address&quot; data-lpignore&#x3D;&quot;true&quot; /&gt;
+  &lt;/form&gt;
+  &lt;!--
+
+(change)&#x3D;&quot;onAddressChg(address.value)&quot;
+--&gt;
+  &lt;hr&gt;
+  &lt;div class&#x3D;&quot;enter__Where-Results&quot;&gt;
+    &lt;!--   {{address}}
+      formControlName&#x3D;&quot;address&quot;
+      input name&#x3D;&quot;addresses&quot; id&#x3D;&quot;addresses&quot; type&#x3D;&quot;text&quot; value&#x3D;&quot;&quot;
+      placeholder&#x3D;&quot;&quot; title&#x3D;&quot;Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding.&quot;
+      onchange&#x3D;&quot;chkAddresses()&quot;&gt; (optional) --&gt;
+    &lt;!-- placeholder&#x3D;&quot;84VVCGWP+VW&quot; title &#x3D;&quot;Enter short or full PlusCode&quot; placeholder&#x3D;&quot;pil.tutles.binde&quot;--&gt;
+
+    &lt;!--Derived Locations: --&gt;
+    &lt;span id&#x3D;&quot;derivedAddress&quot; title&#x3D;&quot;Normalized Address&quot;&gt;Address:&lt;/span&gt;&lt;br&gt;
+    &lt;span id&#x3D;&quot;pCodes&quot; title&#x3D;&quot;Global &amp; short (Google) Plus Codes&quot;&gt;+Codes:&lt;/span&gt;&lt;br&gt;
+    &lt;span id&#x3D;&quot;what3Words&quot; title&#x3D;&quot;What3Words&quot;&gt;What3Words:&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;!-- lat:{{location.lat}}; lng:{{location.lat}}; addr:{{location.address}}; {{location.derivedFromAddress}} --&gt;
+&lt;/div&gt;
+
+
+
+&lt;!--br--&gt;
+
+&lt;!--div class&#x3D;&quot;input-group&quot;&gt;&lt;span class&#x3D;&quot;strongish&quot;&gt;Derived Addresses:&lt;/span&gt;
+      &lt;div id&#x3D;&quot;top3wa&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;Top 3 word address match: &lt;/div&gt;
+      &lt;div id&#x3D;&quot;coords&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;WGS84 Coordinates: &lt;/div&gt;
+      &lt;div id&#x3D;&quot;nearest_place&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;Nearest Place: &lt;/div&gt;
+      &lt;div&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;Derived Address: &lt;span id&#x3D;&quot;derivedAddress&quot; #derivedAddress&gt;WA locale; Full code: +Code:
+          8VCWVF22+&lt;/span&gt;
+      &lt;/div&gt;
+
+  &lt;!- -script type&#x3D;&quot;module&quot;
+    src&#x3D;&quot;https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.esm.js&quot;&gt;&lt;/script&gt;
+  &lt;script nomodule
+    src&#x3D;&quot;https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.js?key&#x3D;YOUR-API-KEY&quot;&gt;&lt;/script- -&gt;
+
+  &lt;!- -form id&#x3D;&quot;form&quot; method&#x3D;&quot;GET&quot;- -&gt;
+  &lt;div id&#x3D;&quot;what3words-autosuggest&quot;&gt;
+    &lt;!- -what3words-autosuggest- -&gt;
+    &amp;nbsp;&amp;nbsp;&amp;nbsp;what3words-autosuggest: &lt;input type&#x3D;&quot;text&quot; /&gt;
+    &lt;!- -/what3words-autosuggest- -&gt;
+  &lt;/div&gt;
+  &lt;!- -/form- -&gt;
+  &lt;/div--&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>./location.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@use &quot;@material/theme&quot;
+with ($primary: #962f10,
+  $on-primary: #442C2E);
+@use &quot;@material/button&quot;;
+@use &quot;@material/button/styles&quot;;
+@use &quot;@material/banner&quot;;
+
+$filledColor : #F0F0F0;
+
+
+.elegant {
+  margin-top   : 25px;
+  margin-bottom: 0px;
+}
+
+.filled {
+  background-color: $filledColor;
+}
+
+.enter__Where-div {
+  background-color: $filledColor;
+  width           : 600px;
+  padding         : 4px 0 2px 5px;
+  border-radius   : 5px;
+}
+
+.enter__Where-input_unused {
+  background-color  : $filledColor;
+  //width           : 700px;
+}
+
+#enter__Where-latI,
+#enter__Where-lngI,
+#enter__Where-latD,
+#enter__Where-lngD,
+#enter__Where-latDdmD,
+#enter__Where-lngDdmD {
+  width     : 30px;
+  text-align: right;
+}
+
+#enter__Where-latF,
+#enter__Where-lngF {
+  width: 35px;
+}
+
+#enter__Where-latQ,
+#enter__Where-lngQ,
+#enter__Where-latDdmQ,
+#enter__Where-lngDdmQ {
+  width       : 12px;
+  margin-right: 3px;
+}
+
+#enter__Where-latM,
+#enter__Where-lngM {
+  width: 18px;
+}
+
+#enter__Where-latS,
+#enter__Where-lngS,
+#enter__Where-latDdmM,
+#enter__Where-lngDdmM {
+  width: 40px;
+}
+
+#enter__Where-Address {
+  width: 295px;
+}
+
+#derivedAddress,
+#pCodes,
+#what3Words {
+  color     : #7d1f02; //#CCC;
+  font-style: italic;
+}
+
+// https://www.codingtag.com/remove-arrows-from-input-type-number
+// to hide spinners
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin            : 0;
+}
+
+/* Specilly used for Firefox */
+input[type&#x3D;number] {
+  -moz-appearance: textfield;
+}
+
+.small {
+  font-size: 12px;
+}
+
+.bordered {
+  border: 2 px solid rgb(62, 189, 189);
+}
+
+hr {
+  width               : 80%;
+  //height            : 0.3 px;
+  //border-width    : 0;
+  //color           : gray;
+  //background-color: gray;
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><!-- https://popper.js.org/docs/v2/tutorial/ --><!--  TODO: onclick="onWhereInfo() --><!--div id="tooltip" role="tooltip">  My tooltip: Instructions for how to enter location into RangerTrak: Enter Lat & Lng as  decimal values or DMS, OR as an address - which will update/REPLACE the coordinates!  <div id="arrow" data-popper-arrow></div></div--><!--(change)="this.addressCtrlChanged(\'latI\')"<!- formControlName="lat": MUST be element in Location Form Group![FormControl]="latI"--><div class="container enter__Where-div">  <!-- (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()" -->  <form appearance="filled" class="enter__Where-input" [formGroup]="locationFormModel">    <div class="input-group">      &nbsp;&nbsp;&nbsp;Latitude:      <span formGroupName="DD">        <input #latI formControlName="latI" type="number" min="-180" max="180" id="enter__Where-latI" />        <!--span *ngIf="location.get(\'latI\')?.touched && location.get(\'latI\')?.hasError(\'required\')"    class="text-sm text-danger">lat is required      [class.border-danger]="location.get(\'latD\')?.touched && location.get(\'latD\')?.invalid"      (change)="this.addressCtrlChanged(\'latD\')"        </span-->        <strong>.</strong>        <input #latF formControlName="latF" type="number" (change)="onDdChg()" step="100" min="0" max="99999"          id="enter__Where-latF" tabindex="2" />        <!--          (change)="onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)"          (change)="onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)"          span *ngIf="location.get(\'latD\')?.touched && location.get(\'latD\')?.hasError(\'required\')"    class="text-sm text-danger">Latitude is required    </span-->        <strong>° </strong>      </span>      <span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;      <span formGroupName="DMS">        <!-- BUG: why no ValueAsNumbers for these?! -->        <input #latD formControlName="latD" id="enter__Where-latD" type="number" min="0" max="90" /><strong>° </strong>        <input #latM formControlName="latM" id="enter__Where-latM" type="number" min="0" max="59" /><strong>\' </strong>        <input #latS formControlName="latS" id="enter__Where-latS" type="number" min="0" max="59.99" /><strong>"        </strong>        <input #latQ formControlName="latQ" id="enter__Where-latQ" type="text" pattern="\'e\',\'E\',\'w\',\'W\'"          title="E or W" />        <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;      </span>      <!--  (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"-->      <span formGroupName="DDM">        <input ##latDdmD formControlName="latDdmD" id="enter__Where-latDdmD" type="number" min="0" max="90" /><strong>°        </strong>        <input ##latDdmM formControlName="latDdmM" id="enter__Where-latDdmM" type="number" min="0" max="59" /><strong>\'        </strong>        <input ##latDdmQ formControlName="latDdmQ" id="enter__Where-latDdmQ" type="text" pattern="\'e\',\'E\',\'w\',\'W\'"          title="E or W" />        <span title="Degree Decimal Minutes"><strong>DDM</strong></span>      </span>    </div>    <!--(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"-->    <div class="input-group">      Longitude:      <span formGroupName="DD">        <input #lngI formControlName="lngI" type="number" min="-180" max="180"          id="enter__Where-lngI" /><strong>.</strong>        <input #lngF formControlName="lngF" type="number" step="100" min="0" max="99999" id="enter__Where-lngF"          tabindex="4" />        <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;      </span>      <!--(change)="onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)" (change)="onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)"-->      <span formGroupName="DMS">        <input formControlName="lngD" id="enter__Where-lngD" type="number" min="0" max="90" /><strong>° </strong>        <input formControlName="lngM" id="enter__Where-lngM" type="number" min="0" max="59" /><strong>\' </strong>        <input formControlName="lngS" id="enter__Where-lngS" type="number" min="0" max="59.99" /><strong>" </strong>        <input formControlName="lngQ" id="enter__Where-lngQ" type="text" pattern="\'n\',\'N\',\'s\',\'S\'" title="N or S" />        <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;      </span>      <!--(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"-->      <span formGroupName="DDM">        <input #lngDdmD formControlName="lngDdmD" id="enter__Where-lngDdmD" type="number" min="0" max="90" /><strong>°        </strong>        <input #lngDdmM formControlName="lngDdmM" id="enter__Where-lngDdmM" type="number" min="0" max="59" /><strong>\'        </strong>        <input #lngDdmQ formControlName="lngDdmQ" id="enter__Where-lngDdmQ" type="text" pattern="\'n\',\'N\',\'s\',\'S\'"          title="N or S" />        <span title="Degree Decimal Minutes"><strong>DDM</strong></span>      </span>    </div>    <!--(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"-->    Street Address,    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>, or    <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>:    <input #address type="text" id="enter__Where-Address" tabindex="5"      title="Optionally enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."      formControlName="address" data-lpignore="true" />  </form>  <!--(change)="onAddressChg(address.value)"-->  <hr>  <div class="enter__Where-Results">    <!--   {{address}}      formControlName="address"      input name="addresses" id="addresses" type="text" value=""      placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."      onchange="chkAddresses()"> (optional) -->    <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->    <!--Derived Locations: -->    <span id="derivedAddress" title="Normalized Address">Address:</span><br>    <span id="pCodes" title="Global & short (Google) Plus Codes">+Codes:</span><br>    <span id="what3Words" title="What3Words">What3Words:</span>  </div>  <!-- lat:{{location.lat}}; lng:{{location.lat}}; addr:{{location.address}}; {{location.derivedFromAddress}} --></div><!--br--><!--div class="input-group"><span class="strongish">Derived Addresses:</span>      <div id="top3wa">&nbsp;&nbsp;&nbsp;Top 3 word address match: </div>      <div id="coords">&nbsp;&nbsp;&nbsp;WGS84 Coordinates: </div>      <div id="nearest_place">&nbsp;&nbsp;&nbsp;Nearest Place: </div>      <div>&nbsp;&nbsp;&nbsp;Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code:          8VCWVF22+</span>      </div>  <!- -script type="module"    src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.esm.js"></script>  <script nomodule    src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.js?key=YOUR-API-KEY"></script- ->  <!- -form id="form" method="GET"- ->  <div id="what3words-autosuggest">    <!- -what3words-autosuggest- ->    &nbsp;&nbsp;&nbsp;what3words-autosuggest: <input type="text" />    <!- -/what3words-autosuggest- ->  </div>  <!- -/form- ->  </div--></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'LocationComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'LocationComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

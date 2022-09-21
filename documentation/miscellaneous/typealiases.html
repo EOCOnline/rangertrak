@@ -48,6 +48,7 @@
 
 
 
+
 <ol class="breadcrumb">
   <li>Miscellaneous</li>
   <li>Type aliases</li>
@@ -61,9 +62,6 @@
                 <td class="col-md-4">
                     <ul class="index-list">
                         <li>
-                            <a href="#addressType" title="src/app/lmap/lmap.component.ts" ><b>addressType</b>&nbsp;&nbsp;&nbsp;(src/.../lmap.component.ts)</a>
-                        </li>
-                        <li>
                             <a href="#AOA" title="src/app/rangers/rangers.component.ts" ><b>AOA</b>&nbsp;&nbsp;&nbsp;(src/.../rangers.component.ts)</a>
                         </li>
                         <li>
@@ -73,25 +71,34 @@
                             <a href="#DirType" title="src/app/shared/coordinate.ts" ><b>DirType</b>&nbsp;&nbsp;&nbsp;(src/.../coordinate.ts)</a>
                         </li>
                         <li>
-                            <a href="#FieldReportStatusType" title="src/app/shared/services/settings.service.ts" ><b>FieldReportStatusType</b>&nbsp;&nbsp;&nbsp;(src/.../settings.service.ts)</a>
+                            <a href="#FieldReportStatusType" title="src/app/shared/services/field-report.interface.ts" ><b>FieldReportStatusType</b>&nbsp;&nbsp;&nbsp;(src/.../field-report.interface.ts)</a>
                         </li>
                         <li>
-                            <a href="#FieldReportType" title="src/app/shared/services/field-report.service.ts" ><b>FieldReportType</b>&nbsp;&nbsp;&nbsp;(src/.../field-report.service.ts)</a>
+                            <a href="#FieldReportsType" title="src/app/shared/services/field-report.interface.ts" ><b>FieldReportsType</b>&nbsp;&nbsp;&nbsp;(src/.../field-report.interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#FieldReportType" title="src/app/shared/services/field-report.interface.ts" ><b>FieldReportType</b>&nbsp;&nbsp;&nbsp;(src/.../field-report.interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LogType" title="src/app/shared/services/log.interface.ts" ><b>LogType</b>&nbsp;&nbsp;&nbsp;(src/.../log.interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Map" title="src/app/shared/map.ts" ><b>Map</b>&nbsp;&nbsp;&nbsp;(src/.../map.ts)</a>
                         </li>
                         <li>
                             <a href="#MarkerType" title="src/app/shared/services/marker.service.ts" ><b>MarkerType</b>&nbsp;&nbsp;&nbsp;(src/.../marker.service.ts)</a>
                         </li>
                         <li>
-                            <a href="#Placement" title="src/app/entry/entry.component.ts" ><b>Placement</b>&nbsp;&nbsp;&nbsp;(src/.../entry.component.ts)</a>
+                            <a href="#Placement" title="src/app/shared/icons/icons.component.ts" ><b>Placement</b>&nbsp;&nbsp;&nbsp;(src/.../icons.component.ts)</a>
                         </li>
                         <li>
                             <a href="#SecretType" title="src/app/shared/services/settings.service.ts" ><b>SecretType</b>&nbsp;&nbsp;&nbsp;(src/.../settings.service.ts)</a>
                         </li>
                         <li>
-                            <a href="#SettingsType" title="src/app/shared/services/settings.service.ts" ><b>SettingsType</b>&nbsp;&nbsp;&nbsp;(src/.../settings.service.ts)</a>
+                            <a href="#SettingsType" title="src/app/shared/services/settings.interface.ts" ><b>SettingsType</b>&nbsp;&nbsp;&nbsp;(src/.../settings.interface.ts)</a>
                         </li>
                         <li>
-                            <a href="#Strategy" title="src/app/entry/entry.component.ts" ><b>Strategy</b>&nbsp;&nbsp;&nbsp;(src/.../entry.component.ts)</a>
+                            <a href="#Strategy" title="src/app/shared/icons/icons.component.ts" ><b>Strategy</b>&nbsp;&nbsp;&nbsp;(src/.../icons.component.ts)</a>
                         </li>
                     </ul>
                 </td>
@@ -100,25 +107,7 @@
     </table>
 </section>
 
-    <h3>src/app/lmap/lmap.component.ts</h3>
-    <section>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="addressType"></a>
-                    <span class="name "><b>addressType</b><a href="#addressType"><span class="icon ion-ios-link"></span></a></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <code>    <code>literal type</code>
-</code>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>    <h3>src/app/rangers/rangers.component.ts</h3>
+    <h3>src/app/rangers/rangers.component.ts</h3>
     <section>
     <table class="table table-sm table-bordered">
         <tbody>
@@ -172,7 +161,7 @@
             </tr>
         </tbody>
     </table>
-</section>    <h3>src/app/shared/services/settings.service.ts</h3>
+</section>    <h3>src/app/shared/services/field-report.interface.ts</h3>
     <section>
     <table class="table table-sm table-bordered">
         <tbody>
@@ -184,18 +173,9 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <code>    <code>literal type</code>
-</code>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="SecretType"></a>
-                    <span class="name "><b>SecretType</b><a href="#SecretType"><span class="icon ion-ios-link"></span></a></span>
+                    <div class="io-description"><p>Field Reports can be tagged with a status. These can have color &amp; associated icons &amp; can be edited by the user.
+? FUTURE: Consider replacing &quot;Color&quot; with &quot;CSS_Style&quot; to allow more options?</p>
+</div>
                 </td>
             </tr>
             <tr>
@@ -210,8 +190,14 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="SettingsType"></a>
-                    <span class="name "><b>SettingsType</b><a href="#SettingsType"><span class="icon ion-ios-link"></span></a></span>
+                    <a name="FieldReportsType"></a>
+                    <span class="name "><b>FieldReportsType</b><a href="#FieldReportsType"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>A packet of all field data for the op period except Rangers or Settings</p>
+</div>
                 </td>
             </tr>
             <tr>
@@ -222,8 +208,6 @@
             </tr>
         </tbody>
     </table>
-</section>    <h3>src/app/shared/services/field-report.service.ts</h3>
-    <section>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -234,7 +218,60 @@
             </tr>
             <tr>
                 <td class="col-md-4">
+                    <div class="io-description"><p>Data to store with every field report entry</p>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
                     <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/app/shared/services/log.interface.ts</h3>
+    <section>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LogType"></a>
+                    <span class="name "><b>LogType</b><a href="#LogType"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/app/shared/map.ts</h3>
+    <section>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Map"></a>
+                    <span class="name "><b>Map</b><a href="#Map"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>per <a href="https://ozak.medium.com/stop-repeating-yourself-in-angular-how-to-create-abstract-components-9726d43c99ab">https://ozak.medium.com/stop-repeating-yourself-in-angular-how-to-create-abstract-components-9726d43c99ab</a>,
+do NOT use &quot;abstract&quot;!</p>
+<p>Needs template: <a href="https://stackoverflow.com/questions/62222979/angular-9-decorators-on-abstract-base-class">https://stackoverflow.com/questions/62222979/angular-9-decorators-on-abstract-base-class</a></p>
+<p><a href="https://www.tutorialsteacher.com/typescript/abstract-class">https://www.tutorialsteacher.com/typescript/abstract-class</a>
+<a href="https://www.cloudhadoop.com/angular-model-class-interface/">https://www.cloudhadoop.com/angular-model-class-interface/</a>
+<a href="https://angular.io/guide/migration-undecorated-classes">https://angular.io/guide/migration-undecorated-classes</a></p>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../miscellaneous/variables.html#google" target="_self" >L.Map | google.maps.Map</a></code>
 </code>
                 </td>
             </tr>
@@ -258,7 +295,7 @@
             </tr>
         </tbody>
     </table>
-</section>    <h3>src/app/entry/entry.component.ts</h3>
+</section>    <h3>src/app/shared/icons/icons.component.ts</h3>
     <section>
     <table class="table table-sm table-bordered">
         <tbody>
@@ -287,6 +324,49 @@
             <tr>
                 <td class="col-md-4">
                     <code>    <code>&quot;absolute&quot; | &quot;fixed&quot;</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/app/shared/services/settings.service.ts</h3>
+    <section>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SecretType"></a>
+                    <span class="name "><b>SecretType</b><a href="#SecretType"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/app/shared/services/settings.interface.ts</h3>
+    <section>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SettingsType"></a>
+                    <span class="name "><b>SettingsType</b><a href="#SettingsType"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>This has &#39;all&#39; event data (aside from Rangers &amp; Field Reports)
+for readily serialization/dehydration</p>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
 </code>
                 </td>
             </tr>

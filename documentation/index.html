@@ -32,6 +32,7 @@
                <div class="content getting-started">
                    <div class="content-data">
 
+<p><a href="https://vshymanskyy.github.io/StandWithUkraine"><img src="https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg" alt="SWUbanner" class="img-responsive"></a></p>
 <h1 id="rangertrak">Rangertrak</h1>
 <p>This application aids tracking &amp; mapping CERT, ACS, other teams, rangers &amp; individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. They can radio in their locations - in a variety of formats, and be centrally tracked..</p>
 <p>Track &amp; map search &amp; rescue members reporting in verbally, without internet or cell access</p>
@@ -46,14 +47,19 @@
 <li>Auto-lookup of Ham Radio operators by callsign</li>
 <li>Google or Leaflet/ESRI maps</li>
 <li>Rangers can be in Teams; both are easily edited/sorted/filters</li>
+<li>Documented using [<a href="https://compodoc.app/guides/jsdoc-tags.html%5DCompodoc">https://compodoc.app/guides/jsdoc-tags.html]Compodoc</a></li>
 </ul>
 <h2 id="future-roadmap">Future Roadmap</h2>
 <ul>
 <li>To work with out flaws!</li>
 <li>Save and reload data to local files</li>
-<li>improved docs: screenshots and architectural diagrams</li>
+<li>Allow loading of additinoal layers (e.g., an image of trails, local features),
+perhaps with <a href="https://github.com/publiclab/Leaflet.DistortableImage">https://github.com/publiclab/Leaflet.DistortableImage</a></li>
+<li>improved docs: screenshots and architectural diagrams<ul>
 <li><ul>
 <li>consider <a href="https://github.com/EventEmitter2/EventEmitter2">https://github.com/EventEmitter2/EventEmitter2</a> for multi-threaded msgs with service workers</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -65,7 +71,7 @@
 </ul>
 <h2 id="to-run">To Run</h2>
 <ul>
-<li>(Future:) Simply visit <a href="https://www.RangerTrak.org">https://www.RangerTrak.org</a> once and the 2nd time you visit you will be given an option to &#39;install/download&#39; the web page/application. That should put an icon on your homescreen or desktop that you can thereafter access without Internet access!</li>
+<li>(The Vision:) Simply visit <a href="https://www.RangerTrak.org">https://www.RangerTrak.org</a> once and the 2nd time you visit you will be given an option to &#39;install/download&#39; the web page/application. That should put an icon on your homescreen or desktop that you can thereafter access without Internet access!</li>
 </ul>
 <h2 id="to-build-and-test">To Build and Test</h2>
 <ul>
@@ -85,9 +91,28 @@
 <h2 id="running-unit-tests">Running unit tests</h2>
 <ul>
 <li>Run <code>ng test</code> to execute the unit tests via <a href="https://karma-runner.github.io">Karma</a>.</li>
+<li>None currently!</li>
 </ul>
 <h2 id="running-end-to-end-tests">Running end-to-end tests</h2>
 <p>Run <code>ng e2e</code> to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.</p>
+<ul>
+<li>None currently!</li>
+</ul>
+<h2 id="to-update-documentation">To update documentation</h2>
+<p>npm run compodoc
+See <a href="https://compodoc.app/guides/usage.html">https://compodoc.app/guides/usage.html</a> and <a href="https://compodoc.app/">https://compodoc.app/</a> for details</p>
+<h2 id="to-update-version">To update Version</h2>
+<p>stage any changes (or add &#39;--allow-empty&#39; to the following), then
+git commit -m &quot;Release-As: 0.11.40&quot;
+which <em>SHOULD</em> (but doesn&#39;t) update version # in Package.json &amp; Package-lock.json
+Some details in service/settings.service.ts &amp; app.component.ts
+<a href="https://github.com/googleapis/release-please#how-do-i-change-the-version-number">https://github.com/googleapis/release-please#how-do-i-change-the-version-number</a></p>
+<h2 id="to-deploy-to-google-firebase">To Deploy to Google Firebase</h2>
+<p>From: <a href="https://www.tutorialspoint.com/firebase/firebase_deploying.htm">https://www.tutorialspoint.com/firebase/firebase_deploying.htm</a>
+firebase login
+firebase init
+firebase deploy
+See angular.json and firebase.json</p>
 <h2 id="architecture">Architecture</h2>
 <img src="./src/docs/PlantUML-Class Diagram.png" alt="PlantUML-Class Diagram" style="height:300px; width:100%; align:right;"/>
 ![This architecural diagram is unimplemented yet]( .\src\docs\RangerTrak.png "Future architectural diagram")
@@ -95,8 +120,9 @@
 <h2 id="further-help">Further help</h2>
 <p>To get more help on the Angular CLI use <code>ng help</code> or go check out the <a href="https://angular.io/cli">Angular CLI Overview and Command Reference</a> page.</p>
 <h2 id="eoconline">eoc.online</h2>
-<p>eoc.online provides free tools for Emergency Operations Centers and emergency services. For more information and to report issues please visit <a href="http://eoc.online">http://eoc.online</a>.</p>
+<p><a href="http://eoc.online">http://eoc.online</a> provides free tools for Emergency Operations Centers and emergency services. For more information and to report issues please visit <a href="http://eoc.online">http://eoc.online</a>.</p>
 <p>©2022 eoc.online, under the MIT License</p>
+
 
 
 

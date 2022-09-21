@@ -106,8 +106,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="9"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:9</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:19</a></div>
                 </td>
             </tr>
 
@@ -161,11 +161,21 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, Inject, Pipe, PipeTransform, OnInit } from &#x27;@angular/core&#x27;;
-import { FieldReportService, FieldReportType, FieldReportStatusType, RangerService, SettingsService, TeamService } from &#x27;../shared/services&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { GridOptions, SelectionChangedEvent } from &#x27;ag-grid-community&#x27;
+// , TeamService
+import { Observable, subscribeOn, Subscription } from &#x27;rxjs&#x27;
 
 import { DOCUMENT, formatDate } from &#x27;@angular/common&#x27;
-import { FormBuilder, FormGroup } from &#x27;@angular/forms&#x27;;
+import {
+    AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform
+} from &#x27;@angular/core&#x27;
+import { UntypedFormBuilder, UntypedFormGroup } from &#x27;@angular/forms&#x27;
+
+import { Utility } from &#x27;../shared&#x27;
+import {
+    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
+    RangerService, SettingsService, SettingsType
+} from &#x27;../shared/services&#x27;
 
 @Pipe({ name: &#x27;myUnusedPipe&#x27; })
 export class myUnusedPipe implements PipeTransform {
@@ -174,157 +184,164 @@ export class myUnusedPipe implements PipeTransform {
   }
 }
 
-// TODO: https://blog.ag-grid.com/refresh-grid-after-data-change/
-// https://stackblitz.com/edit/ag-grid-angular-hello-world-n3aceq?file&#x3D;src%2Fapp%2Fapp.component.ts
-// https://www.ag-grid.com/javascript-data-grid/immutable-data/
-//
-/*
-onGridReady(params) {
-    this.gridApi &#x3D; params.api;
-    this.gridColumnApi &#x3D; params.columnApi;
-
-    this.http
-      .get(
-        &quot;https://raw.githubusercontent.com/ag-grid/ag-grid/master/grid-packages/ag-grid-docs/src/olympicWinnersSmall.json&quot;
-      )
-      .subscribe((data: any[]) &#x3D;&gt; {
-        data.length &#x3D; 10;
-        data &#x3D; data.map((row, index) &#x3D;&gt; {
-          return { ...row, id: index + 1 };
-        });
-        this.backupRowData &#x3D; data;
-        this.rowData &#x3D; data;
-      });
-  }
-*/
 
 @Component({
   selector: &#x27;rangertrak-field-reports&#x27;,
   templateUrl: &#x27;./field-reports.component.html&#x27;,
   styleUrls: [&#x27;./field-reports.component.scss&#x27;]
 })
-export class FieldReportsComponent implements OnInit {
+export class FieldReportsComponent implements OnInit, OnDestroy {
 
-  fieldReports: FieldReportType[] &#x3D; []
-  fieldReportStatuses: FieldReportStatusType[] &#x3D; []
-  private settings
+  private id &#x3D; &#x27;Field Report&#x27;
+  title &#x3D; &#x27;Field Reports&#x27;
+  pageDescr &#x3D; &#x60;Grid display of reported ranger positions and status throughout a mission&#x60;
 
+  private fieldReportsSubscription!: Subscription
+  private fieldReportStatuses: FieldReportStatusType[] &#x3D; []
+  // fieldReportStatuses!: Observable&lt;FieldReportStatusType[]&gt; //TODO:
+  public fieldReportArray: FieldReportType[] &#x3D; []
+  private fieldReports: FieldReportsType | undefined
+
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
+
+  public selectedRows &#x3D; 0
+  public columnDefs!: any
   private gridApi: any
   private gridColumnApi
-  now: Date
-  http: any
-  numSeperatorWarnings &#x3D; 0
-  maxSeperatorWarnings &#x3D; 3
-  numFakesForm!: FormGroup
-  nFakes &#x3D; 10
+  private now: Date
+  private http: any
+  private numSeperatorWarnings &#x3D; 0
+  private maxSeperatorWarnings &#x3D; 3
+  public numFakesForm!: UntypedFormGroup
+  public nFakes &#x3D; 10
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
-  gridOptions &#x3D; {
+  // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
+  gridOptions: GridOptions &#x3D; {
     // PROPERTIES
     rowSelection: &quot;multiple&quot;,
     // pagination: true,
 
     // EVENT handlers
-    // onRowClicked: event &#x3D;&gt; console.log(&#x27;A row was clicked&#x27;),
+    // onRowClicked: event &#x3D;&gt; this.log.verbose(&#x27;A row was clicked&#x27;),
+    onSelectionChanged: (event: SelectionChangedEvent) &#x3D;&gt; this.onRowSelection(event),
 
     // CALLBACKS
     // getRowHeight: (params) &#x3D;&gt; 25
-  }
 
-  defaultColDef &#x3D; {
-    flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
-    minWidth: 100,
-    editable: true,
-    resizable: true,
-    sortable: true,
-    filter: true,
-    floatingFilter: true
+    defaultColDef: {
+      flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
+      minWidth: 80,
+      editable: true,
+      //singleClickEdit: true,
+      resizable: true,
+      sortable: true,
+      filter: true,
+      floatingFilter: true
+    },
+    // set rowData to null or undefined to show loading panel by default
+    rowData: null,
   }
+  private backupRowData: any[] &#x3D; []
+  private rowData: any[] &#x3D; []
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private fieldReportService: FieldReportService,
-    private teamService: TeamService,
-    private rangerService: RangerService,
+    private log: LogService,
+    // private teamService: TeamService,
+    // private rangerService: RangerService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document
   ) {
+    this.log.info(&#x60; Construction&#x60;, this.id)
+
     this.now &#x3D; new Date()
     this.gridApi &#x3D; &quot;&quot;
     this.gridColumnApi &#x3D; &quot;&quot;
-
-    this.settings &#x3D; SettingsService
-    this.fieldReportStatuses &#x3D; settingsService.getFieldReportStatuses() // TODO: Only obtained at construction, won&#x27;t reflect an update from the settings page??? : SUBSCRIBE!!
   }
+  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
+  ngOnInit(): void {
 
+    this.log.verbose(&quot;ngInit&quot;, this.id)
 
-  myDateGetter &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
-    const weekday &#x3D; [&quot;Sun &quot;, &quot;Mon &quot;, &quot;Tue &quot;, &quot;Wed &quot;, &quot;Thu &quot;, &quot;Fri &quot;, &quot;Sat &quot;]
-    let dt &#x3D; &#x27;unknown date&#x27;
-    let d: Date &#x3D; params.data.date
-    //console.log(&#x60;Day is: ${d.toISOString()}&#x60;)
-    //console.log(&#x60;WeekDay is: ${d.getDay}&#x60;)
+    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
+    this.settingsSubscription &#x3D; this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) &#x3D;&gt; {
+        this.settings &#x3D; newSettings
+        this.log.excessive(&#x27;Received new Settings via subscription.&#x27;, this.id)
+      },
+      error: (e) &#x3D;&gt; this.log.error(&#x27;Settings Subscription got:&#x27; + e, this.id),
+      complete: () &#x3D;&gt; this.log.info(&#x27;Settings Subscription complete&#x27;, this.id)
+    })
 
-    try {  // TODO: Use the date pipe instead?
-      //weekday[d.getDay()] +
-      dt &#x3D; formatDate(d, &#x27;M-dd HH:MM:ss&#x27;, &#x27;en-US&#x27;)
-      //console.log(&#x60;Day is: ${params.data.date.toISOString()}&#x60;)
-    } catch (error: any) {
-      dt &#x3D; &#x60;Bad date format: Error name: ${error.name}; msg: ${error.message}&#x60;
+    if (this.settings) {
+      this.fieldReportStatuses &#x3D; this.settings.fieldReportStatuses
+    } else {
+      this.log.error(&#x60;this.settings was null in constructor&#x60;, this.id)
     }
 
-    // https://www.w3schools.com/jsref/jsref_obj_date.asp
-    //console.log(&#x60;Day is: ${params.data.date.toISOString()}&#x60;)
-    /*
-        if (this.isValidDate(d)) {
-          dt &#x3D; weekday[d.getDay()] + formatDate(d, &#x27;yyyy-MM-dd HH:MM:ss&#x27;, &#x27;en-US&#x27;)
-          console.log(&#x60;Day is: ${params.data.date.toISOString()}&#x60;)
-        }
-    */
-    return dt
-  }
-
-  myMinuteGetter &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
-    // performance.now() is better - for elapsed time...
-    //let pi: number &#x3D; 3.14159265359
-    let dt &#x3D; new Date(params.data.date).getTime()
-    let milliseconds &#x3D; Date.now() - dt
-    let seconds: string &#x3D; (Math.round(milliseconds / 1000) % 60).toString().padStart(2, &#x27;0&#x27;)
-    let minutes: string &#x3D; Math.round((milliseconds / (1000 * 60)) % 60).toString().padStart(2, &#x27;0&#x27;)
-    let hours &#x3D; Math.round((milliseconds / (1000 * 60 * 60)) % 24);
-    return (&#x60;${hours}:${minutes}:${seconds}&#x60;)
-  }
-
-  columnDefs &#x3D; [
-    { headerName: &quot;ID&quot;, field: &quot;id&quot;, headerTooltip: &#x27;Is this even needed?!&#x27; }, // TODO:
-    { headerName: &quot;CallSign&quot;, field: &quot;callsign&quot;, tooltipField: &quot;team&quot; },
-    // { headerName: &quot;Team&quot;, field: &quot;team&quot; },
-    { headerName: &quot;Address&quot;, field: &quot;address&quot;, singleClickEdit: true, flex: 50 }, //, maxWidth: 200
-    { headerName: &quot;Lat&quot;, field: &quot;lat&quot;, singleClickEdit: true },
-    { headerName: &quot;Lng&quot;, field: &quot;lng&quot;, cellClass: &#x27;number-cell&#x27; },
-    {
-      headerName: &quot;Time&quot;, headerTooltip: &#x27;Report date&#x27;,
-      valueGetter: this.myDateGetter,
-    },
-    {
-      headerName: &quot;Elapsed&quot;, headerTooltip: &#x27;Hrs:Min:Sec since report&#x27;,
-      valueGetter: this.myMinuteGetter,
-    },
-    {
-      headerName: &quot;Status&quot;, field: &quot;status&quot;, flex: 50,
-      cellStyle: (params: { value: string; }) &#x3D;&gt; {
-        //this.fieldReportStatuses.forEach(function(value) { (params.value &#x3D;&#x3D;&#x3D; value.status) ? { backgroundColor: value.color }  : return(null) }
-        for (let i &#x3D; 0; i &lt; this.fieldReportStatuses.length; i++) {
-          if (params.value &#x3D;&#x3D;&#x3D; this.fieldReportStatuses[i].status) {
-            return { backgroundColor: this.fieldReportStatuses[i].color }
+    //? FUTURE: Consider replacing &quot;Color&quot; with &quot;CSS_Style&quot; to allow more options?
+    //!Future: Hover over notes to show entire (multi-line) note
+    this.columnDefs &#x3D; [
+      { headerName: &quot;ID&quot;, field: &quot;id&quot;, headerTooltip: &#x27;Is this even needed?!&#x27;, width: 3, flex: 1 }, // TODO:
+      { headerName: &quot;CallSign&quot;, field: &quot;callsign&quot;, tooltipField: &quot;team&quot;, flex: 2 },
+      // { headerName: &quot;Team&quot;, field: &quot;team&quot; },
+      { headerName: &quot;Address&quot;, field: &quot;address&quot;, singleClickEdit: true, flex: 30 }, //, maxWidth: 200
+      {
+        headerName: &quot;Lat&quot;, field: &quot;lat&quot;, singleClickEdit: true, cellClass: &#x27;number-cell&#x27;, flex: 1,
+        valueGetter: (params: { data: FieldReportType }) &#x3D;&gt; { return Math.round(params.data.location.lat * 10000) / 10000.0 }
+      },
+      {
+        headerName: &quot;Lng&quot;, field: &quot;lng&quot;, singleClickEdit: true, cellClass: &#x27;number-cell&#x27;, flex: 1,
+        valueGetter: (params: { data: FieldReportType }) &#x3D;&gt; { return Math.round(params.data.location.lng * 10000) / 10000.0 },
+      },
+      { headerName: &quot;Reported&quot;, headerTooltip: &#x27;Report date&#x27;, valueGetter: this.myDateGetter, flex: 2 },
+      { headerName: &quot;Elapsed&quot;, headerTooltip: &#x27;Hrs:Min:Sec since report&#x27;, valueGetter: this.myMinuteGetter, flex: 2 },
+      {
+        headerName: &quot;Status&quot;, field: &quot;status&quot;, flex: 5,
+        cellStyle: (params: { value: string; }) &#x3D;&gt; {
+          //this.fieldReportStatuses.forEach(function(value) { (params.value &#x3D;&#x3D;&#x3D; value.status) ? { backgroundColor: value.color }  : return(null) }
+          for (let i &#x3D; 0; i &lt; this.fieldReportStatuses.length; i++) {
+            if (params.value &#x3D;&#x3D;&#x3D; this.fieldReportStatuses[i].status) {
+              return { backgroundColor: this.fieldReportStatuses[i].color }
+            }
           }
+          return null
         }
-        return null
-      }
-      //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
-    },
-    { headerName: &quot;Note&quot;, field: &quot;note&quot;, flex: 50 }, //, maxWidth: 300
-  ];
+        //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
+      },
+      { headerName: &quot;Notes&quot;, field: &quot;notes&quot;, flex: 50 }, //, maxWidth: 300
+    ];
+
+    this.fieldReportsSubscription &#x3D; this.fieldReportService.getFieldReportsObserver().subscribe({
+      next: (newReport) &#x3D;&gt; {
+        console.log(newReport)
+        this.gotNewFieldReports(newReport)
+      },
+      error: (e) &#x3D;&gt; this.log.error(&#x27;Field Reports Subscription got:&#x27; + e, this.id),
+      complete: () &#x3D;&gt; this.log.info(&#x27;Field Reports Subscription complete&#x27;, this.id)
+    })
+
+    this.numFakesForm &#x3D; this.formBuilder.group({})
+
+    if (this.settings ? !this.settings.debugMode : true) {
+      this.log.verbose(&quot;running in non-debug mode&quot;, this.id)
+      //Utility.displayHide(this.document.getElementById(&quot;enter__Fake--id&quot;)!) // defaults to hidden
+    } else {
+      this.log.verbose(&quot;running in debug mode&quot;, this.id)
+      Utility.displayShow(this.document.getElementById(&quot;enter__Fake--id&quot;)!)
+    }
+
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+    } else {
+      this.log.verbose(&quot;no this.gridApi yet in ngOnInit()&quot;, this.id)
+    }
+  }
+
+  //--------------------------------------------------------------------------
 
   //https://blog.ag-grid.com/conditional-formatting-for-cells-in-ag-grid/
   /* cellClassRules &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
@@ -338,79 +355,145 @@ export class FieldReportsComponent implements OnInit {
   }
 */
 
-  ngOnInit(): void {
-    console.log(&quot;Field Report Form &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; ngInit &#x3D;&#x3D;&#x3D;&#x3D; at &quot;, Date.now)
+  onGridReady &#x3D; (params: any) &#x3D;&gt; {
+    this.log.verbose(&quot;onGridReady()&quot;, this.id)
 
-    // TODO: This doesn&#x27;t actually get the very latest field Report entries: do it by subuscription instead????
-    this.fieldReports &#x3D; this.fieldReportService.getFieldReports()
-    console.log(&#x60;Now have ${this.fieldReports.length} Field Reports retrieved from Local Storage and/or fakes generated&#x60;)
+    this.gridApi &#x3D; params.api
+    //this.log.verbose(&#x60;onGridReady() gridApi: ${this.gridApi}&#x60;, this.id)
+    this.gridColumnApi &#x3D; params.columnApi
+    // this.log.verbose(&#x60;onGridReady() gridColumnApi: ${this.gridColumnApi}&#x60;, this.id)
 
-    this.numFakesForm &#x3D; this.formBuilder.group({})
+    // https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
+    params.api.sizeColumnsToFit()
 
-    if (!this.settings.debugMode) {
-      console.log(&quot;running in non-debug mode&quot;)
-      // this.displayHide(&quot;enter__Fake--id&quot;) // debug mode SHOULD be ON...
-    } else {
-      console.log(&quot;running in debug mode&quot;)
-      this.displayShow(&quot;enter__Fake--id&quot;)
-    }
-
+    // TODO: use this line, or next routine?!
     if (this.gridApi) {
       this.gridApi.refreshCells()
     } else {
-      console.log(&quot;no this.gridApi yet in ngOnInit()&quot;)
+      this.log.verbose(&quot;no this.gridApi yet in onGridReady()&quot;, this.id)
     }
+    //this.log.verbose(&quot;onGridReady() done&quot;, this.id)
   }
 
-  reloadPage() {
-    window.location.reload()
-  }
+  onFirstDataRendered(params: any) {
+    this.log.verbose(&quot;onFirstDataRendered()&quot;, this.id)
 
-  isValidDate(d: any) {
-    return d instanceof Date //&amp;&amp; !isNaN(d);
-    /*
-        if (Object.prototype.toString.call(d) !&#x3D;&#x3D; &quot;[object Date]&quot;) {
-          console.log(&#x60;bad date type:${Object.prototype.toString.call(d)}&#x60;)
-          return false
-        } // invalid date
-        if (isNaN(d.getTime())) {
-          console.log(&#x60;bad time&#x60;)
-          return false
-        } // d.valueOf() could also work  // invalid time
-        return true  // valid date
-        */
-  }
-
-  // filteredReports:FieldReportType[] &#x3D; this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000)) //FUTURE:
-
-  onGridReady &#x3D; (params: any) &#x3D;&gt; {
-    console.log(&quot;Field Report Form onGridReady&quot;)
-
+    // following should not be needed, duplicate of onGridReady()...
     this.gridApi &#x3D; params.api
+    //this.log.verbose(&#x60;onGridReady() gridApi: ${this.gridApi}&#x60;, this.id)
     this.gridColumnApi &#x3D; params.columnApi
 
-    params.api.sizeColumnsToFit() //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
+    //params.api.sizeColumnsToFit();
+    this.refreshGrid()
+  }
+
+  //--------------------------------------------------------------------------
+
+  // https://www.ag-grid.com/javascript-data-grid/grid-events/#reference-selection-selectionChanged
+  onRowSelection(event: SelectionChangedEvent) {
+    let selectedNodes &#x3D; this.gridApi.getSelectedNodes()
+    this.selectedRows &#x3D; selectedNodes.length
+    let selectedData &#x3D; selectedNodes.map((node: { data: FieldReportType; }) &#x3D;&gt; node.data)
+    this.log.verbose(&#x60;Selected Row Data obtained ${selectedNodes.length} selected rows&#x60;, this.id)
+    this.fieldReportService.setSelectedFieldReports(selectedData)
   }
 
   //onFirstDataRendered(params: any) {
   refreshGrid() {
+    // https://blog.ag-grid.com/refresh-grid-after-data-change/
     if (this.gridApi) {
       this.gridApi.refreshCells()
-      this.gridApi.sizeColumnsToFit();
+      this.gridApi.sizeColumnsToFit()
     } else {
-      console.log(&quot;no this.gridApi yet in refreshGrid()&quot;)
+      this.log.warn(&#x60;refreshGrid(): gridApi not established yet!&#x60;, this.id)
     }
   }
 
+  reloadPage() {
+    this.log.verbose(&#x60;Reloading window!&#x60;, this.id)
+    window.location.reload()
+  }
+
+
+  gotNewFieldReports(newReports: FieldReportsType) {
+    this.log.verbose(&#x60;New collection of ${newReports.numReport} Field Reports observed.&#x60;, this.id)
+
+    this.fieldReports &#x3D; newReports
+    this.fieldReportArray &#x3D; newReports.fieldReportArray
+    this.refreshGrid()
+    //this.reloadPage()  // TODO: needed? - creates endless loop!
+  }
+
+  /**
+   * Given a fieldReport, finds the date, and returns it as &#x27;Sun Jan-01 23:00:00&#x27;
+   * @param params
+   * @returns
+   */
+  myDateGetter &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
+    const weekday &#x3D; [&quot;Sun &quot;, &quot;Mon &quot;, &quot;Tue &quot;, &quot;Wed &quot;, &quot;Thu &quot;, &quot;Fri &quot;, &quot;Sat &quot;]
+    let dt &#x3D; &#x27;unknown date&#x27;
+    let d: Date &#x3D; params.data.date
+    //this.log.excessive(&#x60;Day is: ${d.toISOString()}&#x60;, this.id)
+    //this.log.excessive(&#x60;WeekDay is: ${d.getDay}&#x60;, this.id)
+
+    try {  // TODO: Use the date pipe instead?
+      //weekday[d.getDay()] +
+      dt &#x3D; formatDate(d, &#x27;M-dd HH:MM:ss&#x27;, &#x27;en-US&#x27;)
+      //this.log.excessive(&#x60;Day is: ${params.data.date.toISOString()}&#x60;, this.id)
+    } catch (error: any) {
+      dt &#x3D; &#x60;Bad date format: Error name: ${error.name}; msg: ${error.message}&#x60;
+    }
+
+    // https://www.w3schools.com/jsref/jsref_obj_date.asp
+    //this.log.excessive(&#x60;Day is: ${params.data.date.toISOString()}&#x60;, this.id)
+    /*
+        if (this.isValidDate(d)) {
+          dt &#x3D; weekday[d.getDay()] + formatDate(d, &#x27;yyyy-MM-dd HH:MM:ss&#x27;, &#x27;en-US&#x27;)
+          this.log.excessive(&#x60;Day is: ${params.data.date.toISOString()}&#x60;, this.id)
+        }
+    */
+    return dt
+  }
+
+  //!TODO: Returns just hours:min:sec - not days!!!
+  myMinuteGetter &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
+    let dt &#x3D; new Date(params.data.date).getTime()
+    let milliseconds &#x3D; Date.now() - dt
+    let seconds: string &#x3D; (Math.round(milliseconds / 1000) % 60).toString().padStart(2, &#x27;0&#x27;)
+    let minutes: string &#x3D; Math.floor((milliseconds / (1000 * 60)) % 60).toString().padStart(2, &#x27;0&#x27;)
+    let hours &#x3D; Math.floor((milliseconds / (1000 * 60 * 60)) % 24)
+    let days &#x3D; Math.floor((((milliseconds / (1000 * 60 * 60 * 24)) + hours) / 24))
+    return (&#x60;${days ? days + &quot; days  &quot; : &quot;&quot;} ${hours}:${minutes}:${seconds} &#x60;)
+  }
+
+  //! BUG: JUST ROUNDS THE lat, not whatever is passed in!!!!!
+  // rounder &#x3D; (params: { data: FieldReportType }) &#x3D;&gt; {
+  //   let val &#x3D; Math.round(params. data.lat * 10000) / 10000.0
+  //   return val
+  // }
+
+  isValidDate(d: any) {
+    return d instanceof Date //&amp;&amp; !isNaN(d);
+  }
+
+  // filteredReports:FieldReportType[] &#x3D; this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000)) //FUTURE:
+  // onBtnSetSelectedRowData() {
+  //   let selectedNodes &#x3D; this.gridApi.getSelectedNodes();
+  //   let selectedData &#x3D; selectedNodes.map((node: { data: FieldReportType; }) &#x3D;&gt; node.data);
+  //   this.selectedRows &#x3D; selectedNodes.length
+  //   this.log.excessive(&#x60;onBtnGetSelectedRowData obtained ${ selectedNodes.length } selected rows: \n${ JSON.stringify(selectedData) } &#x60;, this.id)
+  //   this.fieldReportService.setSelectedFieldReports(selectedData)
+  // }
+
+
   // following from https://ag-grid.com/javascript-data-grid/csv-export/
-  getValue(inputSelector: string) {
-    //let selector &#x3D; this.document.querySelector(inputSelector) as HTMLSelectElement
+  getParamValue(inputSelector: string) {
     let selector &#x3D; this.document.getElementById(&#x27;columnSeparator&#x27;) as HTMLSelectElement
     var sel &#x3D; selector.selectedIndex;
     var opt &#x3D; selector.options[sel];
     var selVal &#x3D; (&lt;HTMLOptionElement&gt;opt).value;
     var selText &#x3D; (&lt;HTMLOptionElement&gt;opt).text
-    // console.log(&#x60;Got column seperator text:&quot;${selText}&quot;, val:&quot;${selVal}&quot;&#x60;)
+    // this.log.excessive(&#x60;Got column seperator text: &quot;${selText}&quot;, val: &quot;${selVal}&quot;&#x60;, this.id)
 
     switch (selVal) {
       case &#x27;none&#x27;:
@@ -422,43 +505,65 @@ export class FieldReportsComponent implements OnInit {
     }
   }
 
-  getParams() {
+  private getParams() {
     let dt &#x3D; new Date()
     return {
-      columnSeparator: this.getValue(&#x27;columnSeparator&#x27;),
-      fileName: &#x60;FieldReportsExport.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv&#x60;,  // REVIEW: ONLY month is zero based, requires +1?!
+      columnSeparator: this.getParamValue(&#x27;columnSeparator&#x27;),
+      fileName: &#x60;FieldReportsExport.${dt.getFullYear()} -${dt.getMonth() + 1} -${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv&#x60;,
     }
   }
 
   onSeperatorChange() {
     var params &#x3D; this.getParams();
     if (params.columnSeparator &amp;&amp; this.numSeperatorWarnings++ &lt; this.maxSeperatorWarnings) {
-      alert(&#x60;NOTE: Excel handles comma separators best. You&#x27;ve chosen &quot;${params.columnSeparator}&quot;&#x60;)
+      alert(&#x60;NOTE: Excel handles comma separators best.You&#x27;ve chosen &quot;${params.columnSeparator}&quot;&#x60;)
     }
   }
 
   onBtnExport() {
+    // TODO: Does this handle new FieldReports properly?
     var params &#x3D; this.getParams();
-    //console.log(&#x60;Got column seperator value &quot;${params.columnSeparator}&quot;&#x60;)
-    //console.log(&#x60;Got filename of &quot;${params.fileName}&quot;&#x60;)
-    //if (params.columnSeparator) {
-    //  alert(&#x60;NOTE: Excel handles comma separators best. You&#x27;ve chosen &quot;${params.columnSeparator}&quot; Good luck!&#x60;);
-    //}
     this.gridApi.exportDataAsCsv(params);
   }
 
   onBtnClearFieldReports() {
-    this.fieldReportService.deleteAllFieldReports()
-    this.reloadPage()
+    if (Utility.getConfirmation(&#x27;REALLY delete all FieldReports in LocalStorage?&#x27;)) {
+      this.log.info(&quot;Removing all field reports from local storage...&quot;, this.id)
+      this.fieldReportService.deleteAllFieldReports()
+      this.refreshGrid()
+      this.reloadPage()
+    }
   }
 
   // Save them to localstorage &amp; update subscribers
+  // REVIEW: SOMEHOW??? renaming the next to unused caused an error if slecting a row when running???
   onBtnUpdateFieldReports() {
-    this.fieldReportService.UpdateFieldReports()
+    // https://blog.ag-grid.com/refresh-grid-after-data-change/#updating-through-variable-angular
+    // BUG: Need to send the newly edited reports...with Header properties
+    alert(&#x27;onBtnUpdateFieldReports is UNIMPLEMENTED!&#x27;)
+    //this.fieldReportService.updateFieldReports()
   }
 
-  onBtnImportFieldReports_unused() {
+  onBtnImportFieldReportsFromJSON_unused() {
     alert(&#x60;onBtnImportFieldReports is unimplemented&#x60;)
+
+    // TODO: look at: https://www.npmjs.com/package/fs-browsers
+
+    // TODO: https://blog.ag-grid.com/refresh-grid-after-data-change/
+    // https://stackblitz.com/edit/ag-grid-angular-hello-world-n3aceq?file&#x3D;src%2Fapp%2Fapp.component.ts
+    // https://www.ag-grid.com/javascript-data-grid/immutable-data/
+
+    // https://github.com/ag-grid/ag-grid/issues/2450
+    this.http
+      .get(&quot;https://raw.githubusercontent.com/ag-grid/ag-grid/master/grid-packages/ag-grid-docs/src/olympicWinnersSmall.json&quot;)
+      .subscribeOn((data: any[]) &#x3D;&gt; {  // NOTE: subscribeOn() is a guess!!!
+        data.length &#x3D; 10;
+        data &#x3D; data.map((row, index) &#x3D;&gt; {
+          return { ...row, id: index + 1 };
+        })
+        this.backupRowData &#x3D; data
+        this.rowData &#x3D; data
+      })
   }
 
   generateFakeFieldReports(num &#x3D; this.nFakes) {
@@ -466,35 +571,23 @@ export class FieldReportsComponent implements OnInit {
     // https://github.com/material-components/material-components-web/tree/master/packages/mdc-slider#discrete-slider
     // https://material-components.github.io/material-components-web-catalog/#/component/slider
     this.fieldReportService.generateFakeData(num)
-    console.log(&#x60;Generated ${num} FAKE Field Reports&#x60;)
-    this.fieldReportService.UpdateFieldReports()
-    this.fieldReports &#x3D; this.fieldReportService.getFieldReports()
-    this.refreshGrid()
+    this.log.verbose(&#x60;Generated ${num} FAKE Field Reports&#x60;, this.id)
+    //this.fieldReportService.updateFieldReports()
+    //this.fieldReports$ &#x3D; this.fieldReportService.subscribeToFieldReports()
+    //this.refreshGrid()
     this.reloadPage() //TODO: why aren&#x27;t above enough?!!!
   }
 
-  displayHide(htmlElementID: string) {
-    let e &#x3D; this.document.getElementById(htmlElementID)
-    if (e) {
-      e.style.visibility &#x3D; &quot;hidden&quot;;
-    } else {
-      console.warn(&#x60;Could not hide HTML Element ${htmlElementID}&#x60;)
-    }
-  }
-
-  displayShow(htmlElementID: string) {
-    let e &#x3D; this.document.getElementById(htmlElementID)
-    if (e) {
-      e.style.visibility &#x3D; &quot;visible&quot;;
-    } else {
-      console.warn(&#x60;Could not show HTML Element ${htmlElementID}&#x60;)
-    }
+  ngOnDestroy() {
+    this.fieldReportsSubscription.unsubscribe()
+    this.settingsSubscription.unsubscribe()
   }
 }
 </code></pre>
     </div>
 
 </div>
+
 
 
 
