@@ -2,12 +2,7 @@ import { LatLngBounds } from 'leaflet'
 
 import { LocationType } from './location.interface'
 
-/*
-  { lat: number,
-  lng: number,
-  address: string,
-derivedFromAddress}
-  */
+export enum FieldReportSource { Voice, Packet, APRS, Email }
 
 /**
  * Data to store with every field report entry
@@ -19,7 +14,7 @@ export type FieldReportType = {
   location: LocationType,
   date: Date,
   status: string,
-  notes: string,
+  notes: string
   // source: FieldReportSource
 }
 
@@ -30,7 +25,7 @@ export type FieldReportsType = {
   version: string,
   date: Date,
   event: string,
-  bounds: L.LatLngBounds, //!BUG: Relies on Leaflet object type
+  bounds: LatLngBounds, //!BUG: Relies on Leaflet object type
   numReport: number,
   maxId: number,
   filter: string, // All reports or not? Guard to ensure a subset never gets writen to localstorage?

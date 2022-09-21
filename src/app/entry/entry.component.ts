@@ -307,7 +307,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       id: -1,
       callsign: [''],
       // team: ['T1'],
-      // Next 2 are NOT directly displayed, but are persisted on submit
       location: this.locationParent,
       date: [new Date()],
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status],
@@ -366,8 +365,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       this.log.excessive(`CallsignCtrlChanged() call = ${callSign} `)
       this.callsignChanged(callSign)
     }
-
-    // TODO: update #enter__Callsign-upshot
   }
 
   /**
@@ -384,27 +381,19 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // NOTE: Afterward, we will just reset the form. Otherwise (if reusing the form) create a deep copy of the form-model:
     // result.entryDetailsForm = Object.assign({}, result.entryDetailsForm)
 
-    /* OLD:    debugger
-        // this.date=this.dateCtrl.value // TODO:
-        // ! next line should already have happened by patch, in
-        // this.entryDetailsForm.value.date = this.dateCtrl.value
-        //! BUG: ALSO need to get location data into the form...
-        this.log.error(`Not writing locationm: ${JSON.stringify(this.locationParent)} to report!!!`, this.id)
-    */
-
     /* FUTURE: Allow keywords, or search Notes for semicolon delimited tokens?
     get keywordsControls(): any {
     return (<FormArray>this.entryDetailsForm.get('keywords')).controls
     }   */
 
-    //let formData = JSON.stringify(this.entryDetailsForm.value)
+    let formDataJSON = JSON.stringify(this.entryDetailsForm.value)
 
-    let newReport = this.fieldReportService.addfieldReport(formData)
-    this.log.info(`Report id # ${newReport.id} has been added with: ${formData} `, this.id)
+    let newReport = this.fieldReportService.addfieldReport(formDataJSON)
+    this.log.info(`Report id # ${newReport.id} has been added with: ${formDataJSON} `, this.id)
 
     if (this.submitInfo) {
       // Display fading confirmation to right of Submit button
-      this.submitInfo.innerText = `Entry id # ${newReport.id} Saved.${formData} `
+      this.submitInfo.innerText = `Entry id # ${newReport.id} Saved.${formDataJSON} `
       Utility.resetMaterialFadeAnimation(this.submitInfo)
     }
     else {

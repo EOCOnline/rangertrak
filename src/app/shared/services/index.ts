@@ -1,11 +1,11 @@
 export { RangerService } from "./ranger.service"
-export { FieldReportService, FieldReportSource } from "./field-report.service"
+export { FieldReportService } from "./field-report.service"
 export { LogService } from "./log.service"
 export { PopupService } from "./popup.service"
 export { SettingsService, SecretType } from "./settings.service"
 export { ClockService } from "./clock.service"
 
-export { FieldReportType, FieldReportsType, FieldReportStatusType } from "./field-report.interface"
+export { FieldReportType, FieldReportsType, FieldReportStatusType, FieldReportSource } from "./field-report.interface"
 export { LocationType, undefinedAddressFlag, undefinedLocation } from "./location.interface"
 export { LogLevel, LogType, LogHeadings } from "./log.interface"
 export { RangerType, UnknownRanger } from "./ranger.interface"
