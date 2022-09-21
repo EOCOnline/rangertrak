@@ -11,6 +11,7 @@ import { DOCUMENT } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
+import { Utility } from '../shared'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import {
     FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
@@ -210,16 +211,28 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onBtnDeleteRanger(callsign: string) {
-    this.log.verbose(`Deleteing ranger with callsign: ${callsign}`, this.id)
+    this.log.verbose(`onBtnDeleteRanger: Deleteing ranger with callsign: ${callsign}`, this.id)
     this.rangerService.deleteRanger(callsign)
+  }
+
+  onBtnDeleteRangers() {
+    this.log.verbose(`onBtnDeleteRangers: Deleteing all rangers`, this.id)
+    if (Utility.getConfirmation('REALLY delete all Rangers in LocalStorage, vs. edit the Ranger grid & Update the values in Local Storage?')) {
+      this.log.info("Removing all rangers from local storage...", this.id)
+      this.rangerService.deleteAllRangers()
+      this.refreshGrid()
+      this.reloadPage()
+    }
   }
 
   //--------------------------------------------------------------------------
   onDeselectAll() {
+    this.log.verbose(`onDeselectAll: Deleteing all rangers`, this.id)
     this.gridApi.deselectAll()
   }
 
   onBtnUpdateLocalStorage() {
+    this.log.verbose(`onBtnUpdateLocalStorage: Deleteing all rangers`, this.id)
     this.rangerService.updateLocalStorageAndPublish()
   }
 
@@ -230,8 +243,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.verbose(`onBtnImportJson() `, this.id)
     // TODO: Move to RangerService...
     let Logo: string
-    //debugger
 
+    //!debugger
 
     if (e != null && e.target != null) {
       let Logo2 = e.target
@@ -436,24 +449,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     if (params.columnSeparator && this.numSeperatorWarnings++ < this.maxSeperatorWarnings) {
       //this.alerts.OpenSnackBar(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`, `Nota Bene`, 4000)
       alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
-    }
-  }
-
-  //--------------------------------------------------------------------------
-  onBtnDeleteRangers() {
-    if (this.getConfirmation('REALLY delete all Rangers in LocalStorage, vs. edit the Ranger grid & Update the values in Local Storage?')) {
-      this.log.info("Removing all rangers from local storage...", this.id)
-      this.rangerService.deleteAllRangers()
-      this.refreshGrid()
-      this.reloadPage()
-    }
-  }
-
-  getConfirmation(msg: string) {
-    if (confirm(msg) == true) {
-      return true; //proceed
-    } else {
-      return false; //cancel
     }
   }
 

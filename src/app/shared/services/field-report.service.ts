@@ -88,6 +88,7 @@ export class FieldReportService implements OnInit, OnDestroy {
 
 
   ngOnInit() {
+    this.log.excessive('ngOnInit', this.id)
   }
 
 
@@ -165,25 +166,32 @@ export class FieldReportService implements OnInit, OnDestroy {
     this.fieldReportsSubject$.next(this.fieldReports)
   }
 
+  /**
+   * User has submitted a new Field Report: store it into localstorage and publish to any subscribers
+   *
+   * @param formData
+   * @returns
+   */
   public addfieldReport(formData: string) {
     this.log.info(`Got new field report: ${JSON.stringify(formData)}`, 'FieldReportService')
 
     debugger
 
     let newReport: FieldReportType = JSON.parse(formData) //"[object Object]" is not valid JSON
+    //let newReport: FieldReportType = formData //"[object Object]" is not valid JSON
     newReport.id = this.fieldReports.maxId++
     this.fieldReports.fieldReportArray.push(newReport)
 
-    let newPt = L.latLng(newReport.lat, newReport.lng)
+    let newPt = L.latLng(newReport.location.lat, newReport.location.lng)
     //let newPt = L.latLng(newReport.lat, newReport.lng)
     if (!newPt) {
-      this.log.error(`newPt = ${JSON.stringify(newPt)}; lat:${newReport.lat}, lng: ${newReport.lng}`)
+      this.log.error(`newPt = ${JSON.stringify(newPt)}; lat:${newReport.location.lat}, lng: ${newReport.location.lng}`)
       // newPt is undefined, though newReport.lat, newReport.lng look good...
       //!BUG: Not a function, entering new FR in Entry Page...
       //debugger
     }
 
-    this.fieldReports.bounds.extend({ lat: newReport.lat, lng: newReport.lng })
+    this.fieldReports.bounds.extend({ lat: newReport.location.lat, lng: newReport.location.lng })
 
     this.updateFieldReportsAndPublish() // put to localStorage & update subscribers
     return newReport
@@ -243,26 +251,26 @@ export class FieldReportService implements OnInit, OnDestroy {
     let east
 
     if (reports.fieldReportArray.length) {
-      north = reports.fieldReportArray[0].lat
-      west = reports.fieldReportArray[0].lng
-      south = reports.fieldReportArray[0].lat
-      east = reports.fieldReportArray[0].lng
+      north = reports.fieldReportArray[0].location.lat
+      west = reports.fieldReportArray[0].location.lng
+      south = reports.fieldReportArray[0].location.lat
+      east = reports.fieldReportArray[0].location.lng
 
       // https://www.w3docs.com/snippets/javascript/how-to-find-the-min-max-elements-in-an-array-in-javascript.html
       // concludes with: "the results show that the standard loop is the fastest"
 
       for (let i = 1; i < reports.fieldReportArray.length; i++) {
-        if (reports.fieldReportArray[i].lat > north) {
-          north = Math.round(reports.fieldReportArray[i].lat * 10000) / 10000
+        if (reports.fieldReportArray[i].location.lat > north) {
+          north = Math.round(reports.fieldReportArray[i].location.lat * 10000) / 10000
         }
-        if (reports.fieldReportArray[i].lat < south) {
-          south = Math.round(reports.fieldReportArray[i].lat * 10000) / 10000
+        if (reports.fieldReportArray[i].location.lat < south) {
+          south = Math.round(reports.fieldReportArray[i].location.lat * 10000) / 10000
         }
-        if (reports.fieldReportArray[i].lng > east) {
-          east = Math.round(reports.fieldReportArray[i].lng * 10000) / 10000
+        if (reports.fieldReportArray[i].location.lng > east) {
+          east = Math.round(reports.fieldReportArray[i].location.lng * 10000) / 10000
         }
-        if (reports.fieldReportArray[i].lng > west) {
-          west = Math.round(reports.fieldReportArray[i].lng * 10000) / 10000
+        if (reports.fieldReportArray[i].location.lng > west) {
+          west = Math.round(reports.fieldReportArray[i].location.lng * 10000) / 10000
         }
       }
     } else {
@@ -323,9 +331,12 @@ export class FieldReportService implements OnInit, OnDestroy {
         id: this.fieldReports.maxId++,
         callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
         //team: 'T1', //teams[Math.floor(Math.random() * teams.length)].name,
-        address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
-        lat: this.settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
-        lng: this.settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
+        location: {
+          lat: this.settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
+          lng: this.settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
+          address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
+          derivedFromAddress: (Math.random() > 0.75)
+        },
         date: new Date(Math.floor(msSince1970 - (Math.random() * 10 * 60 * 60 * 1000))), // 0-10 hrs earlier
         status: this.settings.fieldReportStatuses[Math.floor(Math.random() * this.settings.fieldReportStatuses.length)].status,
         notes: notes[Math.floor(Math.random() * notes.length)]

@@ -128,11 +128,11 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       { headerName: "Address", field: "address", singleClickEdit: true, flex: 30 }, //, maxWidth: 200
       {
         headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
-        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.lat * 10000) / 10000.0 }
+        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lat * 10000) / 10000.0 }
       },
       {
         headerName: "Lng", field: "lng", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
-        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.lng * 10000) / 10000.0 },
+        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lng * 10000) / 10000.0 },
       },
       { headerName: "Reported", headerTooltip: 'Report date', valueGetter: this.myDateGetter, flex: 2 },
       { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, flex: 2 },
@@ -364,8 +364,12 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   }
 
   onBtnClearFieldReports() {
-    this.fieldReportService.deleteAllFieldReports()
-    this.reloadPage()
+    if (Utility.getConfirmation('REALLY delete all FieldReports in LocalStorage?')) {
+      this.log.info("Removing all field reports from local storage...", this.id)
+      this.fieldReportService.deleteAllFieldReports()
+      this.refreshGrid()
+      this.reloadPage()
+    }
   }
 
   // Save them to localstorage & update subscribers

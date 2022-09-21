@@ -1,5 +1,14 @@
 import { LatLngBounds } from 'leaflet'
 
+import { LocationType } from './location.interface'
+
+/*
+  { lat: number,
+  lng: number,
+  address: string,
+derivedFromAddress}
+  */
+
 /**
  * Data to store with every field report entry
  */
@@ -7,9 +16,7 @@ export type FieldReportType = {
   id: number,
   callsign: string,
   //team: string,
-  lat: number,
-  lng: number,
-  address: string,
+  location: LocationType,
   date: Date,
   status: string,
   notes: string,

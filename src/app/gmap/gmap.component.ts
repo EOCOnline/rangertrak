@@ -476,8 +476,8 @@ MarkerClustererPlus Library - also old
 
     for (let i = 0; i < this.fieldReportArray.length; i++) {
       fr = this.fieldReportArray[i]
-      latlng = new google.maps.LatLng(fr.lat, fr.lng)
-      title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.lat}, lng ${fr.lng} with "${fr.notes}".`
+      latlng = new google.maps.LatLng(fr.location.lat, fr.location.lng)
+      title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.location.lat}, lng ${fr.location.lng} with "${fr.notes}".`
       //title = infoContent
 
       switch (fr.callsign) {

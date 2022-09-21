@@ -474,11 +474,11 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     }
     this.log.verbose(`displayMarkers: all ${this.displayedFieldReportArray.length} of 'em`, this.id)
     this.displayedFieldReportArray.forEach(i => {
-      if (i.lat && i.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
+      if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${i.date} with ${i.status}`
         this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
-        let marker = L.marker(new L.LatLng(i.lat, i.lng), { title: title })
+        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title })
         marker.bindPopup(title)
         this.myMarkerCluster.addLayer(marker);
       } else {

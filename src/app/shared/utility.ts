@@ -104,4 +104,15 @@ export class Utility {
 
   }
 
+  //--------------------------------------------------------------------------
+
+
+  static getConfirmation(msg: string) {
+    if (confirm(msg) == true) {
+      return true; //proceed
+    } else {
+      return false; //cancel
+    }
+  }
+
 }
