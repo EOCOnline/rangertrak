@@ -412,7 +412,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     //this.fieldReportService.updateFieldReports()
     //this.fieldReports$ = this.fieldReportService.subscribeToFieldReports()
     //this.refreshGrid()
-    //this.reloadPage() //TODO: why aren't above enough?!!!
+    this.reloadPage() //TODO: why aren't above enough?!!!
   }
 
   ngOnDestroy() {

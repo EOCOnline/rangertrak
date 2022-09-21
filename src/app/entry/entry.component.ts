@@ -239,6 +239,9 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.initEntryForm()
 
     this.submitInfo = this.document.getElementById("enter__Submit-info")
+    if (!this.submitInfo) {
+      this.log.error(`Could not find enter__Submit-info field`, this.id)
+    }
 
     if (this.settings?.debugMode) {
       Utility.displayShow(this.document.getElementById("enter__frm-reguritation")!)

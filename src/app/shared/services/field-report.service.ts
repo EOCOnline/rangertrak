@@ -175,8 +175,6 @@ export class FieldReportService implements OnInit, OnDestroy {
   public addfieldReport(formData: string) {
     this.log.info(`Got new field report: ${JSON.stringify(formData)}`, 'FieldReportService')
 
-    debugger
-
     let newReport: FieldReportType = JSON.parse(formData) //"[object Object]" is not valid JSON
     //let newReport: FieldReportType = formData //"[object Object]" is not valid JSON
     newReport.id = this.fieldReports.maxId++
