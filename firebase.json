@@ -2,6 +2,7 @@
   "hosting": {
     "target": "rangertrak",
     "public": "dist/rangertrak",
+    "site": "rangertrak-a6dc5",
     "ignore": [
       "**/.*"
     ],

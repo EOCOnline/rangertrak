@@ -28,7 +28,7 @@ There are a number of ways to geocode a latitude & longitude. See <https://en.wi
 - Allow loading of additinoal layers (e.g., an image of trails, local features),
   perhaps with <https://github.com/publiclab/Leaflet.DistortableImage>
 - improved docs: screenshots and architectural diagrams
-  - - consider <https://github.com/EventEmitter2/EventEmitter2> for multi-threaded msgs with service workers
+- consider <https://github.com/EventEmitter2/EventEmitter2> for multi-threaded msgs with service workers
 
 ## Items (still) requiring online access
 
@@ -64,7 +64,7 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## To update documentation
 
 npm run compodoc
-See https://compodoc.app/guides/usage.html and https://compodoc.app/ for details
+See <https://compodoc.app/guides/usage.html> and <https://compodoc.app/> for details
 
 ## To update Version
 
@@ -92,6 +92,7 @@ See angular.json and firebase.json
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
 ## eoc.online
+
 <http://eoc.online> provides free tools for Emergency Operations Centers and emergency services. For more information and to report issues please visit <http://eoc.online>.
 
 ©2022 eoc.online, under the MIT License
