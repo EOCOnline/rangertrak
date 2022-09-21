@@ -50,6 +50,9 @@ There are a number of ways to geocode a latitude & longitude. See <https://en.wi
 
 - or Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
+For productino release:
+ npm run build --release (???)
+
 ## Running unit tests
 
 - Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
@@ -77,9 +80,11 @@ Some details in service/settings.service.ts & app.component.ts
 ## To Deploy to Google Firebase
 
 From: <https://www.tutorialspoint.com/firebase/firebase_deploying.htm>
-firebase login
+firebase login (as john@VashonSoftware.com)
 firebase init
 firebase deploy
+or
+firebase deploy --only hosting:rangertrak-a6dc5
 See angular.json and firebase.json
 
 ## Architecture
