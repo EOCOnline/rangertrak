@@ -53,8 +53,8 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 
 ## To update Version
 stage any changes (or add '--allow-empty' to the following), then
-git commit -m "Release-As: 0.11.39"
-which *SHOULD* (but doesn't?) update version # in Package.json & Package-lock.json
+git commit -m "Release-As: 0.11.40"
+which *SHOULD* (but doesn't) update version # in Package.json & Package-lock.json
 Some details in service/settings.service.ts & app.component.ts
 https://github.com/googleapis/release-please#how-do-i-change-the-version-number
 
