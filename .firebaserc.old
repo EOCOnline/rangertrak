@@ -3,13 +3,12 @@
     "rangertrak-a6dc5": {
       "hosting": {
         "rangertrak": [
-          "RangerTrak"
+          "rangertrak-a6dc5"
         ]
       }
     }
   },
   "projects": {
-    "default": "RangerTrak",
-    "old": "rangertrak-a6dc5"
+    "default": "rangertrak-a6dc5"
   }
 }

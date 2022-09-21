@@ -134,14 +134,14 @@
             "scripts": []
           }
         },
-        "deploy": {
+        "deployOLD": {
           "builder": "@angular/fire:deploy",
           "options": {
             "prerender": false,
             "ssr": false,
             "browserTarget": "rangertrak:build:production",
-            "firebaseProject": "rangertrak",
-            "firebaseHostingSite": "RangerTrak"
+            "firebaseProject": "rangertrak-a6dc5",
+            "firebaseHostingSite": "rangertrak-a6dc5"
           }
         }
       }

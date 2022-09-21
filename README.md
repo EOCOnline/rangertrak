@@ -83,6 +83,7 @@ Some details in service/settings.service.ts & app.component.ts
 ng deploy
 
 ng add @angular/fire
+From Angular Projects, 2nd ed. pg 119
 
 // ignore the rest?
 From: <https://www.tutorialspoint.com/firebase/firebase_deploying.htm>
