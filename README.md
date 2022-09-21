@@ -52,6 +52,7 @@ There are a number of ways to geocode a latitude & longitude. See <https://en.wi
 
 For productino release:
  npm run build --release (???)
+ ng build
 
 ## Running unit tests
 
@@ -79,7 +80,15 @@ Some details in service/settings.service.ts & app.component.ts
 
 ## To Deploy to Google Firebase
 
+ng deploy
+
+ng add @angular/fire
+
+// ignore the rest?
 From: <https://www.tutorialspoint.com/firebase/firebase_deploying.htm>
+https://console.firebase.google.com/u/0/project/_/hosting~2Fsites leads to https://console.firebase.google.com/u/0/project/rangertrak-a6dc5/hosting/sites
+
+
 firebase login (as john@VashonSoftware.com)
 firebase init
 firebase deploy

@@ -140,8 +140,8 @@
             "prerender": false,
             "ssr": false,
             "browserTarget": "rangertrak:build:production",
-            "firebaseProject": "rangertrak-a6dc5",
-            "firebaseHostingSite": "rangertrak-a6dc5"
+            "firebaseProject": "rangertrak",
+            "firebaseHostingSite": "RangerTrak"
           }
         }
       }
