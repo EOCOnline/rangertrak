@@ -145,10 +145,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     //! https://material.angular.io/components/autocomplete/examples#autocomplete-overview has this in constructor!
     // also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
-    this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
-      startWith(''),
-      map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
-    )
+    this.initFilteredRangers()
     this.log.verbose(`constructor: got new callsign: [does endless loop: ] { JSON.stringify(this.filteredRangers) } `, this.id)
 
     // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
@@ -314,6 +311,13 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
+  initFilteredRangers() {
+    this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
+      startWith(''),
+      map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+    )
+  }
+
   /**
    * Reinitializes Form Array values - without recrating a new object
    *
@@ -338,6 +342,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus]],
       notes: ['']
     })
+
+    // !BUG: Need to reset callsign too: otherwise filtered to just this one!
+    //this._filterRangers("")
+    this.initFilteredRangers()
   }
 
   callsignChanged(callsign: string) { // Just serves timer for input field - post interaction
@@ -393,13 +401,13 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.submitInfo) {
       // Display fading confirmation to right of Submit button
-      this.submitInfo.innerText = `Entry id # ${newReport.id} Saved.${formDataJSON} `
+      this.submitInfo.innerText = `Entry id # ${newReport.id} Saved. Data: ${formDataJSON}`
       Utility.resetMaterialFadeAnimation(this.submitInfo)
     }
     else {
       this.log.error("Submit Info field not found. Could not display report confirmation confirmation", this.id)
     }
-    this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData} `, `Entry id # ${newReport.id} `, 2000)
+    this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formDataJSON} `, `Entry id # ${newReport.id} `, 3000)
 
     this.resetEntryForm()  // std reset just blanks values, doesn't initialize the various form fields...
   }
