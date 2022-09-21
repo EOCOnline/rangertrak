@@ -121,6 +121,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     if (this.hasOverviewMap) {
       this.initOverviewMap()
 
+      // Highlight main map location via a rectangle on the overview map
       let rectangle = L.rectangle(this.lMap.getBounds(), { color: 'Blue', fillOpacity: 0.07, weight: 1 })
       rectangle.addTo(this.overviewLMap)
 
@@ -422,6 +423,13 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
   override displayMarkers() {
     super.displayMarkers()
+
+    //!BUG  HACK HACK !!!!
+    this.displayedFieldReportArray = this.fieldReportArray
+
+
+
+
 
     // REVIEW: wipes out any manually dropped markers. Could save 'em, but no request for that...
     //! This needs to be rerun & ONLY display selected rows/markers: i.e., to use  displayedFieldReportArray

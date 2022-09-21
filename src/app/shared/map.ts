@@ -157,15 +157,17 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       return
     }
 
+    this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
+    this.mouseLatLng = this.center
+
     if (!this.fieldReports) { //! or displayedFieldReportArray
       this.log.error(`initMainMap(): fieldReports not yet initialized while initializing abstract Map!`, this.id)
       return
     }
+  }
 
-    this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
-    this.mouseLatLng = this.center
-
-    // Not needed, but available...
+  /*
+    Not needed, but available...
     if (this.map instanceof L.Map) {
       // leaflet map
       // TODO
@@ -175,8 +177,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     } else {
       this.log.warn(`map initMainMap(): map not a leaflet or google map - ignoring as uninitialized?`, this.id)
     }
-
-  }
+    */
 
   captureLMoveAndZoom(map: L.Map) {
     if (!map) {
@@ -334,15 +335,15 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
         this.numSelectedRows = this.selectedReports.numReport
         if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
-          this.log.error(`ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
+
+          //! BUG: At start, if no rows were selected, then this.selectedReports.fieldReportArray.length reports all rows, not zero...
+          this.log.error(`updateFieldReports:  # rows in selected array ${this.numSelectedRows} != # rows supposed to be there: ${this.selectedReports.fieldReportArray.length}. Resetting`, this.id)
           this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
           this.numSelectedRows = this.selectedReports.fieldReportArray.length
         }
       } else {
-
         this.numSelectedRows = 0
       }
-
 
       this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
       if (this.filterButton == undefined) {
@@ -356,7 +357,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         if (!this.filterSwitch) {
           throw ("updateFieldReports(): Found filterButton - but NOT Field Report Selection Switch!")
         }
-
 
         //! TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
         // BUG: refresh page resets selected switch
@@ -406,7 +406,9 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     this.fieldReports = newReports
     this.fieldReportArray = newReports.fieldReportArray
     console.assert(this.numAllRows == this.fieldReportArray.length)
-    this.refreshMap()
+    if (this.map) {
+      this.refreshMap()
+    }
     // this.reloadPage()  // TODO: needed?
   }
 
@@ -466,7 +468,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       return
     }
 
-    //! this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
+    //! this.addMarker(this.fieldReports[i].location.lat, this.fieldReports[i].location.lng, this.fieldReports[i].status)
   }
 
   // Deletes all markers in the array by removing references to them.

@@ -352,10 +352,14 @@ MarkerClustererPlus Library - also old
 */
   refreshMap() {
 
-    //this.gMap.clear()
-    // google.maps.event.trigger(this.gMap, 'resize');
-    // this.gMap.setZoom(map.getZoom());
-    this.gMap.panBy(0, 0);
+    if (this.gMap) {
+      //this.gMap.clear()
+      // google.maps.event.trigger(this.gMap, 'resize');
+      // this.gMap.setZoom(map.getZoom());
+      this.gMap.panBy(0, 0);
+    } else {
+      this.log.warn(`ResetMap called, but gMap not created yet!`, this.id)
+    }
     /*
         let data
         if (this.markerCluster) {
