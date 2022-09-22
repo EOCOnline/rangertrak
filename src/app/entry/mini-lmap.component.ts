@@ -42,7 +42,7 @@ L.Marker.prototype.options.icon = iconDefault;
   selector: 'mini-lmap',
   templateUrl: './mini-lmap.component.html',
   styleUrls: ['./mini-lmap.component.scss',
-    '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
+    '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)]
   providers: [SettingsService]
 })
 export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {

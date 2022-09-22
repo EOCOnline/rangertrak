@@ -1,6 +1,6 @@
 {
   "name": "rangertrak",
-  "version": "0.11.40",
+  "version": "0.11.41",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -62,7 +62,7 @@
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.5",
     "idb": "^7.1.0",
-    "leaflet": "^1.8.0",
+    "leaflet": "^1.9.0",
     "leaflet.markercluster": "^1.5.3",
     "leaflet.offline": "^2.2.0",
     "picocolors": "^1.0.0",
