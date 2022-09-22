@@ -1,5 +1,5 @@
 import { ColDef, GridOptions } from 'ag-grid-community'
-import { TooltipModule } from 'ng2-tooltip-directive'
+//import { TooltipModule } from 'ng2-tooltip-directive'
 import { Subscription } from 'rxjs'
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING
