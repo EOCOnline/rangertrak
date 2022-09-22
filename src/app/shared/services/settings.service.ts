@@ -28,6 +28,8 @@ export class SettingsService implements OnInit {
   constructor(@Optional() @SkipSelf() existingService: SettingsService,
     private log: LogService
   ) {
+    this.log.verbose(`======== constructor() ============`, this.id);
+
     if (existingService) {
       /**
        * see https://angular.io/guide/singleton-services
@@ -43,15 +45,17 @@ export class SettingsService implements OnInit {
 
     // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
     //! REVIEW: Gets called twice!!
-    this.log.verbose('Constructing', this.id)
+    this.log.verbose('======== Constructor() ============', this.id)
 
     //  ------------------------- SECRETS -------------------------------
 
+    // TODO: Add encryption to anything stored in a file...  https://github.com/digitalbazaar/forge
+    // https://stackoverflow.com/questions/48094647/nodejs-crypto-in-typescript-file
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
     let secretWorkaround = JSON.stringify(secrets)
     SettingsService.secrets = JSON.parse(secretWorkaround)
     //this.log.verbose('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
-    // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key: environmental values, GitHub vault, or  encryption? https://www.doppler.com/
+    // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key: environmental values, GitHub vault, or  encryption?
 
     //  ------------------------- SETTINGS -------------------------------
 
@@ -97,7 +101,33 @@ export class SettingsService implements OnInit {
   }
 
   ngOnInit() {
+    this.log.error(`ngOnInit()`, this.id);
 
+
+    if (window.isSecureContext) {
+      this.log.verbose(`Application running in secure context`, this.id)
+
+      // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt
+      // https://mdn.github.io/dom-examples/web-crypto/encrypt-decrypt/index.html
+      // https://github.com/mdn/dom-examples/blob/main/web-crypto/encrypt-decrypt/index.html
+      // https://info.townsendsecurity.com/rsa-vs-aes-encryption-a-primer
+
+      // https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
+      // Page is a secure context so service workers are now available
+      //navigator.serviceWorker.register("/offline-worker.js").then(() => {  ...  })
+    }
+
+    this.sha256("hello").then(digestValue => {
+      console.error(` #### SECRET Digest is: ${digestValue}`)
+    });
+
+  }
+
+  async sha256(str: string) {
+    const encoder = new TextEncoder();
+    const encdata = encoder.encode(str);
+    const buf = await crypto.subtle.digest("SHA-256", encdata);
+    return Array.prototype.map.call(new Uint8Array(buf), x => (('00' + x.toString(16)).slice(-2))).join('');
   }
 
 
@@ -164,12 +194,17 @@ export class SettingsService implements OnInit {
       imageDirectory: "./assets/imgs/",    //! WARNING: Hardcoded & potential SECURITY risk.
       defFieldReportStatus: 0, // which of the following array entries to use as the default value
       //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
+      // https://en.wikipedia.org/wiki/Web_colors#Extended_colors
+      // https://en.wikipedia.org/wiki/Web_colors#Color_table
+      // https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#fully_saturated_colors
       fieldReportStatuses: [
-        { status: 'Normal', color: '', icon: '' },
-        { status: 'Check-in', color: 'darkkhaki', icon: '' },
-        { status: 'Check-out', color: 'darkgoldenrod', icon: '' },
-        { status: 'Need Rest', color: 'chartreuse', icon: '' },
-        { status: 'Urgent', color: 'red', icon: '' }
+        { status: 'Normal', color: 'LightYellow', icon: '' },
+        { status: 'Location Report', color: 'Aquamarine', icon: '' },
+        { status: 'Evidence Report', color: 'DarkGoldenrod', icon: '' },
+        { status: 'Need Rest', color: 'Chartreuse', icon: '' },
+        { status: 'Incident Check-in', color: 'Silver', icon: '' },
+        { status: 'Incident Check-out', color: 'DimGray', icon: '' },
+        { status: 'Urgent', color: 'Crimson', icon: '' }
       ],
       // fieldReportKeywords: [''],  // Future...could also just search notes field
     }
@@ -180,10 +215,15 @@ export class SettingsService implements OnInit {
   */
   public updateSettings(newSettings: SettingsType) {
     // Do any needed sanity/validation here
-
+    //debugger
     localStorage.setItem(this.storageLocalName, JSON.stringify(newSettings))
-    this.settingsSubject$.next(this.settings)
+    this.settings = newSettings
+    this.settingsSubject$.next(newSettings)
     this.log.verbose(`Notified subscribers of new Application Settings ${JSON.stringify(newSettings)} `, this.id)
+
+    //! Is this proper?!
+    this.log.verbose(`Reloading window!`, this.id)
+    //window.location.reload() creates endless cycle!
   }
 
   /**

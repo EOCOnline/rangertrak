@@ -5,3 +5,4 @@ export type LogType = {
   level: LogLevel,
   source: string
 }
+export const LogHeadings = ["Date", "Message", "Level", "Source"]

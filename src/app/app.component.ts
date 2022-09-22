@@ -28,7 +28,16 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     // https://angular.io/api/service-worker/SwUpdate
     // https://angular.io/guide/service-worker-communications#swupdate-service
-
+    // https://angular.io/api/service-worker/UpdateAvailableEvent
+    /*
+    const updatesAvailable = swUpdate.versionUpdates.pipe(
+      filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+      map(evt => ({
+        type: 'UPDATE_AVAILABLE',
+        current: evt.currentVersion,
+        available: evt.latestVersion,
+      })));
+    */
     console.log(`this.swUpdate.versionUpdates: ${JSON.stringify(this.swUpdate.versionUpdates)}`)
 
     const updatesAvailable =

@@ -5,7 +5,8 @@ import {
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
-    AfterViewInit, Component, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
+    AfterViewInit, Component, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit,
+    Output, ViewChild
 } from '@angular/core'
 import {
     FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
@@ -19,24 +20,45 @@ import {
     FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
     SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services/'
+import { LocationComponent } from './location.component'
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
-
-//const magicNumber2 = 12 // BUG: get rid of any magic numbers!
 
 
 @Component({
   selector: 'rangertrak-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
-  providers: [RangerService, FieldReportService, SettingsService] //, TeamService    // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!      // per https://angular.io/guide/singleton-services
+  providers: [RangerService, FieldReportService, SettingsService]
+  //, TeamService
+  // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
+  // per https://angular.io/guide/singleton-services
 })
 export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
+  // following is never referenced: not really in use?!
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
+
+  //  @ViewChild('LocationComponent') myLocationPickerInstance: any//LocationComponent;
+  /** Likely NOT needed...
+   * If we need to call any routines from location component,
+   * use ViewChild to get a reference of the actual instance we're interacting with.
+   * Component initialization shouldn't be done before AfterViewInit lifecycle hook.
+   * Queries on @ViewChild can only see elements inside the component's template.
+   * https://blog.angular-university.io/angular-viewchild/
+   */
+
+  //@Output() newLocationEvent = new EventEmitter<LocationType>()
+  // https://angular.io/guide/inputs-outputs & https://angular.io/guide/two-way-binding
+  //@Output() locationEvent = new EventEmitter<LocationType>()
+
+  // Get time events from <location> component
+  //private locationSubscription!: Subscription
+
   private id = 'Entry Form'
   title = 'Field Report Entry'
   pageDescr = `Enter data associated with ranger's name, location, status for tracking on maps & spreadsheets`
 
+  // REVIEW: do async auto-subscriptions from the HTML side instead?
   private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
   filteredRangers!: Observable<RangerType[]>
@@ -44,24 +66,22 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   private settingsSubscription!: Subscription
   public settings!: SettingsType
 
-
-
   // Get time events from <timepicker> component
-  private timeSubscription!: Subscription
-  time = new Date()
+  //private timeSubscription!: Subscription  //! EVER USED?!
   timePickerLabel = "Enter Report Date, Time"
 
-  alert: any
+  alert: AlertsComponent
 
   // --------------- ENTRY FORM -----------------
   // control creation in a component class = immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
+  // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 & https://github.com/angular/angular/pull/43834
   public entryDetailsForm!: FormGroup //UntypedFormGroup
   callsignCtrl = new FormControl() //Untyped
   readonly imagePath = "'./assets/imgs/'" // not yet used by *.html
 
   // Get location events from <location> component
   //public locationChange: Subscription
-  public location: LocationType = undefinedLocation
+  public locationParent = undefinedLocation
 
   minDate = new Date()
 
@@ -71,6 +91,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // https://github.com/h2qutc/angular-material-components
   // TODO: Consider for tracking ValueChanges: https://angular.io/guide/observables-in-angular#reactive-forms
+  // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
 
   constructor(
     private _formBuilder: UntypedFormBuilder,
@@ -83,52 +104,26 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     private zone: NgZone,
     @Inject(DOCUMENT) private document: Document) {
 
-    this.log.excessive(`Constructing!`, this.id)
-
-    // NOTE: workaround for onChange not working...
-    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
-  }
-
-  onNewLocationParent(newLocation: LocationType) {
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.info(`Parent Entry Form got new location: ${newLocation.lat}, ${newLocation.lng} or ${newLocation.address} as address.`, this.id)
-    //From Entry Form - Parent got new location: {"lat":47.4472,"lng":-122.4627,"address":""}
-
-    // Children (with @Input stmts - i.e., mini-map) automatically gets the updated location
-    this.location = newLocation
-    //REVIEW:
-    //this.initialLocation = newLocation
-
-    // REVIEW: patch entryForm object - as THAT is what gets saved with on form submit
-    // ! REVIEW: Are there 2 locationFrmGrp's ??? -- see this.initLocation() -- Is this the right one?
-    ///this.entryDetailsForm.patchValue({
-    ///locationFrmGrp: newLocation
-    ///})
-  }
-
-  onNewTimeEvent(newTime: Date) {
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.error(`Got new Report time: ${newTime}`, this.id)
-    this.time = newTime
-
-    //! Does this duplicate OnFormSubmit()'s setting value of date?
-    // patch entryForm object - as THAT is what gets saved with on form submit
-    this.entryDetailsForm.patchValue({ timepickerFormControl: newTime })
-    // This then automatically could ge sent to any children (none in this case) via their @Input statements
-    // TODO: Might we need to update the form itself, so 'submit' captures it properly?
-    // TODO: BUT, we still need to update our local copy:
-    //this.timepickerFormControl is where the Event comes up from...
-  }
-
-  // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
-  ngOnInit(): void {
-    this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
-    this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
+    this.log.excessive(`======== constructor() ============`, this.id)
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
+        // REVIEW: If new Default Location, do we switch to that, or any currenlty in 'use'?
+        if (JSON.stringify(this.locationParent) === JSON.stringify(undefinedLocation)) {
+          // Local location has yet to be set
+
+          this.log.excessive('Setting updated location based on default settings.', this.id)
+          // Settings just store default lat/lng, not address.
+          // Child will figure out the address...
+          this.locationParent = {
+            lat: this.settings.defLat,
+            lng: this.settings.defLng,
+            address: undefinedAddressFlag,
+            derivedFromAddress: false
+          }
+        }
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -145,65 +140,134 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       complete: () => this.log.info('Rangers Subscription complete', this.id)
     })
 
-    // TODO: Use Alert Service to avoid passing along doc & snackbar properties!!!!
+    // TODO: Use Alert Service to avoid passing along doc & snackbar properties!
     this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)
 
+    //! https://material.angular.io/components/autocomplete/examples#autocomplete-overview has this in constructor!
+    // also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
+    this.initFilteredRangers()
+    this.log.verbose(`constructor: got new callsign: [does endless loop: ] { JSON.stringify(this.filteredRangers) } `, this.id)
+
+    // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
+    // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+
+    // NOTE: workaround for onChange not working...
+    // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
+    this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
+  }
+
+  // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
+  //this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
+
+  // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
+
+
+  /**
+   * Persist new location so when form is submitted it gets recorded...
+   * Values automatically propogate to any children (mini-map in this case) via their @Input statements
+   *
+   * @param newLocation
+   */
+  onNewLocationEvent(newLocation: LocationType) { //LocationType) {
+    // Based on listing 8.8 in TS dev w/ TS, pg 188
+    this.log.error(`Entry form (parent) got new Location: ${JSON.stringify(newLocation)}`, this.id)
+
+    //!BUG: The next line *should* propogate new value to all children, but only does so intermittently...
+    this.log.error(`locationParent was: ${JSON.stringify(this.locationParent)}`, this.id)
+    this.locationParent = newLocation
+    this.locationParent.lat += 0.0000001  //! REMOVE ME!
+    this.log.error(`locationParent now: ${JSON.stringify(this.locationParent)}`, this.id)
+
+
+    // patch entryForm object - as THAT is what gets saved with on form submit
+    this.entryDetailsForm.patchValue({ location: newLocation }, { emitEvent: false })
+    //! NOTE: emit Event causes endless notification loop; BUT how to notify mini-map?!
+    //this.log.error(`Entry form (parent) recorded the new locationParent: ${JSON.stringify(this.locationParent)}`, this.id)
+  }
+
+  /**
+   * Called when this.timepickerFormControl has emitted a new event
+   *
+   * Persist new time/date so when form is submitted it gets recorded...
+   *
+   * Based on listing 8.8 in TS dev w/ TS, pg 188
+   *
+   * @param newTime
+   */
+  onNewTimeEvent(newTime: Date) {
+    this.log.verbose(`Got new Report time: ${newTime}`, this.id)
+    this.entryDetailsForm.patchValue({ date: newTime })
+  }
+
+  /**
+   * Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
+   *
+   * Autocomplete must be in OnInit, once component properties initialized
+   *
+   * https://material.angular.io/components/autocomplete/examples#autocomplete-overview;
+   * also Ang Dev with TS, pg 140ff;
+   */
+  //
+  ngOnInit(): void {
+    this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
+
+    /*
+        this.sha256("hello").then(digestValue => {
+          console.error(` ########## SECRET      Digest is: ${digestValue}`)
+        });
+    */
+
+    this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
+
+    // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
+    // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
+    this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)
+    // verifies Settings has been loaded
+
+    /*  if receiving the https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
+        i.e., entryDetailsForm probably constructed at wrong time...
+        Move the component creation to ngOnInit hook
+        error can show up when you are working with ViewChild, and execute code in AfterViewInit.
+
+        the binding expression changes after being checked by Angular during the change detection cycle
+   */
+
+
+    this.initEntryForm()
+
+    this.submitInfo = this.document.getElementById("enter__Submit-info")
+    if (!this.submitInfo) {
+      this.log.error(`Could not find enter__Submit-info field`, this.id)
+    }
+
+    if (this.settings?.debugMode) {
+      Utility.displayShow(this.document.getElementById("enter__frm-reguritation")!)
+      Utility.displayShow(this.document.getElementById("enter__where-debug")!)
+    }
 
     if (this.rangers.length < 1) {
-      this.alert.Banner('Welcome! First load your rangers - at the bottom of the Rangers page & then review items in the Settings Page.', 'Go to Rangers, then Settings pages', 'Ignore')
+      this.alert.Banner('Welcome! First load your rangers (at the bottom of the Rangers page) & then review items in the Settings Page.', 'Go to Rangers, then Settings pages', 'Ignore')
       //this.alert.OpenSnackBar(`No Rangers exist.Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
       //TODO: Force navigation to /Rangers?
-
-
-
-      // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff
-      this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
-        startWith(''),
-        map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
-      )
-      this.log.verbose(`constructor: got new callsign: [does endless loop: ] { JSON.stringify(this.filteredRangers) } `, this.id)
-
-      // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
-      // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
-
-
-
-      // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
-      // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
-      this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)  // verifies Settings has been loaded
-
-      /* i.e., entryDetailsForm probably constructed at wrong time?!
-      Move the component creation to ngOnInit hook
-      error can show up when you are working with ViewChild, and execute code in AfterViewInit.
-      https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
-      the binding expression changes after being checked by Angular during the change detection cycle
-
-  Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'null'. Current value: '{
-   "id": -1,
-   "callsign": "",
-   "team": "T1",
-   [...]
-   */
-      this.initEntryForm()
-      // subscribe to addresses value changes?  NO. It bubles up through newLocation INSTEAD!!!
-      // this.entryDetailsForm.controls['locationFrmGrp'].valueChanges.subscribe(x => {
-      //   this.log.verbose(`Subscription to locationFrmGrp got: ${ x } `, this.id);
-      // })
-
-      this.submitInfo = this.document.getElementById("enter__Submit-info")
-
-      if (this.settings?.debugMode) {
-        this.displayShow("enter__frm-reguritation")
-      }
-
-      this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
-
-      // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
 
       this.log.excessive(` ngOnInit completed`, this.id)
     }
   }
 
+
+  /**
+   * Encrpyt reports before storing them?
+   * REVIEW: If so, do so in the read/writing service...not here
+   *
+   * @param str
+   * @returns
+   */
+  async sha256(str: string) {
+    const encoder = new TextEncoder();
+    const encdata = encoder.encode(str);
+    const buf = await crypto.subtle.digest("SHA-256", encdata);
+    return Array.prototype.map.call(new Uint8Array(buf), x => (('00' + x.toString(16)).slice(-2))).join('');
+  }
 
   /**
    * Called once all HTML elements have been created
@@ -213,7 +277,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   *
+   * https://material.angular.io/components/autocomplete/examples#autocomplete-optgroup
    * @param value
    * @returns
    */
@@ -240,19 +304,26 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       id: -1,
       callsign: [''],
       // team: ['T1'],
-      ///locationFrmGrp: this.initLocation(),
-      timepickerFormControl: [new Date()],
+      location: this.locationParent,
+      date: [new Date()],
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status],
       notes: ['']
     })
   }
 
+  initFilteredRangers() {
+    this.filteredRangers = this.callsignCtrl.valueChanges.pipe(
+      startWith(''),
+      map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
+    )
+  }
+
   /**
    * Reinitializes Form Array values - without recrating a new object
+   *
+   * https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
+   * https://stackoverflow.com/a/54048660
    */
-  // this.myReactiveForm.reset(this.myReactiveForm.value)
-  // https://angular.io/guide/reactive-forms#!#_reset_-the-form-flags
-  // https://stackoverflow.com/a/54048660
   resetEntryForm() {
     if (!this.settings) {
       this.log.error(`this.settings was null in initEntryForm`, this.id)
@@ -261,20 +332,20 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.verbose("Resetting form...", this.id)
     this.entryDetailsForm.reset() // this clears flags on the model like touched, dirty, etc.
 
-    // this.entryDetailsForm = this._formBuilder.group({ // OLD: don't recreate the object!!
-    // NOTE: Use patchValue to update just a few
+    // !REVIEW: Should we reset locationParent to default location (from settings)?
     this.entryDetailsForm.setValue({
       id: -2,
       callsign: [''],
       //team: ['T0'],
-      //location: this.initLocation(),
-      date: [new Date()],  // TODO: reset dateCtrl instead?!
+      location: this.locationParent,
+      date: [new Date()],
       status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus]],
-      note: ['']
+      notes: ['']
     })
-    // Allow getting new OnChangeUpdates - or use the subscription?!
-    //this.entryDetailsForm.markAsPristine();
-    //this.entryDetailsForm.markAsUntouched();
+
+    // !BUG: Need to reset callsign too: otherwise filtered to just this one!
+    //this._filterRangers("")
+    this.initFilteredRangers()
   }
 
   callsignChanged(callsign: string) { // Just serves timer for input field - post interaction
@@ -302,73 +373,49 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       this.log.excessive(`CallsignCtrlChanged() call = ${callSign} `)
       this.callsignChanged(callSign)
     }
-
-    // TODO: update #enter__Callsign-upshot
   }
 
-
-  onFormSubmit(formData1: string): void {
+  /**
+   * Save entries to Reports data storage...
+   *
+   * Ensure we have obtained values from child components (timePicker & location) to persist/submit
+   *
+   * @param formData1
+   *
+   */
+  onFormSubmit(formData: string): void {
     this.log.excessive(`Submit Form`, this.id)
 
-    // Create a deep copy of the form-model, if it were to continue to be used - we just rest it
+    // NOTE: Afterward, we will just reset the form. Otherwise (if reusing the form) create a deep copy of the form-model:
     // result.entryDetailsForm = Object.assign({}, result.entryDetailsForm)
 
-    // this.date=this.dateCtrl.value // TODO:
-    // ! next line should already have happened by patch, in
-    // this.entryDetailsForm.value.date = this.dateCtrl.value
+    /* FUTURE: Allow keywords, or search Notes for semicolon delimited tokens?
+    get keywordsControls(): any {
+    return (<FormArray>this.entryDetailsForm.get('keywords')).controls
+    }   */
 
+    let formDataJSON = JSON.stringify(this.entryDetailsForm.value)
 
-
-
-    //! BUG: ALSO need to get location data into the form...
-
-
-
-
-
-    let formData = JSON.stringify(this.entryDetailsForm.value)
-
-    let newReport = this.fieldReportService.addfieldReport(formData)
-    this.log.info(`Report id # ${newReport.id} has been added with: ${formData} `, this.id)
+    let newReport = this.fieldReportService.addfieldReport(formDataJSON)
+    this.log.info(`Report id # ${newReport.id} has been added with: ${formDataJSON} `, this.id)
 
     if (this.submitInfo) {
       // Display fading confirmation to right of Submit button
-      this.submitInfo.innerText = `Entry id # ${newReport.id} Saved.${formData} `
+      this.submitInfo.innerText = `Entry id # ${newReport.id} Saved. Data: ${formDataJSON}`
       Utility.resetMaterialFadeAnimation(this.submitInfo)
-      //this.resetMaterialFadeAnimation2(this.submitInfo)
     }
     else {
       this.log.error("Submit Info field not found. Could not display report confirmation confirmation", this.id)
     }
-    this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formData} `, `Entry id # ${newReport.id} `, 2000)
+    this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formDataJSON} `, `Entry id # ${newReport.id} `, 3000)
 
-    this.resetEntryForm()  // std reset just blanks values, doesn't initialize them...
-  }
-
-  /* FUTURE: Allow keywords, or search Notes for semicolon delimited tokens?
-  get keywordsControls(): any {
-  return (<FormArray>this.entryDetailsForm.get('keywords')).controls
-  }   */
-
-  // ---------------- MISC HELPERS -----------------------------
-  displayHide(htmlElementID: string) {
-    let e = this.document.getElementById(htmlElementID)
-    if (e) {
-      e.style.visibility = "hidden";
-    }
-  }
-
-  displayShow(htmlElementID: string) {
-    let e = this.document.getElementById(htmlElementID)
-    if (e) {
-      e.style.visibility = "visible";
-    }
+    this.resetEntryForm()  // std reset just blanks values, doesn't initialize the various form fields...
   }
 
   ngOnDestroy() {
     //this.locationChange?.unsubscribe()
     this.rangersSubscription?.unsubscribe()
     this.settingsSubscription?.unsubscribe()
-    this.timeSubscription?.unsubscribe()
+    //this.timeSubscription?.unsubscribe()
   }
 }

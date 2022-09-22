@@ -24,6 +24,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   constructor(
     private log: LogService,
     private settingsService: SettingsService) {
+    // ======== Constructor() ============
   }
 
   ngOnInit(): void {

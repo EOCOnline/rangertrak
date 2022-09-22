@@ -1,9 +1,10 @@
-import { delay } from 'rxjs/operators'
+//import CryptoES from 'crypto-es'
 
 export class Utility {
 
   static sleep(ms: number) {
     // TODO try delay instead...
+    // import { delay } from 'rxjs/operators'
     // delay(ms)
     return new Promise(resolve => setTimeout(resolve, ms))
   }
@@ -12,7 +13,6 @@ export class Utility {
     const latlngStr = str.split(",", 2);
     return new google.maps.LatLng(parseFloat(latlngStr[0]), parseFloat(latlngStr[1]))
   }
-
 
   // also consider string.padStart()
   static zeroFill(integ: number, lngth: number) {
@@ -37,4 +37,82 @@ export class Utility {
     element.offsetHeight; // trigger reflow
     element.style.animation = "";
   }
+
+  // https://github.com/entronad/crypto-es
+  // https://github.com/brix/crypto-js
+  // https://cryptojs.gitbook.io/docs/
+  // https://www.w3schools.com/nodejs/ref_crypto.asp
+
+  static encrypt(data: string, secretKey: string) {
+    //crypto.
+    //return Crypto.AES.encrypt(JSON.stringify(data), secretKey).toString();
+    /*
+        var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+        let nonce = ''
+        let path = ''
+        const hashDigest = sha256(nonce + message);
+
+        //const hmacDigest =
+        return Base64.stringify(hmacSHA512(path + hashDigest, privateKey))
+        */
+  }
+
+  static decrypt(cipherText: string, privateKey: string) {
+    //return CryptoJS.AES.decrypt(cipherText, privateKey)
+
+    //return crypto.DES.decrypt(cipherText, privateKey);
+    /*
+        let nonce = ''
+        let path = ''
+        const hashDigest = sha256(nonce + message);
+
+        //const hmacDigest =
+        return Base64.stringify(hmacSHA512(path + hashDigest, privateKey))
+        */
+  }
+
+  static displayHide(htmlElement: HTMLElement) {
+    if (htmlElement) {
+      htmlElement.style.visibility = "hidden";
+    } else {
+      console.warn(`Could not hide null HTML Element`)
+    }
+  }
+
+  static displayShow(htmlElement: HTMLElement) {
+
+    // if (htmlElement.startsWith("#")) {
+    if (htmlElement) {
+      htmlElement.style.visibility = "visible";
+    } else {
+      console.warn(`Could not show null HTML Element`)
+    }
+    //   } else if(htmlElement.startsWith(".")) {
+    //   let e = Array.from(this.document.getElementsByClassName(htmlElement))
+    //   if (e) {
+    //     let i: Element
+    //     for (const i of e) {
+    //       if (i) {
+    //         i.style.visibility = "visible";
+    //       }
+    //     }
+    //   }
+    // }
+    //     else {
+    //   this.log.error("Expected 1st char of . (for Class), or # (for ID).", this.id)
+    // }
+
+  }
+
+  //--------------------------------------------------------------------------
+
+
+  static getConfirmation(msg: string) {
+    if (confirm(msg) == true) {
+      return true; //proceed
+    } else {
+      return false; //cancel
+    }
+  }
+
 }

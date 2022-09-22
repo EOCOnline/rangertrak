@@ -71,6 +71,12 @@
 
 
 
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/core/OnDestroy" target="_blank" >OnDestroy</a></code>
+    </p>
 
 
 <section>
@@ -135,12 +141,38 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#id" >id</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#settings" >settings</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#settingsSubscription" >settingsSubscription</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#version" >version</a>
                             </li>
                         </ul>
                     </td>
                 </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
 
 
@@ -156,15 +188,57 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor()</code>
+<code>constructor(log: <a href="../injectables/LogService.html" target="_self">LogService</a>, settingsService: <a href="../injectables/SettingsService.html" target="_self">SettingsService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/lazy/about/about.component.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/lazy/about/about.component.ts:19</a></div>
                             </td>
                         </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>log</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LogService.html" target="_self" >LogService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>settingsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SettingsService.html" target="_self" >SettingsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
             </tbody>
         </table>
 </section>
@@ -173,7 +247,49 @@
 
 
 
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnDestroy()</code>
+                </td>
+            </tr>
 
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="42"
+                            class="link-to-prism">src/app/lazy/about/about.component.ts:42</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
     <section>
     
     <h3 id="inputs">
@@ -183,8 +299,94 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="id"></a>
+                    <span class="name">
+                        <span ><b>id</b></span>
+                        <a href="#id"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;About&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/lazy/about/about.component.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settings"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>settings</b></span>
+                        <a href="#settings"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#SettingsType" target="_self" >SettingsType</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/lazy/about/about.component.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settingsSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>settingsSubscription</b></span>
+                        <a href="#settingsSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/lazy/about/about.component.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="version"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>version</b></span>
                         <a href="#version"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -198,12 +400,12 @@
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>&quot;&quot;</code>
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/lazy/about/about.component.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/lazy/about/about.component.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -216,9 +418,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, Inject, OnInit, ViewChild, isDevMode } from &#x27;@angular/core&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Subscription } from &#x27;rxjs&#x27;
 
-import {  SettingsService } from &#x27;../../shared/services&#x27;
+import { Component, Inject, isDevMode, OnDestroy, OnInit, ViewChild } from &#x27;@angular/core&#x27;
+
+import { ClockService, LogService, SettingsService, SettingsType } from &#x27;../../shared/services&#x27;
 
 @Component({
   selector: &#x27;rangertrak-about&#x27;,
@@ -226,82 +430,146 @@ import {  SettingsService } from &#x27;../../shared/services&#x27;
   styleUrls: [&#x27;./about.component.scss&#x27;],
   providers: [SettingsService]
 })
-export class AboutComponent {  //implements OnInit {
+export class AboutComponent implements OnDestroy {
 
-  version &#x3D; &quot;&quot;
+  id &#x3D; &#x27;About&#x27;
+  private settingsSubscription!: Subscription
+  private settings!: SettingsType
+  public version &#x3D; &#x27;&#x27;
 
   constructor(
-    //private settingsService: SettingsService
+    private log: LogService,
+    private settingsService: SettingsService
   ) {
-    console.log(&quot;AboutComponent getting constructed&quot;)
-    this.version &#x3D; SettingsService.Settings.version
+    console.log(&quot;AboutComponent  &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Constructor() &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; &quot;)
+
+    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
+    this.settingsSubscription &#x3D; this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) &#x3D;&gt; {
+        this.settings &#x3D; newSettings
+        this.log.excessive(&#x27;Received new Settings via subscription.&#x27;, this.id)
+      },
+      error: (e) &#x3D;&gt; this.log.error(&#x27;Settings Subscription got:&#x27; + e, this.id),
+      complete: () &#x3D;&gt; this.log.info(&#x27;Settings Subscription complete&#x27;, this.id)
+    })
+
+    this.version &#x3D; this.settings ? this.settings.version : &#x27;0&#x27;
   }
 
   //ngOnInit() {  }
+
+  ngOnDestroy() {
+    this.settingsSubscription.unsubscribe()
+  }
 }
 </code></pre>
     </div>
 
     <div class="tab-pane fade " id="c-templateData">
-        <pre class="line-numbers"><code class="language-html">&lt;div id&#x3D;&quot;AboutBody&quot; class&#x3D;&quot;container&quot; [ngStyle]&#x3D;&quot;{backgroundImage:&#x27;./src/assets/imgs/AlpineMarmot.png&#x27;}&quot;&gt;
-  &lt;h1&gt;RangerTrak.org&lt;/h1&gt;
+        <pre class="line-numbers"><code class="language-html">&lt;div id&#x3D;&quot;AboutBody&quot; class&#x3D;&quot;container&quot;&gt;
+  &lt;!--  [ngStyle]&#x3D;&quot;{backgroundImage:&#x27;./src/assets/imgs/AlpineMarmot.png&#x27;}&quot; --&gt;
+  &lt;!--pageHeader&gt;...&lt;/pageHeader--&gt;
   &lt;h2&gt;About&lt;/h2&gt;
   &lt;div&gt;
     &lt;p class&#x3D;&quot;bold&quot;&gt;Version {{version}}&lt;/p&gt;
-    &lt;p&gt;This is an open-source application for tracking &amp; mapping CERT, ACS, other
-      teams, rangers &amp; individuals roaming around, who are only reliably
-      connected via HAM radio or other non-data supporting means. They can
-      radio in their locations - in a variety of formats, and be centrally tracked.&lt;/p&gt;
-    &lt;p&gt; This should be able to function (with some degredation) even if the person
-      using this is offline also.&lt;/p&gt;
+    &lt;p&gt;
+      RangerTrak is an open-source application for tracking &amp; mapping SAR, CERT, ACS, other teams,
+      rangers &amp; individuals roaming around, who are only reliably connected via HAM radio
+      or other non-data supporting means. They can radio in their locations - in a variety
+      of formats, and be centrally tracked.
+    &lt;/p&gt;
+    &lt;p&gt;
+      This should be able to function (with some degredation) even if the person using
+      this is offline.
+    &lt;/p&gt;
 
-    &lt;p&gt; Items requiring online access: &lt;/p&gt;
+    &lt;p&gt;Items requiring online access:&lt;/p&gt;
     &lt;ul&gt;
       &lt;li&gt;GeoCoding an address&lt;/li&gt;
-      &lt;li&gt;All maps (for now)&lt;/li&gt;
+      &lt;li&gt;Google maps&lt;/li&gt;
+      &lt;li&gt;OpenStreetMaps maps (for now)&lt;/li&gt;
       &lt;li&gt;3Word functionality (for now)&lt;/li&gt;
     &lt;/ul&gt;
 
+    &lt;p&gt;An overview of using locatino codes - instead of lat/long can be found at:&lt;br&gt;
+      &lt;a href&#x3D;&quot;https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems&quot;
+        target&#x3D;&quot;_blank&quot;&gt;https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems&lt;/a&gt;
+    &lt;/p&gt;
 
-    &lt;p&gt;eoc.online provides free tools for Emergency Operations Centers and
-      emergency services. For more information and &lt;strong&gt;to report
-        issues&lt;/strong&gt; please visit &lt;a href&#x3D;&quot;https://github.com/EOCOnline/RangerTrak&quot;
-        target&#x3D;&quot;_blank&quot;&gt;https://github.com/EOCOnline/RangerTrak&lt;/a&gt;.&lt;/p&gt;
+    &lt;p&gt;
+      eoc.online provides free tools for Emergency Operations Centers and emergency
+      services. &lt;br&gt;
+      For more information and &lt;strong&gt;to report issues&lt;/strong&gt; please visit
+      &lt;a href&#x3D;&quot;https://github.com/EOCOnline/RangerTrak&quot; target&#x3D;&quot;_blank&quot;&gt;https://github.com/EOCOnline/RangerTrak&lt;/a&gt;.
+    &lt;/p&gt;
 
     &lt;details&gt;
-      &lt;summary&gt;©2022 &lt;a href&#x3D;&quot;http://eoc.online/&quot;
-        target&#x3D;&quot;_blank&quot;&gt;eoc.online&lt;/a&gt;, under the MIT License&lt;/summary&gt;
+      &lt;summary&gt;Technologies&lt;/summary&gt;
       &lt;small&gt;
-        &lt;p class&#x3D;&quot;indented&quot;&gt;Permission is hereby granted, free of charge, to any person obtaining a copy of this
-          software
-          and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including
-          without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-          of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following
-          conditions:&lt;/p&gt;
-        &lt;p class&#x3D;&quot;indented&quot;&gt;The above copyright notice and this permission notice shall be included in all copies or
-          substantial portions of the Software.&lt;/p&gt;
-        &lt;p class&#x3D;&quot;indented&quot;&gt;THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
-          EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-          FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-          OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-          IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-          WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.&lt;/p&gt;
-        &lt;p class&#x3D;&quot;indented&quot;&gt;-- from &lt;a href&#x3D;&quot;https://opensource.org/licenses/MIT&quot;
-            target&#x3D;&quot;_blank&quot;&gt;https://opensource.org/licenses/MIT&lt;/a&gt;&lt;/p&gt;
+        &lt;ul&gt;
+          &lt;li&gt;Progressive Web App (PWA): After the initial load, runs w/o Internet&lt;/li&gt;
+          &lt;li&gt;Angular 13 with TypeScript and Material Design&lt;/li&gt;
+          &lt;li&gt;Evergreen: runs latest stable packages&lt;/li&gt;
+          &lt;li&gt;Leaflet Maps with clustering + overview map + offline caching&lt;/li&gt;
+          &lt;li&gt;Angular Google Maps with clustering + overview map&lt;/li&gt;
+          &lt;li&gt;Observables and Observers&lt;/li&gt;
+          &lt;li&gt;Custom Angular Components, such as time picker, location widget&lt;/li&gt;
+          &lt;li&gt;Reactive Angular Forms&lt;/li&gt;
+          &lt;li&gt;Various geocode technologies: Google PlusCodes, What3Words, coordinate conversion&lt;/li&gt;
+          &lt;li&gt;Ag-grid based tables with searching, sorting, filtering, etc.&lt;/li&gt;
+          &lt;li&gt;No cookies, only uses LocalStorage&lt;/li&gt;
+          &lt;li&gt;Cross platform: Runs on any modern browser, using only standard HTML 5 &amp; CSS 3&lt;/li&gt;
+          &lt;br&gt;
+          &lt;h5&gt;FUTURE:&lt;/h5&gt;
+          &lt;li&gt;Data passed to servers (when internet connectivity allows) for remote display of data &amp; maps&lt;/li&gt;
+          &lt;li&gt;&lt;/li&gt;
+        &lt;/ul&gt;
       &lt;/small&gt;
     &lt;/details&gt;
-
+    &lt;br&gt;
+    &lt;details&gt;
+      &lt;summary&gt;©2022 &lt;a href&#x3D;&quot;http://eoc.online/&quot; target&#x3D;&quot;_blank&quot;&gt;eoc.online&lt;/a&gt;, under the MIT
+        License&lt;/summary&gt;
+      &lt;small&gt;
+        &lt;p class&#x3D;&quot;indented&quot;&gt;
+          Permission is hereby granted, free of charge, to any person obtaining a copy of
+          this software and associated documentation files (the &quot;Software&quot;), to deal in
+          the Software without restriction, including without limitation the rights to
+          use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+          the Software, and to permit persons to whom the Software is furnished to do so,
+          subject to the following conditions:
+        &lt;/p&gt;
+        &lt;p class&#x3D;&quot;indented&quot;&gt;
+          The above copyright notice and this permission notice shall be included in all
+          copies or substantial portions of the Software.
+        &lt;/p&gt;
+        &lt;p class&#x3D;&quot;indented&quot;&gt;
+          THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+          IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+          FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+          COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+          IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+          CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+        &lt;/p&gt;
+        &lt;p class&#x3D;&quot;indented&quot;&gt;
+          -- from
+          &lt;a href&#x3D;&quot;https://opensource.org/licenses/MIT&quot; target&#x3D;&quot;_blank&quot;&gt;https://opensource.org/licenses/MIT&lt;/a&gt;
+        &lt;/p&gt;
+      &lt;/small&gt;
+    &lt;/details&gt;
   &lt;/div&gt;
-&lt;br&gt;
-  &lt;div&gt;&lt;span  class&#x3D;&quot;bold&quot;&gt;Menu Keyboard interaction&lt;/span&gt;&lt;br&gt;
-    Keyboard shortcut - Action&lt;br&gt;
-    Down Arrow - Focus the next menu item.&lt;br&gt;
-    Up Arrow - Focus the previous menu item.&lt;br&gt;
-    Left Arrow - Close the current menu if it is a sub-menu.&lt;br&gt;
-    Right Arrow - Opens the current menu item&#x27;s sub-menu.&lt;br&gt;
-    Enter - Activate the focused menu item.&lt;br&gt;
-    Escape - Close all open menus.&lt;br&gt;
+  &lt;br /&gt;
+  &lt;div&gt;
+    &lt;span class&#x3D;&quot;bold&quot;&gt;Menu Keyboard interaction&lt;/span&gt;&lt;br /&gt;
+    Keyboard shortcut - Action&lt;br /&gt;
+    Down Arrow - Focus the next menu item.&lt;br /&gt;
+    Up Arrow - Focus the previous menu item.&lt;br /&gt;
+    Left Arrow - Close the current menu if it is a sub-menu.&lt;br /&gt;
+    Right Arrow - Opens the current menu item&#x27;s sub-menu.&lt;br /&gt;
+    Enter - Activate the focused menu item.&lt;br /&gt;
+    Escape - Close all open menus.&lt;br /&gt;
   &lt;/div&gt;
+  &lt;div class&#x3D;&quot;imgCredit&quot;&gt;Photo credit: Shocked Marmot from Vistapoint.net, by ___&lt;/div&gt;
 &lt;/div&gt;
 </code></pre>
     </div>
@@ -310,18 +578,17 @@ export class AboutComponent {  //implements OnInit {
                 <p class="comment">
                     <code>./about.component.scss</code>
                 </p>
-                <pre class="line-numbers"><code class="language-scss">
-#AboutBody {
+                <pre class="line-numbers"><code class="language-scss">#AboutBody {
   //display: inline-block;
   //background-image: &#x27;./src/assets/imgs/AlpineMarmot.png&#x27; !important;
   //height: 650 px;
-  color: black;
-  background-image: linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(8, 8, 8, 0.5)), url(&quot;../../../assets/imgs/AlpineMarmot.png&quot;) ;
+  color             : black;
+  background-image  : linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(8, 8, 8, 0.5)), url(&quot;../../../assets/imgs/AlpineMarmot.png&quot;);
   //color: black;
   //background-image: url(&quot;../../../assets/imgs/AlpineMarmot.png&quot;) ;
   //background-size: 100%;
   //background-size: contain;
-  background-size: cover;
+  background-size   : cover;
 }
 
 // https://dev.to/nazanin_ashrafi/how-to-darken-an-image-with-css-4f5h
@@ -335,8 +602,13 @@ filter: brightness(30%);
 // https://developer.mozilla.org/en-US/docs/Web/CSS/background-image
 //https://rapidapi.com/guides/css-painting-api
 
-.bold{
-  font-weight:bold
+.bold {
+  font-weight: bold
+}
+
+.imgCredit {
+  text-align: right;
+  font-size : x-small;
 }
 </code></pre>
     </div>
@@ -366,12 +638,13 @@ filter: brightness(30%);
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><div id="AboutBody" class="container" [ngStyle]="{backgroundImage:\'./src/assets/imgs/AlpineMarmot.png\'}">  <h1>RangerTrak.org</h1>  <h2>About</h2>  <div>    <p class="bold">Version {{version}}</p>    <p>This is an open-source application for tracking & mapping CERT, ACS, other      teams, rangers & individuals roaming around, who are only reliably      connected via HAM radio or other non-data supporting means. They can      radio in their locations - in a variety of formats, and be centrally tracked.</p>    <p> This should be able to function (with some degredation) even if the person      using this is offline also.</p>    <p> Items requiring online access: </p>    <ul>      <li>GeoCoding an address</li>      <li>All maps (for now)</li>      <li>3Word functionality (for now)</li>    </ul>    <p>eoc.online provides free tools for Emergency Operations Centers and      emergency services. For more information and <strong>to report        issues</strong> please visit <a href="https://github.com/EOCOnline/RangerTrak"        target="_blank">https://github.com/EOCOnline/RangerTrak</a>.</p>    <details>      <summary>©2022 <a href="http://eoc.online/"        target="_blank">eoc.online</a>, under the MIT License</summary>      <small>        <p class="indented">Permission is hereby granted, free of charge, to any person obtaining a copy of this          software          and associated documentation files (the "Software"), to deal in the Software without restriction, including          without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies          of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following          conditions:</p>        <p class="indented">The above copyright notice and this permission notice shall be included in all copies or          substantial portions of the Software.</p>        <p class="indented">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,          EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,          FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS          OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER          IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION          WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>        <p class="indented">-- from <a href="https://opensource.org/licenses/MIT"            target="_blank">https://opensource.org/licenses/MIT</a></p>      </small>    </details>  </div><br>  <div><span  class="bold">Menu Keyboard interaction</span><br>    Keyboard shortcut - Action<br>    Down Arrow - Focus the next menu item.<br>    Up Arrow - Focus the previous menu item.<br>    Left Arrow - Close the current menu if it is a sub-menu.<br>    Right Arrow - Opens the current menu item\'s sub-menu.<br>    Enter - Activate the focused menu item.<br>    Escape - Close all open menus.<br>  </div></div></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'GmapComponent', 'selector': 'rangertrak-gmap'},{'name': 'IconComponent', 'selector': 'icon'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+        var COMPONENT_TEMPLATE = '<div><div id="AboutBody" class="container">  <!--  [ngStyle]="{backgroundImage:\'./src/assets/imgs/AlpineMarmot.png\'}" -->  <!--pageHeader>...</pageHeader-->  <h2>About</h2>  <div>    <p class="bold">Version {{version}}</p>    <p>      RangerTrak is an open-source application for tracking & mapping SAR, CERT, ACS, other teams,      rangers & individuals roaming around, who are only reliably connected via HAM radio      or other non-data supporting means. They can radio in their locations - in a variety      of formats, and be centrally tracked.    </p>    <p>      This should be able to function (with some degredation) even if the person using      this is offline.    </p>    <p>Items requiring online access:</p>    <ul>      <li>GeoCoding an address</li>      <li>Google maps</li>      <li>OpenStreetMaps maps (for now)</li>      <li>3Word functionality (for now)</li>    </ul>    <p>An overview of using locatino codes - instead of lat/long can be found at:<br>      <a href="https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems"        target="_blank">https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems</a>    </p>    <p>      eoc.online provides free tools for Emergency Operations Centers and emergency      services. <br>      For more information and <strong>to report issues</strong> please visit      <a href="https://github.com/EOCOnline/RangerTrak" target="_blank">https://github.com/EOCOnline/RangerTrak</a>.    </p>    <details>      <summary>Technologies</summary>      <small>        <ul>          <li>Progressive Web App (PWA): After the initial load, runs w/o Internet</li>          <li>Angular 13 with TypeScript and Material Design</li>          <li>Evergreen: runs latest stable packages</li>          <li>Leaflet Maps with clustering + overview map + offline caching</li>          <li>Angular Google Maps with clustering + overview map</li>          <li>Observables and Observers</li>          <li>Custom Angular Components, such as time picker, location widget</li>          <li>Reactive Angular Forms</li>          <li>Various geocode technologies: Google PlusCodes, What3Words, coordinate conversion</li>          <li>Ag-grid based tables with searching, sorting, filtering, etc.</li>          <li>No cookies, only uses LocalStorage</li>          <li>Cross platform: Runs on any modern browser, using only standard HTML 5 & CSS 3</li>          <br>          <h5>FUTURE:</h5>          <li>Data passed to servers (when internet connectivity allows) for remote display of data & maps</li>          <li></li>        </ul>      </small>    </details>    <br>    <details>      <summary>©2022 <a href="http://eoc.online/" target="_blank">eoc.online</a>, under the MIT        License</summary>      <small>        <p class="indented">          Permission is hereby granted, free of charge, to any person obtaining a copy of          this software and associated documentation files (the "Software"), to deal in          the Software without restriction, including without limitation the rights to          use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of          the Software, and to permit persons to whom the Software is furnished to do so,          subject to the following conditions:        </p>        <p class="indented">          The above copyright notice and this permission notice shall be included in all          copies or substantial portions of the Software.        </p>        <p class="indented">          THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR          IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS          FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR          COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER          IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN          CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.        </p>        <p class="indented">          -- from          <a href="https://opensource.org/licenses/MIT" target="_blank">https://opensource.org/licenses/MIT</a>        </p>      </small>    </details>  </div>  <br />  <div>    <span class="bold">Menu Keyboard interaction</span><br />    Keyboard shortcut - Action<br />    Down Arrow - Focus the next menu item.<br />    Up Arrow - Focus the previous menu item.<br />    Left Arrow - Close the current menu if it is a sub-menu.<br />    Right Arrow - Opens the current menu item\'s sub-menu.<br />    Enter - Activate the focused menu item.<br />    Escape - Close all open menus.<br />  </div>  <div class="imgCredit">Photo credit: Shocked Marmot from Vistapoint.net, by ___</div></div></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'AboutComponent'};
 </script>
 <script src="../js/tree.js"></script>
+
 
 
 

@@ -4,20 +4,17 @@
 
 <nav class="main-nav">
   <span title="RangerTrak" style="margin-right:2em;">
-    <a href="http://www.RangerTrak.org" title="http://RangerTrack.org" target="_blank">
-      <!--fa-icon [icon]="faMapMarkedAlt" class="fa-lg"></fa-icon-->
+    <a href="http://www.RangerTrak.org" title="http://RangerTrack.org" target="_blank">RangerTrak™
+      <!--fa-icon [icon]="faMapMarkedAlt" class="fa-lg"></fa-icon
+      https://en.wikipedia.org/wiki/Trademark
+    -->
     </a>
   </span>
 
   <ul>
     <li>
-      <a
-        [routerLink]="['/']"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact:
-      true}"
-        >Home</a
-      >
+      <a [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact:
+      true}">Home</a>
     </li>
     <li><a [routerLink]="['/gmap']" routerLinkActive="active">Google</a></li>
     <li><a [routerLink]="['/lmap']" routerLinkActive="active">Leaflet</a></li>
@@ -28,14 +25,8 @@
     <li><a [routerLink]="['/log']" routerLinkActive="active">Log</a></li>
   </ul>
 
-  <a
-    href="https://github.com/EOCOnline/rangertrak"
-    target="_blank"
-    title="See ya at GitHub"
-    class="git"
-  >
-    <img src="../../assets/icons/GitHub-Mark-32px.png" id="git" title="See ya at GitHub"
-  /></a>
+  <a href="https://github.com/EOCOnline/rangertrak" target="_blank" title="See ya at GitHub" class="git">
+    <img src="../../assets/icons/GitHub-Mark-32px.png" id="git" title="See ya at GitHub" /></a>
 
   <form>
     <input type="search" placeholder="(Future) Search" />

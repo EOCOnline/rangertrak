@@ -23,6 +23,16 @@
   font-weight: bold;
 }
 
+.small {
+  font-size: x-small;
+  color    : #AAA;
+}
+
+#Entry__LMinimap-debug {
+  visibility: hidden;
+}
+
+
 .leaflet-container.crosshair-cursor-enabled {
   cursor: crosshair;
 }

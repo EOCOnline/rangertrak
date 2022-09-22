@@ -9,7 +9,8 @@ import {
 import { DOCUMENT } from '@angular/common'
 import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core'
 import {
-    FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators
+    FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup,
+    Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 
@@ -31,13 +32,17 @@ import {
   styleUrls: ['./time-picker.component.scss']
 })
 export class TimePickerComponent implements OnInit {
-  @Input() public timepickerFormGroup!: UntypedFormGroup // input from entry.component.ts
+  //!TODO: Is this really needed as @Input, or just a variable?!
+  //@Input()
+  // Untyped
+  public timepickerFormGroup!: FormGroup // input from entry.component.ts
   //  @Input() public timepickerFormControl: FormControl // input from entry.component.ts
   //@Input() public timepickerFormControl: FormControl // input from entry.component.ts
+
   @Output() newTimeEvent = new EventEmitter<Date>()
   // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
 
-  // next 2 can be overriden in parent's html: [initialDate] = "initialTime"
+  // next 2 defaults can be overriden in parent's html: [initialDate] = "initialTime"
   @Input() datePickerLabel = "Enter Date & Time" // [datePickerLabel] = "Enter Date & Time of the Big Bang"
   @Input() initialDate = new Date() //  [initialDate] = "initialTime"
 
@@ -84,7 +89,7 @@ export class TimePickerComponent implements OnInit {
     private log: LogService,
     private _formBuilder: UntypedFormBuilder,
     @Inject(DOCUMENT) private document: Document) {
-    this.log.excessive(`timepicker construction`, this.id)
+    this.log.excessive(`======== Constructor() ============`, this.id)
 
     // BUG: maybe should be in EntryComponent.ts instead? as locationFrmGrp is there...
     // new values here bubble up as emitted events - see onNewLocation()
@@ -116,8 +121,9 @@ export class TimePickerComponent implements OnInit {
     this.log.verbose(`Got new time: ${newTime.value}: Emitting!`, this.id)
 
     this.time = newTime.value
-    //if (! (
     this.newTimeEvent.emit(this.time)
+    //if (! (
+
     //) {
     // this.log.warn(`New time event had no listeners!`, this.id) }
     // REVIEW: Let parent update the form fields & other data as necessary...

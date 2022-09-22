@@ -1,13 +1,14 @@
 //import './polyfills';
 
-import { VERSION as CDK_VERSION } from '@angular/cdk';
-import { VERSION as MAT_VERSION } from '@angular/material/core';
+//import { initializeApp } from 'firebase/app'
 
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { VERSION as CDK_VERSION } from '@angular/cdk'
+import { enableProdMode } from '@angular/core'
+import { VERSION as MAT_VERSION } from '@angular/material/core'
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic'
 
-import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
+import { AppModule } from './app/app.module'
+import { environment } from './environments/environment'
 
 if (environment.production) {
   enableProdMode();
@@ -31,3 +32,18 @@ platformBrowserDynamic() // JIT compilation/execution of ng apps for browsers
     })
     */
   .catch(err => console.error(err)) //log any boot errors
+
+/*
+// Your web app's Firebase configuration
+const firebaseConfig = {
+apiKey: "AIzaSyAEppXv1x4PO7JuRu332GQTizl3ZCpNu-M",
+authDomain: "rangertrak-a6dc5.firebaseapp.com",
+projectId: "rangertrak-a6dc5",
+storageBucket: "rangertrak-a6dc5.appspot.com",
+messagingSenderId: "992529254565",
+appId: "1:992529254565:web:d6ecabc7234254569f654c"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+*/

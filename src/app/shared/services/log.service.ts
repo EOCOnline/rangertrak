@@ -35,7 +35,7 @@ export class LogService {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    console.log(pc.green(`==== Log ${pc.red('Service')} ${pc.italic('Construction')} ====`))
+    console.log(pc.bgGreen(`==== Log ${pc.red('Service')} ${pc.italic('======== Constructor() ============')} ====`))
 
     let initialEntry = {
       date: new Date, msg: 'Log Service is being constructed',
@@ -61,7 +61,7 @@ export class LogService {
     let dt = new Date
     let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
 
-    let preface = `${LogService.nextId++}: ` // `${time} - From `
+    let preface = `${LogService.nextId++}: `   // ${time} - From `
 
     switch (level) {
 
@@ -74,11 +74,11 @@ export class LogService {
       case LogLevel.Verbose:
         // TODO: console.log(pc.blue(`${preface}${source}: ${msg}`), hotStylin)
         // results in:  Header component: New settings received background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;
-        console.log(pc.blue(`${preface}${source}: ${msg}`))
+        console.log(pc.bgBlue(`${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Info:
-        console.log(pc.cyan(`${preface}${source}: ${msg}`))
+        console.log(pc.bgCyan(`${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Warn:

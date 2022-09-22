@@ -73,21 +73,20 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PreloadAllModules, RouterModule, Routes } from &#x27;@angular/router&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NgModule } from &#x27;@angular/core&#x27;
+import { PreloadAllModules, RouterModule, Routes } from &#x27;@angular/router&#x27;
 
-import { EntryComponent } from &#x27;./entry/entry.component&#x27;;
-import { FieldReportsComponent } from &#x27;./field-reports/field-reports.component&#x27;;
-import { GmapComponent } from &#x27;./gmap/gmap.component&#x27;;
-import { LazyModule } from &#x27;./lazy/lazy.module&#x27;;
-import { LmapComponent } from &#x27;./lmap/lmap.component&#x27;;
-import { LogComponent } from &#x27;./log/log.component&#x27;;
-import { NgModule } from &#x27;@angular/core&#x27;;
-import { RangersComponent } from &#x27;./rangers/rangers.component&#x27;;
-import { SettingsComponent } from &#x27;./settings/settings.component&#x27;;
-import { X404Component } from &#x27;./x404/x404.component&#x27;;
+import { EntryComponent } from &#x27;./entry/entry.component&#x27;
+import { FieldReportsComponent } from &#x27;./field-reports/field-reports.component&#x27;
+import { GmapComponent } from &#x27;./gmap/gmap.component&#x27;
+import { LazyModule } from &#x27;./lazy/lazy.module&#x27;
+import { LmapComponent } from &#x27;./lmap/lmap.component&#x27;
+import { LogComponent } from &#x27;./log/log.component&#x27;
+import { RangersComponent } from &#x27;./rangers/rangers.component&#x27;
+import { SettingsComponent } from &#x27;./settings/settings.component&#x27;
+import { X404Component } from &#x27;./x404/x404.component&#x27;
 
 //import { UnsavedChangesGuard } from &#x27;./entry/unsavedChangesGuard &#x27;;
-
 //import { UnsavedChangesGuard } from &#x27;./entry/unsavedChangesGuard&#x27;
 //import { AboutComponent } from &#x27;./lazy/about/about.component&#x27;;
 
@@ -97,18 +96,18 @@ const routes: Routes &#x3D; [
   // EAGER Routes
 
   //{ path: &#x27;&#x27;,   redirectTo: &#x27;/entry&#x27;, pathMatch: &#x27;full&#x27; }, // redirects
-  { path: &#x27;&#x27;,   component: EntryComponent},//, pathMatch: &#x27;full&#x27; }, // redirects
+  { path: &#x27;&#x27;, component: EntryComponent },//, pathMatch: &#x27;full&#x27; }, // redirects
   //{ path: &#x27;entry&#x27;, component: EntryComponent}, //, canActivate: [UnsavedChangesGuard] },
   // , resolve: {SettingsComponent} // causes: Error: Uncaught (in promise): NullInjectorError: R3InjectorError(AppModule)[SettingsComponent -&gt; SettingsComponent -&gt; SettingsComponent]:
   //NullInjectorError: No provider for SettingsComponent!
- // { path: &#x27;entry&#x27;, component: EntryComponent, resolve: {SettingsComponent: myResolver }}, //, canActivate: [UnsavedChangesGuard] },
+  // { path: &#x27;entry&#x27;, component: EntryComponent, resolve: {SettingsComponent: myResolver }}, //, canActivate: [UnsavedChangesGuard] },
   { path: &#x27;reports&#x27;, component: FieldReportsComponent },
   { path: &#x27;gmap&#x27;, component: GmapComponent },
   { path: &#x27;lmap&#x27;, component: LmapComponent },
   { path: &#x27;rangers&#x27;, component: RangersComponent },
   { path: &#x27;settings&#x27;, component: SettingsComponent },
   { path: &#x27;log&#x27;, component: LogComponent },
-
+  // Could add Title &#x3D; &quot;PageName&quot; // https://angular.io/guide/router#setting-the-page-title
 
 
   // LAZY Routes: preloaded right after root app module (via dynamic import module)
@@ -120,7 +119,8 @@ const routes: Routes &#x3D; [
   // Page not found route
   { path: &#x27;**&#x27;, component: X404Component }
 ];
-<!-- https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method -->
+
+
 @NgModule({
   imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],  // lazy loads ASAP!
   exports: [RouterModule]
@@ -131,6 +131,7 @@ export class AppRoutingModule { }
 </code></pre>
     </div>
 </div>
+
 
 
 

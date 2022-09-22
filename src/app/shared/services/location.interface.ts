@@ -1,5 +1,8 @@
 /**
  * something else already has declared Location, so we use LocationType
+ *
+ * TODO: We could also store derived pCode & What3Words.
+ * (We do store them if they were the 'original' user provided location)
  */
 export interface LocationType {
   lat: number,

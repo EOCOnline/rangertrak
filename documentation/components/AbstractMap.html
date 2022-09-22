@@ -1,0 +1,2808 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>rangertrak documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/Vagrant.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">rangertrak documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li
+  >
+  AbstractMap</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/shared/map.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+                    <code><a href="https://angular.io/api/core/OnDestroy" target="_blank" >OnDestroy</a></code>
+    </p>
+
+
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#center" >center</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#displayedFieldReportArray" >displayedFieldReportArray</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#displayReports" >displayReports</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#fieldReportArray" >fieldReportArray</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#fieldReports" >fieldReports</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#fieldReportsSubscription" >fieldReportsSubscription</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#filterButton" >filterButton</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#filterSwitch" >filterSwitch</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#hasOverviewMap" >hasOverviewMap</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#hasSelectedReports" >hasSelectedReports</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#id" >id</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#location" >location</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#map" >map</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#mouseLatLng" >mouseLatLng</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#numAllRows" >numAllRows</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#numSelectedRows" >numSelectedRows</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#overviewMap" >overviewMap</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#pageDescr" >pageDescr</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#selectedReports" >selectedReports</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#settings" >settings</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#settingsSubscription" >settingsSubscription</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#title" >title</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#zoom" >zoom</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#zoomDisplay" >zoomDisplay</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Abstract</span>
+                                <a href="#addManualMarkerEvent" >addManualMarkerEvent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Abstract</span>
+                                <a href="#addMarker" >addMarker</a>
+                            </li>
+                            <li>
+                                <a href="#captureGMoveAndZoom" >captureGMoveAndZoom</a>
+                            </li>
+                            <li>
+                                <a href="#captureLMoveAndZoom" >captureLMoveAndZoom</a>
+                            </li>
+                            <li>
+                                <a href="#clamp" >clamp</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Abstract</span>
+                                <a href="#clearMarkers" >clearMarkers</a>
+                            </li>
+                            <li>
+                                <a href="#displayMarkers" >displayMarkers</a>
+                            </li>
+                            <li>
+                                <a href="#gotNewFieldReports" >gotNewFieldReports</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Abstract</span>
+                                <a href="#hideMarkers" >hideMarkers</a>
+                            </li>
+                            <li>
+                                <a href="#initMainMap" >initMainMap</a>
+                            </li>
+                            <li>
+                                <a href="#isGoogleMap" >isGoogleMap</a>
+                            </li>
+                            <li>
+                                <a href="#isLeafletMap" >isLeafletMap</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onMapZoomed" >onMapZoomed</a>
+                            </li>
+                            <li>
+                                <a href="#onMouseClick" >onMouseClick</a>
+                            </li>
+                            <li>
+                                <a href="#onSwitchSelectedFieldReports" >onSwitchSelectedFieldReports</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Abstract</span>
+                                <a href="#refreshMap" >refreshMap</a>
+                            </li>
+                            <li>
+                                <a href="#removeAllMarkers" >removeAllMarkers</a>
+                            </li>
+                            <li>
+                                <a href="#updateFieldReports" >updateFieldReports</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(settingsService: <a href="../injectables/SettingsService.html" target="_self">SettingsService</a>, fieldReportService: <a href="../injectables/FieldReportService.html" target="_self">FieldReportService</a>, httpClient: <a href="https://angular.io/api/common/http/HttpClient" target="_blank">HttpClient</a>, log: <a href="../injectables/LogService.html" target="_self">LogService</a>, document: Document)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="99" class="link-to-prism">src/app/shared/map.ts:99</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>settingsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SettingsService.html" target="_self" >SettingsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>fieldReportService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FieldReportService.html" target="_self" >FieldReportService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>httpClient</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/common/http/HttpClient" target="_blank" >HttpClient</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>log</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LogService.html" target="_self" >LogService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>document</td>
+                                                  
+                                                        <td>
+                                                                    <code>Document</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addManualMarkerEvent"></a>
+                    <span class="name">
+                        <span class="modifier">Abstract</span>
+                        <span ><b>addManualMarkerEvent</b></span>
+                        <a href="#addManualMarkerEvent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addManualMarkerEvent(event: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="457"
+                            class="link-to-prism">src/app/shared/map.ts:457</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addMarker"></a>
+                    <span class="name">
+                        <span class="modifier">Abstract</span>
+                        <span ><b>addMarker</b></span>
+                        <a href="#addMarker"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addMarker(lat: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, lng: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, title: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="454"
+                            class="link-to-prism">src/app/shared/map.ts:454</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>lat</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>lng</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>title</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="captureGMoveAndZoom"></a>
+                    <span class="name">
+                        <span ><b>captureGMoveAndZoom</b></span>
+                        <a href="#captureGMoveAndZoom"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>captureGMoveAndZoom(map: <a href="../anys/google.html" target="_self">google.maps.Map</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="200"
+                            class="link-to-prism">src/app/shared/map.ts:200</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>map</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.Map</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="captureLMoveAndZoom"></a>
+                    <span class="name">
+                        <span ><b>captureLMoveAndZoom</b></span>
+                        <a href="#captureLMoveAndZoom"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>captureLMoveAndZoom(map: <a href="../undefineds/Map.html" target="_self">L.Map</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="182"
+                            class="link-to-prism">src/app/shared/map.ts:182</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>map</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#Map" target="_self" >L.Map</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="clamp"></a>
+                    <span class="name">
+                        <span ><b>clamp</b></span>
+                        <a href="#clamp"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>clamp(num: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, min: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, max: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="320"
+                            class="link-to-prism">src/app/shared/map.ts:320</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>num</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>min</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>max</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="clearMarkers"></a>
+                    <span class="name">
+                        <span class="modifier">Abstract</span>
+                        <span ><b>clearMarkers</b></span>
+                        <a href="#clearMarkers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>clearMarkers()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="456"
+                            class="link-to-prism">src/app/shared/map.ts:456</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayMarkers"></a>
+                    <span class="name">
+                        <span ><b>displayMarkers</b></span>
+                        <a href="#displayMarkers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>displayMarkers()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="459"
+                            class="link-to-prism">src/app/shared/map.ts:459</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="gotNewFieldReports"></a>
+                    <span class="name">
+                        <span ><b>gotNewFieldReports</b></span>
+                        <a href="#gotNewFieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>gotNewFieldReports(newReports: <a href="../undefineds/FieldReportsType.html" target="_self">FieldReportsType</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="402"
+                            class="link-to-prism">src/app/shared/map.ts:402</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>newReports</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#FieldReportsType" target="_self" >FieldReportsType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hideMarkers"></a>
+                    <span class="name">
+                        <span class="modifier">Abstract</span>
+                        <span ><b>hideMarkers</b></span>
+                        <a href="#hideMarkers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>hideMarkers()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="455"
+                            class="link-to-prism">src/app/shared/map.ts:455</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initMainMap"></a>
+                    <span class="name">
+                        <span ><b>initMainMap</b></span>
+                        <a href="#initMainMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>initMainMap()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="152"
+                            class="link-to-prism">src/app/shared/map.ts:152</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isGoogleMap"></a>
+                    <span class="name">
+                        <span ><b>isGoogleMap</b></span>
+                        <a href="#isGoogleMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isGoogleMap(map: <a href="../undefineds/Map.html" target="_self">Map</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="310"
+                            class="link-to-prism">src/app/shared/map.ts:310</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>map</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#Map" target="_self" >Map</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.Map</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLeafletMap"></a>
+                    <span class="name">
+                        <span ><b>isLeafletMap</b></span>
+                        <a href="#isLeafletMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isLeafletMap(map: <a href="../undefineds/Map.html" target="_self">Map</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="306"
+                            class="link-to-prism">src/app/shared/map.ts:306</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>map</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#Map" target="_self" >Map</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#Map" target="_self" >L.Map</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="483"
+                            class="link-to-prism">src/app/shared/map.ts:483</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="133"
+                            class="link-to-prism">src/app/shared/map.ts:133</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onMapZoomed"></a>
+                    <span class="name">
+                        <span ><b>onMapZoomed</b></span>
+                        <a href="#onMapZoomed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onMapZoomed()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="314"
+                            class="link-to-prism">src/app/shared/map.ts:314</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onMouseClick"></a>
+                    <span class="name">
+                        <span ><b>onMouseClick</b></span>
+                        <a href="#onMouseClick"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onMouseClick(ev: MouseEvent)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="231"
+                            class="link-to-prism">src/app/shared/map.ts:231</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Store Lat/Lng in Clipboard
+! REVIEW: AND/ OR (do both?!)
+! Or use this event to create a new marker?!</p>
+<p>! Review: Alternative approach: Use event listeners:
+<a href="https://developers.google.com/maps/documentation/javascript/examples/event-click-lat">https://developers.google.com/maps/documentation/javascript/examples/event-click-lat</a> lng
+<a href="https://developers.google.com/maps/documentation/javascript/events#EventProperties">https://developers.google.com/maps/documentation/javascript/events#EventProperties</a></p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ev</td>
+                                    <td>
+                                            <code>MouseEvent</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSwitchSelectedFieldReports"></a>
+                    <span class="name">
+                        <span ><b>onSwitchSelectedFieldReports</b></span>
+                        <a href="#onSwitchSelectedFieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onSwitchSelectedFieldReports()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="421"
+                            class="link-to-prism">src/app/shared/map.ts:421</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="refreshMap"></a>
+                    <span class="name">
+                        <span class="modifier">Abstract</span>
+                        <span ><b>refreshMap</b></span>
+                        <a href="#refreshMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>refreshMap()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="324"
+                            class="link-to-prism">src/app/shared/map.ts:324</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeAllMarkers"></a>
+                    <span class="name">
+                        <span ><b>removeAllMarkers</b></span>
+                        <a href="#removeAllMarkers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>removeAllMarkers()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="475"
+                            class="link-to-prism">src/app/shared/map.ts:475</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateFieldReports"></a>
+                    <span class="name">
+                        <span ><b>updateFieldReports</b></span>
+                        <a href="#updateFieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>updateFieldReports()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="331"
+                            class="link-to-prism">src/app/shared/map.ts:331</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="center"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>center</b></span>
+                        <a href="#center"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{ lat: 0, lng: 0 }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/app/shared/map.ts:78</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayedFieldReportArray"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>displayedFieldReportArray</b></span>
+                        <a href="#displayedFieldReportArray"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#FieldReportType" target="_self" >FieldReportType[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">src/app/shared/map.ts:88</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayReports"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>displayReports</b></span>
+                        <a href="#displayReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="83" class="link-to-prism">src/app/shared/map.ts:83</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fieldReportArray"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>fieldReportArray</b></span>
+                        <a href="#fieldReportArray"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#FieldReportType" target="_self" >FieldReportType[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="86" class="link-to-prism">src/app/shared/map.ts:86</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fieldReports"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>fieldReports</b></span>
+                        <a href="#fieldReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#FieldReportsType" target="_self" >FieldReportsType | undefined</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="85" class="link-to-prism">src/app/shared/map.ts:85</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fieldReportsSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>fieldReportsSubscription</b></span>
+                        <a href="#fieldReportsSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">src/app/shared/map.ts:84</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterButton"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>filterButton</b></span>
+                        <a href="#filterButton"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>HTMLButtonElement | undefined</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>undefined</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="94" class="link-to-prism">src/app/shared/map.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterSwitch"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>filterSwitch</b></span>
+                        <a href="#filterSwitch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MDCSwitch | undefined</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>undefined</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="93" class="link-to-prism">src/app/shared/map.ts:93</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hasOverviewMap"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>hasOverviewMap</b></span>
+                        <a href="#hasOverviewMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="98" class="link-to-prism">src/app/shared/map.ts:98</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hasSelectedReports"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>hasSelectedReports</b></span>
+                        <a href="#hasSelectedReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">src/app/shared/map.ts:91</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="id"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>id</b></span>
+                        <a href="#id"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;Abstract Map Component&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">src/app/shared/map.ts:69</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="location"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>location</b></span>
+                        <a href="#location"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/LocationType.html" target="_self" >LocationType</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">src/app/shared/map.ts:77</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="map"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>map</b></span>
+                        <a href="#map"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#Map" target="_self" >Map</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">src/app/shared/map.ts:76</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mouseLatLng"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>mouseLatLng</b></span>
+                        <a href="#mouseLatLng"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>this.center</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="79" class="link-to-prism">src/app/shared/map.ts:79</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="numAllRows"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>numAllRows</b></span>
+                        <a href="#numAllRows"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="96" class="link-to-prism">src/app/shared/map.ts:96</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="numSelectedRows"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>numSelectedRows</b></span>
+                        <a href="#numSelectedRows"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="95" class="link-to-prism">src/app/shared/map.ts:95</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="overviewMap"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>overviewMap</b></span>
+                        <a href="#overviewMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/variables.html#google" target="_self" >L.Map | google.maps.Map | undefined</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>undefined</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="99" class="link-to-prism">src/app/shared/map.ts:99</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pageDescr"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>pageDescr</b></span>
+                        <a href="#pageDescr"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;Abstract Map&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">src/app/shared/map.ts:71</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedReports"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>selectedReports</b></span>
+                        <a href="#selectedReports"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#FieldReportsType" target="_self" >FieldReportsType | undefined</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>undefined</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="92" class="link-to-prism">src/app/shared/map.ts:92</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settings"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>settings</b></span>
+                        <a href="#settings"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#SettingsType" target="_self" >SettingsType</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="74" class="link-to-prism">src/app/shared/map.ts:74</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settingsSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>settingsSubscription</b></span>
+                        <a href="#settingsSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">src/app/shared/map.ts:73</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="title"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>title</b></span>
+                        <a href="#title"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;Abstract Map&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="70" class="link-to-prism">src/app/shared/map.ts:70</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoom"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>zoom</b></span>
+                        <a href="#zoom"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>10</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="80" class="link-to-prism">src/app/shared/map.ts:80</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="zoomDisplay"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>zoomDisplay</b></span>
+                        <a href="#zoomDisplay"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>10</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="81" class="link-to-prism">src/app/shared/map.ts:81</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import L from &#x27;leaflet&#x27;
+import { fromEvent, Observable, Subscription } from &#x27;rxjs&#x27;
+import { catchError, mergeMap, toArray } from &#x27;rxjs/operators&#x27;
+
+import { DOCUMENT, JsonPipe } from &#x27;@angular/common&#x27;
+import { HttpClient } from &#x27;@angular/common/http&#x27;
+import {
+    AfterViewInit, Component, ElementRef, Inject, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
+} from &#x27;@angular/core&#x27;
+import { MDCSwitch } from &#x27;@material/switch&#x27;
+
+import {
+    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LocationType,
+    LogService, SettingsService, SettingsType
+} from &#x27;../shared/services&#x27;
+import { Utility } from &#x27;./&#x27;
+import * as C from &#x27;./coordinate&#x27;
+
+//import { abstractMap } from &#x27;../shared/map&#x27;
+
+export enum MapType {
+  Google,
+  ESRI_Leaflet
+}
+
+export interface LayerType {
+  id: number
+  url: string,
+  id2: string,
+  attribution: string
+}
+
+/*
+  Interface are general, lightweight vs. abstract classes as special-purpose/feature-rich (pg 96, Programming Typescript)
+  export interface IMap {
+    type: MapType,
+    layers: LayerType,
+    initMap():void,
+    displayBeautifulmap(num:number) :void
+    }
+*/
+
+
+/**
+ * per https://ozak.medium.com/stop-repeating-yourself-in-angular-how-to-create-abstract-components-9726d43c99ab,
+ * do NOT use &quot;abstract&quot;!
+ *
+ * Needs template: https://stackoverflow.com/questions/62222979/angular-9-decorators-on-abstract-base-class
+ *
+ * https://www.tutorialsteacher.com/typescript/abstract-class
+ * https://www.cloudhadoop.com/angular-model-class-interface/
+ * https://angular.io/guide/migration-undecorated-classes
+ */
+
+/**
+ * Inputs:
+ * - Leaflet or Google tech
+ * - Overview Map : boolean
+ * - display fieldReports : boolean
+ * - Stuff from Settings: Def_Lat/Lng/Zoom/etc.
+ */
+
+export type Map &#x3D; L.Map | google.maps.Map
+
+@Component({ template: &#x27;&#x27; })
+export abstract class AbstractMap implements OnInit, OnDestroy {
+
+  protected id &#x3D; &#x27;Abstract Map Component&#x27;
+  public title &#x3D; &#x27;Abstract Map&#x27;
+  public pageDescr &#x3D; &#x27;Abstract Map&#x27;
+
+  protected settingsSubscription!: Subscription
+  protected settings!: SettingsType
+
+  protected map!: Map
+  public location!: LocationType
+  public center &#x3D; { lat: 0, lng: 0 }
+  public mouseLatLng &#x3D; this.center // google.maps.LatLngLiteral |
+  public zoom &#x3D; 10 // actual zoom level of main map
+  public zoomDisplay &#x3D; 10 // what&#x27;s displayed below main map
+
+  protected displayReports &#x3D; false // Guard for the following
+  protected fieldReportsSubscription!: Subscription
+  protected fieldReports: FieldReportsType | undefined
+  protected fieldReportArray: FieldReportType[] &#x3D; []  // just the array portion of fieldReports
+  // The displayedFieldReportArray can either be all (fieldReports) or selectedReports!
+  protected displayedFieldReportArray: FieldReportType[] &#x3D; []
+  // protected markers: clusters?
+
+  protected hasSelectedReports &#x3D; false // Guard for the following
+  protected selectedReports: FieldReportsType | undefined &#x3D; undefined
+  protected filterSwitch: MDCSwitch | undefined &#x3D; undefined
+  protected filterButton: HTMLButtonElement | undefined &#x3D; undefined
+  public numSelectedRows &#x3D; 0
+  public numAllRows &#x3D; 0
+
+  protected hasOverviewMap &#x3D; false // Guard for overview map logic
+  protected overviewMap: L.Map | google.maps.Map | undefined &#x3D; undefined
+
+
+  constructor(protected settingsService: SettingsService,
+    protected fieldReportService: FieldReportService,
+    protected httpClient: HttpClient,
+    protected log: LogService,
+    @Inject(DOCUMENT) protected document: Document) {
+
+    this.log.excessive(&#x60;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Constructor() &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Abstract Map&#x60;, this.id)
+
+    this.settingsSubscription &#x3D; this.settingsService.getSettingsObserver().subscribe({
+      next: (newSettings) &#x3D;&gt; {
+        // REVIEW: Any new settings just ripple thru, or does anything need pushing?!
+        this.settings &#x3D; newSettings
+        this.log.excessive(&#x27;Received new Settings via subscription.&#x27;, this.id)
+      },
+      error: (e) &#x3D;&gt; this.log.error(&#x27;Settings Subscription got:&#x27; + e, this.id),
+      complete: () &#x3D;&gt; this.log.info(&#x27;Settings Subscription complete&#x27;, this.id)
+    })
+
+    this.fieldReportsSubscription &#x3D;
+      this.fieldReportService.getFieldReportsObserver().subscribe({
+        next: (newReport) &#x3D;&gt; {
+          this.gotNewFieldReports(newReport)
+        },
+        error: (e) &#x3D;&gt; this.log.error(&#x27;Field Reports Subscription got:&#x27; + e, this.id),
+        complete: () &#x3D;&gt; this.log.info(&#x27;Field Reports Subscription complete&#x27;, this.id)
+      })
+  }
+
+  /**
+   *
+   */
+  ngOnInit() {
+    this.log.verbose(&quot;Map: ngOnInit()&quot;, this.id)
+    // this.log.verbose(&#x60;ngOnInit() with development mode ${isDevMode() ? &quot;&quot; : &quot;NOT &quot;}enabled&#x60;, this.id)
+
+    if (!this.settings) {
+      this.log.error(&#x60;OnInit() this.settings not yet established in ngOnInit()&#x60;, this.id)
+      // REVIEW: Can initMap run OK w/ defaults, but w/o settings?
+    } else {
+      this.center &#x3D; { lat: this.settings.defLat, lng: this.settings.defLng }
+      this.mouseLatLng &#x3D; this.center
+    }
+
+    // Derivitive maps should call this.initMap() themselves!
+  }
+
+  /**
+   *
+   * @returns
+   */
+  initMainMap() {
+    this.log.verbose(&quot;initMainMap()&quot;, this.id)
+
+    if (!this.settings) {
+      this.log.error(&#x60;initMainMap(): Settings not yet initialized while initializing the abstract Map!&#x60;, this.id)
+      return
+    }
+
+    this.center &#x3D; { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
+    this.mouseLatLng &#x3D; this.center
+
+    if (!this.fieldReports) { //! or displayedFieldReportArray
+      this.log.error(&#x60;initMainMap(): fieldReports not yet initialized while initializing abstract Map!&#x60;, this.id)
+      return
+    }
+  }
+
+  /*
+    Not needed, but available...
+    if (this.map instanceof L.Map) {
+      // leaflet map
+      // TODO
+    } else if (this.map instanceof google.maps.Map) {
+      // google map
+      // TODO
+    } else {
+      this.log.warn(&#x60;map initMainMap(): map not a leaflet or google map - ignoring as uninitialized?&#x60;, this.id)
+    }
+    */
+
+  captureLMoveAndZoom(map: L.Map) {
+    if (!map) {
+      this.log.warn(&#x60;No map in captureLMoveAndZoom()&#x60;, this.id)
+      return
+    }
+
+    map.on(&#x27;mousemove&#x27;, ($event: L.LeafletMouseEvent) &#x3D;&gt; {
+      // if (this.zoomDisplay) {
+      this.zoomDisplay &#x3D; map.getZoom()
+      //}
+      if ($event.latlng) {
+        this.mouseLatLng &#x3D; $event.latlng //.toJSON()
+      } else {
+        this.log.warn(&#x60;No latlng on event in captureLMoveAndZoom()&#x60;, this.id)
+      }
+    })
+  }
+
+  captureGMoveAndZoom(map: google.maps.Map) {
+    if (!map) {
+      this.log.warn(&#x60;No map in captureGMoveAndZoom()&#x60;, this.id)
+      return
+    }
+
+    map.addListener(&quot;mousemove&quot;, ($event: any) &#x3D;&gt; {
+      //if (this.zoomDisplay) {
+      this.zoomDisplay &#x3D; map.getZoom()!
+      //}
+
+      if ($event.latLng) {
+        this.mouseLatLng &#x3D; $event.latLng.toJSON()
+      } else {
+        this.log.warn(&#x60;No latlng on event in captureGMoveAndZoom()&#x60;, this.id)
+      }
+    })
+
+  }
+
+  /**
+  * Store Lat/Lng in Clipboard
+  *! REVIEW: AND/ OR (do both?!)
+  *! Or use this event to create a new marker?!
+  *
+  *! Review: Alternative approach: Use event listeners:
+  * https://developers.google.com/maps/documentation/javascript/examples/event-click-lat lng
+  * https://developers.google.com/maps/documentation/javascript/events#EventProperties
+  *
+  * @param ev
+  */
+  onMouseClick(ev: MouseEvent) {
+    // lMap has override onMouseClick()
+
+    if (!this.map) {
+      this.log.error(&#x60;onMouseClick: Map not created, so can&#x27;t get lat &amp; lng&#x60;, this.id)
+      return
+    }
+
+    if (this.settings.allowManualPinDrops) {
+      // Put coordinates into a new non-permanent marker &amp; drop on to map
+      this.log.error(&#x60;onMouseClick() to create markers not implemented yet!&#x60;, this.id)
+      // call: addManualMarkerEvent(event: google.maps.MapMouseEvent)
+      // or
+      //
+      // this actualy works for one map type, just need to be wired up...
+    } else {
+      // Put coordinates into clipboard
+      if (this.isGoogleMap(this.map)) {
+        this.log.error(&#x60;onMouseClick() not implemented for Google Maps yet! &#x60;, this.id)
+        /*
+         ev.x
+        this.map.addListener(&quot;click&quot;, (mapsMouseEvent) &#x3D;&gt; {
+          let position &#x3D; mapsMouseEvent.latLng
+        })
+        JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
+        */
+        // this.log.excessive(&#x60;${coords} copied to clipboard&#x60;, this.id)
+      } else {
+
+        let latlng &#x3D; this.map.mouseEventToLatLng(ev)
+        let coords &#x3D; &#x60;${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}&#x60;
+        navigator.clipboard.writeText(coords)
+          .then(() &#x3D;&gt; {
+            let status &#x3D; document.getElementById(&#x27;map-status&#x27;)
+            if (status) {
+              status.innerText &#x3D; &#x60;${coords} copied to clipboard&#x60;
+              //status.style.visibility &#x3D; &quot;visible&quot;
+              Utility.resetMaterialFadeAnimation(status)
+            } else {
+              this.log.info(&#x60;onMouseClick Entry__Minimap-status not found!&#x60;, this.id)
+            }
+            this.log.excessive(&#x60;${coords} copied to clipboard&#x60;, this.id)
+          })
+          .catch(err &#x3D;&gt; {
+            this.log.error(&#x60;onMouseClick latlng NOT copied to clipboard, error: ${err}&#x60;, this.id)
+          })
+      }
+    }
+  }
+
+  // updateOverviewMap() {
+  //   this.log.verbose(&#x60;updateOverviewMap&#x60;, this.id)
+
+  // TODO: display a small semi-transparent rectangle showing where the main map is
+
+  //let latlng &#x3D; new google.maps.LatLng(this.settings.defLat, this.settings.deflng)
+  //let latlngL &#x3D; {lat: this.settings.defLat, lng: this.settings.deflng}
+
+  // TODO: FitBounds to new point, not to DefLat &amp; Deflng  -- do it on addMarker?
+  // this.map?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
+  //this.map?.fitBounds(this.fieldReportService.bounds.extend({ lat: this.settings.defLat, lng: this.settings.defLng })) // zooms to max!
+
+  //   this.map.setZoom(17) // no effect
+  // }
+
+  // onMapMouseMove(event: L.LeafletMouseEvent | google.maps.MapMouseEvent) {
+  //   if (event.latLng) {
+  //     this.mouseLatLng &#x3D; event.latLng.toJSON()
+  //     //this.log.excessive(&#x27;moving()&#x27;, this.id);
+  //   }
+  //   else {
+  //     this.log.warn(&#x27;move(): NO event.latLng!!!!!!!!!!!!!&#x27;, this.id);
+  //   }
+  // }
+
+  isLeafletMap(map: Map): map is L.Map {
+    return true;
+  }
+
+  isGoogleMap(map: Map): map is google.maps.Map {
+    return true
+  }
+
+  onMapZoomed() {
+    if (this.zoom &amp;&amp; this.map) {
+      this.zoom &#x3D; this.map.getZoom()!
+    }
+  }
+
+  clamp(num: number, min: number, max: number) {
+    return Math.min(Math.max(num, min), max)
+  }
+
+  abstract refreshMap(): void
+  //  {
+  //   this.log.error(&#x60;refreshMap() is unimplemented!&#x60;, this.id)
+  // }
+
+  // ------------------------------------  Field Reports  ---------------------------------------
+
+  updateFieldReports() {
+    this.log.excessive(&#x60;updateFieldReports()&#x60;, this.id)
+    if (this.hasSelectedReports) {
+
+      if (this.selectedReports &#x3D; this.fieldReportService.getSelectedFieldReports()) {
+        this.numSelectedRows &#x3D; this.selectedReports.numReport
+        if (this.numSelectedRows !&#x3D; this.selectedReports.fieldReportArray.length) {
+
+          //! BUG: At start, if no rows were selected, then this.selectedReports.fieldReportArray.length reports all rows, not zero...
+          this.log.error(&#x60;updateFieldReports:  # rows in selected array ${this.numSelectedRows} !&#x3D; # rows supposed to be there: ${this.selectedReports.fieldReportArray.length}. Resetting&#x60;, this.id)
+          this.selectedReports.numReport &#x3D; this.selectedReports.fieldReportArray.length
+          this.numSelectedRows &#x3D; this.selectedReports.fieldReportArray.length
+        }
+      } else {
+        this.numSelectedRows &#x3D; 0
+      }
+
+      this.filterButton &#x3D; document.querySelector(&#x27;#selectedFieldReports&#x27;) as HTMLButtonElement
+      if (this.filterButton &#x3D;&#x3D; undefined) {
+        this.log.error(&quot;updateFieldReports() could not find selectedFieldReports&quot;, this.id)
+      } else {
+        // No need to *subscribe*, as everytime there is a selection made,
+        // it currently gets stored and won&#x27;t change once we&#x27;re on this screen
+        this.numSelectedRows &#x3D; this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
+        // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
+        this.filterSwitch &#x3D; new MDCSwitch(this.filterButton)
+        if (!this.filterSwitch) {
+          throw (&quot;updateFieldReports(): Found filterButton - but NOT Field Report Selection Switch!&quot;)
+        }
+
+        //! TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
+        // BUG: refresh page resets selected switch
+        this.onSwitchSelectedFieldReports()
+
+        // Just get the # of rows in the selection (if any), so we can properly display that # next to the switch
+        if (this.selectedReports &#x3D; this.fieldReportService.getSelectedFieldReports()) {
+          this.numSelectedRows &#x3D; this.selectedReports.numReport
+          if (this.numSelectedRows !&#x3D; this.selectedReports.fieldReportArray.length) {
+            this.log.error(&#x60;updateFieldReports(): ngOnInit issue w/ selected rows ${this.numSelectedRows} !&#x3D; ${this.selectedReports.fieldReportArray.length}&#x60;, this.id)
+            this.selectedReports.numReport &#x3D; this.selectedReports.fieldReportArray.length
+            this.numSelectedRows &#x3D; this.selectedReports.fieldReportArray.length
+          }
+        } else {
+          this.log.warn(&#x60;updateFieldReports(): Could not retrieve selected Field Reportst.&#x60;, this.id)
+          this.numSelectedRows &#x3D; 0
+        }
+
+        this.filterButton &#x3D; document.querySelector(&#x27;#selectedFieldReports&#x27;) as HTMLButtonElement
+        if (!this.filterButton) { throw (&quot;updateFieldReports(): Could not find Field Report Selection button!&quot;) }
+
+        this.filterSwitch &#x3D; new MDCSwitch(this.filterButton)
+        if (!this.filterSwitch) throw (&quot;updateFieldReports(): Could not find Field Report Selection Switch!&quot;)
+
+      }
+    } else {
+      this.log.error(&#x60;updateFieldReports got no Selected reports&#x60;)
+    }
+  }
+
+
+
+  /*
+  What gets displayed: alternates between all &amp; selected rows, based on the switch
+  private override selectedReports: FieldReportsType | null &#x3D; null
+  public override displayedFieldReportArray: FieldReportType[] &#x3D; []
+  !this is just a subcomponent of the above: use the above if possible...  OH NO: this actually flipps back &amp; forth between all &amp; selected field reports, based on the switch...
+  following doesn&#x27;t need a subscription as user selections are auto-saved &amp; available,
+  if they switch to this page
+  REVIEW: UNLESS the switch was already on &quot;selected rows&quot; and isn&#x27;t reswitched!!!: so just check/reset in ngOnInit?!
+  */
+
+  gotNewFieldReports(newReports: FieldReportsType) {
+    this.log.verbose(&#x60;gotNewFieldReports(): New collection of ${newReports.numReport} Field Reports observed.&#x60;, this.id)
+
+    this.numAllRows &#x3D; newReports.numReport
+    this.fieldReports &#x3D; newReports
+    this.fieldReportArray &#x3D; newReports.fieldReportArray
+    console.assert(this.numAllRows &#x3D;&#x3D; this.fieldReportArray.length)
+    if (this.map) {
+      this.refreshMap()
+    }
+    // this.reloadPage()  // TODO: needed?
+  }
+
+  /**
+   *
+   * @returns
+   */
+
+  //! BUG: Resets slected reports to ALL!!!!
+  onSwitchSelectedFieldReports() { //event: any) {
+    if (!this.fieldReports) {
+      this.log.error(&#x60;onSwitchSelectedFieldReports(): Field Reports not yet set&#x60;, this.id)
+      return
+    }
+
+    if (!this.filterSwitch) {
+      this.log.error(&#x60;onSwitchSelectedFieldReports(): filterSwitch not found&#x60;, this.id)
+      return
+    }
+
+    if (this.filterSwitch.selected) {
+      this.displayedFieldReportArray &#x3D; this.fieldReportService.getSelectedFieldReports().fieldReportArray
+      // ! REVIEW: we did NOT grab the whole selectedFieldReports structure, JUST the report array: OK?!
+      this.numSelectedRows &#x3D; this.displayedFieldReportArray.length
+      this.log.verbose(&#x60;onSwitchSelectedFieldReports():Displaying ${this.displayedFieldReportArray.length} SELECTED field Reports&#x60;, this.id)
+    } else {
+      this.displayedFieldReportArray &#x3D; this.fieldReports.fieldReportArray
+      this.log.verbose(&#x60;onSwitchSelectedFieldReports():Displaying ALL ${this.displayedFieldReportArray.length} field Reports&#x60;, this.id)
+      if (this.numSelectedRows !&#x3D; this.displayedFieldReportArray.length) {
+        this.log.error(&#x60;onSwitchSelectedFieldReports():Having to update numSelectedRows ${this.numSelectedRows} to match actual array length ${this.displayedFieldReportArray.length}&#x60;, this.id)
+
+        this.numSelectedRows &#x3D; this.displayedFieldReportArray.length
+      }
+    }
+
+    // TODO: Need to refresh map?!
+    this.refreshMap()
+    // this.reloadPage()  // TODO: needed?
+  }
+
+  // ------------------------------------  Markers  ---------------------------------------
+
+  abstract addMarker(lat: number, lng: number, title: string): void
+  abstract hideMarkers(): void
+  abstract clearMarkers(): void
+  abstract addManualMarkerEvent(event: any): void
+
+  displayMarkers() {
+    this.log.verbose(&#x60;displayMarkers()&#x60;, this.id)
+
+    if (!this.displayReports) {
+      this.log.error(&#x60;displayMarkers() BUT displayReports is false!&#x60;, this.id)
+    }
+
+    if (!this.displayedFieldReportArray) {
+      this.log.error(&#x60;displayMarkers() BUT No Field Reports received yet!&#x60;, this.id)
+      return
+    }
+
+    //! this.addMarker(this.fieldReports[i].location.lat, this.fieldReports[i].location.lng, this.fieldReports[i].status)
+  }
+
+  // Deletes all markers in the array by removing references to them.
+  removeAllMarkers() {
+    this.log.verbose(&#x60;removeAllMarkers()&#x60;, this.id)
+    this.hideMarkers()
+    // this.clearMarkers &#x3D; [] // BUG: this won&#x27;t work!
+    // this.map.clear();
+    // this.markerCluster.clearMarkers()
+  }
+
+  ngOnDestroy() {
+    // this.locationSubscription.unsubscribe()
+    this.fieldReportsSubscription.unsubscribe()
+    this.settingsSubscription.unsubscribe()
+  }
+}
+</code></pre>
+    </div>
+
+
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+    var DIRECTIVES = [];
+    var ACTUAL_COMPONENT = {'name': 'AbstractMap'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'AbstractMap.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -5,8 +5,8 @@ with ($primary: #962f10,
 @use "@material/button/styles";
 @use "@material/banner";
 
-@import "ag-grid-community/dist/styles/ag-grid.css";
-@import "ag-grid-community/dist/styles/ag-theme-balham.css";
+@import "ag-grid-community/styles/ag-grid.css";
+@import "ag-grid-community/styles/ag-theme-balham.css";
 
 ag-grid-angular {
   height: 400px;
@@ -97,8 +97,14 @@ button {
 h1,
 h2,
 h3 {
-  margin-top   : 10px;
-  margin-bottom: 1px;
+  margin-top   : 20px !important;
+  margin-bottom: 0px !important;
+  font-weight  : 600 !important;
+}
+
+h2_unused {
+  //font-style: italic !important;
+  font-weight: bold !important;
 }
 
 .bordered {

@@ -29,7 +29,7 @@ export class AlertsComponent implements OnInit, OnDestroy {
     private log: LogService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
-
+    // ======== Constructor() ============
     this.isAlertHidden = true;
   }
 

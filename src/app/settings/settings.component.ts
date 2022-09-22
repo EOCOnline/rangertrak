@@ -207,11 +207,16 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     //private rangerService: RangerService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
+    this.log.verbose('======== Constructor() ============', this.id)
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
-        //console.log(newSettings)
+        this.log.excessive(`Received new Settings via subscription: ${JSON.stringify(newSettings)}`, this.id)
         this.settings = newSettings
+
+        // reset form based on new settings...
+        this.settingsEditorForm = this.getFormArrayFromSettingsArray()!
+
         this.opPeriodStart = this.settings.opPeriodStart
         this.opPeriodEnd = this.settings.opPeriodEnd
         this.log.excessive('Received new Settings via subscription.', this.id)
@@ -233,6 +238,18 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     } else {
       this.rowData = this.settings.fieldReportStatuses
       this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
+    }
+
+    if (window.isSecureContext) {
+      this.log.verbose(`Application running in secure context`, this.id)
+
+      // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt
+      // https://github.com/mdn/dom-examples/blob/main/web-crypto/encrypt-decrypt/index.html
+      // https://info.townsendsecurity.com/rsa-vs-aes-encryption-a-primer
+
+      // https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
+      // Page is a secure context so service workers are now available
+      //navigator.serviceWorker.register("/offline-worker.js").then(() => {  ...  })
     }
 
     this.settingsEditorForm = this.getFormArrayFromSettingsArray()!
@@ -475,16 +492,17 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
   //TODO: If user edits field report status color, need to update background: refreshCells()????
   onFormSubmit(): void {
-    this.log.verbose("Update Settings...", this.id)
+    this.log.verbose("onFormSubmit: Update Settings...", this.id)
     let newSettings: SettingsType = this.getSettingsArrayFromFormArray()!
     this.settingsService.updateSettings(newSettings)
 
     // TODO: If Debug disabled then call:
     //enableProdMode()
-    this.log.verbose(`Reloading window!`, this.id)
+    this.log.verbose(`onFormSubmit: Reloading window!`, this.id)
     this.reloadPage()
   }
 
+  //TODO: Use Utility functions with same name...
   displayHide(htmlElementID: string) {
     let e = this.document.getElementById(htmlElementID)
     if (e) {
@@ -500,6 +518,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   }
   getPlatform() {
     // TODO:
+    this.log.error("getPlatform: UNIMPLEMENTED", this.id)
     // https://material.angular.io/cdk/platform/overview
   }
 

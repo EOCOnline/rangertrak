@@ -73,12 +73,9 @@ import { X404Component } from './x404/x404.component'
     HttpClientModule,
     MaterialModule,
     ReactiveFormsModule,
-    AppRoutingModule,
+    AppRoutingModule,   // https://giancarlobuomprisco.com/angular/understanding-angular-modules  & https://angular.io/guide/router
     FontAwesomeModule,
-    AgGridModule.withComponents([
-      MoodEditor,
-      MoodRenderer,
-    ]),
+    AgGridModule,
     // https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method: singleton
     // AgmCoreModule.forRoot({ apiKey: 'API_KEY_GOES_HERE' }),
     // AgmSnazzyInfoWindowModule, // BUG: API_KEY

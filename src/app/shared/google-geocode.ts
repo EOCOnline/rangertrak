@@ -4,24 +4,52 @@
 // https://developers.google.com/maps/documentation/geocoding/start
 // TODO: https://developers-dot-devsite-v2-prod.appspot.com/maps/documentation/utils/geocoder
 
+//!BUG: None of these available if offline!!!
 export class GoogleGeocode {
 
-  static geocoder = new google.maps.Geocoder
+  static geocoder: google.maps.Geocoder | null  //= new google.maps.Geocoder
 
-  constructor() { }
+  constructor() {
+    //======== Constructor() ============
+    try {
+      GoogleGeocode.geocoder = new google.maps.Geocoder // || null
+    } catch (error) {
+      // probably offline?!
+      GoogleGeocode.geocoder = null
+    }
+  }
+  // https://developers.google.com/maps/documentation/javascript/geocoding#ReverseGeocoding
+  getAddressFromLatLng(latLng: google.maps.LatLng, UpdateAddress: any): string {
+    if (!GoogleGeocode.geocoder)
+      return "Address lookup requires Internet."
 
-  getAddressFromLatLng(latLng: google.maps.LatLng): string {
+    console.info(`Looking up address: ${JSON.stringify(latLng)}`)
+
     GoogleGeocode.geocoder
       .geocode({ location: latLng })
       .then((response) => {
+
+        //console.error(`Found address: ${JSON.stringify(response.results)}`)
+
         if (response.results[0]) {
+          console.error(`Found address[0]: ${JSON.stringify(response.results[0].formatted_address)}`)
+
+          // Async update of address field...
+
+
+
+
+          //! BUG: FAILS to run...
+          UpdateAddress()//response.results[0].formatted_address)
+          console.error(`returned from UpdateAddress()`)
+
           return (response.results[0].formatted_address)
         } else {
-          return ("") // No results found
+          return ("No address found.") // No results found
         }
       })
       .catch((e) => { return ("Geocoder failed due to: " + e) })
-    return ("?")
+    return ("No immediate address available: await the result!")
   }
 
 
@@ -57,7 +85,11 @@ export class GoogleGeocode {
     }
 
     // debugger
+    // BUG: Needs a promise!
     // BUG: Following hasn't even been tried yet!...
+    if (!GoogleGeocode.geocoder)
+      return { position: null, address: "Geocoding requires Internet", placeId: "" }
+
     GoogleGeocode.geocoder
       .geocode({ address: encoded })
       .then(({ results }) => {
@@ -119,6 +151,9 @@ export class GoogleGeocode {
   getLatLngAndAddressFromPlaceID(placeId: string) //: { position: google.maps.LatLngLiteral | null, address: string, placeId: string }
   //({position:google.maps.LatLng, address:string})
   {
+    if (!GoogleGeocode.geocoder)
+      return { position: null, address: "Geocoding requires Internet", placeId: "" }
+
     let err = ""
     GoogleGeocode.geocoder
       .geocode({ placeId: placeId })

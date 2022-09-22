@@ -13,87 +13,15 @@ $filledColor : #F0F0F0;
   background-color: $filledColor;
 }
 
-/*
-// https://www.concretepage.com/angular-material/angular-material-radio-button#color
-.rButton {
-  border-color        : blue;
-  // background-color: rgb(132, 151, 21); // of whole list
-}
-
-   // For outer circle
-   .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-    border-color      : rgb(71, 223, 51);
-  }
-
-  // For inner circle
-  //.mat-radio-checked
-  .mat-radio-inner-circle {
-      background-color: rgb(132, 151, 21);
-  }
-
-                      ::ng-deep .mat-radio-checked .mat-radio-outer-circle {
-    border-color      : rgb(13, 171, 219);
-}
-
-                      ::ng-deep .mat-radio-checked .mat-radio-inner-circle {
-    background-color  : rgb(153, 58, 98);
-}
-*/
-
-// https://popper.js.org/docs/v2/tutorial/
-#tooltip {
-  background   : #333;
-  color        : white;
-  font-weight  : bold;
-  padding      : 4px 8px;
-  font-size    : 13px;
-  border-radius: 4px;
-  display      : none;
-}
-
-#tooltip[data-popper-placement^='top']>#arrow {
-  bottom: -4px;
-}
-
-#tooltip[data-popper-placement^='bottom']>#arrow {
-  top: -4px;
-}
-
-#tooltip[data-popper-placement^='left']>#arrow {
-  right: -4px;
-}
-
-#tooltip[data-popper-placement^='right']>#arrow {
-  left: -4px;
-}
-
-#tooltip[data-show] {
-  display: block;
-}
-
-#arrow,
-#arrow::before {
-  position  : absolute;
-  width     : 8px;
-  height    : 8px;
-  background: inherit;
-}
-
-#arrow {
-  visibility: hidden;
-}
-
-#arrow::before {
-  visibility: visible;
-  content   : '';
-  transform : rotate(45deg);
-}
-
-
 h1,
 h2,
 h3 {
   margin-top   : 15px;
+  margin-bottom: 0px;
+}
+
+.elegant {
+  margin-top   : 25px;
   margin-bottom: 0px;
 }
 
@@ -119,20 +47,24 @@ h3 {
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
+  //appearance:unset;
   margin            : 0;
 }
 
 // Specilly used for Firefox
 input[type=number] {
   -moz-appearance: textfield;
+  //appearance:unset;
 }
 
 .small {
-  font-size: 12px;
+  font-size: x-small;
+  color    : #AAA;
 }
 
 .timepicker_When-input {
-  width: 250px;
+  width   : 250px;
+  //height: 80px;
 }
 
 .enter__Status {
@@ -165,11 +97,6 @@ input[type=number] {
   //background-color: red;
   margin            : 30 px;
   //padding: 10px;
-}
-
-.elegant {
-  margin-top   : 25px;
-  margin-bottom: 0px;
 }
 
 .enter__form {
@@ -220,6 +147,9 @@ input[type=number] {
   margin-left : 8px;
 }
 */
+#enter__where-debug {
+  visibility: hidden;
+}
 
 #enter__frm-reguritation {
   visibility        : hidden;
@@ -227,7 +157,7 @@ input[type=number] {
   display           : block;
   float             : right;
   height            : 250px;
-  width             : 15vw;
+  width             : 20vw;
   border            : 3px solid brown;
   background-color  : $filledColor;
   padding           : 10px;
@@ -276,3 +206,79 @@ input[type=number] {
     opacity: 0
   }
 }
+
+// https://popper.js.org/docs/v2/tutorial/
+#tooltip {
+  background   : #333;
+  color        : white;
+  font-weight  : bold;
+  padding      : 4px 8px;
+  font-size    : 13px;
+  border-radius: 4px;
+  display      : none;
+}
+
+#tooltip[data-popper-placement^='top']>#arrow {
+  bottom: -4px;
+}
+
+#tooltip[data-popper-placement^='bottom']>#arrow {
+  top: -4px;
+}
+
+#tooltip[data-popper-placement^='left']>#arrow {
+  right: -4px;
+}
+
+#tooltip[data-popper-placement^='right']>#arrow {
+  left: -4px;
+}
+
+#tooltip[data-show] {
+  display: block;
+}
+
+#arrow,
+#arrow::before {
+  position  : absolute;
+  width     : 8px;
+  height    : 8px;
+  background: inherit;
+}
+
+#arrow {
+  visibility: hidden;
+}
+
+#arrow::before {
+  visibility: visible;
+  content   : '';
+  transform : rotate(45deg);
+}
+
+/*
+// https://www.concretepage.com/angular-material/angular-material-radio-button#color
+.rButton {
+  border-color        : blue;
+  // background-color: rgb(132, 151, 21); // of whole list
+}
+
+   // For outer circle
+   .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+    border-color      : rgb(71, 223, 51);
+  }
+
+  // For inner circle
+  //.mat-radio-checked
+  .mat-radio-inner-circle {
+      background-color: rgb(132, 151, 21);
+  }
+
+                      ::ng-deep .mat-radio-checked .mat-radio-outer-circle {
+    border-color      : rgb(13, 171, 219);
+}
+
+                      ::ng-deep .mat-radio-checked .mat-radio-inner-circle {
+    background-color  : rgb(153, 58, 98);
+}
+*/

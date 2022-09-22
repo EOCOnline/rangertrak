@@ -1,7 +1,7 @@
 <div fxLayout="row" fxLayoutAlign="space-between" class="header">
   <span fxFlex="auto" class="title" title="{{pageDescription}}">{{parentTitle}} </span>
   <span fxFlex="auto" class="event" title={{eventDetails}}> {{eventInfo}} </span>
-  <span fxFlex="auto" class="opPeriod" title={{opPeriodDetails}}> {{opPeriod}}: {{timeElapsed$ | async}} elapsed &
+  <span fxFlex="auto" class="opPeriod" title={{opPeriodDetails}}> {{opPeriod}} {{timeElapsed$ | async}} elapsed &
     {{timeLeft$ | async}} left </span>
   <!--span fxFlex="20" class="opPeriod"
     >{{(time.getTime() - opPeriodStart.getTime()) | async | date: 'hh:mm:ss'}}</span

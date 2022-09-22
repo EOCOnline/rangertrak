@@ -8,6 +8,11 @@ with ($primary: #962f10,
 $filledColor : #F0F0F0;
 
 
+.elegant {
+  margin-top   : 25px;
+  margin-bottom: 0px;
+}
+
 .filled {
   background-color: $filledColor;
 }
@@ -23,7 +28,6 @@ $filledColor : #F0F0F0;
   background-color  : $filledColor;
   //width           : 700px;
 }
-
 
 #enter__Where-latI,
 #enter__Where-lngI,
@@ -64,11 +68,12 @@ $filledColor : #F0F0F0;
   width: 295px;
 }
 
-#addressLabel,
-#pCodeGlobal {
-  color: #CCC;
+#derivedAddress,
+#pCodes,
+#what3Words {
+  color     : #7d1f02; //#CCC;
+  font-style: italic;
 }
-
 
 // https://www.codingtag.com/remove-arrows-from-input-type-number
 // to hide spinners
@@ -92,7 +97,10 @@ input[type=number] {
   border: 2 px solid rgb(62, 189, 189);
 }
 
-.elegant {
-  margin-top   : 25px;
-  margin-bottom: 0px;
+hr {
+  width               : 80%;
+  //height            : 0.3 px;
+  //border-width    : 0;
+  //color           : gray;
+  //background-color: gray;
 }

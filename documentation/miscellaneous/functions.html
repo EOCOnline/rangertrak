@@ -48,6 +48,7 @@
 
 
 
+
 <ol class="breadcrumb">
   <li>Miscellaneous</li>
   <li>Functions</li>
@@ -61,19 +62,22 @@
                 <td class="col-md-4">
                     <ul class="index-list">
                         <li>
+                            <a href="#DDMToDD" title="src/app/shared/coordinate.ts" ><b>DDMToDD</b>&nbsp;&nbsp;&nbsp;(src/.../coordinate.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#DDToDDM" title="src/app/shared/coordinate.ts" ><b>DDToDDM</b>&nbsp;&nbsp;&nbsp;(src/.../coordinate.ts)</a>
+                        </li>
+                        <li>
                             <a href="#DDToDMS" title="src/app/shared/coordinate.ts" ><b>DDToDMS</b>&nbsp;&nbsp;&nbsp;(src/.../coordinate.ts)</a>
                         </li>
                         <li>
-                            <a href="#DMSToDD" title="src/app/shared/point.ts" ><b>DMSToDD</b>&nbsp;&nbsp;&nbsp;(src/.../point.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#initShapesLayer" title="src/app/lmap/lmap.component.ts" ><b>initShapesLayer</b>&nbsp;&nbsp;&nbsp;(src/.../lmap.component.ts)</a>
+                            <a href="#DMSToDD" title="src/app/shared/coordinate.ts" ><b>DMSToDD</b>&nbsp;&nbsp;&nbsp;(src/.../coordinate.ts)</a>
                         </li>
                         <li>
                             <a href="#PlusCode2" title="src/app/shared/plus-code.ts" ><b>PlusCode2</b>&nbsp;&nbsp;&nbsp;(src/.../plus-code.ts)</a>
                         </li>
                         <li>
-                            <a href="#strToLatLng" title="src/app/shared/coordinate.ts" ><b>strToLatLng</b>&nbsp;&nbsp;&nbsp;(src/.../coordinate.ts)</a>
+                            <a href="#strToLatLng_Unused" title="src/app/shared/coordinate.ts" ><b>strToLatLng_Unused</b>&nbsp;&nbsp;&nbsp;(src/.../coordinate.ts)</a>
                         </li>
                     </ul>
                 </td>
@@ -85,6 +89,177 @@
     <h3>src/app/shared/coordinate.ts</h3>
     <section>
     <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="DDMToDD"></a>
+                    <span class="name">
+                        <span ><b>DDMToDD</b></span>
+                        <a href="#DDMToDD"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>DDMToDD(Q: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, D: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, M: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Convert DDM to Deg and Decimal minutes
+Get object {deg:, min:, dir:}
+min truncated to 4 digits (e.g. 3.1432)
+dir returns S or N if lng = false (i.e., latitudes)
+dir returns E or W if lng = true  (a longitude)
+<a href="https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/">https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/</a></p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Q</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>D</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>M</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="DDToDDM"></a>
+                    <span class="name">
+                        <span ><b>DDToDDM</b></span>
+                        <a href="#DDToDDM"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>DDToDDM(D: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, lng: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Convert DMS to Deg and Decimal minutes
+Get object {deg:, min:, dir:}
+min truncated to 4 digits (e.g. 3.1432)
+dir returns S or N if lng = false (i.e., latitudes)
+dir returns E or W if lng = true  (a longitude)
+from <a href="https://www.cumulations.com/blog/latitude-and-longitude/">https://www.cumulations.com/blog/latitude-and-longitude/</a>
+<a href="https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/">https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/</a>
+<a href="https://www.earthref.org/content/where-world-are-you-degrees-vs-degrees-minutes-and-seconds">https://www.earthref.org/content/where-world-are-you-degrees-vs-degrees-minutes-and-seconds</a>
+<a href="https://www.fcc.gov/media/radio/dms-decimal">https://www.fcc.gov/media/radio/dms-decimal</a></p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>D</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>lng</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>false</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
@@ -162,16 +337,123 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="strToLatLng"></a>
+                    <a name="DMSToDD"></a>
                     <span class="name">
-                        <span ><b>strToLatLng</b></span>
-                        <a href="#strToLatLng"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>DMSToDD</b></span>
+                        <a href="#DMSToDD"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>strToLatLng(str: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>DMSToDD(Q: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, D: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, M: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, S: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Convert DMS to Deg and Decimal minutes
+Get object {deg:, min:, dir:}
+min truncated to 4 digits (e.g. 3.1432)
+dir returns S or N if lng = false (i.e., latitudes)
+dir returns E or W if lng = true  (a longitude)
+<a href="https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/">https://www.igismap.com/conversion-of-degree-minute-seconds-degree-decimal-minutes-decimal-degree-format-latitude-longitude/</a></p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Q</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>D</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>M</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>S</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>number</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="strToLatLng_Unused"></a>
+                    <span class="name">
+                        <span ><b>strToLatLng_Unused</b></span>
+                        <a href="#strToLatLng_Unused"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>strToLatLng_Unused(str: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -212,88 +494,6 @@
                     </div>
                 </td>
             </tr>
-        </tbody>
-    </table>
-</section>    <h3>src/app/shared/point.ts</h3>
-    <section>
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="DMSToDD"></a>
-                    <span class="name">
-                        <span ><b>DMSToDD</b></span>
-                        <a href="#DMSToDD"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>DMSToDD(dms: <a href="../classes/Point.html" target="_self">Point</a>)</code>
-                </td>
-            </tr>
-
-
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>dms</td>
-                                    <td>
-                                                <code><a href="../classes/Point.html" target="_self" >Point</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>    <h3>src/app/lmap/lmap.component.ts</h3>
-    <section>
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="initShapesLayer"></a>
-                    <span class="name">
-                        <span ><b>initShapesLayer</b></span>
-                        <a href="#initShapesLayer"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>initShapesLayer()</code>
-                </td>
-            </tr>
-
-
-
-
         </tbody>
     </table>
 </section>    <h3>src/app/shared/plus-code.ts</h3>

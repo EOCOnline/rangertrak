@@ -11,7 +11,8 @@ import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@ang
 
 import { AbstractMap, Utility } from '../shared'
 import {
-    FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag
+    FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag,
+    undefinedLocation
 } from '../shared/services'
 
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
@@ -29,10 +30,11 @@ const iconDefault = L.icon({
 })
 const markerIcon = L.icon({
   iconSize: [20, 25],
-  iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png',
+  iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png',   //!BUG: Relies on internet...
   shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png'
 })
 L.Marker.prototype.options.icon = iconDefault;
+//or L.Marker.prototype.options.icon = new L.Icon.Default;
 //type LatLng = { lat: number, lng: number }
 
 
@@ -45,20 +47,31 @@ L.Marker.prototype.options.icon = iconDefault;
 })
 export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {
 
-
-
+  _location = undefinedLocation
   // Use setter get notification of new locations from parent entry form (pg 182 & 188)
   @Input() set locationUpdated(newLocation: LocationType) {
-    if ((newLocation && newLocation.lat) != undefined) {
+    this.log.error((`LMini-Map location Setter called! ${JSON.stringify(newLocation)}`), this.id)
+
+    if (newLocation && (newLocation.lat != undefined)) {
       if (newLocation.address == undefinedAddressFlag) {
-        this.log.verbose(pc.red(`Entry form has no address yet:  ${undefinedAddressFlag} - ignoring...`), this.id)
+        this.log.verbose(pc.bgYellow(`Entry form has no address yet:  ${undefinedAddressFlag}`), this.id)
       } else {
-        this.log.verbose(pc.red(`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
-        this.onNewLocation(newLocation)
+        this.log.verbose(pc.bgYellow(`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
       }
+      // All we need to display is lat & long: address is superfluious, just used for the title
+      this._location = newLocation
+
+      if (!this.lMap) {
+        this.log.error(`Setting new location, but L.Map not yet set!!!`, this.id)
+      }
+      this.addMarker(newLocation.lat, newLocation.lng, newLocation.address)
+      //this.onNewLocation(newLocation)
     } else {
-      this.log.error(pc.red(`DRATS: Parent sent undefined location event to child`), this.id)
+      this.log.error(pc.bgYellow(`DRATS: Parent sent undefined location event to child`), this.id)
     }
+  }
+  get locationUpdated(): LocationType {
+    return this._location
   }
 
   override id = 'Leaflet MiniMap Component'
@@ -69,11 +82,12 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   // TODO: Leaflet's version of following?
   overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
 
-  mymarkers = L.markerClusterGroup()
+  myMarkerCluster = L.markerClusterGroup()
+  //myMarkers: L.Marker[] = []
   mapOptions = ""
 
-  markerClusterGroup: L.MarkerClusterGroup // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
-  markerClusterData = []
+  //markerClusterGroup_UNUSED: L.MarkerClusterGroup // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
+  // markerClusterData = []
 
   constructor(
     settingsService: SettingsService,
@@ -88,15 +102,12 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       log,
       document)
 
-    this.log.verbose(`Constructing Leaflet Map, using https://www.LeafletJS.com version ${L.version}`, this.id)
+    this.log.verbose(`======== Constructor() ============, using https://www.LeafletJS.com version ${L.version}`, this.id)
 
     this.hasOverviewMap = false
-    this.displayReports = false
+    this.displayReports = true  //! Hides ALL markers, not just all reports???
     this.hasSelectedReports = false
-
-    this.markerClusterGroup = L.markerClusterGroup({
-      removeOutsideVisibleBounds: true
-    })
+    this.myMarkerCluster = L.markerClusterGroup()
   }
 
   // override ngOnInit() {
@@ -108,31 +119,49 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     super.ngOnInit()
     this.log.excessive("ngOnInit()", this.id)
 
-    //!Verify settings exist?!
-    // this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
-    // this.zoom = this.settings.leaflet.defZoom
-    // this.zoomDisplay = this.zoom
-    // this.mouseLatLng = this.center
+    if (!this.settings) {
+      this.log.error(`ngOnInit - Settings have yet to be read!`, this.id)
+    }
 
-    this.mymarkers = L.markerClusterGroup()
+    // let i = 0
+    // let msMaxDelay = 5000
+    // while (!this.settings) {
+    //   setTimeout(() => {
+    //     this.log.error(`ngOnInit - Settings have yet to be read! Delayed ${i / 10 * msMaxDelay} ms. Retrying.`, this.id)
+    //     //this.logPanel = this.document.getElementById("log")
+    //   }, msMaxDelay / 10)
+    //   if (++i > 9) {
+    //     return
+    //   }
+    // }
 
+    if (this.settings?.debugMode) {
+      Utility.displayShow(this.document.getElementById("Entry__LMinimap-debug")!)
+    } else {
 
-    /*
-    ERROR Error: NG0100: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '0.00000'. Current value: '47.44720'.. Find more at https://angular.io/errors/NG0100
-        at throwErrorIfNoChangesMode (core.mjs:6733:1)
+    }
 
-        if a child component changes values on its parent.
+    // Following moved from InitMainMap to avoid: map not a leaflet or google map
+    //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
+    this.lMap = L.map('map', {
+      center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
+      zoom: this.settings ? this.settings.leaflet.defZoom : 15
+    }) // Default view set at map creation
 
-        The source maps generated by the CLI are very useful when debugging. Navigate up the call stack until you find a template expression where the value displayed in the error has changed.
+    if (!this.lMap) {
+      this.log.error(`this.lMap not created!`, this.id)
+      return
+    }
 
-Ensure that there are no changes to the bindings in the template after change detection is run. This often means refactoring to use the correct component lifecycle hook for your use case. If the issue exists within ngAfterViewInit, the recommended solution is to use a constructor or ngOnInit to set initial values, or use v  for other value bindings.
-
-
-        */
-    this.log.excessive("exiting ngOnInit() ...", this.id)
 
     this.initMainMap()
     this.updateFieldReports()
+
+    //! Force output of 1st location received (which happened before the map was ready...) - might have to move this to OnMapReady()???
+    // this.onNewLocation(this._location)
+    this.addMarker(this._location.lat, this._location.lng, this._location.address)
+
+    this.log.excessive("exiting ngOnInit() ...", this.id)
   }
 
   /**
@@ -143,6 +172,9 @@ Ensure that there are no changes to the bindings in the template after change de
   }
 
   override initMainMap() {
+    //!Gets: Leaflet MiniMap Component: InitMap(): map not a leaflet or google map - ignoring as uninitialized?  i.e., this.map is NOT yet an instance of LMap...
+    // ! REVIEW: Does this make a copy (that devolves) or a reference (always in sync)
+    this.map = this.lMap
     super.initMainMap()
 
     this.log.excessive("initMap()", this.id)
@@ -160,22 +192,12 @@ Ensure that there are no changes to the bindings in the template after change de
 
 
     // ---------------- Init Map -----------------
-    //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
-    this.lMap = L.map('map', {
-      center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
-      zoom: this.settings ? this.settings.leaflet.defZoom : 15
-    }) // Default view set at map creation
 
-    if (!this.lMap) {
-      this.log.error(`this.lMap not created!`, this.id)
-      return
-    }
 
     // map can be either Leaflet or Google Map (in the abstract class) -
     // But we know it is JUST Leaflet map in this file!
     // Doing this avoids lots of type guards/hassles.
-    // ! REVIEW: Does this make a copy (that devolves) or a reference (always in sync)
-    this.map = this.lMap
+
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 21,  // REVIEW: put into settings?
@@ -194,13 +216,15 @@ Ensure that there are no changes to the bindings in the template after change de
     */
 
     tiles.addTo(this.lMap)
-
+    // !debugger
     if (this.displayReports && this.fieldReports) {
       // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
       // maybe do this further down?!
       this.displayMarkers()
       this.lMap.fitBounds(this.fieldReports.bounds)
       //this.lMap.fitBounds()
+    } else {
+      this.log.error(`initMainMap() did not have displayReports or fieldReports!`, this.id)
     }
 
     L.DomUtil.addClass(this.lMap.getContainer(), 'crosshair-cursor-enabled')  //  Enable crosshairs
@@ -235,7 +259,17 @@ Ensure that there are no changes to the bindings in the template after change de
     this.captureLMoveAndZoom(this.lMap)
   }
 
+  forceMarker() {
+    const myLocation = {
+      lat: 47.43,
+      lng: -122.45,
+      address: "ThisMustWork Road, Pluto",
+      derivedFromAddress: false
+    }
 
+    this.addMarker(myLocation.lat, myLocation.lng, myLocation.address)
+    this.addCircle(myLocation.lat + 0.002, myLocation.lng + 0.002, myLocation.address)
+  }
 
   /**
    *   ---------------- Init OverView Map -----------------
@@ -312,7 +346,7 @@ Ensure that there are no changes to the bindings in the template after change de
    * Store Lat/Lng in Clipboard
    * @param ev
    */
-  onMouseClick(ev: MouseEvent) {
+  override onMouseClick(ev: MouseEvent) {
     if (!this.lMap) {
       this.log.error(`Leaflet map not created, so can't get lat & lng`, this.id)
       return
@@ -321,13 +355,13 @@ Ensure that there are no changes to the bindings in the template after change de
     let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
     navigator.clipboard.writeText(coords)
       .then(() => {
-        let status = document.getElementById('Entry__Minimap-status')
+        let status = document.getElementById('Entry__LMinimap-status')
         if (status) {
           status.innerText = `${coords} copied to clipboard`
           //status.style.visibility = "visible"
           Utility.resetMaterialFadeAnimation(status)
         } else {
-          this.log.info(`Entry__Minimap-status not found!`, this.id)
+          this.log.info(`Entry__LMinimap-status not found!`, this.id)
         }
         this.log.excessive(`${coords} copied to clipboard`, this.id)
       })
@@ -375,21 +409,56 @@ Ensure that there are no changes to the bindings in the template after change de
   // TODO: Just rename MoveExistingMarker(), or AddNewMarker()?
   // Act on new location from parent (i.e., the entry form)
   // Based on Mediator pattern: listing 8.8 in TS dev w/ TS, pg 188
-  public onNewLocation(newLocation: LocationType) {
-    this.log.verbose(`new location received in ${JSON.stringify(newLocation)}`, this.id)
+  public onNewLocation_UNUSED(newLocation: LocationType) {
+    this.log.verbose(`onNewLocation received in ${JSON.stringify(newLocation)}`, this.id)
 
-    if (newLocation && newLocation != undefined) {
+    if (!newLocation) {
+      this.log.error(`Bad location passed in to onNewLocation(): ${JSON.stringify(newLocation)}`, this.id)
+    } else {
       this.location = {
         lat: newLocation.lat,
         lng: newLocation.lng,
-        address: newLocation.address,
+        address: newLocation.address,  //! might be undefinedAddressFlag!
         derivedFromAddress: newLocation.derivedFromAddress
       }
       // TODO: Consider displaying previous points too - not just the new one?
-      this.addMarker(this.location.lat, this.location.lng, this.location.address)
+      let newMarker = L.marker([this.location.lat, this.location.lng], { title: this.location.address })
+      //this.addMarker(this.location.lat, this.location.lng, this.location.address)
       //this.addCircle(this.location.lat, this.location.lng, this.location.address)
-    } else {
-      this.log.error(`Bad location passed in to onNewLocation(): ${JSON.stringify(newLocation)}`, this.id)
+
+      //! resize map to fit?
+      this.lMap.setView([this.location.lat, this.location.lng])
+
+      /*
+            let ptNE = L.point(this.location.lat + 0.01, this.location.lng + 0.01)
+            let ptSW = L.point(this.location.lat - 0.01, this.location.lng - 0.01)
+            let bnd = this.lMap.getBounds()
+            this.log.error(`Bounds=${JSON.stringify(bnd)}`)
+            bnd.extend.
+            .extend(ptNE)
+
+            // https://gis.stackexchange.com/questions/301286/how-to-fit-bounds-after-adding-multiple-markers
+            // You could use a featuregroup, it's like a layergroup but better.
+
+            var myFGMarker = L.FeatureGroup;
+            marker = L.marker(lat_lng);
+            myFGMarker.addLayer(marker);
+            myFGMarker.addTo(map);
+            map.fitBounds(myFGMarker.getBounds());
+
+            // You can instantiate a LatLngBounds object and then extend() it with the coordinates of the companies.After adding the markers you can call map.fitBounds(<LatLngBounds>).
+
+            //function addCompanies() {
+            var bounds = L.latLngBounds() // Instantiate LatLngBounds object
+            //for (let c of companies) {
+            let lat_lng = [this.location.lat, this.location.lng]
+            var marker = L.marker(lat_lng).addTo(this.lMap);
+            marker.bindPopup(`<b>${this.location.address}</b>`)
+            bounds.extend(lat_lng)      // Extend LatLngBounds with coordinates
+            //  }
+            this.lMap.fitBounds(bounds)
+            //  }
+      */
     }
   }
 
@@ -400,32 +469,28 @@ Ensure that there are no changes to the bindings in the template after change de
     // REVIEW: wipes out any manually dropped markers. Could save 'em, but no request for that...
     //! This needs to be rerun & ONLY display selected rows/markers: i.e., to use  displayedFieldReportArray
     if (!this.displayedFieldReportArray) {
-      this.log.error(`displayAllMarkers did not find field reports to display`, this.id)
-      return
+      this.log.error(`displayMarkers did not find field reports to display`, this.id)
+      //return
     }
     this.log.verbose(`displayMarkers: all ${this.displayedFieldReportArray.length} of 'em`, this.id)
     this.displayedFieldReportArray.forEach(i => {
-      if (i.lat && i.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
+      if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${i.date} with ${i.status}`
         this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
-        let marker = L.marker(new L.LatLng(i.lat, i.lng), { title: title })
+        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title })
         marker.bindPopup(title)
-        this.mymarkers.addLayer(marker);
+        this.myMarkerCluster.addLayer(marker);
       } else {
         console.warn(`displayAllMarkers: skipping report # ${i.id}; bad lat/lng: ${i}: ${JSON.stringify(i)}`)
       }
     })
 
-    this.lMap.addLayer(this.mymarkers);
+    this.lMap.addLayer(this.myMarkerCluster);
 
     // to refresh markers that have changed:
     // https://github.com/Leaflet/Leaflet.markercluster#refreshing-the-clusters-icon
   }
-
-  // displayAMarker() {
-  //   this.addMarker(this.settings ? this.settings.defLat : 0 - 0.001, this.settings ? this.settings.defLng : 0 - 0.001, "Home Base")
-  // }
 
   // override displayAllMarkers() {
   //   // this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
@@ -433,16 +498,20 @@ Ensure that there are no changes to the bindings in the template after change de
 
 
   // https:/ / blog.mestwin.net / leaflet - angular - marker - clustering /
-  getDefaultIcon() {
+  getIcon() {
+    const number = Math.floor(Math.random() * 6)
     return L.icon({
       iconSize: [25, 41],
       iconAnchor: [13, 41],
-      iconUrl: './../../assets/icons/marker-icon.png'
+      iconUrl: `./../../assets/icons/t${number}.png`
+      //iconUrl: `./../../assets/icons/marker-icon.png`
     })
   }
 
-  createMarker() {
-    const mapIcon = this.getDefaultIcon();
+  createMarker_UNUSED() {
+    const mapIcon = this.getIcon();
+    // or const mapIcon = L.Icon.Default
+
     // const coordinates = latLng([this.mapPoint.latitude, this.mapPoint.longitude]);
     // this.lastLayer = marker(coordinates).setIcon(mapIcon);
     // this.markerClusterGroup.addLayer(this.lastLayer)
@@ -452,42 +521,26 @@ Ensure that there are no changes to the bindings in the template after change de
     this.log.excessive(`addMarker at ${lat}. ${lng}, ${title}`, this.id)
 
     if (!lat || !lng || !this.lMap) {
-      console.error(`bad lat: ${lat} or lng: ${lng} or lmap: ${this.lMap}`)
-    } else {
-      let _marker = new L.Marker([lat, lng], {
-        icon: iconDefault
-        // ??: title
-      })
-      /*
-      https://javascript.plainenglish.io/how-to-create-marker-and-marker-cluster-with-leaflet-map-95e92216c391
-
-        _marker.bindPopup(city);
-        _marker.on('popupopen', function() {
-          this.log.excessive('open popup', this.id);
-        });
-        _marker.on('popupclose', function() {
-          this.log.excessive('close popup', this.id);
-        });
-        _marker.on('mouseout', function() {
-          this.log.excessive('close popup with mouseout', this.id);
-          _map.closePopup();
-        });
-        this.log.excessive(_map.getZoom(), this.id)
-        if (_map.getZoom() > 15 && _map.hasLayer(_marker)) {
-          _map.closePopup();
-          this.log.excessive('zoom > 15 close popup', this.id);
-        }
-      */
-
-      //markerCluster.addLayer(_mar);
-      //}
-      // _map.addLayer(markerCluster);
-      // _marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup()
-
-      _marker.addTo(this.lMap)
-
-      _marker.addEventListener('click', this._markerOnClick);
+      this.log.error(`addMarker(): bad lat: ${lat} or lng: ${lng} or lmap: ${this.lMap}`, this.id)
+      return
     }
+
+    // 1st dim all previous markers: How to iterate them though?!
+    //this.myMarkers.eachChildLayer(fn <= {
+
+    this.clearMarkers()
+
+    let marker = L.marker(new L.LatLng(lat, lng), { title: title }) //, icon: iconDefault,
+    marker.bindPopup(title)  //! Needed?!
+    this.myMarkerCluster.addLayer(marker);
+
+    //this.myMarkers.push(marker)
+    marker.addTo(this.lMap)
+
+    // Refit map
+    this.lMap.setView([lat, lng])
+    //marker.addEventListener('click', this._markerOnClick);
+
   }
 
   private addCircle(lat: number, lng: number, status: string = '') {
@@ -501,19 +554,21 @@ Ensure that there are no changes to the bindings in the template after change de
     this.log.warn(`Got Marker Click!!!! e= ${JSON.stringify(e)}`, this.id)
   }
 
-  /* some error on map clicking
-  733786.png:1          GET https://c.tile.openstreetmap.org/21/335179/733786.png 400
-  Image (async)
-  createTile @ leaflet-src.js:11702
-  733787.png:1          GET https://a.tile.openstreetmap.org/21/335179/733787.png 400
-  */
-
-
   hideMarkers(): void {
     //throw new Error('Method not implemented.')
   }
   clearMarkers(): void {
-    throw new Error('Method not implemented.')
+    this.log.info(`MarkclearMarkers()`, this.id)
+
+    // https://stackoverflow.com/questions/24772022/using-leaflet-js-how-do-i-iterate-through-markers-in-a-cluster
+    // if(this.myMarkers.hasLayer(marker) this.myMarkers.removeLayer(marker);
+    // if (this.lMap.hasLayer(marker) this.lMap.removeLayer(marker);
+
+    //this.lMap._panes.markerPane.remove()
+    //this.lMap.eachLayer((layer) => { layer.remove() }) // !Removes the base map layer too!!!
+
+    this.myMarkerCluster.clearLayers()
+    //    throw new Error('Method not implemented.')
   }
   addManualMarkerEvent(event: any): void {
     //throw new Error('Method not implemented.')

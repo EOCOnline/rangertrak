@@ -12,46 +12,27 @@
     </li>
     <li>ONCE SAVED (to local storage) the edited data can be exported to a CSV file.</li>
     <li>
-      <span style="color:red;"
-        >Edits HAVE to be MANUALLY saved by selecting the "Save Data" button in the
-        Advanced section below.</span
-      >
+      <span style="color:red;">Edits HAVE to be MANUALLY saved by selecting the "Save Data" button in the
+        Advanced section below.</span>
     </li>
     <li>Click on a column heading to sort by that field.</li>
+    <li>Icons at the top right of each column allows filtering on the value</li>
     <li>Click & Drag on a column heading to move columns</li>
     <li>Move column seperators to resize columns</li>
     <li>Hovering over a cell (e.g., any callsign) can show additional information.</li>
-    <li>Icons at the top right of each column allows filtering on the value</li>
     <li>Save data grid to CSV file. Comma seperated works best for Excel importing.</li>
     <li>FUTURE: Import from Excel.</li>
   </ul>
 </details>
 <br />
 
-<!--details>
-  <summary>Future functionality</summary>
-  <ul>
-    <li></li>
-  </ul>
-</details>
-<br-->
-
 <div id="reportsgrid">
-  <ag-grid-angular
-    #reportsGrid
-    rowAnimation
-    pagination
-    paginationAutoPageSize
-    style="width: 100%; height: 600px;"
-    (gridReady)="onGridReady($event)"
-    [gridOptions]="gridOptions"
-    class="ag-theme-alpine"
-    [rowData]="fieldReportArray"
-    [columnDefs]="columnDefs"
-    [defaultColDef]="defaultColDef"
-    [tooltipShowDelay]="500"
-  >
+  <ag-grid-angular #reportsGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 60vh;"
+    (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="fieldReportArray"
+    [columnDefs]="columnDefs" [tooltipShowDelay]="500">
     <!--
+[defaultColDef]="defaultColDef"
+[columnDefs]="columnDefs"
 
       was :  [rowData]="fieldReports.fieldreportArray | async"
       (firstDataRendered)="onFirstDataRendered($event)"
@@ -62,7 +43,7 @@
         -->
   </ag-grid-angular>
   <div>
-    <span class="strong">Selected Rows: {{selectedRows}}</span> (Maps have a button to
+    <span class="strong">Selected Rows: {{selectedRows}}</span> (Maps have a switch to
     only show these rows)
   </div>
   <br />
@@ -80,22 +61,21 @@
   </div>
   <!--button (click)="this.gridApi.deselectAll()">Clear Selection</button-->
   <!--div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div-->
-  <div>
-    [To be removed - should happen automatically] Force field reports update:
-    <button (click)="reloadPage()">Reload Page</button>
-  </div>
+
 
   <br />
   <details>
     <summary>
       <span class="big" id="Advanced">Advanced</span>
     </summary>
-
-    [To be removed - should happen automatically] Save above Field Reports (to local
-    storage)<button (click)="onBtnUpdateFieldReports()">Save Reports</button><br />
+    <div>
+      [To be removed - should happen automatically] Force field reports update:
+      <button (click)="reloadPage()">Reload Page</button>
+    </div>
+    <div>[To be removed - should happen automatically:] Save above Field Reports (to local
+      storage) <button (click)="onBtnUpdateFieldReports()">Save Reports</button></div>
     <button (click)="onBtnClearFieldReports()">
-      Delete ALL Field Reportgs from local storage</button
-    ><br />
+      Delete ALL Field Reports from local storage</button><br />
     <!--button (click)="onBtnImportFieldReports_unused()">FUTURE: Import Field Reportgs from CSV file</button><br-->
 
     <br /><br />
@@ -106,32 +86,14 @@
       <section class="enter__Fake">
         <mat-form-field class="enter__Fake--numfield" appearance="fill">
           <mat-label># Fakes</mat-label>
-          <input
-            matInput
-            type="number"
-            [(ngModel)]="nFakes"
-            [ngModelOptions]="{standalone: true}"
-          />
+          <input matInput type="number" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}" />
         </mat-form-field>
 
-        <mat-slider
-          id="enter__Fake--slider"
-          thumbLabel
-          tickInterval="10"
-          step="5"
-          min="0"
-          max="100"
-          aria-label="# Fake Field Reports"
-          [(ngModel)]="nFakes"
-          [ngModelOptions]="{standalone: true}"
-        ></mat-slider>
+        <mat-slider id="enter__Fake--slider" thumbLabel tickInterval="10" step="5" min="0" max="100"
+          aria-label="# Fake Field Reports" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"></mat-slider>
 
-        <button
-          (click)="generateFakeFieldReports()"
-          type="button"
-          id="enter__Fake--button"
-        >
-          Add another {{nFakes}} FAKE Field Reports
+        <button (click)="generateFakeFieldReports()" type="button" id="enter__Fake--button">
+          Add another {{nFakes}} FAKE Field Reports ()
         </button>
         <!--For Now: Click on rangers page, then back to this page to refresh view... -->
       </section>

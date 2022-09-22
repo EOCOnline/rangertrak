@@ -136,7 +136,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#id" target="_self" >void</a></code>
 
                     </div>
                 </td>
@@ -153,7 +153,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {  CodeArea, OpenLocationCode as PC, GoogleGeocode } from &#x27;../shared/&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CodeArea, OpenLocationCode as PC, GoogleGeocode } from &#x27;../shared/&#x27;
 
 // Or use Open-Location-code.tx instead???
 export class PlusCode {
@@ -209,21 +209,21 @@ export class PlusCode {
       }
 
 
-            if (PC.isValid(pCode)) {
-              if (PC.isShort) {
-                pCode &#x3D; PC.recoverNearest(pCode, SettingsService.Settings.defLat, SettingsService.Settings.defLong); //OpenLocationCode.recoverNearest
-              }
+      if (PC.isValid(pCode)) {
+        if (PC.isShort) {
+          pCode &#x3D; PC.recoverNearest(pCode, this.settings.defLat, this.settings.defLong); //OpenLocationCode.recoverNearest
+        }
 
-              // Following needs a full (Global) code
-              let coord &#x3D; this.decode(pCode); //OpenLocationCode.decode
-              console.log(&quot;chkPCodes got &quot; + pCode + &quot;; returned: lat&#x3D;&quot; + coord.latitudeCenter + &#x27;, long&#x3D;&#x27; + coord.longitudeCenter);
+        // Following needs a full (Global) code
+        let coord &#x3D; this.decode(pCode); //OpenLocationCode.decode
+        console.log(&quot;chkPCodes got &quot; + pCode + &quot;; returned: lat&#x3D;&quot; + coord.latitudeCenter + &#x27;, long&#x3D;&#x27; + coord.longitudeCenter);
 
-              this.updateCoords(coord.latitudeCenter, coord.longitudeCenter);
-            }
+        this.updateCoords(coord.latitudeCenter, coord.longitudeCenter);
+      }
 
       else {
         document.getElementById(&quot;addressLabel&quot;)!.innerHTML &#x3D; &quot; is &lt;strong style&#x3D;&#x27;color: darkorange;&#x27;&gt;Invalid &lt;/strong&gt; Try: &quot;;
-        document.getElementById(&quot;pCodeGlobal&quot;)!.innerHTML &#x3D; SettingsService.Settings.defPlusCode;
+        document.getElementById(&quot;pCodeGlobal&quot;)!.innerHTML &#x3D; this.settings.defPlusCode;
       }
     }
   }
@@ -371,25 +371,26 @@ function PlusCode2() {
   let pCode &#x3D; document.getElementById(&quot;addresses&quot;)!.innerHTML
   //MAIN.dbug(&quot;chkPCodes got &#x27;&quot; + pCode + &quot;&#x27;&quot;)
   if (pCode.length !&#x3D; 0) {
-      if (isValid(pCode)) {
-          if (pCode.isShort) {
-              pCode &#x3D; recoverNearest(pCode, DEF_LAT, DEF_LONG) //OpenLocationCode.recoverNearest
-          }
-
-          // Following needs a full (Global) code
-          let coord &#x3D; decode(pCode) //OpenLocationCode.decode
-          MAIN.dbug(&quot;chkPCodes got &quot; + pCode + &quot; returned: lat&#x3D;&quot; + coord.latitudeCenter + &#x27;, long&#x3D;&#x27; + coord.longitudeCenter)
-
-          updateCoords(coord.latitudeCenter, coord.longitudeCenter)
-      } else {
-          document.getElementById(&quot;addressLabel&quot;).innerHTML &#x3D; &quot; is &lt;strong style&#x3D;&#x27;color: darkorange&#x27;&gt;Invalid &lt;/strong&gt; Try: &quot;
-          document.getElementById(&quot;pCodeGlobal&quot;).innerHTML &#x3D; DEF_PCODE
+    if (isValid(pCode)) {
+      if (pCode.isShort) {
+        pCode &#x3D; recoverNearest(pCode, DEF_LAT, DEF_LONG) //OpenLocationCode.recoverNearest
       }
+
+      // Following needs a full (Global) code
+      let coord &#x3D; decode(pCode) //OpenLocationCode.decode
+      MAIN.dbug(&quot;chkPCodes got &quot; + pCode + &quot; returned: lat&#x3D;&quot; + coord.latitudeCenter + &#x27;, long&#x3D;&#x27; + coord.longitudeCenter)
+
+      updateCoords(coord.latitudeCenter, coord.longitudeCenter)
+    } else {
+      document.getElementById(&quot;addressLabel&quot;).innerHTML &#x3D; &quot; is &lt;strong style&#x3D;&#x27;color: darkorange&#x27;&gt;Invalid &lt;/strong&gt; Try: &quot;
+      document.getElementById(&quot;pCodeGlobal&quot;).innerHTML &#x3D; DEF_PCODE
+    }
   }
 }
 </code></pre>
     </div>
 </div>
+
 
 
 

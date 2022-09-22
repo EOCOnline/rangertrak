@@ -1,7 +1,7 @@
 <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
 
 <!--div *ngIf="apiLoaded" | async -->
-
+<div>If the map isn't shown below, try refreshing the page -- or even switching to a different page & then back.</div>
 <div class="lmap-container">
   <div class="lmap-frame">
     <div id="map" leaflet (leafletMapReady)="onMapReady($event)" (click)="onMouseClick($event)"></div>
@@ -10,6 +10,8 @@
     Latitude: <span class="strong">{{mouseLatLng.lat.toFixed(5)}}</span> Longitude:
     <span class="strong">{{mouseLatLng.lng.toFixed(5)}}</span> Zoom:
     <span class="strong">{{zoom}}</span>
+
+    <div id="Lmap-status">Click map to copy coordinates</div>
   </div>
 </div>
 <div id="overview" overview></div>
@@ -18,7 +20,7 @@
 <!--
   https://material.io/components/switches/web#switches
   https://material.io/components/switches/web#api -->
-<label for="selectedFieldReports">Field reports to show: All ({{this.numAllRows}}) </label>
+<label for="selectedFieldReports">[Broken:] Field reports to show: All ({{this.numAllRows}}) </label>
 
 <button id="selectedFieldReports" class="mdc-switch mdc-switch--unselected" type="button" role="switch"
   aria-checked="false" (click)="onSwitchSelectedFieldReports()">
@@ -51,8 +53,8 @@
     <li>
       If a subset of Field Reports are selected on the Field Reports page, then those
       {{this.numSelectedRows}} reports can be displayed, with the switch just above.
-    </li>Click on the main leaflet map to store the lat/long coordinates in the clipboard.
-    <li>
+    </li>
+    <li>Click on the main leaflet map to store the lat/long coordinates in the clipboard.
     </li>
   </ul>
 </details>

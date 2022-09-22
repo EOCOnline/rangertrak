@@ -13,7 +13,7 @@ import {
 
 //import {  } from './ranger.interface'
 
-export enum FieldReportSource { Voice, Packet, APRS, Email }
+
 
 // TODO: Update server with new reports:  https://angular.io/tutorial/toh-pt6#heroes-and-http
 
@@ -27,8 +27,8 @@ export class FieldReportService implements OnInit, OnDestroy {
   private fieldReportsSubject$!: BehaviorSubject<FieldReportsType>
 
   // REVIEW: No need to enable subscription to selectedFieldReports as they are
-  // auto-saved on evey selection and user is single-threaded, needs to do that,
-  // then move to maps which THEN grab the new values.
+  // auto-saved on evey selection and user is single-threaded.
+  // Otherwise move to maps which THEN grab the new values.
   private selectedFieldReports!: FieldReportsType
 
   private settingsSubscription!: Subscription
@@ -41,8 +41,8 @@ export class FieldReportService implements OnInit, OnDestroy {
   private serverUri = 'http://localhost:4000/products' // FUTURE:
   private boundsMargin = 0.0025
 
-  // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
-
+  // https://angular.io/guide/architecture-services#providing-services: singleton or multiple service instances?!
+  //! REVIEW: Field & Ranger Services BOTH call constructors twice!!
   constructor(
     private rangerService: RangerService,
     private settingsService: SettingsService,
@@ -62,12 +62,10 @@ export class FieldReportService implements OnInit, OnDestroy {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    this.log.verbose("Contruction", this.id)
-    //! REVIEW: Gets called twice!!
-    this.log.verbose(`Constructor call stack: ${new Error().stack}`, this.id)
-  }
 
-  ngOnInit() {
+    this.log.verbose("======== Constructor() ============", this.id)
+    //! REVIEW: this.log.verbose(`Constructor call stack (NOT an error: why called twice?): ${new Error().stack}`, this.id)
+
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
@@ -79,11 +77,18 @@ export class FieldReportService implements OnInit, OnDestroy {
 
     this.fieldReports = this.LoadFieldReportsFromLocalStorage()
 
+
     this.log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
 
-    //this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
+    // REVIEW: bounds actually needs to be an Object, not getting done this a waitForAsync, right?!
+    this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
     this.fieldReportsSubject$ = new BehaviorSubject(this.fieldReports)
     this.updateFieldReportsAndPublish()
+  }
+
+
+  ngOnInit() {
+    this.log.excessive('ngOnInit', this.id)
   }
 
 
@@ -100,7 +105,7 @@ export class FieldReportService implements OnInit, OnDestroy {
       return this.initEmptyFieldReports()
     }
     else if (localStorageFieldReports.indexOf("version") <= 0) {
-      this.log.error(`Field Reports in Local Storage appear corrupted & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`, this.id)
+      this.log.error(`Field Reports in Local Storage appear corrupted (no version #) & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`, this.id)
       localStorage.setItem(this.storageLocalName + '-BAD', localStorageFieldReports)
       return this.initEmptyFieldReports()
     }
@@ -161,14 +166,31 @@ export class FieldReportService implements OnInit, OnDestroy {
     this.fieldReportsSubject$.next(this.fieldReports)
   }
 
+  /**
+   * User has submitted a new Field Report: store it into localstorage and publish to any subscribers
+   *
+   * @param formData
+   * @returns
+   */
   public addfieldReport(formData: string) {
-    this.log.info(`Got new field report: ${formData}`, 'FieldReportService')
+    this.log.info(`Got new field report: ${JSON.stringify(formData)}`, 'FieldReportService')
 
-    let newReport: FieldReportType = JSON.parse(formData)
+    let newReport: FieldReportType = JSON.parse(formData) //"[object Object]" is not valid JSON
+    //let newReport: FieldReportType = formData //"[object Object]" is not valid JSON
     newReport.id = this.fieldReports.maxId++
     this.fieldReports.fieldReportArray.push(newReport)
-    let newPt = L.latLng(newReport.lat, newReport.lng)
-    this.fieldReports.bounds.extend(newPt)
+
+    let newPt = L.latLng(newReport.location.lat, newReport.location.lng)
+    //let newPt = L.latLng(newReport.lat, newReport.lng)
+    if (!newPt) {
+      this.log.error(`newPt = ${JSON.stringify(newPt)}; lat:${newReport.location.lat}, lng: ${newReport.location.lng}`)
+      // newPt is undefined, though newReport.lat, newReport.lng look good...
+      //!BUG: Not a function, entering new FR in Entry Page...
+      //debugger
+    }
+
+    this.fieldReports.bounds.extend({ lat: newReport.location.lat, lng: newReport.location.lng })
+
     this.updateFieldReportsAndPublish() // put to localStorage & update subscribers
     return newReport
   }
@@ -188,7 +210,7 @@ export class FieldReportService implements OnInit, OnDestroy {
     // TODO: Use setter & getters?, pg 452 Ang Dev w/ TS
     if (this.selectedFieldReports == null) {
       this.log.warn(`User hasn't selected any rows yet,
-      but we're trying to retrieve Selected Rows!`, this.id)
+      so we're returning an empty array for Selected Field Reports!`, this.id)
       this.selectedFieldReports = this.initEmptyFieldReports()
       this.selectedFieldReports.filter = "As selected by user"
       this.selectedFieldReports.fieldReportArray = []
@@ -227,26 +249,26 @@ export class FieldReportService implements OnInit, OnDestroy {
     let east
 
     if (reports.fieldReportArray.length) {
-      north = reports.fieldReportArray[0].lat
-      west = reports.fieldReportArray[0].lng
-      south = reports.fieldReportArray[0].lat
-      east = reports.fieldReportArray[0].lng
+      north = reports.fieldReportArray[0].location.lat
+      west = reports.fieldReportArray[0].location.lng
+      south = reports.fieldReportArray[0].location.lat
+      east = reports.fieldReportArray[0].location.lng
 
       // https://www.w3docs.com/snippets/javascript/how-to-find-the-min-max-elements-in-an-array-in-javascript.html
       // concludes with: "the results show that the standard loop is the fastest"
 
       for (let i = 1; i < reports.fieldReportArray.length; i++) {
-        if (reports.fieldReportArray[i].lat > north) {
-          north = Math.round(reports.fieldReportArray[i].lat * 10000) / 10000
+        if (reports.fieldReportArray[i].location.lat > north) {
+          north = Math.round(reports.fieldReportArray[i].location.lat * 10000) / 10000
         }
-        if (reports.fieldReportArray[i].lat < south) {
-          south = Math.round(reports.fieldReportArray[i].lat * 10000) / 10000
+        if (reports.fieldReportArray[i].location.lat < south) {
+          south = Math.round(reports.fieldReportArray[i].location.lat * 10000) / 10000
         }
-        if (reports.fieldReportArray[i].lng > east) {
-          east = Math.round(reports.fieldReportArray[i].lng * 10000) / 10000
+        if (reports.fieldReportArray[i].location.lng > east) {
+          east = Math.round(reports.fieldReportArray[i].location.lng * 10000) / 10000
         }
-        if (reports.fieldReportArray[i].lng > west) {
-          west = Math.round(reports.fieldReportArray[i].lng * 10000) / 10000
+        if (reports.fieldReportArray[i].location.lng > west) {
+          west = Math.round(reports.fieldReportArray[i].location.lng * 10000) / 10000
         }
       }
     } else {
@@ -269,8 +291,8 @@ export class FieldReportService implements OnInit, OnDestroy {
       this.log.info(`recalcFieldBounds BROADENED to N:${north} S:${south} `, this.id)
     }
 
-    reports.bounds = L.latLngBounds([[south, west], [north, east]])//SW, NE
-    //this.log.excessive(`New bounds: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
+    reports.bounds = new L.LatLngBounds([[south, west], [north, east]])//SW, NE
+    this.log.excessive(`New bounds: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
   }
 
   generateFakeData(num: number = 15) {
@@ -307,9 +329,12 @@ export class FieldReportService implements OnInit, OnDestroy {
         id: this.fieldReports.maxId++,
         callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
         //team: 'T1', //teams[Math.floor(Math.random() * teams.length)].name,
-        address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
-        lat: this.settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
-        lng: this.settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
+        location: {
+          lat: this.settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
+          lng: this.settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
+          address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
+          derivedFromAddress: (Math.random() > 0.75)
+        },
         date: new Date(Math.floor(msSince1970 - (Math.random() * 10 * 60 * 60 * 1000))), // 0-10 hrs earlier
         status: this.settings.fieldReportStatuses[Math.floor(Math.random() * this.settings.fieldReportStatuses.length)].status,
         notes: notes[Math.floor(Math.random() * notes.length)]

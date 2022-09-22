@@ -49,7 +49,7 @@
         </li>
       </ul>
     </details>
-    <br />
+
 
     <!-- ======================================= -->
     <h2>Mission</h2>
@@ -105,7 +105,7 @@
           prioritizing suggested results (for incorrect words) by proximity to this point.
         </li>
         <li>
-          Maps do not use any of these. Maps are auto-centered on the bounding coordinates
+          Maps do NOT use any of these. Maps are auto-centered on the bounding coordinates
           centroid of all points entered and the map is then zoomed to show all points.
         </li>
       </ul>
@@ -116,7 +116,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.invalid"
         type="number" formControlName="defLat" step=".01" min="-89.99" max="89.99"
-        placeholder="{{settings?.defLat?.toFixed(4)}}" value="{{settings?.defLat?.toFixed(4)}}" [style.width.px]="75"
+        placeholder="{{settings.defLat.toFixed(4)}}" value="{{settings.defLat.toFixed(4)}}" [style.width.px]="75"
         data-lpignore="true" />
       <div *ngIf="settingsEditorForm.get('defLat')?.touched && settingsEditorForm.get('defLat')?.hasError('required')"
         class="text-sm text-danger">
@@ -129,7 +129,7 @@
       <input
         [class.border-danger]="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.invalid"
         type="number" formControlName="defLng" step=".01" min="-179.99" max="179.99"
-        placeholder="{{settings!.defLng?.toFixed(4)}}" [style.width.px]="75" data-lpignore="true" />
+        placeholder="{{settings!.defLng.toFixed(4)}}" [style.width.px]="75" data-lpignore="true" />
       <div *ngIf="settingsEditorForm.get('defLng')?.touched && settingsEditorForm.get('defLng')?.hasError('required')"
         class="text-sm text-danger">
         longitude is required
@@ -160,7 +160,6 @@
         plusCode is required
       </div>
     </div>
-    <br />
 
     <!-- ======================================= -->
     <h2>Maps</h2>
@@ -170,7 +169,6 @@
       Clicking on Google & Leaflet maps should make new markers - but won't be saved.<br />
       (Default on Leaflet maps: clicking saves Lat/Long to clipboard.)
     </div>
-    <br />
 
     <!-- ======================================= -->
     <h3>Leaflet Map Settings</h3>
@@ -220,7 +218,6 @@
         </div>
       </div>
     </div>
-    <br />
 
     <!-- ======================================= -->
     <h3>Google Map Settings</h3>
@@ -276,7 +273,6 @@
         </div>
       </div>
     </div>
-    <br />
 
     <!-- ======================================= -->
     <!-- FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options? -->

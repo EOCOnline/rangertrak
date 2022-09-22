@@ -12,30 +12,12 @@ import { Injectable, OnInit, Optional, SkipSelf } from '@angular/core'
 
 import * as rangers from '../../../assets/data/Rangers.3Feb22.json'
 //import { debounceTime, map, startWith } from 'rxjs/operators'
-import { LogService, RangerType } from './'
+import { LogService, RangerType, UnknownRanger } from './'
 
 /* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
 // https://github.com/SheetJS/SheetJS.github.io
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\src\app\sheetjs.component.ts
 type AOA = any[][]  // array of arrays
-
-
-/* BUG: Why are the following called TWICE?!
-
-Ranger Service: Construction
-Ranger Service: Loaded 301 rangers from local storage
-Ranger Service: SortRangersByCallsign: 301 Rangers in array
-Ranger Service: Got 301 from Local Storage
-Ranger Service: New set of 301 rangers. Save to local storage & publish
-Ranger Service: SortRangersByCallsign: 301 Rangers in array
-
-Ranger Service: Construction
-Ranger Service: Loaded 301 rangers from local storage
-Ranger Service: SortRangersByCallsign: 301 Rangers in array
-Ranger Service: Got 301 from Local Storage
-Ranger Service: New set of 301 rangers. Save to local storage & publish
-Ranger Service: SortRangersByCallsign: 301 Rangers in array
-*/
 
 // TODO: Update server with new/deleted Rangers:  https://angular.io/tutorial/toh-pt6#heroes-and-http
 
@@ -53,6 +35,9 @@ export class RangerService implements OnInit {
   private localStorageRangerName = 'rangers'
   excelData: any[][] = [[1, 2], [3, 4]]
 
+
+  // https://angular.io/guide/architecture-services#providing-services: singleton or multiple service instances?!
+  //! REVIEW: Field & Ranger Services BOTH call constructors twice!!
   constructor(
     @Optional() @SkipSelf() existingService: RangerService,
     private httpClient: HttpClient,
@@ -70,10 +55,8 @@ export class RangerService implements OnInit {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    this.log.verbose("Construction", this.id)
-
-    //! REVIEW: Gets called twice!!
-    this.log.verbose(`Constructor call stack: ${new Error().stack}`, this.id)
+    this.log.verbose("======== Constructor() ============", this.id)
+    // REVIEW: this.log.verbose(`Constructor call stack: ${new Error().stack}`, this.id)
 
     this.LoadRangersFromLocalStorage()
     this.log.verbose(`Got ${this.rangers.length} from Local Storage`, this.id)
@@ -106,13 +89,16 @@ export class RangerService implements OnInit {
     * Update localStorage with new rangers & notify observers
     * REVIEW: ALSO called from RangerComponent with new updates!
     *
-    * TODO: Should new rangers be anparameter/argum,ent?!
+    * TODO: Should new rangers be a parameter/argum,ent?!
     */
   public updateLocalStorageAndPublish() {
     // Do any needed sanity/validation here
 
     this.log.verbose(`New set of ${this.rangers.length} rangers. Save to local storage & publish`, this.id)
     this.SortRangersByCallsign()   // Only place this needs to be called?
+
+    //! TODO: encrypt user data (in LocalStorage or elsewhere)
+    // https://github.com/brix/crypto-js - requires Node.js
 
     localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
 
@@ -135,7 +121,7 @@ export class RangerService implements OnInit {
   LoadRangersFromJSON(fileName: string = '../../../assets/data/Rangers.3Feb22.json') {  // WARN: Replaces any existing Rangers
     this.log.verbose(`loading new Rangers from ${fileName}`, this.id)
 
-    //debugger
+    //! debugger
 
     // also see secrets import as an example: Settings.ts
 
@@ -170,12 +156,10 @@ export class RangerService implements OnInit {
         // this requires `"resolveJsonModule": true` in tsconfig.json
 
         import {default as yyy} from './Rangers.3Feb22.json'
-import { HttpClient } from '@angular/common/http';
+        import { HttpClient } from '@angular/common/http';
         yyy.primaryMain
 
-
-    ngOnInit(): void {
-
+        ngOnInit(): void {
             this.myService.getResponseData().then((value) => {
                 //SUCCESS
                 this.log.verbose(value, this.id);
@@ -186,11 +170,9 @@ import { HttpClient } from '@angular/common/http';
                 this.log.verbose(error, this.id);
             })
         }
-
-    <p><b>sales amount:</b> {{ detailsdata?.sales_amount }}</p>
-    <p><b>collection amount:</b> {{ detailsdata?.collection_amount }}</p>
-    <p><b>carts amount:</b> {{ detailsdata?.carts_amount }}</p>
-
+      <p><b>sales amount:</b> {{ detailsdata?.sales_amount }}</p>
+      <p><b>collection amount:</b> {{ detailsdata?.collection_amount }}</p>
+      <p><b>carts amount:</b> {{ detailsdata?.carts_amount }}</p>
     */
 
   //--------------------------------------------------------------------------
@@ -198,6 +180,7 @@ import { HttpClient } from '@angular/common/http';
   // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
   LoadRangersFromExcel(eventTarget: any) {  // HTMLInputElement event:target
 
+    // TODO: look at: https://www.npmjs.com/package/fs-browsers
     // TODO: https://h2qutc.github.io/angular-material-components/fileinput
     type AOR = RangerType[]  // array of Rangers
 
@@ -217,7 +200,7 @@ import { HttpClient } from '@angular/common/http';
       const wsname: string = wb.SheetNames[0];
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
-      // debugger
+      //! debugger
 
       let myJson = JSON.stringify(XLSX.utils.sheet_to_json(ws, { header: 1 }))
 
@@ -305,26 +288,38 @@ import { HttpClient } from '@angular/common/http';
 
   getRanger(callsign: string) {
     const index = this.findIndex(callsign);
-    return this.rangers[index];
+    if (index >= 0) {
+      return this.rangers[index]
+    }
+    this.log.error(`GetRanger got unknown callsign: ${callsign}`, this.id)
+    return UnknownRanger
   }
 
   updateRanger(ranger: RangerType) {
     const index = this.findIndex(ranger.callsign);
-    this.rangers[index] = ranger;
-    this.updateLocalStorageAndPublish();
+    if (index >= 0) {
+      this.rangers[index] = ranger;
+      this.updateLocalStorageAndPublish();
+    } else {
+      this.log.error(`updateRanger got unknown callsign: ${ranger.callsign}`, this.id)
+    }
   }
 
   deleteRanger(callsign: string) {
     const index = this.findIndex(callsign);
-    this.rangers.splice(index, 1);
-    this.updateLocalStorageAndPublish();
+    if (index >= 0) {
+      this.rangers.splice(index, 1);
+      this.updateLocalStorageAndPublish();
+    } else {
+      this.log.error(`deleteRanger got unknown callsign: ${callsign}`, this.id)
+    }
   }
 
   private findIndex(callsign: string): number {
     for (let i = 0; i < this.rangers.length; i++) {
       if (this.rangers[i].callsign === callsign) return i;
     }
-    throw new Error(`Ranger with callsign ${callsign} was not found!`);
+    return -1
   }
 
   SortRangersByCallsign_unused() {
@@ -358,6 +353,35 @@ import { HttpClient } from '@angular/common/http';
         https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
   */
     // REVIEW: push (i.e., add) vs. replace?
+    this.rangers.push(
+
+      // NOTE: The image names are case-sensitive!!
+      { callsign: "!CmdPost", fullName: "ACS-CERT Cmd Post", phone: "206-463-", address: "Vashon, WA 98070", image: "CmdPost.jpg", rew: "CmdPost", team: "T0", role: "Licensed", note: "-" },
+
+      { callsign: "ACS1", fullName: "ACS-CERT Team 1", phone: "206-463-", address: "Vashon, WA 98070", image: "ham_blue.png", rew: "", team: "T1", role: "Licensed", note: "-" },
+      { callsign: "ACS2", fullName: "ACS-CERT Team 2", phone: "206-463-", address: "Vashon, WA 98070", image: "ham_red.png", rew: "", team: "T1", role: "Licensed", note: "-" },
+      { callsign: "ACS3", fullName: "ACS-CERT Team 3", phone: "206-463-", address: "Vashon, WA 98070", image: "ham_yellow.png", rew: "", team: "T1", role: "Licensed", note: "-" },
+      { callsign: "ACS4", fullName: "ACS-CERT Team 4", phone: "206-463-", address: "Vashon, WA 98070", image: "team_brown.png", rew: "", team: "T1", role: "Licensed", note: "-" },
+
+      { callsign: "CERT1", fullName: "CERT 1", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_red.png", rew: "", team: "CERT1", role: "Licensed", note: "-" },
+      { callsign: "CERT2", fullName: "CERT 2", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_green.png", rew: "", team: "CERT2", role: "Licensed", note: "-" },
+      { callsign: "CERT3", fullName: "CERT 3", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_yellow.png", rew: "", team: "CERT3", role: "Licensed", note: "-" },
+      { callsign: "CERT4", fullName: "CERT 4", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_blue.png", rew: "", team: "CERT4", role: "Licensed", note: "-" },
+      { callsign: "CERT5", fullName: "CERT 5", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_brown.png", rew: "", team: "CERT5", role: "Licensed", note: "-" },
+      { callsign: "CERT6", fullName: "CERT 6", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_purple.png", rew: "", team: "CERT6", role: "Licensed", note: "-" },
+
+      { callsign: "MERT1", fullName: "MERT 1", phone: "206-463-", address: "Vashon, WA 98070", image: "MERT_red.png", rew: "", team: "MERT1", role: "Licensed", note: "-" },
+      { callsign: "MERT2", fullName: "MERT 2", phone: "206-463-", address: "Vashon, WA 98070", image: "MERT_green.png", rew: "", team: "MERT2", role: "Licensed", note: "-" },
+      { callsign: "MERT3", fullName: "MERT 3", phone: "206-463-", address: "Vashon, WA 98070", image: "MERT_yellow.png", rew: "", team: "MERT3", role: "Licensed", note: "-" },
+      { callsign: "MERT4", fullName: "MERT 4", phone: "206-463-", address: "Vashon, WA 98070", image: "MERT_blue.png", rew: "", team: "MERT4", role: "Licensed", note: "-" },
+      { callsign: "MERT5", fullName: "MERT 5", phone: "206-463-", address: "Vashon, WA 98070", image: "Yacht_purple.png", rew: "", team: "MERT5", role: "Licensed", note: "-" },
+      { callsign: "MERT6", fullName: "MERT 6", phone: "206-463-", address: "Vashon, WA 98070", image: "sail.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
+
+      { callsign: "Mobile", fullName: "John's Mobile", phone: "206-463-", address: "Vashon, WA 98070", image: "westy.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
+    )
+
+
+    /*
     this.rangers.push(
 
       { callsign: "!CmdPost", fullName: "ACS-CERT Cmd Post", phone: "206-463-", address: "Vashon, WA 98070", image: "CmdPost.jpg", rew: "CmdPost", team: "T0", role: "Licensed", note: "-" },
@@ -674,8 +698,8 @@ import { HttpClient } from '@angular/common/http';
       { callsign: "N0VYO", fullName: "Greer, David J", phone: "206-463-", address: "876 Curtis St, 2508, Burton, WA 98013", image: "male.png", rew: "VI-00", team: "t999", role: "Licensed", note: "-" },
       { callsign: "KG7BSP", fullName: "Nelson, Kimberley A", phone: "206-463-", address: ", Burton, WA 98013", image: "male.png", rew: "VI-00", team: "t999", role: "Licensed", note: "-" },
       { callsign: "KG7JIW", fullName: "Tuttle, Holly K", phone: "206-463-", address: ", Burton, WA 98013", image: "male.png", rew: "VI-00", team: "t999", role: "Licensed", note: "-" }
-
     )
+    */
     //this.log.verbose(`Next: update LocalStorage: ${this.localStorageRangerName}`, this.id)
     this.SortRangersByCallsign()
     this.updateLocalStorageAndPublish();

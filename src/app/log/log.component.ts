@@ -1,3 +1,8 @@
+// TODO: https://github.com/ItamarSmirra/Fs-Browsers
+//import { CSV_FILE, exportFile } from 'fs-browsers'
+// https://github.com/jimmywarting/native-file-system-adapter/
+// https://github.com/GoogleChromeLabs/browser-fs-access
+// https://web.dev/browser-fs-access/
 import { Subscription, switchMap } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
@@ -8,7 +13,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import { Utility } from '../shared'
-import { LogLevel, LogService, LogType, SettingsService, SettingsType } from '../shared/services/'
+import {
+    LogHeadings, LogLevel, LogService, LogType, SettingsService, SettingsType
+} from '../shared/services/'
 
 /**
  * Update the Log Panel pane with notifications
@@ -50,15 +57,8 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
 
     console.log(`Constructing log component`)
 
-  }
-
-  /**
-   * Create heading for Log Panel
-   */
-  ngOnInit(): void {
-    //console.log(`Into log component's ngInit`)
-    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
-    this.logSubscription = this.logService.getLogObserver().subscribe({
+    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
+    this.logSubscription = logService.getLogObserver().subscribe({
       next: (log) => {
         //console.log(`LogPanel got: ${JSON.stringify(log)}`)
         this.latestLog = log
@@ -76,6 +76,18 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
       error: (e) => console.error('Settings Subscription got:' + e, this.id),
       complete: () => console.info('Settings Subscription complete', this.id)
     })
+  }
+
+  /**
+   * Create heading for Log Panel
+   */
+  ngOnInit(): void {
+    //console.log(`Into log component's ngInit`)
+
+    if (this.settings) {
+      // Turn on excessive reporting by default, if in debug mode...
+      this.excessive = this.settings.debugMode
+    }
 
     this.logPanel = this.document.getElementById("log")
     if (this.logPanel) {
@@ -114,10 +126,10 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
     //console.log(`got new log with ${log.length} entries`)
 
     let i = 0
-    let msMaxDelay = 2000
+    let msMaxDelay = 5000
     while (!this.logPanel) {
       setTimeout(() => {
-        console.error(`gotNewLog asked to display the logs BEFORE logPanel initialization. Delayed ${i / 10 * msMaxDelay} ms. Retrying.`) // For: \n${JSON.stringify(log.slice(-1))} `)
+        console.error(`Log Component: gotNewLog() can not display logs BEFORE logPanel initialization. Delayed ${i / 10 * msMaxDelay} ms. Retrying.`) // For: \n${JSON.stringify(log.slice(-1))} `)
         this.logPanel = this.document.getElementById("log")
       }, msMaxDelay / 10)
       if (++i > 9) {
@@ -127,33 +139,20 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
       }
     }
 
-    if (this.logPanel == null) {
-      console.error('this.logPanel is null...')
-      return
-    }
-
-    if (this.logPanel == undefined) {
-      console.error('this.logPanel is undefined...')
-      return
-    }
-
-    if (this.logPanel.innerHTML == null) {
-      console.error('this.logPanel.innerHTML is null...')
-      return
-    }
-
-
-    if (this.logPanel.innerHTML == undefined) {
-      console.error('this.logPanel.innerHTML is undefined...')
+    if (!this.logPanel || !this.logPanel.innerHTML) {
+      console.error('LogComponent: this.logPanel (or .innerHTML) is null or undefined...')
       return
     }
 
     // TODO: rebuilds entire log panel, instead of just pushing last few entries onto it...
     this.logPanel.innerHTML = ''
 
+
+    i = 0
     log.forEach(entry => {
       let time = entry.date.getHours().toString().padStart(2, '0') + ":" + entry.date.getMinutes().toString().padStart(2, '0') + ":" + entry.date.getSeconds().toString().padStart(2, '0') + "." + entry.date.getMilliseconds().toString().padStart(3, '0')
-      let preface = `<span class="tiny">${entry.source}: </span>` //`<span class="tiny"> ${time} - ${entry.source}:  </span>`
+      //let preface = `<span class="tiny">${entry.source}: </span>`
+      let preface = `<span class="tiny"> ${i++}) ${time} - ${entry.source}:  </span>`
 
       if (!this.logPanel) { return }
 
@@ -200,6 +199,15 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
     if (ot > 0) this.logPanel.scrollTop = ot
   }
 
+  onBtnSaveLog() {
+    let dt = new Date()
+    let fileName = `RangerTrak.log.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`
+
+    // https://github.com/ItamarSmirra/Fs-Browsers#readme
+    // TODO:     exportFile(this.latestLog, { type: CSV_FILE, headings: LogHeadings, fileName: fileName });
+
+    console.error(`UNIMPLEMENTED!  Saving Log to file xxxxxxxxxx with ${this.latestLog.length} entries`)
+  }
 
   ngOnDestroy() {
     this.settingsSubscription.unsubscribe()

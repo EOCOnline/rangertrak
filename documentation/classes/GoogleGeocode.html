@@ -131,7 +131,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/app/shared/google-geocode.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/app/shared/google-geocode.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -158,12 +158,13 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>new google.maps.Geocoder</code>
+                        <i>Type : </i>        <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.Geocoder | null</a></code>
+
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/app/shared/google-geocode.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/app/shared/google-geocode.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -190,15 +191,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>getAddressFromLatLng(latLng: <a href="../anys/google.html" target="_self">google.maps.LatLng</a>)</code>
+<code>getAddressFromLatLng(latLng: <a href="../anys/google.html" target="_self">google.maps.LatLng</a>, UpdateAddress: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="13"
-                            class="link-to-prism">src/app/shared/google-geocode.ts:13</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">src/app/shared/google-geocode.ts:22</a></div>
                 </td>
             </tr>
 
@@ -222,6 +223,18 @@
                                     <td>latLng</td>
                                     <td>
                                                 <code><a href="../miscellaneous/variables.html#google" target="_self" >google.maps.LatLng</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>UpdateAddress</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
                                     </td>
 
                                     <td>
@@ -266,8 +279,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="118"
-                            class="link-to-prism">src/app/shared/google-geocode.ts:118</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="151"
+                            class="link-to-prism">src/app/shared/google-geocode.ts:151</a></div>
                 </td>
             </tr>
 
@@ -335,8 +348,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">src/app/shared/google-geocode.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="72"
+                            class="link-to-prism">src/app/shared/google-geocode.ts:72</a></div>
                 </td>
             </tr>
 
@@ -374,7 +387,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>{ position: any; address: string; partial_match: string; placeId: string; plus_code: string; }</code>
+                        <b>Returns : </b>    <code>{ position: any; address: string; placeId: string; partial_match?: undefined; plus_code?: undefined; } | { position: any; address: string; partial_match: string; placeId: string; plus_code: string; }</code>
 
                     </div>
                     <div class="io-description">
@@ -394,30 +407,51 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MapInfoWindow, MapMarker, GoogleMap } from &#x27;@angular/google-maps&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export class GoogleGeocode {
 
-// https://developers.google.com/maps/documentation/geocoding/overview
-// https://developers.google.com/maps/documentation/geocoding/start
-// TODO: https://developers-dot-devsite-v2-prod.appspot.com/maps/documentation/utils/geocoder
+  static geocoder: google.maps.Geocoder | null  //&#x3D; new google.maps.Geocoder
 
-export class GoogleGeocode {
+  constructor() {
+    //&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Constructor() &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
+    try {
+      GoogleGeocode.geocoder &#x3D; new google.maps.Geocoder // || null
+    } catch (error) {
+      // probably offline?!
+      GoogleGeocode.geocoder &#x3D; null
+    }
+  }
+  // https://developers.google.com/maps/documentation/javascript/geocoding#ReverseGeocoding
+  getAddressFromLatLng(latLng: google.maps.LatLng, UpdateAddress: any): string {
+    if (!GoogleGeocode.geocoder)
+      return &quot;Address lookup requires Internet.&quot;
 
-  static geocoder &#x3D; new google.maps.Geocoder
+    console.info(&#x60;Looking up address: ${JSON.stringify(latLng)}&#x60;)
 
-  constructor() { }
-
-  getAddressFromLatLng(latLng: google.maps.LatLng): string {
     GoogleGeocode.geocoder
       .geocode({ location: latLng })
       .then((response) &#x3D;&gt; {
+
+        //console.error(&#x60;Found address: ${JSON.stringify(response.results)}&#x60;)
+
         if (response.results[0]) {
+          console.error(&#x60;Found address[0]: ${JSON.stringify(response.results[0].formatted_address)}&#x60;)
+
+          // Async update of address field...
+
+
+
+
+          //! BUG: FAILS to run...
+          UpdateAddress()//response.results[0].formatted_address)
+          console.error(&#x60;returned from UpdateAddress()&#x60;)
+
           return (response.results[0].formatted_address)
         } else {
-          return (&quot;&quot;) // No results found
+          return (&quot;No address found.&quot;) // No results found
         }
       })
       .catch((e) &#x3D;&gt; { return (&quot;Geocoder failed due to: &quot; + e) })
-    return (&quot;?&quot;)
+    return (&quot;No immediate address available: await the result!&quot;)
   }
 
 
@@ -438,7 +472,7 @@ export class GoogleGeocode {
   // https://developers.google.com/maps/documentation/geocoding/requests-geocoding#geocoding-lookup
   // REVIEW:
   isValidAddress(addr: string) //: { position: google.maps.LatLngLiteral | null, address: string, partial_match: string, placeId: string, plus_code: string }
-   {
+  {
     let encoded
     let err &#x3D; &quot;&quot;
     try {
@@ -453,7 +487,11 @@ export class GoogleGeocode {
     }
 
     // debugger
+    // BUG: Needs a promise!
     // BUG: Following hasn&#x27;t even been tried yet!...
+    if (!GoogleGeocode.geocoder)
+      return { position: null, address: &quot;Geocoding requires Internet&quot;, placeId: &quot;&quot; }
+
     GoogleGeocode.geocoder
       .geocode({ address: encoded })
       .then(({ results }) &#x3D;&gt; {
@@ -467,12 +505,13 @@ export class GoogleGeocode {
             plus_code: results[0].plus_code
           }
         } else {
-          return { position: null, address: &quot;&quot;, partial_match: &quot;&quot;, placeId: &quot;&quot;, plus_code: &quot;&quot;}
+          return { position: null, address: &quot;&quot;, partial_match: &quot;&quot;, placeId: &quot;&quot;, plus_code: &quot;&quot; }
         }
       })
       .catch((e) &#x3D;&gt; {
         //debugger
-         err &#x3D; &quot;Geocoder failed due to: &quot; + e })
+        err &#x3D; &quot;Geocoder failed due to: &quot; + e
+      })
     return { position: null, address: err, partial_match: &quot;&quot;, placeId: &quot;&quot;, plus_code: &quot;&quot; }
   }
 
@@ -514,6 +553,9 @@ export class GoogleGeocode {
   getLatLngAndAddressFromPlaceID(placeId: string) //: { position: google.maps.LatLngLiteral | null, address: string, placeId: string }
   //({position:google.maps.LatLng, address:string})
   {
+    if (!GoogleGeocode.geocoder)
+      return { position: null, address: &quot;Geocoding requires Internet&quot;, placeId: &quot;&quot; }
+
     let err &#x3D; &quot;&quot;
     GoogleGeocode.geocoder
       .geocode({ placeId: placeId })
@@ -531,16 +573,17 @@ export class GoogleGeocode {
       })
       .catch((e) &#x3D;&gt; {
         // debugger
-        err &#x3D; &quot;Geocoder failed due to: &quot; + e })
-        /* _.KA {message: &#x27;GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocoding reque… error. The request may succeed if you try again.&#x27;, stack: &#x27;Error: GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocodin…DPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&amp;token&#x3D;57451:1:28&#x27;, name: &#x27;MapsServerError&#x27;, endpoint: &#x27;GEOCODER_GEOCODE&#x27;, code: &#x27;UNKNOWN_ERROR&#x27;}
-        Local
-        this: undefined
-        e: _.KA {message: &#x27;GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocoding reque… error. The request may succeed if you try again.&#x27;, stack: &#x27;Error: GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocodin…DPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&amp;token&#x3D;57451:1:28&#x27;, name: &#x27;MapsServerError&#x27;, endpoint: &#x27;GEOCODER_GEOCODE&#x27;, code: &#x27;UNKNOWN_ERROR&#x27;}
-        Closure (getLatLngAndAddressFromPlaceID)
-        Block
-        Closure (9614)
-        Window
-        Global*/
+        err &#x3D; &quot;Geocoder failed due to: &quot; + e
+      })
+    /* _.KA {message: &#x27;GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocoding reque… error. The request may succeed if you try again.&#x27;, stack: &#x27;Error: GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocodin…DPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&amp;token&#x3D;57451:1:28&#x27;, name: &#x27;MapsServerError&#x27;, endpoint: &#x27;GEOCODER_GEOCODE&#x27;, code: &#x27;UNKNOWN_ERROR&#x27;}
+    Local
+    this: undefined
+    e: _.KA {message: &#x27;GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocoding reque… error. The request may succeed if you try again.&#x27;, stack: &#x27;Error: GEOCODER_GEOCODE: UNKNOWN_ERROR: A geocodin…DPgrn2iLu2p4II4H1Ww27dx6pVycHVs4&amp;token&#x3D;57451:1:28&#x27;, name: &#x27;MapsServerError&#x27;, endpoint: &#x27;GEOCODER_GEOCODE&#x27;, code: &#x27;UNKNOWN_ERROR&#x27;}
+    Closure (getLatLngAndAddressFromPlaceID)
+    Block
+    Closure (9614)
+    Window
+    Global*/
     return { position: null, address: err, placeId: &quot;&quot; }
   }
 
@@ -548,6 +591,7 @@ export class GoogleGeocode {
 </code></pre>
     </div>
 </div>
+
 
 
 

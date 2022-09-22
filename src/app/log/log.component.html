@@ -14,5 +14,9 @@
       <mat-checkbox [(ngModel)]="warn" (change)="this.redisplayLog()" color="primary">Warnings</mat-checkbox>
       <mat-checkbox [(ngModel)]="error" (change)="this.redisplayLog()" color="primary">Errors</mat-checkbox>
     </section>
+    <br>
+
+    <button (click)="onBtnSaveLog()" style="margin-bottom: 5px" title="Save Log to File">
+      [Broken:] Save Log File</button><br />
   </mat-card-content>
-</mat-card>
+</mat-card><br>
