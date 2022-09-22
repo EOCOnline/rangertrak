@@ -85,16 +85,6 @@ ng deploy
 ng add @angular/fire
 From Angular Projects, 2nd ed. pg 119
 
-// ignore the rest?
-From: <https://www.tutorialspoint.com/firebase/firebase_deploying.htm>
-https://console.firebase.google.com/u/0/project/_/hosting~2Fsites leads to https://console.firebase.google.com/u/0/project/rangertrak-a6dc5/hosting/sites
-
-
-firebase login (as john@VashonSoftware.com)
-firebase init
-firebase deploy
-or
-firebase deploy --only hosting:rangertrak-a6dc5
 See angular.json and firebase.json
 
 ## Architecture
