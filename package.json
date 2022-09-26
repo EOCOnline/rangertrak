@@ -66,7 +66,7 @@
     "leaflet.markercluster": "^1.5.3",
     "leaflet.offline": "^2.2.0",
     "picocolors": "^1.0.0",
-    "rxjs": "^7.5.6",
+    "rxjs": "^7.5.7",
     "tslib": "^2.4.0",
     "tsviz-cli": "^2.0.3",
     "typescript": "4.8.3",
