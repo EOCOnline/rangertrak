@@ -1,24 +1,24 @@
 import {
-    debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
+  debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
 } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
-    AfterViewInit, Component, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit,
-    Output, ViewChild
+  AfterViewInit, Component, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit,
+  Output, ViewChild
 } from '@angular/core'
 import {
-    FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
-    UntypedFormControl, UntypedFormGroup, Validators
+  FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
+  UntypedFormControl, UntypedFormGroup, Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { AlertsComponent, DDToDDM, TimePickerComponent, Utility } from '../shared/'
 import {
-    FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
-    SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
+  FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
+  SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services/'
 import { LocationComponent } from './location.component'
 
@@ -175,7 +175,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     //!BUG: The next line *should* propogate new value to all children, but only does so intermittently...
     this.log.error(`locationParent was: ${JSON.stringify(this.locationParent)}`, this.id)
     this.locationParent = newLocation
-    this.locationParent.lat += 0.0000001  //! REMOVE ME!
+    //this.locationParent.lat += 0.0000001  //! REMOVE ME!
     this.log.error(`locationParent now: ${JSON.stringify(this.locationParent)}`, this.id)
 
 

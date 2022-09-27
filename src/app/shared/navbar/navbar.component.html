@@ -23,6 +23,11 @@
     <li><a [routerLink]="['/settings']" routerLinkActive="active">Settings</a></li>
     <li><a [routerLink]="['/about']" routerLinkActive="active">About</a></li>
     <li><a [routerLink]="['/log']" routerLinkActive="active">Log</a></li>
+    <li *ngIf="isNavigating" class="Navbar__progressBar">Loading... <span class="smaller"> (You may need to 'Refresh'
+        the page.)</span>
+      <mat-progress-bar mode="indeterminate">
+      </mat-progress-bar>
+    </li>
   </ul>
 
   <a href="https://github.com/EOCOnline/rangertrak" target="_blank" title="See ya at GitHub" class="git">

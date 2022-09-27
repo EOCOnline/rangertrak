@@ -40,6 +40,17 @@
   flex           : 1;
 }
 
+.Navbar__progressBar {
+  font-weight : bold;
+  color       : crimson;
+  padding-left: 2vw;
+}
+
+.smaller {
+  font-size  : smaller;
+  font-weight: reset;
+}
+
 .git {
   //align-self: flex-end;
   position          : absolute;
