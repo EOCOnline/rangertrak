@@ -1,7 +1,8 @@
 import 'leaflet.markercluster'
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
-
+//import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
+
 import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { delay, throwError } from 'rxjs'
 
@@ -11,8 +12,8 @@ import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@ang
 
 import { AbstractMap, Utility } from '../shared'
 import {
-    FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag,
-    undefinedLocation
+  FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag,
+  undefinedLocation
 } from '../shared/services'
 
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
@@ -82,7 +83,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   // TODO: Leaflet's version of following?
   overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
 
-  myMarkerCluster = L.markerClusterGroup()
+  myMarkerCluster = new window.L.MarkerClusterGroup()
   //myMarkers: L.Marker[] = []
   mapOptions = ""
 
@@ -107,7 +108,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     this.hasOverviewMap = false
     this.displayReports = true  //! Hides ALL markers, not just all reports???
     this.hasSelectedReports = false
-    this.myMarkerCluster = L.markerClusterGroup()
+    this.myMarkerCluster = new window.L.MarkerClusterGroup()
   }
 
   // override ngOnInit() {

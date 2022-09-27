@@ -4,8 +4,9 @@
 //import { openDB, deleteDB, wrap, unwrp } from 'idb'
 import 'leaflet.markercluster'
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
-
+//import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
+
 import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { throwError } from 'rxjs'
 
@@ -78,7 +79,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     //shadowAnchor: [22, 94]
   })
 
-  myMarkerCluster = L.markerClusterGroup()
+  myMarkerCluster = new window.L.MarkerClusterGroup()
   mapOptions = ""
 
   //markerClusterGroup: L.MarkerClusterGroup // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
@@ -185,7 +186,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
     // http://leaflet.github.io/Leaflet.markercluster/
-    this.myMarkerCluster = L.markerClusterGroup({ removeOutsideVisibleBounds: true })
+    this.myMarkerCluster = new window.L.MarkerClusterGroup({ removeOutsideVisibleBounds: true })
 
 
     // ---------------- Init Main Map -----------------
