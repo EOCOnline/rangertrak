@@ -4,6 +4,7 @@ export { LogService } from "./log.service"
 export { PopupService } from "./popup.service"
 export { SettingsService, SecretType } from "./settings.service"
 export { ClockService } from "./clock.service"
+export { UpdateService } from "./update.service"
 
 export { FieldReportType, FieldReportsType, FieldReportStatusType, FieldReportSource } from "./field-report.interface"
 export { LocationType, undefinedAddressFlag, undefinedLocation } from "./location.interface"

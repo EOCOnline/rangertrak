@@ -28,6 +28,7 @@ export class SettingsService implements OnInit {
   constructor(@Optional() @SkipSelf() existingService: SettingsService,
     private log: LogService
   ) {
+    //! REVIEW: Gets called twice!!
     this.log.verbose(`======== constructor() ============`, this.id);
 
     if (existingService) {
@@ -38,14 +39,12 @@ export class SettingsService implements OnInit {
        * per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
        */
       throwError(() => {
-        console.error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+        this.log.error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
 
     // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
-    //! REVIEW: Gets called twice!!
-    this.log.verbose('======== Constructor() ============', this.id)
 
     //  ------------------------- SECRETS -------------------------------
 
@@ -98,10 +97,12 @@ export class SettingsService implements OnInit {
     // REVIEW: following forces garbage collection of package.json, for security? (would happen at end of constructor too)
     packageAsString = ''
     packageAsJson = null
+
+    this.log.verbose('out of constructor', this.id)
   }
 
   ngOnInit() {
-    this.log.error(`ngOnInit()`, this.id);
+    this.log.verbose(`ngOnInit()`, this.id);
 
 
     if (window.isSecureContext) {
@@ -222,7 +223,7 @@ export class SettingsService implements OnInit {
     this.log.verbose(`Notified subscribers of new Application Settings ${JSON.stringify(newSettings)} `, this.id)
 
     //! Is this proper?!
-    this.log.verbose(`Reloading window!`, this.id)
+    //this.log.verbose(`updateSettings: Reloading window!`, this.id)
     //window.location.reload() creates endless cycle!
   }
 

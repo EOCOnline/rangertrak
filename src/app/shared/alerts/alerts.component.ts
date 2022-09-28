@@ -10,6 +10,8 @@ import { MDCBanner } from '@material/banner'
 import { SettingsService, SettingsType } from '../services'
 import { LogService } from '../services/log.service'
 
+// NOTE: Could have long running service worker push a notification if desired: https://angular.io/guide/service-worker-notifications
+
 @Component({
   selector: 'rangertrak-alerts',
   templateUrl: './alerts.component.html',
