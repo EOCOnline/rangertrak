@@ -92,6 +92,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // }
     // this.log.verbose(`OpPeriodStart = ${JSON.stringify(this.settings.opPeriodStart)}`, this.id)
 
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#calculating_elapsed_time
     let msStartTime = new Date(this.settings.opPeriodStart).getTime()
     this.timeElapsed$ = interval(1000)
       .pipe(map(() => {
