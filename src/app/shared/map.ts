@@ -6,13 +6,13 @@ import { catchError, mergeMap, toArray } from 'rxjs/operators'
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
-    AfterViewInit, Component, ElementRef, Inject, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
+  AfterViewInit, Component, ElementRef, Inject, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
 } from '@angular/core'
 import { MDCSwitch } from '@material/switch'
 
 import {
-    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LocationType,
-    LogService, SettingsService, SettingsType
+  FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LocationType,
+  LogService, SettingsService, SettingsType
 } from '../shared/services'
 import { Utility } from './'
 import * as C from './coordinate'
@@ -471,7 +471,8 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     //! this.addMarker(this.fieldReports[i].location.lat, this.fieldReports[i].location.lng, this.fieldReports[i].status)
   }
 
-  // Deletes all markers in the array by removing references to them.
+  // Deletes all markers in the array by removing references to them
+  // https://developers.google.com/maps/documentation/javascript/markers#remove
   removeAllMarkers() {
     this.log.verbose(`removeAllMarkers()`, this.id)
     this.hideMarkers()
