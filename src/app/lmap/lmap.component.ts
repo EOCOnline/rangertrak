@@ -7,7 +7,7 @@ import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 //import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
 
-import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
+//import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { throwError } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'

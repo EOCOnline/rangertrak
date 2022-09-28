@@ -3,7 +3,7 @@ import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 //import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
 
-import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
+//import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { delay, throwError } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
@@ -55,9 +55,9 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
     if (newLocation && (newLocation.lat != undefined)) {
       if (newLocation.address == undefinedAddressFlag) {
-        this.log.verbose(pc.bgYellow(`Entry form has no address yet:  ${undefinedAddressFlag}`), this.id)
+        this.log.verbose((`Entry form has no address yet:  ${undefinedAddressFlag}`), this.id)
       } else {
-        this.log.verbose(pc.bgYellow(`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
+        this.log.verbose((`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
       }
       // All we need to display is lat & long: address is superfluious, just used for the title
       this._location = newLocation
@@ -68,7 +68,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       this.addMarker(newLocation.lat, newLocation.lng, newLocation.address)
       //this.onNewLocation(newLocation)
     } else {
-      this.log.error(pc.bgYellow(`DRATS: Parent sent undefined location event to child`), this.id)
+      this.log.error((`DRATS: Parent sent undefined location event to child`), this.id)
     }
   }
   get locationUpdated(): LocationType {
