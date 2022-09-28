@@ -14,8 +14,8 @@ import { MDCSwitch } from '@material/switch'
 import { CodeArea, OpenLocationCode, Utility } from '../shared/'
 import { AbstractMap } from '../shared/map'
 import {
-    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
-    SettingsService, SettingsType
+  FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
+  SettingsService, SettingsType
 } from '../shared/services'
 
 /*
@@ -341,6 +341,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   // -----------------------------------  Markers  --------------------------------------
 
 
+  // !REVIEW: Likely should set each marker to null: https://developers.google.com/maps/documentation/javascript/markers#remove
   override clearMarkers() {
     this.markers = []
   }
@@ -431,7 +432,8 @@ MarkerClustererPlus Library - also old
     })*/
   }
 
-  // Removes the markers from the map, but keeps them in the array.
+  // Removes the markers from the map, but keeps them in the array
+  // https://developers.google.com/maps/documentation/javascript/markers#remove
   override hideMarkers(): void {
     this.markers.forEach((i) => i.setMap(null))
   }
@@ -454,6 +456,7 @@ MarkerClustererPlus Library - also old
     this.markerCluster.clearMarkers()
   }
 
+  // https://developers.google.com/maps/documentation/javascript/markers#marker_labels
   override displayMarkers() {
     let latlng
     //let infoContent
