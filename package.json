@@ -49,6 +49,7 @@
     "@mdi/js": "^7.0.96",
     "@types/leaflet": "^1.8.0",
     "@types/leaflet.markercluster": "^1.5.1",
+    "@types/supercluster": "^7.1.0",
     "@what3words/api": "^4.0.7",
     "ag-grid-angular": "^28.1.1",
     "ag-grid-community": "^28.1.1",
