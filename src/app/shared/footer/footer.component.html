@@ -3,5 +3,11 @@
   <a href="http://eoc.online" target="_blank" class="copyLeft">©{{today | date: 'y'}} http://eoc.online - Open Source
     Tools for EOCs</a>
 </div>
-<div>Op Period Start:{{msStartTime | date:'short'}}; end:{{msEndTime | date:'short'}}; Delta: {{(msEndTime-msStartTime)
-  | date:'short'}};</div>
+<div style="font-weight: bold; font-size: large;">Op Period Start:{{msStartTime | date:'short'}}; end:{{msEndTime |
+  date:'short'}}; Delta:
+  {{(msEndTime-msStartTime)
+  | number:'1.0'}} ms or {{(msEndTime-msStartTime)/(1000*60) | number:'1.3'}} minutes or
+  {{(msEndTime-msStartTime)/(1000*60*60)
+  | number:'1.3'}}
+  hours;</div>
+<div id="table">...<div>

@@ -1,9 +1,9 @@
 import { Subscription } from 'rxjs'
 
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
 
 import { LogService, SettingsService, SettingsType } from '../services'
-
+import { DOCUMENT } from '@angular/common'
 /**
  * Footer component
  */
@@ -21,13 +21,15 @@ export class FooterComponent implements OnInit, OnDestroy {
   today = new Date()
   version!: string
 
-
   msStartTime: any
   msEndTime: any
 
+
   constructor(
     private log: LogService,
-    private settingsService: SettingsService) {
+    private settingsService: SettingsService,
+    @Inject(DOCUMENT) private document: Document) {
+
     this.log.excessive(`======== Constructor() ============`, this.id)
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
@@ -51,27 +53,34 @@ export class FooterComponent implements OnInit, OnDestroy {
   timetest() {
     this.msStartTime = new Date(this.settings.opPeriodStart).getTime()
     this.msEndTime = new Date(this.settings.opPeriodEnd).getTime()
+    let myDiv = this.document.getElementById("table")
     //let st = formatDate(msStartTime, 'short', 'en/US')
+    const now = new Date()
+    const msNow = now.getTime()
     const msPerDay = 1000 * 60 * 60 * 24
-    const secPerHour = 1000 * 60 * 60
+    const msPerHour = 1000 * 60 * 60
     const msPerMinute = 1000 * 60
     this.log.excessive(`msStartTime = ${this.msStartTime}; msEndTime = ${this.msEndTime}; delta = ${(this.msEndTime - this.msStartTime) / msPerDay}`, this.id)
-    let i
-    for (i = -30; i < 30; i += 10) {
-
-      let ms = new Date().getTime() - this.msStartTime
+    let offsetHours
+    for (offsetHours = -30; offsetHours < 30; offsetHours += 10) {
+      let ms: any = new Date(msNow + (msPerHour * offsetHours))
+      ms = ms.getTime()
+      ms -= this.msStartTime
       let mse = this.msEndTime - new Date().getTime()
       let d = Math.round((ms / (msPerDay)))
       let de = Math.round((ms / (msPerDay))) - 1
 
       this.log.excessive(`ms=${d}; ms2End=${de}`, this.id)
 
-      let elapsed = `${d ? (d + ' day(s), ') : " "}${Math.round((ms / (secPerHour)) % 24)}:${Math.abs(Math.round((ms / (msPerMinute)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`
+      let elapsed = `${d ? (d + ' day(s), ') : " "}${Math.round((ms / (msPerHour)) % 24)}:${Math.abs(Math.round((ms / (msPerMinute)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`
 
-      let togo = `${d ? d + ' day(s), ' : ''}${Math.round((ms / (secPerHour)) % 24)}:${Math.abs(Math.round((ms / (msPerMinute)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`
+      let togo = `${d ? d + ' day(s), ' : ''}${Math.round((ms / (msPerHour)) % 24)}:${Math.abs(Math.round((ms / (msPerMinute)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`
       //   min:${Math.round(ms / msPerMinute)} hrs:${(Math.round(ms / (secPerHour)))}
 
       this.log.error(`elapsed: ${elapsed}; Left togo: ${togo}`, this.id)
+      if (myDiv) {
+        myDiv.innerHTML += `elapsed: ${elapsed}; Left togo: ${togo} <br>`
+      }
     }
   }
 
