@@ -10,6 +10,8 @@ export { FooterComponent } from "./footer/footer.component"
 export { NavbarComponent } from "./navbar/navbar.component"
 export { TimePickerComponent } from './time-picker/time-picker.component'
 
+//export { CircleHatch } from './circle-hatching'
+
 // !BUG: Can't find @What3Words/API - need to install it?!
 // export { What3Words } from './3words'
 

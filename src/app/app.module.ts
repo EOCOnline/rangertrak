@@ -1,12 +1,12 @@
 import { AgGridModule } from 'ag-grid-angular'
 
 import {
-    MAT_COLOR_FORMATS, NGX_MAT_COLOR_FORMATS, NgxMatColorPickerModule
+  MAT_COLOR_FORMATS, NGX_MAT_COLOR_FORMATS, NgxMatColorPickerModule
 } from '@angular-material-components/color-picker'
 //import { MatDatepickerModule } from '@matheo/datepicker'
 //import { MatNativeDateModule } from '@matheo/datepicker/core'
 import {
-    NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule
+  NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule
 } from '@angular-material-components/datetime-picker'
 import { CommonModule } from '@angular/common'
 import { HttpClientModule } from '@angular/common/http'
@@ -14,7 +14,7 @@ import { NgModule } from '@angular/core'
 import { FlexLayoutModule } from '@angular/flex-layout'
 //import { ClockService, FieldReportService, PopupService, RangerService, SettingsService} from './shared/services/' // instead singleton services use "providedIn: 'root'""
 import {
-    FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators
+  FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators
 } from '@angular/forms'
 import { GoogleMapsModule } from '@angular/google-maps'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar'
@@ -50,12 +50,12 @@ import { FooterComponent } from './shared/footer/footer.component'
 import { IconsComponent } from './shared/icons/icons.component'
 import { NavbarComponent } from './shared/navbar/navbar.component'
 import {
-    FieldReportSource, FieldReportStatusType, FieldReportType, RangerType, SettingsType
+  FieldReportSource, FieldReportStatusType, FieldReportType, RangerType, SettingsType
 } from './shared/services/'
 import { TimePickerComponent } from './shared/time-picker/time-picker.component'
 import { X404Component } from './x404/x404.component'
 
-//import { CircleHatchingComponent } from './settings/circle-hatching/circle-hatching.component'
+
 // REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
 // https://angular.io/guide/build#configuring-commonjs-dependencies
 

@@ -1,0 +1,11 @@
+npm install -g typings
+
+npx ng update -g
+
+Commands from Evergreen Angular:
+npx ng update @angular/core @angular/cli
+npx ng update
+npx npm-check-updates -u
+npm install
+
+ng s -o
