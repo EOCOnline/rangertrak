@@ -186,6 +186,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
     // http://leaflet.github.io/Leaflet.markercluster/
+    // per https://stackoverflow.com/a/71574063/18004414 & https://github.com/Leaflet/Leaflet/issues/8451
     this.myMarkerCluster = new window.L.MarkerClusterGroup({ removeOutsideVisibleBounds: true })
 
 

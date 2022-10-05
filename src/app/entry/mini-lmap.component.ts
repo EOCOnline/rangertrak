@@ -108,6 +108,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     this.hasOverviewMap = false
     this.displayReports = true  //! Hides ALL markers, not just all reports???
     this.hasSelectedReports = false
+    // per https://stackoverflow.com/a/71574063/18004414 & https://github.com/Leaflet/Leaflet/issues/8451
     this.myMarkerCluster = new window.L.MarkerClusterGroup()
   }
 
