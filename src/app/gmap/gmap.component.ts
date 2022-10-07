@@ -1,26 +1,26 @@
 /// <reference types="@types/google.maps" />
-import { LatLng, LatLngBounds } from 'leaflet'
-import { catchError, map, Observable, of, Subscription } from 'rxjs'
 
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core'
-import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps'
-//import * as GMC from '@googlemaps/markerclusterer'
+import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { GoogleMap } from '@angular/google-maps'
 import { MarkerClusterer } from '@googlemaps/markerclusterer'
-// Map
-import { MDCSwitch } from '@material/switch'
 
-import { CodeArea, OpenLocationCode, Utility } from '../shared/'
+import { Utility } from '../shared/'
 import { AbstractMap } from '../shared/map'
 import {
-  FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
-  SettingsService, SettingsType
+  FieldReportService, FieldReportStatusType, FieldReportType, LogService,
+  SettingsService
 } from '../shared/services'
 
 /*
 google-maps: OLD
 google.maps: BEST
+
+GoogleMapsModule (their Angular wrapper) exports three components that we can use:
+- GoogleMap: this is the wrapper around Google Maps, available via the google-map selector
+- MapMarker: used to add markers on the map, available via the map-marker selector
+- MapInfoWindow: the info window of a marker, available via the map-info-window selector
 
 @google/markerclusterer: OLD
 @googlemaps/markerclustererplus: OLD
@@ -29,20 +29,14 @@ google.maps: BEST
   https://googlemaps.github.io/js-markerclusterer/
   https://developers.google.com/maps/support/
   https://angular-maps.com/
-  https://github.com/atmist/snazzy-info-window#html-structure
+  https://github.com/atmist/snazzy-info-window#html-structure // Customizable google map info windows
   https://angular-maps.com/api-docs/agm-core/interfaces/lazymapsapiloaderconfigliteral
  https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md
  TODO: Allow geocoding: https://rapidapi.com/blog/google-maps-api-react/
  Option doc: https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions
-
-GoogleMapsModule (their Angular wrapper) exports three components that we can use:
-- GoogleMap: this is the wrapper around Google Maps, available via the google-map selector
-- MapMarker: used to add markers on the map, available via the map-marker selector
-- MapInfoWindow: the info window of a marker, available via the map-info-window selector
 */
 
-declare const google: any //declare tells compiler "this variable exists (from elsewhere) & can be referenced by other code. There's no need to compile this statement"
-//let marker: google.maps.Marker
+declare const google: any // declare tells compiler "this variable exists (from elsewhere) & can be referenced by other code. There's no need to compile this statement"
 /**
  * @ignore
  */
@@ -57,8 +51,6 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
   // Get reference to map components, for later use
   @ViewChild(GoogleMap, { static: false }) ngMap!: GoogleMap
   @ViewChild(GoogleMap, { static: false }) overviewNgMap!: GoogleMap
-  //@ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow
-  // MapInfoWindow: a map's tooltip: https://developers.google.com/maps/documentation/javascript/infowindows
   /** Details:
    * https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md#methods-and-getters
    * https://github.com/angular/components/blob/master/src/google-maps/google-map/README.md
@@ -69,7 +61,6 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
   public override title = 'Google Map'
   public override pageDescr = 'Google Map'
 
-  // items for template
   override mouseLatLng!: google.maps.LatLngLiteral;
 
   // this.ngMap: GoogleMap (Angular wrapper for the same underlying map!)
@@ -78,6 +69,7 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
   overviewGMap!: google.maps.Map
   overviewMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
   // overviewGMapOptions: google.maps.MapOptions
+
   // items for <google-map>
   trafficLayer = new google.maps.TrafficLayer()
   trafficLayerVisible = 0
@@ -341,7 +333,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   // -----------------------------------  Markers  --------------------------------------
 
 
-  // !REVIEW: Likely should set each marker to null: https://developers.google.com/maps/documentation/javascript/markers#remove
+  // !REVIEW: Need to explicitly set each marker to null? https://developers.google.com/maps/documentation/javascript/markers#remove
   override clearMarkers() {
     this.markers = []
   }
@@ -396,7 +388,7 @@ MarkerClustererPlus Library - also old
       if (event.latLng) {
         this.addMarker(event.latLng.lat(), event.latLng.lng(), `Manual Marker dropped ${event.latLng.lat}, ${event.latLng.lng} at ${Date()}`)
       } else {
-        this.log.error(`addMarker FAILED`, this.id)
+        this.log.error(`addManualMarkerEvent: no latlng`, this.id)
       }
     }
   }
@@ -487,6 +479,8 @@ MarkerClustererPlus Library - also old
       title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.location.lat}, lng ${fr.location.lng} with "${fr.notes}".`
       //title = infoContent
 
+      //! TODO: Provide a better icon generating mechanism...available via Dependency Injection/service?!
+      // Alter marker's icon shape, color, text
       switch (fr.callsign) {
         case "W7VMI":
           //icon = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
@@ -527,7 +521,7 @@ MarkerClustererPlus Library - also old
     this.log.verbose(`displayMarkers added ${this.fieldReportArray.length} markers`, this.id)
   }
 
-  override addMarker(lat: number, lng: number, infoContent = "", labelText = "grade", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP, msDelay = 100) {
+  override addMarker(lat: number, lng: number, infoContent = "", labelText = "report", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP, msDelay = 100) {
     //this.log.excessive(`addMarker(G)`, this.id)
 
     if (infoContent == "") {
@@ -536,8 +530,8 @@ MarkerClustererPlus Library - also old
     if (title == "") {
       title = infoContent
     }
-    labelText = "grade"
-    fontSize = "16px"
+    //labelText = "grade"
+    //fontSize = "16px"
     /*
         //icon = "rocket"
         animation = google.maps.Animation.DROP
@@ -575,7 +569,6 @@ MarkerClustererPlus Library - also old
           text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
           fontFamily: "Material Icons",
           color: labelColor,
-
           fontSize: fontSize,
         },
         // label: labels[labelIndex++ % labels.length],
