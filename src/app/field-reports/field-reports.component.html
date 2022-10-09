@@ -89,6 +89,7 @@
           <input matInput type="number" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}" />
         </mat-form-field>
 
+        <!-- NOTE: Step 5: Gesture Support: mat-slider rely on HammerJS for gestures: https://v5.material.angular.io/guide/getting-started#step-5-gesture-support -->
         <mat-slider id="enter__Fake--slider" thumbLabel tickInterval="10" step="5" min="0" max="100"
           aria-label="# Fake Field Reports" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"></mat-slider>
 
