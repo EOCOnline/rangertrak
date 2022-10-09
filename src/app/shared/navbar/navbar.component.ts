@@ -6,6 +6,7 @@ import { MDCTopAppBar } from '@material/top-app-bar'
 // import { MatButtonModule } from '@angular/material/button'
 import { subscribeOn } from 'rxjs';
 import { InstallableService, LogService, SettingsService, SettingsType } from '../services';
+import { Utility } from '../utility';
 //https://material.io/components/app-bars-top/web#regular-top-app-bar
 
 @Component({
@@ -21,6 +22,7 @@ export class NavbarComponent implements OnInit {
   isInstallable = false
   isNavigating = false
   faMapMarkedAlt = faMapMarkedAlt
+  recycled = 0
 
   constructor(
     private log: LogService,
@@ -32,8 +34,19 @@ export class NavbarComponent implements OnInit {
 
     this.router.events.subscribe(
       (event) => {
+
         if (event instanceof NavigationStart) {
+          // REVIEW: This seems to help page get properly loaded????
+          Utility.sleep(100)
           this.isNavigating = true
+
+          if (false) {
+            //if (this.recycled++ < 3) {
+
+            Utility.sleep(100)
+            this.log.verbose(`Reloading window!`, this.id)
+            window.location.reload()
+          }
         }
         if (event instanceof NavigationEnd) {
           this.isNavigating = false

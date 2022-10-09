@@ -23,16 +23,16 @@
     <li><a [routerLink]="['/settings']" routerLinkActive="active">Settings</a></li>
     <li><a [routerLink]="['/about']" routerLinkActive="active">About</a></li>
     <li><a [routerLink]="['/log']" routerLinkActive="active">Log</a></li>
-    <li *ngIf="isNavigating" class="Navbar__progressBar">Loading... <span class="smaller"> (You may need to 'Refresh'
+    <li *ngIf="isNavigating" class="Navbar__progressBar">Loading... <span class="smaller"> (You likley need to 'Refresh'
         the page.)</span>
       <mat-progress-bar mode="indeterminate">
       </mat-progress-bar>
     </li>
   </ul>
 
+
+  <!-- ================================================-->
   <span class="rightAlign">
-
-
 
     <span *ngIf=isInstallable onclick="onInstallBtn()" class="installBtn"
       title="Installing uses almost no storage and provides off-line mapping and a quick way to return to RangerTrak!">

@@ -1,5 +1,18 @@
 <div id="SettingsBody" class="container">
   <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
+
+  <div *ngIf=isInstallable class="installMe">
+    <h3>&nbsp;<img src="../../assets/icons/install.png" height="14px" width="14px" alt="install icon" /> &nbsp;Install
+    </h3>
+    Would you like to install this application on this device?
+    This...
+    <ul class="small">
+      <li>requires little storage</li>
+      <li>permits offline viewingt of leaflet maps</li>
+      <li>provides a convenient icon to quickly return to the application</li>
+    </ul>
+  </div>
+
   <form [formGroup]="settingsEditorForm" (ngSubmit)="onFormSubmit()">
     <br />
     <details>

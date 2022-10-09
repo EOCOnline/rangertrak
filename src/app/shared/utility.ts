@@ -114,5 +114,4 @@ export class Utility {
       return false; //cancel
     }
   }
-
 }
