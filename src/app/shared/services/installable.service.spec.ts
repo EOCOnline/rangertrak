@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { InstallablePromptService } from './installable.service';
+import { InstallableService } from './installable.service';
 
-describe('InstallablePromptService', () => {
-  let service: InstallablePromptService;
+describe('InstallableService', () => {
+  let service: InstallableService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(InstallablePromptService);
+    service = TestBed.inject(InstallableService);
   });
 
   it('should be created', () => {

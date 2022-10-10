@@ -114,4 +114,56 @@ export class Utility {
       return false; //cancel
     }
   }
+
+  /**
+ *
+ * @param startTime - in milliseconds
+ * @param endTime - in ms
+ * @param secPrecision --  # digits after the decimal point - max of 3
+ * @returns { days: days, hours: hours, minutes: min, seconds: sec }
+ */
+  static timeDiff(startTime: number, endTime: number, secPrecision = 0) {
+    /* shorthand version:
+      let ms = new Date().getTime() - msStartTime
+      let d = Math.trunc((ms / (1000 * 60 * 60 * 24)))
+      return `${d ? (d + ' day(s), ') : " "}${Math.trunc((ms / (1000 * 60 * 60)) % 24)}:${Math.trunc(Math.abs(ms) / (1000 * 60)) % 60).toString().padStart(2, '0')}:${(Math.round(Math.abs(ms) / 1000) % 60).toString().padStart(2, '0')}`
+     */
+    const msPerSecond = 1000
+    const msPerMinute = msPerSecond * 60
+    const msPerHour = msPerMinute * 60
+    const msPerDay = msPerHour * 24
+
+    let isNegative = false
+    let ms = endTime - startTime
+    if (ms < 0) {
+      isNegative = true
+      ms = -ms
+    }
+
+    let days = Math.trunc(ms / msPerDay)
+    let msLeft = ms % msPerDay
+
+    let hours = Math.trunc(msLeft / msPerHour)
+    msLeft = ms % msPerHour
+
+    let min = Math.trunc(msLeft / msPerMinute)
+    msLeft = ms % msPerMinute
+
+    let sec = Math.round(msLeft / msPerSecond * (10 ** secPrecision)) / (10 ** secPrecision)
+
+    // Stringify, in case desired...
+    let strDay = ``
+    let strHours = `${hours}`
+    if (days) {
+      strDay = days + ` day` + (days == 1 ? `, ` : `s, `)
+    } else {
+      if (isNegative) {
+        strHours = '-' + strHours
+      }
+    }
+    let timeAsString = `${strDay}${strHours}:${(min).toString().padStart(2, '0')}:${(sec).toString().padStart(2, '0')}`
+
+    return { negative: isNegative, days: days, hours: hours, minutes: min, seconds: sec, string: timeAsString }
+  }
+
 }
