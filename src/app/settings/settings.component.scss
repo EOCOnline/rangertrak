@@ -19,6 +19,10 @@ $filledColor : #F0F0F0;
   background-color: $filledColor;
 }
 
+.main {
+  margin: 0 1em;
+}
+
 .timepicker {
   position: relative;
   width   : 240px;
@@ -163,10 +167,6 @@ h2_unused {
 
 .timepicker_When-input {
   width: 400px;
-}
-
-body {
-  margin: 0 1em;
 }
 
 #teamgrid1 {

@@ -1,5 +1,5 @@
 <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
-<div class="container">
+<section class="main">
   <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
     <mini-lmap [locationUpdated]="locationParent">LMAP HERE</mini-lmap>
     <!--
@@ -120,4 +120,4 @@
       <pre><strong>EntryForm value:</strong> {{entryDetailsForm.value | json}}</pre>
     </div>
   </form>
-</div>
+</section>
