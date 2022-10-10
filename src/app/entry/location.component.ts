@@ -14,7 +14,6 @@ import {
 
 // https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
 //import { computePosition } from '@floating-ui/dom'
-import { OutsidePlacement, RelativePosition, ToppyModule, Toppy } from 'toppy'
 
 import { faInfoCircle, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { mdiAccount, mdiInformationOutline } from '@mdi/js'
@@ -78,13 +77,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() location: LocationType = undefinedLocation
   @Output() locationChange = new EventEmitter<LocationType>()
 
-  // for Toppy tooltips...
-  @ViewChild('blockDD', { read: ElementRef, static: true })
-  blockDD!: ElementRef
-  toppyOverlay!: any
-  toppyOverlayControl: boolean = false
-  _toppy!: any
-
   private id = "Location Component"
   locationFormModel!: FormGroup
   // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 & https://github.com/angular/angular/pull/43834
@@ -130,9 +122,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       this.log.error("Address lookup requires Internet.", this.id)
       // User notified by funky address string
     }
-
-    this._toppy = new ToppyModule
-    this._toppy.create(key: "bbb")
 
     this.log.verbose("Out of constructor", this.id)
   }
@@ -279,37 +268,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         }).then(this.applyStyles)
     */
 
-    // =========================================================
-    // for Toppy tooltips:
-    const position = new RelativePosition({
-      placement: OutsidePlacement.BOTTOM_LEFT,
-      src: this.blockDD.nativeElement
-    });
 
-    this.toppyOverlay = this._toppy
-      .position(position)
-      .content('<div><i>hello</i> tooltip<div><hr><br>', { hasHTML: true }) // content
-      .create();
-  }
-
-  open() {
-    this.log.error(`Opening Toppy Tooltop!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`, this.id)
-    this.toppyOverlayControl = true
-    this.toppyOverlay.open();
-  }
-
-  close() {
-    this.log.error(`Closinging Toppy Tooltop!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`, this.id)
-    this.toppyOverlayControl = true
-    this.toppyOverlay.close();
-  }
-
-  onToppyClick() {
-    if (this.toppyOverlayControl == false) {
-      this.open();
-    } else {
-      this.close();
-    }
   }
 
   /**
