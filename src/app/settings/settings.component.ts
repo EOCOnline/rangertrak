@@ -311,6 +311,11 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     //this.timepickerFormControl is where the Event comes up from...
   }
 
+  onInstallBtn() {
+    this.log.verbose(`onInstallBtn: Install Application!`, this.id)
+    //!BUG: Unimplemented!!!
+  }
+
   onBtnResetDefaults() {
     this.log.verbose(`onBtnResetDefaults: Reset Settings.`, this.id)
     this.settings = this.settingsService.ResetDefaults() // need to refresh page?!

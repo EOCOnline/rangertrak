@@ -1,15 +1,21 @@
 <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
 <section id="SettingsBody" class="main">
+
   <div *ngIf=isInstallable class="installMe">
-    <h3>&nbsp;<img src="../../assets/icons/install.png" height="14px" width="14px" alt="install icon" /> &nbsp;Install
-    </h3>
-    Would you like to install this application on this device?
-    This...
-    <ul class="small">
-      <li>requires little storage</li>
-      <li>permits offline viewingt of leaflet maps</li>
-      <li>provides a convenient icon to quickly return to the application</li>
+    Install application on this browser to...
+    <ul>
+      <li>Permit offline viewing of leaflet maps</li>
+      <li>Provide a convenient icon to quickly return to the application</li>
+      <li>(Requires little storage)</li>
     </ul>
+
+    <span onclick="onInstallBtn()" class="installBtn"
+      title="Installing uses almost no storage and provides off-line mapping and a quick way to return to RangerTrak!">
+      <!-- button mat-button class="installMe">buggy button!</button-->
+      &nbsp;
+      <img src="../../assets/icons/install.png" height="18px" width="18px" alt="install icon" />
+      <span> Install </span>&nbsp;
+    </span>
   </div>
 
   <form [formGroup]="settingsEditorForm" (ngSubmit)="onFormSubmit()">
