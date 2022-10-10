@@ -1,28 +1,32 @@
 //import assert from 'assert'
 import {
-    BehaviorSubject, debounceTime, fromEvent, map, merge, Observable, Subscription, takeWhile
+  BehaviorSubject, debounceTime, fromEvent, map, merge, Observable, Subscription, takeWhile
 } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import {
-    AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, SkipSelf,
-    ViewChild
+  AfterViewInit, Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, SkipSelf,
+  ViewChild
 } from '@angular/core'
 import {
-    FormArray, FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators
+  FormArray, FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators
 } from '@angular/forms'
-// import * as P from '@popperjs/core';
-///import { createPopper } from '@popperjs/core';
-// import type { StrictModifiers } from '@popperjs/core';
+
+// https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
+//import { computePosition } from '@floating-ui/dom'
+import { OutsidePlacement, RelativePosition, ToppyModule, Toppy } from 'toppy'
+
 import { faInfoCircle, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 
 //import { MatIconRegistry } from '@angular/material/icon'
+
 import {
-    CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GoogleGeocode, OpenLocationCode
+  CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GoogleGeocode, OpenLocationCode
 } from '../shared/'
+
 import {
-    LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
+  LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services'
 
 //! import { What3Words} from '../shared/'
@@ -74,6 +78,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() location: LocationType = undefinedLocation
   @Output() locationChange = new EventEmitter<LocationType>()
 
+  // for Toppy tooltips...
+  @ViewChild('blockDD', { read: ElementRef, static: true })
+  blockDD!: ElementRef
+  toppyOverlay!: any
+  toppyOverlayControl: boolean = false
+  _toppy!: any
+
   private id = "Location Component"
   locationFormModel!: FormGroup
   // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 & https://github.com/angular/angular/pull/43834
@@ -81,11 +92,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   static geocoder: google.maps.Geocoder | null
   geocoder = new GoogleGeocode()
   //!w3w = new What3Words()
-
-  //createPopper<StrictModifiers>(referenceElement, popperElement, options)
-  // button: HTMLButtonElement | undefined
-  //tooltip: HTMLHtmlElement | undefined
-  //popperInstance: any //typeof P.createPopper | undefined
 
   faInfoCircle = faInfoCircle
   faMapMarkedAlt = faMapMarkedAlt
@@ -99,6 +105,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     private settingsService: SettingsService,
     private _formBuilder: UntypedFormBuilder,
     private log: LogService,
+    // private _toppy: Toppy,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("======== Constructor() ============", this.id)
 
@@ -123,6 +130,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       this.log.error("Address lookup requires Internet.", this.id)
       // User notified by funky address string
     }
+
+    this._toppy = new ToppyModule
+    this._toppy.create(key: "bbb")
 
     this.log.verbose("Out of constructor", this.id)
   }
@@ -256,6 +266,50 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         })
     }
     this.newLocationToFormAndEmit(this.location)
+
+    // =========================================================
+    /*  if using floating-ui.com...
+        const referenceElement = document.querySelector('#blockDD');
+        const floatingElement = document.querySelector('#tooltipDD') as HTMLBodyElement
+
+        this.applyStyles
+
+        computePosition(referenceElement!, floatingElement, {
+          placement: 'top',
+        }).then(this.applyStyles)
+    */
+
+    // =========================================================
+    // for Toppy tooltips:
+    const position = new RelativePosition({
+      placement: OutsidePlacement.BOTTOM_LEFT,
+      src: this.blockDD.nativeElement
+    });
+
+    this.toppyOverlay = this._toppy
+      .position(position)
+      .content('<div><i>hello</i> tooltip<div><hr><br>', { hasHTML: true }) // content
+      .create();
+  }
+
+  open() {
+    this.log.error(`Opening Toppy Tooltop!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`, this.id)
+    this.toppyOverlayControl = true
+    this.toppyOverlay.open();
+  }
+
+  close() {
+    this.log.error(`Closinging Toppy Tooltop!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`, this.id)
+    this.toppyOverlayControl = true
+    this.toppyOverlay.close();
+  }
+
+  onToppyClick() {
+    if (this.toppyOverlayControl == false) {
+      this.open();
+    } else {
+      this.close();
+    }
   }
 
   /**
@@ -266,6 +320,17 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.newLocationToFormAndEmit(this.location)
   }
 
+  /*  if using floating-ui.com...
+    applyStyles({ x = 0, y = 0, strategy = 'absolute' }) {
+      // const referenceElement = document.querySelector('#button');
+      const floatingElement = document.querySelector('#tooltipDD') as HTMLBodyElement
+      Object.assign(floatingElement!.style, {
+        position: strategy,
+        left: `${x}px`,
+        top: `${y}px`,
+      });
+    }
+   */
 
   /**
    * Create Form Model, so we can readily set values & respond to user input
@@ -823,11 +888,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     // TODO: this.updateCoords(lat,lng)
   }
 
-  // --------------------------- POPPER ---------------------------
+  // --------------------------- TOOLTIPS ---------------------------
   /*
-    https://popper.js.org/docs/v2/tutorial/
-    TODO: https://popper.js.org/
-    https://popper.js.org/docs/v2/
+  https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
 
     show() {
       if (this.tooltip) {
@@ -881,9 +944,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       })
   }
 
-  https://bobrov.dev/angular-popper/
-  https://sergeygultyayev.medium.com/use-popper-js-in-angular-projects-7b34f18da1c
-  https://github.com/gultyaev/angular-popper-example
+  https://floating-ui.com superceeds popper.js
 
   The hint to display @Input() target!: HTMLElement
   Its positioning (check docs for available options)
