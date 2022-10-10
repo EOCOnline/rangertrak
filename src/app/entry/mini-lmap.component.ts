@@ -361,7 +361,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
         if (status) {
           status.innerText = `${coords} copied to clipboard`
           //status.style.visibility = "visible"
-          Utility.resetMaterialFadeAnimation(status)
+          Utility.resetMaterialFadeAnimation(status) //! BUG: doesn't work?!
         } else {
           this.log.info(`Entry__LMinimap-status not found!`, this.id)
         }

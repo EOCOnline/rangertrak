@@ -1,14 +1,24 @@
   // Flex Layout: https://tburleson-layouts-demos.firebaseapp.com/#/docs
 
   .header {
-    background: rgb(248, 251, 252, 0.5);
-
+    //display      : flex;
+    // background: rgb(248, 251, 252, 0.5);
+    background: rgb(183, 244, 255);
+    padding   : 0 5px 0.5em 5px;
+    //margin : 0;
   }
 
   .title {
     font-weight: bolder;
     font-size  : 20px;
     font-family: Lato, 'Arial Narrow Bold', sans-serif;
+  }
+
+  .rule {
+    background: rgb(183, 244, 255);
+    margin    : 0;
+    padding   : 0;
+    ;
   }
 
   .event {

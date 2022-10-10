@@ -20,6 +20,10 @@ h3 {
   margin-bottom: 0px;
 }
 
+body {
+  margin: 0 1em;
+}
+
 .elegant {
   margin-top   : 25px;
   margin-bottom: 0px;
@@ -199,6 +203,10 @@ input[type=number] {
 
 @keyframes fadeout {
   0% {
+    opacity: 1
+  }
+
+  10% {
     opacity: 1
   }
 

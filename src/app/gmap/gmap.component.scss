@@ -1,5 +1,9 @@
 @use '@material/switch/styles';
 
+body {
+  margin: 0 1em;
+}
+
 .big {
   font-size  : larger;
   font-weight: bold;
