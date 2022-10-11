@@ -22,6 +22,9 @@ RangerTrak-secrets.json
 # Old code
 /archived
 
+#Test and non-project stuff
+/junk
+
 # profiling files
 chrome-profiler-events*.json
 
