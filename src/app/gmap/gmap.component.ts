@@ -555,7 +555,7 @@ MarkerClustererPlus Library - also old
       let pos = `lat: ${lat}; lng: ${lng}`
       //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; lng: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
 
-      this.log.excessive("addMarker(G) Actually adding marker now...", this.id)
+      // this.log.excessive("addMarker(G) Actually adding marker now...", this.id)
 
       let m = new google.maps.Marker({
         draggable: true,
