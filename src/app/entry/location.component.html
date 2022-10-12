@@ -15,11 +15,14 @@
 <div class="container enter__Where-div">
   <!-- (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()" -->
   <form appearance="filled" class="enter__Where-input" [formGroup]="locationFormModel">
+
+    <!------------------------------------------------------------>
     <div class="input-group">
       &nbsp;&nbsp;&nbsp;Latitude:
 
       <span formGroupName="DD">
-        <input #latI formControlName="latI" type="number" min="-180" max="180" id="enter__Where-latI" />
+        <input #latI formControlName="latI" type="number" (change)="onDdChg()" min="-180" max="180"
+          id="enter__Where-latI" />
 
         <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
     class="text-sm text-danger">lat is required
@@ -44,44 +47,51 @@
       <span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
       <span formGroupName="DMS">
         <!-- BUG: why no ValueAsNumbers for these?! -->
-        <input #latD formControlName="latD" id="enter__Where-latD" type="number" min="0" max="90" /><strong>° </strong>
-        <input #latM formControlName="latM" id="enter__Where-latM" type="number" min="0" max="59" /><strong>' </strong>
-        <input #latS formControlName="latS" id="enter__Where-latS" type="number" min="0" max="59.99" /><strong>"
+        <input #latD formControlName="latD" id="enter__Where-latD" type="number" min="0" max="90"
+          (change)="onDmsChg()" /><strong>° </strong>
+        <input #latM formControlName="latM" id="enter__Where-latM" type="number" min="0" max="59"
+          (change)="onDmsChg()" /><strong>' </strong>
+        <input #latS formControlName="latS" id="enter__Where-latS" type="number" min="0" max="59.99"
+          (change)="onDmsChg()" /><strong>"
         </strong>
-        <input #latQ formControlName="latQ" id="enter__Where-latQ" type="text" pattern="'e','E','w','W'"
-          title="E or W" />
+        <input #latQ formControlName="latQ" id="enter__Where-latQ" type="text" pattern="'e','E','w','W'" title="E or W"
+          (change)="onDmsChg()" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;
       </span>
       <!--
-  (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
--->
+        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
+        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
+        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
+        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
+        -->
       <span formGroupName="DDM">
-        <input ##latDdmD formControlName="latDdmD" id="enter__Where-latDdmD" type="number" min="0" max="90" /><strong>°
+        <input ##latDdmD formControlName="latDdmD" id="enter__Where-latDdmD" type="number" min="0" max="90"
+          (change)="onDdmChg()" /><strong>°
         </strong>
-        <input ##latDdmM formControlName="latDdmM" id="enter__Where-latDdmM" type="number" min="0" max="59" /><strong>'
+        <input ##latDdmM formControlName="latDdmM" id="enter__Where-latDdmM" type="number" min="0" max="59"
+          (change)="onDdmChg()" /><strong>'
         </strong>
         <input ##latDdmQ formControlName="latDdmQ" id="enter__Where-latDdmQ" type="text" pattern="'e','E','w','W'"
-          title="E or W" />
+          title="E or W" (change)="onDdmChg()" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
       </span>
     </div>
     <!--
-(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
+      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
+      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
+      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
+      -->
 
--->
+
+    <!------------------------------------------------------------>
     <div class="input-group">
       Longitude:
 
       <span formGroupName="DD">
-        <input #lngI formControlName="lngI" type="number" min="-180" max="180"
-          id="enter__Where-lngI" /><strong>.</strong>
+        <input #lngI formControlName="lngI" type="number" min="-180" max="180" id="enter__Where-lngI"
+          (change)="onDdChg()" /><strong>.</strong>
         <input #lngF formControlName="lngF" type="number" step="100" min="0" max="99999" id="enter__Where-lngF"
-          tabindex="4" />
+          tabindex="4" (change)="onDdChg()" />
         <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
       </span>
       <!--
@@ -90,47 +100,59 @@
 
 -->
       <span formGroupName="DMS">
-        <input formControlName="lngD" id="enter__Where-lngD" type="number" min="0" max="90" /><strong>° </strong>
-        <input formControlName="lngM" id="enter__Where-lngM" type="number" min="0" max="59" /><strong>' </strong>
-        <input formControlName="lngS" id="enter__Where-lngS" type="number" min="0" max="59.99" /><strong>" </strong>
-        <input formControlName="lngQ" id="enter__Where-lngQ" type="text" pattern="'n','N','s','S'" title="N or S" />
+        <input formControlName="lngD" id="enter__Where-lngD" type="number" min="0" max="90"
+          (change)="onDmsChg()" /><strong>° </strong>
+        <input formControlName="lngM" id="enter__Where-lngM" type="number" min="0" max="59"
+          (change)="onDmsChg()" /><strong>' </strong>
+        <input formControlName="lngS" id="enter__Where-lngS" type="number" min="0" max="59.99"
+          (change)="onDmsChg()" /><strong>" </strong>
+        <input formControlName="lngQ" id="enter__Where-lngQ" type="text" pattern="'n','N','s','S'" title="N or S"
+          (change)="onDmsChg()" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;
       </span>
       <!--
-(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-(change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
--->
+        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
+        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
+        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
+        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
+        -->
       <span formGroupName="DDM">
-        <input #lngDdmD formControlName="lngDdmD" id="enter__Where-lngDdmD" type="number" min="0" max="90" /><strong>°
+        <input #lngDdmD formControlName="lngDdmD" id="enter__Where-lngDdmD" type="number" min="0" max="90"
+          (change)="onDdmChg()" /><strong>°
         </strong>
-        <input #lngDdmM formControlName="lngDdmM" id="enter__Where-lngDdmM" type="number" min="0" max="59" /><strong>'
+        <input #lngDdmM formControlName="lngDdmM" id="enter__Where-lngDdmM" type="number" min="0" max="59"
+          (change)="onDdmChg()" /><strong>'
         </strong>
         <input #lngDdmQ formControlName="lngDdmQ" id="enter__Where-lngDdmQ" type="text" pattern="'n','N','s','S'"
-          title="N or S" />
+          title="N or S" (change)="onDdmChg()" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
       </span>
     </div>
     <!--
-(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-(change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
--->
+      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
+      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
+      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
+      -->
+
+
+    <!------------------------------------------------------------>
     Street Address,
     <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>, or
     <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>:
 
     <input #address type="text" id="enter__Where-Address" tabindex="5"
       title="Optionally enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
-      formControlName="address" data-lpignore="true" />
+      formControlName="address" data-lpignore="true" (change)="onAddressChg()" />
   </form>
   <!--
+    (change)="onAddressChg(address.value)"
+  -->
 
-(change)="onAddressChg(address.value)"
--->
-  <hr>
+
+  <!------------------------------------------------------------>
+
   <div class="enter__Where-Results">
+    <hr>
     <!--   {{address}}
       formControlName="address"
       input name="addresses" id="addresses" type="text" value=""
