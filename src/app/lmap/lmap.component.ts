@@ -117,7 +117,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     super.ngOnInit()
     this.log.excessive("ngOnInit()", this.id)
 
-    this.initMainMap()
+    this.initMainMap()  //! REVIEW: Causes LOTS of "lmap:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
 
     if (this.hasOverviewMap) {
       this.initOverviewMap()
@@ -159,6 +159,10 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
      */
   ngAfterViewInit() {
 
+  }
+
+  onInstallBtn() {
+    this.log.error("onInstallBtn onInstallBtn onInstallBtn onInstallBtn UNIMPLEMENTED!!!!!!!!!!!!!!!!!!!!!!", this.id)
   }
 
   override initMainMap() {
@@ -230,6 +234,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
+    // TODO!
+    //! REVIEW: Causes LOTS of "lmap:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
     tiles.addTo(this.lMap)
 
     // TODO: Consider allowing addition of SVG overlay (of known trails and other overlays): https://leafletjs.com/reference.html#svgoverlay

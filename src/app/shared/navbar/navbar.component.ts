@@ -82,8 +82,13 @@ export class NavbarComponent implements OnInit {
     this.log.error("Search: unimplemented yet", this.id)
   }
 
+
+  onInstallBtn2() {
+    this.log.error("onInstallBtn onInstallBtn onInstallBtn onInstallBtn UNIMPLEMENTED!!!!!!!!!!!!!!!!!!!!!!", this.id)
+  }
+
   onInstallBtn() {
-    this.log.info("User wants to install app!"), this.id
+    this.log.info("User wants to install app!", this.id)
 
     // From Angular Cookbook, pg 592
     // https://web.dev/customize-install
