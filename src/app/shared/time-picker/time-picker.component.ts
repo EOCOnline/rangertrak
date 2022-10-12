@@ -1,22 +1,22 @@
-import dayjs from 'dayjs'
+//import dayjs from 'dayjs'
 import {
-    debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
+  debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
 } from 'rxjs'
 
 import {
-    NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule
+  NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule
 } from '@angular-material-components/datetime-picker' // already in app.module.ts
 import { DOCUMENT } from '@angular/common'
 import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core'
 import {
-    FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup,
-    Validators
+  FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup,
+  Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 
 import {
-    FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
-    SettingsService, SettingsType
+  FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
+  SettingsService, SettingsType
 } from '../services/'
 
 // https://blog.briebug.com/blog/5-ways-to-pass-data-into-child-components-in-angular
@@ -73,8 +73,8 @@ export class TimePickerComponent implements OnInit {
   public touchUi = false
   public enableMeridian = false // 24 hr clock
 
-  minDate!: dayjs.Dayjs | null
-  maxDate!: dayjs.Dayjs | null
+  minDate!: null | Date // dayjs.Dayjs
+  maxDate!: null | Date // dayjs.Dayjs
   public stepHour = 1
   public stepMinute = 1
   public stepSecond = 1
@@ -151,12 +151,12 @@ export class TimePickerComponent implements OnInit {
   // }
 
   private _setMinDate(hours: number = this.defaultOpPeriod) {
-    const now = dayjs();
-    this.minDate = now.subtract(hours, 'hours');
+    //const now = Date.now() //dayjs();
+    this.minDate?.setMilliseconds(Date.now() - hours * 60 * 60 * 1000)
   }
 
   private _setMaxDate(hours: number = this.defaultOpPeriod) {
-    const now = dayjs();
-    this.maxDate = now.add(hours, 'hours');
+    //const now = Date.now() //dayjs();
+    this.minDate?.setMilliseconds(Date.now() + hours * 60 * 60 * 1000)
   }
 }

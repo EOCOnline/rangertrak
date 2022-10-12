@@ -55,7 +55,6 @@
     "ag-grid-community": "^28.2.0",
     "ajv": "^8.11.0",
     "crypto-js": "^4.1.1",
-    "dayjs": "^1.11.5",
     "idb": "^7.1.0",
     "leaflet": "^1.9.2",
     "leaflet.markercluster": "^1.5.3",
