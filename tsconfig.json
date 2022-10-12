@@ -1,10 +1,10 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig.
     "disableTypeScriptVersionCheck": true
+    "skipLibCheck": true,
 */
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
     "outDir": "./dist/rangertrak",
