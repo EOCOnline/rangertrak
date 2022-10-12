@@ -31,8 +31,8 @@ const iconDefault = L.icon({
 })
 const markerIcon = L.icon({
   iconSize: [20, 25],
-  iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png',   //!BUG: Relies on internet...
-  shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png'
+  iconUrl: '../../assets/icons/marker-icon.png',
+  shadowUrl: '../../assets/icons/marker-shadow.png'
 })
 L.Marker.prototype.options.icon = iconDefault;
 //or L.Marker.prototype.options.icon = new L.Icon.Default;
