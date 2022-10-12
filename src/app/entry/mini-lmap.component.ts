@@ -478,7 +478,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     this.displayedFieldReportArray.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${i.date} with ${i.status}`
-        this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
+        //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
         let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title })
         marker.bindPopup(title)

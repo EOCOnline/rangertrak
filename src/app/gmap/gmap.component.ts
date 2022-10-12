@@ -510,7 +510,7 @@ MarkerClustererPlus Library - also old
         break
       }
 
-      this.log.excessive(`displayMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`, this.id)
+      // this.log.excessive(`displayMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`, this.id)
 
       this.addMarker(latlng.lat(), latlng.lng(), title, labelText, title, labelColor, "28px", icon)
     }
