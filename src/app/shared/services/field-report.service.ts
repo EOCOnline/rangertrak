@@ -3,12 +3,12 @@ import { BehaviorSubject, Observable, Observer, of, Subscription, throwError } f
 
 import { HttpClient } from '@angular/common/http'
 import {
-    Injectable, OnDestroy, OnInit, Optional, Pipe, PipeTransform, SkipSelf
+  Injectable, OnDestroy, OnInit, Optional, Pipe, PipeTransform, SkipSelf
 } from '@angular/core'
 
 import {
-    FieldReportStatusType, FieldReportsType, FieldReportType, LogService, RangerService, RangerType,
-    SettingsService, SettingsType
+  FieldReportStatusType, FieldReportsType, FieldReportType, LogService, RangerService, RangerType,
+  SettingsService, SettingsType
 } from './' // , TeamService
 
 //import {  } from './ranger.interface'
@@ -350,8 +350,8 @@ export class FieldReportService implements OnInit, OnDestroy {
        TypeError: Cannot read properties of undefined (reading 'unsubscribe')
        at FieldReportService.ngOnDestroy (main.js:8505:35)
     */
-    // this.rangersSubscription.unsubscribe()
-    // this.settingsSubscription.unsubscribe()
+    // this.rangersSubscription?.unsubscribe()
+    // this.settingsSubscription?.unsubscribe()
   }
 
   // ---------------------------------  UNUSED -------------------------------------------------------

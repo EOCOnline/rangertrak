@@ -482,8 +482,8 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // this.locationSubscription.unsubscribe()
-    this.fieldReportsSubscription.unsubscribe()
-    this.settingsSubscription.unsubscribe()
+    // this.locationSubscription?.unsubscribe()
+    this.fieldReportsSubscription?.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }

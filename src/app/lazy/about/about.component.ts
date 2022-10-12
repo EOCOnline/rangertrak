@@ -40,6 +40,6 @@ export class AboutComponent implements OnDestroy {
   //ngOnInit() {  }
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }

@@ -98,7 +98,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.timeElapsed$ = interval(1000)
       .pipe(map(() => {
         let diff = Utility.timeDiff(msStartTime, new Date().getTime())
-        return (`${diff.string} ${(diff.negative ? ` before starting` : ` elapsed`)}`)
+        return (`${diff.string} ${(diff.negative ? ` before period starts` : ` elapsed`)}`)
       }
       ))
 
@@ -106,12 +106,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.timeLeft$ = interval(1000)
       .pipe(map(() => {
         let diff = Utility.timeDiff(new Date().getTime(), msEndTime)
-        return (`${diff.string} ${(diff.negative ? ` since ending` : ` left`)}`)
+        return (`${diff.string} ${(diff.negative ? ` since period ended` : ` left`)}`)
       }
       ))
   }
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe
+    this.settingsSubscription?.unsubscribe
   }
 }

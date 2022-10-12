@@ -122,7 +122,7 @@ export class AlertsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }
 

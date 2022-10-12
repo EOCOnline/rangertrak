@@ -14,8 +14,8 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Utility } from '../shared'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import {
-    FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
-    SettingsService, SettingsType
+  FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
+  SettingsService, SettingsType
 } from '../shared/services'
 import { csvImport } from './csvImport'
 import { CustomTooltip } from './customTooltip'
@@ -481,8 +481,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   ngOnDestroy() {
-    this.rangersSubscription.unsubscribe()
-    this.settingsSubscription.unsubscribe()
+    this.rangersSubscription?.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }
 

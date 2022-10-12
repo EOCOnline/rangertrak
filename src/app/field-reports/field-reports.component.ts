@@ -4,14 +4,14 @@ import { Observable, subscribeOn, Subscription } from 'rxjs'
 
 import { DOCUMENT, formatDate } from '@angular/common'
 import {
-    AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform
+  AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform
 } from '@angular/core'
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms'
 
 import { Utility } from '../shared'
 import {
-    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
-    RangerService, SettingsService, SettingsType
+  FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
+  RangerService, SettingsService, SettingsType
 } from '../shared/services'
 
 @Pipe({ name: 'myUnusedPipe' })
@@ -416,7 +416,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.fieldReportsSubscription.unsubscribe()
-    this.settingsSubscription.unsubscribe()
+    this.fieldReportsSubscription?.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }

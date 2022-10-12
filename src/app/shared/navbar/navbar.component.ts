@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { faL, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { MDCTopAppBar } from '@material/top-app-bar'
 // import { MatButton } from '@angular/material/button'
@@ -30,11 +30,11 @@ export class NavbarComponent implements OnInit {
     private installableService: InstallableService,
     private router: Router
   ) {
-    console.log("Navbar Component: constructor")
+    this.log.verbose("constructor", this.id)
 
     this.router.events.subscribe(
       (event) => {
-
+        // https://angular.io/api/router/NavigationStart
         if (event instanceof NavigationStart) {
           // REVIEW: This seems to help page get properly loaded????
           Utility.sleep(100)
@@ -50,6 +50,12 @@ export class NavbarComponent implements OnInit {
         }
         if (event instanceof NavigationEnd) {
           this.isNavigating = false
+        }
+        if (event instanceof NavigationError) {
+          // https://angular.io/api/router/NavigationError
+          this.log.error(`Navigation Error event: to "${event.target?.toString()}" got "${event.toString()}"`, this.id)
+          //this.isNavigating = false
+
         }
       }
     )
@@ -69,15 +75,15 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.log.info("Navbar Component: ngOnInit", this.id)
+    this.log.info("ngOnInit", this.id)
   }
 
   Search() {
-    this.log.error("Navbar Component: Search: unimplemented yet", this.id)
+    this.log.error("Search: unimplemented yet", this.id)
   }
 
   onInstallBtn() {
-    this.log.info("Navbar Component: User wants to install app!"), this.id
+    this.log.info("User wants to install app!"), this.id
 
     // From Angular Cookbook, pg 592
     // https://web.dev/customize-install

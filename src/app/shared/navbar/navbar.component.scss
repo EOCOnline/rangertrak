@@ -11,15 +11,15 @@
 }
 
 .main-nav {
-  display            : flex;
-  height             : 2em;
-  background         : rgb(183, 244, 255);
+  display              : flex;
+  //height             : 2em;
+  background           : rgb(183, 244, 255);
   // color         : white;
   //border-radius    : 3px;
-  padding-top        : 0.5em;
-  padding-bottom     : 0.15em;
+  padding-top          : 0.3em;
+  padding-bottom       : 0.25em;
   //font-family   : 'Arima Madurai', sans-serif;
-  font-size          : 1.2em;
+  font-size            : 1.2em;
 }
 
 .main-nav>ul {

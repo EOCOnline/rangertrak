@@ -540,8 +540,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   }
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe()
-    this.timeSubscriptionStart$.unsubscribe()
-    this.timeSubscriptionEnd$.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
+    this.timeSubscriptionStart$?.unsubscribe()
+    this.timeSubscriptionEnd$?.unsubscribe()
   }
 }

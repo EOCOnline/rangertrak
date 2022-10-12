@@ -941,6 +941,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   */
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }

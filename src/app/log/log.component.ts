@@ -9,12 +9,12 @@ import { DOCUMENT } from '@angular/common'
 import { AfterContentInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import {
-    faBug, faCircleCheck, faCircleExclamation, faCircleInfo, faMapMarkedAlt
+  faBug, faCircleCheck, faCircleExclamation, faCircleInfo, faMapMarkedAlt
 } from '@fortawesome/free-solid-svg-icons'
 
 import { Utility } from '../shared'
 import {
-    LogHeadings, LogLevel, LogService, LogType, SettingsService, SettingsType
+  LogHeadings, LogLevel, LogService, LogType, SettingsService, SettingsType
 } from '../shared/services/'
 
 /**
@@ -210,6 +210,6 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
   }
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }

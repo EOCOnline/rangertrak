@@ -50,6 +50,6 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }
