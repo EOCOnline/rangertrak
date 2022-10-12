@@ -1,52 +1,30 @@
-<!-- https://popper.js.org/docs/v2/tutorial/ -->
-
-<!--  TODO: onclick="onWhereInfo() -->
-<!--div id="tooltip" role="tooltip">
-  My tooltip: Instructions for how to enter location into RangerTrak: Enter Lat & Lng as
-  decimal values or DMS, OR as an address - which will update/REPLACE the coordinates!
-  <div id="arrow" data-popper-arrow></div>
-</div-->
-
-<!--
-(change)="this.addressCtrlChanged('latI')"
-<!- formControlName="lat": MUST be element in Location Form Group!
-[FormControl]="latI"
--->
 <div class="container enter__Where-div">
-  <!-- (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()" -->
   <form appearance="filled" class="enter__Where-input" [formGroup]="locationFormModel">
+
 
     <!------------------------------------------------------------>
     <div class="input-group">
       &nbsp;&nbsp;&nbsp;Latitude:
+
 
       <span formGroupName="DD">
         <input #latI formControlName="latI" type="number" (change)="onDdChg()" min="-180" max="180"
           id="enter__Where-latI" />
 
         <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
-    class="text-sm text-danger">lat is required
-
-      [class.border-danger]="location.get('latD')?.touched && location.get('latD')?.invalid"
-      (change)="this.addressCtrlChanged('latD')"
+          class="text-sm text-danger">lat is required
+          [class.border-danger]="location.get('latD')?.touched && location.get('latD')?.invalid"
         </span-->
+
         <strong>.</strong>
         <input #latF formControlName="latF" type="number" (change)="onDdChg()" step="100" min="0" max="99999"
           id="enter__Where-latF" tabindex="2" />
-        <!--
-          (change)="onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)"
-          (change)="onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)"
-
-
-          span *ngIf="location.get('latD')?.touched && location.get('latD')?.hasError('required')"
-    class="text-sm text-danger">Latitude is required
-    </span-->
         <strong>° </strong>
       </span>
-
       <span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
+
+
       <span formGroupName="DMS">
-        <!-- BUG: why no ValueAsNumbers for these?! -->
         <input #latD formControlName="latD" id="enter__Where-latD" type="number" min="0" max="90"
           (change)="onDmsChg()" /><strong>° </strong>
         <input #latM formControlName="latM" id="enter__Where-latM" type="number" min="0" max="59"
@@ -58,34 +36,26 @@
           (change)="onDmsChg()" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;
       </span>
-      <!--
-        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-        -->
+
+
       <span formGroupName="DDM">
-        <input ##latDdmD formControlName="latDdmD" id="enter__Where-latDdmD" type="number" min="0" max="90"
+        <input #latDdmD formControlName="latDdmD" id="enter__Where-latDdmD" type="number" min="0" max="90"
           (change)="onDdmChg()" /><strong>°
         </strong>
-        <input ##latDdmM formControlName="latDdmM" id="enter__Where-latDdmM" type="number" min="0" max="59"
+        <input #latDdmM formControlName="latDdmM" id="enter__Where-latDdmM" type="number" min="0" max="59"
           (change)="onDdmChg()" /><strong>'
         </strong>
-        <input ##latDdmQ formControlName="latDdmQ" id="enter__Where-latDdmQ" type="text" pattern="'e','E','w','W'"
+        <input #latDdmQ formControlName="latDdmQ" id="enter__Where-latDdmQ" type="text" pattern="'e','E','w','W'"
           title="E or W" (change)="onDdmChg()" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
       </span>
     </div>
-    <!--
-      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-      -->
 
 
     <!------------------------------------------------------------>
     <div class="input-group">
       Longitude:
+
 
       <span formGroupName="DD">
         <input #lngI formControlName="lngI" type="number" min="-180" max="180" id="enter__Where-lngI"
@@ -94,11 +64,8 @@
           tabindex="4" (change)="onDdChg()" />
         <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
       </span>
-      <!--
-(change)="onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)"
- (change)="onDdChg(latI.valueAsNumber, latF.valueAsNumber, lngI.valueAsNumber, lngF.valueAsNumber)"
 
--->
+
       <span formGroupName="DMS">
         <input formControlName="lngD" id="enter__Where-lngD" type="number" min="0" max="90"
           (change)="onDmsChg()" /><strong>° </strong>
@@ -110,12 +77,8 @@
           (change)="onDmsChg()" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>&nbsp; or &nbsp;
       </span>
-      <!--
-        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-        (change)="onDmsChg(latQ.value, latD.valueAsNumber, latM.valueAsNumber, latS.valueAsNumber,  lngQ, lngD, lngM, lngS)"
-        -->
+
+
       <span formGroupName="DDM">
         <input #lngDdmD formControlName="lngDdmD" id="enter__Where-lngDdmD" type="number" min="0" max="90"
           (change)="onDdmChg()" /><strong>°
@@ -128,11 +91,7 @@
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
       </span>
     </div>
-    <!--
-      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-      (change)="onDdmChg(latDDMQ.value, latDDMD.valueAsNumber, latDDMM.valueAsNumber, lngDDMQ.value, lngDDMD.valueAsNumber, lngDDMM.valueAsNumber)"
-      -->
+
 
 
     <!------------------------------------------------------------>
@@ -144,52 +103,22 @@
       title="Optionally enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
       formControlName="address" data-lpignore="true" (change)="onAddressChg()" />
   </form>
-  <!--
-    (change)="onAddressChg(address.value)"
-  -->
 
 
   <!------------------------------------------------------------>
-
   <div class="enter__Where-Results">
     <hr>
-    <!--   {{address}}
-      formControlName="address"
-      input name="addresses" id="addresses" type="text" value=""
-      placeholder="" title="Enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
-      onchange="chkAddresses()"> (optional) -->
-    <!-- placeholder="84VVCGWP+VW" title ="Enter short or full PlusCode" placeholder="pil.tutles.binde"-->
-
     <!--Derived Locations: -->
     <span id="derivedAddress" title="Normalized Address">Address:</span><br>
     <span id="pCodes" title="Global & short (Google) Plus Codes">+Codes:</span><br>
     <span id="what3Words" title="What3Words">What3Words:</span>
   </div>
-  <!-- lat:{{location.lat}}; lng:{{location.lat}}; addr:{{location.address}}; {{location.derivedFromAddress}} -->
 </div>
 
-
-
-<!--br-->
-
-<!--div class="input-group"><span class="strongish">Derived Addresses:</span>
-      <div id="top3wa">&nbsp;&nbsp;&nbsp;Top 3 word address match: </div>
+<!--
+        div id="top3wa">&nbsp;&nbsp;&nbsp;Top 3 word address match: </div>
       <div id="coords">&nbsp;&nbsp;&nbsp;WGS84 Coordinates: </div>
       <div id="nearest_place">&nbsp;&nbsp;&nbsp;Nearest Place: </div>
       <div>&nbsp;&nbsp;&nbsp;Derived Address: <span id="derivedAddress" #derivedAddress>WA locale; Full code: +Code:
           8VCWVF22+</span>
-      </div>
-
-  <!- -script type="module"
-    src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.esm.js"></script>
-  <script nomodule
-    src="https://cdn.what3words.com/javascript-components@4-latest/dist/what3words/what3words.js?key=YOUR-API-KEY"></script- ->
-
-  <!- -form id="form" method="GET"- ->
-  <div id="what3words-autosuggest">
-    <!- -what3words-autosuggest- ->
-    &nbsp;&nbsp;&nbsp;what3words-autosuggest: <input type="text" />
-    <!- -/what3words-autosuggest- ->
-  </div>
-  <!- -/form- ->
-  </div-->
+      </div-->

@@ -254,6 +254,8 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         })
     }
+
+    // !BUG: Doesn't center on initial (previously received) location...
     this.newLocationToFormAndEmit(this.location)
 
     // =========================================================
@@ -387,7 +389,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
    * https://angular.io/guide/template-reference-variables
    */
   onDdChg() {
-    this.log.excessive(`Grab DD values from locationFormModel`, this.id)
+    //this.log.excessive(`Grab DD values from locationFormModel`, this.id)
     let latI = this.locationFormModel.get("DD.latI")?.value
     let latF = this.locationFormModel.get("DD.latF")?.value
     let lngI = this.locationFormModel.get("DD.lngI")?.value
@@ -408,7 +410,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   onDmsChg() {
-    this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
+    //this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
     let latD = this.locationFormModel.get("DMS.latD")?.value
     let latM = this.locationFormModel.get("DMS.latM")?.value
     let latS = this.locationFormModel.get("DMS.latS")?.value
@@ -437,15 +439,15 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   onDdmChg() {
-    this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
-    let latDdmD = this.locationFormModel.get("DMS.latDdmD")?.value
-    let latDdmM = this.locationFormModel.get("DMS.latDdmM")?.value
-    let latDdmQ = this.locationFormModel.get("DMS.latDdmQ")?.value
-    let lngDdmD = this.locationFormModel.get("DMS.lngDdmD")?.value
-    let lngDdmM = this.locationFormModel.get("DMS.lngDdmM")?.value
-    let lngDdmQ = this.locationFormModel.get("DMS.lngDdmQ")?.value
+    //this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
+    let latDdmD = this.locationFormModel.get("DDM.latDdmD")?.value
+    let latDdmM = this.locationFormModel.get("DDM.latDdmM")?.value
+    let latDdmQ = this.locationFormModel.get("DDM.latDdmQ")?.value
+    let lngDdmD = this.locationFormModel.get("DDM.lngDdmD")?.value
+    let lngDdmM = this.locationFormModel.get("DDM.lngDdmM")?.value
+    let lngDdmQ = this.locationFormModel.get("DDM.lngDdmQ")?.value
 
-    this.log.verbose(`DMS value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
+    this.log.excessive(`DMS value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
 
     let latLng = {
       lat: DDMToDD(<string>latDdmQ, latDdmD, latDdmM)!,

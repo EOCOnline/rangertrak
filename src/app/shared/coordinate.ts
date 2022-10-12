@@ -22,32 +22,6 @@ class PointSample {
     private _firstName: string,
     private _lastName: string) {
   }
-
-  /*
-  public get age() {
-    return this._age;
-  }
-
-  public set age(theAge: number) {
-    if (theAge <= 0 || theAge >= 200) {
-      throw new Error('The age is invalid');
-    }
-    this._age = theAge;
-  }
-
-  public get FullName(): string {
-    return `${this._firstName} ${this._lastName}`;
-  }
-
-  public set fullName(name: string) {
-    let parts = name.split(' ');
-    if (parts.length != 2) {
-      throw new Error('Invalid name format: first last');
-    }
-    this._firstName = parts[0];
-    this._lastName = parts[1];
-  }
-  */
 }
 
 export class Coordinate_Unused {
@@ -156,7 +130,7 @@ export function DDToDDM(D: number, lng: boolean = false) {
  * @returns number
  */
 export function DMSToDD(Q: string, D: number, M: number, S: number): number {
-  // console.info(`DMSToDD got:  ${D}° ${M}' ${S}" ${Q}`)
+  console.info(`DMSToDD got:  ${D}° ${M}' ${S}" ${Q}`)
   return (((Q.toLowerCase() == 'w' || Q.toLowerCase() == 's') ? -1 : 1) * (D
     + Math.round((M / 60 + S / 6000) * (10 ** 4)) / (10 ** 4))) // float portion to 4 decimals
   //+ Number(Math.round((M / 60 + S / 6000) * (10 ** 4)).toFixed(4)))  // alternatively
