@@ -120,7 +120,7 @@
           entered for converting short to full/global codes.</li>
         <li>
           <a href="https://www.What3Words.com" target="_blank">What3Words</a> uses the 'w3wLocale' to set the focus,
-          prioritizing suggested results (for incorrect words) by proximity to this point.
+          prioritizing suggested results (for incorrect words) by proximity to this nearby locality/town/place.
         </li>
         <li>
           Maps do NOT use any of these. Maps are auto-centered on the bounding coordinates
@@ -160,6 +160,7 @@
         [class.border-danger]="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.invalid"
         type="text" formControlName="defPlusCode" placeholder="84VVCGWP+VW" [style.width.px]="100"
         data-lpignore="true" />
+      &nbsp;&nbsp;<button onclick="window.open('http://plus.codes/map/','_blank')">Find a +Code</button>
       <div
         *ngIf="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.hasError('required')"
         class="text-sm text-danger">
