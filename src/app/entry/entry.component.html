@@ -75,10 +75,19 @@
       <mat-radio-group class="filled  enter__Status" labelPosition="after" formControlName="status" tabindex="7"><span
           class="bottomDrop">Status:&nbsp;&nbsp;</span>
         <mat-radio-button *ngFor="let stat of settings.fieldReportStatuses" value="{{stat.status}}" class="rButton">
-          <span class="Enter__status-value" style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
+          <span class="Enter__status-value" style="color:{{stat.color}};  text-shadow: 1px 3px 8px rgb(91, 91, 91);">
+            {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
           <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
         </mat-radio-button>
       </mat-radio-group>
+      <br>
+      <br>
+      <h2>sRBG Luma method</h2>
+      <button class="btn">Primary Color</button>
+      <button class="btn btn--secondary">Secondary Color</button>
+      <h2>W3C Luma method</h2>
+      <button class="btn btn--w3c">Primary Color</button>
+      <button class="btn btn--w3c btn--secondary">Secondary Color</button>
       <br />
       <br />
 

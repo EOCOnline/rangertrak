@@ -40,8 +40,8 @@ import { LogComponent } from './log/log.component'
 import { MaterialModule } from './material.module'
 import { RangersComponent } from './rangers/rangers.component'
 import { ColorEditor } from './settings/color-editor.component'
-import { MoodEditor } from './settings/mood-editor.component'
-import { MoodRenderer } from './settings/mood-renderer.component'
+//import { MoodEditor } from './settings/mood-editor.component'
+//import { MoodRenderer } from './settings/mood-renderer.component'
 import { SettingsComponent } from './settings/settings.component'
 import { HeaderComponent } from './shared/'
 //import { AgmCoreModule } from '@agm/core'
@@ -109,8 +109,8 @@ import { X404Component } from './x404/x404.component'
     FieldReportsComponent,
     SettingsComponent,
     ColorEditor,
-    MoodEditor,
-    MoodRenderer,
+    //MoodEditor,
+    //MoodRenderer,
     RangersComponent,
     X404Component,
     LogComponent,

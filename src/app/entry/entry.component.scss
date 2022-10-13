@@ -7,6 +7,8 @@ with ($primary: #962f10,
 //@use "@material/banner/styles";
 // https://material.io/components/buttons/web#api
 
+@use "contrasting-color";
+
 $filledColor : #F0F0F0;
 
 .filled {
@@ -22,19 +24,6 @@ h3 {
 
 .main {
   margin: 0 1em;
-}
-
-.bkgrnd {
-  // from https://csshero.org/mesher/
-  background-color: #ffb899;
-  background-image:
-    radial-gradient(at 4% 89%, hsla(97, 72%, 65%, 1) 0px, transparent 50%),
-    radial-gradient(at 98% 83%, hsla(265, 73%, 64%, 1) 0px, transparent 50%),
-    radial-gradient(at 35% 39%, hsla(164, 66%, 79%, 1) 0px, transparent 50%),
-    radial-gradient(at 70% 35%, hsla(272, 71%, 67%, 1) 0px, transparent 50%),
-    radial-gradient(at 35% 54%, hsla(63, 68%, 68%, 1) 0px, transparent 50%),
-    radial-gradient(at 44% 59%, hsla(308, 85%, 71%, 1) 0px, transparent 50%),
-    radial-gradient(at 43% 8%, hsla(316, 94%, 61%, 1) 0px, transparent 50%);
 }
 
 .elegant {
@@ -93,11 +82,6 @@ input[type=number] {
   background-color      : $filledColor;
   line-height           : 35px;
   //margin            : 20px 0;
-}
-
-.Enter__status-value {
-  // TODO: Better contrast: https://codepen.io/facundocorradini/pen/LBVvyq & https://css-tricks.com/switch-font-color-for-different-backgrounds-with-css/
-  text-shadow: 1px 3px 8px grey;
 }
 
 .bottomDrop {
@@ -219,7 +203,7 @@ input[type=number] {
     opacity: 1
   }
 
-  10% {
+  15% {
     opacity: 1
   }
 

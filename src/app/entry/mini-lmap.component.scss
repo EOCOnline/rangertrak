@@ -32,7 +32,6 @@
   visibility: hidden;
 }
 
-
 .leaflet-container.crosshair-cursor-enabled {
   cursor: crosshair;
 }
@@ -49,7 +48,6 @@
   color    : #999;
   float    : right;
   margin   : 0 5px;
-
 }
 
 .Entry__LMap-footer {
@@ -57,12 +55,8 @@
 }
 
 #Entry__Minimap-status {
-  // color    : #888;
-  opacity     : 0;
-  //visibility: hidden;
-
-  animation: fadeout 8s ease-out;
-  // TODO: Need to reset annimation see Entry form...
+  opacity  : 0;
+  animation: fadeout 4s ease-out;
 }
 
 @keyframes fadeout {

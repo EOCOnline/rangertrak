@@ -16,8 +16,8 @@ import {
 //import { Color } from '@angular-material-components/color-picker';
 //import { ThemePalette } from '@angular/material/core';
 import { ColorEditor } from './color-editor.component'
-import { MoodEditor } from './mood-editor.component'
-import { MoodRenderer } from './mood-renderer.component'
+//import { MoodEditor } from './mood-editor.component'
+//import { MoodRenderer } from './mood-renderer.component'
 
 @Component({
   selector: 'rangertrak-settings',
