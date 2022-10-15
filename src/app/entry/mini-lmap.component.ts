@@ -498,11 +498,11 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   }
 
   // override displayAllMarkers() {
-  //   // this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
+  // this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
   // }
 
 
-  // https:/ / blog.mestwin.net / leaflet - angular - marker - clustering /
+  // https://blog.mestwin.net/leaflet-angular-marker-clustering/
   getIcon() {
     const number = Math.floor(Math.random() * 6)
     return L.icon({
@@ -516,12 +516,10 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   createMarker_UNUSED() {
     const mapIcon = this.getIcon();
     // or const mapIcon = L.Icon.Default
-
     // const coordinates = latLng([this.mapPoint.latitude, this.mapPoint.longitude]);
     // this.lastLayer = marker(coordinates).setIcon(mapIcon);
     // this.markerClusterGroup.addLayer(this.lastLayer)
   }
-
 
   /**
    * Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.

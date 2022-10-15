@@ -1,4 +1,6 @@
-
+/**
+ * Abstract class serving as a repository for common/reused map functions
+ */
 import L from 'leaflet'
 import { fromEvent, Observable, Subscription } from 'rxjs'
 import { catchError, mergeMap, toArray } from 'rxjs/operators'
@@ -13,11 +15,9 @@ import { MDCSwitch } from '@material/switch'
 import {
   FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LocationType,
   LogService, SettingsService, SettingsType
-} from '../shared/services'
-import { Utility } from './'
-import * as C from './coordinate'
+} from '../services'
+import { Utility } from '..'
 
-//import { abstractMap } from '../shared/map'
 
 export enum MapType {
   Google,

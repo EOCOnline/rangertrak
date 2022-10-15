@@ -7,7 +7,7 @@ import { GoogleMap } from '@angular/google-maps'
 import { MarkerClusterer } from '@googlemaps/markerclusterer'
 
 import { Utility } from '../shared/'
-import { AbstractMap } from '../shared/map'
+import { AbstractMap } from '../shared/mapping/map'
 import {
   FieldReportService, FieldReportStatusType, FieldReportType, LogService,
   SettingsService
@@ -34,6 +34,10 @@ GoogleMapsModule (their Angular wrapper) exports three components that we can us
  https://github.com/timdeschryver/timdeschryver.dev/blob/main/content/blog/google-maps-as-an-angular-component/index.md
  TODO: Allow geocoding: https://rapidapi.com/blog/google-maps-api-react/
  Option doc: https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions
+
+ per https://stackoverflow.com/a/44339169/18004414
+ https://developers.google.com/maps/documentation/javascript/overview supports client-side usage
+ https://console.cloud.google.com/google/maps-apis/ does *NOT* support client side usage?!
 */
 
 declare const google: any // declare tells compiler "this variable exists (from elsewhere) & can be referenced by other code. There's no need to compile this statement"

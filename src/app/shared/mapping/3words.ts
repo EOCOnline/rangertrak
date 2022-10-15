@@ -2,9 +2,9 @@
 //import { Components as W3W  } from "@what3words/javascript-components"
 import { DOCUMENT } from '@angular/common'
 import { Component, Inject, OnInit, ViewChild, isDevMode } from '@angular/core'
-import { AlertsComponent } from './alerts/alerts.component'
+import { AlertsComponent } from '../alerts/alerts.component'
 //import { UrlHandlingStrategy } from "@angular/router";
-import { SettingsService } from "./services";
+import { SettingsService } from "../services";
 
 // https://github.com/what3words/w3w-node-wrapper has the answers!!!
 //import * as W3W from "@what3words/javascript-components"
