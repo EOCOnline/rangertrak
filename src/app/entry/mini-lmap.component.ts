@@ -63,10 +63,11 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       this._location = newLocation
 
       if (!this.lMap) {
-        this.log.error(`Setting new location, but L.Map not yet set!!!`, this.id)
+        // OK, happens enough that we check & handle it at end of ngOnInit()
+        this.log.warn(`Setting new location, but L.Map not yet set!!!`, this.id)
       }
       this.addMarker(newLocation.lat, newLocation.lng, newLocation.address)
-      //this.onNewLocation(newLocation)
+      //  ! this.onNewLocation(newLocation)
     } else {
       this.log.error((`DRATS: Parent sent undefined location event to child`), this.id)
     }
@@ -144,7 +145,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     }
 
     // Following moved from InitMainMap to avoid: map not a leaflet or google map
-    //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
+    // Set intial map position, though AddMarker rescales/centers map as needed
     this.lMap = L.map('map', {
       center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
       zoom: this.settings ? this.settings.leaflet.defZoom : 15
@@ -155,13 +156,15 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       return
     }
 
-
     this.initMainMap()
     this.updateFieldReports()
 
-    //! Force output of 1st location received (which happened before the map was ready...) - might have to move this to OnMapReady()???
-    // this.onNewLocation(this._location)
-    this.addMarker(this._location.lat, this._location.lng, this._location.address)
+    // We probably got (& stored an initial location) before map was initialized just above, so add it now
+    if (this.location === undefinedLocation) {
+      this.log.error("Still have undefined location at end of ngOnInit() - ignoring...", this.id)
+    } else {
+      this.addMarker(this._location.lat, this._location.lng, this._location.address)
+    }
 
     this.log.excessive("exiting ngOnInit() ...", this.id)
   }
@@ -519,6 +522,14 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     // this.markerClusterGroup.addLayer(this.lastLayer)
   }
 
+
+  /**
+   * Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
+   * @param lat
+   * @param lng
+   * @param title
+   * @returns
+   */
   override addMarker(lat: number, lng: number, title: string = '') {
     this.log.excessive(`addMarker at ${lat}. ${lng}, ${title}`, this.id)
 
