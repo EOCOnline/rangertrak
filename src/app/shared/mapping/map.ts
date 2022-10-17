@@ -3,7 +3,7 @@
  */
 import L from 'leaflet'
 import { fromEvent, Observable, Subscription } from 'rxjs'
-import { catchError, mergeMap, toArray } from 'rxjs/operators'
+//import { catchError, mergeMap, toArray } from 'rxjs/operators'
 
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
@@ -16,30 +16,9 @@ import {
   FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LocationType,
   LogService, SettingsService, SettingsType
 } from '../services'
+
 import { Utility } from '..'
-
-
-export enum MapType {
-  Google,
-  ESRI_Leaflet
-}
-
-export interface LayerType {
-  id: number
-  url: string,
-  id2: string,
-  attribution: string
-}
-
-/*
-  Interface are general, lightweight vs. abstract classes as special-purpose/feature-rich (pg 96, Programming Typescript)
-  export interface IMap {
-    type: MapType,
-    layers: LayerType,
-    initMap():void,
-    displayBeautifulmap(num:number) :void
-    }
-*/
+import { LayerType, MapType, Map } from './map.interface'
 
 
 /**
@@ -53,16 +32,19 @@ export interface LayerType {
  * https://angular.io/guide/migration-undecorated-classes
  */
 
+
 /**
- * Inputs:
- * - Leaflet or Google tech
+ * AbstractMap conceived to handle:
+ * - Large (fullpage) Leaflet or Google maps, likely with location markers w/ tooltips
+ * - small overview Leaflet or Google maps, at a much larger scale to help locate where one is
+ * - mid-sized Current Location map displaying user provided coordinates, as a verification for them
+ *
+ * Parameters that specify map:
+ * - Leaflet or Google
  * - Overview Map : boolean
- * - display fieldReports : boolean
- * - Stuff from Settings: Def_Lat/Lng/Zoom/etc.
+ * - Display fieldReports : boolean
+ * - Various Settings: Def_Lat/Lng/Zoom/etc.
  */
-
-export type Map = L.Map | google.maps.Map
-
 @Component({ template: '' })
 export abstract class AbstractMap implements OnInit, OnDestroy {
 
@@ -83,7 +65,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   protected displayReports = false // Guard for the following
   protected fieldReportsSubscription!: Subscription
   protected fieldReports: FieldReportsType | undefined
-  protected fieldReportArray: FieldReportType[] = []  // just the array portion of fieldReports
+  protected fieldReportArray: FieldReportType[] = []  // just the individual reports array portion of fieldReports
   // The displayedFieldReportArray can either be all (fieldReports) or selectedReports!
   protected displayedFieldReportArray: FieldReportType[] = []
   // protected markers: clusters?
@@ -131,8 +113,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    *
    */
   ngOnInit() {
-    this.log.verbose("Map: ngOnInit()", this.id)
-    // this.log.verbose(`ngOnInit() with development mode ${isDevMode() ? "" : "NOT "}enabled`, this.id)
+    this.log.verbose("ngOnInit()", this.id)
 
     if (!this.settings) {
       this.log.error(`OnInit() this.settings not yet established in ngOnInit()`, this.id)

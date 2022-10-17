@@ -10,7 +10,7 @@ import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 
-import { AbstractMap, Utility } from '../shared'
+import { AbstractMap, Utility } from '../shared/'
 import {
   FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag,
   undefinedLocation

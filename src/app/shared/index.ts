@@ -7,7 +7,7 @@ export { FooterComponent } from "./footer/footer.component"
 export { NavbarComponent } from "./navbar/navbar.component"
 export { TimePickerComponent } from './time-picker/time-picker.component'
 
-// Mapping & location library interfaces
+export { LayerType, Map, MapType } from './mapping/map.interface'
 export { CodeArea, OpenLocationCode } from "./mapping/open-location-code"  // HAD TO REMMOVE default KEYWORD????
 export { GoogleGeocode } from "./mapping/google-geocode"
 export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./mapping/coordinate"

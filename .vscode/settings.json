@@ -10,7 +10,7 @@
     "editor.formatOnType": false,
     "editor.formatOnPaste": false,
     "editor.formatOnSave": true,
-    "editor.minimap.enabled": true,
+    "editor.minimap.enabled": false,
     "editor.codeActionsOnSave": {
         "source.organizeImports": false,
         "source.fixAll.tslint": true
