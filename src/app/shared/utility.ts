@@ -116,6 +116,22 @@ export class Utility {
   //--------------------------------------------------------------------------
 
   /**
+   * time
+   * Returns a nice time string...
+   * msPrecision has a max of 3 or 4...
+   */
+  static time(msPrecision = 0) {
+    const dt = new Date()
+
+    let time = `${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}`
+
+    if (msPrecision > 0) {
+      time += `.${Utility.zeroFill(dt.getMilliseconds(), msPrecision)}`
+    }
+    return time
+  }
+
+  /**
  *
  * @param startTime - in milliseconds
  * @param endTime - in ms

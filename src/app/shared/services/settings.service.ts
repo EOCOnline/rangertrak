@@ -195,17 +195,20 @@ export class SettingsService implements OnInit {
       imageDirectory: "./assets/imgs/",    //! WARNING: Hardcoded & potential SECURITY risk.
       defFieldReportStatus: 0, // which of the following array entries to use as the default value
       //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
+      //? FUTURE: Consider adding contrasting 'shadow color' for nice display on entry form
       // https://en.wikipedia.org/wiki/Web_colors#Extended_colors
       // https://en.wikipedia.org/wiki/Web_colors#Color_table
       // https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#fully_saturated_colors
+      // https://m3.material.io/styles/icons/applying-icons#ebb3ae7d-d274-4a25-9356-436e82084f1f
+      // https://fonts.google.com/icons
       fieldReportStatuses: [
-        { status: 'Normal', color: 'LightYellow', icon: '' },
-        { status: 'Location Report', color: 'Aquamarine', icon: '' },
-        { status: 'Evidence Report', color: 'DarkGoldenrod', icon: '' },
-        { status: 'Need Rest', color: 'Chartreuse', icon: '' },
-        { status: 'Incident Check-in', color: 'Silver', icon: '' },
-        { status: 'Incident Check-out', color: 'DimGray', icon: '' },
-        { status: 'Urgent', color: 'Crimson', icon: '' }
+        { status: 'Normal', color: 'LightYellow', icon: 'check_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Location Report', color: 'Aquamarine', icon: 'where_to_vote_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Evidence Report', color: 'DarkGoldenrod', icon: 'add_photo_alternate_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Need Rest/Food', color: 'Chartreuse', icon: 'mood_bad_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Incident Check-in', color: 'Silver', icon: 'person_add_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Incident Check-out', color: 'DimGray', icon: 'person_remove_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Urgent', color: 'Crimson', icon: 'crisis_alert_FILL0_wght400_GRAD0_opsz48.png' }
       ],
       // fieldReportKeywords: [''],  // Future...could also just search notes field
     }

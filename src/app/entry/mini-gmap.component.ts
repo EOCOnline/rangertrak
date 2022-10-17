@@ -10,7 +10,7 @@ import {
   AfterViewInit, Component, Inject, Input, isDevMode, OnDestroy, OnInit
 } from '@angular/core'
 
-import { AbstractMap } from '../shared/mapping/map'
+import { AbstractMap } from '../shared/'
 import {
   FieldReportService, LocationType, LogService, SettingsService, SettingsType
 } from '../shared/services/'

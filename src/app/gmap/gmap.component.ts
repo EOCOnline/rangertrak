@@ -7,7 +7,7 @@ import { GoogleMap } from '@angular/google-maps'
 import { MarkerClusterer } from '@googlemaps/markerclusterer'
 
 import { Utility } from '../shared/'
-import { AbstractMap } from '../shared/mapping/map'
+import { AbstractMap } from '../shared/'
 import {
   FieldReportService, FieldReportStatusType, FieldReportType, LogService,
   SettingsService
@@ -114,6 +114,8 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
   labelIndex = 0;
   // infoContent = ''
   apiLoaded //: Observable<boolean> // used by template
+
+  override iconBase = "./../../../assets/icons/"
 
 
   constructor(
@@ -478,38 +480,21 @@ MarkerClustererPlus Library - also old
     // this.markerCluster.addMarkers(this.markers)
 
     for (let i = 0; i < this.fieldReportArray.length; i++) {
+
+      // !TODO: Add filters: Only show selected teams, for last hours:minutes, with status XYZ,
+      // or assume any selection/filtering in the Reports page...
+
       fr = this.fieldReportArray[i]
       latlng = new google.maps.LatLng(fr.location.lat, fr.location.lng)
       title = `${fr.callsign} (${fr.status}) at ${fr.date} at lat ${fr.location.lat}, lng ${fr.location.lng} with "${fr.notes}".`
       //title = infoContent
 
       //! TODO: Provide a better icon generating mechanism...available via Dependency Injection/service?!
-      // Alter marker's icon shape, color, text
-      switch (fr.callsign) {
-        case "W7VMI":
-          //icon = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
-          icon = "http://maps.gstatic.com/mapfiles/ms2/micons/sunny.png"
-          break;
-        case "!Team3":
-          icon = "http://maps.gstatic.com/mapfiles/ms2/micons/blue.png"
-          break;
-        case "!Team2":
-          icon = "http://maps.google.com/mapfiles/kml/paddle/2.png"
-          break;
-        case "!Team1":
-          icon = "http://maps.google.com/mapfiles/kml/paddle/1.png"
-          break;
-        case "KI7SWF":
-          icon = "http://maps.google.com/mapfiles/kml/shapes/capital_big_highlight.png"
-          break;
-        default:
-          icon = ''
-          break;
-      }
+      labelText = fr.callsign
 
       for (let j = 0; j < fieldReportStatuses.length; j++) {
         if (fieldReportStatuses[j].status != fr.status) continue
-        labelText = fieldReportStatuses[j].icon
+        icon = fieldReportStatuses[j].icon
         labelColor = fieldReportStatuses[j].color
         break
       }
@@ -525,70 +510,46 @@ MarkerClustererPlus Library - also old
     this.log.verbose(`displayMarkers added ${this.fieldReportArray.length} markers`, this.id)
   }
 
-  override addMarker(lat: number, lng: number, infoContent = "", labelText = "report", title = "", labelColor = "aqua", fontSize = "12px", icon = "", animation = google.maps.Animation.DROP, msDelay = 100) {
-    //this.log.excessive(`addMarker(G)`, this.id)
+  override addMarker(lat: number, lng: number, infoContent = "", labelText = "", title = "", labelColor = "aqua", fontSize = "10px", icon = "unpublished_FILL0_wght400_GRAD0_opsz48.png", animation = google.maps.Animation.DROP, msDelay = 100) {
+
+    //this.log.excessive(`addMarker`, this.id)
 
     if (infoContent == "") {
       infoContent = `Manual Marker dropped ${lat}, ${lng} at ${Date()}`
     }
-    if (title == "") {
-      title = infoContent
-    }
-    //labelText = "grade"
-    //fontSize = "16px"
-    /*
-        //icon = "rocket"
-        animation = google.maps.Animation.DROP
-    */
 
-    let labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
     // https://material.angular.io/components/icon/overview
-    //https://developers.google.com/fonts/docs/material_icons
-    //https://fonts.google.com/icons
+    // https://developers.google.com/fonts/docs/material_icons
+    // https://fonts.google.com/icons
     if (lat && lng) {
-      let dt = new Date();
-      let time = `${Utility.zeroFill(dt.getHours(), 2)}:${Utility.zeroFill(dt.getMinutes(), 2)}:${Utility.zeroFill(dt.getSeconds(), 2)}` // :${Utility.zeroFill(dt.getMilliseconds(), 4)}`
-      /* REVIEW:
-       let lat:number = event.latLng.lat  // gets:  Type '() => number' is not assignable to type 'number'.
-       let lng:number = event.latLng.lng
-       lat = Math.round(lat * 1000.0) / 1000.0
-       lng = Math.round(lng * 1000.0) / 1000.0
-       let pos = `lat: ${lat}; lng: ${lng} `
-       */
-      let pos = `lat: ${lat}; lng: ${lng}`
-      //let pos = `lat: ${ Math.round(Number(event.latLng.lat * 1000) / 1000}; lng: ${ Math.round(Number(event.latLng.lng) * 1000) / 1000 } `
+      let time = Utility.time()
 
-      // this.log.excessive("addMarker(G) Actually adding marker now...", this.id)
-
+      // https://developers.google.com/maps/documentation/javascript/reference/marker
       let m = new google.maps.Marker({
-        draggable: true,
+        // draggable: true,
         animation: animation,
-        //!map: this.gMap,
+        // map: this.gMap,
         position: { lat: lat, lng: lng },
-        title: title,
-        icon: icon,
-        label: {
+        title: infoContent, // Hover/Rollover text
+        icon: this.iconBase + icon,
+        fillColor: "red",
+        label: {  //! BUG: a letter or number that appears inside a marker: We're putting a phrase in!!!
+          // origin: { x: 200, y: 200 }, // origin of the label relative to the top-left corner of the icon image
           // label: this.labels[this.labelIndex++ % this.labels.length],
-          text: labelText, // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
-          fontFamily: "Material Icons",
+          text: labelText, // shows up along with icon
+          // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
+          // fontFamily: "Material Icons",
           color: labelColor,
           fontSize: fontSize,
         },
-        // label: labels[labelIndex++ % labels.length],
       })
 
-      // markers can only be keyboard focusable when they have click listeners
-      // open info window when marker is clicked
-      // marker.addListener("click", () => {
-      //this.infoWindow.setContent(label);
-      //this.infoWindow.open(this.gMap, marker);
-      // })
-
+      // infoWindow = tooltips
       m.addListener("click",   // this.toggleBounce)
         () => {
           //this.infowindow.setContent(`${ SpecialMsg } `)
-          //`Manually dropped: ${time} at ${pos} `
+          //`Manually dropped: ${ time } at ${ pos } `
           this.infowindow.setContent(infoContent)
           this.infowindow.open({
             // new google.maps.InfoWindow.open({
@@ -623,7 +584,7 @@ MarkerClustererPlus Library - also old
 
   // or on centerChanged
   logCenter() {
-    this.log.verbose(`Map center is at ${JSON.stringify(this.ngMap.getCenter())}`, this.id)
+    this.log.verbose(`Map center is at ${JSON.stringify(this.ngMap.getCenter())} `, this.id)
   }
 
 
@@ -631,6 +592,6 @@ MarkerClustererPlus Library - also old
     this.trafficLayer.setMap(
       (this.trafficLayerVisible ^= 1) ? this.gMap : null) // toggle trafficLayerVisible to 0 or 1
     // map.setTilt(45);
-    this.log.info(`TrafficLayer made ${this.trafficLayerVisible ? 'visible' : 'hidden'}`, this.id)
+    this.log.info(`TrafficLayer made ${this.trafficLayerVisible ? 'visible' : 'hidden'} `, this.id)
   }
 }

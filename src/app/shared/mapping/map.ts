@@ -80,6 +80,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   protected hasOverviewMap = false // Guard for overview map logic
   protected overviewMap: L.Map | google.maps.Map | undefined = undefined
 
+  protected iconBase = "./../../../assets/icons/"
 
   constructor(protected settingsService: SettingsService,
     protected fieldReportService: FieldReportService,
@@ -87,16 +88,16 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     protected log: LogService,
     @Inject(DOCUMENT) protected document: Document) {
 
-    this.log.excessive(`======== Constructor() ============ Abstract Map`, this.id)
+    this.log.excessive(`(Abstract) ======== Constructor() ============`, this.id)
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         // REVIEW: Any new settings just ripple thru, or does anything need pushing?!
         this.settings = newSettings
-        this.log.excessive('Received new Settings via subscription.', this.id)
+        this.log.excessive('(Abstract) Received new Settings via subscription.', this.id)
       },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
+      error: (e) => this.log.error('(Abstract) Settings Subscription got:' + e, this.id),
+      complete: () => this.log.info('(Abstract) Settings Subscription complete', this.id)
     })
 
     this.fieldReportsSubscription =
@@ -104,8 +105,8 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         next: (newReport) => {
           this.gotNewFieldReports(newReport)
         },
-        error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
-        complete: () => this.log.info('Field Reports Subscription complete', this.id)
+        error: (e) => this.log.error('(Abstract) Field Reports Subscription got:' + e, this.id),
+        complete: () => this.log.info('(Abstract) Field Reports Subscription complete', this.id)
       })
   }
 
@@ -113,10 +114,10 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    *
    */
   ngOnInit() {
-    this.log.verbose("ngOnInit()", this.id)
+    this.log.verbose("(Abstract) ngOnInit()", this.id)
 
     if (!this.settings) {
-      this.log.error(`OnInit() this.settings not yet established in ngOnInit()`, this.id)
+      this.log.error(`(Abstract) this.settings not yet established in ngOnInit()`, this.id)
       // REVIEW: Can initMap run OK w/ defaults, but w/o settings?
     } else {
       this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
@@ -131,10 +132,10 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    * @returns
    */
   initMainMap() {
-    this.log.verbose("initMainMap()", this.id)
+    this.log.verbose("(Abstract) initMainMap()", this.id)
 
     if (!this.settings) {
-      this.log.error(`initMainMap(): Settings not yet initialized while initializing the abstract Map!`, this.id)
+      this.log.error(`(Abstract) initMainMap(): Settings not yet initialized while initializing the abstract Map!`, this.id)
       return
     }
 
@@ -142,7 +143,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     this.mouseLatLng = this.center
 
     if (!this.fieldReports) { //! or displayedFieldReportArray
-      this.log.error(`initMainMap(): fieldReports not yet initialized while initializing abstract Map!`, this.id)
+      this.log.error(`(Abstract) initMainMap(): fieldReports not yet initialized while initializing abstract Map!`, this.id)
       return
     }
   }
@@ -156,13 +157,13 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       // google map
       // TODO
     } else {
-      this.log.warn(`map initMainMap(): map not a leaflet or google map - ignoring as uninitialized?`, this.id)
+      this.log.warn(`(Abstract) map initMainMap(): map not a leaflet or google map - ignoring as uninitialized?`, this.id)
     }
     */
 
   captureLMoveAndZoom(map: L.Map) {
     if (!map) {
-      this.log.warn(`No map in captureLMoveAndZoom()`, this.id)
+      this.log.warn(`(Abstract) No map in captureLMoveAndZoom()`, this.id)
       return
     }
 
@@ -173,14 +174,14 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       if ($event.latlng) {
         this.mouseLatLng = $event.latlng //.toJSON()
       } else {
-        this.log.warn(`No latlng on event in captureLMoveAndZoom()`, this.id)
+        this.log.warn(`(Abstract) No latlng on event in captureLMoveAndZoom()`, this.id)
       }
     })
   }
 
   captureGMoveAndZoom(map: google.maps.Map) {
     if (!map) {
-      this.log.warn(`No map in captureGMoveAndZoom()`, this.id)
+      this.log.warn(`(Abstract) No map in captureGMoveAndZoom()`, this.id)
       return
     }
 
@@ -192,7 +193,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       if ($event.latLng) {
         this.mouseLatLng = $event.latLng.toJSON()
       } else {
-        this.log.warn(`No latlng on event in captureGMoveAndZoom()`, this.id)
+        this.log.warn(`(Abstract) No latlng on event in captureGMoveAndZoom()`, this.id)
       }
     })
 
@@ -213,13 +214,13 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     // lMap has override onMouseClick()
 
     if (!this.map) {
-      this.log.error(`onMouseClick: Map not created, so can't get lat & lng`, this.id)
+      this.log.error(`(Abstract) onMouseClick: Map not created, so can't get lat & lng`, this.id)
       return
     }
 
     if (this.settings.allowManualPinDrops) {
       // Put coordinates into a new non-permanent marker & drop on to map
-      this.log.error(`onMouseClick() to create markers not implemented yet!`, this.id)
+      this.log.error(`(Abstract) onMouseClick() to create markers not implemented yet!`, this.id)
       // call: addManualMarkerEvent(event: google.maps.MapMouseEvent)
       // or
       //
@@ -227,7 +228,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     } else {
       // Put coordinates into clipboard
       if (this.isGoogleMap(this.map)) {
-        this.log.error(`onMouseClick() not implemented for Google Maps yet! `, this.id)
+        this.log.error(`(Abstract) onMouseClick() not implemented for Google Maps yet! `, this.id)
         /*
          ev.x
         this.map.addListener("click", (mapsMouseEvent) => {
@@ -235,7 +236,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         })
         JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
         */
-        // this.log.excessive(`${coords} copied to clipboard`, this.id)
+        // this.log.excessive(`(Abstract) ${coords} copied to clipboard`, this.id)
       } else {
 
         let latlng = this.map.mouseEventToLatLng(ev)
@@ -248,12 +249,12 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
               //status.style.visibility = "visible"
               Utility.resetMaterialFadeAnimation(status)
             } else {
-              this.log.info(`onMouseClick Entry__Minimap-status not found!`, this.id)
+              this.log.info(`(Abstract) onMouseClick Entry__Minimap-status not found!`, this.id)
             }
-            this.log.excessive(`${coords} copied to clipboard`, this.id)
+            this.log.excessive(`(Abstract) ${coords} copied to clipboard`, this.id)
           })
           .catch(err => {
-            this.log.error(`onMouseClick latlng NOT copied to clipboard, error: ${err}`, this.id)
+            this.log.error(`(Abstract) onMouseClick latlng NOT copied to clipboard, error: ${err}`, this.id)
           })
       }
     }
@@ -304,7 +305,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
 
   abstract refreshMap(): void
   //  {
-  //   this.log.error(`refreshMap() is unimplemented!`, this.id)
+  //   this.log.error(`(Abstract) refreshMap() is unimplemented!`, this.id)
   // }
 
   // ------------------------------------  Field Reports  ---------------------------------------
@@ -318,7 +319,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
 
           //! BUG: At start, if no rows were selected, then this.selectedReports.fieldReportArray.length reports all rows, not zero...
-          this.log.error(`updateFieldReports:  # rows in selected array ${this.numSelectedRows} != # rows supposed to be there: ${this.selectedReports.fieldReportArray.length}. Resetting`, this.id)
+          this.log.error(`(Abstract) updateFieldReports:  # rows in selected array ${this.numSelectedRows} != # rows supposed to be there: ${this.selectedReports.fieldReportArray.length}. Resetting`, this.id)
           this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
           this.numSelectedRows = this.selectedReports.fieldReportArray.length
         }
@@ -328,7 +329,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
 
       this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
       if (this.filterButton == undefined) {
-        this.log.error("updateFieldReports() could not find selectedFieldReports", this.id)
+        this.log.error("(Abstract) updateFieldReports() could not find selectedFieldReports", this.id)
       } else {
         // No need to *subscribe*, as everytime there is a selection made,
         // it currently gets stored and won't change once we're on this screen
@@ -336,7 +337,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
         this.filterSwitch = new MDCSwitch(this.filterButton)
         if (!this.filterSwitch) {
-          throw ("updateFieldReports(): Found filterButton - but NOT Field Report Selection Switch!")
+          throw ("(Abstract) updateFieldReports(): Found filterButton - but NOT Field Report Selection Switch!")
         }
 
         //! TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
@@ -347,24 +348,24 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
           this.numSelectedRows = this.selectedReports.numReport
           if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
-            this.log.error(`updateFieldReports(): ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
+            this.log.error(`(Abstract) updateFieldReports(): ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
             this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
             this.numSelectedRows = this.selectedReports.fieldReportArray.length
           }
         } else {
-          this.log.warn(`updateFieldReports(): Could not retrieve selected Field Reportst.`, this.id)
+          this.log.warn(`(Abstract) updateFieldReports(): Could not retrieve selected Field Reportst.`, this.id)
           this.numSelectedRows = 0
         }
 
         this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
-        if (!this.filterButton) { throw ("updateFieldReports(): Could not find Field Report Selection button!") }
+        if (!this.filterButton) { throw ("(Abstract) updateFieldReports(): Could not find Field Report Selection button!") }
 
         this.filterSwitch = new MDCSwitch(this.filterButton)
-        if (!this.filterSwitch) throw ("updateFieldReports(): Could not find Field Report Selection Switch!")
+        if (!this.filterSwitch) throw ("(Abstract) updateFieldReports(): Could not find Field Report Selection Switch!")
 
       }
     } else {
-      this.log.error(`updateFieldReports got no Selected reports`)
+      this.log.error(`(Abstract) updateFieldReports got no Selected reports`)
     }
   }
 
@@ -381,7 +382,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   */
 
   gotNewFieldReports(newReports: FieldReportsType) {
-    this.log.verbose(`gotNewFieldReports(): New collection of ${newReports.numReport} Field Reports observed.`, this.id)
+    this.log.verbose(`(Abstract) gotNewFieldReports(): New collection of ${newReports.numReport} Field Reports observed.`, this.id)
 
     this.numAllRows = newReports.numReport
     this.fieldReports = newReports
@@ -401,12 +402,12 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   //! BUG: Resets slected reports to ALL!!!!
   onSwitchSelectedFieldReports() { //event: any) {
     if (!this.fieldReports) {
-      this.log.error(`onSwitchSelectedFieldReports(): Field Reports not yet set`, this.id)
+      this.log.error(`(Abstract) onSwitchSelectedFieldReports(): Field Reports not yet set`, this.id)
       return
     }
 
     if (!this.filterSwitch) {
-      this.log.error(`onSwitchSelectedFieldReports(): filterSwitch not found`, this.id)
+      this.log.error(`(Abstract) onSwitchSelectedFieldReports(): filterSwitch not found`, this.id)
       return
     }
 
@@ -414,12 +415,12 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       this.displayedFieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
       // ! REVIEW: we did NOT grab the whole selectedFieldReports structure, JUST the report array: OK?!
       this.numSelectedRows = this.displayedFieldReportArray.length
-      this.log.verbose(`onSwitchSelectedFieldReports():Displaying ${this.displayedFieldReportArray.length} SELECTED field Reports`, this.id)
+      this.log.verbose(`(Abstract) onSwitchSelectedFieldReports():Displaying ${this.displayedFieldReportArray.length} SELECTED field Reports`, this.id)
     } else {
       this.displayedFieldReportArray = this.fieldReports.fieldReportArray
-      this.log.verbose(`onSwitchSelectedFieldReports():Displaying ALL ${this.displayedFieldReportArray.length} field Reports`, this.id)
+      this.log.verbose(`(Abstract) onSwitchSelectedFieldReports():Displaying ALL ${this.displayedFieldReportArray.length} field Reports`, this.id)
       if (this.numSelectedRows != this.displayedFieldReportArray.length) {
-        this.log.error(`onSwitchSelectedFieldReports():Having to update numSelectedRows ${this.numSelectedRows} to match actual array length ${this.displayedFieldReportArray.length}`, this.id)
+        this.log.error(`(Abstract) onSwitchSelectedFieldReports():Having to update numSelectedRows ${this.numSelectedRows} to match actual array length ${this.displayedFieldReportArray.length}`, this.id)
 
         this.numSelectedRows = this.displayedFieldReportArray.length
       }
@@ -438,14 +439,14 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   abstract addManualMarkerEvent(event: any): void
 
   displayMarkers() {
-    this.log.verbose(`displayMarkers()`, this.id)
+    this.log.verbose(`(Abstract) displayMarkers()`, this.id)
 
     if (!this.displayReports) {
-      this.log.error(`displayMarkers() BUT displayReports is false!`, this.id)
+      this.log.error(`(Abstract) displayMarkers() BUT displayReports is false!`, this.id)
     }
 
     if (!this.displayedFieldReportArray) {
-      this.log.error(`displayMarkers() BUT No Field Reports received yet!`, this.id)
+      this.log.error(`(Abstract) displayMarkers() BUT No Field Reports received yet!`, this.id)
       return
     }
 
@@ -455,7 +456,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   // Deletes all markers in the array by removing references to them
   // https://developers.google.com/maps/documentation/javascript/markers#remove
   removeAllMarkers() {
-    this.log.verbose(`removeAllMarkers()`, this.id)
+    this.log.verbose(`(Abstract) removeAllMarkers()`, this.id)
     this.hideMarkers()
     // this.clearMarkers = [] // BUG: this won't work!
     // this.map.clear();
