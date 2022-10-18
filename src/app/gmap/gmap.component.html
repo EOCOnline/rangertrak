@@ -33,9 +33,11 @@
 
   <div *ngIf="apiLoaded" id="container">
     <!-- | async
+      [mapTypeId]="google.maps.MapTypeId.TERRAIN"
+    -->
 
-  (mapMouseover)="onMapZoomed()"
--->
+
+    <!-- Create main map -->
     <google-map id="map" width="100%" [center]="center" [zoom]="zoom" [options]="mapOptions"
       (mapClick)="addManualMarkerEvent($event)" (mapMousemove)="onMapMouseMove($event)"
       (mapRightclick)="toggleTrafficLayer()" (zoomChanged)="onMapZoomed()" (mapInitialized)="onMapInitialized($event)">
@@ -54,6 +56,7 @@
     </google-map>
 
 
+    <!-- Create overview map -->
     <google-map id="overviewMap" width="175px" height="175px" (mapMousemove)="onMapMouseMove($event)"
       [options]="overviewMapOptions" (mapInitialized)="onOverviewMapInitialized($event)">
     </google-map>

@@ -80,7 +80,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   protected hasOverviewMap = false // Guard for overview map logic
   protected overviewMap: L.Map | google.maps.Map | undefined = undefined
 
-  protected iconBase = "./../../../assets/icons/"
+  //protected iconBase = "./../../../assets/icons/"
 
   constructor(protected settingsService: SettingsService,
     protected fieldReportService: FieldReportService,

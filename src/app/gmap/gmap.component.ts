@@ -8,6 +8,7 @@ import { MarkerClusterer } from '@googlemaps/markerclusterer'
 
 import { Utility } from '../shared/'
 import { AbstractMap } from '../shared/'
+import { Map } from '../shared/mapping/map.interface';
 import {
   FieldReportService, FieldReportStatusType, FieldReportType, LogService,
   SettingsService
@@ -82,7 +83,8 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
     zoomControl: true,
     scrollwheel: true,
     disableDoubleClickZoom: true,
-    mapTypeId: 'hybrid',
+    // If stored in settings, could reset it in onMapInitialized(), also allows 'terrain'
+    mapTypeId: google.maps.MapTypeId.TERRAIN,  // https://developers.google.com/maps/documentation/javascript/maptypes
     zoom: 18,
     maxZoom: 21,
     minZoom: 4,
@@ -115,7 +117,7 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
   // infoContent = ''
   apiLoaded //: Observable<boolean> // used by template
 
-  override iconBase = "./../../../assets/icons/"
+  iconBase = "./../../../assets/icons/"
 
 
   constructor(
@@ -201,6 +203,10 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   }
 
   // ---------------- Init Main Map -----------------
+  /**
+   *
+   * @returns
+   */
   override initMainMap() {
     super.initMainMap()
 
@@ -228,12 +234,17 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       this.gMap.setCenter({ lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 })
       this.gMap.setZoom(this.settings ? this.settings.google.defZoom : 15)
       this.gMap.fitBounds(this.fieldReportService.boundsToBound(this.fieldReports!.bounds))
+      //      this.gMap.setMapTypeId("roadmap")
+      //this.gMap.setMapTypeId('terrain')
     } else {
       this.log.error(`initMainMap(): this.gMap NOT INitialized yet! `, this.id)
     }
   }
 
-
+  /**
+   *
+   * @param mappy
+   */
   // this.ngMap: GoogleMap (Angular wrapper for the same underlying map!)
   // this.gMap: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
   onMapInitialized(mappy: google.maps.Map) {
@@ -272,7 +283,10 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
         */
   }
 
-
+  /**
+   *
+   * @param mappy
+   */
   onOverviewMapInitialized(mappy: google.maps.Map) {
     this.log.verbose(`onOverviewMapInitialized()`, this.id)
 
@@ -344,116 +358,10 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
     this.markers = []
   }
 
-  /*
-  https://github.com/googlemaps/js-markerclusterer - current!
-https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer - Angular components doesn't encapulate options functionality: identical clones only: ugg.
-MarkerClustererPlus Library - also old
-*/
-  refreshMap() {
-
-    if (this.gMap) {
-      //this.gMap.clear()
-      // google.maps.event.trigger(this.gMap, 'resize');
-      // this.gMap.setZoom(map.getZoom());
-      this.gMap.panBy(0, 0);
-    } else {
-      this.log.warn(`ResetMap called, but gMap not created yet!`, this.id)
-    }
-    /*
-        let data
-        if (this.markerCluster) {
-          this.markerCluster.clearMarkers();
-        }
-        var markers = [];
-
-        var markerImage = new google.maps.MarkerImage(imageUrl,
-          new google.maps.Size(24, 32));
-
-        for (var i = 0; i < data.photos.length; ++i) {
-          markers.push(new marker());
-        }
-        var zoom = parseInt(document.getElementById('zoom').value, 10);
-        var size = parseInt(document.getElementById('size').value, 10);
-        var style = parseInt(document.getElementById('style').value, 10);
-        zoom = zoom === -1 ? null : zoom;
-        size = size === -1 ? null : size;
-        style = style === -1 ? null : style;
-
-        markerClusterer = new MarkerClusterer(map, markers, {
-          maxZoom: zoom,
-          gridSize: size,
-          styles: styles[style],
-          imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
-        });
-        */
-  }
-
-
-  addManualMarkerEvent(event: google.maps.MapMouseEvent) {
-    if (this.settings!.allowManualPinDrops) {
-      if (event.latLng) {
-        this.addMarker(event.latLng.lat(), event.latLng.lng(), `Manual Marker dropped ${event.latLng.lat}, ${event.latLng.lng} at ${Date()}`)
-      } else {
-        this.log.error(`addManualMarkerEvent: no latlng`, this.id)
-      }
-    }
-  }
-
-  override onSwitchSelectedFieldReports() {
-    super.onSwitchSelectedFieldReports()
-    this.log.excessive(`onSwitchSelectedFieldReports()`, this.id)
-
-    this.getAndDisplayFieldReports() // REVIEW: !!!!
-  }
-
-  getAndDisplayFieldReports() {
-    super.onSwitchSelectedFieldReports()
-    //this.onSwitchSelectedFieldReports()
-
-    if (!this.filterSwitch || !this.filterSwitch.selected) {
-      this.log.verbose(`Displaying ALL ${this.fieldReportArray.length} field Reports`, this.id)
-    } else {
-      this.fieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
-      this.log.verbose(`Displaying ${this.fieldReportArray.length} SELECTED field Reports`, this.id)
-    }
-    this.displayMarkers()
-    // this.markerCluster.clearMarkers()
-    // this.markerCluster.addMarkers(this.markers)
-
-    // TODO: Duplicate code as in InitMap: move to a new routine...
-    /*this.markerCluster = new MarkerClusterer({
-      map: this.gMap,
-      markers: this.markers,
-      // algorithm?: Algorithm,
-      // renderer?: Renderer,
-      // onClusterClick?: onClusterClickHandler,
-    })*/
-  }
-
-  // Removes the markers from the map, but keeps them in the array
-  // https://developers.google.com/maps/documentation/javascript/markers#remove
-  override hideMarkers(): void {
-    this.markers.forEach((i) => i.setMap(null))
-  }
-
-  // Shows any markers currently in the array.
-  showMarkers(): void {
-    if (!this.gMap) {
-      this.log.error(`showMarkers() got null gMap`, this.id)
-      return
-    }
-    this.markers.forEach((i) => i.setMap(this.gMap))
-  }
-
-  // Deletes all markers in the array by removing references to them.
-  override removeAllMarkers() {
-    this.log.verbose(`removeAllMarkers()`, this.id)
-    this.hideMarkers()
-    this.markers = []
-    // this.gMap.clear();
-    this.markerCluster.clearMarkers()
-  }
-
+  // --------------------------------  displayMarkers  ------------------------------
+  /**
+   *
+   */
   // https://developers.google.com/maps/documentation/javascript/markers#marker_labels
   override displayMarkers() {
     let latlng
@@ -501,7 +409,7 @@ MarkerClustererPlus Library - also old
 
       // this.log.excessive(`displayMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`, this.id)
 
-      this.addMarker(latlng.lat(), latlng.lng(), title, labelText, title, labelColor, "28px", icon)
+      this.addMarker(latlng.lat(), latlng.lng(), title, labelText, title, labelColor, "14px", icon)
     }
 
     // this.showMarkers() //! This directly adds to map - not in clusters...
@@ -510,13 +418,48 @@ MarkerClustererPlus Library - also old
     this.log.verbose(`displayMarkers added ${this.fieldReportArray.length} markers`, this.id)
   }
 
-  override addMarker(lat: number, lng: number, infoContent = "", labelText = "", title = "", labelColor = "aqua", fontSize = "10px", icon = "unpublished_FILL0_wght400_GRAD0_opsz48.png", animation = google.maps.Animation.DROP, msDelay = 100) {
+
+  // --------------------------------  addMarker  ------------------------------
+  /**
+   *
+   * @param lat
+   *
+   * @param lng\u\0\calls
+   * @param infoContent
+   * @param labelText
+   * @param title
+   * @param labelColor
+   * @param fontSize
+   * @param icon
+   * @param animation
+   * @param msDelay
+   */
+  override addMarker(lat: number, lng: number, infoContent = "", labelText = "", title = "", labelColor = "aqua", fontSize = "8px", icon = "unpublished_FILL0_wght400_GRAD0_opsz48.png", animation = google.maps.Animation.DROP, msDelay = 100) {
 
     //this.log.excessive(`addMarker`, this.id)
 
     if (infoContent == "") {
       infoContent = `Manual Marker dropped ${lat}, ${lng} at ${Date()}`
     }
+    /*  Somehow this breaks following code!!!
+        let myIcon5 = new google.maps.Icon({
+          url: this.iconBase + icon,
+          anchor: new google.maps.Point(5, 5),
+        })
+        */
+
+    // https://developers.google.com/maps/documentation/javascript/examples/marker-symbol-custom
+    const svgMarker = {
+      //url: this.iconBase + icon,
+      path: "M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
+      fillColor: "blue",
+      fillOpacity: 0.7,
+      strokeWeight: 0,
+      rotation: 0,
+      scale: 2,
+      //anchor: new google.maps.Point(5, 0),
+    };
+
 
     // https://developers.google.com/maps/documentation/javascript/examples/marker-modern
     // https://material.angular.io/components/icon/overview
@@ -532,16 +475,40 @@ MarkerClustererPlus Library - also old
         // map: this.gMap,
         position: { lat: lat, lng: lng },
         title: infoContent, // Hover/Rollover text
-        icon: this.iconBase + icon,
-        fillColor: "red",
-        label: {  //! BUG: a letter or number that appears inside a marker: We're putting a phrase in!!!
-          // origin: { x: 200, y: 200 }, // origin of the label relative to the top-left corner of the icon image
+
+        // https://developers.google.com/maps/documentation/javascript/reference/marker#Icon
+        // icon: this.iconBase + icon,  // works
+        icon: svgMarker, // works
+        // icon: google.maps.SymbolPath.CIRCLE,  // gets ignored
+
+        icon_BROKEN: {  // gets ignored
+          // from: https://jsfiddle.net/geocodezip/voeqsw6j/
+          // & https://stackoverflow.com/questions/34001414/google-maps-api-v-3-changing-the-origin-of-custom-marker-icon
+          //path: this.iconBase + icon,
+          //url: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+          labelOrigin: new google.maps.Point(10, 30),
+          //strokeColor: myPoint.color,
+          //fillColor: myPoint.color,
+          fillOpacity: 0.6,
+          scale: this.gMap.getZoom()! / 2,
+          strokeWeight: this.gMap.getZoom()! / 3,
+          //rotation: myPoint.heading,
+        },
+
+        label: {
+          // https://developers.google.com/maps/documentation/javascript/reference/marker#MarkerLabel
+          //! BUG: a letter or number that appears inside a marker: We're putting a phrase in!!!
+          // anchor: new google.maps.Point(50, 50),
+          //labelOrigin: new google.maps.Point(0, 0),
+          // origin: new google.maps.Point(5, 20), // refocuses map on this point, if set to lat/lng, not 100/200!
+          // scaledSize: new google.maps.Size(50, 50),
           // label: this.labels[this.labelIndex++ % this.labels.length],
           text: labelText, // shows up along with icon
           // https://fonts.google.com/icons: rocket, join_inner, noise_aware, water_drop, etc.
-          // fontFamily: "Material Icons",
+          fontFamily: 'Jacques Francois Shadow', // 'Tourney', //"Material Icons",
           color: labelColor,
           fontSize: fontSize,
+          //fontWeight: "bold",
         },
       })
 
@@ -577,8 +544,137 @@ MarkerClustererPlus Library - also old
   }
 
 
-  // -----------------------------------------------------------
-  // Buttons
+  /**
+   *
+   *
+   * https://github.com/googlemaps/js-markerclusterer - current!
+   * https://github.com/angular/components/tree/master/src/google-maps/map-marker-clusterer -
+   * Angular components doesn't encapulate options functionality: identical clones only: ugg.
+   * MarkerClustererPlus Library - also old
+  */
+  refreshMap() {
+
+    if (this.gMap) {
+      //this.gMap.clear()
+      // google.maps.event.trigger(this.gMap, 'resize');
+      // this.gMap.setZoom(map.getZoom());
+      this.gMap.panBy(0, 0);
+    } else {
+      this.log.warn(`ResetMap called, but gMap not created yet!`, this.id)
+    }
+    /*
+        let data
+        if (this.markerCluster) {
+          this.markerCluster.clearMarkers();
+        }
+        var markers = [];
+
+        var markerImage = new google.maps.MarkerImage(imageUrl,
+          new google.maps.Size(24, 32));
+
+        for (var i = 0; i < data.photos.length; ++i) {
+          markers.push(new marker());
+        }
+        var zoom = parseInt(document.getElementById('zoom').value, 10);
+        var size = parseInt(document.getElementById('size').value, 10);
+        var style = parseInt(document.getElementById('style').value, 10);
+        zoom = zoom === -1 ? null : zoom;
+        size = size === -1 ? null : size;
+        style = style === -1 ? null : style;
+
+        markerClusterer = new MarkerClusterer(map, markers, {
+          maxZoom: zoom,
+          gridSize: size,
+          styles: styles[style],
+          imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+        });
+        */
+  }
+
+  /**
+   *
+   * @param event
+   */
+  addManualMarkerEvent(event: google.maps.MapMouseEvent) {
+    if (this.settings!.allowManualPinDrops) {
+      if (event.latLng) {
+        this.addMarker(event.latLng.lat(), event.latLng.lng(), `Manual Marker dropped ${event.latLng.lat}, ${event.latLng.lng} at ${Date()}`)
+      } else {
+        this.log.error(`addManualMarkerEvent: no latlng`, this.id)
+      }
+    }
+  }
+
+  /**
+   *
+   */
+  override onSwitchSelectedFieldReports() {
+    super.onSwitchSelectedFieldReports()
+    this.log.excessive(`onSwitchSelectedFieldReports()`, this.id)
+
+    this.getAndDisplayFieldReports() // REVIEW: !!!!
+  }
+
+  /**
+   *
+   */
+  getAndDisplayFieldReports() {
+    super.onSwitchSelectedFieldReports()
+    //this.onSwitchSelectedFieldReports()
+
+    if (!this.filterSwitch || !this.filterSwitch.selected) {
+      this.log.verbose(`Displaying ALL ${this.fieldReportArray.length} field Reports`, this.id)
+    } else {
+      this.fieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
+      this.log.verbose(`Displaying ${this.fieldReportArray.length} SELECTED field Reports`, this.id)
+    }
+    this.displayMarkers()
+    // this.markerCluster.clearMarkers()
+    // this.markerCluster.addMarkers(this.markers)
+
+    // TODO: Duplicate code as in InitMap: move to a new routine...
+    /*this.markerCluster = new MarkerClusterer({
+      map: this.gMap,
+      markers: this.markers,
+      // algorithm?: Algorithm,
+      // renderer?: Renderer,
+      // onClusterClick?: onClusterClickHandler,
+    })*/
+  }
+
+  // Removes the markers from the map, but keeps them in the array
+  // https://developers.google.com/maps/documentation/javascript/markers#remove
+  override hideMarkers(): void {
+    this.markers.forEach((i) => i.setMap(null))
+  }
+
+  /**
+   *
+   * @returns
+   */
+  // Shows any markers currently in the array.
+  showMarkers(): void {
+    if (!this.gMap) {
+      this.log.error(`showMarkers() got null gMap`, this.id)
+      return
+    }
+    this.markers.forEach((i) => i.setMap(this.gMap))
+  }
+
+  // Deletes all markers in the array by removing references to them.
+  override removeAllMarkers() {
+    this.log.verbose(`removeAllMarkers()`, this.id)
+    this.hideMarkers()
+    this.markers = []
+    // this.gMap.clear();
+    this.markerCluster.clearMarkers()
+  }
+
+
+
+
+  // -------------------------------  Buttons  ----------------------------
+
   // consider: https://developers.google.com/maps/documentation/javascript/examples/control-custom-state
   // https://developers.google.com/maps/documentation/javascript/examples/split-map-panes
 
