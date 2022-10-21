@@ -50,7 +50,8 @@
         <label for="pet-select"># Rows per Page: </label>
         <select name="rowPerPage" id="rowPerPage-select" (change)="onRowsPerPage()">
           <!-- option value="">--Please choose an option--</option -->
-          <option value="Auto" selected>Auto</option>
+          <option value="Auto">Auto</option>
+          <option value="5">5</option>
           <option value="10">10</option>
           <option value="25">25</option>
           <option value="50">50</option>
@@ -72,7 +73,8 @@
         <option value="|">bar (|)</option>
       </select>
       &nbsp;
-      <label class="option" for="allRows" title="By default only filtered & sorted rows are exported.">
+      <label class="option" for="allRows"
+        title="By default only filtered & sorted rows are exported-May require AG-Grid ENTERPRISE?.">
         <input id="allRows" type="checkbox" />All Rows</label>
     </div>
     <!--button (click)="this.gridApi.deselectAll()">Clear Selection</button-->
@@ -84,6 +86,10 @@
       <summary>
         <span class="big" id="Advanced">Advanced</span>
       </summary>
+      <div>
+        [To be removed - should happen automatically] Force field reports refresh:
+        <button (click)="refreshGrid()">Refresh Grid</button>
+      </div>
       <div>
         [To be removed - should happen automatically] Force field reports update:
         <button (click)="reloadPage()">Reload Page</button>

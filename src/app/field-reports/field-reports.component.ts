@@ -61,7 +61,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
     // https://www.ag-grid.com/javascript-data-grid/row-pagination/#pagination-properties
     pagination: true,
-    //paginationAutoPageSize: true, // if set overrides paginationPageSize & forces it back to this on chnages...
+    paginationAutoPageSize: true, // if set overrides paginationPageSize & forces it back to this on changes...
     //paginationPageSize: 5,
     // suppressScrollOnNewData: true, // grid to NOT scroll to the top, on page changes
 
@@ -217,7 +217,8 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
 
     // set initial pagination size
-    this.gridApi.paginationAutoPageSize = true // also see: onRowsPerPage
+    //paginationAutoPageSize: true
+    // this.gridApi.paginationAutoPageSize(true) // also see: onRowsPerPage
 
     //this.log.verbose("onGridReady() done", this.id)
   }
@@ -424,6 +425,10 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       })
   }
 
+  /**
+   *
+   * @returns
+   */
   onRowsPerPage() {
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionElement
     //this.log.excessive(`onRowsPerPage`, this.id)
@@ -435,7 +440,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     }
 
     const option = element.options[element.selectedIndex].outerText
-    this.gridApi.pagination = true // should have been done initially...
+    // this.gridApi.pagination = true // should have been done initially...
     switch (option) {
       case "Auto":
         this.log.verbose("onRowsPerPage set to Auto", this.id)
@@ -443,7 +448,14 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
         this.gridApi.paginationAutoPageSize = true
         this.gridApi.redrawRows()
         break;
+      case "5":
+        //! WORKS! - Maybe any number LESS than auto????
+        this.log.verbose("onRowsPerPage set to 5", this.id)
+        this.gridApi.paginationAutoPageSize = false
+        this.gridApi.paginationSetPageSize("5")
+        break;
       case "10":
+        // WORKS! - Maybe any number LESS than auto????
         this.log.verbose("onRowsPerPage set to 10", this.id)
         this.gridApi.paginationAutoPageSize = false
         this.gridApi.paginationSetPageSize("10")
@@ -468,15 +480,14 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
         //https://www.ag-grid.com/javascript-data-grid/infinite-scrolling
         //set rowModelType: infinite ???
         this.gridApi.pagination = false
-        //this.gridApi.paginationAutoPageSize = false
-        //this.gridApi.paginationSetPageSize("Auto")
+        this.gridApi.paginationAutoPageSize = false
         break;
 
       default:
         this.log.error(`onRowsPerPage got unknown option: ${option}`, this.id)
         break;
     }
-    //this.log.error(`onRowsPerPage!  sel=${sel}, opt=${opt}  curval={curValue}, curText={curText}`, this.id)
+    // this.refreshGrid()
   }
 
   generateFakeFieldReports(num = this.nFakes) {
