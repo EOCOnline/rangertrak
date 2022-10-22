@@ -63,7 +63,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/shared/coordinate.ts</code>
+            <code>src/app/shared/mapping/coordinate.ts</code>
         </p>
 
 
@@ -83,7 +83,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/app/shared/coordinate.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/app/shared/mapping/coordinate.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -177,32 +177,6 @@ class PointSample {
     private _firstName: string,
     private _lastName: string) {
   }
-
-  /*
-  public get age() {
-    return this._age;
-  }
-
-  public set age(theAge: number) {
-    if (theAge &lt;&#x3D; 0 || theAge &gt;&#x3D; 200) {
-      throw new Error(&#x27;The age is invalid&#x27;);
-    }
-    this._age &#x3D; theAge;
-  }
-
-  public get FullName(): string {
-    return &#x60;${this._firstName} ${this._lastName}&#x60;;
-  }
-
-  public set fullName(name: string) {
-    let parts &#x3D; name.split(&#x27; &#x27;);
-    if (parts.length !&#x3D; 2) {
-      throw new Error(&#x27;Invalid name format: first last&#x27;);
-    }
-    this._firstName &#x3D; parts[0];
-    this._lastName &#x3D; parts[1];
-  }
-  */
 }
 
 export class Coordinate_Unused {
@@ -311,7 +285,7 @@ export function DDToDDM(D: number, lng: boolean &#x3D; false) {
  * @returns number
  */
 export function DMSToDD(Q: string, D: number, M: number, S: number): number {
-  // console.info(&#x60;DMSToDD got:  ${D}° ${M}&#x27; ${S}&quot; ${Q}&#x60;)
+  console.info(&#x60;DMSToDD got:  ${D}° ${M}&#x27; ${S}&quot; ${Q}&#x60;)
   return (((Q.toLowerCase() &#x3D;&#x3D; &#x27;w&#x27; || Q.toLowerCase() &#x3D;&#x3D; &#x27;s&#x27;) ? -1 : 1) * (D
     + Math.round((M / 60 + S / 6000) * (10 ** 4)) / (10 ** 4))) // float portion to 4 decimals
   //+ Number(Math.round((M / 60 + S / 6000) * (10 ** 4)).toFixed(4)))  // alternatively

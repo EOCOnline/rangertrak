@@ -1070,12 +1070,12 @@ import { DOCUMENT } from &#x27;@angular/common&#x27;
 import { AfterContentInit, Component, Inject, OnDestroy, OnInit } from &#x27;@angular/core&#x27;
 import { MatCheckboxModule } from &#x27;@angular/material/checkbox&#x27;
 import {
-    faBug, faCircleCheck, faCircleExclamation, faCircleInfo, faMapMarkedAlt
+  faBug, faCircleCheck, faCircleExclamation, faCircleInfo, faMapMarkedAlt
 } from &#x27;@fortawesome/free-solid-svg-icons&#x27;
 
 import { Utility } from &#x27;../shared&#x27;
 import {
-    LogHeadings, LogLevel, LogService, LogType, SettingsService, SettingsType
+  LogHeadings, LogLevel, LogService, LogType, SettingsService, SettingsType
 } from &#x27;../shared/services/&#x27;
 
 /**
@@ -1271,7 +1271,7 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
   }
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }
 </code></pre>
@@ -1279,27 +1279,30 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
 
     <div class="tab-pane fade " id="c-templateData">
         <pre class="line-numbers"><code class="language-html">&lt;pageHeader [parentTitle]&#x3D;&quot;title&quot; [pageDescription]&#x3D;&quot;pageDescr&quot;&gt;...&lt;/pageHeader&gt;
-&lt;div id&#x3D;&quot;log&quot;&gt;
-  Event information log
-&lt;/div&gt;
-&lt;!--div class&#x3D;&quot;tiny&quot;&gt;this is a tiny test!&lt;/div--&gt;
-&lt;mat-card&gt;
-  &lt;mat-card-content&gt;
-    &lt;h3&gt;Log levels to display:&lt;/h3&gt;
-    &lt;section&gt;
-      &lt;!-- Other colors: primary, secondary, accent and warn  https://stackoverflow.com/questions/57926149/angular-material-colors --&gt;
-      &lt;mat-checkbox [(ngModel)]&#x3D;&quot;excessive&quot; (change)&#x3D;&quot;this.redisplayLog()&quot;&gt;Excessive&lt;/mat-checkbox&gt;
-      &lt;mat-checkbox [(ngModel)]&#x3D;&quot;verbose&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Verbose&lt;/mat-checkbox&gt;
-      &lt;mat-checkbox [(ngModel)]&#x3D;&quot;info&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Informational&lt;/mat-checkbox&gt;
-      &lt;mat-checkbox [(ngModel)]&#x3D;&quot;warn&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Warnings&lt;/mat-checkbox&gt;
-      &lt;mat-checkbox [(ngModel)]&#x3D;&quot;error&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Errors&lt;/mat-checkbox&gt;
-    &lt;/section&gt;
-    &lt;br&gt;
 
-    &lt;button (click)&#x3D;&quot;onBtnSaveLog()&quot; style&#x3D;&quot;margin-bottom: 5px&quot; title&#x3D;&quot;Save Log to File&quot;&gt;
-      [Broken:] Save Log File&lt;/button&gt;&lt;br /&gt;
-  &lt;/mat-card-content&gt;
-&lt;/mat-card&gt;&lt;br&gt;
+&lt;section class&#x3D;&quot;main&quot;&gt;
+  &lt;div id&#x3D;&quot;log&quot;&gt;
+    Event information log
+  &lt;/div&gt;
+  &lt;!--div class&#x3D;&quot;tiny&quot;&gt;this is a tiny test!&lt;/div--&gt;
+  &lt;mat-card&gt;
+    &lt;mat-card-content&gt;
+      &lt;h3&gt;Log levels to display:&lt;/h3&gt;
+      &lt;section&gt;
+        &lt;!-- Other colors: primary, secondary, accent and warn  https://stackoverflow.com/questions/57926149/angular-material-colors --&gt;
+        &lt;mat-checkbox [(ngModel)]&#x3D;&quot;excessive&quot; (change)&#x3D;&quot;this.redisplayLog()&quot;&gt;Excessive&lt;/mat-checkbox&gt;
+        &lt;mat-checkbox [(ngModel)]&#x3D;&quot;verbose&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Verbose&lt;/mat-checkbox&gt;
+        &lt;mat-checkbox [(ngModel)]&#x3D;&quot;info&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Informational&lt;/mat-checkbox&gt;
+        &lt;mat-checkbox [(ngModel)]&#x3D;&quot;warn&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Warnings&lt;/mat-checkbox&gt;
+        &lt;mat-checkbox [(ngModel)]&#x3D;&quot;error&quot; (change)&#x3D;&quot;this.redisplayLog()&quot; color&#x3D;&quot;primary&quot;&gt;Errors&lt;/mat-checkbox&gt;
+      &lt;/section&gt;
+      &lt;br&gt;
+
+      &lt;button (click)&#x3D;&quot;onBtnSaveLog()&quot; style&#x3D;&quot;margin-bottom: 5px&quot; title&#x3D;&quot;Save Log to File&quot;&gt;
+        [Broken:] Save Log File&lt;/button&gt;&lt;br /&gt;
+    &lt;/mat-card-content&gt;
+  &lt;/mat-card&gt;&lt;br&gt;
+&lt;/section&gt;
 </code></pre>
     </div>
 
@@ -1307,14 +1310,18 @@ export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit
                 <p class="comment">
                     <code>./log.component.scss</code>
                 </p>
-                <pre class="line-numbers"><code class="language-scss">#log {
+                <pre class="line-numbers"><code class="language-scss">.main {
+  margin: 0 1em;
+}
+
+#log {
   height            : 70vh;
   font-family       : monospace;
   font-size         : 0.7em;
   line-height       : 12px;
   padding           : 2px 5px;
   //color           : rgb(57, 34, 161);
-  background-color  : rgb(226, 238, 156);
+  background-color  : rgb(234, 244, 177);
   border            : 1px solid #030;
   border-radius     : 4px;
   overflow          : auto;
@@ -1385,7 +1392,8 @@ h3 {
 //   font-size  : 1.5em;
 //   font-weight: normal;
 //   margin     : 0;
-// }</code></pre>
+// }
+</code></pre>
     </div>
 
     <div class="tab-pane fade " id="c-tree">
@@ -1413,8 +1421,8 @@ h3 {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader><div id="log">  Event information log</div><!--div class="tiny">this is a tiny test!</div--><mat-card>  <mat-card-content>    <h3>Log levels to display:</h3>    <section>      <!-- Other colors: primary, secondary, accent and warn  https://stackoverflow.com/questions/57926149/angular-material-colors -->      <mat-checkbox [(ngModel)]="excessive" (change)="this.redisplayLog()">Excessive</mat-checkbox>      <mat-checkbox [(ngModel)]="verbose" (change)="this.redisplayLog()" color="primary">Verbose</mat-checkbox>      <mat-checkbox [(ngModel)]="info" (change)="this.redisplayLog()" color="primary">Informational</mat-checkbox>      <mat-checkbox [(ngModel)]="warn" (change)="this.redisplayLog()" color="primary">Warnings</mat-checkbox>      <mat-checkbox [(ngModel)]="error" (change)="this.redisplayLog()" color="primary">Errors</mat-checkbox>    </section>    <br>    <button (click)="onBtnSaveLog()" style="margin-bottom: 5px" title="Save Log to File">      [Broken:] Save Log File</button><br />  </mat-card-content></mat-card><br></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+        var COMPONENT_TEMPLATE = '<div><pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader><section class="main">  <div id="log">    Event information log  </div>  <!--div class="tiny">this is a tiny test!</div-->  <mat-card>    <mat-card-content>      <h3>Log levels to display:</h3>      <section>        <!-- Other colors: primary, secondary, accent and warn  https://stackoverflow.com/questions/57926149/angular-material-colors -->        <mat-checkbox [(ngModel)]="excessive" (change)="this.redisplayLog()">Excessive</mat-checkbox>        <mat-checkbox [(ngModel)]="verbose" (change)="this.redisplayLog()" color="primary">Verbose</mat-checkbox>        <mat-checkbox [(ngModel)]="info" (change)="this.redisplayLog()" color="primary">Informational</mat-checkbox>        <mat-checkbox [(ngModel)]="warn" (change)="this.redisplayLog()" color="primary">Warnings</mat-checkbox>        <mat-checkbox [(ngModel)]="error" (change)="this.redisplayLog()" color="primary">Errors</mat-checkbox>      </section>      <br>      <button (click)="onBtnSaveLog()" style="margin-bottom: 5px" title="Save Log to File">        [Broken:] Save Log File</button><br />    </mat-card-content>  </mat-card><br></section></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'LogComponent'};
 </script>

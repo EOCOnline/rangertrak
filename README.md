@@ -2,29 +2,31 @@
 
 # Rangertrak
 
-This application aids tracking & mapping CERT, ACS, other teams, rangers & individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. They can radio in their locations - in a variety of formats, and be centrally tracked..
+This application aids tracking & mapping CERT, ACS, other teams, rangers & individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. Teams or individuals can radio in their locations - in a variety of formats, and be centrally tracked. A single log of reports, locations, events and time is created for documentation and analysis. Most critically search area coverage can be determined and teams/individuals that have NOT reported in can be monitored.
 
-Track &amp; map search &amp; rescue members reporting in verbally, without internet or cell access
+This Progressive Web Application (PWA) will largely run even if there is incomsistent, limited, or no cell, internet or data access at the command post.  Rangers can radio in their locations - using a variety of location codes, and be centrally tracked.
 
-This is a disconnected browser based app for tracking & mapping CERT, ACS, other teams, rangers & individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. They can radio in their locations - using a variety of location codes, and be centrally tracked.
-
-There are a number of ways to geocode a latitude & longitude. See <https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems> for a list.
+Verbally transmitting & transcribing latitude & longitude coordinates can be very error prone and slow. Instead RangertRak also permits other ways to report locations: by Street Address, Google PlusCodes, and perhaps What3Words. See <https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems> for a list.
 
 ## Features
 
-- Progressive Web App (PWA) this should be able to function (in the future, possibly with some degredation) even if the person using this is offline.
-- Versions after 0.0.10 are generated with Angular, so will run on most modern web browsers, regardless of device/form factor
-- Open Source: free & available to enhance
-- Supports recording locatinos as: lat/long, or What3Words, Google +Codes, or physical Street Addresses
-- Auto-lookup of Ham Radio operators by callsign
-- Google or Leaflet/ESRI maps
-- Rangers can be in Teams; both are easily edited/sorted/filters
-- Documented using [https://compodoc.app/guides/jsdoc-tags.html]Compodoc
+- Open Source: *free* to use & available to enhance!
+- Progressive Web App (PWA) this should be able to function (in the future, possibly with some degredation) even if the person using this at the command post has no or intermittent access to the Internet or cell system.
+- Periodic reports can include an editable stsus field and include easily searched notes which can include keywords that make sense locally.
+- Tracks mission numbers and names, plus Operational Periods.
+- Versions after 0.0.10 are generated with Angular & written in enterprise level Typescript, so will run on most modern web browsers, regardless of device/form factor.
+- Supports recording locations as: lat/long (in Decimal Degrees, Degrees Minutes and Seconds, and Degrees and Decimal Minutes), or What3Words, Google +Codes, or physical Street Addresses. Location support may factor in bounding zones or proximity to a locality.
+- Lists of reports and rangers can be saved to a CSV (comma seperated value) file for display, documentation and after action analysis - readible by any spreadsheet programs.
+- Easy entry via auto-lookup of Ham Radio teams or individuals by tactical callsign.
+- Field report statuses can be edited: name & color, future: icon/markers.
+- View locations on Google and Leaflet/ESRI maps. (Google has yet to support offline/disconnected mapping, but is working on it for the future.) Maps also have overview/locator maps.
+- Rangers can report in as individuals or teams: both are easily edited/sorted/filtered.
+- Source code documentation uses [https://compodoc.app/guides/jsdoc-tags.html]Compodoc
 
 ## Future Roadmap
 
 - To work with out flaws!
-- Save and reload data to local files
+- Reload data from local files
 - Allow loading of additinoal layers (e.g., an image of trails, local features),
   perhaps with <https://github.com/publiclab/Leaflet.DistortableImage>
 - improved docs: screenshots and architectural diagrams
@@ -38,21 +40,21 @@ There are a number of ways to geocode a latitude & longitude. See <https://en.wi
 
 ## To Run
 
-- (The Vision:) Simply visit <https://www.RangerTrak.org> once and the 2nd time you visit you will be given an option to 'install/download' the web page/application. That should put an icon on your homescreen or desktop that you can thereafter access without Internet access!
+- Simply visit <https://www.RangerTrak.org> and try entering some reports. All data is stored locally in your browser's Local Storage: no tracking codes are used. You will have the option to "Install" the application, which just streamlines access with a shortcut. The applicatino takes minimal space and does not run in the background. You can uninstall it like any other app.
 
 ## To Build and Test
 
-- Grab a local copy of Github.com/eocOnline/Rangertrak
+- Fork Github.com/eocOnline/Rangertrak to your own repository
 - Install NodeJS and NPM
-- cd RangerTrak
-- npm install
-- ng serve -o
+- `cd RangerTrak`
+- `npm install`
+- `ng serve -o`
 
 - or Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-For productino release:
- npm run build --release (???)
- ng build
+For production release:
+ `npm run build --release` (???)
+ `ng build`
 
 ## Running unit tests
 
@@ -67,24 +69,26 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 
 ## To update documentation
 
-npm run compodoc
+`npm run compodoc` to regenerate the doc.
+`compodoc -s` to serve/view the doc at `http://127.0.0.1:8080/`
 See <https://compodoc.app/guides/usage.html> and <https://compodoc.app/> for details
 
 ## To update Version
 
 stage any changes (or add '--allow-empty' to the following), then
-git commit -m "Release-As: 0.11.40"
+`git commit -m "Release-As: 0.11.40"`
 which *SHOULD* (but doesn't) update version # in Package.json & Package-lock.json
 Some details in service/settings.service.ts & app.component.ts
 <https://github.com/googleapis/release-please#how-do-i-change-the-version-number>
 
 ## To Deploy to Google Firebase
 
-ng deploy
+This got WAY to complex with Google's recent security upgrades. Now I just FTP it to Https://RangerTrak.org
 
-ng add @angular/fire
+OLD:
+`ng deploy`
+`ng add @angular/fire`
 From Angular Projects, 2nd ed. pg 119
-
 See angular.json and firebase.json
 
 ## Architecture
@@ -98,6 +102,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## eoc.online
 
-<http://eoc.online> provides free tools for Emergency Operations Centers and emergency services. For more information and to report issues please visit <http://eoc.online>.
+<http://eoc.online> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <http://eoc.online> & to report issues please visit <https://github.com/EOCOnline/rangertrak>.
 
 ©2022 eoc.online, under the MIT License

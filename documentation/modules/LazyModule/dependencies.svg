@@ -14,13 +14,13 @@
 <title>cluster_LazyModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-32.8 8,-230.8 440,-230.8 440,-32.8 8,-32.8"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_LazyModule_exports</title>
-<polygon fill="none" stroke="black" points="167,-170.8 167,-222.8 303,-222.8 303,-170.8 167,-170.8"/>
-</g>
 <g id="clust2" class="cluster">
 <title>cluster_LazyModule_declarations</title>
 <polygon fill="none" stroke="black" points="172,-40.8 172,-92.8 432,-92.8 432,-40.8 172,-40.8"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_LazyModule_exports</title>
+<polygon fill="none" stroke="black" points="167,-170.8 167,-222.8 303,-222.8 303,-170.8 167,-170.8"/>
 </g>
 <g id="clust5" class="cluster">
 <title>cluster_LazyModule_imports</title>

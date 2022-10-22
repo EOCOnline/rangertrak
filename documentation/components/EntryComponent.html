@@ -1704,26 +1704,26 @@ Queries on @ViewChild can only see elements inside the component&#39;s template.
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
-    debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
+  debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
 } from &#x27;rxjs&#x27;
 
 import { DOCUMENT } from &#x27;@angular/common&#x27;
 import { HttpClient } from &#x27;@angular/common/http&#x27;
 import {
-    AfterViewInit, Component, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit,
-    Output, ViewChild
+  AfterViewInit, Component, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit,
+  Output, ViewChild
 } from &#x27;@angular/core&#x27;
 import {
-    FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
-    UntypedFormControl, UntypedFormGroup, Validators
+  FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
+  UntypedFormControl, UntypedFormGroup, Validators
 } from &#x27;@angular/forms&#x27;
 import { ThemePalette } from &#x27;@angular/material/core&#x27;
 import { MatSnackBar } from &#x27;@angular/material/snack-bar&#x27;
 
 import { AlertsComponent, DDToDDM, TimePickerComponent, Utility } from &#x27;../shared/&#x27;
 import {
-    FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
-    SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
+  FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
+  SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from &#x27;../shared/services/&#x27;
 import { LocationComponent } from &#x27;./location.component&#x27;
 
@@ -1875,19 +1875,19 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   onNewLocationEvent(newLocation: LocationType) { //LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.error(&#x60;Entry form (parent) got new Location: ${JSON.stringify(newLocation)}&#x60;, this.id)
+    this.log.info(&#x60;Entry form (parent) got new Location: ${JSON.stringify(newLocation)}&#x60;, this.id)
 
     //!BUG: The next line *should* propogate new value to all children, but only does so intermittently...
-    this.log.error(&#x60;locationParent was: ${JSON.stringify(this.locationParent)}&#x60;, this.id)
+    this.log.info(&#x60;locationParent was: ${JSON.stringify(this.locationParent)}&#x60;, this.id)
     this.locationParent &#x3D; newLocation
-    this.locationParent.lat +&#x3D; 0.0000001  //! REMOVE ME!
-    this.log.error(&#x60;locationParent now: ${JSON.stringify(this.locationParent)}&#x60;, this.id)
+    //this.locationParent.lat +&#x3D; 0.0000001  //! REMOVE ME!
+    this.log.info(&#x60;locationParent now: ${JSON.stringify(this.locationParent)}&#x60;, this.id)
 
 
     // patch entryForm object - as THAT is what gets saved with on form submit
     this.entryDetailsForm.patchValue({ location: newLocation }, { emitEvent: false })
     //! NOTE: emit Event causes endless notification loop; BUT how to notify mini-map?!
-    //this.log.error(&#x60;Entry form (parent) recorded the new locationParent: ${JSON.stringify(this.locationParent)}&#x60;, this.id)
+    //this.log.info(&#x60;Entry form (parent) recorded the new locationParent: ${JSON.stringify(this.locationParent)}&#x60;, this.id)
   }
 
   /**
@@ -2129,7 +2129,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     <div class="tab-pane fade " id="c-templateData">
         <pre class="line-numbers"><code class="language-html">&lt;pageHeader [parentTitle]&#x3D;&quot;title&quot; [pageDescription]&#x3D;&quot;pageDescr&quot;&gt;...&lt;/pageHeader&gt;
-&lt;div class&#x3D;&quot;container&quot;&gt;
+
+&lt;section class&#x3D;&quot;main bkgrnd_NotToday&quot;&gt;
   &lt;form #frm&#x3D;&quot;ngForm&quot; [formGroup]&#x3D;&quot;entryDetailsForm&quot; (ngSubmit)&#x3D;&quot;onFormSubmit(frm.value)&quot; class&#x3D;&quot;enter__form&quot;&gt;
     &lt;mini-lmap [locationUpdated]&#x3D;&quot;locationParent&quot;&gt;LMAP HERE&lt;/mini-lmap&gt;
     &lt;!--
@@ -2204,13 +2205,14 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       &lt;mat-radio-group class&#x3D;&quot;filled  enter__Status&quot; labelPosition&#x3D;&quot;after&quot; formControlName&#x3D;&quot;status&quot; tabindex&#x3D;&quot;7&quot;&gt;&lt;span
           class&#x3D;&quot;bottomDrop&quot;&gt;Status:&amp;nbsp;&amp;nbsp;&lt;/span&gt;
         &lt;mat-radio-button *ngFor&#x3D;&quot;let stat of settings.fieldReportStatuses&quot; value&#x3D;&quot;{{stat.status}}&quot; class&#x3D;&quot;rButton&quot;&gt;
-          &lt;span class&#x3D;&quot;Enter__status-value&quot; style&#x3D;&quot;color:{{stat.color}}&quot;&gt; {{stat.status}} &lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+          &lt;span class&#x3D;&quot;Enter__status-value&quot; style&#x3D;&quot;color:{{stat.color}};  text-shadow: 1px 3px 8px rgb(91, 91, 91);&quot;&gt;
+            {{stat.status}} &lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;
           &lt;!-- Disabling intelephense.diagnostics.embeddedLanguages --&gt;
         &lt;/mat-radio-button&gt;
       &lt;/mat-radio-group&gt;
-      &lt;br /&gt;
-      &lt;br /&gt;
 
+      &lt;br&gt;
+      &lt;br&gt;
       &lt;textarea class&#x3D;&quot;input-group enter__What--area&quot; formControlName&#x3D;&quot;notes&quot; id&#x3D;&quot;enter__What--area&quot; cols&#x3D;&quot;80&quot; rows&#x3D;&quot;5&quot;
         placeholder&#x3D;&quot;Enter Any Notes&quot; tabindex&#x3D;&quot;8&quot;&gt;&lt;/textarea&gt;
     &lt;/div&gt;
@@ -2250,7 +2252,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       &lt;pre&gt;&lt;strong&gt;EntryForm value:&lt;/strong&gt; {{entryDetailsForm.value | json}}&lt;/pre&gt;
     &lt;/div&gt;
   &lt;/form&gt;
-&lt;/div&gt;
+&lt;/section&gt;
 </code></pre>
     </div>
 
@@ -2267,6 +2269,8 @@ with ($primary: #962f10,
 //@use &quot;@material/banner/styles&quot;;
 // https://material.io/components/buttons/web#api
 
+//@use &quot;contrasting-color&quot;;
+
 $filledColor : #F0F0F0;
 
 .filled {
@@ -2278,6 +2282,10 @@ h2,
 h3 {
   margin-top   : 15px;
   margin-bottom: 0px;
+}
+
+.main {
+  margin: 0 1em;
 }
 
 .elegant {
@@ -2338,11 +2346,6 @@ input[type&#x3D;number] {
   //margin            : 20px 0;
 }
 
-.Enter__status-value {
-  // TODO: Better contrast: https://codepen.io/facundocorradini/pen/LBVvyq &amp; https://css-tricks.com/switch-font-color-for-different-backgrounds-with-css/
-  text-shadow: 1px 3px 8px grey;
-}
-
 .bottomDrop {
   //padding      : 8px 0;
   //margin-top   : 20px;
@@ -2360,7 +2363,7 @@ input[type&#x3D;number] {
 }
 
 .enter__form {
-  margin     : 0px 10px 15px;
+  //margin     : 0px 10px 15px;
   min-width  : 160px;
   //max-width: 300px;
   width      : 100%;
@@ -2462,12 +2465,16 @@ input[type&#x3D;number] {
     opacity: 1
   }
 
+  15% {
+    opacity: 1
+  }
+
   100% {
     opacity: 0
   }
 }
 
-// https://popper.js.org/docs/v2/tutorial/
+// https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
 #tooltip {
   background   : #333;
   color        : white;
@@ -2476,22 +2483,6 @@ input[type&#x3D;number] {
   font-size    : 13px;
   border-radius: 4px;
   display      : none;
-}
-
-#tooltip[data-popper-placement^&#x3D;&#x27;top&#x27;]&gt;#arrow {
-  bottom: -4px;
-}
-
-#tooltip[data-popper-placement^&#x3D;&#x27;bottom&#x27;]&gt;#arrow {
-  top: -4px;
-}
-
-#tooltip[data-popper-placement^&#x3D;&#x27;left&#x27;]&gt;#arrow {
-  right: -4px;
-}
-
-#tooltip[data-popper-placement^&#x3D;&#x27;right&#x27;]&gt;#arrow {
-  left: -4px;
 }
 
 #tooltip[data-show] {
@@ -2515,33 +2506,6 @@ input[type&#x3D;number] {
   content   : &#x27;&#x27;;
   transform : rotate(45deg);
 }
-
-/*
-// https://www.concretepage.com/angular-material/angular-material-radio-button#color
-.rButton {
-  border-color        : blue;
-  // background-color: rgb(132, 151, 21); // of whole list
-}
-
-   // For outer circle
-   .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-    border-color      : rgb(71, 223, 51);
-  }
-
-  // For inner circle
-  //.mat-radio-checked
-  .mat-radio-inner-circle {
-      background-color: rgb(132, 151, 21);
-  }
-
-                      ::ng-deep .mat-radio-checked .mat-radio-outer-circle {
-    border-color      : rgb(13, 171, 219);
-}
-
-                      ::ng-deep .mat-radio-checked .mat-radio-inner-circle {
-    background-color  : rgb(153, 58, 98);
-}
-*/
 </code></pre>
     </div>
 
@@ -2570,8 +2534,8 @@ input[type&#x3D;number] {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader><div class="container">  <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">    <mini-lmap [locationUpdated]="locationParent">LMAP HERE</mini-lmap>    <!--       (locationChange)="onNewLocationEvent($event)"      mini-gmap [locationUpdated]="location">GMAP HERE</mini-gmap-->    <!-- ======================================= -->    <h2 class="elegant">      <mat-label>Who</mat-label>    </h2>    <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->    <mat-form-field class="enter__Callsign filled">      <mat-label>CallSign</mat-label>      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"        formControlName="callsign" [matAutocomplete]="auto" (change)="this.callsignCtrlChanged()"        id="enter__Callsign-input" tabindex="1" data-lpignore="true" />      <mat-autocomplete #auto="matAutocomplete">        <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">          <img class="enter__Callsign-img" aria-hidden [src]="\'./assets/imgs/\'+(ranger.image)" height="40">          <span> {{ranger.callsign}}</span> |          <small> {{ranger.fullName}} | {{ranger.phone}}</small>        </mat-option>      </mat-autocomplete>    </mat-form-field>    <span id="enter__Callsign-image"> </span>    <span id="enter__Callsign-upshot"> </span>    <!-- ======================================= -->    <h2 class="elegant"      title="Enter position using  Degrees Decmal (DD)  or  Degrees, Minutes & Seconds (DMS)  or  Degrees & Decimal Minutes (DDM)">      <mat-label>Where</mat-label>&nbsp;&nbsp;      <span class="small">(Updates \'Current Location\' map to the right)</span><img        src="../../assets/icons/information-outline.png" height="14px" width="14px" alt="info icon"        style="opacity:0.5;" />    </h2>    <div>      <rangertrak-location [(location)]="locationParent" (locationChange)="onNewLocationEvent($event)">        <!--          https://www.appsloveworld.com/angular/100/13/angular-two-way-data-binding-and-watching-for-changes-in-parent-component          https://stackoverflow.com/questions/56154917/angular-two-way-data-binding-and-watching-for-changes-in-parent-component          https://stackoverflow.com/questions/38405748/angular-2-two-way-component-binding-doesnt-call-parent-ngonchange          https://dev.to/tonyhicks20/angular-two-way-binding-between-parent-and-child-components-16kl          (newLocationEvent)="onNewLocationEvent($event)" -->      </rangertrak-location>      <!-- span class="small" id="enter__where-debug">And meanwhile, back in the PARENT: lat:{{locationParent.lat}};        lng:{{locationParent.lat}};        addr:{{locationParent.address}}; {{locationParent.derivedFromAddress}}</span -->    </div>    <!-- ======================================= -->    <h2 class="elegant">      <mat-label>When</mat-label>    </h2>    <div FormControl="timepickerFormControl" class="filled timepicker timepicker_When-input">      <rangertrak-time-picker #picker [datePickerLabel]="timePickerLabel" (newTimeEvent)="onNewTimeEvent($event)">        <!-- [initialDate] = "initialTime" works, but we just use default - current time -->      </rangertrak-time-picker>    </div>    <!-- ======================================= -->    <h2 class="elegant bordered">      <mat-label>What</mat-label>    </h2>    <div class="input-group bordered">      <!-- mat-label><div class="strong bottomDrop">Status:</div></mat-label -->      <mat-radio-group class="filled  enter__Status" labelPosition="after" formControlName="status" tabindex="7"><span          class="bottomDrop">Status:&nbsp;&nbsp;</span>        <mat-radio-button *ngFor="let stat of settings.fieldReportStatuses" value="{{stat.status}}" class="rButton">          <span class="Enter__status-value" style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;          <!-- Disabling intelephense.diagnostics.embeddedLanguages -->        </mat-radio-button>      </mat-radio-group>      <br />      <br />      <textarea class="input-group enter__What--area" formControlName="notes" id="enter__What--area" cols="80" rows="5"        placeholder="Enter Any Notes" tabindex="8"></textarea>    </div>    <!-- ======================================= -->    <!-- TODO: Add h4> Keywords</h4>    <div formArrayName="keywords">      <div *ngIf="keywordsControls && keywordsControls.length">        <div *ngFor="let keywordControl of keywordsControls; let i = index">          <div class="input-group">            <input [class.border-danger]="keywordControl.touched && keywordControl.invalid" [formControlName]="i"              type="text" placeholder="keyword" />            <div *ngIf="keywordControl.touched && keywordControl.hasError(\'required\')" class="text-sm text-danger">              keyword Name is required</div>          </div>          <hr>        </div>      </div>    </div-->    <br />    <!-- ======================================= -->    <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->    <button (click)="resetEntryForm()" title="Reset all form fields to their defaults" class="eButton" type="button">      Reset    </button>    <button class="enter__Submit-button eButton" [disabled]="entryDetailsForm.invalid" type="submit" tabindex="9">      Submit    </button>    <span id="enter__Submit-info"> </span>    <div id="enter__frm-reguritation">      <h4>Entry Form Details:</h4>      <pre><strong>EntryForm valid:</strong> {{entryDetailsForm.valid | json}}</pre>      <pre><strong>EntryForm value:</strong> {{entryDetailsForm.value | json}}</pre>    </div>  </form></div></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+        var COMPONENT_TEMPLATE = '<div><pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader><section class="main bkgrnd_NotToday">  <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">    <mini-lmap [locationUpdated]="locationParent">LMAP HERE</mini-lmap>    <!--       (locationChange)="onNewLocationEvent($event)"      mini-gmap [locationUpdated]="location">GMAP HERE</mini-gmap-->    <!-- ======================================= -->    <h2 class="elegant">      <mat-label>Who</mat-label>    </h2>    <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->    <mat-form-field class="enter__Callsign filled">      <mat-label>CallSign</mat-label>      <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"        formControlName="callsign" [matAutocomplete]="auto" (change)="this.callsignCtrlChanged()"        id="enter__Callsign-input" tabindex="1" data-lpignore="true" />      <mat-autocomplete #auto="matAutocomplete">        <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">          <img class="enter__Callsign-img" aria-hidden [src]="\'./assets/imgs/\'+(ranger.image)" height="40">          <span> {{ranger.callsign}}</span> |          <small> {{ranger.fullName}} | {{ranger.phone}}</small>        </mat-option>      </mat-autocomplete>    </mat-form-field>    <span id="enter__Callsign-image"> </span>    <span id="enter__Callsign-upshot"> </span>    <!-- ======================================= -->    <h2 class="elegant"      title="Enter position using  Degrees Decmal (DD)  or  Degrees, Minutes & Seconds (DMS)  or  Degrees & Decimal Minutes (DDM)">      <mat-label>Where</mat-label>&nbsp;&nbsp;      <span class="small">(Updates \'Current Location\' map to the right)</span><img        src="../../assets/icons/information-outline.png" height="14px" width="14px" alt="info icon"        style="opacity:0.5;" />    </h2>    <div>      <rangertrak-location [(location)]="locationParent" (locationChange)="onNewLocationEvent($event)">        <!--          https://www.appsloveworld.com/angular/100/13/angular-two-way-data-binding-and-watching-for-changes-in-parent-component          https://stackoverflow.com/questions/56154917/angular-two-way-data-binding-and-watching-for-changes-in-parent-component          https://stackoverflow.com/questions/38405748/angular-2-two-way-component-binding-doesnt-call-parent-ngonchange          https://dev.to/tonyhicks20/angular-two-way-binding-between-parent-and-child-components-16kl          (newLocationEvent)="onNewLocationEvent($event)" -->      </rangertrak-location>      <!-- span class="small" id="enter__where-debug">And meanwhile, back in the PARENT: lat:{{locationParent.lat}};        lng:{{locationParent.lat}};        addr:{{locationParent.address}}; {{locationParent.derivedFromAddress}}</span -->    </div>    <!-- ======================================= -->    <h2 class="elegant">      <mat-label>When</mat-label>    </h2>    <div FormControl="timepickerFormControl" class="filled timepicker timepicker_When-input">      <rangertrak-time-picker #picker [datePickerLabel]="timePickerLabel" (newTimeEvent)="onNewTimeEvent($event)">        <!-- [initialDate] = "initialTime" works, but we just use default - current time -->      </rangertrak-time-picker>    </div>    <!-- ======================================= -->    <h2 class="elegant bordered">      <mat-label>What</mat-label>    </h2>    <div class="input-group bordered">      <!-- mat-label><div class="strong bottomDrop">Status:</div></mat-label -->      <mat-radio-group class="filled  enter__Status" labelPosition="after" formControlName="status" tabindex="7"><span          class="bottomDrop">Status:&nbsp;&nbsp;</span>        <mat-radio-button *ngFor="let stat of settings.fieldReportStatuses" value="{{stat.status}}" class="rButton">          <span class="Enter__status-value" style="color:{{stat.color}};  text-shadow: 1px 3px 8px rgb(91, 91, 91);">            {{stat.status}} </span>&nbsp;&nbsp;&nbsp;          <!-- Disabling intelephense.diagnostics.embeddedLanguages -->        </mat-radio-button>      </mat-radio-group>      <br>      <br>      <textarea class="input-group enter__What--area" formControlName="notes" id="enter__What--area" cols="80" rows="5"        placeholder="Enter Any Notes" tabindex="8"></textarea>    </div>    <!-- ======================================= -->    <!-- TODO: Add h4> Keywords</h4>    <div formArrayName="keywords">      <div *ngIf="keywordsControls && keywordsControls.length">        <div *ngFor="let keywordControl of keywordsControls; let i = index">          <div class="input-group">            <input [class.border-danger]="keywordControl.touched && keywordControl.invalid" [formControlName]="i"              type="text" placeholder="keyword" />            <div *ngIf="keywordControl.touched && keywordControl.hasError(\'required\')" class="text-sm text-danger">              keyword Name is required</div>          </div>          <hr>        </div>      </div>    </div-->    <br />    <!-- ======================================= -->    <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->    <button (click)="resetEntryForm()" title="Reset all form fields to their defaults" class="eButton" type="button">      Reset    </button>    <button class="enter__Submit-button eButton" [disabled]="entryDetailsForm.invalid" type="submit" tabindex="9">      Submit    </button>    <span id="enter__Submit-info"> </span>    <div id="enter__frm-reguritation">      <h4>Entry Form Details:</h4>      <pre><strong>EntryForm valid:</strong> {{entryDetailsForm.valid | json}}</pre>      <pre><strong>EntryForm value:</strong> {{entryDetailsForm.value | json}}</pre>    </div>  </form></section></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'EntryComponent'};
 </script>

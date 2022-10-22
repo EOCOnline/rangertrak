@@ -1286,89 +1286,14 @@ export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
                 <p class="comment">
                     <code>./color-editor-component.scss</code>
                 </p>
-                <pre class="line-numbers"><code class="language-scss">
-.mat-card {
+                <pre class="line-numbers"><code class="language-scss">.mat-card {
   //transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
   //display: block;
   //position: relative;
-  padding: 0px;
+  padding        : 0px;
   //border-radius: 4px;
 }
 
-/*
-.mat-form-field-appearance-legacy {
-  padding:0;
-  padding-bottom: 0em;
-}
-
-.mat-form-field-wrapper {
-  padding:0;
-  padding-bottom: 0em;
-}
-
-.mat-field.form {
-  padding:0;
-  padding-bottom: 0em;
-}
-
-.colorPickerIcon {
-  padding:0;
-}
-*/
-
-/*
-.ngx-mat-colorpicker-content  {
-  background-color: red;
-  border: 6px dotted red;
-}
-.NgxMatColorToggleComponent {
-  background-color: red;
-  border: 6px dotted red;
-}
-*/
-
-/*
-#colorTextField {
-  background-color:rgb(241, 198, 141);
-  padding:0 !important;
-}
-
-#colorIconToggleArea {
-  background-color: yellow;
-  padding:0 !important;
-}
-#colorFormField{
-  background-color:rgb(187, 236, 154);
-  padding:0 !important;
-  display:inline-block;
-}
-.mat-form.field.wrapper {
-  border: 3px solid red;
-  padding:0 !important;
-}
-*/
-
-/*
-.NgxMatColorPickerContentComponent {
-  background-color: red;
-  border: 3px dotted red;
-}
-
-.NgxMatColorPaletteComponent {
-  background-color: green;
-  border: 3px dotted green;
-}
-
-.NgxMatColorCanvasComponent {
-  background-color: aqua;
-  border: 3px dotted aqua;
-}
-
-.NgxMatColorCollectionComponent {
-  background-color: yellow;
-  border: 3px dotted yellow;
-}
-*/
 
 
 
@@ -1437,7 +1362,7 @@ hr.box {
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
         var COMPONENT_TEMPLATE = '<div><!--div #container class="color"-->  <!-- tabindex="0" (click)="onClick($event)" (mousedown)="onMouseDown($event)"  (keydown)="onKeyDown($event)" -->  <!-- https://h2qutc.github.io/angular-material-components/colorpicker-->  <!--mat-card >     <span [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}} &nbsp;&nbsp; RGBA: {{colorCtr.value?.rgba}}</span>     <br>     Warning: 1) Cclick the small color palette icon on the right.<br>     2) Select your color.<br>     3) Click just a bit to to the left of the color palette to <br>     \'set\' the color & dismiss the dialog.  </mat-card-->  <mat-card>    <mat-form-field id="colorFormField" appearance="fill">      <!-- [disabled]="colorCntlDisabled" causes warning -->      <input matInput [ngxMatColorPicker]="picker"      [formControl]="colorCtr" (click)="onClick($event)" id="colorTextField">      <ngx-mat-color-toggle matSuffix [for]="picker" id="colorIconToggleArea"></ngx-mat-color-toggle>      <ngx-mat-color-picker #picker [touchUi]="touchUi" [color]="colorPalette" (closed)="onColorCtrClosed()" class="colorPickerIcon" > BBBBB        <!--button >howNow?!</button>        <ng-template>          <mat-icon>star</mat-icon>          <span>OK</span>        </ng-template-->      </ngx-mat-color-picker>    </mat-form-field>    <!--hr class="symbol" [style.hr.border-color]="colorCtr.value?.rgba"-->    <!--span [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}} &nbsp;&nbsp; {{colorCtr.value?.rgba}}</span-->  </mat-card>  <!--mat-card >     <span [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}} &nbsp;&nbsp; RGBA: {{colorCtr.value?.rgba}}</span>  </mat-card--><!--/div--></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'ColorEditor'};
 </script>

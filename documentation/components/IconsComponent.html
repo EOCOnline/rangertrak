@@ -390,8 +390,8 @@ const THUMBUP_ICON &#x3D;
   &lt;/svg&gt;
 &#x60;
 
-// https://popper.js.org/docs/v2/constructors/
-type Placement &#x3D;
+// https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
+/*type Placement_UNUSED &#x3D;
   | &#x27;auto&#x27;
   | &#x27;auto-start&#x27;
   | &#x27;auto-end&#x27;
@@ -408,7 +408,7 @@ type Placement &#x3D;
   | &#x27;left-start&#x27;
   | &#x27;left-end&#x27;;
 type Strategy &#x3D; &#x27;absolute&#x27; | &#x27;fixed&#x27;;
-/*type Options &#x3D; {|
+type Options &#x3D; {|
   placement: Placement, // &quot;bottom&quot;
   modifiers: Array&lt;$Shape&lt;Modifier&lt;any&gt;&gt;&gt;, // []
   strategy: PositioningStrategy, // &quot;absolute&quot;,
@@ -515,7 +515,7 @@ export class IconsComponent implements OnInit {
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
         var COMPONENT_TEMPLATE = '<div><p>icons works?</p><svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">  <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" /></svg><!--svg version="1.1" viewBox="0 0 24 24" style="display:inline-block;width:1.5rem">      <path [attr.d]="data" d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z" />  </svg--><!-- icons:  https://dev.materialdesignicons.com/getting-started/angular      https://iconify.design/      https://dev.materialdesignicons.com/getting-started      style="width:15px;height:15px"      {{mdiAccount}} dddfdd {{mdiIformationOutline}}      <fa-icon [icon]="faMapMarkedAlt"></fa-icon>    --><!-- https://fontawesome.com/v5.15/icons<img src="../../assets/icons/information-outline.png"    icon path="mdiAccount"></icon>  <icon path="mdiInformationOutline"></icon>      https://material.angular.io/components/icon/examples    --><!--mat-icon aria-hidden="false" aria-label="home icon">home</mat-icon>    <mat-icon aria-hidden="false" aria-label="info icon">info</mat-icon>    <mat-icon aria-hidden="false" aria-label="info icon">hiking</mat-icon>    <mat-icon svgIcon="thumbs-up" aria-hidden="false" aria-label="thumbs up SVG icon"></mat-icon>thumbsup    <span class="material-icons-two-tone">info</span--></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'IconsComponent'};
 </script>

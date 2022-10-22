@@ -322,8 +322,8 @@ export class X404Component implements OnInit {
     </div>
 
     <div class="tab-pane fade " id="c-templateData">
-        <pre class="line-numbers"><code class="language-html">&lt;div&gt;
-  &lt;pageHeader [parentTitle]&#x3D;&quot;title&quot; [pageDescription]&#x3D;&quot;pageDescr&quot;&gt;...&lt;/pageHeader&gt;
+        <pre class="line-numbers"><code class="language-html">&lt;pageHeader [parentTitle]&#x3D;&quot;title&quot; [pageDescription]&#x3D;&quot;pageDescr&quot;&gt;...&lt;/pageHeader&gt;
+&lt;section class&#x3D;&quot;main&quot;&gt;
   &lt;div style&#x3D;&quot;background-color: rgb(230, 97, 97); font-weight: bold; padding:1em&quot;&gt;
     We can&#x27;t find that page: Error 404&lt;br /&gt;
     &lt;a href&#x3D;&quot;/&quot;&gt;Return Home&lt;/a&gt;
@@ -334,21 +334,15 @@ export class X404Component implements OnInit {
     &lt;param name&#x3D;&quot;allowscriptaccess&quot; value&#x3D;&quot;always&quot; /&gt;
     &lt;param name&#x3D;&quot;autoplay&quot; value&#x3D;&quot;true&quot; /&gt;
 
-    &lt;embed
-      width&#x3D;&quot;100%&quot;
-      height&#x3D;&quot;80vh&quot;
-      src&#x3D;&quot;http://player.vimeo.com/video/26192400?h&#x3D;85463dcf19&quot;
-      class&#x3D;&quot;youtube-player&quot;
-      type&#x3D;&quot;text/html&quot;
-      allowscriptaccess&#x3D;&quot;always&quot;
-      allowfullscreen&#x3D;&quot;true&quot;
-    /&gt;
+    &lt;embed width&#x3D;&quot;100%&quot; height&#x3D;&quot;80vh&quot; src&#x3D;&quot;http://player.vimeo.com/video/26192400?h&#x3D;85463dcf19&quot; class&#x3D;&quot;youtube-player&quot;
+      type&#x3D;&quot;text/html&quot; allowscriptaccess&#x3D;&quot;always&quot; allowfullscreen&#x3D;&quot;true&quot; /&gt;
   &lt;/object&gt;
-&lt;/div&gt;
-&lt;div&gt;
-  Many Thanks (&amp; laughs) for the above. Credits to Steve Lambert:
-  &lt;a href&#x3D;&quot;https://visitsteve.com/&quot; target&#x3D;&quot;_blank&quot;&gt;Visit Steve!&lt;/a&gt;
-&lt;/div&gt;
+
+  &lt;div&gt;
+    Many Thanks (&amp; laughs) for the above. Credits to Steve Lambert:
+    &lt;a href&#x3D;&quot;https://visitsteve.com/&quot; target&#x3D;&quot;_blank&quot;&gt;Visit Steve!&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
 </code></pre>
     </div>
 
@@ -356,7 +350,10 @@ export class X404Component implements OnInit {
                 <p class="comment">
                     <code>./x404.component.scss</code>
                 </p>
-                <pre class="line-numbers"><code class="language-scss"></code></pre>
+                <pre class="line-numbers"><code class="language-scss">.main {
+  margin: 0 1em;
+}
+</code></pre>
     </div>
 
     <div class="tab-pane fade " id="c-tree">
@@ -384,8 +381,8 @@ export class X404Component implements OnInit {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><div>  <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>  <div style="background-color: rgb(230, 97, 97); font-weight: bold; padding:1em">    We can\'t find that page: Error 404<br />    <a href="/">Return Home</a>  </div>  <object width="1024px" height="600px">    <param name="movie" value="http://player.vimeo.com/video/26192400?h=85463dcf19" />    <param name="allowFullScreen" value="true" />    <param name="allowscriptaccess" value="always" />    <param name="autoplay" value="true" />    <embed      width="100%"      height="80vh"      src="http://player.vimeo.com/video/26192400?h=85463dcf19"      class="youtube-player"      type="text/html"      allowscriptaccess="always"      allowfullscreen="true"    />  </object></div><div>  Many Thanks (& laughs) for the above. Credits to Steve Lambert:  <a href="https://visitsteve.com/" target="_blank">Visit Steve!</a></div></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+        var COMPONENT_TEMPLATE = '<div><pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader><section class="main">  <div style="background-color: rgb(230, 97, 97); font-weight: bold; padding:1em">    We can\'t find that page: Error 404<br />    <a href="/">Return Home</a>  </div>  <object width="1024px" height="600px">    <param name="movie" value="http://player.vimeo.com/video/26192400?h=85463dcf19" />    <param name="allowFullScreen" value="true" />    <param name="allowscriptaccess" value="always" />    <param name="autoplay" value="true" />    <embed width="100%" height="80vh" src="http://player.vimeo.com/video/26192400?h=85463dcf19" class="youtube-player"      type="text/html" allowscriptaccess="always" allowfullscreen="true" />  </object>  <div>    Many Thanks (& laughs) for the above. Credits to Steve Lambert:    <a href="https://visitsteve.com/" target="_blank">Visit Steve!</a>  </div></section></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'X404Component'};
 </script>

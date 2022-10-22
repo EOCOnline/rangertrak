@@ -106,8 +106,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="19"
-                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:19</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">src/app/field-reports/field-reports.component.ts:18</a></div>
                 </td>
             </tr>
 
@@ -166,15 +166,14 @@
 import { Observable, subscribeOn, Subscription } from &#x27;rxjs&#x27;
 
 import { DOCUMENT, formatDate } from &#x27;@angular/common&#x27;
-import {
-    AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform
-} from &#x27;@angular/core&#x27;
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef } from &#x27;@angular/core&#x27;;
+
 import { UntypedFormBuilder, UntypedFormGroup } from &#x27;@angular/forms&#x27;
 
 import { Utility } from &#x27;../shared&#x27;
 import {
-    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
-    RangerService, SettingsService, SettingsType
+  FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
+  RangerService, SettingsService, SettingsType
 } from &#x27;../shared/services&#x27;
 
 @Pipe({ name: &#x27;myUnusedPipe&#x27; })
@@ -218,10 +217,16 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
+  // NOT monitored for changes on the fly: https://stackoverflow.com/questions/52519129/ag-grid-and-angular-how-to-switch-grid-options-dynamically/52519796#52519796
   gridOptions: GridOptions &#x3D; {
     // PROPERTIES
     rowSelection: &quot;multiple&quot;,
-    // pagination: true,
+
+    // https://www.ag-grid.com/javascript-data-grid/row-pagination/#pagination-properties
+    pagination: true,
+    paginationAutoPageSize: true, // if set overrides paginationPageSize &amp; forces it back to this on changes...
+    //paginationPageSize: 5,
+    // suppressScrollOnNewData: true, // grid to NOT scroll to the top, on page changes
 
     // EVENT handlers
     // onRowClicked: event &#x3D;&gt; this.log.verbose(&#x27;A row was clicked&#x27;),
@@ -366,12 +371,18 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     // https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
     params.api.sizeColumnsToFit()
 
-    // TODO: use this line, or next routine?!
+    // TODO: use this line, or onFirstDataRendered()?
     if (this.gridApi) {
       this.gridApi.refreshCells()
     } else {
       this.log.verbose(&quot;no this.gridApi yet in onGridReady()&quot;, this.id)
     }
+
+
+    // set initial pagination size
+    //paginationAutoPageSize: true
+    // this.gridApi.paginationAutoPageSize(true) // also see: onRowsPerPage
+
     //this.log.verbose(&quot;onGridReady() done&quot;, this.id)
   }
 
@@ -522,8 +533,19 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
   onBtnExport() {
     // TODO: Does this handle new FieldReports properly?
-    var params &#x3D; this.getParams();
-    this.gridApi.exportDataAsCsv(params);
+    // https://www.ag-grid.com/javascript-data-grid/excel-export-styles/#styling-headers
+
+    // const params &#x3D; this.getParams();
+    // this.gridApi.exportDataAsCsv(params);
+
+    // ! Is this JUST for enterprise edition?! - test...
+    // https://www.ag-grid.com/javascript-data-grid/excel-export-rows/#export-all-unprocessed-rows
+    this.gridApi.exportDataAsExcel({
+      exportedRows: (document.getElementById(&#x27;allRows&#x27;) as HTMLInputElement)
+        .checked
+        ? &#x27;all&#x27;
+        : &#x27;filteredAndSorted&#x27;,
+    })
   }
 
   onBtnClearFieldReports() {
@@ -566,6 +588,71 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       })
   }
 
+  /**
+   *
+   * @returns
+   */
+  onRowsPerPage() {
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionElement
+    //this.log.excessive(&#x60;onRowsPerPage&#x60;, this.id)
+
+    const element &#x3D; this.document.getElementById(&#x27;rowPerPage-select&#x27;) as HTMLSelectElement// OptionElement
+    if (!element) {
+      this.log.error(&quot;onRowsPerPage could not find rowPerPage-select!&quot;, this.id)
+      return
+    }
+
+    const option &#x3D; element.options[element.selectedIndex].outerText
+    // this.gridApi.pagination &#x3D; true // should have been done initially...
+    switch (option) {
+      case &quot;Auto&quot;:
+        this.log.verbose(&quot;onRowsPerPage set to Auto&quot;, this.id)
+        //this.gridApi.paginationSetPageSize()
+        this.gridApi.paginationAutoPageSize &#x3D; true
+        this.gridApi.redrawRows()
+        break;
+      case &quot;5&quot;:
+        //! WORKS! - Maybe any number LESS than auto????
+        this.log.verbose(&quot;onRowsPerPage set to 5&quot;, this.id)
+        this.gridApi.paginationAutoPageSize &#x3D; false
+        this.gridApi.paginationSetPageSize(&quot;5&quot;)
+        break;
+      case &quot;10&quot;:
+        // WORKS! - Maybe any number LESS than auto????
+        this.log.verbose(&quot;onRowsPerPage set to 10&quot;, this.id)
+        this.gridApi.paginationAutoPageSize &#x3D; false
+        this.gridApi.paginationSetPageSize(&quot;10&quot;)
+        break;
+      case &quot;25&quot;:
+        this.log.verbose(&quot;onRowsPerPage set to 25&quot;, this.id)
+        this.gridApi.paginationAutoPageSize &#x3D; false
+        this.gridApi.paginationSetPageSize(&quot;25&quot;)
+        break;
+      case &quot;50&quot;:
+        this.log.verbose(&quot;onRowsPerPage set to 50&quot;, this.id)
+        this.gridApi.paginationAutoPageSize &#x3D; false
+        this.gridApi.paginationSetPageSize(&quot;50&quot;)
+        break;
+      case &quot;100&quot;:
+        this.log.verbose(&quot;onRowsPerPage set to 100&quot;, this.id)
+        this.gridApi.paginationAutoPageSize &#x3D; false
+        this.gridApi.paginationSetPageSize(&quot;100&quot;)
+        break;
+      case &quot;All&quot;:
+        this.log.verbose(&quot;onRowsPerPage set to All&quot;, this.id)
+        //https://www.ag-grid.com/javascript-data-grid/infinite-scrolling
+        //set rowModelType: infinite ???
+        this.gridApi.pagination &#x3D; false
+        this.gridApi.paginationAutoPageSize &#x3D; false
+        break;
+
+      default:
+        this.log.error(&#x60;onRowsPerPage got unknown option: ${option}&#x60;, this.id)
+        break;
+    }
+    // this.refreshGrid()
+  }
+
   generateFakeFieldReports(num &#x3D; this.nFakes) {
     // TODO: compare current with
     // https://github.com/material-components/material-components-web/tree/master/packages/mdc-slider#discrete-slider
@@ -579,8 +666,8 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.fieldReportsSubscription.unsubscribe()
-    this.settingsSubscription.unsubscribe()
+    this.fieldReportsSubscription?.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }
 </code></pre>

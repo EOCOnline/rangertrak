@@ -217,8 +217,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="117"
-                            class="link-to-prism">src/app/shared/services/log.service.ts:117</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="119"
+                            class="link-to-prism">src/app/shared/services/log.service.ts:119</a></div>
                 </td>
             </tr>
 
@@ -304,8 +304,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="101"
-                            class="link-to-prism">src/app/shared/services/log.service.ts:101</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="103"
+                            class="link-to-prism">src/app/shared/services/log.service.ts:103</a></div>
                 </td>
             </tr>
 
@@ -391,8 +391,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="121"
-                            class="link-to-prism">src/app/shared/services/log.service.ts:121</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="123"
+                            class="link-to-prism">src/app/shared/services/log.service.ts:123</a></div>
                 </td>
             </tr>
 
@@ -428,8 +428,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="109"
-                            class="link-to-prism">src/app/shared/services/log.service.ts:109</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="111"
+                            class="link-to-prism">src/app/shared/services/log.service.ts:111</a></div>
                 </td>
             </tr>
 
@@ -515,8 +515,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">src/app/shared/services/log.service.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="61"
+                            class="link-to-prism">src/app/shared/services/log.service.ts:61</a></div>
                 </td>
             </tr>
 
@@ -617,8 +617,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="105"
-                            class="link-to-prism">src/app/shared/services/log.service.ts:105</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="107"
+                            class="link-to-prism">src/app/shared/services/log.service.ts:107</a></div>
                 </td>
             </tr>
 
@@ -704,8 +704,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="113"
-                            class="link-to-prism">src/app/shared/services/log.service.ts:113</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="115"
+                            class="link-to-prism">src/app/shared/services/log.service.ts:115</a></div>
                 </td>
             </tr>
 
@@ -938,8 +938,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import pc from &#x27;picocolors&#x27; // https://github.com/alexeyraspopov/picocolors
-import { BehaviorSubject, Observable, throwError } from &#x27;rxjs&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BehaviorSubject, Observable, throwError } from &#x27;rxjs&#x27;
 
 // / &lt;reference types&#x3D; @types/picocolors /&gt; - gets: Cannot find type definition file for &#x27;@types/picocolors&#x27;.
 import { Injectable, Optional, SkipSelf } from &#x27;@angular/core&#x27;
@@ -975,7 +974,9 @@ export class LogService {
         new Error(&#x60;This singleton service has already been provided in the application. Avoid providing it again in child modules.&#x60;)
       })
     }
-    console.log(pc.bgGreen(&#x60;&#x3D;&#x3D;&#x3D;&#x3D; Log ${pc.red(&#x27;Service&#x27;)} ${pc.italic(&#x27;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Constructor() &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x27;)} &#x3D;&#x3D;&#x3D;&#x3D;&#x60;))
+    console.log(&#x60;&#x3D;&#x3D;&#x3D;&#x3D; Log Service  &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Constructor &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x60;)
+    //console.log(pc.bgGreen(&#x60;&#x3D;&#x3D;&#x3D;&#x3D; Log ${pc.red(&#x27;Service&#x27;)} ${pc.italic(&#x27;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Constructor() &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x27;)} &#x3D;&#x3D;&#x3D;&#x3D;&#x60;))
+    //console.log(&#x60;I see a ${pc.red(&quot;red door&quot;)} and I want it painted ${pc.black(&quot;black&quot;)} &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x60;)
 
     let initialEntry &#x3D; {
       date: new Date, msg: &#x27;Log Service is being constructed&#x27;,
@@ -1008,17 +1009,17 @@ export class LogService {
       case LogLevel.Excessive:
         // BUG: %c not getting interpreted...
         //console.log(pc.red(&#x60;%c${preface}${source}: ${msg}&#x60;))
-        console.log(pc.red(&#x60;${preface}${source}: ${msg}&#x60;))
+        console.log((&#x60;${preface}${source}: ${msg}&#x60;))
         break;
 
       case LogLevel.Verbose:
         // TODO: console.log(pc.blue(&#x60;${preface}${source}: ${msg}&#x60;), hotStylin)
         // results in:  Header component: New settings received background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;
-        console.log(pc.bgBlue(&#x60;${preface}${source}: ${msg}&#x60;))
+        console.log((&#x60;${preface}${source}: ${msg}&#x60;))
         break;
 
       case LogLevel.Info:
-        console.log(pc.bgCyan(&#x60;${preface}${source}: ${msg}&#x60;))
+        console.log((&#x60;${preface}${source}: ${msg}&#x60;))
         break;
 
       case LogLevel.Warn:
@@ -1026,7 +1027,7 @@ export class LogService {
         break;
 
       case LogLevel.Error:
-        console.error(pc.red(pc.bold(&#x60;${preface}${source}: ${msg}&#x60;)))
+        console.error((&#x60;${preface}${source}: ${msg}&#x60;))
         break;
 
       default:

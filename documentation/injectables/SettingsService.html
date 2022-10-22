@@ -241,8 +241,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="232"
-                            class="link-to-prism">src/app/shared/services/settings.service.ts:232</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="236"
+                            class="link-to-prism">src/app/shared/services/settings.service.ts:236</a></div>
                 </td>
             </tr>
 
@@ -282,8 +282,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="148"
-                            class="link-to-prism">src/app/shared/services/settings.service.ts:148</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="149"
+                            class="link-to-prism">src/app/shared/services/settings.service.ts:149</a></div>
                 </td>
             </tr>
 
@@ -323,8 +323,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="236"
-                            class="link-to-prism">src/app/shared/services/settings.service.ts:236</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="240"
+                            class="link-to-prism">src/app/shared/services/settings.service.ts:240</a></div>
                 </td>
             </tr>
 
@@ -360,8 +360,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="103"
-                            class="link-to-prism">src/app/shared/services/settings.service.ts:103</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="104"
+                            class="link-to-prism">src/app/shared/services/settings.service.ts:104</a></div>
                 </td>
             </tr>
 
@@ -399,8 +399,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="137"
-                            class="link-to-prism">src/app/shared/services/settings.service.ts:137</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="138"
+                            class="link-to-prism">src/app/shared/services/settings.service.ts:138</a></div>
                 </td>
             </tr>
 
@@ -440,8 +440,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="126"
-                            class="link-to-prism">src/app/shared/services/settings.service.ts:126</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="127"
+                            class="link-to-prism">src/app/shared/services/settings.service.ts:127</a></div>
                 </td>
             </tr>
 
@@ -511,8 +511,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="216"
-                            class="link-to-prism">src/app/shared/services/settings.service.ts:216</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="220"
+                            class="link-to-prism">src/app/shared/services/settings.service.ts:220</a></div>
                 </td>
             </tr>
 
@@ -781,6 +781,7 @@ export class SettingsService implements OnInit {
   constructor(@Optional() @SkipSelf() existingService: SettingsService,
     private log: LogService
   ) {
+    //! REVIEW: Gets called twice!!
     this.log.verbose(&#x60;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; constructor() &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x60;, this.id);
 
     if (existingService) {
@@ -791,14 +792,12 @@ export class SettingsService implements OnInit {
        * per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
        */
       throwError(() &#x3D;&gt; {
-        console.error(&#x60;This singleton service has already been provided in the application. Avoid providing it again in child modules.&#x60;)
+        this.log.error(&#x60;This singleton service has already been provided in the application. Avoid providing it again in child modules.&#x60;)
         new Error(&#x60;This singleton service has already been provided in the application. Avoid providing it again in child modules.&#x60;)
       })
     }
 
     // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
-    //! REVIEW: Gets called twice!!
-    this.log.verbose(&#x27;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Constructor() &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x27;, this.id)
 
     //  ------------------------- SECRETS -------------------------------
 
@@ -851,10 +850,12 @@ export class SettingsService implements OnInit {
     // REVIEW: following forces garbage collection of package.json, for security? (would happen at end of constructor too)
     packageAsString &#x3D; &#x27;&#x27;
     packageAsJson &#x3D; null
+
+    this.log.verbose(&#x27;out of constructor&#x27;, this.id)
   }
 
   ngOnInit() {
-    this.log.error(&#x60;ngOnInit()&#x60;, this.id);
+    this.log.verbose(&#x60;ngOnInit()&#x60;, this.id);
 
 
     if (window.isSecureContext) {
@@ -947,17 +948,20 @@ export class SettingsService implements OnInit {
       imageDirectory: &quot;./assets/imgs/&quot;,    //! WARNING: Hardcoded &amp; potential SECURITY risk.
       defFieldReportStatus: 0, // which of the following array entries to use as the default value
       //? FUTURE: Consider replacing &quot;Color&quot; with &quot;CSS_Style&quot; to allow more options?
+      //? FUTURE: Consider adding contrasting &#x27;shadow color&#x27; for nice display on entry form
       // https://en.wikipedia.org/wiki/Web_colors#Extended_colors
       // https://en.wikipedia.org/wiki/Web_colors#Color_table
       // https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#fully_saturated_colors
+      // https://m3.material.io/styles/icons/applying-icons#ebb3ae7d-d274-4a25-9356-436e82084f1f
+      // https://fonts.google.com/icons
       fieldReportStatuses: [
-        { status: &#x27;Normal&#x27;, color: &#x27;LightYellow&#x27;, icon: &#x27;&#x27; },
-        { status: &#x27;Location Report&#x27;, color: &#x27;Aquamarine&#x27;, icon: &#x27;&#x27; },
-        { status: &#x27;Evidence Report&#x27;, color: &#x27;DarkGoldenrod&#x27;, icon: &#x27;&#x27; },
-        { status: &#x27;Need Rest&#x27;, color: &#x27;Chartreuse&#x27;, icon: &#x27;&#x27; },
-        { status: &#x27;Incident Check-in&#x27;, color: &#x27;Silver&#x27;, icon: &#x27;&#x27; },
-        { status: &#x27;Incident Check-out&#x27;, color: &#x27;DimGray&#x27;, icon: &#x27;&#x27; },
-        { status: &#x27;Urgent&#x27;, color: &#x27;Crimson&#x27;, icon: &#x27;&#x27; }
+        { status: &#x27;Normal&#x27;, color: &#x27;LightYellow&#x27;, icon: &#x27;check_FILL0_wght400_GRAD0_opsz48.png&#x27; },
+        { status: &#x27;Location Report&#x27;, color: &#x27;Aquamarine&#x27;, icon: &#x27;where_to_vote_FILL0_wght400_GRAD0_opsz48.png&#x27; },
+        { status: &#x27;Evidence Report&#x27;, color: &#x27;DarkGoldenrod&#x27;, icon: &#x27;add_photo_alternate_FILL0_wght400_GRAD0_opsz48.png&#x27; },
+        { status: &#x27;Need Rest/Food&#x27;, color: &#x27;Chartreuse&#x27;, icon: &#x27;mood_bad_FILL0_wght400_GRAD0_opsz48.png&#x27; },
+        { status: &#x27;Incident Check-in&#x27;, color: &#x27;Silver&#x27;, icon: &#x27;person_add_FILL0_wght400_GRAD0_opsz48.png&#x27; },
+        { status: &#x27;Incident Check-out&#x27;, color: &#x27;DimGray&#x27;, icon: &#x27;person_remove_FILL0_wght400_GRAD0_opsz48.png&#x27; },
+        { status: &#x27;Urgent&#x27;, color: &#x27;Crimson&#x27;, icon: &#x27;crisis_alert_FILL0_wght400_GRAD0_opsz48.png&#x27; }
       ],
       // fieldReportKeywords: [&#x27;&#x27;],  // Future...could also just search notes field
     }
@@ -975,7 +979,7 @@ export class SettingsService implements OnInit {
     this.log.verbose(&#x60;Notified subscribers of new Application Settings ${JSON.stringify(newSettings)} &#x60;, this.id)
 
     //! Is this proper?!
-    this.log.verbose(&#x60;Reloading window!&#x60;, this.id)
+    //this.log.verbose(&#x60;updateSettings: Reloading window!&#x60;, this.id)
     //window.location.reload() creates endless cycle!
   }
 

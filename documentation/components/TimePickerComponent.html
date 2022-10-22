@@ -1041,7 +1041,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>    <code>dayjs.Dayjs | null</code>
+                        <i>Type : </i>    <code>null | Date</code>
 
                     </td>
                 </tr>
@@ -1067,7 +1067,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>    <code>dayjs.Dayjs | null</code>
+                        <i>Type : </i>    <code>null | Date</code>
 
                     </td>
                 </tr>
@@ -1313,25 +1313,24 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import dayjs from &#x27;dayjs&#x27;
-import {
-    debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
 } from &#x27;rxjs&#x27;
 
 import {
-    NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule
+  NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule
 } from &#x27;@angular-material-components/datetime-picker&#x27; // already in app.module.ts
 import { DOCUMENT } from &#x27;@angular/common&#x27;
 import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from &#x27;@angular/core&#x27;
 import {
-    FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup,
-    Validators
+  FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup,
+  Validators
 } from &#x27;@angular/forms&#x27;
 import { ThemePalette } from &#x27;@angular/material/core&#x27;
 
 import {
-    FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
-    SettingsService, SettingsType
+  FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
+  SettingsService, SettingsType
 } from &#x27;../services/&#x27;
 
 // https://blog.briebug.com/blog/5-ways-to-pass-data-into-child-components-in-angular
@@ -1388,8 +1387,8 @@ export class TimePickerComponent implements OnInit {
   public touchUi &#x3D; false
   public enableMeridian &#x3D; false // 24 hr clock
 
-  minDate!: dayjs.Dayjs | null
-  maxDate!: dayjs.Dayjs | null
+  minDate!: null | Date // dayjs.Dayjs
+  maxDate!: null | Date // dayjs.Dayjs
   public stepHour &#x3D; 1
   public stepMinute &#x3D; 1
   public stepSecond &#x3D; 1
@@ -1466,13 +1465,13 @@ export class TimePickerComponent implements OnInit {
   // }
 
   private _setMinDate(hours: number &#x3D; this.defaultOpPeriod) {
-    const now &#x3D; dayjs();
-    this.minDate &#x3D; now.subtract(hours, &#x27;hours&#x27;);
+    //const now &#x3D; Date.now() //dayjs();
+    this.minDate?.setMilliseconds(Date.now() - hours * 60 * 60 * 1000)
   }
 
   private _setMaxDate(hours: number &#x3D; this.defaultOpPeriod) {
-    const now &#x3D; dayjs();
-    this.maxDate &#x3D; now.add(hours, &#x27;hours&#x27;);
+    //const now &#x3D; Date.now() //dayjs();
+    this.minDate?.setMilliseconds(Date.now() + hours * 60 * 60 * 1000)
   }
 }
 </code></pre>
@@ -1481,7 +1480,7 @@ export class TimePickerComponent implements OnInit {
     <div class="tab-pane fade " id="c-templateData">
         <pre class="line-numbers"><code class="language-html">&#x60;
 &lt;!-- div class&#x3D;&quot;container&quot; --&gt;
-&lt;div appearance&#x3D;&quot;filled&quot; class&#x3D;&quot;input-group &quot; [formGroup]&#x3D;&quot;timepickerFormGroup&quot;&gt;
+&lt;div appearance&#x3D;&quot;filled&quot; class&#x3D;&quot;input-group rounded&quot; [formGroup]&#x3D;&quot;timepickerFormGroup&quot;&gt;
   &lt;!--
         enter__Where-div
         class&#x3D;&quot;timepicker__Where-input&quot;
@@ -1540,7 +1539,7 @@ with ($primary: #962f10,
 $filledColor : #F0F0F0;
 
 .rounded {
-  border-radius: 5px;
+  border-radius: 30px; // !important;
 }
 
 .innerElement {
@@ -1554,15 +1553,15 @@ $filledColor : #F0F0F0;
 }
 
 .bordered {
-  border                      : 2 px solid rgb(62, 189, 189);
+  border                    : 2 px solid rgb(62, 189, 189);
   //padding               : 4px;
-  //  border-radius           : 5px;
+  //border-radius           : 25px !important;
 }
 
 .timepicker__When-input {
   width                     : 400px;
   //padding               : 4px;
-  //border-radius           : 5px;
+  //border-radius           : 25p !important;
 }
 
 //.elegant {
@@ -1597,8 +1596,8 @@ $filledColor : #F0F0F0;
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div>`<!-- div class="container" --><div appearance="filled" class="input-group " [formGroup]="timepickerFormGroup">  <!--        enter__Where-div        class="timepicker__Where-input"         [formControl]="dateCtrl"         for $(datePicker) explaination:  https://stackoverflow.com/questions/64826483/ngxmatdatetimepicker-is-not-assignable-to-type-matdatepickerbase        [ngxMatDatetimePicker]="$any(datePicker)", below, gets:        No value accessor for form control with unspecified name attribute        app.module.ts imports: NgxMatDatetimePickerModule        No value accessor for form control with unspecified name attribute[formControl]="time"          [min]="minDate"          [max]="maxDate"      -->  <mat-form-field class="innerElement">    <mat-label>{{datePickerLabel}}</mat-label>    <input matInput [ngxMatDatetimePicker]="$any(datePicker)" formControlName="time" type="datetime"      placeholder="Enter a date" class="timepicker__When-input" data-lpignore="true" tabindex="6"      (dateChange)="onNewTime($event)" />    <mat-datepicker-toggle matSuffix [for]="$any(datePicker)" title="Click me to display a time picker">    </mat-datepicker-toggle>    <ngx-mat-datetime-picker #datePicker [showSpinners]="showSpinners" [showSeconds]="showSeconds" [stepHour]="stepHour"      [stepMinute]="stepMinute" [stepSecond]="stepSecond" [touchUi]="touchUi" [color]="color"      [enableMeridian]="enableMeridian" [disableMinute]="disableMinute" [hideTime]="hideTime">      <!-- Custom icon or text of Apply icon -->      <!--ng-template>          <mat-icon>star</mat-icon>          <span>OK</span>        </ng-template-->    </ngx-mat-datetime-picker>  </mat-form-field></div><!--/div --></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+        var COMPONENT_TEMPLATE = '<div>`<!-- div class="container" --><div appearance="filled" class="input-group rounded" [formGroup]="timepickerFormGroup">  <!--        enter__Where-div        class="timepicker__Where-input"         [formControl]="dateCtrl"         for $(datePicker) explaination:  https://stackoverflow.com/questions/64826483/ngxmatdatetimepicker-is-not-assignable-to-type-matdatepickerbase        [ngxMatDatetimePicker]="$any(datePicker)", below, gets:        No value accessor for form control with unspecified name attribute        app.module.ts imports: NgxMatDatetimePickerModule        No value accessor for form control with unspecified name attribute[formControl]="time"          [min]="minDate"          [max]="maxDate"      -->  <mat-form-field class="innerElement">    <mat-label>{{datePickerLabel}}</mat-label>    <input matInput [ngxMatDatetimePicker]="$any(datePicker)" formControlName="time" type="datetime"      placeholder="Enter a date" class="timepicker__When-input" data-lpignore="true" tabindex="6"      (dateChange)="onNewTime($event)" />    <mat-datepicker-toggle matSuffix [for]="$any(datePicker)" title="Click me to display a time picker">    </mat-datepicker-toggle>    <ngx-mat-datetime-picker #datePicker [showSpinners]="showSpinners" [showSeconds]="showSeconds" [stepHour]="stepHour"      [stepMinute]="stepMinute" [stepSecond]="stepSecond" [touchUi]="touchUi" [color]="color"      [enableMeridian]="enableMeridian" [disableMinute]="disableMinute" [hideTime]="hideTime">      <!-- Custom icon or text of Apply icon -->      <!--ng-template>          <mat-icon>star</mat-icon>          <span>OK</span>        </ng-template-->    </ngx-mat-datetime-picker>  </mat-form-field></div><!--/div --></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'TimePickerComponent'};
 </script>

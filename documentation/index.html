@@ -55,13 +55,8 @@
 <li>Save and reload data to local files</li>
 <li>Allow loading of additinoal layers (e.g., an image of trails, local features),
 perhaps with <a href="https://github.com/publiclab/Leaflet.DistortableImage">https://github.com/publiclab/Leaflet.DistortableImage</a></li>
-<li>improved docs: screenshots and architectural diagrams<ul>
-<li><ul>
+<li>improved docs: screenshots and architectural diagrams</li>
 <li>consider <a href="https://github.com/EventEmitter2/EventEmitter2">https://github.com/EventEmitter2/EventEmitter2</a> for multi-threaded msgs with service workers</li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 <h2 id="items-still-requiring-online-access">Items (still) requiring online access</h2>
 <ul>
@@ -88,6 +83,9 @@ perhaps with <a href="https://github.com/publiclab/Leaflet.DistortableImage">htt
 <li><p>or Run <code>ng serve</code> for a dev server. Navigate to <code>http://localhost:4200/</code>. The app will automatically reload if you change any of the source files.</p>
 </li>
 </ul>
+<p>For productino release:
+ npm run build --release (???)
+ ng build</p>
 <h2 id="running-unit-tests">Running unit tests</h2>
 <ul>
 <li>Run <code>ng test</code> to execute the unit tests via <a href="https://karma-runner.github.io">Karma</a>.</li>
@@ -108,11 +106,10 @@ which <em>SHOULD</em> (but doesn&#39;t) update version # in Package.json &amp; P
 Some details in service/settings.service.ts &amp; app.component.ts
 <a href="https://github.com/googleapis/release-please#how-do-i-change-the-version-number">https://github.com/googleapis/release-please#how-do-i-change-the-version-number</a></p>
 <h2 id="to-deploy-to-google-firebase">To Deploy to Google Firebase</h2>
-<p>From: <a href="https://www.tutorialspoint.com/firebase/firebase_deploying.htm">https://www.tutorialspoint.com/firebase/firebase_deploying.htm</a>
-firebase login
-firebase init
-firebase deploy
-See angular.json and firebase.json</p>
+<p>ng deploy</p>
+<p>ng add @angular/fire
+From Angular Projects, 2nd ed. pg 119</p>
+<p>See angular.json and firebase.json</p>
 <h2 id="architecture">Architecture</h2>
 <img src="./src/docs/PlantUML-Class Diagram.png" alt="PlantUML-Class Diagram" style="height:300px; width:100%; align:right;"/>
 ![This architecural diagram is unimplemented yet]( .\src\docs\RangerTrak.png "Future architectural diagram")

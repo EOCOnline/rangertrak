@@ -442,8 +442,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="468"
-                            class="link-to-prism">src/app/rangers/rangers.component.ts:468</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="477"
+                            class="link-to-prism">src/app/rangers/rangers.component.ts:477</a></div>
                 </td>
             </tr>
 
@@ -511,8 +511,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="475"
-                            class="link-to-prism">src/app/rangers/rangers.component.ts:475</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="484"
+                            class="link-to-prism">src/app/rangers/rangers.component.ts:484</a></div>
                 </td>
             </tr>
 
@@ -619,8 +619,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="439"
-                            class="link-to-prism">src/app/rangers/rangers.component.ts:439</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="448"
+                            class="link-to-prism">src/app/rangers/rangers.component.ts:448</a></div>
                 </td>
             </tr>
 
@@ -656,8 +656,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="420"
-                            class="link-to-prism">src/app/rangers/rangers.component.ts:420</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="429"
+                            class="link-to-prism">src/app/rangers/rangers.component.ts:429</a></div>
                 </td>
             </tr>
 
@@ -764,8 +764,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="457"
-                            class="link-to-prism">src/app/rangers/rangers.component.ts:457</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="466"
+                            class="link-to-prism">src/app/rangers/rangers.component.ts:466</a></div>
                 </td>
             </tr>
 
@@ -840,8 +840,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="483"
-                            class="link-to-prism">src/app/rangers/rangers.component.ts:483</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="492"
+                            class="link-to-prism">src/app/rangers/rangers.component.ts:492</a></div>
                 </td>
             </tr>
 
@@ -1587,8 +1587,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="447"
-                            class="link-to-prism">src/app/rangers/rangers.component.ts:447</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="456"
+                            class="link-to-prism">src/app/rangers/rangers.component.ts:456</a></div>
                 </td>
             </tr>
 
@@ -2433,7 +2433,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ColDef, GridOptions } from &#x27;ag-grid-community&#x27;
-import { TooltipModule } from &#x27;ng2-tooltip-directive&#x27;
+//import { TooltipModule } from &#x27;ng2-tooltip-directive&#x27;
 import { Subscription } from &#x27;rxjs&#x27;
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING
@@ -2448,8 +2448,8 @@ import { MatSnackBar } from &#x27;@angular/material/snack-bar&#x27;
 import { Utility } from &#x27;../shared&#x27;
 import { AlertsComponent } from &#x27;../shared/alerts/alerts.component&#x27;
 import {
-    FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
-    SettingsService, SettingsType
+  FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
+  SettingsService, SettingsType
 } from &#x27;../shared/services&#x27;
 import { csvImport } from &#x27;./csvImport&#x27;
 import { CustomTooltip } from &#x27;./customTooltip&#x27;
@@ -2845,10 +2845,19 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   //--------------------------------------------------------------------------
   // following from https://ag-grid.com/javascript-data-grid/csv-export/
   onBtnExportToExcel() {
-    var params &#x3D; this.getParams();
+    //var params &#x3D; this.getParams();
     //this.log.verbose(&#x60;Got column seperator value &quot;${params.columnSeparator}&quot;&#x60;, this.id)
     //this.log.verbose(&#x60;Got filename of &quot;${params.fileName}&quot;&#x60;, this.id)
-    this.gridApi.exportDataAsCsv(params);
+    //this.gridApi.exportDataAsCsv(params);
+
+    // ! Is this JUST for enterprise edition?! - test...
+    // https://www.ag-grid.com/javascript-data-grid/excel-export-rows/#export-all-unprocessed-rows
+    this.gridApi.exportDataAsExcel({
+      exportedRows: (document.getElementById(&#x27;allRows&#x27;) as HTMLInputElement)
+        .checked
+        ? &#x27;all&#x27;
+        : &#x27;filteredAndSorted&#x27;,
+    })
   }
 
   getSeperatorValue(inputSelector: string) {
@@ -2915,8 +2924,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   ngOnDestroy() {
-    this.rangersSubscription.unsubscribe()
-    this.settingsSubscription.unsubscribe()
+    this.rangersSubscription?.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }
 
@@ -2940,180 +2949,185 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     </div>
 
     <div class="tab-pane fade " id="c-templateData">
-        <pre class="line-numbers"><code class="language-html">&lt;!-- https://material.io/components/banners/web#banners --&gt;
+        <pre class="line-numbers"><code class="language-html">&lt;!-- https://material.io/components/banners/web#banners &gt;
 &lt;div class&#x3D;&quot;mdc-banner mdc-banner--centered mdc-banner--mobile-stacked&quot; role&#x3D;&quot;banner&quot;&gt;
   &lt;div class&#x3D;&quot;mdc-banner__fixed&quot;&gt;
     &lt;div class&#x3D;&quot;mdc-banner__content&quot; role&#x3D;&quot;alertdialog&quot; aria-live&#x3D;&quot;assertive&quot;&gt;
       &lt;div class&#x3D;&quot;mdc-banner__graphic-text-wrapper&quot;&gt;
-        &lt;!-- https://fonts.google.com/icons?selected&#x3D;Material+Icons --&gt;
-        &lt;div class&#x3D;&quot;mdc-banner__graphic&quot; role&#x3D;&quot;img&quot; alt&#x3D;&quot;&quot;&gt;
-          &lt;i class&#x3D;&quot;material-icons mdc-banner__icon&quot;&gt;emoji_people&lt;/i&gt;
-        &lt;/div&gt;
-        &lt;div class&#x3D;&quot;mdc-banner__text&quot;&gt;&lt;/div&gt;
-      &lt;/div&gt;
-      &lt;div class&#x3D;&quot;mdc-banner__actions&quot;&gt;
-        &lt;!--button type&#x3D;&quot;button&quot; class&#x3D;&quot;mdc-button mdc-banner__secondary-action&quot;&gt;
+        &lt;! -- https://fonts.google.com/icons?selected&#x3D;Material+Icons -- &gt;
+&lt;div class&#x3D;&quot;mdc-banner__graphic&quot; role&#x3D;&quot;img&quot; alt&#x3D;&quot;&quot;&gt;
+  &lt;i class&#x3D;&quot;material-icons mdc-banner__icon&quot;&gt;emoji_people&lt;/i&gt;
+&lt;/div&gt;
+&lt;div class&#x3D;&quot;mdc-banner__text&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class&#x3D;&quot;mdc-banner__actions&quot;&gt;
+  &lt;! --button type&#x3D;&quot;button&quot; class&#x3D;&quot;mdc-button mdc-banner__secondary-action&quot;&gt;
         &lt;div class&#x3D;&quot;mdc-button__ripple&quot;&gt;&lt;/div&gt;
         &lt;div class&#x3D;&quot;mdc-button__label&quot;&gt;Learn more&lt;/div&gt;
-      &lt;/button--&gt;
-        &lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;mdc-button mdc-banner__primary-action&quot;&gt;
-          &lt;div class&#x3D;&quot;mdc-button__ripple&quot;&gt;&lt;/div&gt;
-          &lt;div class&#x3D;&quot;mdc-button__label&quot;&gt;Close&lt;/div&gt;
-        &lt;/button&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
+      &lt;/button -- &gt;
+&lt;button type&#x3D;&quot;button&quot; class&#x3D;&quot;mdc-button mdc-banner__primary-action&quot;&gt;
+  &lt;div class&#x3D;&quot;mdc-button__ripple&quot;&gt;&lt;/div&gt;
+  &lt;div class&#x3D;&quot;mdc-button__label&quot;&gt;Close&lt;/div&gt;
+&lt;/button&gt;
 &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div--&gt;
 
 &lt;pageHeader [parentTitle]&#x3D;&quot;title&quot; [pageDescription]&#x3D;&quot;pageDescr&quot;&gt;...&lt;/pageHeader&gt;
-&lt;br /&gt;
-&lt;details&gt;
-  &lt;summary class&#x3D;&quot;big&quot;&gt;Instructions&lt;/summary&gt;
-  This list of participants was taken from the FCC Database February 3, 2022. &lt;br /&gt;
-  It has been significantly reformatted and your edits may alter it further.&lt;br /&gt;
-  To maintain these changes between browser sessions, a button in the Advanced sectino
-  below allows writing the following table to the Browser Local Storage where it will
-  remain (thru multiple browser sessions) until explicitly deleted.&lt;br /&gt;
-  &lt;ul&gt;
-    &lt;li&gt;
-      The photos are not associated with the correct person currently - so are disabled
-      for now.
-    &lt;/li&gt;
-    &lt;li&gt;
-      Some fields may be editable (single or double-click), and ONCE SAVED can be exported
-      to a CSV file.
-    &lt;/li&gt;
-    &lt;li&gt;
-      &lt;span style&#x3D;&quot;color:red;&quot;&gt;Edits HAVE to be MANUALLY saved by selecting the &quot;Save Data&quot; button in the
-        Advanced section below.&lt;/span&gt;
-    &lt;/li&gt;
-    &lt;li&gt;Click on a column heading to sort by that field.&lt;/li&gt;
-    &lt;li&gt;Click &amp; Drag on a column heading to move columns&lt;/li&gt;
-    &lt;li&gt;Hovering over a cell (e.g., any callsign) may show additional information.&lt;/li&gt;
-    &lt;li&gt;Icons at the top right of each column allows filtering on the value&lt;/li&gt;
-    &lt;li&gt;
-      Export Rangers will save data as a CSV file for Excel. For
-      &lt;a href&#x3D;&quot;https://ag-grid.com/javascript-data-grid/csv-export&quot; target&#x3D;&quot;_blank&quot;&gt;details&lt;/a&gt;
-    &lt;/li&gt;
-    &lt;li&gt;
-      FUTURE: Import Excel button currently brings in the data - but due to imporoper
-      quoting it doesn&#x27;t show up, so isn&#x27;t working - yet.
-    &lt;/li&gt;
-  &lt;/ul&gt;
-&lt;/details&gt;
-&lt;br /&gt;
+&lt;section class&#x3D;&quot;main&quot;&gt;
 
-&lt;!-- https://www.ag-grid.com/javascript-data-grid/component-tooltip/
+  &lt;details&gt;
+    &lt;summary class&#x3D;&quot;big&quot;&gt;Instructions&lt;/summary&gt;
+    This list of participants was taken from the FCC Database February 3, 2022. &lt;br /&gt;
+    It has been significantly reformatted and your edits may alter it further.&lt;br /&gt;
+    To maintain these changes between browser sessions, a button in the Advanced sectino
+    below allows writing the following table to the Browser Local Storage where it will
+    remain (thru multiple browser sessions) until explicitly deleted.&lt;br /&gt;
+    &lt;ul&gt;
+      &lt;li&gt;
+        The photos are not associated with the correct person currently - so are disabled
+        for now.
+      &lt;/li&gt;
+      &lt;li&gt;
+        Some fields may be editable (single or double-click), and ONCE SAVED can be exported
+        to a CSV file.
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;span style&#x3D;&quot;color:red;&quot;&gt;Edits HAVE to be MANUALLY saved by selecting the &quot;Save Data&quot; button in the
+          Advanced section below.&lt;/span&gt;
+      &lt;/li&gt;
+      &lt;li&gt;Click on a column heading to sort by that field.&lt;/li&gt;
+      &lt;li&gt;Click &amp; Drag on a column heading to move columns&lt;/li&gt;
+      &lt;li&gt;Hovering over a cell (e.g., any callsign) may show additional information.&lt;/li&gt;
+      &lt;li&gt;Icons at the top right of each column allows filtering on the value&lt;/li&gt;
+      &lt;li&gt;
+        Export Rangers will save data as a CSV file for Excel. For
+        &lt;a href&#x3D;&quot;https://ag-grid.com/javascript-data-grid/csv-export&quot; target&#x3D;&quot;_blank&quot;&gt;details&lt;/a&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        FUTURE: Import Excel button currently brings in the data - but due to imporoper
+        quoting it doesn&#x27;t show up, so isn&#x27;t working - yet.
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/details&gt;
+  &lt;br /&gt;
+
+  &lt;!-- https://www.ag-grid.com/javascript-data-grid/component-tooltip/
 &lt;div class&#x3D;&quot;tooltip2&quot; placement&#x3D;&quot;top&quot; showDelay&#x3D;&quot;3000&quot;&gt;WORKING Tooltip!
   &lt;span class&#x3D;&quot;tooltiphtml&quot;&gt;KE7KDQ &lt;img src&#x3D;&quot;./assets/imgs/rew/VI-0038.jpg&quot; height&#x3D;&quot;60px&quot; width&#x3D;&quot;60px&quot; /&gt;&lt;br&gt; John
     Cornelison&lt;/span&gt;
 &lt;/div--&gt;
 
-&lt;div id&#x3D;&quot;rangersgrid&quot;&gt;
-  &lt;ag-grid-angular #rangerGrid rowAnimation pagination paginationAutoPageSize style&#x3D;&quot;width: 100%; height: 60vh;&quot;
-    (gridReady)&#x3D;&quot;onGridReady($event)&quot; [gridOptions]&#x3D;&quot;gridOptions&quot; class&#x3D;&quot;ag-theme-alpine&quot; [rowData]&#x3D;&quot;rangers&quot;
-    [columnDefs]&#x3D;&quot;columnDefs&quot; [tooltipShowDelay]&#x3D;&quot;500&quot;&gt;
-    &lt;!--
+  &lt;div id&#x3D;&quot;rangersgrid&quot;&gt;
+    &lt;ag-grid-angular #rangerGrid rowAnimation pagination paginationAutoPageSize style&#x3D;&quot;width: 100%; height: 60vh;&quot;
+      (gridReady)&#x3D;&quot;onGridReady($event)&quot; [gridOptions]&#x3D;&quot;gridOptions&quot; class&#x3D;&quot;ag-theme-alpine&quot; [rowData]&#x3D;&quot;rangers&quot;
+      [columnDefs]&#x3D;&quot;columnDefs&quot; [tooltipShowDelay]&#x3D;&quot;500&quot;&gt;
+      &lt;!--
       [defaultColDef]&#x3D;&quot;defaultColDef&quot;
           (gridReady)&#x3D;&quot;onGridReady($event)&quot; // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1
 
           [columns]&#x3D;&quot;columns&quot;
           [showToolPanel]&#x3D;&quot;showToolPanel&quot;;
         --&gt;
-  &lt;/ag-grid-angular&gt;
-  &lt;br /&gt;
-  &lt;!--button (click)&#x3D;&quot;onBtPrinterFriendly()&quot;&gt;Printer Friendly Layout&lt;/button&gt;
+    &lt;/ag-grid-angular&gt;
+    &lt;br /&gt;
+    &lt;!--button (click)&#x3D;&quot;onBtPrinterFriendly()&quot;&gt;Printer Friendly Layout&lt;/button&gt;
       &lt;button (click)&#x3D;&quot;onBtNormal()&quot;&gt;Normal Layout&lt;/button--&gt;
 
-  &lt;div&gt;
-    &lt;button (click)&#x3D;&quot;onBtnExportToExcel()&quot;&gt;Export Rangers&lt;/button&gt; with column separator
-    of
-    &lt;select (change)&#x3D;&quot;onSeperatorChange()&quot; id&#x3D;&quot;columnSeparator&quot;&gt;
-      &lt;option value&#x3D;&quot;none&quot;&gt;comma (,)&lt;/option&gt;
-      &lt;option value&#x3D;&quot;tab&quot;&gt;tab&lt;/option&gt;
-      &lt;option value&#x3D;&quot;|&quot;&gt;bar (|)&lt;/option&gt;
-    &lt;/select&gt;
-  &lt;/div&gt;
-  &lt;br /&gt;
-  &lt;button (click)&#x3D;&quot;onDeselectAll()&quot;&gt;Clear Selection&lt;/button&gt;
-  &lt;br /&gt;
-  &lt;br /&gt;
-  &lt;button (click)&#x3D;&quot;onBtnAddRanger()&quot;
-    title&#x3D;&quot;Add a new Ranger, or a new CERT, or a new Team Tactical sign: they&#x27;re considered identically&quot;&gt;
-    Add new tactical sign
-  &lt;/button&gt;
-  &lt;br /&gt;
-  &lt;br /&gt;
-  &lt;details&gt;
-    &lt;summary&gt;&lt;span class&#x3D;&quot;big&quot; id&#x3D;&quot;Advanced&quot;&gt;Advanced&lt;/span&gt;&lt;/summary&gt;
+    &lt;div&gt;
+      &lt;button (click)&#x3D;&quot;onBtnExportToExcel()&quot;&gt;Export Rangers&lt;/button&gt; with column separator
+      of
+      &lt;select (change)&#x3D;&quot;onSeperatorChange()&quot; id&#x3D;&quot;columnSeparator&quot;&gt;
+        &lt;option value&#x3D;&quot;none&quot;&gt;comma (,)&lt;/option&gt;
+        &lt;option value&#x3D;&quot;tab&quot;&gt;tab&lt;/option&gt;
+        &lt;option value&#x3D;&quot;|&quot;&gt;bar (|)&lt;/option&gt;
+      &lt;/select&gt;
+      &lt;label class&#x3D;&quot;option&quot; for&#x3D;&quot;allRows&quot; title&#x3D;&quot;By default only filtered &amp; sorted rows are exported.&quot;&gt;
+        &lt;input id&#x3D;&quot;allRows&quot; type&#x3D;&quot;checkbox&quot; /&gt;All Rows&lt;/label&gt;
 
-    If no rangers exist, or you would like to replace those shown above, either:
-    &lt;ol&gt;
-      &lt;li&gt;
-        BEST: Use the &quot;Add Vashon Rangers&quot; button to import all known HAM Radio licensees.
-        &lt;p&gt;
-          This list of potential Rangers was taken from the FCC Database Feb 3, 2022.
-          &lt;br /&gt;
-          It has been significantly reformatted and your edits may alter it further.&lt;br /&gt;
-          Contact John with a better list if desired...
-        &lt;/p&gt;
-      &lt;/li&gt;
 
-      &lt;li&gt;
-        Add new rangers (or other tactical signs such as Team Names/CERTs) into the grid.
-      &lt;/li&gt;
-    &lt;/ol&gt;
-    &lt;hr /&gt;
-
-    &lt;p&gt;
-      To maintain these changes between browser sessions, we write the table above to the
-      Browser Local Storage where it will remain until deleted. Use this &quot;Save Data&quot;
-      button to save the current state of the grid above, so it will be restored the next
-      time this web page is opened on this browser &amp; device
-    &lt;/p&gt;
-    Save Rangers to Local Storage:
-    &lt;button (click)&#x3D;&quot;onBtnUpdateLocalStorage()&quot; style&#x3D;&quot;margin-bottom: 5px&quot;
-      title&#x3D;&quot;Preserve the edits above to the Rangers stored on this browser&quot;&gt;
-      Save Rangers&lt;/button&gt;&lt;br /&gt;
-
-    Delete ALL Rangers from Local Storage (NOTE: they will immediately get replaced with the hardcoded names!):
-    &lt;button (click)&#x3D;&quot;onBtnDeleteRangers()&quot;&gt;Delete Rangers&lt;/button&gt;&lt;br /&gt;
-
-    &lt;div id&#x3D;&quot;rangers__Fake&quot;&gt;
-      Add the large list of Vashon rangers to any existing rangers:
-      &lt;button (click)&#x3D;&quot;loadVashonRangers()&quot; type&#x3D;&quot;button&quot; id&#x3D;&quot;enter__Fake--button&quot;&gt;
-        Add Vashon Rangers
-      &lt;/button&gt;
-      &lt;!--button (click)&#x3D;&quot;onBtnReloadPage()&quot; type&#x3D;&quot;button&quot;&gt;Reload Page&lt;/button--&gt;
     &lt;/div&gt;
-  &lt;/details&gt;
+    &lt;br /&gt;
+    &lt;button (click)&#x3D;&quot;onDeselectAll()&quot;&gt;Clear Selection&lt;/button&gt;
+    &lt;br /&gt;
+    &lt;br /&gt;
+    &lt;button (click)&#x3D;&quot;onBtnAddRanger()&quot;
+      title&#x3D;&quot;Add a new Ranger, or a new CERT, or a new Team Tactical sign: they&#x27;re considered identically&quot;&gt;
+      Add new tactical sign
+    &lt;/button&gt;
+    &lt;br /&gt;
+    &lt;br /&gt;
+    &lt;details&gt;
+      &lt;summary&gt;&lt;span class&#x3D;&quot;big&quot; id&#x3D;&quot;Advanced&quot;&gt;Advanced&lt;/span&gt;&lt;/summary&gt;
 
-  &lt;br /&gt;
-  &lt;details&gt;
-    &lt;summary&gt;&lt;span class&#x3D;&quot;big&quot;&gt;Untested or unlikely to work!&lt;/span&gt;&lt;/summary&gt;
-    &lt;ul&gt;
-      &lt;li&gt;
-        FUTURE: Import Rangers from a JSON file:
-        &lt;button (click)&#x3D;&quot;onBtnImportJson($event)&quot; style&#x3D;&quot;margin-bottom: 5px&quot; title&#x3D;&quot;Import Rangers from JSON file&quot;&gt;
-          Import Rangers (JSON)&lt;/button&gt;&lt;br /&gt;, or
-      &lt;/li&gt;
-      &lt;li&gt;
-        FUTURE: Replace existing Rangers with those from an Excel file:
-        &lt;input type&#x3D;&quot;file&quot; (change)&#x3D;&quot;onBtnImportExcel($event)&quot; multiple&#x3D;&quot;false&quot; accept&#x3D;&quot;.csv, .xls, .xslt&quot; /&gt;
-        Then SAVE RANGERS below and then REFRESH PAGE!
-      &lt;/li&gt;
-    &lt;/ul&gt;
+      If no rangers exist, or you would like to replace those shown above, either:
+      &lt;ol&gt;
+        &lt;li&gt;
+          BEST: Use the &quot;Add Vashon Rangers&quot; button to import all known HAM Radio licensees.
+          &lt;p&gt;
+            This list of potential Rangers was taken from the FCC Database Feb 3, 2022.
+            &lt;br /&gt;
+            It has been significantly reformatted and your edits may alter it further.&lt;br /&gt;
+            Contact John with a better list if desired...
+          &lt;/p&gt;
+        &lt;/li&gt;
 
-    FUTURE: Import Excel button currently &#x27;works&#x27;, but imports wrong spreadsheet and does
-    nothing with it!&lt;br /&gt;
-    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
-    &lt;label for&#x3D;&quot;myfile&quot;&gt;Select a file:&lt;/label&gt;
-    &lt;input type&#x3D;&quot;file&quot; id&#x3D;&quot;myfile&quot; name&#x3D;&quot;myfile&quot; /&gt;
+        &lt;li&gt;
+          Add new rangers (or other tactical signs such as Team Names/CERTs) into the grid.
+        &lt;/li&gt;
+      &lt;/ol&gt;
+      &lt;hr /&gt;
 
-    &lt;label for&#x3D;&quot;avatar&quot;&gt;Choose a png OR jpg only test:&lt;/label&gt;
-    &lt;input type&#x3D;&quot;file&quot; id&#x3D;&quot;avatar&quot; name&#x3D;&quot;avatar&quot; accept&#x3D;&quot;image/png, image/jpeg&quot; /&gt;
+      &lt;p&gt;
+        To maintain these changes between browser sessions, we write the table above to the
+        Browser Local Storage where it will remain until deleted. Use this &quot;Save Data&quot;
+        button to save the current state of the grid above, so it will be restored the next
+        time this web page is opened on this browser &amp; device
+      &lt;/p&gt;
+      Save Rangers to Local Storage:
+      &lt;button (click)&#x3D;&quot;onBtnUpdateLocalStorage()&quot; style&#x3D;&quot;margin-bottom: 5px&quot;
+        title&#x3D;&quot;Preserve the edits above to the Rangers stored on this browser&quot;&gt;
+        Save Rangers&lt;/button&gt;&lt;br /&gt;
 
-    &lt;!-- Events
+      Delete ALL Rangers from Local Storage (NOTE: they will immediately get replaced with the hardcoded names!):
+      &lt;button (click)&#x3D;&quot;onBtnDeleteRangers()&quot;&gt;Delete Rangers&lt;/button&gt;&lt;br /&gt;
+
+      &lt;div id&#x3D;&quot;rangers__Fake&quot;&gt;
+        Add the large list of Vashon rangers to any existing rangers:
+        &lt;button (click)&#x3D;&quot;loadVashonRangers()&quot; type&#x3D;&quot;button&quot; id&#x3D;&quot;enter__Fake--button&quot;&gt;
+          Add Vashon Rangers
+        &lt;/button&gt;
+        &lt;!--button (click)&#x3D;&quot;onBtnReloadPage()&quot; type&#x3D;&quot;button&quot;&gt;Reload Page&lt;/button--&gt;
+      &lt;/div&gt;
+    &lt;/details&gt;
+
+    &lt;br /&gt;
+    &lt;details&gt;
+      &lt;summary&gt;&lt;span class&#x3D;&quot;big&quot;&gt;Untested or unlikely to work!&lt;/span&gt;&lt;/summary&gt;
+      &lt;ul&gt;
+        &lt;li&gt;
+          FUTURE: Import Rangers from a JSON file:
+          &lt;button (click)&#x3D;&quot;onBtnImportJson($event)&quot; style&#x3D;&quot;margin-bottom: 5px&quot; title&#x3D;&quot;Import Rangers from JSON file&quot;&gt;
+            Import Rangers (JSON)&lt;/button&gt;&lt;br /&gt;, or
+        &lt;/li&gt;
+        &lt;li&gt;
+          FUTURE: Replace existing Rangers with those from an Excel file:
+          &lt;input type&#x3D;&quot;file&quot; (change)&#x3D;&quot;onBtnImportExcel($event)&quot; multiple&#x3D;&quot;false&quot; accept&#x3D;&quot;.csv, .xls, .xslt&quot; /&gt;
+          Then SAVE RANGERS below and then REFRESH PAGE!
+        &lt;/li&gt;
+      &lt;/ul&gt;
+
+      FUTURE: Import Excel button currently &#x27;works&#x27;, but imports wrong spreadsheet and does
+      nothing with it!&lt;br /&gt;
+      // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
+      &lt;label for&#x3D;&quot;myfile&quot;&gt;Select a file:&lt;/label&gt;
+      &lt;input type&#x3D;&quot;file&quot; id&#x3D;&quot;myfile&quot; name&#x3D;&quot;myfile&quot; /&gt;
+
+      &lt;label for&#x3D;&quot;avatar&quot;&gt;Choose a png OR jpg only test:&lt;/label&gt;
+      &lt;input type&#x3D;&quot;file&quot; id&#x3D;&quot;avatar&quot; name&#x3D;&quot;avatar&quot; accept&#x3D;&quot;image/png, image/jpeg&quot; /&gt;
+
+      &lt;!-- Events
       https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event
       https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event
       https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement#properties_file
@@ -3126,37 +3140,38 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
         log.textContent &#x3D; e.target.value;
       }
     --&gt;
-    &lt;hr /&gt;
+      &lt;hr /&gt;
 
-    &lt;br /&gt;
-    &lt;label for&#x3D;&quot;myfile2&quot;&gt;Select a file:&lt;/label&gt;
-    &lt;input type&#x3D;&quot;file2&quot; id&#x3D;&quot;myfile2&quot; name&#x3D;&quot;myfile2&quot; /&gt;
+      &lt;br /&gt;
+      &lt;label for&#x3D;&quot;myfile2&quot;&gt;Select a file:&lt;/label&gt;
+      &lt;input type&#x3D;&quot;file2&quot; id&#x3D;&quot;myfile2&quot; name&#x3D;&quot;myfile2&quot; /&gt;
 
-    &lt;!-- Array&lt;Array&lt;any&gt;&gt; neatly maps to this table
+      &lt;!-- Array&lt;Array&lt;any&gt;&gt; neatly maps to this table
          https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/  --&gt;
-    excelData:
-    &lt;table class&#x3D;&quot;sjs-table&quot;&gt;
-      &lt;tr *ngFor&#x3D;&quot;let row of excelData&quot;&gt;
-        &lt;td *ngFor&#x3D;&quot;let val of row&quot;&gt;
-          {{val}}
-        &lt;/td&gt;
-      &lt;/tr&gt;
-    &lt;/table&gt;
+      excelData:
+      &lt;table class&#x3D;&quot;sjs-table&quot;&gt;
+        &lt;tr *ngFor&#x3D;&quot;let row of excelData&quot;&gt;
+          &lt;td *ngFor&#x3D;&quot;let val of row&quot;&gt;
+            {{val}}
+          &lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/table&gt;
 
-    &lt;hr /&gt;
-    &lt;div id&#x3D;&quot;ranger__ImportExcel--zzzzzz&quot;&gt;
-      FUTURE - attempt import of an Excel file:
-      &lt;input type&#x3D;&quot;file&quot; (change)&#x3D;&quot;onFileChange($event)&quot; multiple&#x3D;&quot;false&quot; /&gt;
-      &lt;button ion-button color&#x3D;&quot;secondary&quot; (click)&#x3D;&quot;import()&quot;&gt;Import Data&lt;/button&gt;
-      &lt;button ion-button color&#x3D;&quot;secondary&quot; (click)&#x3D;&quot;export()&quot;&gt;Export Data&lt;/button&gt;
-      Code from &lt;a href&#x3D;&quot;http://sheetjs.com&quot; target&#x3D;&quot;_blank&quot;&gt;http://sheetjs.com&lt;/a&gt;,
-      specifically
-      &lt;a href&#x3D;&quot;https://oss.sheetjs.com/&quot; target&#x3D;&quot;_blank&quot;&gt;https://oss.sheetjs.com/&lt;/a&gt; &amp;
-      &lt;a href&#x3D;&quot;https://github.com/SheetJS/SheetJS.github.io/&quot;
-        target&#x3D;&quot;_blank&quot;&gt;https://github.com/SheetJS/SheetJS.github.io/&lt;/a&gt;
-    &lt;/div&gt;
-  &lt;/details&gt;
-&lt;/div&gt;
+      &lt;hr /&gt;
+      &lt;div id&#x3D;&quot;ranger__ImportExcel--zzzzzz&quot;&gt;
+        FUTURE - attempt import of an Excel file:
+        &lt;input type&#x3D;&quot;file&quot; (change)&#x3D;&quot;onFileChange($event)&quot; multiple&#x3D;&quot;false&quot; /&gt;
+        &lt;button ion-button color&#x3D;&quot;secondary&quot; (click)&#x3D;&quot;import()&quot;&gt;Import Data&lt;/button&gt;
+        &lt;button ion-button color&#x3D;&quot;secondary&quot; (click)&#x3D;&quot;export()&quot;&gt;Export Data&lt;/button&gt;
+        Code from &lt;a href&#x3D;&quot;http://sheetjs.com&quot; target&#x3D;&quot;_blank&quot;&gt;http://sheetjs.com&lt;/a&gt;,
+        specifically
+        &lt;a href&#x3D;&quot;https://oss.sheetjs.com/&quot; target&#x3D;&quot;_blank&quot;&gt;https://oss.sheetjs.com/&lt;/a&gt; &amp;
+        &lt;a href&#x3D;&quot;https://github.com/SheetJS/SheetJS.github.io/&quot;
+          target&#x3D;&quot;_blank&quot;&gt;https://github.com/SheetJS/SheetJS.github.io/&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/details&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
 </code></pre>
     </div>
 
@@ -3176,6 +3191,10 @@ $primary: #fcb8ab,
 ////@mixin fill-color {
 //fill-color:green;
 // }
+
+.main {
+  margin: 0 1em;
+}
 
 label {
   display: block;
@@ -3314,8 +3333,8 @@ label {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><!-- https://material.io/components/banners/web#banners --><div class="mdc-banner mdc-banner--centered mdc-banner--mobile-stacked" role="banner">  <div class="mdc-banner__fixed">    <div class="mdc-banner__content" role="alertdialog" aria-live="assertive">      <div class="mdc-banner__graphic-text-wrapper">        <!-- https://fonts.google.com/icons?selected=Material+Icons -->        <div class="mdc-banner__graphic" role="img" alt="">          <i class="material-icons mdc-banner__icon">emoji_people</i>        </div>        <div class="mdc-banner__text"></div>      </div>      <div class="mdc-banner__actions">        <!--button type="button" class="mdc-button mdc-banner__secondary-action">        <div class="mdc-button__ripple"></div>        <div class="mdc-button__label">Learn more</div>      </button-->        <button type="button" class="mdc-button mdc-banner__primary-action">          <div class="mdc-button__ripple"></div>          <div class="mdc-button__label">Close</div>        </button>      </div>    </div>  </div></div><pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader><br /><details>  <summary class="big">Instructions</summary>  This list of participants was taken from the FCC Database February 3, 2022. <br />  It has been significantly reformatted and your edits may alter it further.<br />  To maintain these changes between browser sessions, a button in the Advanced sectino  below allows writing the following table to the Browser Local Storage where it will  remain (thru multiple browser sessions) until explicitly deleted.<br />  <ul>    <li>      The photos are not associated with the correct person currently - so are disabled      for now.    </li>    <li>      Some fields may be editable (single or double-click), and ONCE SAVED can be exported      to a CSV file.    </li>    <li>      <span style="color:red;">Edits HAVE to be MANUALLY saved by selecting the "Save Data" button in the        Advanced section below.</span>    </li>    <li>Click on a column heading to sort by that field.</li>    <li>Click & Drag on a column heading to move columns</li>    <li>Hovering over a cell (e.g., any callsign) may show additional information.</li>    <li>Icons at the top right of each column allows filtering on the value</li>    <li>      Export Rangers will save data as a CSV file for Excel. For      <a href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank">details</a>    </li>    <li>      FUTURE: Import Excel button currently brings in the data - but due to imporoper      quoting it doesn\'t show up, so isn\'t working - yet.    </li>  </ul></details><br /><!-- https://www.ag-grid.com/javascript-data-grid/component-tooltip/<div class="tooltip2" placement="top" showDelay="3000">WORKING Tooltip!  <span class="tooltiphtml">KE7KDQ <img src="./assets/imgs/rew/VI-0038.jpg" height="60px" width="60px" /><br> John    Cornelison</span></div--><div id="rangersgrid">  <ag-grid-angular #rangerGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 60vh;"    (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="rangers"    [columnDefs]="columnDefs" [tooltipShowDelay]="500">    <!--      [defaultColDef]="defaultColDef"          (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1          [columns]="columns"          [showToolPanel]="showToolPanel";        -->  </ag-grid-angular>  <br />  <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>      <button (click)="onBtNormal()">Normal Layout</button-->  <div>    <button (click)="onBtnExportToExcel()">Export Rangers</button> with column separator    of    <select (change)="onSeperatorChange()" id="columnSeparator">      <option value="none">comma (,)</option>      <option value="tab">tab</option>      <option value="|">bar (|)</option>    </select>  </div>  <br />  <button (click)="onDeselectAll()">Clear Selection</button>  <br />  <br />  <button (click)="onBtnAddRanger()"    title="Add a new Ranger, or a new CERT, or a new Team Tactical sign: they\'re considered identically">    Add new tactical sign  </button>  <br />  <br />  <details>    <summary><span class="big" id="Advanced">Advanced</span></summary>    If no rangers exist, or you would like to replace those shown above, either:    <ol>      <li>        BEST: Use the "Add Vashon Rangers" button to import all known HAM Radio licensees.        <p>          This list of potential Rangers was taken from the FCC Database Feb 3, 2022.          <br />          It has been significantly reformatted and your edits may alter it further.<br />          Contact John with a better list if desired...        </p>      </li>      <li>        Add new rangers (or other tactical signs such as Team Names/CERTs) into the grid.      </li>    </ol>    <hr />    <p>      To maintain these changes between browser sessions, we write the table above to the      Browser Local Storage where it will remain until deleted. Use this "Save Data"      button to save the current state of the grid above, so it will be restored the next      time this web page is opened on this browser & device    </p>    Save Rangers to Local Storage:    <button (click)="onBtnUpdateLocalStorage()" style="margin-bottom: 5px"      title="Preserve the edits above to the Rangers stored on this browser">      Save Rangers</button><br />    Delete ALL Rangers from Local Storage (NOTE: they will immediately get replaced with the hardcoded names!):    <button (click)="onBtnDeleteRangers()">Delete Rangers</button><br />    <div id="rangers__Fake">      Add the large list of Vashon rangers to any existing rangers:      <button (click)="loadVashonRangers()" type="button" id="enter__Fake--button">        Add Vashon Rangers      </button>      <!--button (click)="onBtnReloadPage()" type="button">Reload Page</button-->    </div>  </details>  <br />  <details>    <summary><span class="big">Untested or unlikely to work!</span></summary>    <ul>      <li>        FUTURE: Import Rangers from a JSON file:        <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">          Import Rangers (JSON)</button><br />, or      </li>      <li>        FUTURE: Replace existing Rangers with those from an Excel file:        <input type="file" (change)="onBtnImportExcel($event)" multiple="false" accept=".csv, .xls, .xslt" />        Then SAVE RANGERS below and then REFRESH PAGE!      </li>    </ul>    FUTURE: Import Excel button currently \'works\', but imports wrong spreadsheet and does    nothing with it!<br />    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file    <label for="myfile">Select a file:</label>    <input type="file" id="myfile" name="myfile" />    <label for="avatar">Choose a png OR jpg only test:</label>    <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg" />    <!-- Events      https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event      https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event      https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement#properties_file      <input placeholder="Enter some text" name="name"/>      <p id="values"></p>      const input = document.querySelector(\'input\');      const log = document.getElementById(\'values\');      input.addEventListener(\'input\', updateValue);      function updateValue(e) {        log.textContent = e.target.value;      }    -->    <hr />    <br />    <label for="myfile2">Select a file:</label>    <input type="file2" id="myfile2" name="myfile2" />    <!-- Array<Array<any>> neatly maps to this table         https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/  -->    excelData:    <table class="sjs-table">      <tr *ngFor="let row of excelData">        <td *ngFor="let val of row">          {{val}}        </td>      </tr>    </table>    <hr />    <div id="ranger__ImportExcel--zzzzzz">      FUTURE - attempt import of an Excel file:      <input type="file" (change)="onFileChange($event)" multiple="false" />      <button ion-button color="secondary" (click)="import()">Import Data</button>      <button ion-button color="secondary" (click)="export()">Export Data</button>      Code from <a href="http://sheetjs.com" target="_blank">http://sheetjs.com</a>,      specifically      <a href="https://oss.sheetjs.com/" target="_blank">https://oss.sheetjs.com/</a> &      <a href="https://github.com/SheetJS/SheetJS.github.io/"        target="_blank">https://github.com/SheetJS/SheetJS.github.io/</a>    </div>  </details></div></div>'
-    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'AppComponent', 'selector': 'mediator'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'MoodEditor', 'selector': 'editor-cell'},{'name': 'MoodRenderer', 'selector': 'mood-cell'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'OrderComponent', 'selector': 'order-processor'},{'name': 'PriceQuoterComponent', 'selector': 'price-quoter'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'SizerComponent', 'selector': 'app-sizer'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
+        var COMPONENT_TEMPLATE = '<div><!-- https://material.io/components/banners/web#banners ><div class="mdc-banner mdc-banner--centered mdc-banner--mobile-stacked" role="banner">  <div class="mdc-banner__fixed">    <div class="mdc-banner__content" role="alertdialog" aria-live="assertive">      <div class="mdc-banner__graphic-text-wrapper">        <! -- https://fonts.google.com/icons?selected=Material+Icons -- ><div class="mdc-banner__graphic" role="img" alt="">  <i class="material-icons mdc-banner__icon">emoji_people</i></div><div class="mdc-banner__text"></div></div><div class="mdc-banner__actions">  <! --button type="button" class="mdc-button mdc-banner__secondary-action">        <div class="mdc-button__ripple"></div>        <div class="mdc-button__label">Learn more</div>      </button -- ><button type="button" class="mdc-button mdc-banner__primary-action">  <div class="mdc-button__ripple"></div>  <div class="mdc-button__label">Close</div></button></div></div></div></div--><pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader><section class="main">  <details>    <summary class="big">Instructions</summary>    This list of participants was taken from the FCC Database February 3, 2022. <br />    It has been significantly reformatted and your edits may alter it further.<br />    To maintain these changes between browser sessions, a button in the Advanced sectino    below allows writing the following table to the Browser Local Storage where it will    remain (thru multiple browser sessions) until explicitly deleted.<br />    <ul>      <li>        The photos are not associated with the correct person currently - so are disabled        for now.      </li>      <li>        Some fields may be editable (single or double-click), and ONCE SAVED can be exported        to a CSV file.      </li>      <li>        <span style="color:red;">Edits HAVE to be MANUALLY saved by selecting the "Save Data" button in the          Advanced section below.</span>      </li>      <li>Click on a column heading to sort by that field.</li>      <li>Click & Drag on a column heading to move columns</li>      <li>Hovering over a cell (e.g., any callsign) may show additional information.</li>      <li>Icons at the top right of each column allows filtering on the value</li>      <li>        Export Rangers will save data as a CSV file for Excel. For        <a href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank">details</a>      </li>      <li>        FUTURE: Import Excel button currently brings in the data - but due to imporoper        quoting it doesn\'t show up, so isn\'t working - yet.      </li>    </ul>  </details>  <br />  <!-- https://www.ag-grid.com/javascript-data-grid/component-tooltip/<div class="tooltip2" placement="top" showDelay="3000">WORKING Tooltip!  <span class="tooltiphtml">KE7KDQ <img src="./assets/imgs/rew/VI-0038.jpg" height="60px" width="60px" /><br> John    Cornelison</span></div-->  <div id="rangersgrid">    <ag-grid-angular #rangerGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 60vh;"      (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="rangers"      [columnDefs]="columnDefs" [tooltipShowDelay]="500">      <!--      [defaultColDef]="defaultColDef"          (gridReady)="onGridReady($event)" // See https://www.ag-grid.com/angular-data-grid/grid-interface/#access-the-grid--column-api-1          [columns]="columns"          [showToolPanel]="showToolPanel";        -->    </ag-grid-angular>    <br />    <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>      <button (click)="onBtNormal()">Normal Layout</button-->    <div>      <button (click)="onBtnExportToExcel()">Export Rangers</button> with column separator      of      <select (change)="onSeperatorChange()" id="columnSeparator">        <option value="none">comma (,)</option>        <option value="tab">tab</option>        <option value="|">bar (|)</option>      </select>      <label class="option" for="allRows" title="By default only filtered & sorted rows are exported.">        <input id="allRows" type="checkbox" />All Rows</label>    </div>    <br />    <button (click)="onDeselectAll()">Clear Selection</button>    <br />    <br />    <button (click)="onBtnAddRanger()"      title="Add a new Ranger, or a new CERT, or a new Team Tactical sign: they\'re considered identically">      Add new tactical sign    </button>    <br />    <br />    <details>      <summary><span class="big" id="Advanced">Advanced</span></summary>      If no rangers exist, or you would like to replace those shown above, either:      <ol>        <li>          BEST: Use the "Add Vashon Rangers" button to import all known HAM Radio licensees.          <p>            This list of potential Rangers was taken from the FCC Database Feb 3, 2022.            <br />            It has been significantly reformatted and your edits may alter it further.<br />            Contact John with a better list if desired...          </p>        </li>        <li>          Add new rangers (or other tactical signs such as Team Names/CERTs) into the grid.        </li>      </ol>      <hr />      <p>        To maintain these changes between browser sessions, we write the table above to the        Browser Local Storage where it will remain until deleted. Use this "Save Data"        button to save the current state of the grid above, so it will be restored the next        time this web page is opened on this browser & device      </p>      Save Rangers to Local Storage:      <button (click)="onBtnUpdateLocalStorage()" style="margin-bottom: 5px"        title="Preserve the edits above to the Rangers stored on this browser">        Save Rangers</button><br />      Delete ALL Rangers from Local Storage (NOTE: they will immediately get replaced with the hardcoded names!):      <button (click)="onBtnDeleteRangers()">Delete Rangers</button><br />      <div id="rangers__Fake">        Add the large list of Vashon rangers to any existing rangers:        <button (click)="loadVashonRangers()" type="button" id="enter__Fake--button">          Add Vashon Rangers        </button>        <!--button (click)="onBtnReloadPage()" type="button">Reload Page</button-->      </div>    </details>    <br />    <details>      <summary><span class="big">Untested or unlikely to work!</span></summary>      <ul>        <li>          FUTURE: Import Rangers from a JSON file:          <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">            Import Rangers (JSON)</button><br />, or        </li>        <li>          FUTURE: Replace existing Rangers with those from an Excel file:          <input type="file" (change)="onBtnImportExcel($event)" multiple="false" accept=".csv, .xls, .xslt" />          Then SAVE RANGERS below and then REFRESH PAGE!        </li>      </ul>      FUTURE: Import Excel button currently \'works\', but imports wrong spreadsheet and does      nothing with it!<br />      // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file      <label for="myfile">Select a file:</label>      <input type="file" id="myfile" name="myfile" />      <label for="avatar">Choose a png OR jpg only test:</label>      <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg" />      <!-- Events      https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event      https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event      https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement#properties_file      <input placeholder="Enter some text" name="name"/>      <p id="values"></p>      const input = document.querySelector(\'input\');      const log = document.getElementById(\'values\');      input.addEventListener(\'input\', updateValue);      function updateValue(e) {        log.textContent = e.target.value;      }    -->      <hr />      <br />      <label for="myfile2">Select a file:</label>      <input type="file2" id="myfile2" name="myfile2" />      <!-- Array<Array<any>> neatly maps to this table         https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/  -->      excelData:      <table class="sjs-table">        <tr *ngFor="let row of excelData">          <td *ngFor="let val of row">            {{val}}          </td>        </tr>      </table>      <hr />      <div id="ranger__ImportExcel--zzzzzz">        FUTURE - attempt import of an Excel file:        <input type="file" (change)="onFileChange($event)" multiple="false" />        <button ion-button color="secondary" (click)="import()">Import Data</button>        <button ion-button color="secondary" (click)="export()">Export Data</button>        Code from <a href="http://sheetjs.com" target="_blank">http://sheetjs.com</a>,        specifically        <a href="https://oss.sheetjs.com/" target="_blank">https://oss.sheetjs.com/</a> &        <a href="https://github.com/SheetJS/SheetJS.github.io/"          target="_blank">https://github.com/SheetJS/SheetJS.github.io/</a>      </div>    </details>  </div></section></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'rangertrak-about'},{'name': 'AbstractMap', 'selector': ''},{'name': 'AlertsComponent', 'selector': 'rangertrak-alerts'},{'name': 'AppComponent', 'selector': 'rangertrak-root'},{'name': 'ColorEditor', 'selector': 'editor-cell'},{'name': 'EntryComponent', 'selector': 'rangertrak-entry'},{'name': 'FieldReportsComponent', 'selector': 'rangertrak-field-reports'},{'name': 'FooterComponent', 'selector': 'rangertrak-footer'},{'name': 'HeaderComponent', 'selector': 'pageHeader'},{'name': 'IconsComponent', 'selector': 'rangertrak-icons'},{'name': 'LazyComponent', 'selector': 'lazy'},{'name': 'LmapComponent', 'selector': 'rangertrak-lmap'},{'name': 'LocationComponent', 'selector': 'rangertrak-location'},{'name': 'LogComponent', 'selector': 'rangertrak-log'},{'name': 'MiniGMapComponent', 'selector': 'mini-gmap'},{'name': 'MiniLMapComponent', 'selector': 'mini-lmap'},{'name': 'NavbarComponent', 'selector': 'rangertrak-navbar'},{'name': 'RangersComponent', 'selector': 'rangertrak-rangers'},{'name': 'SettingsComponent', 'selector': 'rangertrak-settings'},{'name': 'TimePickerComponent', 'selector': 'rangertrak-time-picker'},{'name': 'X404Component', 'selector': 'rangertrak-x404'}];
     var DIRECTIVES = [];
     var ACTUAL_COMPONENT = {'name': 'RangersComponent'};
 </script>
