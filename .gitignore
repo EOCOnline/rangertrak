@@ -19,6 +19,12 @@ RangerTrak-secrets.json
 # dependencies
 /node_modules
 
+# Old code
+/archived
+
+#Test and non-project stuff
+/junk
+
 # profiling files
 chrome-profiler-events*.json
 
@@ -62,3 +68,4 @@ Thumbs.db
 .runtimeconfig.json
 .env
 node_modules
+src/app/shared/policies.json

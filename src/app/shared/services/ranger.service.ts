@@ -118,6 +118,10 @@ export class RangerService implements OnInit {
   }
 
   //--------------------------------------------------------------------------
+
+  // Or see code part way thru: https://www.geeksforgeeks.org/how-to-display-loading-screen-when-navigating-between-routes-using-angular/
+  // for batsman.component.ts
+
   LoadRangersFromJSON(fileName: string = '../../../assets/data/Rangers.3Feb22.json') {  // WARN: Replaces any existing Rangers
     this.log.verbose(`loading new Rangers from ${fileName}`, this.id)
 

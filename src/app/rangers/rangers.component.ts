@@ -14,8 +14,8 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Utility } from '../shared'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import {
-    FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
-    SettingsService, SettingsType
+  FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
+  SettingsService, SettingsType
 } from '../shared/services'
 import { csvImport } from './csvImport'
 import { CustomTooltip } from './customTooltip'
@@ -411,10 +411,19 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   //--------------------------------------------------------------------------
   // following from https://ag-grid.com/javascript-data-grid/csv-export/
   onBtnExportToExcel() {
-    var params = this.getParams();
+    //var params = this.getParams();
     //this.log.verbose(`Got column seperator value "${params.columnSeparator}"`, this.id)
     //this.log.verbose(`Got filename of "${params.fileName}"`, this.id)
-    this.gridApi.exportDataAsCsv(params);
+    //this.gridApi.exportDataAsCsv(params);
+
+    // ! Is this JUST for enterprise edition?! - test...
+    // https://www.ag-grid.com/javascript-data-grid/excel-export-rows/#export-all-unprocessed-rows
+    this.gridApi.exportDataAsExcel({
+      exportedRows: (document.getElementById('allRows') as HTMLInputElement)
+        .checked
+        ? 'all'
+        : 'filteredAndSorted',
+    })
   }
 
   getSeperatorValue(inputSelector: string) {
@@ -481,8 +490,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   ngOnDestroy() {
-    this.rangersSubscription.unsubscribe()
-    this.settingsSubscription.unsubscribe()
+    this.rangersSubscription?.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }
 

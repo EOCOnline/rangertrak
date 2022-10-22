@@ -8,7 +8,7 @@ with ($primary: #962f10,
 $filledColor : #F0F0F0;
 
 .rounded {
-  border-radius: 5px;
+  border-radius: 30px; // !important;
 }
 
 .innerElement {
@@ -22,15 +22,15 @@ $filledColor : #F0F0F0;
 }
 
 .bordered {
-  border                      : 2 px solid rgb(62, 189, 189);
+  border                    : 2 px solid rgb(62, 189, 189);
   //padding               : 4px;
-  //  border-radius           : 5px;
+  //border-radius           : 25px !important;
 }
 
 .timepicker__When-input {
   width                     : 400px;
   //padding               : 4px;
-  //border-radius           : 5px;
+  //border-radius           : 25p !important;
 }
 
 //.elegant {

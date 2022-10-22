@@ -4,9 +4,10 @@
 //import { openDB, deleteDB, wrap, unwrp } from 'idb'
 import 'leaflet.markercluster'
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
-
+//import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
-import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
+
+//import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { throwError } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
@@ -78,7 +79,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     //shadowAnchor: [22, 94]
   })
 
-  myMarkerCluster = L.markerClusterGroup()
+  myMarkerCluster = new window.L.MarkerClusterGroup()
   mapOptions = ""
 
   //markerClusterGroup: L.MarkerClusterGroup // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
@@ -116,7 +117,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     super.ngOnInit()
     this.log.excessive("ngOnInit()", this.id)
 
-    this.initMainMap()
+    this.initMainMap()  //! REVIEW: Causes LOTS of "lmap:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
 
     if (this.hasOverviewMap) {
       this.initOverviewMap()
@@ -160,6 +161,10 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
   }
 
+  onInstallBtn() {
+    this.log.error("onInstallBtn onInstallBtn onInstallBtn onInstallBtn UNIMPLEMENTED!!!!!!!!!!!!!!!!!!!!!!", this.id)
+  }
+
   override initMainMap() {
     //this.log.excessive("initMainMap()  pre-super", this.id)
     super.initMainMap()
@@ -185,7 +190,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
     // http://leaflet.github.io/Leaflet.markercluster/
-    this.myMarkerCluster = L.markerClusterGroup({ removeOutsideVisibleBounds: true })
+    // per https://stackoverflow.com/a/71574063/18004414 & https://github.com/Leaflet/Leaflet/issues/8451
+    this.myMarkerCluster = new window.L.MarkerClusterGroup({ removeOutsideVisibleBounds: true })
 
 
     // ---------------- Init Main Map -----------------
@@ -228,6 +234,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
+    // TODO!
+    //! REVIEW: Causes LOTS of "lmap:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
     tiles.addTo(this.lMap)
 
     // TODO: Consider allowing addition of SVG overlay (of known trails and other overlays): https://leafletjs.com/reference.html#svgoverlay
@@ -441,7 +449,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     this.displayedFieldReportArray.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${i.date} with ${i.status}`
-        this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
+        //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
         let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title })
         marker.bindPopup(title)

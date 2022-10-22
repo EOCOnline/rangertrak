@@ -4,6 +4,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core'
 import { FlexLayoutModule } from '@angular/flex-layout'
 
 import { ClockService, LogService, SettingsService, SettingsType } from '../services'
+import { Utility } from '../'
 
 /**
  * HaaderComponent
@@ -92,28 +93,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // }
     // this.log.verbose(`OpPeriodStart = ${JSON.stringify(this.settings.opPeriodStart)}`, this.id)
 
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#calculating_elapsed_time
     let msStartTime = new Date(this.settings.opPeriodStart).getTime()
     this.timeElapsed$ = interval(1000)
       .pipe(map(() => {
-        let ms = new Date().getTime() - msStartTime
-        let d = Math.round((ms / (1000 * 60 * 60 * 24)))
-        return (`${d ? (d + ' day(s), ') : " "}${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.abs(Math.round((ms / (1000 * 60)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`)
+        let diff = Utility.timeDiff(msStartTime, new Date().getTime())
+        return (`${diff.string} ${(diff.negative ? ` before period starts` : ` elapsed`)}`)
       }
       ))
 
     let msEndTime = new Date(this.settings.opPeriodEnd).getTime()
     this.timeLeft$ = interval(1000)
       .pipe(map(() => {
-        let ms = msEndTime - new Date().getTime()
-        let d = Math.round((ms / (1000 * 60 * 60 * 24))) - 1
-
-        return (`${d ? d + ' day(s), ' : ''}${Math.round((ms / (1000 * 60 * 60)) % 24)}:${Math.abs(Math.round((ms / (1000 * 60)) % 60)).toString().padStart(2, '0')}:${(Math.abs(Math.round(ms / 1000) % 60)).toString().padStart(2, '0')}`)
-        //   min:${Math.round(ms / 60000)} hrs:${(Math.round(ms / (60000 * 60)))}
+        let diff = Utility.timeDiff(new Date().getTime(), msEndTime)
+        return (`${diff.string} ${(diff.negative ? ` since period ended` : ` left`)}`)
       }
       ))
   }
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe
+    this.settingsSubscription?.unsubscribe
   }
 }

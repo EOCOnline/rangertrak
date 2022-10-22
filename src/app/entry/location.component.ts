@@ -1,28 +1,31 @@
 //import assert from 'assert'
 import {
-    BehaviorSubject, debounceTime, fromEvent, map, merge, Observable, Subscription, takeWhile
+  BehaviorSubject, debounceTime, fromEvent, map, merge, Observable, Subscription, takeWhile
 } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import {
-    AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, SkipSelf,
-    ViewChild
+  AfterViewInit, Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, SkipSelf,
+  ViewChild
 } from '@angular/core'
 import {
-    FormArray, FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators
+  FormArray, FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators
 } from '@angular/forms'
-// import * as P from '@popperjs/core';
-///import { createPopper } from '@popperjs/core';
-// import type { StrictModifiers } from '@popperjs/core';
+
+// https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
+//import { computePosition } from '@floating-ui/dom'
+
 import { faInfoCircle, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 
 //import { MatIconRegistry } from '@angular/material/icon'
+
 import {
-    CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GoogleGeocode, OpenLocationCode
+  CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GoogleGeocode, OpenLocationCode
 } from '../shared/'
+
 import {
-    LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
+  LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services'
 
 //! import { What3Words} from '../shared/'
@@ -82,11 +85,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   geocoder = new GoogleGeocode()
   //!w3w = new What3Words()
 
-  //createPopper<StrictModifiers>(referenceElement, popperElement, options)
-  // button: HTMLButtonElement | undefined
-  //tooltip: HTMLHtmlElement | undefined
-  //popperInstance: any //typeof P.createPopper | undefined
-
   faInfoCircle = faInfoCircle
   faMapMarkedAlt = faMapMarkedAlt
   mdiAccount: string = mdiAccount
@@ -99,6 +97,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     private settingsService: SettingsService,
     private _formBuilder: UntypedFormBuilder,
     private log: LogService,
+    // private _toppy: Toppy,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("======== Constructor() ============", this.id)
 
@@ -255,7 +254,23 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         })
     }
+
+    // !BUG: Doesn't center on initial (previously received) location...
     this.newLocationToFormAndEmit(this.location)
+
+    // =========================================================
+    /*  if using floating-ui.com...
+        const referenceElement = document.querySelector('#blockDD');
+        const floatingElement = document.querySelector('#tooltipDD') as HTMLBodyElement
+
+        this.applyStyles
+
+        computePosition(referenceElement!, floatingElement, {
+          placement: 'top',
+        }).then(this.applyStyles)
+    */
+
+
   }
 
   /**
@@ -266,6 +281,17 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.newLocationToFormAndEmit(this.location)
   }
 
+  /*  if using floating-ui.com...
+    applyStyles({ x = 0, y = 0, strategy = 'absolute' }) {
+      // const referenceElement = document.querySelector('#button');
+      const floatingElement = document.querySelector('#tooltipDD') as HTMLBodyElement
+      Object.assign(floatingElement!.style, {
+        position: strategy,
+        left: `${x}px`,
+        top: `${y}px`,
+      });
+    }
+   */
 
   /**
    * Create Form Model, so we can readily set values & respond to user input
@@ -363,7 +389,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
    * https://angular.io/guide/template-reference-variables
    */
   onDdChg() {
-    this.log.excessive(`Grab DD values from locationFormModel`, this.id)
+    //this.log.excessive(`Grab DD values from locationFormModel`, this.id)
     let latI = this.locationFormModel.get("DD.latI")?.value
     let latF = this.locationFormModel.get("DD.latF")?.value
     let lngI = this.locationFormModel.get("DD.lngI")?.value
@@ -384,7 +410,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   onDmsChg() {
-    this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
+    //this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
     let latD = this.locationFormModel.get("DMS.latD")?.value
     let latM = this.locationFormModel.get("DMS.latM")?.value
     let latS = this.locationFormModel.get("DMS.latS")?.value
@@ -413,15 +439,15 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   onDdmChg() {
-    this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
-    let latDdmD = this.locationFormModel.get("DMS.latDdmD")?.value
-    let latDdmM = this.locationFormModel.get("DMS.latDdmM")?.value
-    let latDdmQ = this.locationFormModel.get("DMS.latDdmQ")?.value
-    let lngDdmD = this.locationFormModel.get("DMS.lngDdmD")?.value
-    let lngDdmM = this.locationFormModel.get("DMS.lngDdmM")?.value
-    let lngDdmQ = this.locationFormModel.get("DMS.lngDdmQ")?.value
+    //this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
+    let latDdmD = this.locationFormModel.get("DDM.latDdmD")?.value
+    let latDdmM = this.locationFormModel.get("DDM.latDdmM")?.value
+    let latDdmQ = this.locationFormModel.get("DDM.latDdmQ")?.value
+    let lngDdmD = this.locationFormModel.get("DDM.lngDdmD")?.value
+    let lngDdmM = this.locationFormModel.get("DDM.lngDdmM")?.value
+    let lngDdmQ = this.locationFormModel.get("DDM.lngDdmQ")?.value
 
-    this.log.verbose(`DMS value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
+    this.log.excessive(`DMS value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
 
     let latLng = {
       lat: DDMToDD(<string>latDdmQ, latDdmD, latDdmM)!,
@@ -823,11 +849,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     // TODO: this.updateCoords(lat,lng)
   }
 
-  // --------------------------- POPPER ---------------------------
+  // --------------------------- TOOLTIPS ---------------------------
   /*
-    https://popper.js.org/docs/v2/tutorial/
-    TODO: https://popper.js.org/
-    https://popper.js.org/docs/v2/
+  https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
 
     show() {
       if (this.tooltip) {
@@ -881,9 +905,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       })
   }
 
-  https://bobrov.dev/angular-popper/
-  https://sergeygultyayev.medium.com/use-popper-js-in-angular-projects-7b34f18da1c
-  https://github.com/gultyaev/angular-popper-example
+  https://floating-ui.com superceeds popper.js
 
   The hint to display @Input() target!: HTMLElement
   Its positioning (check docs for available options)
@@ -921,6 +943,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   */
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }

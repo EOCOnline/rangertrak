@@ -7,12 +7,12 @@ import { Subscription } from 'rxjs'
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
-    AfterViewInit, Component, Inject, Input, isDevMode, OnDestroy, OnInit
+  AfterViewInit, Component, Inject, Input, isDevMode, OnDestroy, OnInit
 } from '@angular/core'
 
-import { AbstractMap } from '../shared/map'
+import { AbstractMap } from '../shared/'
 import {
-    FieldReportService, LocationType, LogService, SettingsService, SettingsType
+  FieldReportService, LocationType, LogService, SettingsService, SettingsType
 } from '../shared/services/'
 
 //const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }

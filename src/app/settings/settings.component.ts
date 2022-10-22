@@ -5,19 +5,19 @@ import { delay, Subscription, throwError } from 'rxjs'
 import { DOCUMENT } from '@angular/common'
 import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import {
-    AbstractControl, FormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators
+  AbstractControl, FormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators
 } from '@angular/forms'
 
 import { TimePickerComponent } from '../shared/'
 import {
-    FieldReportService, FieldReportStatusType, LogService, RangerService, SettingsService,
-    SettingsType
+  FieldReportService, FieldReportStatusType, InstallableService, LogService, RangerService, SettingsService,
+  SettingsType
 } from '../shared/services/'
 //import { Color } from '@angular-material-components/color-picker';
 //import { ThemePalette } from '@angular/material/core';
 import { ColorEditor } from './color-editor.component'
-import { MoodEditor } from './mood-editor.component'
-import { MoodRenderer } from './mood-renderer.component'
+//import { MoodEditor } from './mood-editor.component'
+//import { MoodRenderer } from './mood-renderer.component'
 
 @Component({
   selector: 'rangertrak-settings',
@@ -183,7 +183,10 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         width: 300,
       } //, minWidth: "25px" }
   */
-  ];
+  ]
+
+  isInstallable = false
+
   fonts = ["'Open Sans'", "Montserrat", "Roboto", "'Playfair Display'", "Lato", "Merriweather", "Helvetica", "Lora", "'PT Serif'", "Spectral", "'Times New Roman'", "'Akaya Telivigala'",
     "'Open Sans Condensed'", "'Saira Extra Condensed'", "Boogaloo", "Anton", "'Faster One'", "'Arima Madurai'"]  //, "'Material Icons'"]  all loaded in Index.html
   // https://en.wikipedia.org/wiki/Pangram
@@ -203,6 +206,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       settings.component.ts(155, 17): This type does not have a value, so it cannot be used as injection token.
     */
     //private fieldReportService: FieldReportService,
+    private installableService: InstallableService,
     private log: LogService,
     //private rangerService: RangerService,
     private settingsService: SettingsService,
@@ -227,6 +231,10 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
     // timeSubscription1$ =
     //timeSubscription2$ =
+
+    if (installableService.installableEvent) {
+      this.isInstallable = true
+    }
 
     this.pangram = this.getPangram()
     //this.log.verbose('Settings set to static values. But not initialized???', this.id)
@@ -301,6 +309,11 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     // TODO: Might we need to update the form itself, so 'submit' captures it properly?
     // TODO: BUT, we still need to update our local copy:
     //this.timepickerFormControl is where the Event comes up from...
+  }
+
+  onInstallBtn() {
+    this.log.verbose(`onInstallBtn: Install Application!`, this.id)
+    //!BUG: Unimplemented!!!
   }
 
   onBtnResetDefaults() {
@@ -527,8 +540,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   }
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe()
-    this.timeSubscriptionStart$.unsubscribe()
-    this.timeSubscriptionEnd$.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
+    this.timeSubscriptionStart$?.unsubscribe()
+    this.timeSubscriptionEnd$?.unsubscribe()
   }
 }

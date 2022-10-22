@@ -3,15 +3,14 @@ import { GridOptions, SelectionChangedEvent } from 'ag-grid-community'
 import { Observable, subscribeOn, Subscription } from 'rxjs'
 
 import { DOCUMENT, formatDate } from '@angular/common'
-import {
-    AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform
-} from '@angular/core'
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef } from '@angular/core';
+
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms'
 
 import { Utility } from '../shared'
 import {
-    FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
-    RangerService, SettingsService, SettingsType
+  FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
+  RangerService, SettingsService, SettingsType
 } from '../shared/services'
 
 @Pipe({ name: 'myUnusedPipe' })
@@ -55,10 +54,16 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
+  // NOT monitored for changes on the fly: https://stackoverflow.com/questions/52519129/ag-grid-and-angular-how-to-switch-grid-options-dynamically/52519796#52519796
   gridOptions: GridOptions = {
     // PROPERTIES
     rowSelection: "multiple",
-    // pagination: true,
+
+    // https://www.ag-grid.com/javascript-data-grid/row-pagination/#pagination-properties
+    pagination: true,
+    paginationAutoPageSize: true, // if set overrides paginationPageSize & forces it back to this on changes...
+    //paginationPageSize: 5,
+    // suppressScrollOnNewData: true, // grid to NOT scroll to the top, on page changes
 
     // EVENT handlers
     // onRowClicked: event => this.log.verbose('A row was clicked'),
@@ -203,12 +208,18 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     // https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
     params.api.sizeColumnsToFit()
 
-    // TODO: use this line, or next routine?!
+    // TODO: use this line, or onFirstDataRendered()?
     if (this.gridApi) {
       this.gridApi.refreshCells()
     } else {
       this.log.verbose("no this.gridApi yet in onGridReady()", this.id)
     }
+
+
+    // set initial pagination size
+    //paginationAutoPageSize: true
+    // this.gridApi.paginationAutoPageSize(true) // also see: onRowsPerPage
+
     //this.log.verbose("onGridReady() done", this.id)
   }
 
@@ -359,8 +370,19 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
   onBtnExport() {
     // TODO: Does this handle new FieldReports properly?
-    var params = this.getParams();
-    this.gridApi.exportDataAsCsv(params);
+    // https://www.ag-grid.com/javascript-data-grid/excel-export-styles/#styling-headers
+
+    // const params = this.getParams();
+    // this.gridApi.exportDataAsCsv(params);
+
+    // ! Is this JUST for enterprise edition?! - test...
+    // https://www.ag-grid.com/javascript-data-grid/excel-export-rows/#export-all-unprocessed-rows
+    this.gridApi.exportDataAsExcel({
+      exportedRows: (document.getElementById('allRows') as HTMLInputElement)
+        .checked
+        ? 'all'
+        : 'filteredAndSorted',
+    })
   }
 
   onBtnClearFieldReports() {
@@ -403,6 +425,71 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       })
   }
 
+  /**
+   *
+   * @returns
+   */
+  onRowsPerPage() {
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionElement
+    //this.log.excessive(`onRowsPerPage`, this.id)
+
+    const element = this.document.getElementById('rowPerPage-select') as HTMLSelectElement// OptionElement
+    if (!element) {
+      this.log.error("onRowsPerPage could not find rowPerPage-select!", this.id)
+      return
+    }
+
+    const option = element.options[element.selectedIndex].outerText
+    // this.gridApi.pagination = true // should have been done initially...
+    switch (option) {
+      case "Auto":
+        this.log.verbose("onRowsPerPage set to Auto", this.id)
+        //this.gridApi.paginationSetPageSize()
+        this.gridApi.paginationAutoPageSize = true
+        this.gridApi.redrawRows()
+        break;
+      case "5":
+        //! WORKS! - Maybe any number LESS than auto????
+        this.log.verbose("onRowsPerPage set to 5", this.id)
+        this.gridApi.paginationAutoPageSize = false
+        this.gridApi.paginationSetPageSize("5")
+        break;
+      case "10":
+        // WORKS! - Maybe any number LESS than auto????
+        this.log.verbose("onRowsPerPage set to 10", this.id)
+        this.gridApi.paginationAutoPageSize = false
+        this.gridApi.paginationSetPageSize("10")
+        break;
+      case "25":
+        this.log.verbose("onRowsPerPage set to 25", this.id)
+        this.gridApi.paginationAutoPageSize = false
+        this.gridApi.paginationSetPageSize("25")
+        break;
+      case "50":
+        this.log.verbose("onRowsPerPage set to 50", this.id)
+        this.gridApi.paginationAutoPageSize = false
+        this.gridApi.paginationSetPageSize("50")
+        break;
+      case "100":
+        this.log.verbose("onRowsPerPage set to 100", this.id)
+        this.gridApi.paginationAutoPageSize = false
+        this.gridApi.paginationSetPageSize("100")
+        break;
+      case "All":
+        this.log.verbose("onRowsPerPage set to All", this.id)
+        //https://www.ag-grid.com/javascript-data-grid/infinite-scrolling
+        //set rowModelType: infinite ???
+        this.gridApi.pagination = false
+        this.gridApi.paginationAutoPageSize = false
+        break;
+
+      default:
+        this.log.error(`onRowsPerPage got unknown option: ${option}`, this.id)
+        break;
+    }
+    // this.refreshGrid()
+  }
+
   generateFakeFieldReports(num = this.nFakes) {
     // TODO: compare current with
     // https://github.com/material-components/material-components-web/tree/master/packages/mdc-slider#discrete-slider
@@ -416,7 +503,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.fieldReportsSubscription.unsubscribe()
-    this.settingsSubscription.unsubscribe()
+    this.fieldReportsSubscription?.unsubscribe()
+    this.settingsSubscription?.unsubscribe()
   }
 }

@@ -26,6 +26,8 @@ export type SettingsType = {
   allowManualPinDrops: boolean,
 
   google: {
+    //! TODO: type: string,  // e.g., google.maps.MapTypeId.ROADMAP
+    // https://developers.google.com/maps/documentation/javascript/maptypes
     defZoom: number,  // or just zoom to bounds?
     markerScheme: string,
     overviewDifference: number,
@@ -34,6 +36,7 @@ export type SettingsType = {
   },
 
   leaflet: {
+    //! TODO: TileProvider: string,
     defZoom: number,  // or just zoom to bounds?
     markerScheme: string,
     overviewDifference: number,

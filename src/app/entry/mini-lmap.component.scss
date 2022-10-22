@@ -5,7 +5,7 @@
   //height          : 25vh; //200px !important; //
   //border              : 5px brown;
   background-color      : #F0F0F0;
-  margin-right          : 10px;
+  margin-right          : 16px;
   border-radius         : 5px;
   border                : 2px solid black;
 }
@@ -32,7 +32,6 @@
   visibility: hidden;
 }
 
-
 .leaflet-container.crosshair-cursor-enabled {
   cursor: crosshair;
 }
@@ -49,7 +48,6 @@
   color    : #999;
   float    : right;
   margin   : 0 5px;
-
 }
 
 .Entry__LMap-footer {
@@ -57,12 +55,8 @@
 }
 
 #Entry__Minimap-status {
-  // color    : #888;
-  opacity     : 0;
-  //visibility: hidden;
-
-  animation: fadeout 12s ease-out;
-  // TODO: Need to reset annimation see Entry form...
+  opacity  : 0;
+  animation: fadeout 4s ease-out;
 }
 
 @keyframes fadeout {

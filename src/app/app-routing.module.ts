@@ -16,6 +16,7 @@ import { X404Component } from './x404/x404.component'
 //import { AboutComponent } from './lazy/about/about.component';
 
 // https://angular.io/guide/router
+// https://angular.io/api/router/Resolve#usage-notes - Processing order: BaseGuard, ChildGuard, BaseDataResolver, ChildDataResolver
 
 const routes: Routes = [
   // EAGER Routes

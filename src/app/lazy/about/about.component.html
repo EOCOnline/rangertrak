@@ -1,6 +1,10 @@
-<div id="AboutBody" class="container">
-  <!--  [ngStyle]="{backgroundImage:'./src/assets/imgs/AlpineMarmot.png'}" -->
-  <!--pageHeader>...</pageHeader-->
+<section id="AboutBody" class="main">
+  <!-- <H1 split-by="word" word-animation="trampoline"> -->
+  <!-- <h1 split-by="word" word-animation="hover"> -->
+  <!-- <h1 split-by="letter" letter-animation="hover" -->
+  <h1 split-by="letter" letter-animation="breath">
+    RangerTrak - tooling for ranging Rangers
+  </h1>
   <h2>About</h2>
   <div>
     <p class="bold">Version {{version}}</p>
@@ -23,7 +27,7 @@
       <li>3Word functionality (for now)</li>
     </ul>
 
-    <p>An overview of using locatino codes - instead of lat/long can be found at:<br>
+    <p>An overview of using location codes (instead of lat/long) can be found at:<br>
       <a href="https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems"
         target="_blank">https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems</a>
     </p>
@@ -39,8 +43,8 @@
       <summary>Technologies</summary>
       <small>
         <ul>
-          <li>Progressive Web App (PWA): After the initial load, runs w/o Internet</li>
-          <li>Angular 13 with TypeScript and Material Design</li>
+          <li>Progressive Web App (PWA): After the initial load, installable & runs w/o Internet</li>
+          <li>Angular 14 with TypeScript and Material Design</li>
           <li>Evergreen: runs latest stable packages</li>
           <li>Leaflet Maps with clustering + overview map + offline caching</li>
           <li>Angular Google Maps with clustering + overview map</li>
@@ -102,4 +106,4 @@
     Escape - Close all open menus.<br />
   </div>
   <div class="imgCredit">Photo credit: Shocked Marmot from Vistapoint.net, by ___</div>
-</div>
+</section>

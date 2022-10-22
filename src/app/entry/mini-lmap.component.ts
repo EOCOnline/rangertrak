@@ -1,18 +1,19 @@
 import 'leaflet.markercluster'
 import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
-
+//import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
-import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
+
+//import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { delay, throwError } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 
-import { AbstractMap, Utility } from '../shared'
+import { AbstractMap, Utility } from '../shared/'
 import {
-    FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag,
-    undefinedLocation
+  FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag,
+  undefinedLocation
 } from '../shared/services'
 
 const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
@@ -30,8 +31,8 @@ const iconDefault = L.icon({
 })
 const markerIcon = L.icon({
   iconSize: [20, 25],
-  iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png',   //!BUG: Relies on internet...
-  shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png'
+  iconUrl: '../../assets/icons/marker-icon.png',
+  shadowUrl: '../../assets/icons/marker-shadow.png'
 })
 L.Marker.prototype.options.icon = iconDefault;
 //or L.Marker.prototype.options.icon = new L.Icon.Default;
@@ -42,7 +43,7 @@ L.Marker.prototype.options.icon = iconDefault;
   selector: 'mini-lmap',
   templateUrl: './mini-lmap.component.html',
   styleUrls: ['./mini-lmap.component.scss',
-    '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angula.json & Here! (chgs there REQUIRE restart!)]
+    '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)]
   providers: [SettingsService]
 })
 export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {
@@ -54,20 +55,21 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
     if (newLocation && (newLocation.lat != undefined)) {
       if (newLocation.address == undefinedAddressFlag) {
-        this.log.verbose(pc.bgYellow(`Entry form has no address yet:  ${undefinedAddressFlag}`), this.id)
+        this.log.verbose((`Entry form has no address yet:  ${undefinedAddressFlag}`), this.id)
       } else {
-        this.log.verbose(pc.bgYellow(`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
+        this.log.verbose((`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
       }
       // All we need to display is lat & long: address is superfluious, just used for the title
       this._location = newLocation
 
       if (!this.lMap) {
-        this.log.error(`Setting new location, but L.Map not yet set!!!`, this.id)
+        // OK, happens enough that we check & handle it at end of ngOnInit()
+        this.log.warn(`Setting new location, but L.Map not yet set!!!`, this.id)
       }
       this.addMarker(newLocation.lat, newLocation.lng, newLocation.address)
-      //this.onNewLocation(newLocation)
+      //  ! this.onNewLocation(newLocation)
     } else {
-      this.log.error(pc.bgYellow(`DRATS: Parent sent undefined location event to child`), this.id)
+      this.log.error((`DRATS: Parent sent undefined location event to child`), this.id)
     }
   }
   get locationUpdated(): LocationType {
@@ -82,7 +84,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   // TODO: Leaflet's version of following?
   overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
 
-  myMarkerCluster = L.markerClusterGroup()
+  myMarkerCluster = new window.L.MarkerClusterGroup()
   //myMarkers: L.Marker[] = []
   mapOptions = ""
 
@@ -107,7 +109,8 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     this.hasOverviewMap = false
     this.displayReports = true  //! Hides ALL markers, not just all reports???
     this.hasSelectedReports = false
-    this.myMarkerCluster = L.markerClusterGroup()
+    // per https://stackoverflow.com/a/71574063/18004414 & https://github.com/Leaflet/Leaflet/issues/8451
+    this.myMarkerCluster = new window.L.MarkerClusterGroup()
   }
 
   // override ngOnInit() {
@@ -142,7 +145,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     }
 
     // Following moved from InitMainMap to avoid: map not a leaflet or google map
-    //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
+    // Set intial map position, though AddMarker rescales/centers map as needed
     this.lMap = L.map('map', {
       center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
       zoom: this.settings ? this.settings.leaflet.defZoom : 15
@@ -153,13 +156,15 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       return
     }
 
-
     this.initMainMap()
     this.updateFieldReports()
 
-    //! Force output of 1st location received (which happened before the map was ready...) - might have to move this to OnMapReady()???
-    // this.onNewLocation(this._location)
-    this.addMarker(this._location.lat, this._location.lng, this._location.address)
+    // We probably got (& stored an initial location) before map was initialized just above, so add it now
+    if (this.location === undefinedLocation) {
+      this.log.error("Still have undefined location at end of ngOnInit() - ignoring...", this.id)
+    } else {
+      this.addMarker(this._location.lat, this._location.lng, this._location.address)
+    }
 
     this.log.excessive("exiting ngOnInit() ...", this.id)
   }
@@ -359,7 +364,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
         if (status) {
           status.innerText = `${coords} copied to clipboard`
           //status.style.visibility = "visible"
-          Utility.resetMaterialFadeAnimation(status)
+          Utility.resetMaterialFadeAnimation(status) //! BUG: doesn't work?!
         } else {
           this.log.info(`Entry__LMinimap-status not found!`, this.id)
         }
@@ -476,7 +481,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     this.displayedFieldReportArray.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${i.date} with ${i.status}`
-        this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
+        //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
         let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title })
         marker.bindPopup(title)
@@ -493,11 +498,11 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   }
 
   // override displayAllMarkers() {
-  //   // this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
+  // this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
   // }
 
 
-  // https:/ / blog.mestwin.net / leaflet - angular - marker - clustering /
+  // https://blog.mestwin.net/leaflet-angular-marker-clustering/
   getIcon() {
     const number = Math.floor(Math.random() * 6)
     return L.icon({
@@ -511,12 +516,18 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   createMarker_UNUSED() {
     const mapIcon = this.getIcon();
     // or const mapIcon = L.Icon.Default
-
     // const coordinates = latLng([this.mapPoint.latitude, this.mapPoint.longitude]);
     // this.lastLayer = marker(coordinates).setIcon(mapIcon);
     // this.markerClusterGroup.addLayer(this.lastLayer)
   }
 
+  /**
+   * Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
+   * @param lat
+   * @param lng
+   * @param title
+   * @returns
+   */
   override addMarker(lat: number, lng: number, title: string = '') {
     this.log.excessive(`addMarker at ${lat}. ${lng}, ${title}`, this.id)
 

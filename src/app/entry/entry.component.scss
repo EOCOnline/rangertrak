@@ -7,6 +7,8 @@ with ($primary: #962f10,
 //@use "@material/banner/styles";
 // https://material.io/components/buttons/web#api
 
+//@use "contrasting-color";
+
 $filledColor : #F0F0F0;
 
 .filled {
@@ -18,6 +20,10 @@ h2,
 h3 {
   margin-top   : 15px;
   margin-bottom: 0px;
+}
+
+.main {
+  margin: 0 1em;
 }
 
 .elegant {
@@ -78,11 +84,6 @@ input[type=number] {
   //margin            : 20px 0;
 }
 
-.Enter__status-value {
-  // TODO: Better contrast: https://codepen.io/facundocorradini/pen/LBVvyq & https://css-tricks.com/switch-font-color-for-different-backgrounds-with-css/
-  text-shadow: 1px 3px 8px grey;
-}
-
 .bottomDrop {
   //padding      : 8px 0;
   //margin-top   : 20px;
@@ -100,7 +101,7 @@ input[type=number] {
 }
 
 .enter__form {
-  margin     : 0px 10px 15px;
+  //margin     : 0px 10px 15px;
   min-width  : 160px;
   //max-width: 300px;
   width      : 100%;
@@ -202,12 +203,16 @@ input[type=number] {
     opacity: 1
   }
 
+  15% {
+    opacity: 1
+  }
+
   100% {
     opacity: 0
   }
 }
 
-// https://popper.js.org/docs/v2/tutorial/
+// https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
 #tooltip {
   background   : #333;
   color        : white;
@@ -216,22 +221,6 @@ input[type=number] {
   font-size    : 13px;
   border-radius: 4px;
   display      : none;
-}
-
-#tooltip[data-popper-placement^='top']>#arrow {
-  bottom: -4px;
-}
-
-#tooltip[data-popper-placement^='bottom']>#arrow {
-  top: -4px;
-}
-
-#tooltip[data-popper-placement^='left']>#arrow {
-  right: -4px;
-}
-
-#tooltip[data-popper-placement^='right']>#arrow {
-  left: -4px;
 }
 
 #tooltip[data-show] {
@@ -255,30 +244,3 @@ input[type=number] {
   content   : '';
   transform : rotate(45deg);
 }
-
-/*
-// https://www.concretepage.com/angular-material/angular-material-radio-button#color
-.rButton {
-  border-color        : blue;
-  // background-color: rgb(132, 151, 21); // of whole list
-}
-
-   // For outer circle
-   .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-    border-color      : rgb(71, 223, 51);
-  }
-
-  // For inner circle
-  //.mat-radio-checked
-  .mat-radio-inner-circle {
-      background-color: rgb(132, 151, 21);
-  }
-
-                      ::ng-deep .mat-radio-checked .mat-radio-outer-circle {
-    border-color      : rgb(13, 171, 219);
-}
-
-                      ::ng-deep .mat-radio-checked .mat-radio-inner-circle {
-    background-color  : rgb(153, 58, 98);
-}
-*/

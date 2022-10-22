@@ -51,3 +51,14 @@ body {
   margin     : 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+//From Angular Cookbook, pg 588
+@media (prefers-color-scheme: dark) {
+  :root {
+    --main-bg               : #333;
+    --text-color            : #fff;
+    --card-bg               : #000;
+    --primary-btn-color     : #fff;
+    --primary-btn-text-color: #333;
+  }
+}

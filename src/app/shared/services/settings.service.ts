@@ -28,6 +28,7 @@ export class SettingsService implements OnInit {
   constructor(@Optional() @SkipSelf() existingService: SettingsService,
     private log: LogService
   ) {
+    //! REVIEW: Gets called twice!!
     this.log.verbose(`======== constructor() ============`, this.id);
 
     if (existingService) {
@@ -38,14 +39,12 @@ export class SettingsService implements OnInit {
        * per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
        */
       throwError(() => {
-        console.error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
+        this.log.error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
 
     // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
-    //! REVIEW: Gets called twice!!
-    this.log.verbose('======== Constructor() ============', this.id)
 
     //  ------------------------- SECRETS -------------------------------
 
@@ -98,10 +97,12 @@ export class SettingsService implements OnInit {
     // REVIEW: following forces garbage collection of package.json, for security? (would happen at end of constructor too)
     packageAsString = ''
     packageAsJson = null
+
+    this.log.verbose('out of constructor', this.id)
   }
 
   ngOnInit() {
-    this.log.error(`ngOnInit()`, this.id);
+    this.log.verbose(`ngOnInit()`, this.id);
 
 
     if (window.isSecureContext) {
@@ -194,17 +195,20 @@ export class SettingsService implements OnInit {
       imageDirectory: "./assets/imgs/",    //! WARNING: Hardcoded & potential SECURITY risk.
       defFieldReportStatus: 0, // which of the following array entries to use as the default value
       //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
+      //? FUTURE: Consider adding contrasting 'shadow color' for nice display on entry form
       // https://en.wikipedia.org/wiki/Web_colors#Extended_colors
       // https://en.wikipedia.org/wiki/Web_colors#Color_table
       // https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#fully_saturated_colors
+      // https://m3.material.io/styles/icons/applying-icons#ebb3ae7d-d274-4a25-9356-436e82084f1f
+      // https://fonts.google.com/icons
       fieldReportStatuses: [
-        { status: 'Normal', color: 'LightYellow', icon: '' },
-        { status: 'Location Report', color: 'Aquamarine', icon: '' },
-        { status: 'Evidence Report', color: 'DarkGoldenrod', icon: '' },
-        { status: 'Need Rest', color: 'Chartreuse', icon: '' },
-        { status: 'Incident Check-in', color: 'Silver', icon: '' },
-        { status: 'Incident Check-out', color: 'DimGray', icon: '' },
-        { status: 'Urgent', color: 'Crimson', icon: '' }
+        { status: 'Normal', color: 'LightYellow', icon: 'check_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Location Report', color: 'Aquamarine', icon: 'where_to_vote_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Evidence Report', color: 'DarkGoldenrod', icon: 'add_photo_alternate_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Need Rest/Food', color: 'Chartreuse', icon: 'mood_bad_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Incident Check-in', color: 'Silver', icon: 'person_add_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Incident Check-out', color: 'DimGray', icon: 'person_remove_FILL0_wght400_GRAD0_opsz48.png' },
+        { status: 'Urgent', color: 'Crimson', icon: 'crisis_alert_FILL0_wght400_GRAD0_opsz48.png' }
       ],
       // fieldReportKeywords: [''],  // Future...could also just search notes field
     }
@@ -222,7 +226,7 @@ export class SettingsService implements OnInit {
     this.log.verbose(`Notified subscribers of new Application Settings ${JSON.stringify(newSettings)} `, this.id)
 
     //! Is this proper?!
-    this.log.verbose(`Reloading window!`, this.id)
+    //this.log.verbose(`updateSettings: Reloading window!`, this.id)
     //window.location.reload() creates endless cycle!
   }
 

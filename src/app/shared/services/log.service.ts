@@ -1,4 +1,4 @@
-import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
+//import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { BehaviorSubject, Observable, throwError } from 'rxjs'
 
 // / <reference types= @types/picocolors /> - gets: Cannot find type definition file for '@types/picocolors'.
@@ -35,7 +35,9 @@ export class LogService {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    console.log(pc.bgGreen(`==== Log ${pc.red('Service')} ${pc.italic('======== Constructor() ============')} ====`))
+    console.log(`==== Log Service  ======== Constructor =============`)
+    //console.log(pc.bgGreen(`==== Log ${pc.red('Service')} ${pc.italic('======== Constructor() ============')} ====`))
+    //console.log(`I see a ${pc.red("red door")} and I want it painted ${pc.black("black")} ========================================================`)
 
     let initialEntry = {
       date: new Date, msg: 'Log Service is being constructed',
@@ -68,17 +70,17 @@ export class LogService {
       case LogLevel.Excessive:
         // BUG: %c not getting interpreted...
         //console.log(pc.red(`%c${preface}${source}: ${msg}`))
-        console.log(pc.red(`${preface}${source}: ${msg}`))
+        console.log((`${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Verbose:
         // TODO: console.log(pc.blue(`${preface}${source}: ${msg}`), hotStylin)
         // results in:  Header component: New settings received background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;
-        console.log(pc.bgBlue(`${preface}${source}: ${msg}`))
+        console.log((`${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Info:
-        console.log(pc.bgCyan(`${preface}${source}: ${msg}`))
+        console.log((`${preface}${source}: ${msg}`))
         break;
 
       case LogLevel.Warn:
@@ -86,7 +88,7 @@ export class LogService {
         break;
 
       case LogLevel.Error:
-        console.error(pc.red(pc.bold(`${preface}${source}: ${msg}`)))
+        console.error((`${preface}${source}: ${msg}`))
         break;
 
       default:

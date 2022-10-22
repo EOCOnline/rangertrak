@@ -19,6 +19,10 @@ $filledColor : #F0F0F0;
   background-color: $filledColor;
 }
 
+.main {
+  margin: 0 0 0 1em;
+}
+
 .timepicker {
   position: relative;
   width   : 240px;
@@ -58,15 +62,9 @@ input[type=number] {
 */
 
 .settings__OpPeriod--notes {
-  border              : 1px dotted rgb(52, 28, 192);
-  border-radius       : 6px;
-  background-color    : $filledColor;
-  //text-orientation: upright;
-  //text-transform: capitalize;
-  //float             : left;
-  //margin-left       : 75px;
-  //position          : absolute;
-  //bottom:40px;
+  border          : 1px dotted rgb(52, 28, 192);
+  border-radius   : 6px;
+  background-color: $filledColor;
 }
 
 label {
@@ -85,34 +83,13 @@ button {
   font-weight: bold;
 }
 
-.strong {
-  font-weight: bold;
+.small {
+  font-size: 12px;
 }
 
 .elegant {
   margin-top   : 25px;
   margin-bottom: 0px;
-}
-
-h1,
-h2,
-h3 {
-  margin-top   : 20px !important;
-  margin-bottom: 0px !important;
-  font-weight  : 600 !important;
-}
-
-h2_unused {
-  //font-style: italic !important;
-  font-weight: bold !important;
-}
-
-.bordered {
-  border: 2 px solid rgb(62, 189, 189);
-}
-
-#addresses {
-  width: 200px;
 }
 
 .strong {
@@ -123,6 +100,22 @@ h2_unused {
   font-weight: 500;
 }
 
+h1,
+h2,
+h3 {
+  margin-top   : 20px !important;
+  margin-bottom: 0px !important;
+  font-weight  : 600 !important;
+}
+
+.bordered {
+  border: 2 px solid rgb(62, 189, 189);
+}
+
+#addresses {
+  width: 200px;
+}
+
 .wideField {
   width: 10em;
 }
@@ -131,13 +124,40 @@ h2_unused {
   background-color: rgb(212, 179, 106);
 }
 
-.small {
-  font-size: 12px;
-}
-
 .text-warning {
   color: rgb(175, 75, 35);
   ;
+}
+
+.installBtn {
+  background-color  : rgb(147, 227, 227);
+  float             : right;
+  padding           : 3px 2px 5px 1px;
+  margin            : 0 5px 5px 0;
+  border-radius     : 8px;
+  cursor            : pointer;
+  //opacity         : 0.75;
+  width             : 90px;
+  font-size         : 1.2em;
+}
+
+.installMe {
+  display           : block;
+  float             : right;
+  //height          : 190px;
+  width             : 250px;
+  border            : 1px solid black;
+  background-color  : $filledColor;
+  opacity           : 0.8;
+  border-radius     : 10px;
+  padding           : 5px;
+  margin-top        : 20px;
+  margin-right      : 20px;
+}
+
+.installMe ul {
+  margin      : 8px;
+  padding-left: 5px;
 }
 
 .border-warning {
@@ -186,7 +206,7 @@ h2_unused {
 
   // Color hint: A gradient going from the left to right, starting white, getting to the midpoint color
   // 30% of the way across the length of the gradient, taking the rest of the 70% of the length to change to allow full picture through
-  background-image: linear-gradient(.25turn, rgba(252, 252, 252, 1), 30%, rgba(221, 213, 213, 0.25)), url("../../assets/imgs/20220205_112750.jpg");
+  background-image: linear-gradient(.25turn, rgba(252, 252, 252, 1), 30%, rgba(221, 213, 213, 0.25)), url("../../assets/imgs/20220205_112750.png");
 
   //background-image  : linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(221, 213, 213, 0.5)), url("../../assets/imgs/20220205_112750.jpg");
   //color: black;

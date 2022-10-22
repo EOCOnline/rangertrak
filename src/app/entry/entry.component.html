@@ -1,5 +1,6 @@
 <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
-<div class="container">
+
+<section class="main bkgrnd_NotToday">
   <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
     <mini-lmap [locationUpdated]="locationParent">LMAP HERE</mini-lmap>
     <!--
@@ -74,13 +75,14 @@
       <mat-radio-group class="filled  enter__Status" labelPosition="after" formControlName="status" tabindex="7"><span
           class="bottomDrop">Status:&nbsp;&nbsp;</span>
         <mat-radio-button *ngFor="let stat of settings.fieldReportStatuses" value="{{stat.status}}" class="rButton">
-          <span class="Enter__status-value" style="color:{{stat.color}}"> {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
+          <span class="Enter__status-value" style="color:{{stat.color}};  text-shadow: 1px 3px 8px rgb(91, 91, 91);">
+            {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
           <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
         </mat-radio-button>
       </mat-radio-group>
-      <br />
-      <br />
 
+      <br>
+      <br>
       <textarea class="input-group enter__What--area" formControlName="notes" id="enter__What--area" cols="80" rows="5"
         placeholder="Enter Any Notes" tabindex="8"></textarea>
     </div>
@@ -120,4 +122,4 @@
       <pre><strong>EntryForm value:</strong> {{entryDetailsForm.value | json}}</pre>
     </div>
   </form>
-</div>
+</section>

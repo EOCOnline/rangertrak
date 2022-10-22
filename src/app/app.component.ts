@@ -25,6 +25,8 @@ export class AppComponent implements OnInit {
     private snackbar: MatSnackBar) {
   }
 
+
+
   ngOnInit() {
     // https://angular.io/api/service-worker/SwUpdate
     // https://angular.io/guide/service-worker-communications#swupdate-service

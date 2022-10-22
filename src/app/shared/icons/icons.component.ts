@@ -20,8 +20,8 @@ const THUMBUP_ICON =
   </svg>
 `
 
-// https://popper.js.org/docs/v2/constructors/
-type Placement =
+// https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
+/*type Placement_UNUSED =
   | 'auto'
   | 'auto-start'
   | 'auto-end'
@@ -38,7 +38,7 @@ type Placement =
   | 'left-start'
   | 'left-end';
 type Strategy = 'absolute' | 'fixed';
-/*type Options = {|
+type Options = {|
   placement: Placement, // "bottom"
   modifiers: Array<$Shape<Modifier<any>>>, // []
   strategy: PositioningStrategy, // "absolute",

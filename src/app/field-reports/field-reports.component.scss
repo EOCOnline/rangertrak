@@ -1,3 +1,7 @@
+.main {
+  margin: 0 1em;
+}
+
 .big {
   font-size  : larger;
   font-weight: bold;
@@ -5,6 +9,14 @@
 
 .strong {
   font-weight: bold;
+}
+
+.pager {
+  text-align: right;
+}
+
+#rowPerPage-select {
+  width: 60px;
 }
 
 .enter__Fake {

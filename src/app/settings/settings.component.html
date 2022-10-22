@@ -1,5 +1,23 @@
-<div id="SettingsBody" class="container">
-  <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
+<pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
+<section id="SettingsBody" class="main">
+
+  <div *ngIf=isInstallable class="installMe">
+    Install application on this browser to...
+    <ul>
+      <li>Permit offline viewing of leaflet maps</li>
+      <li>Provide a convenient icon to quickly return to the application</li>
+      <li>(Requires little storage)</li>
+    </ul>
+
+    <span onclick="onInstallBtn()" class="installBtn"
+      title="Installing uses almost no storage and provides off-line mapping and a quick way to return to RangerTrak!">
+      <!-- button mat-button class="installMe">buggy button!</button-->
+      &nbsp;
+      <img src="../../assets/icons/install.png" height="18px" width="18px" alt="install icon" />
+      <span> Install </span>&nbsp;
+    </span>
+  </div>
+
   <form [formGroup]="settingsEditorForm" (ngSubmit)="onFormSubmit()">
     <br />
     <details>
@@ -102,7 +120,7 @@
           entered for converting short to full/global codes.</li>
         <li>
           <a href="https://www.What3Words.com" target="_blank">What3Words</a> uses the 'w3wLocale' to set the focus,
-          prioritizing suggested results (for incorrect words) by proximity to this point.
+          prioritizing suggested results (for incorrect words) by proximity to this nearby locality/town/place.
         </li>
         <li>
           Maps do NOT use any of these. Maps are auto-centered on the bounding coordinates
@@ -142,6 +160,7 @@
         [class.border-danger]="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.invalid"
         type="text" formControlName="defPlusCode" placeholder="84VVCGWP+VW" [style.width.px]="100"
         data-lpignore="true" />
+      &nbsp;&nbsp;<button onclick="window.open('http://plus.codes/map/','_blank')">Find a +Code</button>
       <div
         *ngIf="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.hasError('required')"
         class="text-sm text-danger">
@@ -307,7 +326,7 @@
 
     <br />
 
-    <span class="strong">Save above settings: </span>
+    <span class="strong">Save all settings above: </span>
     <button [disabled]="settingsEditorForm.invalid" class="settings__Save-button eButton" type="submit">Save</button>
     <!-- button tabindex="9" -->
 
@@ -334,4 +353,4 @@
       </ul>
     </details>
   </form>
-</div>
+</section>

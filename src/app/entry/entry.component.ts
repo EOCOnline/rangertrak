@@ -1,24 +1,24 @@
 import {
-    debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
+  debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
 } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
-    AfterViewInit, Component, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit,
-    Output, ViewChild
+  AfterViewInit, Component, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit,
+  Output, ViewChild
 } from '@angular/core'
 import {
-    FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
-    UntypedFormControl, UntypedFormGroup, Validators
+  FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
+  UntypedFormControl, UntypedFormGroup, Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { AlertsComponent, DDToDDM, TimePickerComponent, Utility } from '../shared/'
 import {
-    FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
-    SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
+  FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
+  SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services/'
 import { LocationComponent } from './location.component'
 
@@ -170,19 +170,19 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   onNewLocationEvent(newLocation: LocationType) { //LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.error(`Entry form (parent) got new Location: ${JSON.stringify(newLocation)}`, this.id)
+    this.log.info(`Entry form (parent) got new Location: ${JSON.stringify(newLocation)}`, this.id)
 
     //!BUG: The next line *should* propogate new value to all children, but only does so intermittently...
-    this.log.error(`locationParent was: ${JSON.stringify(this.locationParent)}`, this.id)
+    this.log.info(`locationParent was: ${JSON.stringify(this.locationParent)}`, this.id)
     this.locationParent = newLocation
-    this.locationParent.lat += 0.0000001  //! REMOVE ME!
-    this.log.error(`locationParent now: ${JSON.stringify(this.locationParent)}`, this.id)
+    //this.locationParent.lat += 0.0000001  //! REMOVE ME!
+    this.log.info(`locationParent now: ${JSON.stringify(this.locationParent)}`, this.id)
 
 
     // patch entryForm object - as THAT is what gets saved with on form submit
     this.entryDetailsForm.patchValue({ location: newLocation }, { emitEvent: false })
     //! NOTE: emit Event causes endless notification loop; BUT how to notify mini-map?!
-    //this.log.error(`Entry form (parent) recorded the new locationParent: ${JSON.stringify(this.locationParent)}`, this.id)
+    //this.log.info(`Entry form (parent) recorded the new locationParent: ${JSON.stringify(this.locationParent)}`, this.id)
   }
 
   /**

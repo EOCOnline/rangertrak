@@ -1,3 +1,7 @@
+.main {
+  margin: 0 1em;
+}
+
 #log {
   height            : 70vh;
   font-family       : monospace;
@@ -5,7 +9,7 @@
   line-height       : 12px;
   padding           : 2px 5px;
   //color           : rgb(57, 34, 161);
-  background-color  : rgb(226, 238, 156);
+  background-color  : rgb(234, 244, 177);
   border            : 1px solid #030;
   border-radius     : 4px;
   overflow          : auto;
