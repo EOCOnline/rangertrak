@@ -81,7 +81,7 @@
     "import-sort-style-module": "^6.0.0",
     "init-dev-env": "^1.0.0",
     "jasmine-core": "~4.4.0",
-    "js-beautify": "^1.14.6",
+    "js-beautify": "^1.14.7",
     "jshint": "^2.13.5",
     "karma": "^6.4.1",
     "karma-chrome-launcher": "~3.1.1",
