@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 
 // https://web.dev/learn/pwa/installation/
 // also: https://web.dev/patterns/advanced-apps/shortcuts/
+// https://web.dev/learn/pwa/service-workers/
 
 @Injectable({
   providedIn: 'root'
