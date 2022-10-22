@@ -34,3 +34,39 @@ filter: brightness(30%);
   text-align: right;
   font-size : x-small;
 }
+
+// from https://web.dev/patterns/animation/
+@keyframes breath {
+  from {
+    animation-timing-function: ease-out;
+  }
+
+  to {
+    transform                : scale(1.25) translateY(-5px) perspective(1px);
+    text-shadow              : 0 0 40px var(--glow-color);
+    animation-timing-function: ease-in-out;
+  }
+}
+
+//(prefers-reduced-motion:no-preference)
+@media (screen) {
+  [letter-animation]>span {
+    display    : inline-block;
+    white-space: break-spaces;
+  }
+
+  [letter-animation=breath] {
+    --glow-color: white;
+  }
+
+  [letter-animation=breath]>span {
+    animation: breath 1.2s ease calc(var(--index) * 100 * 1ms) infinite alternate;
+  }
+}
+
+//(prefers-reduced-motion:no-preference) and
+@media (prefers-color-scheme: light) {
+  [letter-animation=breath] {
+    --glow-color: black;
+  }
+}

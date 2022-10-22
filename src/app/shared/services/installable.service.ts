@@ -4,6 +4,9 @@ import { Injectable } from '@angular/core';
 // https://web.dev/customize-install
 // https://github.com/WICG/manifest-incubations
 
+// https://web.dev/learn/pwa/installation/
+// also: https://web.dev/patterns/advanced-apps/shortcuts/
+
 @Injectable({
   providedIn: 'root'
 })
