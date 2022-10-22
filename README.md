@@ -6,7 +6,7 @@ This application aids tracking & mapping CERT, ACS, other teams, rangers & indiv
 
 This Progressive Web Application (PWA) will largely run even if there is incomsistent, limited, or no cell, internet or data access at the command post.  Rangers can radio in their locations - using a variety of location codes, and be centrally tracked.
 
-Verbally transmitting & transcribing latitude & longitude coordinates can be very error prone and slow. Instead RangertRak also permits other ways to report locations: by Street Address, Google PlusCodes, and perhaps What3Words. See <https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems> for a list.
+Verbally transmitting & transcribing latitude & longitude coordinates can be very error prone and slow. Instead RangerTrak also permits other ways to report locations: by Street Address, Google PlusCodes, and perhaps What3Words. See <https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems> for a list.
 
 ## Features
 
@@ -20,17 +20,20 @@ Verbally transmitting & transcribing latitude & longitude coordinates can be ver
 - Easy entry via auto-lookup of Ham Radio teams or individuals by tactical callsign.
 - Field report statuses can be edited: name & color, future: icon/markers.
 - View locations on Google and Leaflet/ESRI maps. (Google has yet to support offline/disconnected mapping, but is working on it for the future.) Maps also have overview/locator maps.
-- Rangers can report in as individuals or teams: both are easily edited/sorted/filtered.
+- Rangers can report in as individuals or teams: both are easily edited/sorted/filtered and then only that subset may be exported or displayed on maps.
 - Source code documentation uses [https://compodoc.app/guides/jsdoc-tags.html]Compodoc
+- Source code is evergreen: current with latest libraries (as of fall 2022)
 
 ## Future Roadmap
 
 - To work with out flaws!
-- Reload data from local files
-- Allow loading of additinoal layers (e.g., an image of trails, local features),
+- Enhance map markers to better highlight paths, teams, statuses.
+- Reload data from local files.
+- Allow loading of additional map layers (e.g., an image of trails, local features)
   perhaps with <https://github.com/publiclab/Leaflet.DistortableImage>
-- improved docs: screenshots and architectural diagrams
-- consider <https://github.com/EventEmitter2/EventEmitter2> for multi-threaded msgs with service workers
+- improved docs: screenshots and architectural diagrams.
+- consider <https://github.com/EventEmitter2/EventEmitter2> for multi-threaded msgs with service workers.
+- Optionally publish field reports to a server if Internet access allows: for display at a central EOC or even by participants out in the field with data or cell coverage.
 
 ## Items (still) requiring online access
 
