@@ -92,7 +92,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // On hovering, display a larger image!
   imageCellRenderer = (params: { data: RangerType }) => {
     return `<img class="licenseImg" style="height:40px; width:40px;" alt= "Image of ${params.data.fullName}"
-      src= "${this.settings.imageDirectory}${params.data.image}">`
+      src= "${this.settings.imageDirectory}rangers/${params.data.image}">`
   }
   //<strong>art</strong>
   // title="${params.data.callsign} ? ${params.data.callsign} : ${params.data.fullName}"
