@@ -19,7 +19,7 @@
         id="enter__Callsign-input" tabindex="1" data-lpignore="true" />
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
-          <img class="enter__Callsign-img" aria-hidden [src]="'./assets/imgs/'+(ranger.image)" height="40">
+          <img class="enter__Callsign-img" aria-hidden [src]="'./assets/imgs/rangers/'+(ranger.image)" height="40">
           <span> {{ranger.callsign}}</span> |
           <small> {{ranger.fullName}} | {{ranger.phone}}</small>
         </mat-option>

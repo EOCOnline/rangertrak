@@ -77,7 +77,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 & https://github.com/angular/angular/pull/43834
   public entryDetailsForm!: FormGroup //UntypedFormGroup
   callsignCtrl = new FormControl() //Untyped
-  readonly imagePath = "'./assets/imgs/'" // not yet used by *.html
+  //readonly imagePath = "'./assets/imgs/rangers/'" // not yet used by *.html
 
   // Get location events from <location> component
   //public locationChange: Subscription

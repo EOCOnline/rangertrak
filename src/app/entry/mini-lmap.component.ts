@@ -16,9 +16,9 @@ import {
   undefinedLocation
 } from '../shared/services'
 
-const iconRetinaUrl = 'assets/imgs/marker-icon-2x.png'
-const iconUrl = 'assets/imgs/marker-icon.png'
-const shadowUrl = 'assets/imgs/marker-shadow.png'
+const iconRetinaUrl = 'assets/icons/marker-icon-2x.png'
+const iconUrl = 'assets/icons/marker-icon.png'
+const shadowUrl = 'assets/icons/marker-shadow.png'
 const iconDefault = L.icon({
   iconRetinaUrl,
   iconUrl,

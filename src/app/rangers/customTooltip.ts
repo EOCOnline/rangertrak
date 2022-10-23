@@ -15,7 +15,7 @@ export class CustomTooltip implements ITooltipComp {
     eGui.innerHTML = `
     <p>
     <img class="licenseImg" style="height:256px; width:256px;" alt= "${params.data.fullName}"
-    src= "./assets/imgs/${params.data.image}"><br>
+    src= "./assets/imgs/rangers/${params.data.image}"><br>
                 <span class"name">&nbsp;&nbsp;${data.fullName}</span> - <span >callsign: </span>
                 ${data.callsign}
             </p>`
