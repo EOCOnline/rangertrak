@@ -86,7 +86,7 @@ Some details in service/settings.service.ts & app.component.ts
 
 ## To Deploy to Google Firebase
 
-This got WAY to complex with Google's recent security upgrades. Now I just FTP it to Https://RangerTrak.org
+This got WAY to complex with Google's recent security upgrades. Now I just FTP it to https://RangerTrak.org
 
 OLD:
 `ng deploy`
