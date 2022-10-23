@@ -96,7 +96,7 @@ See angular.json and firebase.json
 
 ## Architecture
 
-![PlantUML-Class Diagram](./src/docs/PlantUML-Class Diagram.png)
+![PlantUML-Class Diagram](./src/assets/imgs/PlantUML-Class Diagram.png)
 ![This architecural diagram is out-of-date -- & unimplemented yet]( .\src\docs\RangerTrak.png "Future architectural diagram")
 
 ## Further help
@@ -108,4 +108,5 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 <http://eoc.online> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <http://eoc.online> & to report issues please visit <https://github.com/EOCOnline/rangertrak>.
 
 ©2022 eoc.online, under the MIT License
+
 ![MIT License](./src/assets/imgs/MIT_License.png)
