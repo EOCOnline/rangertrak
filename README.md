@@ -96,8 +96,7 @@ See angular.json and firebase.json
 
 ## Architecture
 
-![PlantUML-Class Diagram](./src/assets/imgs/PlantUML-Class_Diagram.png)
-![This architecural diagram is out-of-date -- & unimplemented yet](./src/assets/imgs/PlantUML-Class_Diagram.png "Future architectural diagram")
+![This architecural diagram is out-of-date -- & unimplemented yet](./src/assets/imgs/PlantUML-Class_Diagram.png "Old/future architectural diagram")
 
 ## Further help
 
