@@ -47,6 +47,18 @@ To use and see what this application does, simply browse to <https://Rangertrak.
 - All maps (for now)
 - 3Word functionality (for now)
 
+### To Run
+
+Simply visit <https://www.RangerTrak.org> and follow the Workflow below:
+
+1. Enter Mission info on the[Mission Settings Screen](./non-dist-imgs/MissionSettings.png "Mission Settings Screen") once, then
+2. Enter/edit participating rangers on the [Rangers Page](https://www.RangerTrak.org/rangers "Rangers Page") as needed, then
+3. Repeatedly enter reports on the [Home (Entry) Screen](https://www.RangerTrak.org/ "Home (Entry) Screen")
+
+Moving to a different browser, or device will provide a 'fresh' RangerTrak environment. RangerTrak’s machinations are all local to each brand of browser (Firefox won’t know what you did with Chrome or Edge), so that gives you a way to experiment.
+
+All data is private: only stored locally in your browser's Local Storage.
+
 ### Screenshots & Typical Workflow
 
 So you get an idea of how it looks/works here's a typical workflow. (Click images for larger versions.)
@@ -104,11 +116,6 @@ This provides a bit more explaination about the application, its purpose, techno
 This screen is primarily used for debugging and reporting issues. It can also serve as a partial audit trail of actions taken during the mission.
 ![Logs Screen](./non-dist-imgs/Logs.png "Logs Screen")
 
-### To Run
-
-Simply visit <https://www.RangerTrak.org> and follow the Workflow above: enter Mission info on the Settings page, then enter Rangers, then repeatedly enter reports. All data is stored locally in your browser's Local Storage: no tracking codes are used.
-
-Moving to a different browser, or device will provide a 'fresh' RangerTrak environment. RangerTrak’s machinations are all local to each brand of browser (Firefox won’t know what you did with Chrome or Edge), so that gives you a way to experiment.
 
 ### To Reset/Clear all Data
 
