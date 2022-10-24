@@ -1,8 +1,8 @@
-# Rangertrak
+# Rangertrak™
 
 [![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine)
 
-This application aids tracking & mapping CERT, ACS, other teams, rangers & individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. Teams or individuals can radio in their locations - in a variety of formats, and be centrally tracked. A single log of reports, locations, events and time is created for documentation and analysis. Most critically search area coverage can be determined and teams/individuals that have NOT reported in can be monitored.
+The RangerTrak™ application aids tracking & mapping CERT, ACS, other teams, rangers & individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. Teams or individuals can radio in their locations - in a variety of formats, and be centrally tracked. A single log of reports, locations, events and time is created for documentation and analysis. Most critically search area coverage can be determined and teams/individuals that have NOT reported in can be monitored.
 
 This Progressive Web Application (PWA) will largely run even if there is inconsistent, limited, or no cell, internet or data access at the command post.  Rangers can radio in their locations - using a variety of location codes, and be centrally tracked.
 
@@ -54,9 +54,10 @@ So you get an idea of how it looks/works here's a typical workflow. (Click image
 #### Mission Settings Screen: Start here!
 
 At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters can also be adjusted. Field Report statuses can be edited as desired. The background incidentally shows RangerTrak being tested in a real-world exercise.
-![Mission Settings Screen](./non-dist-imgs/MissionSettings.png "Mission Settings Screen")
 
-**Before doing the above:** Be sure you have backed up and downloaded any previous mission data, via the Export Buttons on the [Field Reports Page](https://www.RangerTrak.org/reports) and [Rangers Page](https://www.RangerTrak.org/rangers) Screens.
+**WARNING: Before doing the above** Be sure you have backed up and downloaded any previous mission data, via the Export Buttons on the [Field Reports Page](https://www.RangerTrak.org/reports) and [Rangers Page](https://www.RangerTrak.org/rangers) Screens.
+
+![Mission Settings Screen](./non-dist-imgs/MissionSettings.png "Mission Settings Screen")
 
 #### Rangers Screen
 
