@@ -44,14 +44,29 @@ Verbally transmitting & transcribing latitude & longitude coordinates can be ver
 ## Screenshots
 
 - So you get an idea of how it looks/works here's a typical workflow:
+
+![Mission Settings Screen](./non-dist-imgs/MissionSettings.png)
+Start here: At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters ccan also be adjusted. Field Report statuses can be edited as desired.
+
+![Rangers Screen](./non-dist-imgs/Rangers.png)
+Secondly, at the start of an Operational Period, come to this screen to record rangers participating. Afterwards this displays Rangers participating in the exercise. This can refer to individuals or teams as desired. Rangers can be edited as needed, and optionally exported to a CSV spreadsheet.
+
+Once those initial two steps are complete (i.e., the two screens above), users will just primarily use the Entry Screen, below, for most of the rest of the exercise or incident.
+
 ![Home Screen](./non-dist-imgs/Entry.png)
-![About Screen](./non-dist-imgs/GoogleMaps.png)
-![About Screen](./non-dist-imgs/LeafletMaps.png)
-![About Screen](./non-dist-imgs/FieldReports.png)
-![About Screen](./non-dist-imgs/Rangers.png)
-![About Screen](./non-dist-imgs/MissionSettings.png)
+Above is the 'home' or entry screen that allows a 'scribe' to record 'Field Reporrts', i.e., ranger's locations and status reports. Locations can be entered in a variety of formats.
+
+![Google Maps Screen](./non-dist-imgs/GoogleMaps.png)
+Displays Field Reports that have been entered, and optionally a filtered subset of reports.
+
+![Leaflet Maps Screen](./non-dist-imgs/LeafletMaps.png)
+Displays Field Reports that have been entered, and optionally a filtered subset of reports.
+
+![Field Reports Screen](./non-dist-imgs/FieldReports.png)
+Displays Field Reports that have been entered, in a grid format, with the ability to filter, sort, and search reports on any field. Filtered reports can be mapped or exported to a CSV spreadsheet for documentation or later analysis.
+
 ![About Screen](./non-dist-imgs/About.png)
-![About Screen](./non-dist-imgs/Logs.png)
+![Logs Screen](./non-dist-imgs/Logs.png)
 
 ## To Run
 
