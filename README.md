@@ -139,3 +139,10 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ©2022 eoc.online, under the MIT License
 
 ![MIT License](./non-dist-imgs/MIT_License.png)
+
+## Testimonials
+
+---
+>  (We) all agreed that this is a WOW program with high value added to SAR.  I really hope you continue to refine it!
+
+— Michael Meyer, Vashon ACS, KB7MTM
