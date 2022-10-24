@@ -41,15 +41,15 @@ Verbally transmitting & transcribing latitude & longitude coordinates can be ver
 - All maps (for now)
 - 3Word functionality (for now)
 
-## Screenshots
+## Screenshots & Typical Workflow
 
 - So you get an idea of how it looks/works here's a typical workflow:
 
 ![Mission Settings Screen](./non-dist-imgs/MissionSettings.png)
-Start here: At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters ccan also be adjusted. Field Report statuses can be edited as desired.
+#Start here:# At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters ccan also be adjusted. Field Report statuses can be edited as desired.
 
 ![Rangers Screen](./non-dist-imgs/Rangers.png)
-Secondly, at the start of an Operational Period, come to this screen to record rangers participating. Afterwards this displays Rangers participating in the exercise. This can refer to individuals or teams as desired. Rangers can be edited as needed, and optionally exported to a CSV spreadsheet.
+*Secondly,* at the start of an Operational Period, come to this screen to record rangers participating. Afterwards this displays Rangers participating in the exercise. This can refer to individuals or teams as desired. Rangers can be edited as needed, and optionally exported to a CSV spreadsheet.
 
 Once those initial two steps are complete (i.e., the two screens above), users will just primarily use the Entry Screen, below, for most of the rest of the exercise or incident.
 
