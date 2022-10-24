@@ -156,11 +156,25 @@ See <https://compodoc.app/guides/usage.html> and <https://compodoc.app/> for det
 
 ### To update Version
 
-stage any changes (or add '--allow-empty' to the following), then
+Stage any changes (or add '--allow-empty' to the following), then
 `git commit -m "Release-As: 0.11.40"`
 which *SHOULD* (but doesn't) update version ## in Package.json & Package-lock.json
 Some details in service/settings.service.ts & app.component.ts
 <https://github.com/googleapis/release-please#how-do-i-change-the-version-number>
+
+### To update 3rd party libraries
+
+Commands from Evergreen Angular:
+
+- `npx ng update @angular/core @angular/cli`
+- `npx ng update`
+- `npx npm-check-updates -u`
+- `npm install`
+
+Other useful commands:
+
+- `npm install -g typings` - Looks for updated Typescript type files.
+- `npx ng update -g`  - Updates global cli & sdk
 
 ### To Deploy
 
@@ -184,7 +198,7 @@ Way out of date!
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
-### eoc.online
+## eoc.online
 
 <http://eoc.online> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <http://eoc.online>. We'd LOVE to get your reports of use and suggestions for enhancement. To report issues please visit <https://github.com/EOCOnline/rangertrak/issues>.
 
