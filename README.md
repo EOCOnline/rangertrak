@@ -1,7 +1,6 @@
-[![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine)
-
-
 # Rangertrak
+
+[![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine)
 
 This application aids tracking & mapping CERT, ACS, other teams, rangers & individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. Teams or individuals can radio in their locations - in a variety of formats, and be centrally tracked. A single log of reports, locations, events and time is created for documentation and analysis. Most critically search area coverage can be determined and teams/individuals that have NOT reported in can be monitored.
 
@@ -9,9 +8,11 @@ This Progressive Web Application (PWA) will largely run even if there is inconsi
 
 Verbally transmitting & transcribing latitude & longitude coordinates can be very error prone and slow. Instead RangerTrak also permits other ways to report locations: by Street Address, Google PlusCodes, and perhaps What3Words. See <https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems> for a list.
 
-# For Users
+## For Users
 
-## Features
+To use and see what this application does, simply browse to <https://Rangertrak.org>. Additinoal guidence follows,
+
+### Features
 
 - Open Source: *free* to use & available to enhance!
 - Progressive Web App (PWA) this should be able to function (in the future, possibly with some degredation) even if the person using this at the command post has no or intermittent access to the Internet or cell system.
@@ -27,9 +28,9 @@ Verbally transmitting & transcribing latitude & longitude coordinates can be ver
 - Source code documentation uses [https://compodoc.app/guides/jsdoc-tags.html]Compodoc
 - Source code is evergreen: current with latest libraries (as of fall 2022)
 
-## Future Roadmap
+### Future Roadmap
 
-- To work with out flaws!
+- To work with out flaws! In particulr one often has to refresh some pages to get them to display - especially the Leaflet Maps page - or screen.
 - Issues should be moving from a spreadsheet to [the standard GitHub Issues Page](https://github.com/EOCOnline/rangertrak/issues)
 - Enhance map markers to better highlight paths, teams, statuses.
 - Reload data from local files.
@@ -37,69 +38,85 @@ Verbally transmitting & transcribing latitude & longitude coordinates can be ver
   perhaps with <https://github.com/publiclab/Leaflet.DistortableImage>
 - improved docs: screenshots and architectural diagrams.
 - consider <https://github.com/EventEmitter2/EventEmitter2> for multi-threaded msgs with service workers.
-- consider adding heatmaps, or https://github.com/eurostat/gridviz
+- consider adding heatmaps, or <https://github.com/eurostat/gridviz>
 - Optionally publish field reports to a server if Internet access allows: for display at a central EOC or even by participants out in the field with data or cell coverage.
 
-## Items (still) requiring online access
+### Items (still) requiring online access
 
 - GeoCoding an address
 - All maps (for now)
 - 3Word functionality (for now)
 
-## Screenshots & Typical Workflow
+### Screenshots & Typical Workflow
 
 So you get an idea of how it looks/works here's a typical workflow. (Click images for larger versions.)
 
-### Mission Settings Screen: Start here!
+#### Mission Settings Screen: Start here!
+
 At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters can also be adjusted. Field Report statuses can be edited as desired. The background incidentally shows RangerTrak being tested in a real-world exercise.
 ![Mission Settings Screen](./non-dist-imgs/MissionSettings.png "Mission Settings Screen")
 
+**Before doing the above:** Be sure you have backed up and downloaded any previous mission data, via the Export Buttons on the [Field Reports Page](https://www.RangerTrak.org/reports) and [Rangers Page](https://www.RangerTrak.org/rangers) Screens.
 
 
-### Rangers Screen
+
+#### Rangers Screen
+
 **Secondly,** at the start of an Operational Period, come to this screen to enter/edit/record rangers participating. Afterwards this displays Rangers participating in the exercise. This can refer to individuals and/or teams as desired. Rangers can be edited as needed, and optionally exported to a CSV spreadsheet.
 ![Rangers Screen](./non-dist-imgs/Rangers.png "Rangers Screen")
 
-
 Once those initial two steps are complete (i.e., the two screens above), *users will just primarily use the Entry Screen, below, for most of the rest of the exercise or incident.*
 
-### Home (Entry) Screen
+#### Home (Entry) Screen
+
 Next is the 'home' or entry screen that allows a 'scribe' to record 'Field Reporrts', i.e., ranger's locations and status reports. Locations can be entered in a variety of formats.
 ![Home (Entry) Screen](./non-dist-imgs/Entry.png "Home (Entry) Screen")
 
+#### Google Maps Screen
 
-### Google Maps Screen
 This displays Field Reports that have been entered, and optionally a filtered subset of reports.
 ![Google Maps Screen](./non-dist-imgs/GoogleMaps.png "Google Maps Screen")
 
+#### Leaflet Maps Screen
 
-### Leaflet Maps Screen
 This displays Field Reports that have been entered, and optionally a filtered subset of reports.
 ![Leaflet Maps Screen](./non-dist-imgs/LeafletMaps.png "Leaflet Maps Screen")
 
+#### Field Reports Screen
 
-### Field Reports Screen
 The next screen displays Field Reports that have been entered, in a table or grid format, with the ability to filter, sort, and search reports on any field. Filtered reports can be mapped or exported to a CSV spreadsheet for documentation or later analysis.
 ![Field Reports Screen](./non-dist-imgs/FieldReports.png "Field Reports Screen")
 
+#### About Screen
 
-### About Screen
 This provides a bit more explaination about the application, its purpose, technologies used, how to report issues, and license model.
 ![About Screen](./non-dist-imgs/About.png "About Screen")
 
+#### Logs Screen
 
-### Logs Screen
 This screen is primarily used for debugging and reporting issues. It can also serve as a partial audit trail of actions taken during the mission.
 ![Logs Screen](./non-dist-imgs/Logs.png "Logs Screen")
 
-## To Run
+### To Run
 
-- Simply visit <https://www.RangerTrak.org> and try entering some reports. All data is stored locally in your browser's Local Storage: no tracking codes are used. (Moving to a different browser, or device will provide a 'fresh' RangerTrak environment.) You will have the option to "Install" the application, which just streamlines access with a shortcut. The applicatino takes minimal space and does not run in the background. You can uninstall it like any other app.
+Simply visit <https://www.RangerTrak.org> and follow the Workflow above: enter Mission info on the Settings page, then enter Rangers, then repeatedly enter reports. All data is stored locally in your browser's Local Storage: no tracking codes are used.
 
+Moving to a different browser, or device will provide a 'fresh' RangerTrak environment. RangerTrak’s machinations are all local to each brand of browser (Firefox won’t know what you did with Chrome or Edge), so that gives you a way to experiment.
 
-# For Developers Interested in Modifying the App or Contributing to the Project
+### To Reset/Clear all Data
 
-## To Build and Test
+1. Browse to <https://www.RangerTrak.org>
+2. Go to [Settings Page](https://www.RangerTrak.org/settings) and under Advanced at the very bottom, click on “Reset Settings”, then edit the fields as desired.
+3. Go to the [Rangers Page](https://www.RangerTrak.org/rangers), then under Advanced at the bottom, click on “Delete Rangers” which should load the default ranger teams. (This will change in the future. Its convenient for testing though. You can rename Teams by clicking on the name. For ANY changes: under Advanced, remember to click “Save Rangers” to preserve changes!
+4. Go to the [Field Reports Page](https://www.RangerTrak.org/reports), then under Advanced at the bottom , click on “Delete ALL Field Reports from local storage” – if there are any! (You may enter new reports or use the mint colored block below to “Add some ## of Fake Reports” which auto generates some reports to experiment with.)
+
+### Installation
+
+At the upper right of every screen, or additinoally on the [Settings Page](https://www.RangerTrak.org/settings), You will have the option to "Install" the application, which just streamlines access with a shortcut. The application takes minimal space and doesn't consume resources in the background. You can uninstall it like any other app.
+
+## For Developers Interested in Modifying or Contributing to the Project
+
+### To Build and Test
 
 - Fork Github.com/eocOnline/Rangertrak to your own repository
 - Install NodeJS and NPM
@@ -107,42 +124,42 @@ This screen is primarily used for debugging and reporting issues. It can also se
 - `npm install`
 - `ng serve -o`
 
-- or Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+- or Run `ng serve` for a dev server. Navigate to <http://localhost:4200/>. The app will automatically reload if you change any of the source files.
 
 For production release:
  `npm run build --release` (???)
  `ng build`
 
-## Running unit tests
+### Running unit tests
 
 - Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 - None currently!
 
-## Running end-to-end tests
+### Running end-to-end tests
 
 Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
 - None currently!
 
-## To update documentation
+### To update documentation
 
 `npm run compodoc` to regenerate the doc.
-`compodoc -s` to serve/view the doc at `http://127.0.0.1:8080/`
+`compodoc -s` to serve/view the doc at <http://127.0.0.1:8080/>
 See <https://compodoc.app/guides/usage.html> and <https://compodoc.app/> for details
 
-## To update Version
+### To update Version
 
 stage any changes (or add '--allow-empty' to the following), then
 `git commit -m "Release-As: 0.11.40"`
-which *SHOULD* (but doesn't) update version # in Package.json & Package-lock.json
+which *SHOULD* (but doesn't) update version ## in Package.json & Package-lock.json
 Some details in service/settings.service.ts & app.component.ts
 <https://github.com/googleapis/release-please#how-do-i-change-the-version-number>
 
-## To Deploy
+### To Deploy
 
 Deploying via Google Firebase got WAY to complex with Google's recent security upgrades.
 
-Now I just FTP it to https://RangerTrak.org
+Now I just FTP it to <https://RangerTrak.org>
 
 OLD:
 `ng deploy`
@@ -150,15 +167,15 @@ OLD:
 From Angular Projects, 2nd ed. pg 119
 See angular.json and firebase.json
 
-## Architecture
+### Architecture
 
 ![This architecural diagram is out-of-date -- & unimplemented yet](./non-dist-imgs/PlantUML-Class_Diagram.png "Old/future architectural diagram")
 
-## Further help
+### Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
-## eoc.online
+### eoc.online
 
 <http://eoc.online> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <http://eoc.online> & to report issues please visit <https://github.com/EOCOnline/rangertrak>.
 
@@ -166,9 +183,9 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ![MIT License](./non-dist-imgs/MIT_License.png)
 
-## Testimonials
+### Testimonials
 
 ---
->  "*(We) all agreed that this is a WOW program with high value added to SAR.  I really hope you continue to refine it!*"
+> "*(We) all agreed that this is a WOW program with high value added to SAR.  I really hope you continue to refine it!*"
 
-— Michael Meyer, Vashon ACS, KB7MTM
+— Michael Meyer, KB7MTM, [Vashon ACS](https://vashonbeprepared.org/en-us/Partners/ACS)
