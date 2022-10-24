@@ -41,6 +41,18 @@ Verbally transmitting & transcribing latitude & longitude coordinates can be ver
 - All maps (for now)
 - 3Word functionality (for now)
 
+## Screenshots
+
+- So you get an idea of how it looks/works here's a typical workflow:
+![Home Screen](./non-dist-imgs/Entry.png)
+![About Screen](./non-dist-imgs/GoogleMaps.png)
+![About Screen](./non-dist-imgs/LeafletMaps.png)
+![About Screen](./non-dist-imgs/FieldReports.png)
+![About Screen](./non-dist-imgs/Rangers.png)
+![About Screen](./non-dist-imgs/MissionSettings.png)
+![About Screen](./non-dist-imgs/About.png)
+![About Screen](./non-dist-imgs/Logs.png)
+
 ## To Run
 
 - Simply visit <https://www.RangerTrak.org> and try entering some reports. All data is stored locally in your browser's Local Storage: no tracking codes are used. You will have the option to "Install" the application, which just streamlines access with a shortcut. The applicatino takes minimal space and does not run in the background. You can uninstall it like any other app.
@@ -108,4 +120,4 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ©2022 eoc.online, under the MIT License
 
-![MIT License](./src/assets/imgs/MIT_License.png)
+![MIT License](./non-dist-imgs/MIT_License.png)

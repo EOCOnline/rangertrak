@@ -357,7 +357,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       this.log.verbose(`EntryForm callsignChanged looking for ${callsign}`, this.id)
 
       let ranger = this.rangerService.getRanger(callsign)
-      this.callImg.innerHTML = `<img style="height:60px; margin-bottom:-15px;" text="${ranger.fullName}" aria-hidden src="${this.settings.imageDirectory}${ranger.image}"/>`
+      this.callImg.innerHTML = `<img style="height:60px; margin-bottom:-15px;" text="${ranger.fullName}" aria-hidden src="${this.settings.imageDirectory}rangers/${ranger.image}"/>`
       this.callInfo.innerHTML = `<span class="enter__Callsign-info">${ranger.fullName}<br> ${ranger.phone}<br>${ranger.rew ? ranger.rew : "No REW!"}</span>`
 
     } else {
