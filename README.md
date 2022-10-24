@@ -1,18 +1,21 @@
 [![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine)
 
+
 # Rangertrak
 
 This application aids tracking & mapping CERT, ACS, other teams, rangers & individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. Teams or individuals can radio in their locations - in a variety of formats, and be centrally tracked. A single log of reports, locations, events and time is created for documentation and analysis. Most critically search area coverage can be determined and teams/individuals that have NOT reported in can be monitored.
 
-This Progressive Web Application (PWA) will largely run even if there is incomsistent, limited, or no cell, internet or data access at the command post.  Rangers can radio in their locations - using a variety of location codes, and be centrally tracked.
+This Progressive Web Application (PWA) will largely run even if there is inconsistent, limited, or no cell, internet or data access at the command post.  Rangers can radio in their locations - using a variety of location codes, and be centrally tracked.
 
 Verbally transmitting & transcribing latitude & longitude coordinates can be very error prone and slow. Instead RangerTrak also permits other ways to report locations: by Street Address, Google PlusCodes, and perhaps What3Words. See <https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems> for a list.
+
+# For Users
 
 ## Features
 
 - Open Source: *free* to use & available to enhance!
 - Progressive Web App (PWA) this should be able to function (in the future, possibly with some degredation) even if the person using this at the command post has no or intermittent access to the Internet or cell system.
-- Periodic reports can include an editable stsus field and include easily searched notes which can include keywords that make sense locally.
+- Periodic reports can include an editable status field and include easily searched notes which can include mission specific, custom keywords.
 - Tracks mission numbers and names, plus Operational Periods.
 - Versions after 0.0.10 are generated with Angular & written in enterprise level Typescript, so will run on most modern web browsers, regardless of device/form factor.
 - Supports recording locations as: lat/long (in Decimal Degrees, Degrees Minutes and Seconds, and Degrees and Decimal Minutes), or What3Words, Google +Codes, or physical Street Addresses. Location support may factor in bounding zones or proximity to a locality.
@@ -27,13 +30,14 @@ Verbally transmitting & transcribing latitude & longitude coordinates can be ver
 ## Future Roadmap
 
 - To work with out flaws!
-- Issues should be moving from a spreadsheet to [the standard Issues Page](https://github.com/EOCOnline/rangertrak/issues)
+- Issues should be moving from a spreadsheet to [the standard GitHub Issues Page](https://github.com/EOCOnline/rangertrak/issues)
 - Enhance map markers to better highlight paths, teams, statuses.
 - Reload data from local files.
 - Allow loading of additional map layers (e.g., an image of trails, local features)
   perhaps with <https://github.com/publiclab/Leaflet.DistortableImage>
 - improved docs: screenshots and architectural diagrams.
 - consider <https://github.com/EventEmitter2/EventEmitter2> for multi-threaded msgs with service workers.
+- consider adding heatmaps, or https://github.com/eurostat/gridviz
 - Optionally publish field reports to a server if Internet access allows: for display at a central EOC or even by participants out in the field with data or cell coverage.
 
 ## Items (still) requiring online access
@@ -92,6 +96,9 @@ This screen is primarily used for debugging and reporting issues. It can also se
 
 - Simply visit <https://www.RangerTrak.org> and try entering some reports. All data is stored locally in your browser's Local Storage: no tracking codes are used. (Moving to a different browser, or device will provide a 'fresh' RangerTrak environment.) You will have the option to "Install" the application, which just streamlines access with a shortcut. The applicatino takes minimal space and does not run in the background. You can uninstall it like any other app.
 
+
+# For Developers Interested in Modifying the App or Contributing to the Project
+
 ## To Build and Test
 
 - Fork Github.com/eocOnline/Rangertrak to your own repository
@@ -131,9 +138,11 @@ which *SHOULD* (but doesn't) update version # in Package.json & Package-lock.jso
 Some details in service/settings.service.ts & app.component.ts
 <https://github.com/googleapis/release-please#how-do-i-change-the-version-number>
 
-## To Deploy to Google Firebase
+## To Deploy
 
-This got WAY to complex with Google's recent security upgrades. Now I just FTP it to https://RangerTrak.org
+Deploying via Google Firebase got WAY to complex with Google's recent security upgrades.
+
+Now I just FTP it to https://RangerTrak.org
 
 OLD:
 `ng deploy`
@@ -143,7 +152,7 @@ See angular.json and firebase.json
 
 ## Architecture
 
-![This architecural diagram is out-of-date -- & unimplemented yet](./src/assets/imgs/PlantUML-Class_Diagram.png "Old/future architectural diagram")
+![This architecural diagram is out-of-date -- & unimplemented yet](./non-dist-imgs/PlantUML-Class_Diagram.png "Old/future architectural diagram")
 
 ## Further help
 
@@ -160,6 +169,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ## Testimonials
 
 ---
->  (We) all agreed that this is a WOW program with high value added to SAR.  I really hope you continue to refine it!
+>  "*(We) all agreed that this is a WOW program with high value added to SAR.  I really hope you continue to refine it!*"
 
 — Michael Meyer, Vashon ACS, KB7MTM
