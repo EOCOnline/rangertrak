@@ -58,18 +58,24 @@ At the start of every mission and Op Period, come to this screen and enter missi
 
 **Before doing the above:** Be sure you have backed up and downloaded any previous mission data, via the Export Buttons on the [Field Reports Page](https://www.RangerTrak.org/reports) and [Rangers Page](https://www.RangerTrak.org/rangers) Screens.
 
-
-
 #### Rangers Screen
 
 **Secondly,** at the start of an Operational Period, come to this screen to enter/edit/record rangers participating. Afterwards this displays Rangers participating in the exercise. This can refer to individuals and/or teams as desired. Rangers can be edited as needed, and optionally exported to a CSV spreadsheet.
 ![Rangers Screen](./non-dist-imgs/Rangers.png "Rangers Screen")
 
-Once those initial two steps are complete (i.e., the two screens above), *users will just primarily use the Entry Screen, below, for most of the rest of the exercise or incident.*
+Once those initial two steps are complete (i.e., the two screens above), **users will just primarily use the Entry Screen, below, for most of the rest of the exercise or incident.**
 
 #### Home (Entry) Screen
 
-Next is the 'home' or entry screen that allows a 'scribe' to record 'Field Reporrts', i.e., ranger's locations and status reports. Locations can be entered in a variety of formats.
+Most users will spend most of their time entering field reports from this 'home' or entry screen. It allows a 'scribe' to record 'Field Reporrts', i.e., ranger's locations and status reports.
+
+1. Start by enter any letters of a tactical call sign in the Who field. The app filters rangers with those letters for ready selection.
+2. Next, enter a location in any of the labeled formats. Derived addresses will then be displayed and mapped for your confirmation.
+3. When defaults to the current time. Edit it if the report was previoulsy recieved.
+4. What records the report status or nature, defaulting to "normal". You can enter freeform notes as desired too, possibly entering custom, unique incident specific keywords. Those can be filtered/searched for on the Field Reports Screen if desired.
+5. Submit your report. (Mistakes can generally be edited in the Field Reports Screen.)
+6. The Reset button clears the form of any data erroneously entered and lets the scribe start over with a clean field report.
+
 ![Home (Entry) Screen](./non-dist-imgs/Entry.png "Home (Entry) Screen")
 
 #### Google Maps Screen
@@ -169,6 +175,8 @@ See angular.json and firebase.json
 
 ### Architecture
 
+Way out of date!
+
 ![This architecural diagram is out-of-date -- & unimplemented yet](./non-dist-imgs/PlantUML-Class_Diagram.png "Old/future architectural diagram")
 
 ### Further help
@@ -177,7 +185,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ### eoc.online
 
-<http://eoc.online> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <http://eoc.online> & to report issues please visit <https://github.com/EOCOnline/rangertrak>.
+<http://eoc.online> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <http://eoc.online>. We'd LOVE to get your reports of use and suggestions for enhancement. To report issues please visit <https://github.com/EOCOnline/rangertrak/issues>.
 
 ©2022 eoc.online, under the MIT License
 
