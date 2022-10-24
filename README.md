@@ -27,6 +27,7 @@ Verbally transmitting & transcribing latitude & longitude coordinates can be ver
 ## Future Roadmap
 
 - To work with out flaws!
+- Issues should be moving from a spreadsheet to [the standard Issues Page](https://github.com/EOCOnline/rangertrak/issues)
 - Enhance map markers to better highlight paths, teams, statuses.
 - Reload data from local files.
 - Allow loading of additional map layers (e.g., an image of trails, local features)
@@ -43,10 +44,10 @@ Verbally transmitting & transcribing latitude & longitude coordinates can be ver
 
 ## Screenshots & Typical Workflow
 
-So you get an idea of how it looks/works here's a typical workflow:
+So you get an idea of how it looks/works here's a typical workflow. (Click images for larger versions.)
 
 **Mission Settings Screen: Start here!**
-At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters can also be adjusted. Field Report statuses can be edited as desired. (Click image for a larger version.) The background incidentally shows RangerTrak being tested in a real-world exercise.
+At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters can also be adjusted. Field Report statuses can be edited as desired. The background incidentally shows RangerTrak being tested in a real-world exercise.
 ![Mission Settings Screen](./non-dist-imgs/MissionSettings.png "Mission Settings Screen")
 
 
