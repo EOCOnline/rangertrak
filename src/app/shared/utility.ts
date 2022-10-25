@@ -198,11 +198,11 @@ export class Utility {
 
 
   /*
-.Enter__status - value_Unused {
+  .Enter__status - value_Unused {
   // TODO: Better contrast: https://codepen.io/facundocorradini/pen/LBVvyq & https://css-tricks.com/switch-font-color-for-different-backgrounds-with-css/
   text - shadow: 1px 3px 8px rgb(${ r, g, b });
-}
-*/
+  }
+  */
 
   /**
      * from https://css-tricks.com/switch-font-color-for-different-backgrounds-with-css/

@@ -269,6 +269,8 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   //let latlngL = {lat: this.settings.defLat, lng: this.settings.deflng}
 
   // TODO: FitBounds to new point, not to DefLat & Deflng  -- do it on addMarker?
+  // see also: https://tomik23.github.io/leaflet-examples/#10.matching-all-markers-to-the-map-view
+
   // this.map?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
   //this.map?.fitBounds(this.fieldReportService.bounds.extend({ lat: this.settings.defLat, lng: this.settings.defLng })) // zooms to max!
 

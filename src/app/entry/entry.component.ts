@@ -93,6 +93,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // TODO: Consider for tracking ValueChanges: https://angular.io/guide/observables-in-angular#reactive-forms
   // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
 
+
   constructor(
     private _formBuilder: UntypedFormBuilder,
     private rangerService: RangerService,
@@ -325,6 +326,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    * https://stackoverflow.com/a/54048660
    */
   resetEntryForm() {
+
+    //Utility.getUsers()
+
+
     if (!this.settings) {
       this.log.error(`this.settings was null in initEntryForm`, this.id)
       return

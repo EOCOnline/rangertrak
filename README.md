@@ -213,6 +213,15 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ![MIT License](./non-dist-imgs/MIT_License.png)
 
+### Public Feedback & Contribution
+
+We encourage your feedback and contributions to this repository. Content suggestions and discussions (specific to RangerTrak) can be communicated in the following ways:
+
+- GitHub “issues.” Each issue is a conversation about specific project work initiated by a member of the public.
+- GitHub "discussions". Each discussion is a project communication forum. Discussions are not specific to elements of work like a pull request. We encourage you to browse and join in on discussions or start a new conversation by creating a new discussion.
+- Direct changes and line edits to the content may be submitted through a "pull request" by clicking "Edit this page" on any site page in the repository. You do not need to install any software to suggest a change. You can use GitHub's in-browser editor to edit files and submit a pull request for your changes to be merged into the document. Directions on how to submit a pull request can be found on GitHub.
+- Send your content suggestions or proposed revisions to the RangerTrak team via email to RangerTeam@eoc.online.
+
 ### Testimonials
 
 ---
