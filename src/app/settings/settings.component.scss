@@ -208,6 +208,12 @@ h3 {
   // 30% of the way across the length of the gradient, taking the rest of the 70% of the length to change to allow full picture through
   background-image: linear-gradient(.25turn, rgba(252, 252, 252, 1), 30%, rgba(221, 213, 213, 0.25)), url("../../assets/imgs/20220205_112750.png");
 
+
+  // TODO: loading="lazy"
+  // https://imagekit.io/blog/lazy-loading-images-complete-guide/#lazy-loading-css-background-images
+  // https://web.dev/lazy-loading-images/
+  // https://www.sitelint.com/blog/lazy-loading-css-background-images-for-better-website-loading-performance/
+
   //background-image  : linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(221, 213, 213, 0.5)), url("../../assets/imgs/20220205_112750.jpg");
   //color: black;
   //background-image: url("../../../assets/imgs/AlpineMarmot.png") ;
