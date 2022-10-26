@@ -30,7 +30,9 @@ To use and see what this application does, simply browse to <https://Rangertrak.
 
 ### Future Roadmap
 
-- To work with out flaws! In particulr one often has to refresh some pages to get them to display - especially the Leaflet Maps page - or screen.
+- This project is moving to using [milestones](https://github.com/EOCOnline/rangertrak/milestones) to show what is being worked on next. Dates are super approximate!
+- Also see the [Issues page](https://github.com/EOCOnline/rangertrak/issues) for what we're working on in terms of bug fixes. Feel free to add your comments to them.
+- To work with out flaws! In particular one often has to refresh some pages to get them to display - especially the Leaflet Maps page - or screen.
 - Issues should be moving from a spreadsheet to [the standard GitHub Issues Page](https://github.com/EOCOnline/rangertrak/issues)
 - Enhance map markers to better highlight paths, teams, statuses.
 - Reload data from local files.
