@@ -9,7 +9,7 @@ import {
 import {
   FieldReportStatusType, FieldReportsType, FieldReportType, LogService, RangerService, RangerType,
   SettingsService, SettingsType
-} from './' // , TeamService
+} from './'
 
 //import {  } from './ranger.interface'
 
@@ -47,7 +47,7 @@ export class FieldReportService implements OnInit, OnDestroy {
     private rangerService: RangerService,
     private settingsService: SettingsService,
     private log: LogService,
-    private httpClient: HttpClient,
+    //private httpClient: HttpClient,
     @Optional() @SkipSelf() existingService: FieldReportService,
   ) {
     if (existingService) {

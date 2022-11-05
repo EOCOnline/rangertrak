@@ -198,6 +198,8 @@ input[type=number] {
   animation           : fadeout 20s ease-out;
 }
 
+
+//! REVIEW: Could also use ANgular Animations: https://appdividend.com/2022/02/02/angular-animations/ FadeIn & FadeOut
 @keyframes fadeout {
   0% {
     opacity: 1

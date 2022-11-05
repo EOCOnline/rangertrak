@@ -3,7 +3,7 @@ import { User, GetUsersResponse } from './http.interface'
 
 // ---------------------------------------------------------------------------
 
-
+/*
 export type User = {
   id: number;
   email: string;
@@ -13,7 +13,7 @@ export type User = {
 export type GetUsersResponse = {
   data: User[]
 }
-
+*/
 
   // sample to get api data
   static async getUsers() {

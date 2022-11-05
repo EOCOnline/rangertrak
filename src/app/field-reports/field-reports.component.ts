@@ -103,6 +103,8 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     this.gridApi = ""
     this.gridColumnApi = ""
   }
+
+
   // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   ngOnInit(): void {
 
