@@ -66,7 +66,7 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
   public override title = 'Google Map'
   public override pageDescr = 'Google Map'
 
-  override mouseLatLng!: google.maps.LatLngLiteral;
+  override mouseLatLng!: google.maps.LatLngLiteral
 
   // this.ngMap: GoogleMap (Angular wrapper for the same underlying map!)
   // this.gMap: google.maps.Map (JavaScript core map) - made available in onMapInitialized()
@@ -101,7 +101,7 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
   }
 
   infowindow = new google.maps.InfoWindow({
-    maxwidth: "150px",
+    maxWidth: "150px",
   });
 
   // Google MapMarker only wraps google.maps.LatLngLiteral (positions) - NOT google.maps.Marker: styles, behaviors, etc. -- But might be able to set marker options?
