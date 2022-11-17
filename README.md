@@ -172,6 +172,8 @@ which *SHOULD* (but doesn't) update version ## in Package.json & Package-lock.js
 Some details in service/settings.service.ts & app.component.ts
 <https://github.com/googleapis/release-please#how-do-i-change-the-version-number>
 
+To verify, also check/update package.json & package-lock.json
+
 ### To update 3rd party libraries
 
 Commands from Evergreen Angular:
