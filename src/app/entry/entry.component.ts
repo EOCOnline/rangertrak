@@ -20,7 +20,7 @@ import {
   FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
   SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services/'
-import { LocationComponent } from './location.component'
+//import { LocationComponent } from './location.component'
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
 
