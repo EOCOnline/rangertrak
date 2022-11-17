@@ -142,7 +142,8 @@ At the upper right of every screen, or additinoally on the [Settings Page](https
 
 - or Run `ng serve` for a dev server. Navigate to <http://localhost:4200/>. The app will automatically reload if you change any of the source files.
 
-For production release:
+#### For production release:
+
  `npm run build --release` (???)
  `ng build`
 
