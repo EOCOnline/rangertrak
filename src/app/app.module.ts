@@ -21,7 +21,7 @@ import { MAT_LEGACY_SNACK_BAR_DEFAULT_OPTIONS as MAT_SNACK_BAR_DEFAULT_OPTIONS }
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { ServiceWorkerModule } from '@angular/service-worker'
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
+//import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { MDCBanner } from '@material/banner'
 
 import { environment } from '../environments/environment'
@@ -74,7 +74,7 @@ import { X404Component } from './x404/x404.component'
     MaterialModule,
     ReactiveFormsModule,
     AppRoutingModule,   // https://giancarlobuomprisco.com/angular/understanding-angular-modules  & https://angular.io/guide/router
-    FontAwesomeModule,
+    //FontAwesomeModule,
     AgGridModule,
     // https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method: singleton
     // AgmCoreModule.forRoot({ apiKey: 'API_KEY_GOES_HERE' }),
