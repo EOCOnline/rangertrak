@@ -7,7 +7,7 @@ import { Subscription, switchMap } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import { AfterContentInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
-import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatLegacyCheckboxModule as MatCheckboxModule } from '@angular/material/legacy-checkbox'
 import {
   faBug, faCircleCheck, faCircleExclamation, faCircleInfo, faMapMarkedAlt
 } from '@fortawesome/free-solid-svg-icons'

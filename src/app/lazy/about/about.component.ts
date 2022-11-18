@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs'
 import { Component, Inject, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core'
 
 import { ClockService, LogService, SettingsService, SettingsType } from '../../shared/services'
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
+import { MAT_LEGACY_SNACK_BAR_DEFAULT_OPTIONS as MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/legacy-snack-bar';
 
 @Component({
   selector: 'rangertrak-about',

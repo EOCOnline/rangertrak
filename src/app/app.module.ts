@@ -17,7 +17,7 @@ import {
   FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators
 } from '@angular/forms'
 import { GoogleMapsModule } from '@angular/google-maps'
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar'
+import { MAT_LEGACY_SNACK_BAR_DEFAULT_OPTIONS as MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/legacy-snack-bar'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { ServiceWorkerModule } from '@angular/service-worker'

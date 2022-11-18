@@ -9,7 +9,7 @@ import * as XLSX from 'xlsx'
 
 import { DOCUMENT } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
-import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar'
 
 import { Utility } from '../shared'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
