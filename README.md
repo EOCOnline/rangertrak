@@ -212,7 +212,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## eoc.online
 
-<http://eoc.online> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <http://eoc.online>. We'd LOVE to get your reports of use and suggestions for enhancement. To report issues please visit <https://github.com/EOCOnline/rangertrak/issues>.
+<https://eoc.online> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <https://eoc.online>. We'd LOVE to get your reports of use and suggestions for enhancement. To report issues please visit <https://github.com/EOCOnline/rangertrak/issues>.
 
 ©2022 eoc.online, under the MIT License
 

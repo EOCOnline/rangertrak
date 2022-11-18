@@ -21,7 +21,7 @@ import { csvImport } from './csvImport'
 import { CustomTooltip } from './customTooltip'
 
 type AOA = any[][]  // array of arrays
-/* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
+/* xlsx.js (C) 2013-present SheetJS -- https://sheetjs.com */
 // https://github.com/SheetJS/SheetJS.github.io
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\src\app\sheetjs.component.ts
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\ionic.ts
@@ -496,7 +496,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 }
 
   // works - but Unused....
-  // http://www.angulartutorial.net/2018/01/show-preview-image-while-uploading.html
+  // https://www.angulartutorial.net/2018/01/show-preview-image-while-uploading.html
 /*
   showPreviewImage(event: any) {
     if (event.target.files && event.target.files[0]) {

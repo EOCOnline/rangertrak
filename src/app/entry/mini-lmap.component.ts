@@ -207,13 +207,13 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 21,  // REVIEW: put into settings?
       minZoom: 3,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
     // TODO: Consider allowing addition of SVG overlay (of known trails and other overlays): https://leafletjs.com/reference.html#svgoverlay
     /*
-      var svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      svgElement.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+      var svgElement = document.createElementNS("https://www.w3.org/2000/svg", "svg");
+      svgElement.setAttribute('xmlns', "https://www.w3.org/2000/svg");
       svgElement.setAttribute('viewBox', "0 0 200 200");
       svgElement.innerHTML = '<rect width="200" height="200"/><rect x="75" y="23" width="50" height="50" style="fill:red"/><rect x="75" y="123" width="50" height="50" style="fill:#0013ff"/>';
       var svgElementBounds = [ [ 32, -130 ], [ 13, -100 ] ];
@@ -301,7 +301,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     const overviewTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: this.settings.leaflet.overviewMaxZoom,
       minZoom: this.settings.leaflet.overviewMinZoom,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
     overviewTiles.addTo(this.overviewLMap)

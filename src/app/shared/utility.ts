@@ -186,7 +186,7 @@ export class Utility {
 
   //--------------------------------------------------------------------------
 
-  // YIQ equation from http://24ways.org/2010/calculating-color-contrast
+  // YIQ equation from https://24ways.org/2010/calculating-color-contrast
   // given a hex code, (no # in front) returns
   static isDark(hexcolor: string) {
     const r = parseInt(hexcolor.slice(0, 2), 16);

@@ -38,7 +38,7 @@ export class FieldReportService implements OnInit, OnDestroy {
   public rangers: RangerType[] = []
 
   private storageLocalName = 'fieldReports'
-  private serverUri = 'http://localhost:4000/products' // FUTURE:
+  private serverUri = 'https://localhost:4000/products' // FUTURE:
   private boundsMargin = 0.0025
 
   // https://angular.io/guide/architecture-services#providing-services: singleton or multiple service instances?!

@@ -160,7 +160,7 @@
         [class.border-danger]="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.invalid"
         type="text" formControlName="defPlusCode" placeholder="84VVCGWP+VW" [style.width.px]="100"
         data-lpignore="true" />
-      &nbsp;&nbsp;<button onclick="window.open('http://plus.codes/map/','_blank')">Find a +Code</button>
+      &nbsp;&nbsp;<button onclick="window.open('https://plus.codes/map/','_blank')">Find a +Code</button>
       <div
         *ngIf="settingsEditorForm.get('defPlusCode')?.touched && settingsEditorForm.get('defPlusCode')?.hasError('required')"
         class="text-sm text-danger">

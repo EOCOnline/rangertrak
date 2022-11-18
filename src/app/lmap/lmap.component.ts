@@ -191,7 +191,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     }
 
     // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
-    // http://leaflet.github.io/Leaflet.markercluster/
+    // https://leaflet.github.io/Leaflet.markercluster/
     // per https://stackoverflow.com/a/71574063/18004414 & https://github.com/Leaflet/Leaflet/issues/8451
     this.myMarkerCluster = new window.L.MarkerClusterGroup({ removeOutsideVisibleBounds: true })
 
@@ -239,7 +239,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 21,  // REVIEW: put into settings?
       minZoom: 3,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
     // TODO!
@@ -247,14 +247,14 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     tiles.addTo(this.lMap)
 
     // TODO: Consider allowing addition of SVG overlay (of known trails and other overlays): https://leafletjs.com/reference.html#svgoverlay
-    // TODO: ...or add D3 too: http://bl.ocks.org/xEviL/4921fff1d70f5601d159, w/ GeoJson: http://bl.ocks.org/xEviL/0c4f628645c6c21c8b3a https://github.com/topojson/us-atlas
+    // TODO: ...or add D3 too: https://bl.ocks.org/xEviL/4921fff1d70f5601d159, w/ GeoJson: https://bl.ocks.org/xEviL/0c4f628645c6c21c8b3a https://github.com/topojson/us-atlas
     // https://www.w3schools.com/graphics/svg_examples.asp & https://commons.wikimedia.org/wiki/SVG_examples
 
     // https://plnkr.co/edit/zK6Ync2o23viZxSugBoX?preview
     // let svgElement = document.createElementNS("src/assets/data/King_County_Washington_Incorporated_and_Unincorporated_areas_Burien_Highlighted.svg", "svg") as SVGElement
     /*
-      let svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg") as SVGElement
-      svgElement.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+      let svgElement = document.createElementNS("https://www.w3.org/2000/svg", "svg") as SVGElement
+      svgElement.setAttribute('xmlns', "https://www.w3.org/2000/svg");
       svgElement.setAttribute('viewBox', "0 0 200 200");
       svgElement.innerHTML = '<rect width="200" height="200"/><rect x="75" y="23" width="50" height="50" style="fill:red"/><rect x="75" y="123" width="50" height="50" style="fill:#0013ff"/>';
       svgElement.innerHTML = '<rect x="80" y="60" width="250" height="250" rx="20" fill="#F00"/> <rect x="140" y="120" width="250" height="250" rx="40" fill="#00F" fill-opacity=".7"/>';
@@ -346,7 +346,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     const overviewTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: this.settings.leaflet.overviewMaxZoom,
       minZoom: this.settings.leaflet.overviewMinZoom,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
     overviewTiles.addTo(this.overviewLMap)
@@ -644,7 +644,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     options: {
       position: "topleft",
       className: "locate-button leaflet-bar",
-      html: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>',
+      html: '<svg viewBox="0 0 24 24" xmlns="https://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>',
       style:
         "margin-top: 0; left: 0; display: flex; cursor: pointer; justify-content: center; font-size: 2rem;",
     },

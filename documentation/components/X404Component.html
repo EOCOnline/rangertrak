@@ -178,7 +178,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/app/x404/x404.component.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/x404/x404.component.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -215,8 +215,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">src/app/x404/x404.component.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">src/app/x404/x404.component.ts:25</a></div>
                 </td>
             </tr>
 
@@ -256,7 +256,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/app/x404/x404.component.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/x404/x404.component.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -287,7 +287,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/app/x404/x404.component.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/x404/x404.component.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -302,8 +302,11 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit } from &#x27;@angular/core&#x27;
 
-// TODO: https://bobrov.dev/blog/angular-smart-404-page/
+// TODO: https://bobrov.dev/blog/angular-smart-404-page/ - suggest the *right* page!
 
+/**
+ *
+ */
 @Component({
   selector: &#x27;rangertrak-x404&#x27;,
   templateUrl: &#x27;./x404.component.html&#x27;,
@@ -312,8 +315,15 @@
 export class X404Component implements OnInit {
   title &#x3D; &#x27;You are seeking a web page that does not yet exist!&#x27;
   pageDescr &#x3D; &#x60;Unknown page&#x60;
+
+  /**
+   *
+   */
   constructor() { }
 
+  /**
+   *
+   */
   ngOnInit(): void {
   }
 

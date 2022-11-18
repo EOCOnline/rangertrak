@@ -14,7 +14,7 @@ import * as rangers from '../../../assets/data/Rangers.3Feb22.json'
 //import { debounceTime, map, startWith } from 'rxjs/operators'
 import { LogService, RangerType, UnknownRanger } from './'
 
-/* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
+/* xlsx.js (C) 2013-present SheetJS -- https://sheetjs.com */
 // https://github.com/SheetJS/SheetJS.github.io
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\src\app\sheetjs.component.ts
 type AOA = any[][]  // array of arrays

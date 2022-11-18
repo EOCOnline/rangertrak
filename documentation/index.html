@@ -32,93 +32,188 @@
                <div class="content getting-started">
                    <div class="content-data">
 
+<h1 id="rangertrak™">Rangertrak™</h1>
 <p><a href="https://vshymanskyy.github.io/StandWithUkraine"><img src="https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg" alt="SWUbanner" class="img-responsive"></a></p>
-<h1 id="rangertrak">Rangertrak</h1>
-<p>This application aids tracking &amp; mapping CERT, ACS, other teams, rangers &amp; individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. They can radio in their locations - in a variety of formats, and be centrally tracked..</p>
-<p>Track &amp; map search &amp; rescue members reporting in verbally, without internet or cell access</p>
-<p>This is a disconnected browser based app for tracking &amp; mapping CERT, ACS, other teams, rangers &amp; individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. They can radio in their locations - using a variety of location codes, and be centrally tracked.</p>
-<p>There are a number of ways to geocode a latitude &amp; longitude. See <a href="https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems">https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems</a> for a list.</p>
-<h2 id="features">Features</h2>
+<p>The RangerTrak™ application aids tracking &amp; mapping CERT, ACS, other teams, rangers &amp; individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. Teams or individuals can radio in their locations - in a variety of formats, and be centrally tracked. A single log of reports, locations, events and time is created for documentation and analysis. Most critically search area coverage can be determined and teams/individuals that have NOT reported in can be monitored.</p>
+<p>This <a href="https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps">Progressive Web Application</a>, or <a href="https://en.wikipedia.org/wiki/Progressive_web_app">PWA</a>, will largely run even if there is inconsistent, limited, or no cell, internet or data access at the command post.  It runs entirely in a device&#39;s browser, allowing operation on most any simple, modern, basic web brower in the field. Rangers can radio in their locations - using a variety of location codes, and be centrally tracked.</p>
+<p>Verbally transmitting &amp; transcribing latitude &amp; longitude coordinates can be very error prone and slow. Instead RangerTrak also permits other ways to report locations: by Street Address, Google PlusCodes, and perhaps What3Words. See <a href="https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems">https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems</a> for a list.</p>
+<h2 id="for-users">For Users</h2>
+<p>To use and see what this application does, simply browse to <a href="https://Rangertrak.org">https://Rangertrak.org</a>. Additional guidence follows,</p>
+<h3 id="features">Features</h3>
 <ul>
-<li>Progressive Web App (PWA) this should be able to function (in the future, possibly with some degredation) even if the person using this is offline.</li>
-<li>Versions after 0.0.10 are generated with Angular, so will run on most modern web browsers, regardless of device/form factor</li>
-<li>Open Source: free &amp; available to enhance</li>
-<li>Supports recording locatinos as: lat/long, or What3Words, Google +Codes, or physical Street Addresses</li>
-<li>Auto-lookup of Ham Radio operators by callsign</li>
-<li>Google or Leaflet/ESRI maps</li>
-<li>Rangers can be in Teams; both are easily edited/sorted/filters</li>
-<li>Documented using [<a href="https://compodoc.app/guides/jsdoc-tags.html%5DCompodoc">https://compodoc.app/guides/jsdoc-tags.html]Compodoc</a></li>
+<li>Open Source: <em>free</em> to use &amp; available to enhance!</li>
+<li>Progressive Web App (PWA) this should be able to function (in the future, possibly with some degredation) even if the person using this at the command post has no or intermittent access to the Internet or cell system.</li>
+<li>Periodic reports can include an editable status field and include easily searched notes which can include mission specific, custom keywords.</li>
+<li>Tracks mission numbers and names, plus Operational Periods.</li>
+<li>Versions after 0.0.10 are generated with Angular &amp; written in enterprise level Typescript, so will run on most modern web browsers, regardless of device/form factor.</li>
+<li>Supports recording locations as: lat/long (in Decimal Degrees, Degrees Minutes and Seconds, and Degrees and Decimal Minutes), or What3Words, Google +Codes, or physical Street Addresses. Location support may factor in bounding zones or proximity to a locality.</li>
+<li>Lists of reports and rangers can be saved to a CSV (comma seperated value) file for display, documentation and after action analysis - readible by any spreadsheet programs.</li>
+<li>Easy entry via auto-lookup of Ham Radio teams or individuals by tactical callsign.</li>
+<li>Field report statuses can be edited: name &amp; color, future: icon/markers.</li>
+<li>View locations on Google and Leaflet/ESRI maps. (Google has yet to support offline/disconnected mapping, but is working on it for the future.) Maps also have overview/locator maps.</li>
+<li>Rangers can report in as individuals or teams: both are easily edited/sorted/filtered and then only that subset may be exported or displayed on maps.</li>
+<li>Source code documentation uses [<a href="https://compodoc.app/guides/jsdoc-tags.html%5DCompodoc">https://compodoc.app/guides/jsdoc-tags.html]Compodoc</a></li>
+<li>Source code is evergreen: current with latest libraries (as of fall 2022)</li>
 </ul>
-<h2 id="future-roadmap">Future Roadmap</h2>
+<h3 id="future-roadmap">Future Roadmap</h3>
 <ul>
-<li>To work with out flaws!</li>
-<li>Save and reload data to local files</li>
-<li>Allow loading of additinoal layers (e.g., an image of trails, local features),
+<li>This project is moving to using <a href="https://github.com/EOCOnline/rangertrak/milestones">milestones</a> to show what is being worked on next. Dates are super approximate!</li>
+<li>Also see the <a href="https://github.com/EOCOnline/rangertrak/issues">Issues page</a> for what we&#39;re working on in terms of bug fixes. Feel free to add your comments to them.</li>
+<li>To work with out flaws! In particular one often has to refresh some pages to get them to display - especially the Leaflet Maps page - or screen.</li>
+<li>Issues should be moving from a spreadsheet to <a href="https://github.com/EOCOnline/rangertrak/issues">the standard GitHub Issues Page</a></li>
+<li>Enhance map markers to better highlight paths, teams, statuses.</li>
+<li>Reload data from local files.</li>
+<li>Allow loading of additional map layers (e.g., an image of trails, local features)
 perhaps with <a href="https://github.com/publiclab/Leaflet.DistortableImage">https://github.com/publiclab/Leaflet.DistortableImage</a></li>
-<li>improved docs: screenshots and architectural diagrams</li>
-<li>consider <a href="https://github.com/EventEmitter2/EventEmitter2">https://github.com/EventEmitter2/EventEmitter2</a> for multi-threaded msgs with service workers</li>
+<li>improved docs: screenshots and architectural diagrams.</li>
+<li>consider <a href="https://github.com/EventEmitter2/EventEmitter2">https://github.com/EventEmitter2/EventEmitter2</a> for multi-threaded msgs with service workers.</li>
+<li>consider adding heatmaps, or <a href="https://github.com/eurostat/gridviz">https://github.com/eurostat/gridviz</a></li>
+<li>Optionally publish field reports to a server if Internet access allows: for display at a central EOC or even by participants out in the field with data or cell coverage.</li>
 </ul>
-<h2 id="items-still-requiring-online-access">Items (still) requiring online access</h2>
+<h3 id="items-still-requiring-online-access">Items (still) requiring online access</h3>
 <ul>
 <li>GeoCoding an address</li>
 <li>All maps (for now)</li>
 <li>3Word functionality (for now)</li>
 </ul>
-<h2 id="to-run">To Run</h2>
+<h3 id="to-run">To Run</h3>
+<p>Simply visit <a href="https://www.RangerTrak.org">https://www.RangerTrak.org</a> and follow the Workflow below:</p>
+<ol>
+<li>Enter Mission info on the<a href="./non-dist-imgs/MissionSettings.png" title="Mission Settings Screen">Mission Settings Screen</a> once, then</li>
+<li>Enter/edit participating rangers on the <a href="https://www.RangerTrak.org/rangers" title="Rangers Page">Rangers Page</a> as needed, then</li>
+<li>Repeatedly enter reports on the <a href="https://www.RangerTrak.org/" title="Home (Entry) Screen">Home (Entry) Screen</a></li>
+</ol>
+<p>Moving to a different browser, or device will provide a &#39;fresh&#39; RangerTrak environment. RangerTrak’s machinations are all local to each brand of browser (Firefox won’t know what you did with Chrome or Edge), so that gives you a way to experiment.</p>
+<p>All data is private: only stored locally in your browser&#39;s Local Storage.</p>
+<h3 id="screenshots--typical-workflow">Screenshots &amp; Typical Workflow</h3>
+<p>So you get an idea of how it looks/works here&#39;s a typical workflow. (Click images for larger versions.)</p>
+<h4 id="mission-settings-screen-start-here">Mission Settings Screen: Start here!</h4>
+<p>At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters can also be adjusted. Field Report statuses can be edited as desired. The background incidentally shows RangerTrak being tested in a real-world exercise.</p>
+<p><strong>WARNING: Before doing the above</strong> Be sure you have backed up and downloaded any previous mission data, via the Export Buttons on the <a href="https://www.RangerTrak.org/reports">Field Reports Page</a> and <a href="https://www.RangerTrak.org/rangers">Rangers Page</a> Screens.</p>
+<p><img src="./non-dist-imgs/MissionSettings.png" alt="Mission Settings Screen" class="img-responsive" title="Mission Settings Screen"></p>
+<h4 id="rangers-screen">Rangers Screen</h4>
+<p><strong>Secondly,</strong> at the start of an Operational Period, come to this screen to enter/edit/record rangers participating. Afterwards this displays Rangers participating in the exercise. This can refer to individuals and/or teams as desired. Rangers can be edited as needed, and optionally exported to a CSV spreadsheet.
+<img src="./non-dist-imgs/Rangers.png" alt="Rangers Screen" class="img-responsive" title="Rangers Screen"></p>
+<p>Once those initial two steps are complete (i.e., the two screens above), <strong>users will just primarily use the Entry Screen, below, for most of the rest of the exercise or incident.</strong></p>
+<h4 id="home-entry-screen">Home (Entry) Screen</h4>
+<p>Most users will spend most of their time entering field reports from this &#39;home&#39; or entry screen. It allows a &#39;scribe&#39; to record &#39;Field Reporrts&#39;, i.e., ranger&#39;s locations and status reports.</p>
+<ol>
+<li>Start by enter any letters of a tactical call sign in the Who field. The app filters rangers with those letters for ready selection.</li>
+<li>Next, enter a location in any of the labeled formats. Derived addresses will then be displayed and mapped for your confirmation.</li>
+<li>When defaults to the current time. Edit it if the report was previoulsy recieved.</li>
+<li>What records the report status or nature, defaulting to &quot;normal&quot;. You can enter freeform notes as desired too, possibly entering custom, unique incident specific keywords. Those can be filtered/searched for on the Field Reports Screen if desired.</li>
+<li>Submit your report. (Mistakes can generally be edited in the Field Reports Screen.)</li>
+<li>The Reset button clears the form of any data erroneously entered and lets the scribe start over with a clean field report.</li>
+</ol>
+<p><img src="./non-dist-imgs/Entry.png" alt="Home (Entry) Screen" class="img-responsive" title="Home (Entry) Screen"></p>
+<h4 id="google-maps-screen">Google Maps Screen</h4>
+<p>This displays Field Reports that have been entered, and optionally a filtered subset of reports.
+<img src="./non-dist-imgs/GoogleMaps.png" alt="Google Maps Screen" class="img-responsive" title="Google Maps Screen"></p>
+<h4 id="leaflet-maps-screen">Leaflet Maps Screen</h4>
+<p>This displays Field Reports that have been entered, and optionally a filtered subset of reports.
+<img src="./non-dist-imgs/LeafletMaps.png" alt="Leaflet Maps Screen" class="img-responsive" title="Leaflet Maps Screen"></p>
+<h4 id="field-reports-screen">Field Reports Screen</h4>
+<p>The next screen displays Field Reports that have been entered, in a table or grid format, with the ability to filter, sort, and search reports on any field. Filtered reports can be mapped or exported to a CSV spreadsheet for documentation or later analysis.
+<img src="./non-dist-imgs/FieldReports.png" alt="Field Reports Screen" class="img-responsive" title="Field Reports Screen"></p>
+<h4 id="about-screen">About Screen</h4>
+<p>This provides a bit more explaination about the application, its purpose, technologies used, how to report issues, and license model.
+<img src="./non-dist-imgs/About.png" alt="About Screen" class="img-responsive" title="About Screen"></p>
+<h4 id="logs-screen">Logs Screen</h4>
+<p>This screen is primarily used for debugging and reporting issues. It can also serve as a partial audit trail of actions taken during the mission.
+<img src="./non-dist-imgs/Logs.png" alt="Logs Screen" class="img-responsive" title="Logs Screen"></p>
+<h3 id="to-resetclear-all-data">To Reset/Clear all Data</h3>
+<ol>
+<li>Browse to <a href="https://www.RangerTrak.org">https://www.RangerTrak.org</a></li>
+<li>Go to <a href="https://www.RangerTrak.org/settings">Settings Page</a> and under Advanced at the very bottom, click on “Reset Settings”, then edit the fields as desired.</li>
+<li>Go to the <a href="https://www.RangerTrak.org/rangers">Rangers Page</a>, then under Advanced at the bottom, click on “Delete Rangers” which should load the default ranger teams. (This will change in the future. Its convenient for testing though. You can rename Teams by clicking on the name. For ANY changes: under Advanced, remember to click “Save Rangers” to preserve changes!</li>
+<li>Go to the <a href="https://www.RangerTrak.org/reports">Field Reports Page</a>, then under Advanced at the bottom , click on “Delete ALL Field Reports from local storage” – if there are any! (You may enter new reports or use the mint colored block below to “Add some ## of Fake Reports” which auto generates some reports to experiment with.)</li>
+</ol>
+<h3 id="installation">Installation</h3>
+<p>At the upper right of every screen, or additinoally on the <a href="https://www.RangerTrak.org/settings">Settings Page</a>, You will have the option to &quot;Install&quot; the application, which just streamlines access with a shortcut. The application takes minimal space and doesn&#39;t consume resources in the background. You can uninstall it like any other app.</p>
+<h2 id="for-developers-interested-in-modifying-or-contributing-to-the-project">For Developers Interested in Modifying or Contributing to the Project</h2>
+<h3 id="to-build-and-test">To Build and Test</h3>
 <ul>
-<li>(The Vision:) Simply visit <a href="https://www.RangerTrak.org">https://www.RangerTrak.org</a> once and the 2nd time you visit you will be given an option to &#39;install/download&#39; the web page/application. That should put an icon on your homescreen or desktop that you can thereafter access without Internet access!</li>
-</ul>
-<h2 id="to-build-and-test">To Build and Test</h2>
-<ul>
-<li><p>Grab a local copy of Github.com/eocOnline/Rangertrak</p>
+<li><p>Fork Github.com/eocOnline/Rangertrak to your own repository</p>
 </li>
 <li><p>Install NodeJS and NPM</p>
 </li>
-<li><p>cd RangerTrak</p>
+<li><p><code>cd RangerTrak</code></p>
 </li>
-<li><p>npm install</p>
+<li><p><code>npm install</code></p>
 </li>
-<li><p>ng serve -o</p>
+<li><p><code>ng serve -o</code></p>
 </li>
-<li><p>or Run <code>ng serve</code> for a dev server. Navigate to <code>http://localhost:4200/</code>. The app will automatically reload if you change any of the source files.</p>
+<li><p>or Run <code>ng serve</code> for a dev server. Navigate to <a href="http://localhost:4200/">http://localhost:4200/</a>. The app will automatically reload if you change any of the source files.</p>
 </li>
 </ul>
-<p>For productino release:
- npm run build --release (???)
- ng build</p>
-<h2 id="running-unit-tests">Running unit tests</h2>
+<h4 id="for-production-release">For production release:</h4>
+<p> <code>npm run build --release</code> (???)
+ <code>ng build</code></p>
+<h3 id="running-unit-tests">Running unit tests</h3>
 <ul>
 <li>Run <code>ng test</code> to execute the unit tests via <a href="https://karma-runner.github.io">Karma</a>.</li>
 <li>None currently!</li>
 </ul>
-<h2 id="running-end-to-end-tests">Running end-to-end tests</h2>
+<h3 id="running-end-to-end-tests">Running end-to-end tests</h3>
 <p>Run <code>ng e2e</code> to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.</p>
 <ul>
 <li>None currently!</li>
 </ul>
-<h2 id="to-update-documentation">To update documentation</h2>
-<p>npm run compodoc
+<h3 id="to-update-documentation">To update documentation</h3>
+<p><code>npm run compodoc</code> to regenerate the doc.
+<code>compodoc -s</code> to serve/view the doc at <a href="http://127.0.0.1:8080/">http://127.0.0.1:8080/</a>
 See <a href="https://compodoc.app/guides/usage.html">https://compodoc.app/guides/usage.html</a> and <a href="https://compodoc.app/">https://compodoc.app/</a> for details</p>
-<h2 id="to-update-version">To update Version</h2>
-<p>stage any changes (or add &#39;--allow-empty&#39; to the following), then
-git commit -m &quot;Release-As: 0.11.40&quot;
-which <em>SHOULD</em> (but doesn&#39;t) update version # in Package.json &amp; Package-lock.json
+<h3 id="to-update-version">To update Version</h3>
+<p>Stage any changes (or add &#39;--allow-empty&#39; to the following), then
+<code>git commit -m &quot;Release-As: 0.11.40&quot;</code>
+which <em>SHOULD</em> (but doesn&#39;t) update version ## in Package.json &amp; Package-lock.json
 Some details in service/settings.service.ts &amp; app.component.ts
 <a href="https://github.com/googleapis/release-please#how-do-i-change-the-version-number">https://github.com/googleapis/release-please#how-do-i-change-the-version-number</a></p>
-<h2 id="to-deploy-to-google-firebase">To Deploy to Google Firebase</h2>
-<p>ng deploy</p>
-<p>ng add @angular/fire
-From Angular Projects, 2nd ed. pg 119</p>
-<p>See angular.json and firebase.json</p>
-<h2 id="architecture">Architecture</h2>
-<img src="./src/docs/PlantUML-Class Diagram.png" alt="PlantUML-Class Diagram" style="height:300px; width:100%; align:right;"/>
-![This architecural diagram is unimplemented yet]( .\src\docs\RangerTrak.png "Future architectural diagram")
-
-<h2 id="further-help">Further help</h2>
+<p>To verify, also check/update package.json &amp; package-lock.json</p>
+<h3 id="to-update-3rd-party-libraries">To update 3rd party libraries</h3>
+<p>Commands from Evergreen Angular:</p>
+<ul>
+<li><code>npx ng update @angular/core @angular/cli</code></li>
+<li><code>npx ng update</code></li>
+<li><code>npx npm-check-updates -u</code></li>
+<li><code>npm install</code></li>
+</ul>
+<p>Other useful commands:</p>
+<ul>
+<li><code>npm install -g typings</code> - Looks for updated Typescript type files.</li>
+<li><code>npx ng update -g</code>  - Updates global cli &amp; sdk</li>
+</ul>
+<h3 id="to-deploy">To Deploy</h3>
+<p>Deploying via Google Firebase got WAY to complex with Google&#39;s recent security upgrades.</p>
+<p>Now I just FTP it to <a href="https://RangerTrak.org">https://RangerTrak.org</a></p>
+<p>OLD:
+<code>ng deploy</code>
+<code>ng add @angular/fire</code>
+From Angular Projects, 2nd ed. pg 119
+See angular.json and firebase.json</p>
+<h3 id="architecture">Architecture</h3>
+<p>Way out of date!</p>
+<p><img src="./non-dist-imgs/PlantUML-Class_Diagram.png" alt="This architecural diagram is out-of-date -- &amp; unimplemented yet" class="img-responsive" title="Old/future architectural diagram"></p>
+<h3 id="further-help">Further help</h3>
 <p>To get more help on the Angular CLI use <code>ng help</code> or go check out the <a href="https://angular.io/cli">Angular CLI Overview and Command Reference</a> page.</p>
 <h2 id="eoconline">eoc.online</h2>
-<p><a href="http://eoc.online">http://eoc.online</a> provides free tools for Emergency Operations Centers and emergency services. For more information and to report issues please visit <a href="http://eoc.online">http://eoc.online</a>.</p>
+<p><a href="https://eoc.online">https://eoc.online</a> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <a href="https://eoc.online">https://eoc.online</a>. We&#39;d LOVE to get your reports of use and suggestions for enhancement. To report issues please visit <a href="https://github.com/EOCOnline/rangertrak/issues">https://github.com/EOCOnline/rangertrak/issues</a>.</p>
 <p>©2022 eoc.online, under the MIT License</p>
+<p><img src="./non-dist-imgs/MIT_License.png" alt="MIT License" class="img-responsive"></p>
+<h3 id="public-feedback--contribution">Public Feedback &amp; Contribution</h3>
+<p>We encourage your feedback and contributions to this repository. Content suggestions and discussions (specific to RangerTrak) can be communicated in the following ways:</p>
+<ul>
+<li>GitHub “issues.” Each issue is a conversation about specific project work initiated by a member of the public.</li>
+<li>GitHub &quot;discussions&quot;. Each discussion is a project communication forum. Discussions are not specific to elements of work like a pull request. We encourage you to browse and join in on discussions or start a new conversation by creating a new discussion.</li>
+<li>Direct changes and line edits to the content may be submitted through a &quot;pull request&quot; by clicking &quot;Edit this page&quot; on any site page in the repository. You do not need to install any software to suggest a change. You can use GitHub&#39;s in-browser editor to edit files and submit a pull request for your changes to be merged into the document. Directions on how to submit a pull request can be found on GitHub.</li>
+<li>Send your content suggestions or proposed revisions to the RangerTrak team via email to <a href="mailto:&#x52;&#97;&#110;&#103;&#x65;&#x72;&#84;&#x65;&#x61;&#109;&#64;&#x65;&#111;&#x63;&#x2e;&#111;&#x6e;&#108;&#105;&#110;&#101;">&#x52;&#97;&#110;&#103;&#x65;&#x72;&#84;&#x65;&#x61;&#109;&#64;&#x65;&#111;&#x63;&#x2e;&#111;&#x6e;&#108;&#105;&#110;&#101;</a>.</li>
+</ul>
+<h3 id="testimonials">Testimonials</h3>
+<hr>
+<blockquote>
+<p>&quot;<em>(We) all agreed that this is a WOW program with high value added to SAR.  I really hope you continue to refine it!</em>&quot;</p>
+</blockquote>
+<p>— Michael Meyer, KB7MTM, <a href="https://vashonbeprepared.org/en-us/Partners/ACS">Vashon ACS</a></p>
 
 
 
