@@ -55,7 +55,7 @@
     "idb": "^7.1.1",
     "leaflet": "^1.9.2",
     "leaflet.markercluster": "^1.5.3",
-    "leaflet.offline": "^3.0.0-rc.1",
+    "leaflet.offline": "^3.0.0-rc.2",
     "supercluster": "^7.1.5",
     "tslib": "^2.4.1",
     "xlsx": "^0.18.5",
