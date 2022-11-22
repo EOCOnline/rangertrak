@@ -76,8 +76,6 @@ export class GoogleGeocode {
     try {
       encoded = encodeURI(addr) // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/URLSearchParams
       console.log(`isValidAddress returned ${JSON.stringify(encoded)}`)
-      // isValidAddress returned "10506%20sw%20132nd%20pl,%20vashon,%20wa,%2098070"
-      // TODO: Parse encoded for lat/long or?
     } catch (e: any) {
       // Status codes:  https://developers.google.com/maps/documentation/geocoding/requests-geocoding#StatusCodes
       console.error(e);
@@ -109,6 +107,7 @@ export class GoogleGeocode {
       .catch((e) => {
         //debugger
         err = "Geocoder failed due to: " + e
+        console.error(`GoogleGeocode.geocoder failed with returning ${JSON.stringify(e)}`)
       })
     return { position: null, address: err, partial_match: "", placeId: "", plus_code: "" }
   }
