@@ -16,7 +16,7 @@
       <mat-label>CallSign</mat-label>
       <input matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one" aria-label="Callsigns"
         formControlName="callsign" [matAutocomplete]="auto" (change)="this.callsignCtrlChanged()"
-        id="enter__Callsign-input" tabindex="1" data-lpignore="true" />
+        id="enter__Callsign-input" tabindex="1" data-lpignore="true" spellcheck="false" />
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
           <img class="enter__Callsign-img" aria-hidden [src]="'./assets/imgs/rangers/'+(ranger.image)" height="40">
@@ -30,7 +30,7 @@
 
     <!-- ======================================= -->
     <h2 class="elegant"
-      title="Enter position using  Degrees Decmal (DD)  or  Degrees, Minutes & Seconds (DMS)  or  Degrees & Decimal Minutes (DDM)">
+      title="Enter position using  Degrees Decmal (DD)  or  Degrees & Decimal Minutes (DDM)  or  Degrees, Minutes & Seconds (DMS)">
       <mat-label>Where</mat-label>&nbsp;&nbsp;
       <span class="small">(Updates 'Current Location' map to the right)</span><img
         src="../../assets/icons/information-outline.png" height="14px" width="14px" alt="info icon"

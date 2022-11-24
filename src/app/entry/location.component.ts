@@ -217,6 +217,19 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.onDdChg()
                 break
               }
+
+            // Cooordinates as Degrees & Decimal Minutes (DDM)
+            case 'DDM.latDdmQ':
+            case 'DDM.latDdmD':
+            case 'DDM.latDdmM':
+            case 'DDM.lngDdmQ':
+            case 'DDM.lngDdmD':
+            case 'DDM.lngDdmM':
+              {
+                this.onDdmChg()
+                break
+              }
+
             // Cooordinates as Degrees, Minutes & Seconds (DMS)
             case 'DMS.latQ':
             case 'DMS.latD':
@@ -228,17 +241,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
             case 'DMS.lngS':
               {
                 this.onDmsChg()
-                break
-              }
-            // Cooordinates as Degrees & Decimal Minutes (DDM)
-            case 'DDM.latDdmQ':
-            case 'DDM.latDdmD':
-            case 'DDM.latDdmM':
-            case 'DDM.lngDdmQ':
-            case 'DDM.lngDdmD':
-            case 'DDM.lngDdmM':
-              {
-                this.onDdmChg()
                 break
               }
 
@@ -306,6 +308,15 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         lngI: [0],
         lngF: [0]
       }),
+      // Cooordinates as Degrees & Decimal Minutes (DDM)
+      DDM: this._formBuilder.group({
+        latDdmQ: ["N"], // Quadrant
+        latDdmD: [0], // Degrees
+        latDdmM: [0], // Minutes
+        lngDdmQ: ["E"],
+        lngDdmD: [0],
+        lngDdmM: [0]
+      }),
       // Cooordinates as Degrees, Minutes & Seconds (DMS)
       DMS: this._formBuilder.group({
         latQ: ["N"], // Quadrant
@@ -317,15 +328,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         lngM: [0],
         lngS: [0]
       }),
-      // Cooordinates as Degrees & Decimal Minutes (DDM)
-      DDM: this._formBuilder.group({
-        latDdmQ: ["N"], // Quadrant
-        latDdmD: [0], // Degrees
-        latDdmM: [0], // Minutes
-        lngDdmQ: ["E"],
-        lngDdmD: [0],
-        lngDdmM: [0]
-      }),
+
       address: [''] //, Validators.required],
     })
 
@@ -409,6 +412,34 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
+
+  onDdmChg() {
+    //this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
+    let latDdmD = this.locationFormModel.get("DDM.latDdmD")?.value
+    let latDdmM = this.locationFormModel.get("DDM.latDdmM")?.value
+    let latDdmQ = this.locationFormModel.get("DDM.latDdmQ")?.value
+    let lngDdmD = this.locationFormModel.get("DDM.lngDdmD")?.value
+    let lngDdmM = this.locationFormModel.get("DDM.lngDdmM")?.value
+    let lngDdmQ = this.locationFormModel.get("DDM.lngDdmQ")?.value
+
+    this.log.excessive(`DMS value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
+
+    let latLng = {
+      lat: DDMToDD(<string>latDdmQ, latDdmD, latDdmM)!,
+      lng: DDMToDD(<string>lngDdmQ, lngDdmD, lngDdmM)!
+    }
+    this.log.verbose(`DDM converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
+
+    let enteredLocation = {
+      lat: latLng.lat,
+      lng: latLng.lng,
+      address: undefinedAddressFlag,
+      derivedFromAddress: false
+    }
+
+    this.newLocationToFormAndEmit(enteredLocation)
+  }
+
   onDmsChg() {
     //this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
     let latD = this.locationFormModel.get("DMS.latD")?.value
@@ -437,33 +468,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
-
-  onDdmChg() {
-    //this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
-    let latDdmD = this.locationFormModel.get("DDM.latDdmD")?.value
-    let latDdmM = this.locationFormModel.get("DDM.latDdmM")?.value
-    let latDdmQ = this.locationFormModel.get("DDM.latDdmQ")?.value
-    let lngDdmD = this.locationFormModel.get("DDM.lngDdmD")?.value
-    let lngDdmM = this.locationFormModel.get("DDM.lngDdmM")?.value
-    let lngDdmQ = this.locationFormModel.get("DDM.lngDdmQ")?.value
-
-    this.log.excessive(`DMS value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
-
-    let latLng = {
-      lat: DDMToDD(<string>latDdmQ, latDdmD, latDdmM)!,
-      lng: DDMToDD(<string>lngDdmQ, lngDdmD, lngDdmM)!
-    }
-    this.log.verbose(`DDM converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
-
-    let enteredLocation = {
-      lat: latLng.lat,
-      lng: latLng.lng,
-      address: undefinedAddressFlag,
-      derivedFromAddress: false
-    }
-
-    this.newLocationToFormAndEmit(enteredLocation)
-  }
 
 
   /**
@@ -502,13 +506,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     let lngI = Math.trunc(lngDD)
     let lngF = Math.abs(Math.round((lngDD - lngI) * 10000))
 
-    let latDMS = DDToDMS(latDD)
-    let lngDMS = DDToDMS(lngDD, true)
-    this.log.excessive(`new DMS Location: ${latDMS.dir} ${latDMS.deg}° ${latDMS.min}' ${latDMS.sec}" lat; ${lngDMS.dir} ${lngDMS.deg}° ${lngDMS.min}' ${lngDMS.sec}" lng`, this.id);
-
     let latDDM = DDToDDM(latDD)
     let lngDDM = DDToDDM(lngDD, true)
     this.log.excessive(`new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min / 100}' lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min / 100}' lng`, this.id)
+
+    let latDMS = DDToDMS(latDD)
+    let lngDMS = DDToDMS(lngDD, true)
+    this.log.excessive(`new DMS Location: ${latDMS.dir} ${latDMS.deg}° ${latDMS.min}' ${latDMS.sec}" lat; ${lngDMS.dir} ${lngDMS.deg}° ${lngDMS.min}' ${lngDMS.sec}" lng`, this.id);
 
     // Set model values - which updates the display & is the only place the current location is kept.
     this.locationFormModel.setValue({
@@ -517,6 +521,15 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         latF: latF,
         lngI: lngI,
         lngF: lngF
+      },
+      DDM: {
+        latDdmQ: latDDM.dir,
+        latDdmD: latDDM.deg,
+        latDdmM: latDDM.min / 100,
+
+        lngDdmQ: lngDDM.dir,
+        lngDdmD: lngDDM.deg,
+        lngDdmM: lngDDM.min / 100
       },
       DMS: {
         latQ: latDMS.dir,
@@ -528,15 +541,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         lngD: lngDMS.deg,
         lngM: lngDMS.min,
         lngS: lngDMS.sec
-      },
-      DDM: {
-        latDdmQ: latDDM.dir,
-        latDdmD: latDDM.deg,
-        latDdmM: latDDM.min / 100,
-
-        lngDdmQ: lngDDM.dir,
-        lngDdmD: lngDDM.deg,
-        lngDdmM: lngDDM.min / 100
       },
       address: address
     },
