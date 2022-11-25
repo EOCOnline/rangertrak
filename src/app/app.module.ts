@@ -10,7 +10,7 @@ import {
 } from '@angular-material-components/datetime-picker'
 import { CommonModule } from '@angular/common'
 import { HttpClientModule } from '@angular/common/http'
-import { NgModule } from '@angular/core'
+import { NgModule, isDevMode } from '@angular/core'
 import { FlexLayoutModule } from '@angular/flex-layout'
 //import { ClockService, FieldReportService, PopupService, RangerService, SettingsService} from './shared/services/' // instead singleton services use "providedIn: 'root'""
 import {
@@ -89,6 +89,12 @@ import { X404Component } from './x404/x404.component'
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
     })

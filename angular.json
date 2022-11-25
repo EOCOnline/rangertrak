@@ -36,7 +36,8 @@
                 "glob": "**/*",
                 "input": "node_modules/leaflet/dist/images/",
                 "output": "./assets/imgs"
-              }
+              },
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "./node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css",
@@ -123,6 +124,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/assets/icons/favicon.ico",
+              "src/manifest.webmanifest",
               "src/manifest.webmanifest"
             ],
             "styles": [
