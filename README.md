@@ -197,7 +197,7 @@ Other useful commands:
 
 ### To Deploy
 
-Deploying via Google Firebase got WAY to complex with Google's recent security upgrades.
+Deploying via Google Firebase got WAY too complex with Google's recent security upgrades.
 
 Now I just FTP it to <https://RangerTrak.org>
 
