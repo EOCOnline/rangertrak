@@ -284,7 +284,34 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // this.lMap.on('moveend', ($event: L.LeafletEvent) => {
     //   rectangle.setBounds(this.lMap.getBounds())
     // })
+
+
+    // force tile display
+    /**
+     * Using CSS rules for width and height with percentage (%) values. This normally doesn't cause problems
+     * unless the ngx-leaflet directive is on an element that has not had its width/height explicitly set.
+     * You could try using viewport-percentage units (vh or vw) which can be read about here.
+     *
+     * Using ngIf or CSS rule display: none. Both of these turn your Angular component into a
+     * 0 size element. After an ngIf is true or display:none is reversed, your problem may be
+     * solved by having the leaflet map call invalidateSize after one of those events happen.
+     *
+     * If neither of these suggestions are applicable, try adding a setTimeout call that then has the leaflet map call invalidateSize.
+     *
+     * ALSO see https://github.com/bluehalo/ngx-leaflet/issues/104#issuecomment-394883609
+     */
+
+    // https://stackoverflow.com/questions/61461292/leaflet-map-not-updating-background-tile-correctly-until-resize-or-pan-is-made
+    // Call invalidateSize once the tab containing your map becomes visible
+    //$('#mapcontainer').width('0');
+    //this.lMap.invalidateSize();
+    //$('#mapcontainer').width('50%');
+    this.lMap.invalidateSize();
+
+
   }
+
+
 
   // ------------ Legend ---------------
   // create legend
@@ -392,6 +419,17 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    */
   onMapReady(ev: any) {
     this.log.verbose(`OnMapReady()`, this.id)
+
+    // following from https://github.com/bluehalo/ngx-leaflet/issues/104
+    setTimeout(() => {
+      this.lMap.invalidateSize()
+    }, 0)
+  }
+
+  onMapReady2(map: L.Map) {
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 0);
   }
 
   /**

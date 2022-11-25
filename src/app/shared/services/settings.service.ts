@@ -87,7 +87,7 @@ export class SettingsService implements OnInit {
     //this.version = packageAsJson.version
     //SettingsService.version = packageAsJson.version
     this.settings.version = packageAsJson.version
-    this.log.verbose(`Got version: ${packageAsJson.version} `, this.id)
+    this.log.error(`Settings version (from package.json) set to: ${packageAsJson.version} `, this.id)
 
     // Save settings
     this.settingsSubject$ = new BehaviorSubject(this.settings)

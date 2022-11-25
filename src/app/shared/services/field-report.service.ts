@@ -66,17 +66,23 @@ export class FieldReportService implements OnInit, OnDestroy {
     this.log.verbose("======== Constructor() ============", this.id)
     //! REVIEW: this.log.verbose(`Constructor call stack (NOT an error: why called twice?): ${new Error().stack}`, this.id)
 
+    this.fieldReports = this.LoadFieldReportsFromLocalStorage()
+
+
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
         this.log.excessive('Received new Settings via subscription.', this.id)
+
+        if (this.fieldReports.version == this.settings.version) {
+          this.log.excessive('Application version matches version used to store Field Reports.', this.id)
+        } else {
+          this.log.error(`Application version ${this.settings.version} does NOT match version used to store Field Reports: ${this.fieldReports.version}. No upgrade logic implemented yet...`, this.id)
+        }
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
-
-    this.fieldReports = this.LoadFieldReportsFromLocalStorage()
-
 
     this.log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
 
@@ -93,8 +99,8 @@ export class FieldReportService implements OnInit, OnDestroy {
 
 
   /**
-   *
-   * Try to load existing FieldReports from browser's Local Storage
+   * Load any existing FieldReports from browser's Local Storage
+   * FUTURE: If FieldReportsType elements/structure changes in a future version, upgrade to that
    * @returns
    */
   private LoadFieldReportsFromLocalStorage(): FieldReportsType {
@@ -108,8 +114,7 @@ export class FieldReportService implements OnInit, OnDestroy {
       this.log.error(`Field Reports in Local Storage appear corrupted (no version #) & will be stored in Local Storage with key: '${this.storageLocalName}-BAD'. Will rebuild from defaults.`, this.id)
       localStorage.setItem(this.storageLocalName + '-BAD', localStorageFieldReports)
       return this.initEmptyFieldReports()
-    }
-    else {
+    } else {
       return JSON.parse(localStorageFieldReports)
     }
   }
@@ -234,6 +239,12 @@ export class FieldReportService implements OnInit, OnDestroy {
     return { east: bounds.getEast(), north: bounds.getNorth(), south: bounds.getSouth(), west: bounds.getWest() }
   }
 
+  /**
+   * recalcFieldBounds
+   *
+   * @param reports
+   * @returns
+   */
   recalcFieldBounds(reports: FieldReportsType) {
     this.log.verbose(`recalcFieldBounds got ${reports.fieldReportArray.length} field reports`, this.id)
     //this.log.excessive(`OLD Value: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
@@ -259,18 +270,23 @@ export class FieldReportService implements OnInit, OnDestroy {
 
       for (let i = 1; i < reports.fieldReportArray.length; i++) {
         if (reports.fieldReportArray[i].location.lat > north) {
-          north = Math.round(reports.fieldReportArray[i].location.lat * 10000) / 10000
+          north = reports.fieldReportArray[i].location.lat //Math.round(reports.fieldReportArray[i].location.lat * 10000) / 10000
         }
         if (reports.fieldReportArray[i].location.lat < south) {
-          south = Math.round(reports.fieldReportArray[i].location.lat * 10000) / 10000
+          south = reports.fieldReportArray[i].location.lat //Math.round(reports.fieldReportArray[i].location.lat * 10000) / 10000
         }
         if (reports.fieldReportArray[i].location.lng > east) {
-          east = Math.round(reports.fieldReportArray[i].location.lng * 10000) / 10000
+          east = reports.fieldReportArray[i].location.lng //Math.round(reports.fieldReportArray[i].location.lng * 10000) / 10000
         }
         if (reports.fieldReportArray[i].location.lng > west) {
-          west = Math.round(reports.fieldReportArray[i].location.lng * 10000) / 10000
+          west = reports.fieldReportArray[i].location.lng //Math.round(reports.fieldReportArray[i].location.lng * 10000) / 10000
         }
       }
+      // Round to 4 decimal places
+      north = Math.round(north * 10 ** 4) / 10 ** 4
+      south = Math.round(south * 10 ** 4) / 10 ** 4
+      east = Math.round(east * 10 ** 4) / 10 ** 4
+      west = Math.round(west * 10 ** 4) / 10 ** 4
     } else {
       // no field reports yet! Rely on broadening processing below
       north = this.settings.defLat
@@ -279,6 +295,7 @@ export class FieldReportService implements OnInit, OnDestroy {
       east = this.settings.defLng
     }
 
+    // Broaden boundaries to minimum values
     this.log.info(`recalcFieldBounds got E:${east} W:${west} N:${north} S:${south} `, this.id)
     if (east - west < 2 * this.boundsMargin) {
       east += this.boundsMargin

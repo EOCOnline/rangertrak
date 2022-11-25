@@ -116,6 +116,11 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   ngOnInit() {
     this.log.verbose("(Abstract) ngOnInit()", this.id)
 
+    this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
+    if (this.filterButton == undefined) {
+      this.log.error("(Abstract) updateFieldReports() could not find selectedFieldReports", this.id)
+    }
+
     if (!this.settings) {
       this.log.error(`(Abstract) this.settings not yet established in ngOnInit()`, this.id)
       // REVIEW: Can initMap run OK w/ defaults, but w/o settings?
@@ -329,43 +334,43 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         this.numSelectedRows = 0
       }
 
-      this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
       if (this.filterButton == undefined) {
-        this.log.error("(Abstract) updateFieldReports() could not find selectedFieldReports", this.id)
-      } else {
-        // No need to *subscribe*, as everytime there is a selection made,
-        // it currently gets stored and won't change once we're on this screen
-        this.numSelectedRows = this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
-        // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
-        this.filterSwitch = new MDCSwitch(this.filterButton)
-        if (!this.filterSwitch) {
-          throw ("(Abstract) updateFieldReports(): Found filterButton - but NOT Field Report Selection Switch!")
-        }
-
-        //! TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
-        // BUG: refresh page resets selected switch
-        this.onSwitchSelectedFieldReports()
-
-        // Just get the # of rows in the selection (if any), so we can properly display that # next to the switch
-        if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
-          this.numSelectedRows = this.selectedReports.numReport
-          if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
-            this.log.error(`(Abstract) updateFieldReports(): ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
-            this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
-            this.numSelectedRows = this.selectedReports.fieldReportArray.length
-          }
-        } else {
-          this.log.warn(`(Abstract) updateFieldReports(): Could not retrieve selected Field Reportst.`, this.id)
-          this.numSelectedRows = 0
-        }
-
-        this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
-        if (!this.filterButton) { throw ("(Abstract) updateFieldReports(): Could not find Field Report Selection button!") }
-
-        this.filterSwitch = new MDCSwitch(this.filterButton)
-        if (!this.filterSwitch) throw ("(Abstract) updateFieldReports(): Could not find Field Report Selection Switch!")
-
+        this.log.error("(Abstract) updateFieldReports() could not find selectedFieldReports button", this.id)
+        return
       }
+
+      // No need to *subscribe*, as everytime there is a selection made,
+      // it currently gets stored and won't change once we're on this screen
+      this.numSelectedRows = this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
+      // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
+      this.filterSwitch = new MDCSwitch(this.filterButton)
+      if (!this.filterSwitch) {
+        throw ("(Abstract) updateFieldReports(): Found filterButton - but could NOT create Field Report Selection Switch!")
+      }
+
+      //! TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
+      // BUG: refresh page resets selected switch
+      this.onSwitchSelectedFieldReports()
+
+      // Just get the # of rows in the selection (if any), so we can properly display that # next to the switch
+      if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
+        this.numSelectedRows = this.selectedReports.numReport
+        if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
+          this.log.error(`(Abstract) updateFieldReports(): ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
+          this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
+          this.numSelectedRows = this.selectedReports.fieldReportArray.length
+        }
+      } else {
+        this.log.warn(`(Abstract) updateFieldReports(): Could not retrieve selected Field Reportst.`, this.id)
+        this.numSelectedRows = 0
+      }
+
+      this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
+      if (!this.filterButton) { throw ("(Abstract) updateFieldReports(): Could not find Field Report Selection button!") }
+
+      this.filterSwitch = new MDCSwitch(this.filterButton)
+      if (!this.filterSwitch) throw ("(Abstract) updateFieldReports(): Could not find Field Report Selection Switch!")
+
     } else {
       this.log.error(`(Abstract) updateFieldReports got no Selected reports`)
     }
@@ -401,7 +406,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    * @returns
    */
 
-  //! BUG: Resets slected reports to ALL!!!!
+  //! BUG: Resets selected reports to ALL!!!!
   onSwitchSelectedFieldReports() { //event: any) {
     if (!this.fieldReports) {
       this.log.error(`(Abstract) onSwitchSelectedFieldReports(): Field Reports not yet set`, this.id)

@@ -1,11 +1,10 @@
 
-# Contributor Covenant Code of Conduct
+# RangerTrak Contributor Covenant Code of Conduct
 
 (Directly from https://www.contributor-covenant.org/ without changees, but likely serves ths august community's needs - all 1 of us...  ;-)
 Other examples:
 https://github.com/rails/rails/blob/main/CONTRIBUTING.md
 https://github.com/opengovernment/opengovernment/blob/master/CONTRIBUTING.md
-
 
 ## Our Pledge
 

@@ -166,6 +166,13 @@ See <https://compodoc.app/guides/usage.html> and <https://compodoc.app/> for det
 
 ### To update Version
 
+Run `npm run release` per <https://www.npmjs.com/package/standard-version>
+
+This updates bumps the version number in package.JSON & ChangeLog.md by an increment (& deletes package-lock.json?)
+
+Then run `git push --follow-tags origin main` to publish to Github as a new release
+
+
 Stage any changes (or add '--allow-empty' to the following), then
 `git commit -m "Release-As: 0.11.40"`
 which *SHOULD* (but doesn't) update version ## in Package.json & Package-lock.json

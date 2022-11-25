@@ -5,21 +5,7 @@ import { LocationType } from './location.interface'
 export enum FieldReportSource { Voice, Packet, APRS, Email }
 
 /**
- * Data to store with every field report entry
- */
-export type FieldReportType = {
-  id: number,
-  callsign: string,
-  //team: string,
-  location: LocationType,
-  date: Date,
-  status: string,
-  notes: string
-  // source: FieldReportSource
-}
-
-/**
- * A packet of all field data for the op period except Rangers or Settings
+ * A packet of all (or selected/filtered) field data for the op period except Rangers or Settings
  */
 export type FieldReportsType = {
   version: string,
@@ -30,6 +16,20 @@ export type FieldReportsType = {
   maxId: number,
   filter: string, // All reports or not? Guard to ensure a subset never gets writen to localstorage?
   fieldReportArray: FieldReportType[]
+}
+
+/**
+ * Data to store for each field report
+ */
+export type FieldReportType = {
+  id: number,
+  callsign: string,
+  //team: string,
+  location: LocationType,
+  date: Date,
+  status: string,
+  notes: string
+  // source: FieldReportSource
 }
 
 /**
