@@ -172,10 +172,8 @@ This updates bumps the version number in package.JSON & ChangeLog.md by an incre
 
 Then run `git push --follow-tags origin main` to publish to Github as a new release
 
-
 Stage any changes (or add '--allow-empty' to the following), then
 `git commit -m "Release-As: 0.11.40"`
-which *SHOULD* (but doesn't) update version ## in Package.json & Package-lock.json
 Some details in service/settings.service.ts & app.component.ts
 <https://github.com/googleapis/release-please#how-do-i-change-the-version-number>
 
