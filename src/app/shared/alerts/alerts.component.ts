@@ -2,7 +2,7 @@ import { Subscription } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { NavigationEnd } from '@angular/router'
 //import { MatFormFieldModule } from '@angular/material/form-field';
 import { MDCBanner } from '@material/banner'

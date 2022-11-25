@@ -13,7 +13,7 @@ import {
   UntypedFormControl, UntypedFormGroup, Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar'
+import { MatSnackBar } from '@angular/material/snack-bar'
 
 import { AlertsComponent, DDToDDM, TimePickerComponent, Utility } from '../shared/'
 import {

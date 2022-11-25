@@ -112,8 +112,9 @@
           </mat-form-field>
 
           <!-- NOTE: Step 5: Gesture Support: mat-slider rely on HammerJS for gestures: https://v5.material.angular.io/guide/getting-started#step-5-gesture-support -->
-          <mat-slider id="enter__Fake--slider" thumbLabel tickInterval="10" step="5" min="0" max="100"
-            aria-label="# Fake Field Reports" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"></mat-slider>
+          <!-- TODO: The 'tickInterval' property no longer exists -->
+          <mat-slider id="enter__Fake--slider" thumbLabel step="5" min="0" max="100"
+            aria-label="# Fake Field Reports" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"><input matSliderThumb /></mat-slider>
 
           <button (click)="generateFakeFieldReports()" type="button" id="enter__Fake--button">
             Add another {{nFakes}} FAKE Field Reports ()
