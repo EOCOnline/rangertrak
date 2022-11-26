@@ -1,7 +1,9 @@
 {
   "name": "rangertrak",
   "short_name": "rangertrak",
-  "theme_color": "#1976d2",
+  "theme1_color": "#1976d2",
+  "theme_color": "#8711fc",
+  "background1_color": "#fafafa",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",
