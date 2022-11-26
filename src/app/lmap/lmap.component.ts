@@ -3,7 +3,7 @@
 // also: https://github.com/onthegomap/planetiler
 //import { openDB, deleteDB, wrap, unwrp } from 'idb'
 import 'leaflet.markercluster'
-import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
+//import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 //import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
 
