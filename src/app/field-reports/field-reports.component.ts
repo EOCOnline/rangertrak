@@ -144,14 +144,13 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       { headerName: "Reported", headerTooltip: 'Report date', valueGetter: this.myDateGetter, flex: 2 },
       { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, flex: 2 },
       {
-        headerName: "Status", field: "status", flex: 5,
+        headerName: "Status", field: "status", flex: 5, cellRenderer: this.statusCellRenderer,
         cellStyle: (params: { value: string; }) => {
           let stat = this.fieldReportStatuses.find(el => el.status == params.value)
           return { 'background-color': `${stat ? stat.color : '#A3A3A3'}` }
         }
         //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
       },
-      //{ headerName: "Notes", field: "notes", flex: 50 }, //, maxWidth: 300
       { headerName: "Notes", field: "notes", cellRenderer: this.notesCellRenderer, flex: 50 }, //, maxWidth: 300
     ];
 
@@ -188,6 +187,11 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   imageCellRenderer_unused = (params: { data: FieldReportType }) => {
     return `<img class="licenseImg" style="height:40px; width:40px;" alt= "Image of ${params.data.callsign}"
       src= "${this.settings.imageDirectory}rangers/${params.data.callsign}">`
+  }
+
+  statusCellRenderer = (params: { data: FieldReportType }) => {
+    let title = `Status: ${params.data.status}`
+    return `<span aria-hidden title="${title}"> ${params.data.status}</span>`
   }
 
   notesCellRenderer = (params: { data: FieldReportType }) => {
