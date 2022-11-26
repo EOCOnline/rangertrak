@@ -94,11 +94,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     return `<img class="licenseImg" style="height:40px; width:40px;" alt= "Image of ${params.data.fullName}"
       src= "${this.settings.imageDirectory}rangers/${params.data.image}">`
   }
-  //<strong>art</strong>
-  // title="${params.data.callsign} ? ${params.data.callsign} : ${params.data.fullName}"
 
   callsignCellRenderer = (params: { data: RangerType }) => {
-    // let title = `<img src="${params.data.image}" height="40"> | <small> ${params.data.fullName} | ${params.data.phone}</small>`
     let title = `${params.data.fullName} | ${params.data.phone}`
     return `<span aria-hidden title="${title}"> ${params.data.callsign}</span>`
   }

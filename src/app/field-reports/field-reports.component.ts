@@ -130,11 +130,11 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     //!Future: Hover over notes to show entire (multi-line) note
     this.columnDefs = [
       { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1 }, // TODO:
-      { headerName: "CallSign", field: "callsign", tooltipField: "team", flex: 2 },
+      { headerName: "CallSign", field: "callsign", tooltipField: "team", width: 4, flex: 2 },
       // { headerName: "Team", field: "team" },
-      { headerName: "Address", field: "address", singleClickEdit: true, flex: 30 }, //, maxWidth: 200
+      { headerName: "Address", field: "address", singleClickEdit: true, width: 3, flex: 30 }, //, maxWidth: 200
       {
-        headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
+        headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell',
         valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lat * 10000) / 10000.0 }
       },
       {
@@ -146,17 +146,13 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       {
         headerName: "Status", field: "status", flex: 5,
         cellStyle: (params: { value: string; }) => {
-          //this.fieldReportStatuses.forEach(function(value) { (params.value === value.status) ? { backgroundColor: value.color }  : return(null) }
-          for (let i = 0; i < this.fieldReportStatuses.length; i++) {
-            if (params.value === this.fieldReportStatuses[i].status) {
-              return { backgroundColor: this.fieldReportStatuses[i].color }
-            }
-          }
-          return null
+          let stat = this.fieldReportStatuses.find(el => el.status == params.value)
+          return { 'background-color': `${stat ? stat.color : '#A3A3A3'}` }
         }
         //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
       },
-      { headerName: "Notes", field: "notes", flex: 50 }, //, maxWidth: 300
+      //{ headerName: "Notes", field: "notes", flex: 50 }, //, maxWidth: 300
+      { headerName: "Notes", field: "notes", cellRenderer: this.notesCellRenderer, flex: 50 }, //, maxWidth: 300
     ];
 
     this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
@@ -183,6 +179,20 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     } else {
       this.log.verbose("no this.gridApi yet in ngOnInit()", this.id)
     }
+  }
+
+  // -------------------------------------------------------------------------
+
+  // On hovering, display a larger image!
+  //  { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, tooltipField: "image", tooltipComponentParams: { color: '#ececec' }, flex: 5 },
+  imageCellRenderer_unused = (params: { data: FieldReportType }) => {
+    return `<img class="licenseImg" style="height:40px; width:40px;" alt= "Image of ${params.data.callsign}"
+      src= "${this.settings.imageDirectory}rangers/${params.data.callsign}">`
+  }
+
+  notesCellRenderer = (params: { data: FieldReportType }) => {
+    let title = `Note: ${params.data.notes}`
+    return `<span aria-hidden title="${title}"> ${params.data.notes}</span>`
   }
 
   //--------------------------------------------------------------------------
@@ -305,7 +315,6 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     return dt
   }
 
-  //!TODO: Returns just hours:min:sec - not days!!!
   myMinuteGetter = (params: { data: FieldReportType }) => {
     let dt = new Date(params.data.date).getTime()
     let milliseconds = Date.now() - dt

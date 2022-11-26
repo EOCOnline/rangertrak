@@ -71,6 +71,21 @@ export class Utility {
         */
   }
 
+
+  //  ----------------------------------------------------
+
+  // static getReportStatus(status: string) {
+  //   return this.fieldReportStatuses.find(el => el.type == status)
+  // }
+
+  // static getReportStatusColorStyle(status: string) {
+  //   let stat = this.fieldReportStatuses.find(el => el.status == status)
+  //   return { 'background-color': `${stat ? stat.color : '#A3A3A3'}`
+  // }
+
+  //  ----------------------------------------------------
+
+
   static displayHide(htmlElement: HTMLElement) {
     if (htmlElement) {
       htmlElement.style.visibility = "hidden";

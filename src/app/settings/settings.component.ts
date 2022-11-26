@@ -88,12 +88,14 @@ export class SettingsComponent implements OnInit, OnDestroy {
     {
       headerName: "Status", field: "status", flex: 50,
       cellStyle: (params: { value: string; }) => {
-        for (let i = 0; i < this.rowData.length; i++) {
-          if (params.value === this.rowData[i].status) {
-            return { backgroundColor: this.rowData[i].color }
-          }
-        }
-        return null
+        let stat = this.rowData.find(el => el.status == params.value)
+        return { 'background-color': `${stat ? stat.color : '#A3A3A3'}` }
+        // for (let i = 0; i < this.rowData.length; i++) {
+        //   if (params.value === this.rowData[i].status) {
+        //     return { backgroundColor: this.rowData[i].color }
+        //   }
+        // }
+        // return null
       }
     },
     {

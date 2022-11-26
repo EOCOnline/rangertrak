@@ -400,12 +400,18 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       //! TODO: Provide a better icon generating mechanism...available via Dependency Injection/service?!
       labelText = fr.callsign
 
-      for (let j = 0; j < fieldReportStatuses.length; j++) {
-        if (fieldReportStatuses[j].status != fr.status) continue
-        icon = fieldReportStatuses[j].icon
-        labelColor = fieldReportStatuses[j].color
-        break
+      let stat = fieldReportStatuses.find(el => el.status == fr.status)
+      if (stat) {
+        icon = stat.icon
+        labelColor = stat.color
       }
+
+      // for (let j = 0; j < fieldReportStatuses.length; j++) {
+      //   if (fieldReportStatuses[j].status != fr.status) continue
+      //   icon = fieldReportStatuses[j].icon
+      //   labelColor = fieldReportStatuses[j].color
+      //   break
+      // }
 
       // this.log.excessive(`displayMarkers adding marker #${i} at ${JSON.stringify(latlng)} with ${labelText}, ${title}, ${labelColor}`, this.id)
 
