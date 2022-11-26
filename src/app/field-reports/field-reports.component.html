@@ -46,6 +46,7 @@
     <div>
       <span class="strong">Selected Rows: {{selectedRows}} </span> &nbsp; (Maps have a switch to
       only show these rows)
+      <br>
       <span fxFlex="auto" class="pager">
         <label for="pet-select"># Rows per Page: </label>
         <select name="rowPerPage" id="rowPerPage-select" (change)="onRowsPerPage()">
@@ -113,8 +114,8 @@
 
           <!-- NOTE: Step 5: Gesture Support: mat-slider rely on HammerJS for gestures: https://v5.material.angular.io/guide/getting-started#step-5-gesture-support -->
           <!-- TODO: The 'tickInterval' property no longer exists -->
-          <mat-slider id="enter__Fake--slider" thumbLabel step="5" min="0" max="100"
-            aria-label="# Fake Field Reports" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"><input matSliderThumb /></mat-slider>
+          <mat-slider id="enter__Fake--slider" thumbLabel step="5" min="0" max="100" aria-label="# Fake Field Reports"
+            [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"><input matSliderThumb /></mat-slider>
 
           <button (click)="generateFakeFieldReports()" type="button" id="enter__Fake--button">
             Add another {{nFakes}} FAKE Field Reports ()
