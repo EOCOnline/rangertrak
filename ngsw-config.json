@@ -26,5 +26,18 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "api_randomuser.me",
+      "urls": [
+        "https://api.randomuser.me/?reesults*"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 100,
+        "maxAge": "2d"
+      }
+    }
   ]
 }
