@@ -1,6 +1,6 @@
 import { filter, map, switchMap } from 'rxjs'
 
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, HostListener } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 //import { MatSnackBar } from '@material/snackbar'
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker'
@@ -19,10 +19,15 @@ export class AppComponent implements OnInit {
   pageDescr = `Track & map Rangers' progress & reports on a mission`
   updateEvt: any = null
 
-  constructor(
-    private swUpdate: SwUpdate,
-    private log: LogService,
-    private snackbar: MatSnackBar) {
+  // https://stackoverflow.com/questions/53871586/angular-catch-beforeinstallprompt-event-add-to-homescreen-in-dev-tools-applic
+  deferredPrompt: any;
+  showButton = false;
+  @HostListener('window:beforeinstallprompt', ['$event'])
+
+    constructor(
+      private swUpdate: SwUpdate,
+      private log: LogService,
+      private snackbar: MatSnackBar) {
   }
 
 
@@ -120,6 +125,38 @@ export class AppComponent implements OnInit {
     this.log.verbose(`Reloading window!`, this.id)
     */
   }
+
+
+
+  onbeforeinstallprompt(e) {
+    console.log(e);
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    this.deferredPrompt = e;
+    this.showButton = true;
+  }
+
+
+  addToHomeScreen() {
+    // hide our user interface that shows our A2HS button
+    this.showButton = false;
+    // Show the prompt
+    this.deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    this.deferredPrompt.userChoice
+      .then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt');
+        } else {
+          console.log('User dismissed the A2HS prompt');
+        }
+        this.deferredPrompt = null;
+      });
+  }
+
+
+
 }
 
 /*
@@ -142,3 +179,4 @@ available: evt.latestVersion,
 })));
 
 */
+

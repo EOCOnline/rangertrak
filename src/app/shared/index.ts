@@ -4,6 +4,7 @@ export { AlertsComponent } from "./alerts/alerts.component"
 export { HeaderComponent } from "./header/header.component"
 export { IconsComponent } from "./icons/icons.component"
 export { FooterComponent } from "./footer/footer.component"
+export { InstallPromptComponent } from "./install-prompt/install-prompt.component"
 export { NavbarComponent } from "./navbar/navbar.component"
 export { TimePickerComponent } from './time-picker/time-picker.component'
 

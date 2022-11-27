@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
+import { InstallPromptComponent } from '../'
 
 // From Angular Cookbook, pg 592
 // https://web.dev/customize-install
@@ -8,6 +10,9 @@ import { Injectable } from '@angular/core';
 // also: https://web.dev/patterns/advanced-apps/shortcuts/
 // https://web.dev/learn/pwa/service-workers/npm
 
+// https://love2dev.com/pwa/ - benefits of pwa
+// https://love2dev.com/blog/beforeinstallprompt/
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,7 +20,9 @@ export class InstallableService {
 
   installableEvent: Event | null | 1 = 1
 
-  constructor() {
+  constructor(
+    private dialog: MatDialog,
+  ) {
     this.init()
   }
 
@@ -25,6 +32,28 @@ export class InstallableService {
       'beforeinstallprompt',
       this.handleInstallPrompt.bind(this)
     )
+  }
+
+  async showPrompt() {
+    if (!this.installableEvent) {
+      return;
+    }
+    const dialogRef = this.dialog.open(InstallPromptComponent, {
+      width: '300px',
+    });
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (!result) {
+        this.installableEvent = null;
+        return;
+      }
+      if (!this.installableEvent) {
+        return
+      }
+      this.installableEvent.prompt();
+      const { outcome } = await this.installableEvent.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
+      this.installableEvent = null;
+    });
   }
 
   /*

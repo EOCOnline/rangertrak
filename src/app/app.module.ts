@@ -53,7 +53,8 @@ import {
   FieldReportSource, FieldReportStatusType, FieldReportType, RangerType, SettingsType
 } from './shared/services/'
 import { TimePickerComponent } from './shared/time-picker/time-picker.component'
-import { X404Component } from './x404/x404.component'
+import { X404Component } from './x404/x404.component';
+import { InstallPromptComponent } from './shared/'
 
 
 // REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
@@ -125,7 +126,8 @@ import { X404Component } from './x404/x404.component'
     MiniLMapComponent,
     HeaderComponent,
     TimePickerComponent,
-    IconsComponent
+    IconsComponent,
+    InstallPromptComponent
     //,
     //CircleHatchingComponent
   ],
