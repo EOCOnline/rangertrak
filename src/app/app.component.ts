@@ -13,6 +13,7 @@ import { LogService } from './shared/services'
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+  @HostListener('window:beforeinstallprompt', ['$event'])
 
   private id = "AppComponent"
   title = 'RangerTrak'
@@ -22,12 +23,12 @@ export class AppComponent implements OnInit {
   // https://stackoverflow.com/questions/53871586/angular-catch-beforeinstallprompt-event-add-to-homescreen-in-dev-tools-applic
   deferredPrompt: any;
   showButton = false;
-  @HostListener('window:beforeinstallprompt', ['$event'])
 
-    constructor(
-      private swUpdate: SwUpdate,
-      private log: LogService,
-      private snackbar: MatSnackBar) {
+
+  constructor(
+    private swUpdate: SwUpdate,
+    private log: LogService,
+    private snackbar: MatSnackBar) {
   }
 
 
@@ -128,7 +129,7 @@ export class AppComponent implements OnInit {
 
 
 
-  onbeforeinstallprompt(e) {
+  onbeforeinstallprompt(e: Event) {
     console.log(e);
     // Prevent Chrome 67 and earlier from automatically showing the prompt
     e.preventDefault();
@@ -144,7 +145,7 @@ export class AppComponent implements OnInit {
     // Show the prompt
     this.deferredPrompt.prompt();
     // Wait for the user to respond to the prompt
-    this.deferredPrompt.userChoice
+    /*this.deferredPrompt.userChoice
       .then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
           console.log('User accepted the A2HS prompt');
@@ -153,6 +154,7 @@ export class AppComponent implements OnInit {
         }
         this.deferredPrompt = null;
       });
+      */
   }
 
 

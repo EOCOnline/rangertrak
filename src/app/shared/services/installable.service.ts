@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog'
 import { InstallPromptComponent } from '../'
 
 // From Angular Cookbook, pg 592
+// https://web.dev/install-criteria/
 // https://web.dev/customize-install
 // https://github.com/WICG/manifest-incubations
 
@@ -13,20 +14,25 @@ import { InstallPromptComponent } from '../'
 // https://love2dev.com/pwa/ - benefits of pwa
 // https://love2dev.com/blog/beforeinstallprompt/
 
+/**
+ *
+ * https://web.dev/customize-install/
+ * https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent
+ *
+ */
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class InstallableService {
 
-  installableEvent: Event | null | 1 = 1
+  // Initialize installableEvent for use later to show browser install prompt.
+  installableEvent: Event | null | 1 = 1 // BeforeInstallPromptEvent
 
   constructor(
     private dialog: MatDialog,
   ) {
-    this.init()
-  }
-
-  init() {
     console.log(`'beforeinstallprompt' service construction`)
     window.addEventListener(
       'beforeinstallprompt',
@@ -49,9 +55,11 @@ export class InstallableService {
       if (!this.installableEvent) {
         return
       }
-      this.installableEvent.prompt();
-      const { outcome } = await this.installableEvent.userChoice;
-      console.log(`User response to the install prompt: ${outcome}`);
+      //this.installableEvent.prompt();
+      //const { outcome } = await this.installableEvent.userChoice;
+      //console.log(`User response to the install prompt: ${outcome}`)
+
+      // We've used the prompt, and can't use it again, throw it away
       this.installableEvent = null;
     });
   }
@@ -75,7 +83,16 @@ export class InstallableService {
   // TODO: This should work once per user session, but isn't persisted to Settings or LocalStorage - if desired...
 
   handleInstallPrompt(e: Event) {
+    // log the platforms provided as options in an install prompt
+    //    console.log(e.platforms); // e.g., ["web", "android", "windows"]
+
     console.log(`'beforeinstallprompt' event was fired.`)
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent
+    //e.userChoice.then((choiceResult) => {
+    //      console.log(choiceResult.outcome); // either "accepted" or "dismissed"
+    //}, handleError);
+
     // Prevent the mini-infobar from appearing on mobile
     e.preventDefault()
 
