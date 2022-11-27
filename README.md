@@ -132,6 +132,8 @@ At the upper right of every screen, or additinoally on the [Settings Page](https
 
 ## For Developers Interested in Modifying or Contributing to the Project
 
+- Check out <contributing.md>
+
 ### To Build and Test
 
 - Fork Github.com/eocOnline/Rangertrak to your own repository
@@ -151,7 +153,7 @@ old: `http-server dist/rangertrak`
 
 #### Run App-shell
 
-- `ng run rangertrak:app-shell:development`
+- `ng run rangertrak:app-shell:development` or `ng run rangertrak:app-shell:production` - currently fails.
 - Then browse to `./dist/rangertrak/index.html`
 - see <https://angular.io/guide/app-shell> for details
 
