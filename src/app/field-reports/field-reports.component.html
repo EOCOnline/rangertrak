@@ -43,12 +43,11 @@
           [showToolPanel]="showToolPanel"
         -->
     </ag-grid-angular>
-    <div>
-      <span class="strong">Selected Rows: {{selectedRows}} </span> &nbsp; (Maps have a switch to
-      only show these rows)
-      <br>
-      <span fxFlex="auto" class="pager">
-        <label for="pet-select"># Rows per Page: </label>
+    <div class="rows">
+      <span class="selected"><span class="strong">Selected Rows: {{selectedRows}} </span> &nbsp; (Maps have a switch to
+        only show these rows)</span>
+      <span class="pager">
+        <label for="pet-select"># Rows per Page: &nbsp;</label>
         <select name="rowPerPage" id="rowPerPage-select" (change)="onRowsPerPage()">
           <!-- option value="">--Please choose an option--</option -->
           <option value="Auto">Auto</option>

@@ -1,11 +1,11 @@
 <!-- hr class="rule"-->
-<div fxLayout="row" fxLayoutAlign="space-between" class="header">
-  <span fxFlex="auto" class="title" title="{{pageDescription}}">{{parentTitle}} </span>
-  <span fxFlex="auto" class="event" title={{eventDetails}}> {{eventInfo}} </span>
-  <span fxFlex="auto" class="opPeriod" title={{opPeriodDetails}}> {{opPeriod}} {{timeElapsed$ | async}} &
+<div class="header">
+  <span class="title" title="{{pageDescription}}">{{parentTitle}} </span>
+  <span class="event" title={{eventDetails}}> {{eventInfo}} </span>
+  <span class="opPeriod" title={{opPeriodDetails}}> {{opPeriod}} {{timeElapsed$ | async}} &
     {{timeLeft$ | async}} </span>
-  <!--span fxFlex="20" class="opPeriod"
+  <!--span class="opPeriod"
     >{{(time.getTime() - opPeriodStart.getTime()) | async | date: 'hh:mm:ss'}}</span
   -->
-  <span fxFlex="auto" class="clock"> {{timeCurrent | async | date: 'MMM d, hh:mm:ss'}}</span>
+  <span class="clock"> {{timeCurrent | async | date: 'MMM d, hh:mm:ss'}}</span>
 </div>

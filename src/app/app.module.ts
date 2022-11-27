@@ -11,7 +11,6 @@ import {
 import { CommonModule } from '@angular/common'
 import { HttpClientModule } from '@angular/common/http'
 import { NgModule, isDevMode } from '@angular/core'
-//import { FlexLayoutModule } from '@angular/flex-layout'
 //import { ClockService, FieldReportService, PopupService, RangerService, SettingsService} from './shared/services/' // instead singleton services use "providedIn: 'root'""
 import {
   FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators
@@ -68,7 +67,6 @@ import { InstallPromptComponent } from './shared/'
     BrowserModule,
     CommonModule,
     // DayjsModule,
-    //FlexLayoutModule,
     FormsModule,
     GoogleMapsModule,
     HttpClientModule,

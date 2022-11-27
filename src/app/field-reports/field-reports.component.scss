@@ -11,8 +11,18 @@
   font-weight: bold;
 }
 
+.rows {
+  display        : flex;
+  justify-content: space-between;
+}
+
 .pager {
-  text-align: right;
+  font-weight              : bold;
+  //text-align             : right;
+  //display              : flex;
+  //display            : flex;
+  //flex-flow      : row wrap;
+  //justify-content  : space-between;
 }
 
 #rowPerPage-select {

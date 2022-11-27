@@ -7,8 +7,6 @@ import { AboutComponent } from './about/about.component'
 import { LazyRoutingModule } from './lazy-routing.module'
 import { LazyComponent } from './lazy.component'
 
-//import { FlexLayoutModule } from '@angular/flex-layout';
-
 // https://malcoded.com/posts/angular-fundamentals-modules/ is good
 // https://angular.io/guide/build#configuring-commonjs-dependencies
 // https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method: singleton
@@ -20,8 +18,6 @@ import { LazyComponent } from './lazy.component'
   imports: [
     CommonModule,
     LazyRoutingModule,
-    //FlexLayoutModule,
-
     /*
       RouterModule.forChild([
         { path: 'about', component: AboutComponent }
