@@ -53,7 +53,8 @@ import {
 } from './shared/services/'
 import { TimePickerComponent } from './shared/time-picker/time-picker.component'
 import { X404Component } from './x404/x404.component';
-import { InstallPromptComponent } from './shared/'
+import { InstallPromptComponent } from './shared/';
+import { RouterModule } from '@angular/router'
 
 
 // REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
@@ -64,7 +65,7 @@ import { InstallPromptComponent } from './shared/'
   // Import sub-modules
   imports: [
     BrowserAnimationsModule,
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     CommonModule,
     // DayjsModule,
     FormsModule,
@@ -96,7 +97,8 @@ import { InstallPromptComponent } from './shared/'
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
-    })
+    }),
+    RouterModule
   ],
 
   // Define all the components, directives and pipes,
@@ -150,13 +152,14 @@ import { InstallPromptComponent } from './shared/'
   // Ranger,
   // providers: [File, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
 
-  bootstrap: [AppComponent]//,
+  bootstrap: [AppComponent],
 
   // Make components, directives or pipes available to other modules...
+  // Also used by https://angular.io/guide/app-shell
   // ? TODO: Ensure lazy loaded Module has access to all the services it deserves!
-  // , exports: [
-  //   SettingsComponent
-  // ]
+  exports: [
+    //   SettingsComponent
+  ]
 })
 export class AppModule { }
 

@@ -20,7 +20,8 @@ console.info('Angular Material version', MAT_VERSION.full);
 
 // Load root module using bootstrap from platformBrowserDynamic
 // (ng.core only has platform neutral stuff & uses AOT compilation)
-platformBrowserDynamic() // JIT compilation/execution of ng apps for browsers
+function bootstrap() {
+                                                                                                                                           platformBrowserDynamic() // JIT compilation/execution of ng apps for browsers
   .bootstrapModule(AppModule)
   /*  Found in StackBlitz samples... doesn't resolve 'ngRef'
     .then(ref => {
@@ -31,7 +32,16 @@ platformBrowserDynamic() // JIT compilation/execution of ng apps for browsers
       window[<any>"ngRef"] = ref;
     })
     */
-  .catch(err => console.error(err)) //log any boot errors
+  .catch(err => console.error(err))
+                                                                                                                                         };
+
+
+ if (document.readyState === 'complete') {
+   bootstrap();
+ } else {
+   document.addEventListener('DOMContentLoaded', bootstrap);
+ }
+  //log any boot errors
 
 /*
 // Your web app's Firebase configuration
