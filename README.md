@@ -149,6 +149,12 @@ to serve it:
 `ng s -c production -o`
 old: `http-server dist/rangertrak`
 
+#### Run App-shell
+
+- `ng run rangertrak:app-shell:development`
+- Then browse to `./dist/rangertrak/index.html`
+- see <https://angular.io/guide/app-shell> for details
+
 ### Running unit tests
 
 - Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
