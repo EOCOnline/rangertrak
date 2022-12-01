@@ -18,7 +18,9 @@ import { InstallPromptComponent } from '../'
  *
  * https://web.dev/customize-install/
  * https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent
- *
+ * https://medium.com/runic-software/publishing-your-mapapp-229ba1e8258c
+ * https://medium.com/runic-software/simple-guide-to-workbox-in-angular-197c25396e68
+ * https://web.dev/app-shortcuts/
  */
 
 

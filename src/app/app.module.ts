@@ -1,5 +1,3 @@
-import { AgGridModule } from 'ag-grid-angular'
-
 import {
   MAT_COLOR_FORMATS, NGX_MAT_COLOR_FORMATS, NgxMatColorPickerModule
 } from '@angular-material-components/color-picker'
@@ -15,6 +13,8 @@ import { NgModule, isDevMode } from '@angular/core'
 import {
   FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators
 } from '@angular/forms'
+import { RouterModule } from '@angular/router'
+
 import { GoogleMapsModule } from '@angular/google-maps'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar'
 import { BrowserModule } from '@angular/platform-browser'
@@ -22,11 +22,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { ServiceWorkerModule } from '@angular/service-worker'
 //import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { MDCBanner } from '@material/banner'
+// import { DayjsModule } from 'ngx-dayjs'
 
 import { environment } from '../environments/environment'
-import { AppRoutingModule } from './app-routing.module'
+
+import { AgGridModule } from 'ag-grid-angular'
+//import { AgmCoreModule } from '@agm/core'
+
 import { AppComponent } from './app.component'
-// import { DayjsModule } from 'ngx-dayjs'
+import { AppShellComponent } from './app-shell/app-shell.component'
+import { AppRoutingModule } from './app-routing.module'
 import { EntryComponent } from './entry/entry.component'
 import { LocationComponent } from './entry/location.component'
 import { MiniGMapComponent } from './entry/mini-gmap.component'
@@ -39,26 +44,13 @@ import { LogComponent } from './log/log.component'
 import { MaterialModule } from './material.module'
 import { RangersComponent } from './rangers/rangers.component'
 import { ColorEditor } from './settings/color-editor.component'
+import { SettingsComponent } from './settings/settings.component'
 //import { MoodEditor } from './settings/mood-editor.component'
 //import { MoodRenderer } from './settings/mood-renderer.component'
-import { SettingsComponent } from './settings/settings.component'
-import { HeaderComponent } from './shared/'
-//import { AgmCoreModule } from '@agm/core'
-import { AlertsComponent } from './shared/'
-import { FooterComponent } from './shared/'
-import { IconsComponent } from './shared/'
-import { NavbarComponent } from './shared/'
-import {
-  FieldReportSource, FieldReportStatusType, FieldReportType, RangerType, SettingsType
-} from './shared/services/'
-import { TimePickerComponent } from './shared/time-picker/time-picker.component'
 import { X404Component } from './x404/x404.component';
-import { InstallPromptComponent } from './shared/';
-import { RouterModule } from '@angular/router'
 
-
-// REVIEW: import of AgmSnazzyInfoWindowModule yields: D:\Projects\RangerTrak\rangertrak\src\app\app.module.ts depends on '@agm/snazzy-info-window'. CommonJS or AMD dependencies can cause optimization bailouts.
-// https://angular.io/guide/build#configuring-commonjs-dependencies
+import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, InstallPromptComponent, NavbarComponent, TimePickerComponent } from './shared/'
+//import { FieldReportSource, FieldReportStatusType, FieldReportType, RangerType, SettingsType} from './shared/services/'
 
 @NgModule({
 
@@ -78,27 +70,18 @@ import { RouterModule } from '@angular/router'
     AgGridModule,
     // https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method: singleton
     // AgmCoreModule.forRoot({ apiKey: 'API_KEY_GOES_HERE' }),
-    // AgmSnazzyInfoWindowModule, // BUG: API_KEY
     LazyModule,
     NgxMatColorPickerModule,
-    // MatNativeDateModule,
-    // MatDatepickerModule,
     NgxMatDatetimePickerModule,
     NgxMatTimepickerModule,
     NgxMatNativeDateModule,
+    RouterModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: environment.production,
+      enabled: environment.production || !isDevMode(),
       // Register the ServiceWorker as soon as the app is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
-    }),
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
-    }),
-    RouterModule
+    })
   ],
 
   // Define all the components, directives and pipes,
@@ -107,6 +90,7 @@ import { RouterModule } from '@angular/router'
   // bundle it into a separate module & import that in the module
   declarations: [
     AppComponent,
+    //AppShellComponent,
     NavbarComponent,
     FooterComponent,
     AlertsComponent,
@@ -129,7 +113,6 @@ import { RouterModule } from '@angular/router'
     IconsComponent,
     InstallPromptComponent
     //,
-    //CircleHatchingComponent
   ],
 
   // Define any required @Injectables. Any sub-components or modules can get the
@@ -158,6 +141,7 @@ import { RouterModule } from '@angular/router'
   // Also used by https://angular.io/guide/app-shell
   // ? TODO: Ensure lazy loaded Module has access to all the services it deserves!
   exports: [
+    //AppShellComponent
     //   SettingsComponent
   ]
 })

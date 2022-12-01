@@ -560,6 +560,9 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   */
   refreshMap() {
 
+    // REVIEW: Redraw markers here or in calling routine?
+    this.displayMarkers()
+
     if (this.gMap) {
       //this.gMap.clear()
       // google.maps.event.trigger(this.gMap, 'resize');

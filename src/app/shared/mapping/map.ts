@@ -425,17 +425,16 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       this.log.verbose(`(Abstract) onSwitchSelectedFieldReports():Displaying ${this.displayedFieldReportArray.length} SELECTED field Reports`, this.id)
     } else {
       this.displayedFieldReportArray = this.fieldReports.fieldReportArray
+      this.numSelectedRows = this.fieldReports.numReport
       this.log.verbose(`(Abstract) onSwitchSelectedFieldReports():Displaying ALL ${this.displayedFieldReportArray.length} field Reports`, this.id)
       if (this.numSelectedRows != this.displayedFieldReportArray.length) {
         this.log.error(`(Abstract) onSwitchSelectedFieldReports():Having to update numSelectedRows ${this.numSelectedRows} to match actual array length ${this.displayedFieldReportArray.length}`, this.id)
-
         this.numSelectedRows = this.displayedFieldReportArray.length
       }
     }
 
-    // TODO: Need to refresh map?!
     this.refreshMap()
-    // this.reloadPage()  // TODO: needed?
+    //this.reloadPage()
   }
 
   // ------------------------------------  Markers  ---------------------------------------
