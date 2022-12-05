@@ -48,6 +48,9 @@ export class SettingsService implements OnInit {
 
     //  ------------------------- SECRETS -------------------------------
 
+    // We have a secrets file that is .gitignore - so never gets stored up at github
+    // TODO: Maybe better is to ask user to enter THEIR API Kerys on the settings page?
+    // https://www.freecodecamp.org/news/how-to-securely-store-api-keys-4ff3ea19ebda/
     // TODO: Add encryption to anything stored in a file...  https://github.com/digitalbazaar/forge
     // https://stackoverflow.com/questions/48094647/nodejs-crypto-in-typescript-file
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
