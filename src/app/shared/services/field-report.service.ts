@@ -419,19 +419,20 @@ export class FieldReportService implements OnInit, OnDestroy {
 
   // NOTE: findIndex is a system function on arrays!
   private findIndex2(id2: number): number {
-    this.fieldReports.fieldReportArray.findIndex(this.myFn)
-    for (let i = 0; i < this.fieldReports.fieldReportArray.length; i++) {
+    let i = this.fieldReports.fieldReportArray.findIndex((element) => element.id == id2)
+    if (i > -1) {
+      return i
+    }
+    /*for (let i = 0; i < this.fieldReports.fieldReportArray.length; i++) {
       if (this.fieldReports.fieldReportArray[i].id === id2) {
         return i
       }
     }
+    */
     throw new Error(`FieldReport with id ${id2} was not found!`)
     // return -1
   }
 
-  myFn(ids: FieldReportType) {
-    return ids.id === id
-  }
 
   //! MUlti-field sort:  data.sort((a, b) => a.city.localeCompare(b.city) || b.price - a.price)
   private sortFieldReportsByCallsign_unused() {

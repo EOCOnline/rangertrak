@@ -56,7 +56,7 @@
     "idb": "^7.1.1",
     "leaflet": "^1.9.3",
     "leaflet.markercluster": "^1.5.3",
-    "leaflet.offline": "^3.0.0-rc.2",
+    "leaflet.offline": "^3.0.0-rc.4",
     "mock-browser": "^0.92.14",
     "supercluster": "^7.1.5",
     "tslib": "^2.4.1",
