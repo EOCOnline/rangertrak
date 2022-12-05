@@ -398,35 +398,42 @@ export class FieldReportService implements OnInit, OnDestroy {
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
 
   private getFieldReport(id: number) {
-    const index = this.findIndex(id);
+    const index = this.findIndex2(id);
     return this.fieldReports.fieldReportArray[index];
   }
 
   updateFieldReport_unused(report: FieldReportType) {
-    const index = this.findIndex(report.id)
+    const index = this.findIndex2(report.id)
     this.fieldReports.fieldReportArray[index] = report
     // TODO: recalc bounds
     this.updateFieldReportsAndPublish()
   }
 
   private deleteFieldReport(id: number) {
-    const index = this.findIndex(id);
+    const index = this.findIndex2(id);
     this.fieldReports.fieldReportArray.splice(index, 1);
     // TODO: recalc bounds
     this.updateFieldReportsAndPublish();
     // this.nextId-- // REVIEW: is this desired???
   }
 
-  private findIndex(id: number): number {
+  // NOTE: findIndex is a system function on arrays!
+  private findIndex2(id2: number): number {
+    this.fieldReports.fieldReportArray.findIndex(this.myFn)
     for (let i = 0; i < this.fieldReports.fieldReportArray.length; i++) {
-      if (this.fieldReports.fieldReportArray[i].id === id) {
+      if (this.fieldReports.fieldReportArray[i].id === id2) {
         return i
       }
     }
-    throw new Error(`FieldReport with id ${id} was not found!`)
+    throw new Error(`FieldReport with id ${id2} was not found!`)
     // return -1
   }
 
+  myFn(ids: FieldReportType) {
+    return ids.id === id
+  }
+
+  //! MUlti-field sort:  data.sort((a, b) => a.city.localeCompare(b.city) || b.price - a.price)
   private sortFieldReportsByCallsign_unused() {
     return this.fieldReports.fieldReportArray.sort((n1, n2) => {
       if (n1.callsign > n2.callsign) { return 1 }
