@@ -398,38 +398,35 @@ export class FieldReportService implements OnInit, OnDestroy {
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
 
   private getFieldReport(id: number) {
-    const index = this.findIndex2(id);
+    const index = this.findFieldReportIndex(id);
     return this.fieldReports.fieldReportArray[index];
   }
 
   updateFieldReport_unused(report: FieldReportType) {
-    const index = this.findIndex2(report.id)
+    const index = this.findFieldReportIndex(report.id)
     this.fieldReports.fieldReportArray[index] = report
     // TODO: recalc bounds
     this.updateFieldReportsAndPublish()
   }
 
   private deleteFieldReport(id: number) {
-    const index = this.findIndex2(id);
+    const index = this.findFieldReportIndex(id);
     this.fieldReports.fieldReportArray.splice(index, 1);
     // TODO: recalc bounds
     this.updateFieldReportsAndPublish();
     // this.nextId-- // REVIEW: is this desired???
   }
 
-  // NOTE: findIndex is a system function on arrays!
-  private findIndex2(id2: number): number {
-    let i = this.fieldReports.fieldReportArray.findIndex((element) => element.id == id2)
+  private findFieldReportIndex(id: number): number {
+    let i = this.fieldReports.fieldReportArray.findIndex((element) => element.id == id)
     if (i > -1) {
       return i
     }
-    /*for (let i = 0; i < this.fieldReports.fieldReportArray.length; i++) {
+    /* for (let i = 0; i < this.fieldReports.fieldReportArray.length; i++) {
       if (this.fieldReports.fieldReportArray[i].id === id2) {
         return i
-      }
-    }
-    */
-    throw new Error(`FieldReport with id ${id2} was not found!`)
+     }} */
+    throw new Error(`FieldReport with id ${id} was not found!`)
     // return -1
   }
 
