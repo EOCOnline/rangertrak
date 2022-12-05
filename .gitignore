@@ -3,7 +3,7 @@
 # API Keys
 secrets.json
 RangerTrak-secrets.json
-./src/index.html
+/src/index.html
 
 # personnel info
 /src/assets/imgs/REW
@@ -21,6 +21,7 @@ RangerTrak-secrets.json
 
 # Old code
 /archived
+/non-distributed
 
 #Test and non-project stuff
 /junk
