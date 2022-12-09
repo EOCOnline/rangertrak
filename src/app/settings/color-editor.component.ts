@@ -4,10 +4,11 @@ import { ArgumentOutOfRangeError } from 'rxjs'
 import { Color } from '@angular-material-components/color-picker'
 import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef } from '@angular/core'
 import {
-    AbstractControl, FormArray, FormBuilder, FormGroup, UntypedFormControl, Validators
+  AbstractControl, FormArray, FormBuilder, FormGroup, UntypedFormControl, Validators
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 
+// TODO: Consider switching to https://github.com/brianpkelley/md-color-picker
 // https://www.ag-grid.com/angular-data-grid/component-cell-editor
 // TODO: Based on boolean value for icons: we need a selection from a panel of icons...
 @Component({
