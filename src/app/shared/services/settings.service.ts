@@ -51,6 +51,54 @@ export class SettingsService implements OnInit {
     // We have a secrets file that is .gitignore - so never gets stored up at github
     // TODO: Maybe better is to ask user to enter THEIR API Kerys on the settings page?
     // https://www.freecodecamp.org/news/how-to-securely-store-api-keys-4ff3ea19ebda/
+
+    //  https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt   & https://www.crypto101.io/
+
+    // https://github.com/mdn/dom-examples/blob/main/web-crypto/encrypt-decrypt/index.html
+
+
+
+    /**
+     * https://github.com/brix/crypto-js
+     * https://cryptojs.gitbook.io/docs/
+     * https://www.labnol.org/code/encrypt-decrypt-javascript-200307
+     * const CryptoJS = require('crypto-js');
+
+const encryptWithAES = (text) => {
+  const passphrase = '123';
+  return CryptoJS.AES.encrypt(text, passphrase).toString();
+};
+
+const decryptWithAES = (ciphertext) => {
+  const passphrase = '123';
+  const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase);
+  const originalText = bytes.toString(CryptoJS.enc.Utf8);
+  return originalText;
+};
+
+
+
+*  or from https://jsbin.com/kofiqokoku/1/edit?html,js,output
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+
+
+var encrypted = CryptoJS.AES.encrypt("Message", "Secret Passphrase");
+
+console.log(encrypted);
+console.log(encrypted.toString());
+
+var decrypted = CryptoJS.AES.decrypt(encrypted.toString(), "Secret Passphrase");
+
+console.log(decrypted);
+console.log(decrypted.toString(CryptoJS.enc.Utf8));
+
+     */
+
+
+
+
+
+
     // TODO: Add encryption to anything stored in a file...  https://github.com/digitalbazaar/forge
     // https://stackoverflow.com/questions/48094647/nodejs-crypto-in-typescript-file
     // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
