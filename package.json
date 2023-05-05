@@ -96,7 +96,7 @@
     "tslint-etc": "^1.13.10",
     "tslint-plugin-prettier": "^2.3.0",
     "tsviz-cli": "^2.0.3",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.4"
   },
   "importSort": {
     ".ts, .tsx": {
