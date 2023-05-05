@@ -2,8 +2,9 @@
 
 <section class="main">
   <!--div *ngIf="apiLoaded" | async -->
-  <div>If the map isn't shown below, try refreshing the page, zooming -- or even switching to a different page & then
-    back.</div>
+  <div>If the map isn't shown below, try refreshing the page (F5), zooming -- or even switching to a different page &
+    then
+    back.<span style="font-size: xx-small;"> (Need to have Leaflet refresh once map download is complete?)</span></div>
   <div class="lmap-container">
     <div class="lmap-frame">
       <div id="map" leaflet (leafletMapReady)="onMapReady($event)" (click)="onMouseClick($event)"></div>

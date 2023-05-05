@@ -18,6 +18,7 @@ export class AboutComponent implements OnDestroy, OnInit {
   private settingsSubscription!: Subscription
   private settings!: SettingsType
   public version = ''
+  today = new Date()
 
   // Makes spans (elements) for each letter/word
   animatedSpan = (text: string, index: number) => {
