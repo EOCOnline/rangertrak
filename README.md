@@ -202,6 +202,8 @@ Other useful commands:
 
 - `npm install -g typings` - Looks for updated Typescript type files.
 - `npx ng update -g`  - Updates global cli & sdk
+- `npm install npm@latest -g` - update npm
+- `npm install -g typescript` or to update:  `npm -g upgrade typescript`; to get version: `tsc --version` - update typescript
 
 ### To Deploy
 
