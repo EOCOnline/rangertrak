@@ -1,0 +1,36 @@
+# based on https://www.freecodecamp.org/news/update-dependencies-automatically-with-github-actions-and-renovate/
+
+name: Build and Test
+
+# Trigger when pushing to the master branch, and
+# when the Renovate app submits a Pull Request to update a dependency
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+    #
+jobs:
+  build_and_test:
+    # virtual machine where the job will be run
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # configure the combination of versions and systems we want to run our Workflow
+        node: [18, 19]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install project
+        run: npm install
+      - name: Build the project
+        run: npm run build --if-present
+      - name: Run tests
+        run: npm test
