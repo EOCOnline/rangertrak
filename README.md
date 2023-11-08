@@ -193,7 +193,7 @@ To verify, also check/update package.json & package-lock.json
 
 Commands from Evergreen Angular:
 
-- `npx ng update @angular/core @angular/cdk @angular/cli @angular/google-maps @angular/material`
+- `npx ng update @angular/core @angular/cdk @angular/cli @angular/google-maps @angular/material` (maybe with ' --force' to avoid peer dependency warnings)
 - `npx ng update`
 - `npx npm-check-updates -u`
 - `npm install`

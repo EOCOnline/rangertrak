@@ -100,10 +100,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "rangertrak:build:production"
+              "buildTarget": "rangertrak:build:production"
             },
             "development": {
-              "browserTarget": "rangertrak:build:development"
+              "buildTarget": "rangertrak:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -111,7 +111,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "rangertrak:build"
+            "buildTarget": "rangertrak:build"
           }
         },
         "test": {
