@@ -8,6 +8,20 @@ import {
 } from '@angular/forms'
 import { ThemePalette } from '@angular/material/core'
 
+
+
+
+// TODO: Consider https://www.npmjs.com/package/@angular-material-components/datetime-picker as a replacement to current timepicker/colorpicker?
+// https://github.com/h2qutc/angular-material-components
+// it is updated to NG 16...
+
+
+
+
+
+
+
+
 // TODO: Consider switching to https://github.com/brianpkelley/md-color-picker
 // https://www.ag-grid.com/angular-data-grid/component-cell-editor
 // TODO: Based on boolean value for icons: we need a selection from a panel of icons...

@@ -19,6 +19,19 @@ import {
   SettingsService, SettingsType
 } from '../services/'
 
+
+
+
+// TODO: Consider https://www.npmjs.com/package/@angular-material-components/datetime-picker as a replacement to current timepicker/colorpicker?
+// https://github.com/h2qutc/angular-material-components
+// it is updated to NG 16...
+
+
+
+
+
+
+
 // https://blog.briebug.com/blog/5-ways-to-pass-data-into-child-components-in-angular
 
 
