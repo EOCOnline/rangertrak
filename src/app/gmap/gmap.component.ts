@@ -4,6 +4,7 @@ import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { GoogleMap } from '@angular/google-maps'
+import { Loader } from '@googlemaps/js-api-loader'
 import { MarkerClusterer } from '@googlemaps/markerclusterer'
 
 import { Utility } from '../shared/'
@@ -11,7 +12,7 @@ import { AbstractMap } from '../shared/'
 import { Map } from '../shared/mapping/map.interface';
 import {
   FieldReportService, FieldReportStatusType, FieldReportType, LogService,
-  SettingsService
+  SettingsService, Secret
 } from '../shared/services'
 
 /*
@@ -40,6 +41,8 @@ GoogleMapsModule (their Angular wrapper) exports three components that we can us
  https://developers.google.com/maps/documentation/javascript/overview supports client-side usage
  https://console.cloud.google.com/google/maps-apis/ does *NOT* support client side usage?!
 */
+
+
 
 declare const google: any // declare tells compiler "this variable exists (from elsewhere) & can be referenced by other code. There's no need to compile this statement"
 /**
@@ -74,6 +77,16 @@ export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
   overviewGMap!: google.maps.Map
   overviewMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
   // overviewGMapOptions: google.maps.MapOptions
+
+
+  loader!: Loader
+  /*
+    loader = new Loader({
+      apiKey: "YOUR_API_KEY", //SettingsService.secrets[Secret.GoogleMaps].key, //"YOUR_API_KEY",
+      version: "weekly",
+      //...additionalOptions,
+    });
+  */
 
   // items for <google-map>
   trafficLayer = new google.maps.TrafficLayer()
@@ -153,6 +166,20 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
 
 */
 
+
+
+
+    /*
+          // https://developers.google.com/maps/documentation/javascript/get-api-key
+          (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+            key: "YOUR_API_KEY_HERE",
+            v: "weekly",
+            // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
+            // Add other bootstrap parameters as needed, using camel case.
+          });
+    */
+
+
     // https://developers.google.com/maps/documentation/javascript/examples/map-latlng-literal
     // https://developers.google.com/maps/documentation/javascript/reference/coordinates
 
@@ -202,6 +229,7 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
 
   }
 
+
   // ---------------- Init Main Map -----------------
   /**
    *
@@ -210,13 +238,44 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
   override initMainMap() {
     super.initMainMap()
 
-    this.log.excessive("initMap()", this.id)
+    this.log.excessive("initMap() %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", this.id)
 
     // ! Repeat of the guards in super:
     if (!this.settings) {
       this.log.error(`Settings not yet initialized while in initMap()!`, this.id)
       return
     }
+
+
+    // https://developers.google.com/maps/documentation/javascript/load-maps-js-api
+    // https://developers.google.com/maps/documentation/javascript/overview#Loading_the_Maps_API
+    // this.initMap();
+    if (!this.loader) {
+
+      this.log.excessive("initMap() --------------  creating loader !!!!!!!!!!!!", this.id)
+      this.log.excessive(`initMap() --------------  creating loader using Google Maps key ${(SettingsService.secrets[Secret.GoogleMaps].key)}`, this.id)
+
+      this.loader = new Loader({
+        apiKey: SettingsService.secrets[Secret.GoogleMaps].key, //"YOUR_API_KEY",
+        version: "weekly",
+        //...additionalOptions,
+      });
+
+    } else {
+      this.log.excessive("initMap() --------------  loader exists!!!!!!!!!!!!", this.id)
+    }
+
+    this.loader.load().then(async () => {
+      const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
+      this.gMap = new Map(document.getElementById("map") as HTMLElement, {
+        center: { lat: -34.397, lng: 150.644 },
+        zoom: 8,
+      });
+    });
+
+
+
+
 
     //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
 
@@ -240,6 +299,25 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       this.log.error(`initMainMap(): this.gMap NOT INitialized yet! `, this.id)
     }
   }
+
+
+
+
+  // https://developers.google.com/maps/documentation/javascript/load-maps-js-api
+
+  /* let gMap: google.maps.Map;
+  async initMap(): Promise<void> {
+    const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
+    this.gMap = new Map(document.getElementById("map") as HTMLElement, {
+      center: { lat: -34.397, lng: 150.644 },
+      zoom: 8,
+    });
+  }
+*/
+
+
+
+
 
   /**
    *

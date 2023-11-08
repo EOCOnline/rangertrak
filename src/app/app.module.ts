@@ -16,6 +16,7 @@ import {
 import { RouterModule } from '@angular/router'
 
 import { GoogleMapsModule } from '@angular/google-maps'
+//import { Loader } from '@googlemaps/js-api-loader'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
@@ -62,6 +63,7 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
     // DayjsModule,
     FormsModule,
     GoogleMapsModule,
+    //    Loader,
     HttpClientModule,
     MaterialModule,
     ReactiveFormsModule,

@@ -38,6 +38,7 @@
     "@angular/router": "^16.0.3",
     "@angular/service-worker": "^16.0.3",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@googlemaps/js-api-loader": "^1.15.2",
     "@googlemaps/markerclusterer": "^2.1.4",
     "@material/banner": "^14.0.0",
     "@material/icon-button": "^14.0.0",

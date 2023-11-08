@@ -11,6 +11,7 @@ export { FieldReportType, FieldReportsType, FieldReportStatusType, FieldReportSo
 export { LocationType, undefinedAddressFlag, undefinedLocation } from "./location.interface"
 export { LogLevel, LogType, LogHeadings } from "./log.interface"
 export { RangerType, UnknownRanger } from "./ranger.interface"
+export { Secret } from "./secrets.interface"
 export { SettingsType } from "./settings.interface"
 
 
