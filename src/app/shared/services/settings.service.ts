@@ -49,7 +49,7 @@ export class SettingsService implements OnInit {
     //  ------------------------- SECRETS -------------------------------
 
     // We have a secrets file that is .gitignore - so never gets stored up at github
-    // TODO: Maybe better is to ask user to enter THEIR API Kerys on the settings page?
+    // TODO: Maybe better is to ask user to enter THEIR API Keys on the settings page?
     // https://www.freecodecamp.org/news/how-to-securely-store-api-keys-4ff3ea19ebda/
 
     //  https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt   & https://www.crypto101.io/

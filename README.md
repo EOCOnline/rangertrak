@@ -45,6 +45,8 @@ To use and see what this application does, simply browse to <https://Rangertrak.
 
 ### Items (still) requiring online access
 
+- BLOCKING: Removed hardcoded Google API key from the secrets.json file. Either create your own from the secrets template,
+  or await my changes to SettingsService::Constructor() &/or GmapComponent::Loader
 - GeoCoding an address
 - All maps (for now)
 - 3Word functionality (for now)
@@ -65,7 +67,7 @@ All data is private: only stored locally in your browser's Local Storage.
 
 So you get an idea of how it looks/works here's a typical workflow. (Click images for larger versions.)
 
-#### Mission Settings Screen: Start here!
+#### Mission Settings Screen: Start here
 
 At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters can also be adjusted. Field Report statuses can be edited as desired. The background incidentally shows RangerTrak being tested in a real-world exercise.
 
