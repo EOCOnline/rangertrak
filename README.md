@@ -69,11 +69,11 @@ So you get an idea of how it looks/works here's a typical workflow. (Click image
 
 #### Mission Settings Screen: Start here
 
-At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters can also be adjusted. Field Report statuses can be edited as desired. The background incidentally shows RangerTrak being tested in a real-world exercise.
-
-**WARNING: Before doing the above** Be sure you have backed up and downloaded any previous mission data, via the Export Buttons on the [Field Reports Page](https://www.RangerTrak.org/reports) and [Rangers Page](https://www.RangerTrak.org/rangers) Screens.
+**WARNING: Before doing the following** Be sure you have backed up and downloaded any previous mission data, via the Export Buttons on the [Field Reports Page](https://www.RangerTrak.org/reports) and [Rangers Page](https://www.RangerTrak.org/rangers) Screens.
 
 ![Mission Settings Screen](./non-dist-imgs/MissionSettings.png "Mission Settings Screen")
+
+At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters can also be adjusted. Field Report statuses can be edited as desired. The background incidentally shows RangerTrak being tested in a real-world exercise.
 
 #### Rangers Screen
 
@@ -90,8 +90,8 @@ Most users will spend most of their time entering field reports from this 'home'
 2. Next, enter a location in any of the labeled formats. Derived addresses will then be displayed and mapped for your confirmation.
 3. When defaults to the current time. Edit it if the report was previoulsy recieved.
 4. What records the report status or nature, defaulting to "normal". You can enter freeform notes as desired too, possibly entering custom, unique incident specific keywords. Those can be filtered/searched for on the Field Reports Screen if desired.
-5. Submit your report. (Mistakes can generally be edited in the Field Reports Screen.)
-6. The Reset button clears the form of any data erroneously entered and lets the scribe start over with a clean field report.
+5. Submit your report. (Mistakes can generally be edited later on in the Field Reports Screen.) Once submitted a confirmation is briefly displayed and the form is automatically reset.
+6. The Reset button clears the form of all current data, so the scribe can start over with a clean field report.
 
 ![Home (Entry) Screen](./non-dist-imgs/Entry.png "Home (Entry) Screen")
 

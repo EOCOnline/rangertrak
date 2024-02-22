@@ -12,8 +12,8 @@
     "editor.formatOnSave": true,
     "editor.minimap.enabled": false,
     "editor.codeActionsOnSave": {
-        "source.organizeImports": false,
-        "source.fixAll.tslint": true
+        "source.organizeImports": "never",
+        "source.fixAll.tslint": "explicit"
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[html]": {
