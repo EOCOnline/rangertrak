@@ -169,6 +169,7 @@ old: `http-server dist/rangertrak`
 Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
 - None currently!
+- Plans to move to Puppeter, per https://blog.angular.io/introducing-puppeteer-schematics-test-your-angular-apps-with-ease-dea6947f6299
 
 ### To update documentation
 
@@ -176,7 +177,7 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 `compodoc -s` to serve/view the doc at <http://127.0.0.1:8080/>
 See <https://compodoc.app/guides/usage.html> and <https://compodoc.app/> for details
 
-### To update Version
+### To update RangerTrak version number
 
 Run `npm run release` per <https://www.npmjs.com/package/standard-version>
 
@@ -206,6 +207,7 @@ Other useful commands:
 - `npx ng update -g`  - Updates global cli & sdk
 - `npm install npm@latest -g` - update npm
 - `npm install -g typescript` or to update:  `npm -g upgrade typescript`; to get version: `tsc --version` - update typescript
+- `choco upgrade all` - updates https://docs.chocolatey.org/en-us/choco/commands/upgrade (requires VSCode being run with Admin permissions) & many apps that use Choclatey
 
 ### To Deploy
 

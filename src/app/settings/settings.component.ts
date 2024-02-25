@@ -57,6 +57,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private gridColumnApi: any
   rowData: FieldReportStatusType[] = []
 
+
+
+
+
+
   /*
   colorCtr: AbstractControl = new FormControl(new Color(255, 243, 200), [Validators.required])
   //colorCtr: string = new FormControl(new Color(255, 243, 0), [Validators.required])
