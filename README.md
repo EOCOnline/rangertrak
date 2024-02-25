@@ -208,6 +208,8 @@ Other useful commands:
 - `npm install npm@latest -g` - update npm
 - `npm install -g typescript` or to update:  `npm -g upgrade typescript`; to get version: `tsc --version` - update typescript
 - `choco upgrade all` - updates https://docs.chocolatey.org/en-us/choco/commands/upgrade (requires VSCode being run with Admin permissions) & many apps that use Choclatey
+- `https://update.angular.io/?v=15.0-17.0` shows additinoal code updates that may be required
+
 
 ### To Deploy
 
