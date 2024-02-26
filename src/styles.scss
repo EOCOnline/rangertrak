@@ -50,7 +50,7 @@ $theme: mat.define-light-theme((color: (primary: $theme-primary,
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include mat.all-legacy-component-themes($theme);
+// @ xx include mat.all-legacy-component-themes($theme);
 
 html,
 body {
