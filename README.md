@@ -209,7 +209,9 @@ Other useful commands:
 - `npm install -g typescript` or to update:  `npm -g upgrade typescript`; to get version: `tsc --version` - update typescript
 - `choco upgrade all` - updates https://docs.chocolatey.org/en-us/choco/commands/upgrade (requires VSCode being run with Admin permissions) & many apps that use Choclatey
 - `https://update.angular.io/?v=15.0-17.0` shows additinoal code updates that may be required
-
+- `npm install --save --legacy-peer-deps` - tells NPM to install packages using relaxed V6 algorithm
+- `npm i yarn -g`, then `yarn install` - uses yarn (a nice wrapper for npm)
+- `npm outdated` - show availability of newer packages
 
 ### To Deploy
 
