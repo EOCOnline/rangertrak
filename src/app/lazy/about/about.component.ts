@@ -51,9 +51,9 @@ export class AboutComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    //console.error("lets get animated!")
+    // console.error("lets get animated!")
     // this.animatedLetters()
-    //console.error("we got animated!")
+    // console.error("we got animated!")
   }
 
   // from https://web.dev/patterns/animation/
