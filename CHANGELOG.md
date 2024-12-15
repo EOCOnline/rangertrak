@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.11.46](https://github.com/EOCOnline/rangertrak/compare/v0.11.40...v0.11.46) (2024-12-15)
 
+- Modernizing: Updating to latest libraries & tools
+- Might evolve to using Angular Signals?
+
 ### [0.11.45](https://github.com/EOCOnline/RangerTrak/compare/v0.11.44...v0.11.45) (2024-02-26)
 
 ### [0.11.44](https://github.com/EOCOnline/RangerTrak/compare/v0.11.40...v0.11.44) (2022-11-25)

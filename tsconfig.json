@@ -29,7 +29,15 @@
     "useDefineForClassFields": false,
     "typeRoots": [
       "node_modules/@types",
-    ]
+    ],
+    "paths": {
+      "@shared/*": [
+        "./src/shared/*"
+      ],
+      "@services/*": [
+        "./src/shared/services/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -38,29 +46,19 @@
     "strictTemplates": true,
     "fullTemplateTypeCheck": true
   },
-  "paths": {
-    "@shared/*": [
-      "./src/shared/*"
-    ],
-    "@services/*": [
-      "./src/shared/services/*"
-    ]
-  }
   /*
-    RE: Typeroots: see https://developers.google.com/maps/documentation/javascript/using-typescript#specifying_typeroots
+    RE: Typeroots: see https: //developers.google.com/maps/documentation/javascript/using-typescript#specifying_typeroots
     Some frameworks such as Angular may require specifying the typeRoots compiler option to include types installed from @types/google.maps and all other "@types" packages
 
 
-    above from https://giancarlobuomprisco.com/typescript/writing-scalabale-typescript
-    https://www.devasking.com/issue/tsconfigjson-include-property
-    ,
-    "files": [
-      "./node_modules/picocolors/types.ts"
-    ]
-
-    ,
-    "exclude": [
-      "./node_modules/picocolors/types.ts"
-    ]
+    above from https: //giancarlobuomprisco.com/typescript/writing-scalabale-typescript
+    https: //www.devasking.com/issue/tsconfigjson-include-property
+  ,
+  "files": [
+    "./node_modules/picocolors/types.ts"
+  ],
+  "exclude": [
+    "./node_modules/picocolors/types.ts"
+  ]
   */
 }
