@@ -8,7 +8,7 @@ import {
 } from '@angular-material-components/datetime-picker'
 import { CommonModule } from '@angular/common'
 import { HttpClientModule } from '@angular/common/http'
-import { NgModule, isDevMode } from '@angular/core'
+import { NgModule, isDevMode, APP_ID } from '@angular/core'
 //import { ClockService, FieldReportService, PopupService, RangerService, SettingsService} from './shared/services/' // instead singleton services use "providedIn: 'root'""
 import {
   FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators
@@ -58,7 +58,7 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
   // Import sub-modules
   imports: [
     BrowserAnimationsModule,
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+
     CommonModule,
     // DayjsModule,
     FormsModule,
@@ -128,10 +128,12 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
   // Post Ang 6, do not put here as they are no longer tree-shakable,
   // ? instead use providedin: 'root' at start of every service/singleton
   // per https://angular.io/guide/singleton-services
+  // https://angular.dev/api/core/APP_ID?tab=description
   providers: [
     //ClockService, FieldReportService, LogService, PopupService, RangerService, SettingsService,
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS }
+    { provide: APP_ID, useValue: 'serverApp' },
   ],
   //{provide: MAT_BANNER_DEFAULT_OPTIONS}],
   // Ranger,
