@@ -45,7 +45,10 @@ import { LayerType, MapType, Map } from './map.interface'
  * - Display fieldReports : boolean
  * - Various Settings: Def_Lat/Lng/Zoom/etc.
  */
-@Component({ template: '' })
+@Component({
+    template: '',
+    standalone: false
+})
 export abstract class AbstractMap implements OnInit, OnDestroy {
 
   protected id = 'Abstract Map Component'

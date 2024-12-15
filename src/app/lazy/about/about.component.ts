@@ -7,10 +7,11 @@ import { ClockService, LogService, SettingsService, SettingsType } from '../../s
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'rangertrak-about',
-  templateUrl: './about.component.html',
-  styleUrls: ['./about.component.scss'],
-  providers: [SettingsService]
+    selector: 'rangertrak-about',
+    templateUrl: './about.component.html',
+    styleUrls: ['./about.component.scss'],
+    providers: [SettingsService],
+    standalone: false
 })
 export class AboutComponent implements OnDestroy, OnInit {
 

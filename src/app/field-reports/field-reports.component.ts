@@ -13,7 +13,10 @@ import {
   RangerService, SettingsService, SettingsType
 } from '../shared/services'
 
-@Pipe({ name: 'myUnusedPipe' })
+@Pipe({
+    name: 'myUnusedPipe',
+    standalone: false
+})
 export class myUnusedPipe implements PipeTransform {
   transform(val: string) {
     return val.toUpperCase()
@@ -22,9 +25,10 @@ export class myUnusedPipe implements PipeTransform {
 
 
 @Component({
-  selector: 'rangertrak-field-reports',
-  templateUrl: './field-reports.component.html',
-  styleUrls: ['./field-reports.component.scss']
+    selector: 'rangertrak-field-reports',
+    templateUrl: './field-reports.component.html',
+    styleUrls: ['./field-reports.component.scss'],
+    standalone: false
 })
 export class FieldReportsComponent implements OnInit, OnDestroy {
 

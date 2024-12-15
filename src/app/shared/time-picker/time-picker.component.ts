@@ -40,9 +40,10 @@ import {
 // https://www.concretepage.com/angular-material/angular-material-datepicker-change-event
 
 @Component({
-  selector: 'rangertrak-time-picker',
-  templateUrl: './time-picker.component.html',
-  styleUrls: ['./time-picker.component.scss']
+    selector: 'rangertrak-time-picker',
+    templateUrl: './time-picker.component.html',
+    styleUrls: ['./time-picker.component.scss'],
+    standalone: false
 })
 export class TimePickerComponent implements OnInit {
   //!TODO: Is this really needed as @Input, or just a variable?!

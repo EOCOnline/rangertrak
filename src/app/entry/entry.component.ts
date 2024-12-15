@@ -26,13 +26,15 @@ import {
 
 
 @Component({
-  selector: 'rangertrak-entry',
-  templateUrl: './entry.component.html',
-  styleUrls: ['./entry.component.scss'],
-  providers: [RangerService, FieldReportService, SettingsService]
-  //, TeamService
-  // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
-  // per https://angular.io/guide/singleton-services
+    selector: 'rangertrak-entry',
+    templateUrl: './entry.component.html',
+    styleUrls: ['./entry.component.scss'],
+    providers: [RangerService, FieldReportService, SettingsService]
+    //, TeamService
+    // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
+    // per https://angular.io/guide/singleton-services
+    ,
+    standalone: false
 })
 export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // following is never referenced: not really in use?!

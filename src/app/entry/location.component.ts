@@ -36,10 +36,11 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 */
 
 @Component({
-  //moduleId: module.id,
-  selector: 'rangertrak-location',
-  templateUrl: './location.component.html',
-  styleUrls: ['./location.component.scss']
+    //moduleId: module.id,
+    selector: 'rangertrak-location',
+    templateUrl: './location.component.html',
+    styleUrls: ['./location.component.scss'],
+    standalone: false
 })
 export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
 

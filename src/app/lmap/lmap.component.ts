@@ -44,15 +44,16 @@ L.Marker.prototype.options.icon = iconDefault;
 
 
 @Component({
-  selector: 'rangertrak-lmap',
-  templateUrl: './lmap.component.html',
-  styleUrls: [
-    './lmap.component.scss'
-    //,     "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.css", // REVIEW: also added to angular.json: needed there?
-    // "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css" // (not needed if you use your own iconCreateFunction instead of the default one)
-    //'../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)
-  ],
-  providers: [SettingsService]
+    selector: 'rangertrak-lmap',
+    templateUrl: './lmap.component.html',
+    styleUrls: [
+        './lmap.component.scss'
+        //,     "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.css", // REVIEW: also added to angular.json: needed there?
+        // "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css" // (not needed if you use your own iconCreateFunction instead of the default one)
+        //'../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)
+    ],
+    providers: [SettingsService],
+    standalone: false
 })
 export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {  //OnInit,
 

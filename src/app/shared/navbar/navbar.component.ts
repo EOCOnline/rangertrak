@@ -10,9 +10,10 @@ import { Utility } from '../utility';
 //https://material.io/components/app-bars-top/web#regular-top-app-bar
 
 @Component({
-  selector: 'rangertrak-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+    selector: 'rangertrak-navbar',
+    templateUrl: './navbar.component.html',
+    styleUrls: ['./navbar.component.scss'],
+    standalone: false
 })
 export class NavbarComponent implements OnInit {
 

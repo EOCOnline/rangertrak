@@ -26,9 +26,10 @@ import { ThemePalette } from '@angular/material/core'
 // https://www.ag-grid.com/angular-data-grid/component-cell-editor
 // TODO: Based on boolean value for icons: we need a selection from a panel of icons...
 @Component({
-  selector: 'editor-cell',
-  templateUrl: './color-editor-component.html',
-  styleUrls: ['./color-editor-component.scss',],
+    selector: 'editor-cell',
+    templateUrl: './color-editor-component.html',
+    styleUrls: ['./color-editor-component.scss',],
+    standalone: false
 })
 export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
 

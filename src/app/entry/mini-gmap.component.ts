@@ -18,9 +18,10 @@ import {
 //const Vashon: google.maps.LatLngLiteral = { lat: 47.4471, lng: -122.4627 }
 
 @Component({
-  selector: 'mini-gmap',
-  templateUrl: './mini-gmap.component.html',
-  styleUrls: ['./mini-gmap.component.scss']
+    selector: 'mini-gmap',
+    templateUrl: './mini-gmap.component.html',
+    styleUrls: ['./mini-gmap.component.scss'],
+    standalone: false
 })
 export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy {
 

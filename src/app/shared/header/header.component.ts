@@ -16,9 +16,10 @@ import { Utility } from '../'
  *   pageDescr = `Description of this page & purpose`
  */
 @Component({
-  selector: 'pageHeader',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+    selector: 'pageHeader',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.scss'],
+    standalone: false
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @Input() parentTitle: string

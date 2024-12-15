@@ -6,9 +6,10 @@ import { Component, OnInit } from '@angular/core'
  *
  */
 @Component({
-  selector: 'rangertrak-x404',
-  templateUrl: './x404.component.html',
-  styleUrls: ['./x404.component.scss']
+    selector: 'rangertrak-x404',
+    templateUrl: './x404.component.html',
+    styleUrls: ['./x404.component.scss'],
+    standalone: false
 })
 export class X404Component implements OnInit {
   title = 'You are seeking a web page that does not yet exist!'

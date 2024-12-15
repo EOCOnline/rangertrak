@@ -8,9 +8,10 @@ import { SwUpdate, VersionReadyEvent } from '@angular/service-worker'
 import { LogService } from './shared/services'
 
 @Component({
-  selector: 'rangertrak-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'rangertrak-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent implements OnInit {
   @HostListener('window:beforeinstallprompt', ['$event'])

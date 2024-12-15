@@ -27,9 +27,10 @@ type AOA = any[][]  // array of arrays
 // D:\Projects\ImportExcel\sheetjs-master\demos\angular2\ionic.ts
 
 @Component({
-  selector: 'rangertrak-rangers',
-  templateUrl: './rangers.component.html',
-  styleUrls: ['./rangers.component.scss']
+    selector: 'rangertrak-rangers',
+    templateUrl: './rangers.component.html',
+    styleUrls: ['./rangers.component.scss'],
+    standalone: false
 })
 export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 

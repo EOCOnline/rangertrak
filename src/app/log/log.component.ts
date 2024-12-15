@@ -22,9 +22,10 @@ import {
  *
  */
 @Component({
-  selector: 'rangertrak-log',
-  templateUrl: './log.component.html',
-  styleUrls: ['./log.component.scss']
+    selector: 'rangertrak-log',
+    templateUrl: './log.component.html',
+    styleUrls: ['./log.component.scss'],
+    standalone: false
 })
 export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit {
   // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method

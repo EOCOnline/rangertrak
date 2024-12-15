@@ -49,10 +49,11 @@ declare const google: any // declare tells compiler "this variable exists (from 
  * @ignore
  */
 @Component({
-  selector: 'rangertrak-gmap',
-  templateUrl: './gmap.component.html',
-  styleUrls: ['./gmap.component.scss'],
-  providers: [SettingsService]
+    selector: 'rangertrak-gmap',
+    templateUrl: './gmap.component.html',
+    styleUrls: ['./gmap.component.scss'],
+    providers: [SettingsService],
+    standalone: false
 })
 export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {
 

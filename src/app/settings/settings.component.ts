@@ -20,10 +20,11 @@ import { ColorEditor } from './color-editor.component'
 //import { MoodRenderer } from './mood-renderer.component'
 
 @Component({
-  selector: 'rangertrak-settings',
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss'],
-  providers: [SettingsService]
+    selector: 'rangertrak-settings',
+    templateUrl: './settings.component.html',
+    styleUrls: ['./settings.component.scss'],
+    providers: [SettingsService],
+    standalone: false
 })
 export class SettingsComponent implements OnInit, OnDestroy {
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/

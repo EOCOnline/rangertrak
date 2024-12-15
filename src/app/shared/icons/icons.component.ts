@@ -48,9 +48,10 @@ type Options = {|
 // ICONS: see pg 164, Ang Dev w/ TS
 
 @Component({
-  selector: 'rangertrak-icons',
-  templateUrl: './icons.component.html',
-  styleUrls: ['./icons.component.scss']
+    selector: 'rangertrak-icons',
+    templateUrl: './icons.component.html',
+    styleUrls: ['./icons.component.scss'],
+    standalone: false
 })
 export class IconsComponent implements OnInit {
   @Input('path') data: string = 'M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z';
