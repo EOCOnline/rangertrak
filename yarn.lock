@@ -126,7 +126,7 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/animations@^18.0.0 || ^19.0.0", "@angular/animations@^19.0.4", "@angular/animations@19.0.4":
+"@angular/animations@^19.0.0 || ^20.0.0", "@angular/animations@^19.0.4", "@angular/animations@19.0.4":
   version "19.0.4"
   resolved "https://registry.npmjs.org/@angular/animations/-/animations-19.0.4.tgz"
   integrity sha512-iGuOMlVhLBmGCSJ5azqwLdsBIFlWXtB+CffeoJjKXGjR2YRxP1aylNccB5UqE7G/XjNNLjJfLkm+nQUAWGLMNg==
@@ -166,10 +166,10 @@
   optionalDependencies:
     lmdb "3.1.5"
 
-"@angular/cdk@^16.0.0", "@angular/cdk@^18.2.14", "@angular/cdk@>=16.0.0", "@angular/cdk@18.2.14":
-  version "18.2.14"
-  resolved "https://registry.npmjs.org/@angular/cdk/-/cdk-18.2.14.tgz"
-  integrity sha512-vDyOh1lwjfVk9OqoroZAP8pf3xxKUvyl+TVR8nJxL4c5fOfUFkD7l94HaanqKSRwJcI2xiztuu92IVoHn8T33Q==
+"@angular/cdk@^16.0.0", "@angular/cdk@^19.0.3", "@angular/cdk@>=16.0.0":
+  version "19.0.3"
+  resolved "https://registry.npmjs.org/@angular/cdk/-/cdk-19.0.3.tgz"
+  integrity sha512-sPdIKbSgNk4z02FqdTTMUS62aLVA2R/DsnOk3qdH+nEfeS4nNWQEzwrvMf6dDsTeLQ6YJLWXfZfemsGYpOoiWg==
   dependencies:
     tslib "^2.3.0"
   optionalDependencies:
@@ -198,7 +198,7 @@
     symbol-observable "4.0.0"
     yargs "17.7.2"
 
-"@angular/common@^16.0.0", "@angular/common@^17.0.0 || ^18.0.0", "@angular/common@^18.0.0 || ^19.0.0", "@angular/common@^19.0.4", "@angular/common@>= 14.0.0", "@angular/common@>=16.0.0", "@angular/common@19.0.4":
+"@angular/common@^16.0.0", "@angular/common@^17.0.0 || ^18.0.0", "@angular/common@^19.0.4", "@angular/common@>= 14.0.0", "@angular/common@>=16.0.0", "@angular/common@19.0.4":
   version "19.0.4"
   resolved "https://registry.npmjs.org/@angular/common/-/common-19.0.4.tgz"
   integrity sha512-SBWraO5NVZa/QJPrVbk3IsUmZQDriYBvqYuZFJaI/UTbhcAedNRsLDbKHtOYrHHx6K1saPXSQCufWgFo30lEqw==
@@ -226,14 +226,14 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/core@^16.0.0", "@angular/core@^17.0.0 || ^18.0.0", "@angular/core@^18.0.0 || ^19.0.0", "@angular/core@^19.0.4", "@angular/core@>= 14.0.0", "@angular/core@>=16.0.0", "@angular/core@19.0.4":
+"@angular/core@^16.0.0", "@angular/core@^17.0.0 || ^18.0.0", "@angular/core@^19.0.4", "@angular/core@>= 14.0.0", "@angular/core@>=16.0.0", "@angular/core@19.0.4":
   version "19.0.4"
   resolved "https://registry.npmjs.org/@angular/core/-/core-19.0.4.tgz"
   integrity sha512-eoLixL8+03HpMIrmbL9lX+PAEw/fJSGshUH99IN9ZgCDEWeAlORg3U5RQEEh59ovelGfTn/sNaYhWsLVoBUIYQ==
   dependencies:
     tslib "^2.3.0"
 
-"@angular/forms@^16.0.0", "@angular/forms@^18.0.0 || ^19.0.0", "@angular/forms@^19.0.4", "@angular/forms@>=16.0.0":
+"@angular/forms@^16.0.0", "@angular/forms@^19.0.4", "@angular/forms@>=16.0.0":
   version "19.0.4"
   resolved "https://registry.npmjs.org/@angular/forms/-/forms-19.0.4.tgz"
   integrity sha512-smBCOjqCOMjHxRwwmImo58esSatGRsIxEaPytMezWWXqcD9pCZFzHskXA7218cJBRO8T9wuAf5AJFSqD4Yg72A==
@@ -248,10 +248,10 @@
     "@types/google.maps" "^3.54.10"
     tslib "^2.3.0"
 
-"@angular/material@^16.0.0", "@angular/material@^18.2.14", "@angular/material@>=16.0.0":
-  version "18.2.14"
-  resolved "https://registry.npmjs.org/@angular/material/-/material-18.2.14.tgz"
-  integrity sha512-28pxzJP49Mymt664WnCtPkKeg7kXUsQKTKGf/Kl95rNTEdTJLbnlcc8wV0rT0yQNR7kXgpfBnG7h0ETLv/iu5Q==
+"@angular/material@^16.0.0", "@angular/material@^19.0.3", "@angular/material@>=16.0.0":
+  version "19.0.3"
+  resolved "https://registry.npmjs.org/@angular/material/-/material-19.0.3.tgz"
+  integrity sha512-aHAnmEzoE6nEF7S/lBlMwDMs6ZEkvE3omg9g6jY6WyKWtP9HYeCfwxmTPVclqcbXWxJWO/5Bvwfcjzs75uC+YA==
   dependencies:
     tslib "^2.3.0"
 
@@ -262,7 +262,7 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/platform-browser@^16.0.0", "@angular/platform-browser@^18.0.0 || ^19.0.0", "@angular/platform-browser@^19.0.4", "@angular/platform-browser@>=16.0.0", "@angular/platform-browser@19.0.4":
+"@angular/platform-browser@^16.0.0", "@angular/platform-browser@^19.0.4", "@angular/platform-browser@>=16.0.0", "@angular/platform-browser@19.0.4":
   version "19.0.4"
   resolved "https://registry.npmjs.org/@angular/platform-browser/-/platform-browser-19.0.4.tgz"
   integrity sha512-/PRr7kLVVqNFqAkw+SK8RwqE479qCcUyuw6GOHtGabt3ZfQKSbx+pTioVrZFEy5pTBMslCPV5q3I+wGRG7/nyg==
@@ -1977,7 +1977,7 @@
     "@types/range-parser" "*"
     "@types/send" "*"
 
-"@types/express@*", "@types/express@^4.17.13", "@types/express@^4.17.21":
+"@types/express@*", "@types/express@^4.17.13", "@types/express@^4.17.17", "@types/express@^4.17.21":
   version "4.17.21"
   resolved "https://registry.npmjs.org/@types/express/-/express-4.17.21.tgz"
   integrity sha512-ejlPM315qwLpaQlQDTjPdsUFSc6ZsP4AN6AlWnogPjQ7CVi7PYF3YVz+CY3jE2pwYf7E/7HlDAN0rV2GxTG0HQ==
@@ -4368,7 +4368,7 @@ exponential-backoff@^3.1.1:
   resolved "https://registry.npmjs.org/exponential-backoff/-/exponential-backoff-3.1.1.tgz"
   integrity sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==
 
-express@^4.19.2:
+express@^4.18.2, express@^4.19.2:
   version "4.21.2"
   resolved "https://registry.npmjs.org/express/-/express-4.21.2.tgz"
   integrity sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==
