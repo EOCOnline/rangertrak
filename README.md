@@ -1,4 +1,4 @@
-# Rangertrak™
+# 🌲 RangerTrak™ 📡
 
 [![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine)
 
@@ -8,11 +8,11 @@ This [Progressive Web Application](https://developer.mozilla.org/en-US/docs/Web/
 
 Verbally transmitting & transcribing latitude & longitude coordinates can be very error prone and slow. Instead RangerTrak also permits other ways to report locations: by Street Address, Google PlusCodes, and perhaps What3Words. See <https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems> for a list.
 
-## For Users
+## 👥 For Users
 
 To use and see what this application does, simply browse to <https://Rangertrak.org>. Additional guidence follows,
 
-### Features
+### ✨ Features
 
 - Open Source: *free* to use & available to enhance!
 - Progressive Web App (PWA) this should be able to function (in the future, possibly with some degredation) even if the person using this at the command post has no or intermittent access to the Internet or cell system.
@@ -28,7 +28,7 @@ To use and see what this application does, simply browse to <https://Rangertrak.
 - Source code documentation uses [https://compodoc.app/guides/jsdoc-tags.html]Compodoc
 - Source code is evergreen: current with latest libraries (as of fall 2022)
 
-### Future Roadmap
+### 🗺️ Future Roadmap
 
 - This project is moving to using [milestones](https://github.com/EOCOnline/rangertrak/milestones) to show what is being worked on next. Dates are super approximate!
 - Also see the [Issues page](https://github.com/EOCOnline/rangertrak/issues) for what we're working on in terms of bug fixes. Feel free to add your comments to them.
@@ -43,7 +43,7 @@ To use and see what this application does, simply browse to <https://Rangertrak.
 - consider adding heatmaps, or <https://github.com/eurostat/gridviz>
 - Optionally publish field reports to a server if Internet access allows: for display at a central EOC or even by participants out in the field with data or cell coverage.
 
-### Items (still) requiring online access
+### 🌐 Items (still) requiring online access
 
 - BLOCKING: Removed hardcoded Google API key from the secrets.json file. Either create your own from the secrets template,
   or await my changes to SettingsService::Constructor() &/or GmapComponent::Loader
@@ -51,7 +51,7 @@ To use and see what this application does, simply browse to <https://Rangertrak.
 - All maps (for now)
 - 3Word functionality (for now)
 
-### To Run
+### 🚀 To Run
 
 Simply visit <https://www.RangerTrak.org> and follow the Workflow below:
 
@@ -63,7 +63,7 @@ Moving to a different browser, or device will provide a 'fresh' RangerTrak envir
 
 All data is private: only stored locally in your browser's Local Storage.
 
-### Screenshots & Typical Workflow
+### 📸 Screenshots & Typical Workflow
 
 So you get an idea of how it looks/works here's a typical workflow. (Click images for larger versions.)
 
@@ -121,23 +121,23 @@ This screen is primarily used for debugging and reporting issues. It can also se
 ![Logs Screen](./non-dist-imgs/Logs.png "Logs Screen")
 
 
-### To Reset/Clear all Data
+### 🧹 To Reset/Clear all Data
 
 1. Browse to <https://www.RangerTrak.org>
 2. Go to [Settings Page](https://www.RangerTrak.org/settings) and under Advanced at the very bottom, click on “Reset Settings”, then edit the fields as desired.
 3. Go to the [Rangers Page](https://www.RangerTrak.org/rangers), then under Advanced at the bottom, click on “Delete Rangers” which should load the default ranger teams. (This will change in the future. Its convenient for testing though. You can rename Teams by clicking on the name. For ANY changes: under Advanced, remember to click “Save Rangers” to preserve changes!
 4. Go to the [Field Reports Page](https://www.RangerTrak.org/reports), then under Advanced at the bottom , click on “Delete ALL Field Reports from local storage” – if there are any! (You may enter new reports or use the mint colored block below to “Add some ## of Fake Reports” which auto generates some reports to experiment with.)
 
-### Installation
+### 📲 Installation
 
 At the upper right of every screen, or additinoally on the [Settings Page](https://www.RangerTrak.org/settings), You will have the option to "Install" the application, which just streamlines access with a shortcut. The application takes minimal space and doesn't consume resources in the background. You can uninstall it like any other app.
 
-## For Developers Interested in Modifying or Contributing to the Project
+## 💻 For Developers Interested in Modifying or Contributing to the Project
 
 - **NEW:** Check out [.vscode/SETUP.md](.vscode/SETUP.md) for a complete VS Code workspace setup guide
 - Also see [contributing.md](contributing.md) for contribution guidelines
 
-### Quick Start for Developers
+### ⚡ Quick Start for Developers
 
 1. Fork `Github.com/eocOnline/Rangertrak` to your own repository
 2. Install [Node.js](https://nodejs.org/) (v18 or higher)
@@ -167,25 +167,25 @@ old: `http-server dist/rangertrak`
 - Then browse to `./dist/rangertrak/index.html`
 - see <https://angular.io/guide/app-shell> for details
 
-### Running unit tests
+### 🧪 Running unit tests
 
 - Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 - None currently!
 
-### Running end-to-end tests
+### 🎭 Running end-to-end tests
 
 Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
 - None currently!
 - Plans to move to Puppeter, per https://blog.angular.io/introducing-puppeteer-schematics-test-your-angular-apps-with-ease-dea6947f6299
 
-### To update documentation
+### 📚 To update documentation
 
 `npm run compodoc` to regenerate the doc.
 `compodoc -s` to serve/view the doc at <http://127.0.0.1:8080/>
 See <https://compodoc.app/guides/usage.html> and <https://compodoc.app/> for details
 
-### To update RangerTrak version number
+### 🔖 To update RangerTrak version number
 
 Run `npm run release` per <https://www.npmjs.com/package/standard-version>
 
@@ -200,7 +200,7 @@ Some details in service/settings.service.ts & app.component.ts
 
 To verify, also check/update package.json & package-lock.json
 
-### To update 3rd party libraries
+### 📦 To update 3rd party libraries
 
 Follow this sequence to update your development environment:
 
@@ -268,7 +268,7 @@ yarn install
 - Check <https://update.angular.io/> for Angular-specific migration guides and required code changes between versions
 - Use `npm outdated` to see which packages have newer versions available
 
-### To Deploy
+### 🚢 To Deploy
 
 Deploying via Google Firebase got WAY too complex with Google's recent security upgrades.
 
@@ -280,17 +280,17 @@ OLD:
 From Angular Projects, 2nd ed. pg 119
 See angular.json and firebase.json
 
-### Architecture
+### 🏗️ Architecture
 
 Way out of date!
 
 ![This architecural diagram is out-of-date -- & unimplemented yet](./non-dist-imgs/PlantUML-Class_Diagram.png "Old/future architectural diagram")
 
-### Further help
+### 🆘 Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
-## eoc.online
+## 🌐 eoc.online
 
 <https://eoc.online> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <https://eoc.online>. We'd LOVE to get your reports of use and suggestions for enhancement. To report issues please visit <https://github.com/EOCOnline/rangertrak/issues>.
 
@@ -298,7 +298,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ![MIT License](./non-dist-imgs/MIT_License.png)
 
-### Public Feedback & Contribution
+### 🗣️ Public Feedback & Contribution
 
 We encourage your feedback and contributions to this repository. Content suggestions and discussions (specific to RangerTrak) can be communicated in the following ways:
 
@@ -307,7 +307,7 @@ We encourage your feedback and contributions to this repository. Content suggest
 - Direct changes and line edits to the content may be submitted through a "pull request" by clicking "Edit this page" on any site page in the repository. You do not need to install any software to suggest a change. You can use GitHub's in-browser editor to edit files and submit a pull request for your changes to be merged into the document. Directions on how to submit a pull request can be found on GitHub.
 - Send your content suggestions or proposed revisions to the RangerTrak team via email to RangerTeam@eoc.online.
 
-### Testimonials
+### 💬 Testimonials
 
 ---
 > "*(We) all agreed that this is a WOW program with high value added to SAR.  I really hope you continue to refine it!*"
