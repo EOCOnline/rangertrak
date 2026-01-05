@@ -81,7 +81,18 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
     InstallPromptComponent,
     NavbarComponent,
     TimePickerComponent,
-    X404Component
+    X404Component,
+    GmapComponent,
+    LmapComponent,
+    EntryComponent,
+    FieldReportsComponent,
+    SettingsComponent,
+    ColorEditor,
+    RangersComponent,
+    LogComponent,
+    LocationComponent,
+    MiniGMapComponent,
+    MiniLMapComponent
   ],
 
   // Define all the components, directives and pipes,
@@ -112,9 +123,7 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
     //TimePickerComponent, // Now standalone
     //IconsComponent, // Now standalone
     //InstallPromptComponent // Now standalone,
-    TimePickerComponent,
-    IconsComponent,
-    InstallPromptComponent
+
     //,
   ],
 
