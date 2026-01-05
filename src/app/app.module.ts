@@ -1,11 +1,3 @@
-import {
-  MAT_COLOR_FORMATS, NGX_MAT_COLOR_FORMATS, NgxMatColorPickerModule
-} from '@angular-material-components/color-picker'
-//import { MatDatepickerModule } from '@matheo/datepicker'
-//import { MatNativeDateModule } from '@matheo/datepicker/core'
-import {
-  NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule
-} from '@angular-material-components/datetime-picker'
 import { CommonModule } from '@angular/common'
 import { HttpClientModule } from '@angular/common/http'
 import { NgModule, isDevMode } from '@angular/core'
@@ -73,10 +65,6 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
     // https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method: singleton
     // AgmCoreModule.forRoot({ apiKey: 'API_KEY_GOES_HERE' }),
     LazyModule,
-    NgxMatColorPickerModule,
-    NgxMatDatetimePickerModule,
-    NgxMatTimepickerModule,
-    NgxMatNativeDateModule,
     RouterModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production || !isDevMode(),

@@ -1,44 +1,21 @@
 `
-<!-- div class="container" -->
+<!-- Simplified datetime picker using native Angular Material -->
 <div appearance="filled" class="input-group rounded" [formGroup]="timepickerFormGroup">
-  <!--
-        enter__Where-div
-        class="timepicker__Where-input"
-         [formControl]="dateCtrl"
-
-         for $(datePicker) explaination:  https://stackoverflow.com/questions/64826483/ngxmatdatetimepicker-is-not-assignable-to-type-matdatepickerbase
-        [ngxMatDatetimePicker]="$any(datePicker)", below, gets:
-        No value accessor for form control with unspecified name attribute
-        app.module.ts imports: NgxMatDatetimePickerModule
-
-
-        No value accessor for form control with unspecified name attribute
-
-[formControl]="time"
-
-          [min]="minDate"
-          [max]="maxDate"
-      -->
   <mat-form-field class="innerElement">
     <mat-label>{{datePickerLabel}}</mat-label>
-    <input matInput [ngxMatDatetimePicker]="$any(datePicker)" formControlName="time" type="datetime"
-      placeholder="Enter a date" class="timepicker__When-input" data-lpignore="true" tabindex="6"
-      (dateChange)="onNewTime($event)" />
+    <input matInput [matDatepicker]="picker" formControlName="time" placeholder="Enter a date and time"
+      class="timepicker__When-input" data-lpignore="true" tabindex="6" (dateChange)="onNewTime($event)" />
 
-    <mat-datepicker-toggle matSuffix [for]="$any(datePicker)" title="Click me to display a time picker">
+    <mat-datepicker-toggle matSuffix [for]="picker" title="Click me to display a date picker">
     </mat-datepicker-toggle>
 
-    <ngx-mat-datetime-picker #datePicker [showSpinners]="showSpinners" [showSeconds]="showSeconds" [stepHour]="stepHour"
-      [stepMinute]="stepMinute" [stepSecond]="stepSecond" [touchUi]="touchUi" [color]="color"
-      [enableMeridian]="enableMeridian" [disableMinute]="disableMinute" [hideTime]="hideTime">
-      <!-- Custom icon or text of Apply icon -->
-      <!--ng-template>
-          <mat-icon>star</mat-icon>
-          <span>OK</span>
-        </ng-template-->
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
 
-    </ngx-mat-datetime-picker>
+  <!-- Time input field (HTML5 time input) -->
+  <mat-form-field class="innerElement">
+    <mat-label>Time</mat-label>
+    <input matInput type="time" formControlName="timeOfDay" step="60" class="timepicker__time-input"
+      data-lpignore="true" tabindex="7" />
   </mat-form-field>
 </div>
-
-<!--/div -->

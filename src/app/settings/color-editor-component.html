@@ -1,41 +1,9 @@
-<!--div #container class="color"-->
-  <!-- tabindex="0" (click)="onClick($event)" (mousedown)="onMouseDown($event)"  (keydown)="onKeyDown($event)" -->
-
-  <!-- https://h2qutc.github.io/angular-material-components/colorpicker-->
-
-  <!--mat-card >
-     <span [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}} &nbsp;&nbsp; RGBA: {{colorCtr.value?.rgba}}</span>
-     <br>
-     Warning: 1) Cclick the small color palette icon on the right.<br>
-     2) Select your color.<br>
-     3) Click just a bit to to the left of the color palette to <br>
-     'set' the color & dismiss the dialog.
-  </mat-card-->
-
-  <mat-card appearance="outlined">
-    <mat-form-field id="colorFormField" appearance="fill">
-      <!-- [disabled]="colorCntlDisabled" causes warning -->
-      <input matInput [ngxMatColorPicker]="picker"
-      [formControl]="colorCtr" (click)="onClick($event)" id="colorTextField">
-      <ngx-mat-color-toggle matSuffix [for]="picker" id="colorIconToggleArea"></ngx-mat-color-toggle>
-
-      <ngx-mat-color-picker #picker [touchUi]="touchUi" [color]="colorPalette" (closed)="onColorCtrClosed()" class="colorPickerIcon" > BBBBB
-        <!--button >howNow?!</button>
-        <ng-template>
-          <mat-icon>star</mat-icon>
-          <span>OK</span>
-        </ng-template-->
-      </ngx-mat-color-picker>
-
-    </mat-form-field>
-
-    <!--hr class="symbol" [style.hr.border-color]="colorCtr.value?.rgba"-->
-
-    <!--span [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}} &nbsp;&nbsp; {{colorCtr.value?.rgba}}</span-->
-  </mat-card>
-  <!--mat-card >
-     <span [style.background-color]="colorCtr.value?.rgba">HEX: {{colorCtr.value?.hex}} &nbsp;&nbsp; RGBA: {{colorCtr.value?.rgba}}</span>
-  </mat-card-->
-
-<!--/div-->
-
+<!-- Simplified color picker using native HTML color input -->
+<mat-card appearance="outlined">
+  <mat-form-field id="colorFormField" appearance="fill">
+    <mat-label>Select Color</mat-label>
+    <input matInput type="color" [formControl]="colorCtr" (change)="onColorChange()" id="colorTextField"
+      class="color-input">
+    <mat-hint>Current: {{colorCtr.value}}</mat-hint>
+  </mat-form-field>
+</mat-card>

@@ -21,8 +21,6 @@
   },
   "private": true,
   "dependencies": {
-    "@angular-material-components/color-picker": "^16.0.1",
-    "@angular-material-components/datetime-picker": "^16.0.1",
     "@angular/animations": "^21.0.6",
     "@angular/cdk": "^21.0.5",
     "@angular/cli": "^21.0.4",
@@ -100,28 +98,6 @@
       "parser": "typescript",
       "style": "module",
       "options": {}
-    }
-  },
-  "overrides": {
-    "@angular-material-components/datetime-picker": {
-      "@angular/platform-browser": "$@angular/platform-browser",
-      "@angular/common": "$@angular/common",
-      "@angular/core": "$@angular/core",
-      "@angular/forms": "$@angular/forms",
-      "@angular/material": "$@angular/material",
-      "@angular/cdk": "$@angular/cdk"
-    },
-    "@angular-material-components/color-picker": {
-      "@angular/platform-browser": "$@angular/platform-browser",
-      "@angular/common": "$@angular/common",
-      "@angular/core": "$@angular/core",
-      "@angular/forms": "$@angular/forms",
-      "@angular/material": "$@angular/material",
-      "@angular/cdk": "$@angular/cdk"
-    },
-    "@angular-material-components/moment-adapter": {
-      "@angular/common": "$@angular/common",
-      "@angular/core": "$@angular/core"
     }
   }
 }

@@ -3,9 +3,6 @@ import {
   debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
 } from 'rxjs'
 
-import {
-  NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule
-} from '@angular-material-components/datetime-picker' // already in app.module.ts
 import { DOCUMENT } from '@angular/common'
 import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core'
 import {
@@ -119,10 +116,21 @@ export class TimePickerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // ! REVIEW: this duplicates code just above AND in parent!!!
+    // Extract time from initialDate if provided
+    const hours = this.initialDate.getHours().toString().padStart(2, '0');
+    const minutes = this.initialDate.getMinutes().toString().padStart(2, '0');
+    const timeString = `${hours}:${minutes}`;
+
     this.timepickerFormGroup = this._formBuilder.group({
-      time: [this.initialDate]
-    })
+      time: [this.initialDate],
+      timeOfDay: [timeString]
+    });
+
+    // Listen to both date and time changes to emit combined datetime
+    this.timepickerFormGroup.valueChanges.subscribe(() => {
+      this.combineDateTime();
+    });
+
     this.log.verbose(`initialDate = ${this.initialDate} in ngInit`, this.id)
   }
 
@@ -133,14 +141,25 @@ export class TimePickerComponent implements OnInit {
     // todo : validate min/max time?
     this.log.verbose(`Got new time: ${newTime.value}: Emitting!`, this.id)
 
-    this.time = newTime.value
-    this.newTimeEvent.emit(this.time)
-    //if (! (
+    this.combineDateTime();
+  }
 
-    //) {
-    // this.log.warn(`New time event had no listeners!`, this.id) }
-    // REVIEW: Let parent update the form fields & other data as necessary...
-    //this.timeFrmGrp
+  private combineDateTime() {
+    const dateValue = this.timepickerFormGroup.get('time')?.value;
+    const timeValue = this.timepickerFormGroup.get('timeOfDay')?.value;
+
+    if (dateValue && timeValue) {
+      const [hours, minutes] = timeValue.split(':').map(Number);
+      const combinedDate = new Date(dateValue);
+      combinedDate.setHours(hours, minutes, 0, 0);
+
+      this.time = combinedDate;
+      this.newTimeEvent.emit(this.time);
+      this.log.verbose(`Combined date/time emitted: ${this.time}`, this.id);
+    } else if (dateValue) {
+      this.time = new Date(dateValue);
+      this.newTimeEvent.emit(this.time);
+    }
   }
 
   toggleMinDate(evt: any) {
