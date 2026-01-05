@@ -1,15 +1,17 @@
 import { Subscription } from 'rxjs'
 
+import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
 
 import { LogService, SettingsService, SettingsType } from '../services'
-import { DOCUMENT, formatDate } from '@angular/common'
 import { Utility } from '../utility';
 /**
  * Footer component
  */
 @Component({
   selector: 'rangertrak-footer',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss']
 })

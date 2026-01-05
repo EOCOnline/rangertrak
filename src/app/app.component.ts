@@ -1,14 +1,28 @@
 import { filter, map, switchMap } from 'rxjs'
 
 import { Component, OnInit, HostListener } from '@angular/core'
-import { MatSnackBar } from '@angular/material/snack-bar'
+import { RouterModule } from '@angular/router'
+import { MatSnackBarModule } from '@angular/material/snack-bar'
 //import { MatSnackBar } from '@material/snackbar'
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker'
 
 import { LogService } from './shared/services'
+import { HeaderComponent } from './shared/header/header.component'
+import { NavbarComponent } from './shared/navbar/navbar.component'
+import { FooterComponent } from './shared/footer/footer.component'
+import { AlertsComponent } from './shared/alerts/alerts.component'
 
 @Component({
   selector: 'rangertrak-root',
+  standalone: true,
+  imports: [
+    RouterModule,
+    MatSnackBarModule,
+    HeaderComponent,
+    NavbarComponent,
+    FooterComponent,
+    AlertsComponent
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })

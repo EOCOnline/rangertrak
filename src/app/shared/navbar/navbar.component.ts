@@ -1,6 +1,8 @@
+import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
-import { NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
+import { NavigationEnd, NavigationError, NavigationStart, Router, RouterModule } from '@angular/router';
 import { faL, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
+import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MDCTopAppBar } from '@material/top-app-bar'
 // import { MatButton } from '@angular/material/button'
 // import { MatButtonModule } from '@angular/material/button'
@@ -11,6 +13,8 @@ import { Utility } from '../utility';
 
 @Component({
   selector: 'rangertrak-navbar',
+  standalone: true,
+  imports: [CommonModule, RouterModule, MatProgressBarModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })

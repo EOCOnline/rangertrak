@@ -3,13 +3,16 @@ import {
   debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
 } from 'rxjs'
 
-import { DOCUMENT } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
 import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core'
 import {
   FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup,
   Validators
 } from '@angular/forms'
-import { ThemePalette } from '@angular/material/core'
+import { MatDatepickerModule } from '@angular/material/datepicker'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatNativeDateModule } from '@angular/material/core'
 
 import {
   FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
@@ -38,6 +41,16 @@ import {
 
 @Component({
   selector: 'rangertrak-time-picker',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatNativeDateModule
+  ],
   templateUrl: './time-picker.component.html',
   styleUrls: ['./time-picker.component.scss']
 })
@@ -88,7 +101,7 @@ export class TimePickerComponent implements OnInit {
   public stepHour = 1
   public stepMinute = 1
   public stepSecond = 1
-  public color: ThemePalette = 'primary'
+  public color: 'primary' | 'accent' | 'warn' = 'primary'
   disableMinute = false
   hideTime = false
   //dateCtrl = new FormControl(new Date()) //TODO: Still need to grab the result during submit...!

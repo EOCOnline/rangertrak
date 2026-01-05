@@ -1,8 +1,8 @@
 import { Subscription } from 'rxjs'
 
-import { DOCUMENT } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
-import { MatSnackBar } from '@angular/material/snack-bar'
+import { MatSnackBarModule } from '@angular/material/snack-bar'
 import { NavigationEnd } from '@angular/router'
 //import { MatFormFieldModule } from '@angular/material/form-field';
 import { MDCBanner } from '@material/banner'
@@ -14,6 +14,8 @@ import { LogService } from '../services/log.service'
 
 @Component({
   selector: 'rangertrak-alerts',
+  standalone: true,
+  imports: [CommonModule, MatSnackBarModule],
   templateUrl: './alerts.component.html',
   styleUrls: ['./alerts.component.scss']
 })

@@ -50,7 +50,7 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
   // Import sub-modules
   imports: [
     BrowserAnimationsModule,
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    BrowserModule,
     CommonModule,
     // DayjsModule,
     FormsModule,
@@ -71,7 +71,17 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
       // Register the ServiceWorker as soon as the app is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
-    })
+    }),
+    // Import standalone components
+    AppComponent,
+    HeaderComponent,
+    AlertsComponent,
+    FooterComponent,
+    IconsComponent,
+    InstallPromptComponent,
+    NavbarComponent,
+    TimePickerComponent,
+    X404Component
   ],
 
   // Define all the components, directives and pipes,
@@ -79,11 +89,11 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
   // ? If you want to use any of these in multiple modules,
   // bundle it into a separate module & import that in the module
   declarations: [
-    AppComponent,
+    //AppComponent, // Now standalone
     //AppShellComponent,
-    NavbarComponent,
-    FooterComponent,
-    AlertsComponent,
+    //NavbarComponent, // Now standalone
+    //FooterComponent, // Now standalone
+    //AlertsComponent, // Now standalone
     GmapComponent,
     LmapComponent,
     EntryComponent,
@@ -93,12 +103,15 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
     //MoodEditor,
     //MoodRenderer,
     RangersComponent,
-    X404Component,
+    //X404Component, // Now standalone
     LogComponent,
     LocationComponent,
     MiniGMapComponent,
-    MiniLMapComponent,
-    HeaderComponent,
+    MiniLMapComponent
+    //HeaderComponent, // Now standalone
+    //TimePickerComponent, // Now standalone
+    //IconsComponent, // Now standalone
+    //InstallPromptComponent // Now standalone,
     TimePickerComponent,
     IconsComponent,
     InstallPromptComponent
@@ -118,8 +131,7 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
   // per https://angular.io/guide/singleton-services
   providers: [
     //ClockService, FieldReportService, LogService, PopupService, RangerService, SettingsService,
-    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } },
-    { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS }
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } }
   ],
   //{provide: MAT_BANNER_DEFAULT_OPTIONS}],
   // Ranger,
@@ -133,6 +145,11 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
   exports: [
     //AppShellComponent
     //   SettingsComponent
+    RouterModule,
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule
   ]
 })
 export class AppModule { }

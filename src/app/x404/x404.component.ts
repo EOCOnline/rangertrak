@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core'
+import { HeaderComponent } from '../shared/header/header.component'
 
 // TODO: https://bobrov.dev/blog/angular-smart-404-page/ - suggest the *right* page!
 
@@ -7,6 +8,8 @@ import { Component, OnInit } from '@angular/core'
  */
 @Component({
   selector: 'rangertrak-x404',
+  standalone: true,
+  imports: [HeaderComponent],
   templateUrl: './x404.component.html',
   styleUrls: ['./x404.component.scss']
 })

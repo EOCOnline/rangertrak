@@ -1,5 +1,6 @@
 import { interval, map, Observable, Subscription } from 'rxjs'
 
+import { CommonModule } from '@angular/common'
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
 
 import { ClockService, LogService, SettingsService, SettingsType } from '../services'
@@ -17,6 +18,8 @@ import { Utility } from '../'
  */
 @Component({
   selector: 'pageHeader',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })

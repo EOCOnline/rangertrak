@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { mdiAccount, mdiInformationOutline } from '@mdi/js';
-import { MatIconRegistry } from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 //import { lookupCollections, locate } from '@iconify/json'; //https://docs.iconify.design/icons/all.html vs https://docs.iconify.design/icons/icons.html
 import { DomSanitizer } from '@angular/platform-browser';
 import { LogService } from '../services';
@@ -49,6 +49,8 @@ type Options = {|
 
 @Component({
   selector: 'rangertrak-icons',
+  standalone: true,
+  imports: [MatIconModule],
   templateUrl: './icons.component.html',
   styleUrls: ['./icons.component.scss']
 })
