@@ -82,41 +82,25 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
     NavbarComponent,
     TimePickerComponent,
     X404Component,
+    // Standalone-by-default page components
+    EntryComponent,
+    LocationComponent,
     MiniGMapComponent,
-    MiniLMapComponent
+    MiniLMapComponent,
+    FieldReportsComponent,
+    GmapComponent,
+    LmapComponent,
+    RangersComponent,
+    SettingsComponent,
+    ColorEditor,
+    LogComponent,
   ],
 
   // Define all the components, directives and pipes,
   // that are declared and used inside this module.
   // ? If you want to use any of these in multiple modules,
   // bundle it into a separate module & import that in the module
-  declarations: [
-    //AppComponent, // Now standalone
-    //AppShellComponent,
-    //NavbarComponent, // Now standalone
-    //FooterComponent, // Now standalone
-    //AlertsComponent, // Now standalone
-    GmapComponent,
-    LmapComponent,
-    EntryComponent,
-    FieldReportsComponent,
-    SettingsComponent,
-    ColorEditor,
-    //MoodEditor,
-    //MoodRenderer,
-    RangersComponent,
-    //X404Component, // Now standalone
-    LogComponent,
-    LocationComponent
-    //MiniGMapComponent, // Now standalone
-    //MiniLMapComponent // Now standalone
-    //HeaderComponent, // Now standalone
-    //TimePickerComponent, // Now standalone
-    //IconsComponent, // Now standalone
-    //InstallPromptComponent // Now standalone,
-
-    //,
-  ],
+  declarations: [],
 
   // Define any required @Injectables. Any sub-components or modules can get the
   // same @Injectable instance (i.e., a singleton!) via dependency injection.

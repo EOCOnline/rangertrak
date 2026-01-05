@@ -1,0 +1,74 @@
+Debugger listening on ws://127.0.0.1:57074/43a9705d-573c-4b62-a4d0-a413a4f3c36e
+For help, see: https://nodejs.org/en/docs/inspector
+Debugger attached.
+- Generating browser application bundles (phase: setup)...
+Γ£ö Browser application bundle generation complete.
+Γ£ö Browser application bundle generation complete.
+
+Warning: D:\Projects\EOC.online\RangerTrak\rangertrak\src\app\entry\mini-lmap.component.ts depends on 'leaflet'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies
+
+Warning: D:\Projects\EOC.online\RangerTrak\rangertrak\src\app\entry\mini-lmap.component.ts depends on 'leaflet.markercluster'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies
+
+Warning: D:\Projects\EOC.online\RangerTrak\rangertrak\src\app\lmap\lmap.component.ts depends on 'leaflet.offline'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies
+
+
+
+Error: src/app/app.module.ts:99:5 - error NG6008: Component GmapComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
+
+99     GmapComponent,
+       ~~~~~~~~~~~~~
+
+
+Error: src/app/app.module.ts:100:5 - error NG6008: Component LmapComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
+
+100     LmapComponent,
+        ~~~~~~~~~~~~~
+
+
+Error: src/app/app.module.ts:101:5 - error NG6008: Component EntryComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
+
+101     EntryComponent,
+        ~~~~~~~~~~~~~~
+
+
+Error: src/app/app.module.ts:102:5 - error NG6008: Component FieldReportsComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
+
+102     FieldReportsComponent,
+        ~~~~~~~~~~~~~~~~~~~~~
+
+
+Error: src/app/app.module.ts:103:5 - error NG6008: Component SettingsComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
+
+103     SettingsComponent,
+        ~~~~~~~~~~~~~~~~~
+
+
+Error: src/app/app.module.ts:104:5 - error NG6008: Component ColorEditor is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
+
+104     ColorEditor,
+        ~~~~~~~~~~~
+
+
+Error: src/app/app.module.ts:107:5 - error NG6008: Component RangersComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
+
+107     RangersComponent,
+        ~~~~~~~~~~~~~~~~
+
+
+Error: src/app/app.module.ts:109:5 - error NG6008: Component LogComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
+
+109     LogComponent,
+        ~~~~~~~~~~~~
+
+
+Error: src/app/app.module.ts:110:5 - error NG6008: Component LocationComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
+
+110     LocationComponent
+        ~~~~~~~~~~~~~~~~~
+
+
+
+Waiting for the debugger to disconnect...

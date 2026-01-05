@@ -2,10 +2,15 @@ import { GridOptions, SelectionChangedEvent } from 'ag-grid-community'
 // , TeamService
 import { Observable, subscribeOn, Subscription } from 'rxjs'
 
-import { DOCUMENT, formatDate } from '@angular/common'
+import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef } from '@angular/core';
 
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms'
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSliderModule } from '@angular/material/slider';
+import { AgGridAngular } from 'ag-grid-angular';
+import { HeaderComponent } from '../shared/header/header.component';
 
 import { Utility } from '../shared'
 import {
@@ -23,6 +28,17 @@ export class myUnusedPipe implements PipeTransform {
 
 @Component({
   selector: 'rangertrak-field-reports',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AgGridAngular,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSliderModule,
+    HeaderComponent
+  ],
   templateUrl: './field-reports.component.html',
   styleUrls: ['./field-reports.component.scss']
 })

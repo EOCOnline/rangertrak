@@ -5,9 +5,11 @@
 // https://web.dev/browser-fs-access/
 import { Subscription, switchMap } from 'rxjs'
 
-import { DOCUMENT } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
+import { FormsModule } from '@angular/forms'
 import { AfterContentInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
 import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatCardModule } from '@angular/material/card'
 import {
   faBug, faCircleCheck, faCircleExclamation, faCircleInfo, faMapMarkedAlt
 } from '@fortawesome/free-solid-svg-icons'
@@ -17,12 +19,16 @@ import {
   LogHeadings, LogLevel, LogService, LogType, SettingsService, SettingsType
 } from '../shared/services/'
 
+import { HeaderComponent } from '../shared'
+
 /**
  * Update the Log Panel pane with notifications
  *
  */
 @Component({
   selector: 'rangertrak-log',
+  standalone: true,
+  imports: [CommonModule, FormsModule, MatCheckboxModule, MatCardModule, HeaderComponent],
   templateUrl: './log.component.html',
   styleUrls: ['./log.component.scss']
 })

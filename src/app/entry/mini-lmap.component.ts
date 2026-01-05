@@ -6,7 +6,7 @@ import * as L from 'leaflet'
 //import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { delay, throwError } from 'rxjs'
 
-import { DOCUMENT } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
 
@@ -41,6 +41,8 @@ L.Marker.prototype.options.icon = iconDefault;
 
 @Component({
   selector: 'mini-lmap',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './mini-lmap.component.html',
   styleUrls: ['./mini-lmap.component.scss',
     '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)]

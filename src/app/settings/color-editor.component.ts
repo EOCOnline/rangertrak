@@ -3,9 +3,12 @@ import { ArgumentOutOfRangeError } from 'rxjs'
 
 import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef } from '@angular/core'
 import {
-  AbstractControl, FormArray, FormBuilder, FormGroup, UntypedFormControl, Validators
+  AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, UntypedFormControl, Validators
 } from '@angular/forms'
+import { MatCardModule } from '@angular/material/card';
 import { ThemePalette } from '@angular/material/core'
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 
 
@@ -26,6 +29,13 @@ import { ThemePalette } from '@angular/material/core'
 // TODO: Based on boolean value for icons: we need a selection from a panel of icons...
 @Component({
   selector: 'editor-cell',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule
+  ],
   templateUrl: './color-editor-component.html',
   styleUrls: ['./color-editor-component.scss',],
 })

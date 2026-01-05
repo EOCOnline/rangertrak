@@ -7,9 +7,11 @@ D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'
 For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies */
 import * as XLSX from 'xlsx'
 
-import { DOCUMENT } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
+import { AgGridAngular } from 'ag-grid-angular';
+import { HeaderComponent } from '../shared/header/header.component';
 
 import { Utility } from '../shared'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
@@ -28,6 +30,8 @@ type AOA = any[][]  // array of arrays
 
 @Component({
   selector: 'rangertrak-rangers',
+  standalone: true,
+  imports: [CommonModule, AgGridAngular, HeaderComponent],
   templateUrl: './rangers.component.html',
   styleUrls: ['./rangers.component.scss']
 })

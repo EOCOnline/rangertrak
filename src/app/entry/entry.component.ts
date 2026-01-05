@@ -2,7 +2,7 @@ import {
   debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
 } from 'rxjs'
 
-import { DOCUMENT } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
   AfterViewInit, Component, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit,
@@ -15,18 +15,33 @@ import {
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
-import { AlertsComponent, DDToDDM, TimePickerComponent, Utility } from '../shared/'
+import { AlertsComponent, DDToDDM, HeaderComponent, TimePickerComponent, Utility } from '../shared/'
 import {
   FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
   SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services/'
 //import { LocationComponent } from './location.component'
 
+import { MaterialModule } from '../material.module'
+import { LocationComponent } from './location.component'
+import { MiniLMapComponent } from './mini-lmap.component'
+
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
 
 
 @Component({
   selector: 'rangertrak-entry',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MaterialModule,
+    HeaderComponent,
+    TimePickerComponent,
+    LocationComponent,
+    MiniLMapComponent,
+  ],
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
   providers: [RangerService, FieldReportService, SettingsService]

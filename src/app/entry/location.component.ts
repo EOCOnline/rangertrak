@@ -3,11 +3,12 @@ import {
   BehaviorSubject, debounceTime, fromEvent, map, merge, Observable, Subscription, takeWhile
 } from 'rxjs'
 
-import { DOCUMENT } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
 import {
   AfterViewInit, Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, SkipSelf,
   ViewChild
 } from '@angular/core'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import {
   FormArray, FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators
 } from '@angular/forms'
@@ -28,6 +29,8 @@ import {
   LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services'
 
+import { MaterialModule } from '../material.module'
+
 //! import { What3Words} from '../shared/'
 /*
 https://stackoverflow.com/questions/43270564/dividing-a-form-into-multiple-components-with-validation
@@ -38,6 +41,8 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
 @Component({
   //moduleId: module.id,
   selector: 'rangertrak-location',
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MaterialModule],
   templateUrl: './location.component.html',
   styleUrls: ['./location.component.scss']
 })

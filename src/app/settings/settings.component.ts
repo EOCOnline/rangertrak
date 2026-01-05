@@ -2,13 +2,15 @@ import { AgGridModule } from 'ag-grid-angular'
 import { ColDef } from 'ag-grid-community'
 import { delay, Subscription, throwError } from 'rxjs'
 
-import { DOCUMENT } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
 import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import {
   AbstractControl, FormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators
 } from '@angular/forms'
 
-import { TimePickerComponent } from '../shared/'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+
+import { HeaderComponent, TimePickerComponent } from '../shared/'
 import {
   FieldReportService, FieldReportStatusType, InstallableService, LogService, RangerService, SettingsService,
   SettingsType
@@ -19,8 +21,21 @@ import { ColorEditor } from './color-editor.component'
 //import { MoodEditor } from './mood-editor.component'
 //import { MoodRenderer } from './mood-renderer.component'
 
+import { MaterialModule } from '../material.module'
+
 @Component({
   selector: 'rangertrak-settings',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MaterialModule,
+    AgGridModule,
+    HeaderComponent,
+    TimePickerComponent,
+    ColorEditor,
+  ],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
   providers: [SettingsService]
