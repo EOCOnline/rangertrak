@@ -496,8 +496,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 }
 
-  // works - but Unused....
-  // https://www.angulartutorial.net/2018/01/show-preview-image-while-uploading.html
+// works - but Unused....
+// https://www.angulartutorial.net/2018/01/show-preview-image-while-uploading.html
 /*
   showPreviewImage(event: any) {
     if (event.target.files && event.target.files[0]) {

@@ -34,7 +34,6 @@ import { MaterialModule } from '../material.module'
     AgGridModule,
     HeaderComponent,
     TimePickerComponent,
-    ColorEditor,
   ],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
