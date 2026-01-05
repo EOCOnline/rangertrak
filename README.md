@@ -282,9 +282,84 @@ See angular.json and firebase.json
 
 ### 🏗️ Architecture
 
-Way out of date!
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the updated visual architectural diagram.
 
-![This architecural diagram is out-of-date -- & unimplemented yet](./non-dist-imgs/PlantUML-Class_Diagram.png "Old/future architectural diagram")
+```mermaid
+classDiagram
+    direction TB
+
+    namespace Core {
+        class AppComponent
+        class AppRoutingModule
+    }
+
+    namespace Features {
+        class EntryComponent
+        class FieldReportsComponent
+        class RangersComponent
+        class LmapComponent
+        class GmapComponent
+        class SettingsComponent
+        class LogComponent
+        class AboutComponent
+    }
+
+    namespace Shared {
+        class HeaderComponent
+        class AlertsComponent
+    }
+
+    namespace Services {
+        class FieldReportService
+        class RangerService
+        class SettingsService
+        class LogService
+        class ClockService
+        class InstallableService
+        class GoogleGeocode
+    }
+
+    AppComponent --> AppRoutingModule : Uses
+    AppRoutingModule --> EntryComponent : Route
+    AppRoutingModule --> FieldReportsComponent : Route
+    AppRoutingModule --> RangersComponent : Route
+    AppRoutingModule --> LmapComponent : Route
+    AppRoutingModule --> GmapComponent : Route
+    AppRoutingModule --> SettingsComponent : Route
+    AppRoutingModule --> LogComponent : Route
+    AppRoutingModule ..> AboutComponent : Lazy Route
+
+    EntryComponent ..> FieldReportService
+    EntryComponent ..> RangerService
+    EntryComponent ..> SettingsService
+    EntryComponent ..> LogService
+
+    FieldReportsComponent ..> FieldReportService
+    FieldReportsComponent ..> SettingsService
+    FieldReportsComponent ..> LogService
+
+    RangersComponent ..> RangerService
+    RangersComponent ..> SettingsService
+    RangersComponent ..> LogService
+
+    LmapComponent ..> FieldReportService
+    LmapComponent ..> SettingsService
+    LmapComponent ..> LogService
+
+    GmapComponent ..> FieldReportService
+    GmapComponent ..> SettingsService
+    GmapComponent ..> LogService
+    GmapComponent ..> GoogleGeocode
+
+    SettingsComponent ..> SettingsService
+    SettingsComponent ..> LogService
+
+    LogComponent ..> LogService
+    LogComponent ..> SettingsService
+
+    HeaderComponent ..> SettingsService
+    HeaderComponent ..> ClockService
+```
 
 ### 🆘 Further help
 
