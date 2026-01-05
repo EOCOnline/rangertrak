@@ -4,11 +4,12 @@ import { Subscription } from 'rxjs'
 //import { MapInfoWindow, MapMarker, GoogleMap } from '@angular/google-maps'
 //import { DDToDMS, CodeArea, OpenLocationCode } from '../shared/' // BUG: , What3Words, Map, , GoogleGeocode
 //import { LatLng } from 'leaflet';
-import { DOCUMENT } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
   AfterViewInit, Component, Inject, Input, isDevMode, OnDestroy, OnInit
 } from '@angular/core'
+import { GoogleMapsModule } from '@angular/google-maps'
 
 import { AbstractMap } from '../shared/'
 import {
@@ -19,6 +20,8 @@ import {
 
 @Component({
   selector: 'mini-gmap',
+  standalone: true,
+  imports: [CommonModule, GoogleMapsModule],
   templateUrl: './mini-gmap.component.html',
   styleUrls: ['./mini-gmap.component.scss']
 })
@@ -152,9 +155,9 @@ this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
   // -----------------------------  MAP STUFF -----------------------------------
 
 
-  onMapInitialized(newMapReference: google.maps.Map) {
+  onMapInitialized(newMapReference: unknown) {
     this.log.excessive(`onMapInitialized()`)
-    this.gMap = newMapReference
+    this.gMap = newMapReference as google.maps.Map
     /*
         if (this.gMap == null) {
           this.log.verbose("onMapInitialized(): This.gMap is null", this.id)
@@ -201,9 +204,10 @@ this.entryDetailsForm.controls['location'].valueChanges.subscribe(x => {
   //   }
   // }
 
-  onMapMouseMove(event: google.maps.MapMouseEvent) {
-    if (event.latLng) {
-      // this.mouseLatLng = event.latLng.toJSON()
+  onMapMouseMove(event: unknown) {
+    const mouseEvent = event as google.maps.MapMouseEvent
+    if (mouseEvent?.latLng) {
+      // this.mouseLatLng = mouseEvent.latLng.toJSON()
     }
   }
 

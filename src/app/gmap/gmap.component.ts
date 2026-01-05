@@ -265,12 +265,14 @@ See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.
       this.log.excessive("initMap() --------------  loader exists!!!!!!!!!!!!", this.id)
     }
 
-    this.loader.load().then(async () => {
+    (this.loader as any).load().then(async () => {
       const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
       this.gMap = new Map(document.getElementById("map") as HTMLElement, {
         center: { lat: -34.397, lng: 150.644 },
         zoom: 8,
       });
+    }).catch((error: unknown) => {
+      this.log.error(`Failed to load Google Maps: ${error}`, this.id);
     });
 
 

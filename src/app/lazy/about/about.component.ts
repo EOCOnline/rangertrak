@@ -2,12 +2,15 @@
 import { Subscription } from 'rxjs'
 
 import { Component, Inject, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { CommonModule } from '@angular/common'
 
 import { ClockService, LogService, SettingsService, SettingsType } from '../../shared/services'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'rangertrak-about',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
   providers: [SettingsService]

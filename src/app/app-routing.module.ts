@@ -4,7 +4,6 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router'
 import { EntryComponent } from './entry/entry.component'
 import { FieldReportsComponent } from './field-reports/field-reports.component'
 import { GmapComponent } from './gmap/gmap.component'
-import { LazyModule } from './lazy/lazy.module'
 import { LmapComponent } from './lmap/lmap.component'
 import { LogComponent } from './log/log.component'
 import { RangersComponent } from './rangers/rangers.component'
@@ -39,7 +38,7 @@ const routes: Routes = [
   // LAZY Routes: preloaded right after root app module (via dynamic import module)
   {
     path: 'about',
-    loadChildren: () => LazyModule // WAS import('./lazy/lazy.module').then(module => module.
+    loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule)
   },
 
   // Page not found route

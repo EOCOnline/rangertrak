@@ -72,7 +72,7 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
     }),
-    // Import standalone components
+    // Import standalone components ONLY (non-standalone components go in declarations)
     AppComponent,
     HeaderComponent,
     AlertsComponent,
@@ -82,15 +82,6 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
     NavbarComponent,
     TimePickerComponent,
     X404Component,
-    GmapComponent,
-    LmapComponent,
-    EntryComponent,
-    FieldReportsComponent,
-    SettingsComponent,
-    ColorEditor,
-    RangersComponent,
-    LogComponent,
-    LocationComponent,
     MiniGMapComponent,
     MiniLMapComponent
   ],
@@ -116,9 +107,9 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
     RangersComponent,
     //X404Component, // Now standalone
     LogComponent,
-    LocationComponent,
-    MiniGMapComponent,
-    MiniLMapComponent
+    LocationComponent
+    //MiniGMapComponent, // Now standalone
+    //MiniLMapComponent // Now standalone
     //HeaderComponent, // Now standalone
     //TimePickerComponent, // Now standalone
     //IconsComponent, // Now standalone
