@@ -194,27 +194,71 @@ To verify, also check/update package.json & package-lock.json
 
 ### To update 3rd party libraries
 
-Commands from Evergreen Angular:
+Follow this sequence to update your development environment:
 
-- `npx ng update @angular/core @angular/cdk @angular/cli @angular/google-maps @angular/material` (maybe with ' --force' to avoid peer dependency warnings)
-- `npx ng update`
-- `npx npm-check-updates -u`
-- `npm install`
+#### 1. Check current versions (optional)
+```bash
+node -v
+npm -v
+tsc --version
+npm outdated
+```
 
-Other useful commands:
-- `node -v`
-- `npm -v`
-- `yarn -v`
--
-- `npm install -g typings` - Looks for updated Typescript type files.
-- `npx ng update -g`  - Updates global cli & sdk
-- `npm install npm@latest -g` - update npm
-- `npm install -g typescript` or to update:  `npm -g upgrade typescript`; to get version: `tsc --version` - update typescript
-- `choco upgrade all` - updates https://docs.chocolatey.org/en-us/choco/commands/upgrade (requires VSCode being run with Admin permissions) & many apps that use Choclatey
-- `https://update.angular.io/?v=15.0-17.0` shows additional code updates that may be required
-- `npm install --save --legacy-peer-deps` - tells NPM to install packages using relaxed V6 algorithm
-- `npm i yarn -g`, then `yarn install` - uses yarn (a nice wrapper for npm)
-- `npm outdated` - show availability of newer packages
+#### 2. Update Node.js and global tools
+
+**Note:** Global npm installations on Windows require running PowerShell or Command Prompt as Administrator.
+
+```bash
+# Update npm to latest version (requires Admin on Windows)
+npm install npm@latest -g
+
+# Update TypeScript globally (requires Admin on Windows)
+npm install -g typescript
+
+# Update TypeScript type files (requires Admin on Windows)
+npm install -g typings
+
+# Update Angular CLI globally (requires Admin on Windows)
+npm install -g @angular/cli@latest
+
+# (Optional) Update Chocolatey packages - requires Admin permissions
+choco upgrade all
+```
+
+**If you get permission errors on Windows:**
+- Right-click PowerShell or Command Prompt and select "Run as Administrator"
+- Or use a package manager like Chocolatey to update Node.js/npm: `choco upgrade nodejs`
+
+#### 3. Update Angular and project dependencies
+```bash
+# Check for available Angular updates
+npx ng update
+
+# Update Angular core packages (add --force if needed for peer dependency warnings)
+y
+
+
+# Check for all package updates
+npx npm-check-updates -u
+
+# Install all updated dependencies
+npm install
+```
+
+#### 4. Alternative: Use legacy peer dependency resolution (if needed)
+```bash
+npm install --save --legacy-peer-deps
+```
+
+#### 5. Optional: Use Yarn as package manager
+```bash
+npm i yarn -g
+yarn install
+```
+
+**Additional Resources:**
+- Check <https://update.angular.io/> for Angular-specific migration guides and required code changes between versions
+- Use `npm outdated` to see which packages have newer versions available
 
 ### To Deploy
 
