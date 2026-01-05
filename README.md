@@ -134,15 +134,23 @@ At the upper right of every screen, or additinoally on the [Settings Page](https
 
 ## For Developers Interested in Modifying or Contributing to the Project
 
-- Check out <contributing.md>
+- **NEW:** Check out [.vscode/SETUP.md](.vscode/SETUP.md) for a complete VS Code workspace setup guide
+- Also see [contributing.md](contributing.md) for contribution guidelines
 
-### To Build and Test
+### Quick Start for Developers
 
-- Fork Github.com/eocOnline/Rangertrak to your own repository
-- Install NodeJS and NPM
-- `cd RangerTrak`
-- `npm install`
-- `ng serve -o`
+1. Fork `Github.com/eocOnline/Rangertrak` to your own repository
+2. Install [Node.js](https://nodejs.org/) (v18 or higher)
+3. Clone and setup:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/rangertrak.git
+   cd rangertrak
+   npm install
+   ng serve -o
+   ```
+4. Open in VS Code and install recommended extensions when prompted
+
+For detailed setup instructions, environment configuration, and troubleshooting, see [.vscode/SETUP.md](.vscode/SETUP.md).
 
 - or Run `ng serve` for a dev server. Navigate to <http://localhost:4200/>. The app will automatically reload if you change any of the source files.
 

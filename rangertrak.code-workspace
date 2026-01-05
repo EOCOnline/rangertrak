@@ -1,0 +1,34 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {},
+  "extensions": {
+    "recommendations": [
+      "angular.ng-template",
+      "amatiasq.sort-imports",
+      "dskwrk.vscode-generate-getter-setter",
+      "eamodio.gitlens",
+      "esbenp.prettier-vscode",
+      "johnpapa.vscode-peacock",
+      "ms-azuretools.vscode-docker",
+      "ms-vscode.vscode-typescript-tslint-plugin",
+      "pkief.material-icon-theme",
+      "wallabyjs.quokka-vscode",
+      "expertly-simple.ng-evergreen",
+      "hookyqr.beautify",
+      "johnpapa.angular-essentials",
+      "msjsdiag.debugger-for-edge"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": []
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": []
+  }
+}

@@ -1,5 +1,6 @@
 {
   "recommendations": [
+    "angular.ng-template",
     "amatiasq.sort-imports",
     "dskwrk.vscode-generate-getter-setter",
     "eamodio.gitlens",
@@ -12,6 +13,7 @@
     "expertly-simple.ng-evergreen",
     "hookyqr.beautify",
     "johnpapa.angular-essentials",
-    "msjsdiag.debugger-for-edge"
+    "msjsdiag.debugger-for-edge",
+    "yzhang.markdown-all-in-one"
   ]
 }
