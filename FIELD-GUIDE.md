@@ -22,7 +22,7 @@ server, no account, and no login — nothing you type is sent anywhere.
 | **Map (Leaflet)** | Full-page map using standard online road maps. Best detail, anywhere in the world, but needs Internet. |
 | **Map (Offline)** | Full-page map using map data built into the app. Works with no Internet at all, but currently only covers Vashon Island in detail. |
 | **Settings** | Mission name, operating period, default location, status labels and colours, backup and restore. |
-| **Log** | A running record of what the app did, including any warnings or errors. Useful when reporting a problem. |
+| **Log** | A running record of what the app did, including warnings and crashes. Export it when reporting a problem. |
 
 ### Who it's for
 
@@ -241,10 +241,25 @@ page.
 ### About and Log
 
 **About** explains the application, the technologies behind it, how to report issues, and
-the licence. **Log** records what the app did during the session — primarily for
-troubleshooting, but also a partial audit trail of actions taken during the mission.
+the licence.
+
+**Log** records what the app did during the session, colour-coded by severity, including
+any errors or crashes. Tick the level checkboxes to control how much detail is shown —
+this only changes the display, it never discards entries.
 
 ![Logs Screen](./non-dist-imgs/Logs.png "Logs Screen")
+
+**Reporting a problem.** Press **Save Log File** to download the log as a spreadsheet file
+and attach it to your bug report — it is far more useful than a description of what went
+wrong. Two things to know:
+
+- **The log is not saved between sessions.** Reloading or closing the app clears it, so
+  export *before* reloading if something has gone wrong.
+- ⚠️ **The log may contain confidential information.** It is a raw diagnostic record and
+  can include field report details, street addresses, and call signs, and the file is not
+  encrypted. Share it only with the people who need it to diagnose the problem, and delete
+  it afterwards. A future release will add a second, redacted export for anonymized
+  analysis and hot-wash replay; until then, treat every log export as sensitive.
 
 ---
 
@@ -313,7 +328,8 @@ That cuts both ways:
 
 The roster is the sensitive part: names, home addresses, personal phone numbers, photos,
 and call signs that tie back to publicly searchable licence records. It is stored
-unencrypted, and exports are plain files. Share only with people who need it for the
+unencrypted, and exports are plain files. **The same applies to log exports** — the log is
+a raw diagnostic record and can quote report details and addresses verbatim. Share only with people who need it for the
 mission, and delete exports when the mission is over. Follow your agency's policy on
 handling participant information.
 

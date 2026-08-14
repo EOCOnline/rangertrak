@@ -1,24 +1,63 @@
-//import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
-import { BehaviorSubject, Observable, throwError } from 'rxjs'
+import { Observable, ReplaySubject, throwError } from 'rxjs'
 
-// / <reference types= @types/picocolors /> - gets: Cannot find type definition file for '@types/picocolors'.
-import { Injectable, Optional, SkipSelf } from '@angular/core'
+import { Injectable, Optional, signal, SkipSelf, Signal } from '@angular/core'
 
-import { Utility } from '../utility'
-import { LogLevel, LogType } from './'
+import { LogHeadings, LogLevel, LogLevelNames, LogType } from './'
 
 // Additional ideas: https://www.codemag.com/Article/1711021/Logging-in-Angular-Applications
 
+/**
+ * In-app event log: the data behind the Log page, and the raw material for a trouble
+ * report.
+ *
+ * Why this exists at all, given `console` already does logging: `console.*` writes to
+ * devtools and **nowhere the page can read back** - there is no API to retrieve console
+ * history. A scribe running RangerTrak on a field tablet has no devtools, so an in-app log
+ * requires capturing entries ourselves. What this adds over `console` is (a) visibility
+ * inside the app, (b) structured records that can be filtered and exported, and (c)
+ * something a user can actually attach to a trouble report. Entries are still mirrored to
+ * the console, which stays the better tool when devtools *are* available.
+ */
 @Injectable({ providedIn: 'root' })
 export class LogService {
 
-  private Log: LogType[] = []
-  private logSubject$: BehaviorSubject<LogType[]>
+  /**
+   * Entries are held in a bounded ring buffer. Previously the array grew without limit for
+   * the life of the session, which on a multi-day incident with excessive logging enabled
+   * is a slow memory leak in a tool that must not fall over mid-mission. Oldest entries are
+   * discarded first; the console retains everything if more history is needed.
+   */
+  private static readonly MAX_ENTRIES = 5000
+
+  private buffer: LogType[] = []
+
+  /**
+   * Source of truth for consumers. `equal: () => false` makes every `.set()` notify even
+   * though the array reference never changes - deliberate, because copying a 5,000-element
+   * array on every log call would make logging O(n) per entry and O(n²) over a session,
+   * which is the cost this rewrite exists to remove. Consumers must treat the array as
+   * read-only.
+   */
+  private logSignal = signal<LogType[]>([], { equal: () => false })
+
+  /** Thin adapter for the Observable consumers that predate the signal, matching the
+   *  pattern used by the other services (see settings.service.ts for why ReplaySubject
+   *  rather than toObservable). */
+  private logReplay$ = new ReplaySubject<LogType[]>(1)
+
+  /** Read-only view for zoneless components - reading this in a template keeps the view
+   *  updating without a manual subscription. */
+  public readonly entries: Signal<LogType[]> = this.logSignal.asReadonly()
+
+  /**
+   * Entries below this level are dropped at the source - neither stored nor written to the
+   * console. Defaults to capturing everything, preserving existing behaviour; raise it to
+   * quiet a noisy session without editing call sites.
+   */
+  public minCaptureLevel: LogLevel = LogLevel.Excessive
+
   private defaultSource = 'Unknown'
   static nextId = 1
-  //const colors = require('colors/safe');
-  readonly hotStylin = 'background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;'
-
 
   constructor(
     @Optional() @SkipSelf() existingService: LogService,
@@ -36,91 +75,116 @@ export class LogService {
       })
     }
     console.log(`==== Log Service  ======== Constructor =============`)
-    //console.log(pc.bgGreen(`==== Log ${pc.red('Service')} ${pc.italic('======== Constructor() ============')} ====`))
-    //console.log(`I see a ${pc.red("red door")} and I want it painted ${pc.black("black")} ========================================================`)
 
-    let initialEntry = {
-      date: new Date, msg: 'Log Service is being constructed',
-      level: LogLevel.Verbose, source: 'LogService'
-    }
-    this.logSubject$ = new BehaviorSubject([initialEntry])
+    this.log_('Log Service is being constructed', 'LogService', LogLevel.Verbose)
   }
-
-  // const style = 'background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;'
-  // console.log("%cHooray", style);
-  // https://developer.chrome.com/docs/devtools/console/format-style/#style-console-messages
 
   // compare to functionality of https://developer.mozilla.org/en-US/docs/Web/API/console
   // Chrome console formatting: https://developer.chrome.com/docs/devtools/console/format-style/
-  // https://www.npmjs.com/package/chalk
-
-  // https://github.com/alexeyraspopov/picocolors
-  // black, red, green, yellow, blue, magenta, cyan, white, gray
-  // bgBlack, bgRed, bgGreen, bgYellow, bgBlue, bgMagenta, bgCyan, bgWhite
-  // dim, bold, hidden, italic, underline, strikethrough, reset, inverse
   log(msg: string, source: string = this.defaultSource, level: LogLevel = LogLevel.Info) {
+    this.log_(msg, source, level)
+  }
 
-    let dt = new Date
-    let time = Utility.zeroFill(dt.getHours(), 2) + ":" + Utility.zeroFill(dt.getMinutes(), 2) + ":" + Utility.zeroFill(dt.getSeconds(), 2) + ":" + Utility.zeroFill(dt.getMilliseconds(), 4)
+  private log_(msg: string, source: string, level: LogLevel) {
+    if (level < this.minCaptureLevel) {
+      return
+    }
 
-    let preface = `${LogService.nextId++}: `   // ${time} - From `
+    const entry: LogType = { id: LogService.nextId++, date: new Date(), msg, level, source }
+    const line = `${entry.id}: ${source}: ${msg}`
 
     switch (level) {
-
-      case LogLevel.Excessive:
-        // BUG: %c not getting interpreted...
-        //console.log(pc.red(`%c${preface}${source}: ${msg}`))
-        console.log((`${preface}${source}: ${msg}`))
-        break;
-
-      case LogLevel.Verbose:
-        // TODO: console.log(pc.blue(`${preface}${source}: ${msg}`), hotStylin)
-        // results in:  Header component: New settings received background-color: darkblue; color: white; font-style: italic; border: 5px solid hotpink; font-size: 2em;
-        console.log((`${preface}${source}: ${msg}`))
-        break;
-
-      case LogLevel.Info:
-        console.log((`${preface}${source}: ${msg}`))
-        break;
-
       case LogLevel.Warn:
-        console.warn(`${preface}${source}: ${msg}`)
-        break;
-
+        console.warn(line)
+        break
       case LogLevel.Error:
-        console.error((`${preface}${source}: ${msg}`))
-        break;
-
+        console.error(line)
+        break
+      case LogLevel.Excessive:
+      case LogLevel.Verbose:
+      case LogLevel.Info:
+        console.log(line)
+        break
       default:
         console.error(`Unknown level = ${level}!`)
-        console.error(`${preface}${source}: ${msg}`)
-        break;
+        console.error(line)
+        break
     }
-    this.Log.push({ date: new Date, msg: msg, level: level, source: source })
-    this.logSubject$.next(this.Log)  //? Review: we republish the entire log, not just the next entry: ?????
+
+    this.buffer.push(entry)
+    if (this.buffer.length > LogService.MAX_ENTRIES) {
+      this.buffer.splice(0, this.buffer.length - LogService.MAX_ENTRIES)
+    }
+
+    this.logSignal.set(this.buffer)
+    this.logReplay$.next(this.buffer)
   }
 
   excessive(msg: string, source: string = this.defaultSource) {
-    this.log(msg, source, LogLevel.Excessive)
+    this.log_(msg, source, LogLevel.Excessive)
   }
 
   verbose(msg: string, source: string = this.defaultSource) {
-    this.log(msg, source, LogLevel.Verbose)
+    this.log_(msg, source, LogLevel.Verbose)
   }
 
   info(msg: string, source: string = this.defaultSource) {
-    this.log(msg, source, LogLevel.Info)
+    this.log_(msg, source, LogLevel.Info)
   }
 
   warn(msg: string, source: string = this.defaultSource) {
-    this.log(msg, source, LogLevel.Warn)
+    this.log_(msg, source, LogLevel.Warn)
   }
 
   error(msg: string, source: string = this.defaultSource) {
-    this.log(msg, source, LogLevel.Error)
+    this.log_(msg, source, LogLevel.Error)
   }
 
+  /** Expose the Observable, not the subject itself (which could be abused). */
   getLogObserver(): Observable<LogType[]> {
-    return this.logSubject$.asObservable()
+    return this.logReplay$.asObservable()
+  }
+
+  /** Synchronous read, e.g. for export. Treat the result as read-only. */
+  getEntries(): readonly LogType[] {
+    return this.buffer
+  }
+
+  clear() {
+    this.buffer = []
+    this.logSignal.set(this.buffer)
+    this.logReplay$.next(this.buffer)
+    this.info('Log cleared by user.', 'LogService')
+  }
+
+  /**
+   * Serializes the log as CSV. Pure and separate from the download so it can be tested.
+   *
+   * FUTURE: this exports everything. A second "redacted" export - stripping addresses,
+   * call signs and report payloads - would allow anonymized analysis and hot-wash action
+   * replay without distributing personal data. Until that exists the UI warns that the
+   * export may contain confidential information.
+   */
+  toCsv(): string {
+    const rows = [
+      LogHeadings.join(','),
+      ...this.buffer.map(e => [
+        e.id,
+        e.date.toISOString(),
+        LogLevelNames[e.level] ?? e.level,
+        e.source,
+        e.msg,
+      ].map(field => this.csvEscape(field)).join(','))
+    ]
+    return rows.join('\r\n')
+  }
+
+  /**
+   * Log messages routinely contain commas, quotes, and embedded JSON with both, plus
+   * newlines - so every field is quoted and internal quotes doubled, per RFC 4180.
+   * Without this the CSV silently misaligns into the wrong columns.
+   */
+  private csvEscape(field: unknown): string {
+    return `"${String(field).replace(/"/g, '""')}"`
   }
 }

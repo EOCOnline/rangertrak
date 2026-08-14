@@ -1,4 +1,4 @@
-import { ApplicationConfig, isDevMode, provideZonelessChangeDetection } from '@angular/core'
+import { ApplicationConfig, ErrorHandler, isDevMode, provideZonelessChangeDetection } from '@angular/core'
 import { provideAnimations } from '@angular/platform-browser/animations'
 import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router'
 import { provideHttpClient } from '@angular/common/http'
@@ -17,7 +17,7 @@ import {
 } from './shared/mapping/geocoding-provider.interface'
 import { GoogleGeocoder } from './shared/mapping/google-geocoder'
 import { NominatimGeocoder } from './shared/mapping/nominatim-geocoder'
-import { SettingsService } from './shared/services'
+import { GlobalErrorHandler, SettingsService } from './shared/services'
 
 // Standalone replacement for AppModule's NgModule imports/providers.
 // AgGridModule is NOT here: every component that actually uses it already
@@ -28,6 +28,9 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideAnimations(),
+    // Sends uncaught exceptions and rejected promises to the in-app Log page, which a
+    // field user can actually see - see global-error-handler.ts.
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideHttpClient(),
     provideRouter(APP_ROUTES, withPreloading(PreloadAllModules)),
     provideServiceWorker('ngsw-worker.js', {

@@ -3,81 +3,85 @@
 }
 
 #log {
-  height            : 70vh;
-  font-family       : monospace;
-  font-size         : 0.7em;
-  line-height       : 12px;
-  padding           : 2px 5px;
-  //color           : rgb(57, 34, 161);
-  background-color  : rgb(234, 244, 177);
-  border            : 1px solid #030;
-  border-radius     : 4px;
-  overflow          : auto;
+  height          : 70vh;
+  font-family     : monospace;
+  font-size       : 0.75em;
+  line-height     : 1.45;
+  padding         : 4px 6px;
+  background-color: rgb(234, 244, 177);
+  border          : 1px solid #030;
+  border-radius   : 4px;
+  overflow        : auto;
 }
 
-#log .tiny {
-  font-size  : 8px;
-  font-family: 'Times New Roman', Times, serif;
-
-  color           : crimson;
-  background-color: cornflowerblue;
+// One entry. Note these level colours only started taking effect once the panel was
+// rendered from the template: hand-built innerHTML never receives the component's style
+// scoping attribute, so the old code's classes could never match (its own comment said as
+// much). Kept muted deliberately - the point is to distinguish levels at a glance in a
+// dense monospace list, not to decorate.
+.log-line {
+  padding      : 1px 2px;
+  white-space  : pre-wrap;   // messages contain JSON and newlines
+  word-break   : break-word; // ...and long unbroken addresses/URLs
+  border-radius: 2px;
 }
 
-.tiny {
-  font-size       : 8px;
-  font-family     : 'Times New Roman', Times, serif;
-  color           : crimson !important;
-  background-color: cornflowerblue;
+.log-line .tiny {
+  font-family: monospace;
+  font-size  : 0.85em;
+  color      : #6a6a6a;
+  margin-right: 0.25em;
 }
 
+.log-empty {
+  padding   : 1em;
+  color     : #777;
+  font-style: italic;
+}
+
+.excessive {
+  color: #8a8a8a;
+}
+
+.verbose {
+  color: #545454;
+}
+
+.info {
+  color: #14561f;
+}
+
+.warn {
+  color           : #7a4a00;
+  background-color: rgba(255, 165, 0, 0.18);
+}
+
+.error {
+  color           : #8a1010;
+  background-color: rgba(255, 0, 0, 0.12);
+  font-weight     : 600;
+}
 
 h3 {
-  margin            : 0px 0px;
-  //background-color: crimson;
+  margin: 0px 0px;
 }
 
 .mat-mdc-checkbox {
   margin: 0px 10px;
 }
 
-.excessive {
-  background-color: rgb(255, 121, 148);
-  color           : rgb(106, 103, 103);
-  font-size       : 8px;
+.log-count {
+  font-size: 0.85em;
+  color    : #555;
+  margin   : 0.75em 0;
 }
 
-.verbose {
-  color    : rgb(66, 65, 65);
-  font-size: 8px;
+.log-warning {
+  font-size    : 0.85em;
+  color        : #8a6100;
+  background   : #fff8e1;
+  border-left  : 4px solid #d9a300;
+  border-radius: 3px;
+  padding      : .5em .75em;
+  margin       : 1em 0 0 0;
 }
-
-.Info {
-  //font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  color: rgb(7, 246, 39);
-}
-
-.info {
-  //font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  color: rgb(7, 246, 39);
-}
-
-.warn {
-  color: orange;
-}
-
-.error {
-  color: red
-}
-
-// body {
-//   font-family     : arial, helvetica, freesans, sans-serif;
-//   font-size       : 100%;
-//   color           : #333;
-//   background-color: #ddd;
-// }
-
-// h1 {
-//   font-size  : 1.5em;
-//   font-weight: normal;
-//   margin     : 0;
-// }

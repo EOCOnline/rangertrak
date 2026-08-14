@@ -1,29 +1,34 @@
-// TODO: https://github.com/ItamarSmirra/Fs-Browsers
-//import { CSV_FILE, exportFile } from 'fs-browsers'
-// https://github.com/jimmywarting/native-file-system-adapter/
-// https://github.com/GoogleChromeLabs/browser-fs-access
-// https://web.dev/browser-fs-access/
-import { Subscription, switchMap } from 'rxjs'
-
-import { CommonModule, DOCUMENT } from '@angular/common'
+import {
+  ChangeDetectionStrategy, Component, computed, effect, ElementRef, signal, viewChild
+} from '@angular/core'
+import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
-import { AfterContentInit, Component, Inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatCardModule } from '@angular/material/card'
-import {
-  faBug, faCircleCheck, faCircleExclamation, faCircleInfo, faMapMarkedAlt
-} from '@fortawesome/free-solid-svg-icons'
-
-import { Utility } from '../shared'
-import {
-  LogHeadings, LogLevel, LogService, LogType, SettingsService, SettingsType
-} from '../shared/services/'
 
 import { HeaderComponent } from '../shared'
+import { Utility } from '../shared'
+import { LogLevel, LogService, LogType } from '../shared/services/'
 
 /**
- * Update the Log Panel pane with notifications
+ * Displays the in-app event log.
  *
+ * Rewritten to render through the Angular template rather than by assembling
+ * `innerHTML` by hand, which fixed three separate problems at once:
+ *
+ *  - **Injection.** Entry text went into `innerHTML` unescaped, and log messages carry
+ *    free-text ranger notes and serialized field reports - so a note containing markup
+ *    executed. Interpolation escapes automatically.
+ *  - **Performance.** Every new entry cleared the panel and re-rendered *every* entry, so
+ *    cost grew quadratically over a session. `@for` with a stable `track` now updates only
+ *    what changed.
+ *  - **Styling.** The old code's own comment noted that its CSS classes "show up in the
+ *    debugger but don't get calculated". That is what happens with hand-built `innerHTML`
+ *    under emulated view encapsulation: the markup never receives the component's scoping
+ *    attribute, so scoped styles cannot match it. Template-rendered nodes do.
+ *
+ * It also removes the `getElementById` + retry-loop dance the old version needed to find
+ * its own panel before the view existed.
  */
 @Component({
   selector: 'rangertrak-log',
@@ -33,190 +38,110 @@ import { HeaderComponent } from '../shared'
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./log.component.scss']
 })
-export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit {
-  // REVIEW: If this should be a singleton, consider:  https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method
+export class LogComponent {
+
   private id = 'Log Component'
   title = 'Event Summary Log'
   pageDescr = `Program internal debug information`
 
-  private logPanel: HTMLElement | null = null
-  private logSubscription!: Subscription
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
+  private logPanel = viewChild<ElementRef<HTMLElement>>('logPanel')
 
-  private latestLog: LogType[] = []
+  // Which levels to display. Signals rather than plain fields so the computed view below
+  // recalculates - this app runs zoneless, where a plain field mutation would not
+  // necessarily refresh anything derived from it.
+  public excessive = signal(false)
+  public verbose = signal(true)
+  public info = signal(true)
+  public warn = signal(true)
+  public error = signal(true)
 
-  // https://material.angular.io/components/checkbox
-  public excessive = false
-  public verbose = true
-  public info = true
-  public warn = true
-  public error = true
-  faCircleInfo = faCircleInfo
-  faCircleCheck = faCircleCheck
-  faCircleExclamation = faCircleExclamation
-  faBug = faBug
-
-  constructor(
-    private logService: LogService,
-    private settingsService: SettingsService,
-    @Inject(DOCUMENT) private document: Document) {
-
-    console.log(`Constructing log component`)
-
-    //! TODO: Move ALL subscribes to AfterViewInit() !!!!
-    this.logSubscription = logService.getLogObserver().subscribe({
-      next: (log) => {
-        //console.log(`LogPanel got: ${JSON.stringify(log)}`)
-        this.latestLog = log
-        this.gotNewLog(log)
-      },
-      error: (e) => console.error('Log Subscription got:' + e, this.id),
-      complete: () => console.info('Log Subscription complete', this.id)
-    })
-
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
-        console.log('Received new Settings via subscription.', this.id)
-      },
-      error: (e) => console.error('Settings Subscription got:' + e, this.id),
-      complete: () => console.info('Settings Subscription complete', this.id)
-    })
-  }
-
-  /**
-   * Create heading for Log Panel
-   */
-  ngOnInit(): void {
-    //console.log(`Into log component's ngInit`)
-
-    if (this.settings) {
-      // Turn on excessive reporting by default, if in debug mode...
-      this.excessive = this.settings.debugMode
+  /** Display filter only. Entries are already captured (or not) by
+   *  LogService.minCaptureLevel; unchecking a box here hides history, never deletes it. */
+  public visibleEntries = computed(() => {
+    const show = {
+      [LogLevel.Excessive]: this.excessive(),
+      [LogLevel.Verbose]: this.verbose(),
+      [LogLevel.Info]: this.info(),
+      [LogLevel.Warn]: this.warn(),
+      [LogLevel.Error]: this.error(),
     }
+    return this.logService.entries().filter(e => show[e.level] ?? true)
+  })
 
-    this.logPanel = this.document.getElementById("log")
-    if (this.logPanel) {
-      // YES!
-      console.log(`ngOnInit() found logPanel.`)
-      this.redisplayLog()
-    } else {
-      console.error('logPanel not found in ngOnInit(). Move code later!');
-    }
-  }
+  public totalEntries = computed(() => this.logService.entries().length)
 
-  ngAfterContentInit() {
-    //console.log(`Into log component's ngAfterContentInit`)
-
-    this.logPanel = this.document.getElementById("log")
-    if (this.logPanel) {
-      // YES!
-      console.log(`ngAfterContentInit() found logPanel.`)
-      this.redisplayLog()
-    } else {
-      console.error('logPanel not found in ngAfterContentInit(). Move code later!');
-    }
-  }
-
-
-  redisplayLog() {
-    console.log(`Display log with ${this.excessive ? 'excessive, ' : 'only '}${this.verbose ? 'verbose, ' : ''}${this.info ? 'info, ' : ''}${this.warn ? 'warnings, ' : ''}${this.error ? 'errors ' : ''}`)
-    this.gotNewLog(this.latestLog)
-  }
-
-  /**
-   * If you have to display reserved characters such as <, >, &, " within the <pre> tag,
-   * the characters must be escaped using their respective HTML entity.
-   */
-  gotNewLog(log: LogType[]) {
-    //console.log(`got new log with ${log.length} entries`)
-
-    let i = 0
-    let msMaxDelay = 5000
-    while (!this.logPanel) {
+  constructor(private logService: LogService) {
+    // Keep the newest entry in view, as the old implementation did. Deferred a tick so the
+    // rows for the entries we just reacted to actually exist before measuring scrollHeight.
+    effect(() => {
+      this.visibleEntries()
       setTimeout(() => {
-        console.error(`Log Component: gotNewLog() can not display logs BEFORE logPanel initialization. Delayed ${i / 10 * msMaxDelay} ms. Retrying.`) // For: \n${JSON.stringify(log.slice(-1))} `)
-        this.logPanel = this.document.getElementById("log")
-      }, msMaxDelay / 10)
-      if (++i > 9) {
-        return
-        //throw ("log panel undefined...")
-        //break
-      }
-    }
+        const panel = this.logPanel()?.nativeElement
+        if (panel) {
+          panel.scrollTop = panel.scrollHeight
+        }
+      })
+    })
+  }
 
-    if (!this.logPanel || !this.logPanel.innerHTML) {
-      console.error('LogComponent: this.logPanel (or .innerHTML) is null or undefined...')
+  /** Maps a level to its stylesheet class. */
+  cssClassFor(level: LogLevel): string {
+    switch (level) {
+      case LogLevel.Excessive: return 'excessive'
+      case LogLevel.Verbose: return 'verbose'
+      case LogLevel.Info: return 'info'
+      case LogLevel.Warn: return 'warn'
+      case LogLevel.Error: return 'error'
+      default: return 'error'
+    }
+  }
+
+  trackEntry(_index: number, entry: LogType) {
+    return entry.id
+  }
+
+  /**
+   * Downloads the whole log as CSV.
+   *
+   * Confirms first, because the log is not sanitized: it contains whatever was logged,
+   * which includes serialized field reports, resolved street addresses and call signs.
+   * Same treatment as the roster export on the Rangers page.
+   *
+   * FUTURE: offer "full log" and "redacted log" exports, the latter stripping personal
+   * detail so a log can be shared for anonymized analysis or replayed during a hot wash.
+   */
+  onBtnSaveLog() {
+    if (!Utility.getConfirmation(
+      `Save the event log to a file?\n\n`
+      + `The log is a raw diagnostic record and MAY CONTAIN CONFIDENTIAL INFORMATION - `
+      + `field report details, street addresses and call signs among them - and is NOT `
+      + `encrypted.\n\n`
+      + `Share it only with people who need it to diagnose a problem, and delete it `
+      + `afterwards.`)) {
+      this.logService.verbose('onBtnSaveLog: user cancelled export.', this.id)
       return
     }
 
-    // TODO: rebuilds entire log panel, instead of just pushing last few entries onto it...
-    this.logPanel.innerHTML = ''
+    const dt = new Date()
+    const stamp = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`
+      + `_${String(dt.getHours()).padStart(2, '0')}${String(dt.getMinutes()).padStart(2, '0')}`
+    const fileName = `RangerTrak.log.${stamp}.csv`
 
+    const blob = new Blob([this.logService.toCsv()], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    a.click()
+    URL.revokeObjectURL(url)
 
-    i = 0
-    log.forEach(entry => {
-      let time = entry.date.getHours().toString().padStart(2, '0') + ":" + entry.date.getMinutes().toString().padStart(2, '0') + ":" + entry.date.getSeconds().toString().padStart(2, '0') + "." + entry.date.getMilliseconds().toString().padStart(3, '0')
-      //let preface = `<span class="tiny">${entry.source}: </span>`
-      let preface = `<span class="tiny"> ${i++}) ${time} - ${entry.source}:  </span>`
-
-      if (!this.logPanel) { return }
-
-      switch (entry.level) {
-
-        case LogLevel.Excessive:
-          if (this.excessive) {
-            // BUG: Classes and id's show up in debugger, but font-sizes & colors don't get calculated/are ineffective!
-            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-check"></i><span class="excessive">${preface}${entry.msg}</span><br>`
-          }
-          break;
-
-        case LogLevel.Verbose:
-          if (this.verbose) {
-            // BUG: Classes and id's show up in debugger, but font-sizes & colors don't get calculated/are ineffective!
-            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-check"></i><span class="verbose">${preface}${entry.msg}</span><br>`
-          }
-          break;
-
-        case LogLevel.Info:
-          if (this.info) {
-            this.logPanel.innerHTML += `<fa-icon [icon]="fa-circle-info"></fa-icon><span class="info" style="background-color:yellow;">${preface}${entry.msg}</span><br>`
-          }
-          break;
-
-        case LogLevel.Warn:
-          if (this.warn) {
-            this.logPanel.innerHTML += `<i class="fa-solid fa-circle-exclamation"></i><span class="warn" style="background-color:orange;"">${preface}${entry.msg}</span><br>`
-          }
-          break;
-
-        case LogLevel.Error:
-          if (this.error) {
-            this.logPanel.innerHTML += `<i class="fa-solid fa-bug"></i><span class="error" style="background-color:red;">${preface}${entry.msg}</span><br>`
-          }
-          break;
-
-        default:
-          this.logPanel.innerHTML += `<i class="fa-solid fa-bug"></i><span class="error" style="background-color:salmon;">UNEXPECTED LOG TYPE: ${preface}${entry.msg}</span><br>`
-      }
-    })
-
-    let ot = this.logPanel.scrollHeight - this.logPanel.clientHeight
-    if (ot > 0) this.logPanel.scrollTop = ot
+    this.logService.info(`Exported ${this.totalEntries()} log entries to ${fileName}`, this.id)
   }
 
-  onBtnSaveLog() {
-    let dt = new Date()
-    let fileName = `RangerTrak.log.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`
-
-    // https://github.com/ItamarSmirra/Fs-Browsers#readme
-    // TODO:     exportFile(this.latestLog, { type: CSV_FILE, headings: LogHeadings, fileName: fileName });
-
-    console.error(`UNIMPLEMENTED!  Saving Log to file xxxxxxxxxx with ${this.latestLog.length} entries`)
-  }
-
-  ngOnDestroy() {
-    this.settingsSubscription?.unsubscribe()
+  onBtnClearLog() {
+    if (!Utility.getConfirmation('Clear all log entries currently held in memory?')) {
+      return
+    }
+    this.logService.clear()
   }
 }
