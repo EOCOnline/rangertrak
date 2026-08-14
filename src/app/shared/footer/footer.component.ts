@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
+import { Component, Inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
 
 import { LogService, SettingsService, SettingsType } from '../services'
 import { Utility } from '../utility';
@@ -13,6 +13,7 @@ import { Utility } from '../utility';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './footer.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent implements OnInit, OnDestroy {

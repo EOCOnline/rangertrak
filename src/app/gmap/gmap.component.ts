@@ -2,7 +2,7 @@
 
 import { CommonModule, DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 import { GoogleMap, GoogleMapsModule } from '@angular/google-maps'
 import { Loader } from '@googlemaps/js-api-loader'
 import { MarkerClusterer } from '@googlemaps/markerclusterer'
@@ -56,6 +56,7 @@ declare const google: any // declare tells compiler "this variable exists (from 
   imports: [CommonModule, GoogleMapsModule, HeaderComponent],
   templateUrl: './gmap.component.html',
   styleUrls: ['./gmap.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [SettingsService]
 })
 export class GmapComponent extends AbstractMap implements OnInit, OnDestroy {

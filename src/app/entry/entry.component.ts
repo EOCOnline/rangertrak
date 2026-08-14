@@ -6,7 +6,8 @@ import { CommonModule, DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
   AfterViewInit, Component, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit,
-  Output, ViewChild
+  Output, ViewChild,
+  ChangeDetectionStrategy
 } from '@angular/core'
 import {
   FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
@@ -44,6 +45,7 @@ import { MiniLMapComponent } from './mini-lmap.component'
   ],
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [RangerService, FieldReportService, SettingsService]
   //, TeamService
   // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!

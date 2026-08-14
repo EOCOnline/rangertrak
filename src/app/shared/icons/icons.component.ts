@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { mdiAccount, mdiInformationOutline } from '@mdi/js';
@@ -52,6 +52,7 @@ type Options = {|
   standalone: true,
   imports: [MatIconModule],
   templateUrl: './icons.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./icons.component.scss']
 })
 export class IconsComponent implements OnInit {

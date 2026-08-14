@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, Observer, of, throwError } from 'rxjs'
-import { csvImport } from 'src/app/rangers/csvImport'
+import { csvImport } from '../../rangers/csvImport'
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING
 D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'. CommonJS or AMD dependencies can cause optimization bailouts.

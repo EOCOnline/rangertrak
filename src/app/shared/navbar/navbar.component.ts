@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
 import { NavigationEnd, NavigationError, NavigationStart, Router, RouterModule } from '@angular/router';
 import { faL, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
@@ -16,6 +16,7 @@ import { Utility } from '../utility';
   standalone: true,
   imports: [CommonModule, RouterModule, MatProgressBarModule],
   templateUrl: './navbar.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {

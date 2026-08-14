@@ -8,7 +8,7 @@ import { delay, throwError } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
 
 import { AbstractMap, Utility } from '../shared/'
 import {
@@ -46,6 +46,7 @@ L.Marker.prototype.options.icon = iconDefault;
   templateUrl: './mini-lmap.component.html',
   styleUrls: ['./mini-lmap.component.scss',
     '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)]
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [SettingsService]
 })
 export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {

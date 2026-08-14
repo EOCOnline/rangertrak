@@ -8,7 +8,7 @@ For more info see: https://angular.io/guide/build#configuring-commonjs-dependenc
 import * as XLSX from 'xlsx'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { AfterViewInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { AgGridAngular } from 'ag-grid-angular';
 import { HeaderComponent } from '../shared/header/header.component';
@@ -33,6 +33,7 @@ type AOA = any[][]  // array of arrays
   standalone: true,
   imports: [CommonModule, AgGridAngular, HeaderComponent],
   templateUrl: './rangers.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
 })
 export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {

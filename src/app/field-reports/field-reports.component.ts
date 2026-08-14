@@ -3,7 +3,7 @@ import { GridOptions, SelectionChangedEvent } from 'ag-grid-community'
 import { Observable, subscribeOn, Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
-import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms'
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -40,6 +40,7 @@ export class myUnusedPipe implements PipeTransform {
     HeaderComponent
   ],
   templateUrl: './field-reports.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./field-reports.component.scss']
 })
 export class FieldReportsComponent implements OnInit, OnDestroy {

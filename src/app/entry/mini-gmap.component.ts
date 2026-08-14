@@ -7,7 +7,8 @@ import { Subscription } from 'rxjs'
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
-  AfterViewInit, Component, Inject, Input, isDevMode, OnDestroy, OnInit
+  AfterViewInit, Component, Inject, Input, isDevMode, OnDestroy, OnInit,
+  ChangeDetectionStrategy
 } from '@angular/core'
 import { GoogleMapsModule } from '@angular/google-maps'
 
@@ -23,6 +24,7 @@ import {
   standalone: true,
   imports: [CommonModule, GoogleMapsModule],
   templateUrl: './mini-gmap.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./mini-gmap.component.scss']
 })
 export class MiniGMapComponent extends AbstractMap implements OnInit, OnDestroy {

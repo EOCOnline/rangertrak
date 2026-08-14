@@ -7,7 +7,7 @@ import { Subscription, switchMap } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { FormsModule } from '@angular/forms'
-import { AfterContentInit, Component, Inject, OnDestroy, OnInit } from '@angular/core'
+import { AfterContentInit, Component, Inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatCardModule } from '@angular/material/card'
 import {
@@ -30,6 +30,7 @@ import { HeaderComponent } from '../shared'
   standalone: true,
   imports: [CommonModule, FormsModule, MatCheckboxModule, MatCardModule, HeaderComponent],
   templateUrl: './log.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./log.component.scss']
 })
 export class LogComponent implements OnInit, OnDestroy, AfterContentInit, OnInit {

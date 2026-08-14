@@ -8,7 +8,8 @@ import { fromEvent, Observable, Subscription } from 'rxjs'
 import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
-  AfterViewInit, Component, ElementRef, Inject, isDevMode, NgZone, OnDestroy, OnInit, ViewChild
+  AfterViewInit, Component, ElementRef, Inject, isDevMode, NgZone, OnDestroy, OnInit, ViewChild,
+  ChangeDetectionStrategy
 } from '@angular/core'
 import { MDCSwitch } from '@material/switch'
 
@@ -45,7 +46,8 @@ import { LayerType, MapType, Map } from './map.interface'
  * - Display fieldReports : boolean
  * - Various Settings: Def_Lat/Lng/Zoom/etc.
  */
-@Component({ template: '' })
+@Component({ changeDetection: ChangeDetectionStrategy.Eager,
+ template: '' })
 export abstract class AbstractMap implements OnInit, OnDestroy {
 
   protected id = 'Abstract Map Component'

@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
+import { Component, Inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar'
 import { MatCardModule } from '@angular/material/card'
 import { NavigationEnd } from '@angular/router'
@@ -18,6 +18,7 @@ import { LogService } from '../services/log.service'
   standalone: true,
   imports: [CommonModule, MatSnackBarModule, MatCardModule],
   templateUrl: './alerts.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./alerts.component.scss']
 })
 export class AlertsComponent implements OnInit, OnDestroy {

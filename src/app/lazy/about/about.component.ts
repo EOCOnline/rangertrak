@@ -1,7 +1,7 @@
 
 import { Subscription } from 'rxjs'
 
-import { Component, Inject, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { Component, Inject, isDevMode, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 import { CommonModule } from '@angular/common'
 
 import { ClockService, LogService, SettingsService, SettingsType } from '../../shared/services'
@@ -13,6 +13,7 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
   imports: [CommonModule],
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [SettingsService]
 })
 export class AboutComponent implements OnDestroy, OnInit {

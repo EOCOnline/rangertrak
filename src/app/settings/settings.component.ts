@@ -3,7 +3,7 @@ import { ColDef } from 'ag-grid-community'
 import { delay, Subscription, throwError } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 import {
   AbstractControl, FormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators
 } from '@angular/forms'
@@ -37,6 +37,7 @@ import { MaterialModule } from '../material.module'
   ],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [SettingsService]
 })
 export class SettingsComponent implements OnInit, OnDestroy {

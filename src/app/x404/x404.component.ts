@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
 import { HeaderComponent } from '../shared/header/header.component'
 
 // TODO: https://bobrov.dev/blog/angular-smart-404-page/ - suggest the *right* page!
@@ -11,6 +11,7 @@ import { HeaderComponent } from '../shared/header/header.component'
   standalone: true,
   imports: [HeaderComponent],
   templateUrl: './x404.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./x404.component.scss']
 })
 export class X404Component implements OnInit {

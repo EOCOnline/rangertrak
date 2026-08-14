@@ -1,9 +1,10 @@
-import { Component } from '@angular/core'
+import { Component, ChangeDetectionStrategy } from '@angular/core'
 
 @Component({
   selector: 'lazy',
 
   template: '',   // templateUrl: [], // './lazy.component.html'
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: [] //./lazy.component.scss
 })
 export class LazyComponent {

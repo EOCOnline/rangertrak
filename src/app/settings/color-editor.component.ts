@@ -1,7 +1,7 @@
 import { ICellEditorAngularComp } from 'ag-grid-angular'
 import { ArgumentOutOfRangeError } from 'rxjs'
 
-import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef } from '@angular/core'
+import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef, ChangeDetectionStrategy } from '@angular/core'
 import {
   AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, UntypedFormControl, Validators
 } from '@angular/forms'
@@ -37,6 +37,7 @@ import { MatInputModule } from '@angular/material/input';
     MatInputModule
   ],
   templateUrl: './color-editor-component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./color-editor-component.scss',],
 })
 export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {

@@ -4,7 +4,7 @@ import {
 } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core'
+import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 import {
   FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup,
   Validators
@@ -52,6 +52,7 @@ import {
     MatNativeDateModule
   ],
   templateUrl: './time-picker.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./time-picker.component.scss']
 })
 export class TimePickerComponent implements OnInit {

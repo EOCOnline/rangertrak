@@ -12,7 +12,7 @@ import { throwError } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
 
 import { AbstractMap, Utility } from '../shared'
 import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
@@ -56,6 +56,7 @@ L.Marker.prototype.options.icon = iconDefault;
     // "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css" // (not needed if you use your own iconCreateFunction instead of the default one)
     //'../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [SettingsService]
 })
 export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {  //OnInit,

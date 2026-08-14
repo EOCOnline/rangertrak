@@ -6,7 +6,8 @@ import {
 import { CommonModule, DOCUMENT } from '@angular/common'
 import {
   AfterViewInit, Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, SkipSelf,
-  ViewChild
+  ViewChild,
+  ChangeDetectionStrategy
 } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import {
@@ -44,6 +45,7 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MaterialModule],
   templateUrl: './location.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./location.component.scss']
 })
 export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {

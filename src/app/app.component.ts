@@ -1,7 +1,7 @@
 import { filter, map, switchMap } from 'rxjs'
 
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, HostListener } from '@angular/core'
+import { Component, OnInit, HostListener, ChangeDetectionStrategy } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar'
 //import { MatSnackBar } from '@material/snackbar'
@@ -24,6 +24,7 @@ import { AlertsComponent } from './shared/alerts/alerts.component'
     FooterComponent
   ],
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
