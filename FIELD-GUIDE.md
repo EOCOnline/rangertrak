@@ -329,7 +329,11 @@ That cuts both ways:
 The roster is the sensitive part: names, home addresses, personal phone numbers, photos,
 and call signs that tie back to publicly searchable licence records. It is stored
 unencrypted, and exports are plain files. **The same applies to log exports** — the log is
-a raw diagnostic record and can quote report details and addresses verbatim. Share only with people who need it for the
+a raw diagnostic record and can quote report details and addresses verbatim.
+
+> **Planned:** optional passphrase encryption, first for exported files and later for the
+> data held on the device. Until then, the practical protection is device security — lock
+> the device, and treat exported files the way you would a printed roster. Share only with people who need it for the
 mission, and delete exports when the mission is over. Follow your agency's policy on
 handling participant information.
 

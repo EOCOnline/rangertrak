@@ -113,6 +113,69 @@ entering and mapping field reports. The current architecture satisfies this on e
 path — coordinates, Plus Codes, both map engines, Nominatim, and export/import are all
 keyless.
 
+## Planned: encryption at rest
+
+Today everything — roster, field reports, settings, and every export — is stored and
+written in the clear. The roster is the sensitive part (legal names, home addresses,
+personal phone numbers, and call signs that resolve to public licence records), and field
+reports can contain PII about missing persons. The UI warns about this in several places;
+the intent to fix it properly exists as scattered commented-out `crypto-js` code in
+`utility.ts`, `settings.service.ts` and `ranger.service.ts`. This section consolidates
+that into one plan.
+
+### Threat model — decide this first
+
+There is **no server**, so "server breach" is not the threat. What encryption at rest
+actually defends against here is narrow, and worth being honest about:
+
+- ✅ **Lost or stolen device** — the realistic case, and the one that justifies the work.
+- ✅ **A shared command-post laptop** where another user has access to the browser profile.
+- ✅ **Exported files** distributed further than intended.
+- ❌ **Not** an attacker who has the app open and unlocked — the key is in memory by
+  definition.
+- ❌ **Not** malicious code running in the page. Encryption at rest is not a substitute for
+  the XSS fix already made on the Log page.
+
+### Design sketch
+
+- **Use the Web Crypto API (`crypto.subtle`), not `crypto-js`.** It is native, audited, and
+  already used elsewhere in this codebase for SHA-256. `crypto-js` is currently a
+  dependency with **zero live call sites** — every use is commented out. It should be
+  removed rather than left implying a capability that does not exist.
+- **AES-GCM (256-bit)** for the data; **PBKDF2** with a high iteration count to derive the
+  key from an operator passphrase; a random salt per store and a random IV per record,
+  stored alongside the ciphertext.
+- **The key lives in memory for the session only**, never persisted. Unlocking re-derives
+  it from the passphrase.
+
+### The hard parts, in order of cost
+
+1. **`localStorage` is synchronous; Web Crypto is not.** Every service writes synchronously
+   inside `updateLocalStorageAndPublish()`. Encrypting forces the storage layer async,
+   which is the main implementation cost — not the cryptography. The natural pairing is to
+   do it alongside a move to **IndexedDB** (the `idb` package is already a dependency),
+   which is async regardless.
+2. **A forgotten passphrase destroys the mission record, permanently.** With no server
+   there is no escrow and no reset. For a life-safety tool that failure mode may be worse
+   than the exposure it prevents, so it must be designed for deliberately: keep encryption
+   **opt-in per device**, and require an unencrypted export before enabling it.
+3. **Unlock friction must never land during a callout.** Same rule as the API-key
+   principle: surface setup during mission preparedness, not when someone is on the radio
+   waiting. A locked app that a scribe cannot open mid-incident is a worse outcome than an
+   unencrypted one.
+4. **Encrypt selectively.** The roster carries the concentrated risk; settings carry almost
+   none. Encrypting the roster (and optionally reports) rather than everything reduces the
+   blast radius of a lost passphrase and keeps the app usable if only part is locked.
+
+### Suggested staging
+
+- **Phase 1 — encrypted exports.** Optional passphrase on Export Mission, roster export,
+  and log export. Self-contained, needs no storage refactor, and targets the data that
+  actually leaves the device. Highest value per unit of work; do this first.
+- **Phase 2 — encrypted at rest**, tied to the IndexedDB migration so the async change is
+  paid for once.
+- **Phase 3 — per-mission keys**, if agencies ask for separation between missions.
+
 ## Bundle and loading strategy
 
 Only the Entry route is eager; every other route is a `loadComponent` split point

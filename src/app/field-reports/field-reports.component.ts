@@ -162,7 +162,10 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1 }, // TODO:
       { headerName: "CallSign", field: "callsign", tooltipField: "team", width: 4, flex: 2 },
       // { headerName: "Team", field: "team" },
-      { headerName: "Address", field: "address", singleClickEdit: true, width: 3, flex: 30 }, //, maxWidth: 200
+      // Dot path, not "address": the address lives on the nested location object, exactly
+      // as lat/lng do below. Bound to the wrong field, this column rendered blank for
+      // every report - the addresses were in the data all along.
+      { headerName: "Address", field: "location.address", singleClickEdit: true, width: 3, flex: 30 }, //, maxWidth: 200
       {
         headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell',
         valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lat * 10000) / 10000.0 }
