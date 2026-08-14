@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, Observer, of, throwError } from 'rxjs'
+import { Observable, Observer, of, ReplaySubject, throwError } from 'rxjs'
 import { csvImport } from '../../rangers/csvImport'
 /* Following gets:
 index.js:553 [webpack-dev-server] WARNING
@@ -8,7 +8,7 @@ import * as XLSX from 'xlsx'
 
 import { formatDate } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { Injectable, OnInit, Optional, SkipSelf } from '@angular/core'
+import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 
 import * as rangers from '../../../assets/data/Rangers.3Feb22.json'
 //import { debounceTime, map, startWith } from 'rxjs/operators'
@@ -28,8 +28,17 @@ export class RangerService implements OnInit {
 
   id = 'Ranger Service'
 
-  private rangersSubject$ =
-    new BehaviorSubject<RangerType[]>([])
+  // rangersSignal is the single source of truth for state. rangersReplay$ is
+  // a thin, synchronously-fed notification layer for existing Observable
+  // consumers - see the equivalent, more-detailed comment in
+  // settings.service.ts for why (toObservable()'s effect-based bridge is
+  // asynchronous; several consumers need synchronous emission).
+  private rangersSignal = signal<RangerType[]>([])
+  private rangersReplay$ = new ReplaySubject<RangerType[]>(1)
+  // `rangers` is mutated in place throughout this class (push/splice/sort)
+  // rather than reassigned; updateLocalStorageAndPublish() is the single
+  // point that syncs that mutable array's current contents out to
+  // rangersSignal/rangersReplay$ and localStorage.
   rangers: RangerType[] = []
 
   private localStorageRangerName = 'rangers'
@@ -71,7 +80,11 @@ export class RangerService implements OnInit {
       //Rangers.2Feb22.json file.`, this.id)
     }
 
-    this.rangersSubject$ = new BehaviorSubject(this.rangers)
+    // Ensures state is published regardless of which branch above populated
+    // this.rangers (loadHardcodedRangers() already publishes internally;
+    // this call is what publishes the localStorage-loaded case, and is a
+    // harmless redundant re-publish in the hardcoded case).
+    this.updateLocalStorageAndPublish()
   }
 
   ngOnInit() {
@@ -82,7 +95,7 @@ export class RangerService implements OnInit {
    * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
    */
   public getRangersObserver(): Observable<RangerType[]> {
-    return this.rangersSubject$.asObservable()
+    return this.rangersReplay$.asObservable()
   }
 
   /**
@@ -102,7 +115,14 @@ export class RangerService implements OnInit {
 
     localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
 
-    this.rangersSubject$.next(this.rangers)
+    // Signal gets a fresh array copy: this.rangers is mutated in place
+    // (push/splice/sort), so passing the same reference to .set() would be
+    // treated as "no change" by the signal's default equality check and
+    // silently skip notifying signal-based consumers. The Replay layer gets
+    // the original live reference, matching the exact prior BehaviorSubject
+    // behavior for existing Observable-based consumers.
+    this.rangersSignal.set([...this.rangers])
+    this.rangersReplay$.next(this.rangers)
   }
 
   //--------------------------------------------------------------------------
