@@ -30,7 +30,14 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "./src/assets/icons/favicon.ico",
-              "./src/assets",
+              {
+                "glob": "**/*",
+                "input": "./src/assets",
+                "output": "./assets",
+                "ignore": [
+                  "data/secrets.json"
+                ]
+              },
               "src/manifest.webmanifest",
               {
                 "glob": "**/*",
