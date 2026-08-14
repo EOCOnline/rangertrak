@@ -11,6 +11,7 @@ import {
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 
 import { HeaderComponent, TimePickerComponent } from '../shared/'
+import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import {
   BackupService, FieldReportService, FieldReportStatusType, InstallableService, LogService, RangerService,
   SampleDataService, SettingsService, SettingsType, StoragePersistenceService
@@ -243,6 +244,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
     this.log.verbose('======== Constructor() ============', this.id)
+    ensureAgGridRegistered()
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {

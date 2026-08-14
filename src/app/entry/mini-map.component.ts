@@ -6,7 +6,7 @@ import {
   ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit
 } from '@angular/core'
 
-import { buildPmtilesStyle, registerPmtilesProtocol } from '../shared/mapping'
+import { buildPmtilesStyle, registerPmtilesProtocol } from '../shared/mapping/map-style'
 import {
   FieldReportsType, FieldReportService, FieldReportType, LocationType, LogService, SettingsService,
   SettingsType, undefinedAddressFlag, undefinedLocation

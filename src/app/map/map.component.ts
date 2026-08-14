@@ -7,7 +7,7 @@ import {
   AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit
 } from '@angular/core'
 
-import { buildPmtilesStyle, registerPmtilesProtocol } from '../shared/mapping'
+import { buildPmtilesStyle, registerPmtilesProtocol } from '../shared/mapping/map-style'
 import {
   FieldReportsType, FieldReportService, FieldReportType, LogService, SettingsService, SettingsType
 } from '../shared/services'

@@ -14,6 +14,7 @@ import { AgGridAngular } from 'ag-grid-angular';
 import { HeaderComponent } from '../shared/header/header.component';
 
 import { Utility } from '../shared'
+import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import {
   FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
@@ -134,6 +135,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document
   ) {
     this.log.info(`======== Constructor() ============`, this.id)
+    ensureAgGridRegistered()
 
     this.now = new Date()
     this.gridApi = ""

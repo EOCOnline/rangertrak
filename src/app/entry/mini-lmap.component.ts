@@ -10,7 +10,11 @@ import { CommonModule, DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
 
-import { AbstractMap, Utility } from '../shared/'
+// Specific paths, not the '../shared/' barrel: the barrel re-exports the MapLibre style
+// helpers, so importing through it here pulled MapLibre (~800KB) into the eager bundle
+// alongside Leaflet, even though this Leaflet mini-map never touches MapLibre.
+import { AbstractMap } from '../shared/mapping/map'
+import { Utility } from '../shared/utility'
 import {
   FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag,
   undefinedLocation

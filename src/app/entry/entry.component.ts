@@ -16,7 +16,12 @@ import {
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
-import { AlertsComponent, DDToDDM, HeaderComponent, TimePickerComponent, Utility } from '../shared/'
+// Specific paths, not the '../shared/' barrel - see the note in location.component.ts.
+import { Utility } from '../shared/utility'
+import { AlertsComponent } from '../shared/alerts/alerts.component'
+import { HeaderComponent } from '../shared/header/header.component'
+import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
+import { DDToDDM } from '../shared/mapping/coordinate'
 import {
   FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
   SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation

@@ -5,6 +5,10 @@ export { CodeArea, OpenLocationCode } from "./open-location-code"  // HAD TO REM
 export { GeocodingProvider, GeocodeResult, GEOCODING_PROVIDER } from "./geocoding-provider.interface"
 export { NominatimGeocoder } from "./nominatim-geocoder"
 export { GoogleGeocoder } from "./google-geocoder"
-export { buildPmtilesStyle, registerPmtilesProtocol, DEFAULT_PMTILES_URL } from "./map-style"
+// NOTE: ./map-style is deliberately NOT re-exported here (nor from ../index.ts). It pulls
+// in MapLibre (~800KB), and anything importing this barrel for an unrelated symbol would
+// drag MapLibre along with it into the eager bundle. Its two consumers - MapComponent and
+// MiniMapComponent - import it directly from './mapping/map-style' instead, which keeps
+// MapLibre inside the lazily-loaded /map route chunk.
 export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./coordinate"
 export { AbstractMap } from "./map"

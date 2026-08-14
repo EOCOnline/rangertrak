@@ -13,6 +13,7 @@ import { AgGridAngular } from 'ag-grid-angular';
 import { HeaderComponent } from '../shared/header/header.component';
 
 import { Utility } from '../shared'
+import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import {
   FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
   RangerService, SettingsService, SettingsType
@@ -126,6 +127,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document
   ) {
     this.log.info(` Construction`, this.id)
+    ensureAgGridRegistered()
 
     this.now = new Date()
     this.gridApi = ""

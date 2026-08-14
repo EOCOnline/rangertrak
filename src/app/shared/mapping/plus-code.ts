@@ -1,5 +1,6 @@
 
-import { CodeArea, OpenLocationCode as PC } from '..'
+// Own file, not the '..' barrel - same cycle problem described in map.ts.
+import { CodeArea, OpenLocationCode as PC } from './open-location-code'
 
 // Or use Open-Location-code.tx instead???
 export class PlusCode {

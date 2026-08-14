@@ -13,7 +13,7 @@ export { CodeArea, OpenLocationCode } from "./mapping/open-location-code"  // HA
 export { GeocodingProvider, GeocodeResult, GEOCODING_PROVIDER } from "./mapping/geocoding-provider.interface"
 export { NominatimGeocoder } from "./mapping/nominatim-geocoder"
 export { GoogleGeocoder } from "./mapping/google-geocoder"
-export { buildPmtilesStyle, registerPmtilesProtocol, DEFAULT_PMTILES_URL } from "./mapping/map-style"
+// ./mapping/map-style is deliberately NOT re-exported - see the note in mapping/index.ts.
 export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./mapping/coordinate"
 export { AbstractMap } from "./mapping/map"
 

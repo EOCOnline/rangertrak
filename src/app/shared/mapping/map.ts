@@ -18,7 +18,12 @@ import {
   LogService, SettingsService, SettingsType
 } from '../services'
 
-import { Utility } from '..'
+// Imported from its own file, not the '..' barrel. This module is *re-exported by* that
+// barrel, so importing it back creates a cycle (barrel -> map.ts -> barrel) that welds
+// every module the barrel touches into one unit - including the MapLibre style helpers,
+// which is how MapLibre ended up in the eager bundle despite only the lazy /map route
+// using it.
+import { Utility } from '../utility'
 import { Map } from './map.interface'
 
 

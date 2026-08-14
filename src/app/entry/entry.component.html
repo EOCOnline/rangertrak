@@ -2,7 +2,20 @@
 
 <section class="main bkgrnd_NotToday">
   <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
-    <mini-lmap [locationUpdated]="locationParent">LMAP HERE</mini-lmap>
+    <!-- Deferred so Leaflet (plus leaflet.offline and the tile requests) stays out of the
+         initial download and the Entry form itself paints immediately. The placeholder
+         reserves the same space the map will occupy, so the fields below don't jump when
+         it swaps in. `on viewport` would be wrong here - the map sits at the top of the
+         form and is visible right away - so this loads as soon as the app is idle. -->
+    @defer (on idle) {
+      <mini-lmap [locationUpdated]="locationParent">LMAP HERE</mini-lmap>
+    } @placeholder {
+      <div class="minimap-placeholder">Map still loading&hellip;</div>
+    } @error {
+      <div class="minimap-placeholder minimap-placeholder--error">
+        Map could not be loaded. Coordinates can still be entered by hand below.
+      </div>
+    }
 
     <!-- ======================================= -->
     <h2 class="elegant">

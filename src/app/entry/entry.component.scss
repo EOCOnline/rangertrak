@@ -15,6 +15,33 @@ $filledColor : #F0F0F0;
   background-color: $filledColor;
 }
 
+// Stand-in shown while the deferred mini-map (@defer in entry.component.html) loads.
+// Deliberately mirrors .lmap-container/#map in mini-lmap.component.scss - same float,
+// width, height and border - so the form below keeps its position and nothing shifts
+// when the real map swaps in.
+.minimap-placeholder {
+  display          : flex;
+  align-items      : center;
+  justify-content  : center;
+  float            : right;
+  width            : 35vw;
+  height           : 35vh;
+  margin-right     : 16px;
+  background-color : $filledColor;
+  border           : 2px solid black;
+  border-radius    : 5px;
+  color            : #777;
+  font-style       : italic;
+  text-align       : center;
+  padding          : 0 1em;
+}
+
+.minimap-placeholder--error {
+  border-color: #b3261e;
+  color       : #b3261e;
+  font-style  : normal;
+}
+
 h1,
 h2,
 h3 {

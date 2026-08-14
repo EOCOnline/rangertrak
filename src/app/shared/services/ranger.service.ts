@@ -1,10 +1,16 @@
 import { Observable, Observer, of, ReplaySubject, throwError } from 'rxjs'
-import { csvImport } from '../../rangers/csvImport'
-/* Following gets:
-index.js:553 [webpack-dev-server] WARNING
-D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'. CommonJS or AMD dependencies can cause optimization bailouts.
-For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies */
-import * as XLSX from 'xlsx'
+
+/**
+ * xlsx and csvImport are imported *dynamically*, inside the two methods that use them,
+ * rather than at the top of this file.
+ *
+ * RangerService is providedIn:'root' and is injected by the Entry page, so it lands in
+ * the eager initial bundle. A static `import * as XLSX from 'xlsx'` here therefore pulled
+ * the entire SheetJS library (~800KB) into the initial download for every user - to
+ * support two buttons on the Rangers page that most users never press. `import type` is
+ * erased at compile time and costs nothing at runtime.
+ */
+import type * as XLSXType from 'xlsx'
 
 import { formatDate } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
@@ -214,15 +220,18 @@ export class RangerService implements OnInit {
     if (target.files.length !== 1) throw new Error('Cannot use multiple files');
     this.log.verbose(`LoadRangersFromExcel(): About to read contents of ${target.files[0].name}`, this.id)
     const reader: FileReader = new FileReader();
-    reader.onload = (e: any) => {
+    reader.onload = async (e: any) => {
+
+      // Loaded on demand - see the import-type note at the top of this file.
+      const XLSX = await import('xlsx')
 
       // read workbook
       const ab: ArrayBuffer = e.target.result;
-      const wb: XLSX.WorkBook = XLSX.read(ab);
+      const wb: XLSXType.WorkBook = XLSX.read(ab);
 
       // grab first sheet
       const wsname: string = wb.SheetNames[0];
-      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+      const ws: XLSXType.WorkSheet = wb.Sheets[wsname];
 
       //! debugger
 
@@ -308,8 +317,10 @@ export class RangerService implements OnInit {
     }
   }
 
-  public loadRangersFromExcel2() {  // still called by rangers Component from a button
+  public async loadRangersFromExcel2() {  // still called by rangers Component from a button
     //debugger
+    // Loaded on demand - csvImport pulls in xlsx. See the note at the top of this file.
+    const { csvImport } = await import('../../rangers/csvImport')
     let fnc = new csvImport(document)
     fnc.importExcel2()
     //csvImport.importExcel2()

@@ -22,9 +22,13 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 
 //import { MatIconRegistry } from '@angular/material/icon'
 
-import {
-  CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GEOCODING_PROVIDER, GeocodingProvider, OpenLocationCode
-} from '../shared/'
+// Imported from their own files rather than the '../shared/' barrel on purpose: that
+// barrel also re-exports the MapLibre style helpers, so pulling anything through it from
+// the eagerly-loaded Entry page drags MapLibre (~800KB) into the initial bundle even
+// though this page never shows a MapLibre map. Same reasoning as app.config.ts.
+import { DDMToDD, DDToDDM, DDToDMS, DMSToDD } from '../shared/mapping/coordinate'
+import { GEOCODING_PROVIDER, GeocodingProvider } from '../shared/mapping/geocoding-provider.interface'
+import { CodeArea, OpenLocationCode } from '../shared/mapping/open-location-code'
 
 import {
   LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
