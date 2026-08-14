@@ -13,7 +13,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { HeaderComponent, TimePickerComponent } from '../shared/'
 import {
   BackupService, FieldReportService, FieldReportStatusType, InstallableService, LogService, RangerService,
-  SettingsService, SettingsType
+  SettingsService, SettingsType, StoragePersistenceService
 } from '../shared/services/'
 //import { Color } from '@angular-material-components/color-picker';
 //import { ThemePalette } from '@angular/material/core';
@@ -230,6 +230,10 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     //private fieldReportService: FieldReportService,
     private backupService: BackupService,
     private installableService: InstallableService,
+    // public (not private): read directly in the template as
+    // storagePersistence.persisted() - a signal, so this is zoneless-safe
+    // without any manual subscription/markForCheck().
+    public storagePersistence: StoragePersistenceService,
     private log: LogService,
     //private rangerService: RangerService,
     private settingsService: SettingsService,
@@ -343,6 +347,13 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     this.log.verbose(`onBtnResetDefaults: Reset Settings.`, this.id)
     this.settings = this.settingsService.ResetDefaults() // need to refresh page?!
     //this.reloadPage_unused()
+  }
+
+  /** Re-requests persistent storage - e.g. after the user installs the app, which
+   *  can change whether the browser is willing to grant it. */
+  onBtnRequestPersistence() {
+    this.log.verbose('onBtnRequestPersistence: re-requesting persistent storage.', this.id)
+    this.storagePersistence.requestPersistence()
   }
 
   /**

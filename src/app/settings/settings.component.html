@@ -343,6 +343,23 @@
       <button (click)="onBtnResetDefaults()">Reset Settings</button><br />
       <br />
 
+      <h2>Storage Protection</h2>
+      <span *ngIf="storagePersistence.persisted() === true">
+        ✅ Persistent storage is granted. This browser should not clear RangerTrak's data
+        without your explicit action (e.g. manually clearing site data).
+      </span>
+      <span *ngIf="storagePersistence.persisted() === false">
+        ⚠️ Persistent storage is <b>not</b> granted. Under storage pressure, the browser
+        could clear this mission's data without warning.
+        <button (click)="onBtnRequestPersistence()">Request Persistent Storage</button>
+      </span>
+      <span *ngIf="storagePersistence.persisted() === null">
+        ℹ️ This browser doesn't support requesting persistent storage. Export your
+        mission regularly (below) as a precaution.
+      </span>
+      <br />
+      <br />
+
       <h2>Mission Backup</h2>
       <span class="strong">
         Back up this device's entire mission (settings, rangers, and field reports) to a

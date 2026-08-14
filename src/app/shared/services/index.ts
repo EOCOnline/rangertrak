@@ -6,6 +6,7 @@ export { PopupService } from "./popup.service"
 export { SettingsService, SecretType } from "./settings.service"
 export { ClockService } from "./clock.service"
 export { UpdateService } from "./update.service"
+export { StoragePersistenceService } from "./storage-persistence.service"
 export { InstallableService } from "./installable.service"
 
 export { FieldReportType, FieldReportsType, FieldReportStatusType, FieldReportSource } from "./field-report.interface"

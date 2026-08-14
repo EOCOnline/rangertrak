@@ -7,7 +7,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar'
 //import { MatSnackBar } from '@material/snackbar'
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker'
 
-import { LogService } from './shared/services'
+import { LogService, StoragePersistenceService } from './shared/services'
 import { HeaderComponent } from './shared/header/header.component'
 import { NavbarComponent } from './shared/navbar/navbar.component'
 import { FooterComponent } from './shared/footer/footer.component'
@@ -43,12 +43,22 @@ export class AppComponent implements OnInit {
   constructor(
     private swUpdate: SwUpdate,
     private log: LogService,
-    private snackbar: MatSnackBar) {
+    private snackbar: MatSnackBar,
+    private storagePersistence: StoragePersistenceService) {
   }
 
 
 
   ngOnInit() {
+    // Request persistent storage once, at app startup, so a mission's
+    // localStorage data is protected from silent eviction under storage
+    // pressure. USE-CASES.md Section 8/R3. Most browsers grant/deny this
+    // based on site-engagement heuristics rather than a user-facing prompt,
+    // so there is nothing further to wait on here; the granted/denied
+    // result is exposed via storagePersistence.persisted for any screen
+    // (e.g. Settings) that wants to surface it.
+    this.storagePersistence.requestPersistence()
+
     // https://angular.io/api/service-worker/SwUpdate
     // https://angular.io/guide/service-worker-communications#swupdate-service
     // https://angular.io/api/service-worker/UpdateAvailableEvent
