@@ -1,4 +1,4 @@
-import { ApplicationConfig, isDevMode } from '@angular/core'
+import { ApplicationConfig, isDevMode, provideZonelessChangeDetection } from '@angular/core'
 import { provideAnimations } from '@angular/platform-browser/animations'
 import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router'
 import { provideHttpClient } from '@angular/common/http'
@@ -16,6 +16,7 @@ import { environment } from '../environments/environment'
 // (registered here) matter at this level.
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideZonelessChangeDetection(),
     provideAnimations(),
     provideHttpClient(),
     provideRouter(APP_ROUTES, withPreloading(PreloadAllModules)),

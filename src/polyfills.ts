@@ -43,9 +43,10 @@
  */
 
 /***************************************************************************************************
- * Zone JS is required by default for Angular itself.
+ * The app is zoneless (provideZonelessChangeDetection() in app.config.ts) - zone.js is
+ * intentionally NOT imported here. The Karma test harness still loads zone.js/testing
+ * independently via src/test.ts, so this does not affect `ng test`.
  */
-import 'zone.js';  // Included with Angular CLI.
 
 
 /***************************************************************************************************
