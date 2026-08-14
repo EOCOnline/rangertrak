@@ -369,9 +369,30 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 <https://eoc.online> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <https://eoc.online>. We'd LOVE to get your reports of use and suggestions for enhancement. To report issues please visit <https://github.com/EOCOnline/rangertrak/issues>.
 
-©2022 eoc.online, under the MIT License
+### 📜 License
 
-![MIT License](./non-dist-imgs/MIT_License.png)
+Copyright © 2019–2026 eoc.online
+
+RangerTrak is free software: you can redistribute it and/or modify it under the terms of
+the **GNU Affero General Public License** as published by the Free Software Foundation,
+either version 3 of the License, or (at your option) any later version. See
+[LICENSE](LICENSE) for the full text.
+
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
+**What this means for you:**
+
+- **Using RangerTrak — including at your EOC, exercise, or incident — is completely free
+  and always will be.** The AGPL places no obligations at all on people who simply *use*
+  the application.
+- If you **modify** RangerTrak and distribute it, or run your modified version as a
+  network service, you must make your modified source available under the same license.
+- Contributions are welcome. Note that the project may offer commercially licensed
+  versions in future, so contributors may be asked to sign a Contributor License
+  Agreement.
+
+*(Releases prior to this change were published under the MIT License and remain available
+under those terms.)*
 
 ### 🗣️ Public Feedback & Contribution
 
