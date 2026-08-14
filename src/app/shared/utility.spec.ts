@@ -1,36 +1,54 @@
-
-import { TestBed } from '@angular/core/testing';
-
 import { Utility } from './utility';
 
+// Utility is all static functions - no instance/TestBed needed.
 describe('Utility', () => {
-  let util: Utility;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    //    service = TestBed.inject(InstallableService);
+  describe('timeDiff', () => {
+    it('computes days/hours/minutes/seconds between two timestamps', () => {
+      const start = Date.UTC(2026, 0, 1, 0, 0, 0);
+      const end = Date.UTC(2026, 0, 2, 3, 4, 5); // +1d 3h 4m 5s
+
+      const diff = Utility.timeDiff(start, end);
+
+      expect(diff.negative).toBeFalse();
+      expect(diff.days).toBe(1);
+      expect(diff.hours).toBe(3);
+      expect(diff.minutes).toBe(4);
+      expect(diff.seconds).toBe(5);
+    });
+
+    it('flags a negative interval when endTime precedes startTime', () => {
+      const start = Date.UTC(2026, 0, 2, 0, 0, 0);
+      const end = Date.UTC(2026, 0, 1, 18, 0, 0); // 6h before start (18:00 -> midnight)
+
+      const diff = Utility.timeDiff(start, end);
+
+      expect(diff.negative).toBeTrue();
+      expect(diff.days).toBe(0);
+      expect(diff.hours).toBe(6);
+      expect(diff.minutes).toBe(0);
+      expect(diff.seconds).toBe(0);
+    });
   });
 
-  // Utility is currently ALL static functinos - do we really need an actual instance of it?!
-  it('should be created', () => {
-    expect(util).toBeTruthy();
+  describe('zeroFill', () => {
+    it('left-pads a number to the requested width', () => {
+      expect(Utility.zeroFill(5, 2)).toBe('05');
+      expect(Utility.zeroFill(42, 4)).toBe('0042');
+    });
+
+    it('does not truncate a number already at or beyond the requested width', () => {
+      expect(Utility.zeroFill(12345, 2)).toBe('12345');
+    });
   });
 
-  timetest()
+  describe('isDark', () => {
+    it('treats a light hex color as not dark (YIQ >= 128)', () => {
+      expect(Utility.isDark('ffffff')).toBeTrue();
+    });
 
+    it('treats a dark hex color as dark (YIQ < 128)', () => {
+      expect(Utility.isDark('000000')).toBeFalse();
+    });
+  });
 });
-
-function timetest() {
-  const now = new Date()
-  const msNow = now.getTime()
-  const msPerHour = 1000 * 60 * 60
-  const perfectDiff = { days: 0, hours: -18, minutes: 0, seconds: 0 }
-  let offsetHours = -18
-
-  let ms: any = new Date(msNow + (msPerHour * offsetHours))
-
-  let diff = Utility.timeDiff(msNow, ms)
-  //  console.info(`Days = ${diff.days} and ${diff.hours}:${diff.minutes}:${diff.seconds}`)
-  expect(diff == perfectDiff)
-}
-
