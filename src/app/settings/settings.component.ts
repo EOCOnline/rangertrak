@@ -12,8 +12,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 
 import { HeaderComponent, TimePickerComponent } from '../shared/'
 import {
-  FieldReportService, FieldReportStatusType, InstallableService, LogService, RangerService, SettingsService,
-  SettingsType
+  BackupService, FieldReportService, FieldReportStatusType, InstallableService, LogService, RangerService,
+  SettingsService, SettingsType
 } from '../shared/services/'
 //import { Color } from '@angular-material-components/color-picker';
 //import { ThemePalette } from '@angular/material/core';
@@ -228,6 +228,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       settings.component.ts(155, 17): This type does not have a value, so it cannot be used as injection token.
     */
     //private fieldReportService: FieldReportService,
+    private backupService: BackupService,
     private installableService: InstallableService,
     private log: LogService,
     //private rangerService: RangerService,
@@ -342,6 +343,53 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     this.log.verbose(`onBtnResetDefaults: Reset Settings.`, this.id)
     this.settings = this.settingsService.ResetDefaults() // need to refresh page?!
     //this.reloadPage_unused()
+  }
+
+  /**
+   * Downloads the current mission (settings + rangers + field reports) as a
+   * single JSON file. See USE-CASES.md Section 8/R3.
+   */
+  onBtnExportMission() {
+    this.log.verbose('onBtnExportMission: Exporting mission.', this.id)
+    this.backupService.exportMission()
+  }
+
+  /**
+   * Handles a file picked via the "Import Mission" <input type="file">.
+   * Destructive - replaces current settings/rangers/field reports entirely -
+   * so this confirms with the user before applying.
+   */
+  onImportFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    input.value = '' // allow re-selecting the same file later
+
+    if (!file) {
+      return
+    }
+
+    this.backupService.readFileAsMissionExport(file)
+      .then(payload => {
+        const summary = `Mission "${payload.settings.mission || '(unnamed)'}" exported `
+          + `${payload.exportedAt}, with ${payload.rangers.length} rangers and `
+          + `${payload.fieldReports.fieldReportArray.length} field reports.`
+
+        if (!confirm(`Import this mission?\n\n${summary}\n\n`
+          + `This REPLACES all current settings, rangers, and field reports on this device. `
+          + `This cannot be undone - export the current mission first if you want to keep it.`)) {
+          this.log.verbose('onImportFileSelected: user cancelled import.', this.id)
+          return
+        }
+
+        this.backupService.importMission(payload)
+        this.log.warn(`Imported mission from ${file.name}.`, this.id)
+        alert('Mission imported. Reloading to refresh every screen with the new data...')
+        window.location.reload()
+      })
+      .catch(error => {
+        this.log.error(`onImportFileSelected: failed to import ${file.name}: ${error.message}`, this.id)
+        alert(`Could not import "${file.name}": ${error.message}`)
+      })
   }
 
   /**
