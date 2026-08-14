@@ -239,7 +239,20 @@
     </div>
 
     <!-- ======================================= -->
-    <h3>Google Map Settings</h3>
+    <h3>Geocoding</h3>
+    <div class="input-group">
+      <span class="strong">Google Geocoding API Key (optional): </span>
+      <input formControlName="googleGeocodingApiKey" placeholder="leave blank to use Nominatim (OpenStreetMap)"
+        type="text" [style.width.px]="320" />
+      <div class="text-sm">
+        By default, address lookup uses Nominatim (OpenStreetMap) - no key required, but requires Internet.
+        Supplying your own Google API key here switches address lookup to Google Geocoding instead. This key is
+        stored only in your browser and is your own billing responsibility.
+      </div>
+    </div>
+
+    <!-- ======================================= -->
+    <h3>Offline Map (PMTiles) Settings</h3>
     <div formGroupName="google">
       <!-- settingsEditorForm -->
       <div class="input-group">

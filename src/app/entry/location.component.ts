@@ -23,7 +23,7 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 //import { MatIconRegistry } from '@angular/material/icon'
 
 import {
-  CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GoogleGeocode, OpenLocationCode
+  CodeArea, DDMToDD, DDToDDM, DDToDMS, DMSToDD, GEOCODING_PROVIDER, GeocodingProvider, OpenLocationCode
 } from '../shared/'
 
 import {
@@ -88,8 +88,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   locationFormModel!: FormGroup
   // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 & https://github.com/angular/angular/pull/43834
 
-  static geocoder: google.maps.Geocoder | null
-  geocoder = new GoogleGeocode()
   //!w3w = new What3Words()
 
   faInfoCircle = faInfoCircle
@@ -104,6 +102,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     private settingsService: SettingsService,
     private _formBuilder: UntypedFormBuilder,
     private log: LogService,
+    @Inject(GEOCODING_PROVIDER) private geocodingProvider: GeocodingProvider,
     // private _toppy: Toppy,
     @Inject(DOCUMENT) private document: Document) {
     this.log.info("======== Constructor() ============", this.id)
@@ -120,15 +119,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     this.initForm() // creates blank locationFormModel
-
-    try {
-      LocationComponent.geocoder = new google.maps.Geocoder
-    } catch (error) {
-      // probably offline?!
-      LocationComponent.geocoder = null
-      this.log.error("Address lookup requires Internet.", this.id)
-      // User notified by funky address string
-    }
 
     this.log.verbose("Out of constructor", this.id)
   }
@@ -571,25 +561,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   chkPCodes(pCode: string) {
     this.log.verbose(`User entered potential pCode: '${pCode}'. Verify it.`, this.id);
     if (pCode.length) {
-      let result = this.geocoder.getLatLngAndAddressFromPlaceID(pCode)
-      this.log.verbose(`chkPCode of ${pCode} got result:${JSON.stringify(result)}`, this.id);
-
-      //!BUG - following need review!!!!!!!!!!!!!!!!!!!!!!
-      /*result: {
-          position: null;
-          address: string;
-          placeId: string;
-      }*/
-      if (result.position) {
-        //    (document.getElementById("addressLabel") as HTMLLabelElement).innerText = result.address;
-        (document.getElementById("enter__Where-Lat") as HTMLInputElement).value = "result.position.lat";
-        // BUG: position has type of never????!!!!
-        (document.getElementById("lng") as HTMLInputElement).value = "JSON.stringify(result.position)";
-      }
-      else {
-        this.log.warn(`chkPCode of ${pCode} got NULL result!!!`, this.id);
-      }
-
       if (!this.settings) {
         this.log.error(`this.settings was null in chkPCodes`, this.id)
         return
@@ -677,50 +648,29 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       this.log.error(`DDToAddress got a primary address NOT needing derivation!`, this.id)
     }
 
-    if (!LocationComponent.geocoder) {
-      this.log.warn(`DDToAddress requires Internet access`, this.id)
-      return "Address lookup requires Internet"
-    }
-    else {
-      // Only show address in model during location emition
-      // This control ONLY shows main address if user entered it there
-      // for this control/widget: differentiate between derived & 'primary' or user entered addresses
-      this.locationFormModel.patchValue({ address: "" }, { emitEvent: false })
-      //this.locationFormModel.patchValue({ address: "" }, { emitEvent: false, onlySelf: true })
+    // Only show address in model during location emition
+    // This control ONLY shows main address if user entered it there
+    // for this control/widget: differentiate between derived & 'primary' or user entered addresses
+    this.locationFormModel.patchValue({ address: "" }, { emitEvent: false })
 
+    this.geocodingProvider.reverseGeocode(location.lat, location.lng)
+      .then((result) => {
+        // Async: likely runs after subroutine returns
+        if (!result.found) {
+          this.log.warn(`DDToAddress: ${result.error}`, this.id)
+          return
+        }
 
-      let latLng = new google.maps.LatLng(location.lat, location.lng)
-      // Reverse Geocode: get address from coordinates
-      LocationComponent.geocoder
-        .geocode({ location: latLng })
-        .then((response) => {
-          // Async: likely runs after subroutine returns
+        this.log.info(`DDToAddress(): Received a new geocoded address: ${result.address}`, this.id)
 
-          // this.log.excessive(`Found array of addresses: ${JSON.stringify(response.results)}`, this.id)
-          if (response.results[0]) {
-            this.log.info(`DDToAddress(): Received a new geocoded address[0]: ${JSON.stringify(response.results[0].formatted_address)}`, this.id)
+        location.address = result.address
+        // Async update of DERIVED address fields...
+        this.updateDerivedLocations(location)
 
-            location.address = response.results[0].formatted_address
-            // Async update of DERIVED address fields...
-            this.updateDerivedLocations(location)
-
-            this.log.warn(`DDToAddress() Emitting new Location ${JSON.stringify(location)}`, this.id)
-            this.locationChange.emit(location)
-
-            // Only update model's address if it was what user entered: a 'primary' address
-            //this.locationFormModel.patchValue({ address: response.results[0].formatted_address },
-            //  { emitEvent: false })  // Prevent enless loop...
-            // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
-            //)
-            //this.log.verbose(`DDToAddress(): Updated location.address`, this.id)
-            return (response.results[0].formatted_address)
-          } else {
-            return ("No address found.") // No results found
-          }
-        })
-        .catch((e) => { return ("Geocoder failed due to: " + e) })
-      return ("No immediate address available: await the result!")
-    }
+        this.log.warn(`DDToAddress() Emitting new Location ${JSON.stringify(location)}`, this.id)
+        this.locationChange.emit(location)
+      })
+    return ("No immediate address available: await the result!")
   }
 
   onAddressChg() { //newAddress: string = "undefined address"
@@ -743,39 +693,8 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
         this.log.verbose("Got What 3 Words: " + newAddress, this.id)
         this.chk3Words(newAddress)
       } else {
-        //! UNIMPLEMENTED!
-        let geocodedAddress = this.chkStreetAddress(newAddress)
-        //let addrLabel = document.getElementById("addressLabel") as HTMLLabelElement
-        /*
-        if (geocodedAddress.position) {
-          addrLabel.innerText
-            = `STREET ADDRESS: Formatted address: ${geocodedAddress.address}; Google PlaceID: ${geocodedAddress.placeId}; Position: ${geocodedAddress.position}; partial_match: ${geocodedAddress.partial_match}; placeId: ${geocodedAddress.placeId}; plus_code: ${geocodedAddress.plus_code}`
-        } else {
-          addrLabel.innerText = `STREET ADDRESS: unable to geocode. ${geocodedAddress.address}`
-        }
-        */
+        this.chkStreetAddress(newAddress)
       }
-    }
-    // https://developers.google.com/maps/documentation/javascript/places
-    //!BUG: Following needs REVIEWING!!!!!!!!!
-    if (!this.geocoder) {
-      this.log.error(`Google.Geocoder not available while offline from Internet. Needed to get coordinates from new address: ${JSON.stringify(newAddress)}`, this.id)
-    }
-    // Regular Geocode: get coordinates from address
-    let myTuple = this.geocoder.isValidAddress(newAddress)
-    // { position: null, address: err, partial_match: "", placeId: "", plus_code: "" }
-
-    if (myTuple.position) {
-      let pos = myTuple.position
-      let enteredLocation = {
-        //! BUG: how to extract lat/lng from pos?????; use PROMISE
-        lat: -25,
-        lng: 125,
-        address: newAddress,
-        derivedFromAddress: true
-      }
-
-      this.newLocationToFormAndEmit(enteredLocation)
     }
   }
 
@@ -852,12 +771,23 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   chkStreetAddress(addrText: string) {
-    //https://developers.google.com/maps/documentation/geocoding/requests-geocoding
     this.log.verbose("Got street address to check: " + addrText, this.id)
-    // Type 'GeocoderResult' must have a '[Symbol.iterator]()' method that returns an iterator.
-    //let result:google.maps.GeocoderResult = this.geocoder.isValidAddress(addrText)
-    //  return this.geocoder.isValidAddress(addrText)
-    // TODO: this.updateCoords(lat,lng)
+
+    this.geocodingProvider.geocodeAddress(addrText).then((result) => {
+      if (!result.found) {
+        this.log.warn(`chkStreetAddress: ${result.error}`, this.id)
+        return
+      }
+
+      let enteredLocation: LocationType = {
+        lat: result.lat,
+        lng: result.lng,
+        address: addrText,
+        derivedFromAddress: true
+      }
+
+      this.newLocationToFormAndEmit(enteredLocation)
+    })
   }
 
   // --------------------------- TOOLTIPS ---------------------------

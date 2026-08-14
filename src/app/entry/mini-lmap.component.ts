@@ -1,5 +1,5 @@
 import 'leaflet.markercluster'
-//import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
+import { tileLayerOffline } from 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 //import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
 
@@ -207,7 +207,11 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     // Doing this avoids lots of type guards/hassles.
 
 
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // tileLayerOffline shares its IndexedDB tile cache with LmapComponent's - tiles
+    // saved via the full map's "Save this area for offline use" control render here
+    // too, offline. No save control here though; that's the full map's job, not this
+    // small preview's.
+    const tiles = tileLayerOffline('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 21,  // REVIEW: put into settings?
       minZoom: 3,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

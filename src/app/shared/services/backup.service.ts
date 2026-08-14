@@ -27,7 +27,7 @@ export const MISSION_EXPORT_SCHEMA_VERSION = 1
 /**
  * Exports/imports a full mission (settings + rangers + field reports) as a
  * single JSON file, so a mission survives clearing browser storage and can
- * move between devices/browsers. USE-CASES.md Section 8/R3.
+ * move between devices/browsers. PRIVATE-Roadmap.md Section 8/R3.
  */
 @Injectable({ providedIn: 'root' })
 export class BackupService {

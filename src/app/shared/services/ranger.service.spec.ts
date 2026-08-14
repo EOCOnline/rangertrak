@@ -6,7 +6,7 @@ import { RangerService } from './ranger.service';
 
 /**
  * Characterization tests: pin RangerService's current localStorage-backed
- * behavior before the signals rewrite (USE-CASES.md Section 8/R4, Section 12
+ * behavior before the signals rewrite (PRIVATE-Roadmap.md Section 8/R4, Section 12
  * step 3). These assert what the service actually does today, not what it
  * should do.
  */

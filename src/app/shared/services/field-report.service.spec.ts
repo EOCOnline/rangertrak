@@ -6,7 +6,7 @@ import { FieldReportsType, FieldReportType } from './field-report.interface';
 
 /**
  * Characterization tests: pin FieldReportService's current localStorage-backed
- * behavior before the signals rewrite (USE-CASES.md Section 8/R4, Section 12
+ * behavior before the signals rewrite (PRIVATE-Roadmap.md Section 8/R4, Section 12
  * step 3), covering the DoD: localStorage round-trip, bounds calc, and
  * report add/select/delete.
  *

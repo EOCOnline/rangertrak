@@ -2,9 +2,9 @@ import { Routes } from '@angular/router'
 
 import { EntryComponent } from './entry/entry.component'
 import { FieldReportsComponent } from './field-reports/field-reports.component'
-import { GmapComponent } from './gmap/gmap.component'
 import { LmapComponent } from './lmap/lmap.component'
 import { LogComponent } from './log/log.component'
+import { MapComponent } from './map/map.component'
 import { RangersComponent } from './rangers/rangers.component'
 import { SettingsComponent } from './settings/settings.component'
 import { X404Component } from './x404/x404.component'
@@ -16,8 +16,8 @@ export const APP_ROUTES: Routes = [
   // EAGER Routes
   { path: '', component: EntryComponent },
   { path: 'reports', component: FieldReportsComponent },
-  { path: 'gmap', component: GmapComponent },
   { path: 'lmap', component: LmapComponent },
+  { path: 'map', component: MapComponent },
   { path: 'rangers', component: RangersComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'log', component: LogComponent },

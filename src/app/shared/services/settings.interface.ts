@@ -25,9 +25,15 @@ export type SettingsType = {
   w3wLocale: string,
   allowManualPinDrops: boolean,
 
+  // User-supplied Google Geocoding API key (optional). Activates GoogleGeocoder as the
+  // GeocodingProvider instead of the default, no-key Nominatim. Lives only in this
+  // user's localStorage - never in secrets.json, never bundled. Empty string = disabled.
+  googleGeocodingApiKey: string,
+
+  // Zoom/overview settings for the MapLibre + PMTiles map (repurposed from its original
+  // Google Maps *display* meaning now that GmapComponent is gone - the field name is
+  // legacy, the settings UI section is labeled for its current purpose).
   google: {
-    //! TODO: type: string,  // e.g., google.maps.MapTypeId.ROADMAP
-    // https://developers.google.com/maps/documentation/javascript/maptypes
     defZoom: number,  // or just zoom to bounds?
     markerScheme: string,
     overviewDifference: number,

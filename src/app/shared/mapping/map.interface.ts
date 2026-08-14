@@ -1,7 +1,6 @@
-export type Map = L.Map | google.maps.Map
+export type Map = L.Map
 
 export enum MapType {
-  Google,
   ESRI_Leaflet
 }
 

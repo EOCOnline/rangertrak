@@ -1,0 +1,27 @@
+.main {
+  margin: 0 1em;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+.map-container,
+.map-frame {
+  width: 100%;
+}
+
+#map {
+  height: 500px;
+  width: 100%;
+}
+
+#overview {
+  position: relative;
+  float: right;
+  left: 0px;
+  height: 175px;
+  width: 175px;
+  bottom: 0px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}

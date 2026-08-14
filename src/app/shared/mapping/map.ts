@@ -19,7 +19,7 @@ import {
 } from '../services'
 
 import { Utility } from '..'
-import { LayerType, MapType, Map } from './map.interface'
+import { Map } from './map.interface'
 
 
 /**
@@ -80,7 +80,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   public numAllRows = 0
 
   protected hasOverviewMap = false // Guard for overview map logic
-  protected overviewMap: L.Map | google.maps.Map | undefined = undefined
+  protected overviewMap: L.Map | undefined = undefined
 
   //protected iconBase = "./../../../assets/icons/"
 
@@ -186,26 +186,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     })
   }
 
-  captureGMoveAndZoom(map: google.maps.Map) {
-    if (!map) {
-      this.log.warn(`(Abstract) No map in captureGMoveAndZoom()`, this.id)
-      return
-    }
-
-    map.addListener("mousemove", ($event: any) => {
-      //if (this.zoomDisplay) {
-      this.zoomDisplay = map.getZoom()!
-      //}
-
-      if ($event.latLng) {
-        this.mouseLatLng = $event.latLng.toJSON()
-      } else {
-        this.log.warn(`(Abstract) No latlng on event in captureGMoveAndZoom()`, this.id)
-      }
-    })
-
-  }
-
   /**
   * Store Lat/Lng in Clipboard
   *! REVIEW: AND/ OR (do both?!)
@@ -228,42 +208,25 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     if (this.settings.allowManualPinDrops) {
       // Put coordinates into a new non-permanent marker & drop on to map
       this.log.error(`(Abstract) onMouseClick() to create markers not implemented yet!`, this.id)
-      // call: addManualMarkerEvent(event: google.maps.MapMouseEvent)
-      // or
-      //
-      // this actualy works for one map type, just need to be wired up...
     } else {
       // Put coordinates into clipboard
-      if (this.isGoogleMap(this.map)) {
-        this.log.error(`(Abstract) onMouseClick() not implemented for Google Maps yet! `, this.id)
-        /*
-         ev.x
-        this.map.addListener("click", (mapsMouseEvent) => {
-          let position = mapsMouseEvent.latLng
+      let latlng = this.map.mouseEventToLatLng(ev)
+      let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
+      navigator.clipboard.writeText(coords)
+        .then(() => {
+          let status = document.getElementById('map-status')
+          if (status) {
+            status.innerText = `${coords} copied to clipboard`
+            //status.style.visibility = "visible"
+            Utility.resetMaterialFadeAnimation(status)
+          } else {
+            this.log.info(`(Abstract) onMouseClick Entry__Minimap-status not found!`, this.id)
+          }
+          this.log.excessive(`(Abstract) ${coords} copied to clipboard`, this.id)
         })
-        JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
-        */
-        // this.log.excessive(`(Abstract) ${coords} copied to clipboard`, this.id)
-      } else {
-
-        let latlng = this.map.mouseEventToLatLng(ev)
-        let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
-        navigator.clipboard.writeText(coords)
-          .then(() => {
-            let status = document.getElementById('map-status')
-            if (status) {
-              status.innerText = `${coords} copied to clipboard`
-              //status.style.visibility = "visible"
-              Utility.resetMaterialFadeAnimation(status)
-            } else {
-              this.log.info(`(Abstract) onMouseClick Entry__Minimap-status not found!`, this.id)
-            }
-            this.log.excessive(`(Abstract) ${coords} copied to clipboard`, this.id)
-          })
-          .catch(err => {
-            this.log.error(`(Abstract) onMouseClick latlng NOT copied to clipboard, error: ${err}`, this.id)
-          })
-      }
+        .catch(err => {
+          this.log.error(`(Abstract) onMouseClick latlng NOT copied to clipboard, error: ${err}`, this.id)
+        })
     }
   }
 
@@ -293,14 +256,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   //     this.log.warn('move(): NO event.latLng!!!!!!!!!!!!!', this.id);
   //   }
   // }
-
-  isLeafletMap(map: Map): map is L.Map {
-    return true;
-  }
-
-  isGoogleMap(map: Map): map is google.maps.Map {
-    return true
-  }
 
   onMapZoomed() {
     if (this.zoom && this.map) {

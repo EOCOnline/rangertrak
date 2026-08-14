@@ -358,7 +358,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
   /**
    * Downloads the current mission (settings + rangers + field reports) as a
-   * single JSON file. See USE-CASES.md Section 8/R3.
+   * single JSON file. See PRIVATE-Roadmap.md Section 8/R3.
    */
   onBtnExportMission() {
     this.log.verbose('onBtnExportMission: Exporting mission.', this.id)
@@ -440,6 +440,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       defPlusCode: [this.settings.defPlusCode],
       w3wLocale: [this.settings.w3wLocale],
       allowManualPinDrops: [this.settings.allowManualPinDrops],
+      googleGeocodingApiKey: [this.settings.googleGeocodingApiKey],
 
       leaflet: this.fb.group({
         defZoom: [this.settings.leaflet.defZoom], //, Validators.min(3), Validators.max(21)], //https://www.concretepage.com/angular-2/angular-4-min-max-validation  // or just zoom to bounds?
@@ -501,6 +502,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       defPlusCode: this.settingsEditorForm.value.defPlusCode,
       w3wLocale: this.settingsEditorForm.value.w3wLocale,
       allowManualPinDrops: this.settingsEditorForm.value.allowManualPinDrops,
+      googleGeocodingApiKey: this.settingsEditorForm.value.googleGeocodingApiKey,
 
       google: {
         defZoom: this.settingsEditorForm.value.google.defZoom, //, Validators.min(3), Validators.max(21), //https://www.concretepage.com/angular-2/angular-4-min-max-validation    // or just zoom to bounds?

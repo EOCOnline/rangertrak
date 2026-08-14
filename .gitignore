@@ -11,10 +11,10 @@ RangerTrak-secrets.json
 /src/assets/imgs/REW
 /src/assets/data/ranger*.json
 
-# Internal planning docs - NOT for the public repo.
-# Contains unremediated security findings, named agency contacts, and commercial
-# strategy. Publish a sanitized ROADMAP.md instead. See USE-CASES.md section 16.
-USE-CASES.md
+# The internal planning/roadmap doc (unremediated security findings, named agency
+# contacts, commercial strategy) now lives outside the repo entirely, one directory up,
+# at ../PRIVATE-Roadmap.md - not relying on a gitignore rule to keep it out of the
+# public repo.
 
 # compiled output
 /dist

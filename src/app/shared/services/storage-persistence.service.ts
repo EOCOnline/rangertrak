@@ -4,7 +4,7 @@ import { LogService } from './'
 
 /**
  * Requests persistent storage (protects localStorage from being silently
- * evicted under browser storage pressure - USE-CASES.md Section 8/R3) and
+ * evicted under browser storage pressure - PRIVATE-Roadmap.md Section 8/R3) and
  * exposes the current grant state as a signal.
  *
  * `persisted()` state meaning:

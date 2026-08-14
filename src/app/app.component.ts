@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     // Request persistent storage once, at app startup, so a mission's
     // localStorage data is protected from silent eviction under storage
-    // pressure. USE-CASES.md Section 8/R3. Most browsers grant/deny this
+    // pressure. PRIVATE-Roadmap.md Section 8/R3. Most browsers grant/deny this
     // based on site-engagement heuristics rather than a user-facing prompt,
     // so there is nothing further to wait on here; the granted/denied
     // result is exposed via storagePersistence.persisted for any screen

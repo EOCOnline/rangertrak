@@ -7,7 +7,7 @@ import { RangerService } from './ranger.service';
 import { SettingsService } from './settings.service';
 
 /**
- * Covers USE-CASES.md Section 8/R3 and the Section 12 step 7 DoD literally:
+ * Covers PRIVATE-Roadmap.md Section 8/R3 and the Section 12 step 7 DoD literally:
  * "export -> clear storage -> import reproduces the mission exactly."
  */
 describe('BackupService', () => {

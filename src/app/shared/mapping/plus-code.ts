@@ -1,5 +1,5 @@
 
-import { CodeArea, OpenLocationCode as PC, GoogleGeocode } from '..'
+import { CodeArea, OpenLocationCode as PC } from '..'
 
 // Or use Open-Location-code.tx instead???
 export class PlusCode {

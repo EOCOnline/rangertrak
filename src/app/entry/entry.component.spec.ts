@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { GEOCODING_PROVIDER, NominatimGeocoder } from '../shared';
 import { EntryComponent } from './entry.component';
 
 describe('EntryComponent', () => {
@@ -8,7 +9,10 @@ describe('EntryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ EntryComponent ]
+      imports: [ EntryComponent ],
+      providers: [
+        { provide: GEOCODING_PROVIDER, useValue: new NominatimGeocoder() }
+      ]
     })
     .compileComponents();
   });

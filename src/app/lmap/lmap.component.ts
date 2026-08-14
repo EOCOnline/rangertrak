@@ -3,7 +3,7 @@
 // also: https://github.com/onthegomap/planetiler
 //import { openDB, deleteDB, wrap, unwrp } from 'idb'
 import 'leaflet.markercluster'
-import 'leaflet.offline' // https://github.com/allartk/leaflet.offline
+import { savetiles, tileLayerOffline } from 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 //import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
 
@@ -241,7 +241,11 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // Doing this avoids lots of type guards/hassles.
     this.map = this.lMap
 
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // tileLayerOffline (not plain L.tileLayer) caches tiles in IndexedDB as they're
+    // viewed, and the savetiles control below lets a user explicitly save the visible
+    // area for offline use - giving this engine a real offline story to compare against
+    // the PMTiles map, rather than the previously-unused `leaflet.offline` import.
+    const tiles = tileLayerOffline('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 21,  // REVIEW: put into settings?
       minZoom: 3,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -250,6 +254,13 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // TODO!
     //! REVIEW: Causes LOTS of "lmap:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
     tiles.addTo(this.lMap)
+
+    savetiles(tiles, {
+      saveText: '💾 Save this area for offline use',
+      rmText: '🗑️ Remove saved tiles',
+      maxZoom: 19,
+      parallel: 3
+    }).addTo(this.lMap)
 
     // TODO: Consider allowing addition of SVG overlay (of known trails and other overlays): https://leafletjs.com/reference.html#svgoverlay
     // TODO: ...or add D3 too: https://bl.ocks.org/xEviL/4921fff1d70f5601d159, w/ GeoJson: https://bl.ocks.org/xEviL/0c4f628645c6c21c8b3a https://github.com/topojson/us-atlas

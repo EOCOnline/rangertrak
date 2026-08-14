@@ -10,7 +10,10 @@ export { TimePickerComponent } from './time-picker/time-picker.component'
 
 export { LayerType, Map, MapType } from './mapping/map.interface'
 export { CodeArea, OpenLocationCode } from "./mapping/open-location-code"  // HAD TO REMMOVE default KEYWORD????
-export { GoogleGeocode } from "./mapping/google-geocode"
+export { GeocodingProvider, GeocodeResult, GEOCODING_PROVIDER } from "./mapping/geocoding-provider.interface"
+export { NominatimGeocoder } from "./mapping/nominatim-geocoder"
+export { GoogleGeocoder } from "./mapping/google-geocoder"
+export { buildPmtilesStyle, registerPmtilesProtocol, DEFAULT_PMTILES_URL } from "./mapping/map-style"
 export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./mapping/coordinate"
 export { AbstractMap } from "./mapping/map"
 

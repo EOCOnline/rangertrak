@@ -244,6 +244,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       defPlusCode: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
       w3wLocale: "Vashon, WA",
       allowManualPinDrops: false,
+      googleGeocodingApiKey: '',
 
       leaflet: {
         defZoom: 17,  // or just zoom to bounds?

@@ -1,0 +1,34 @@
+<pageHeader [parentTitle]="title" [pageDescription]="pageDescr"></pageHeader>
+
+<section class="main">
+  <div>Offline-capable map (MapLibre + PMTiles). Detailed coverage is limited to the
+    bundled pilot region today; panning further out shows background only.</div>
+
+  <div class="map-container">
+    <div class="map-frame">
+      <div id="map"></div>
+    </div>
+    <div>
+      Zoom: <span class="strong">{{zoomDisplay}}</span>
+      <div id="map-status">Click map to copy coordinates</div>
+    </div>
+  </div>
+  <div id="overview"></div>
+  <br />
+
+  <label for="selectedFieldReportsPmtiles">Field reports to show: All ({{numAllRows}})</label>
+  <input id="selectedFieldReportsPmtiles" type="checkbox" (change)="onSwitchSelectedFieldReports()" />
+  <label for="selectedFieldReportsPmtiles">Just those ({{numSelectedRows}}) selected in the Field Report
+    panel</label>
+
+  <details>
+    <summary>Instructions</summary>
+    <ul>
+      <li>This displays All Field Reports for All Rangers, by default.</li>
+      <li>If a subset of Field Reports are selected on the Field Reports page, then those
+        {{numSelectedRows}} reports can be displayed, with the switch just above.</li>
+      <li>Click on the map to store the lat/long coordinates in the clipboard.</li>
+      <li>Nearby reports are grouped into clusters; click a cluster to zoom in.</li>
+    </ul>
+  </details>
+</section>
