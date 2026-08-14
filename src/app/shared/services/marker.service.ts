@@ -19,7 +19,7 @@ export class MarkerService implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private popupService: PopupService
+    private popupService: PopupService,
     @Optional() @SkipSelf() existingService: MarkerService,
   ) {
     if (existingService) {
@@ -78,5 +78,4 @@ export class MarkerService implements OnInit {
   }
 
 
-}
 }
