@@ -15,17 +15,26 @@
       of formats, and be centrally tracked.
     </p>
     <p>
-      This should be able to function (with some degredation) even if the person using
-      this is offline.
+      Once loaded, RangerTrak keeps working with no Internet: entering and saving reports,
+      the roster, the report table, coordinate conversion, and mission export/import are
+      all local to your device.
     </p>
 
     <p>Items requiring online access:</p>
     <ul>
-      <li>GeoCoding an address</li>
-      <li>Google maps</li>
-      <li>OpenStreetMaps maps (for now)</li>
-      <li>3Word functionality (for now)</li>
+      <li>Geocoding an address (and the reverse: coordinates to a street address)</li>
+      <li>The Leaflet map, except for areas saved in advance for offline use</li>
+      <li>
+        The offline (MapLibre) map needs to be opened once while connected, after which it
+        works with no Internet
+      </li>
     </ul>
+
+    <p>
+      Coordinates always work offline, and so do Plus Codes &mdash; they are calculated on
+      your device rather than looked up over the network. Addresses need a connection. See
+      the Field Guide for how to prepare a device before a mission.
+    </p>
 
     <p>An overview of using location codes (instead of lat/long) can be found at:<br>
       <a href="https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems"
@@ -43,53 +52,56 @@
       <summary>Technologies</summary>
       <small>
         <ul>
-          <li>Progressive Web App (PWA): After the initial load, installable & runs w/o Internet</li>
-          <li>Angular 17 with TypeScript and Material Design</li>
-          <li>Evergreen: runs latest stable packages</li>
-          <li>Leaflet Maps with clustering + overview map + offline caching</li>
-          <li>Angular Google Maps with clustering + overview map</li>
-          <li>Observables and Observers</li>
-          <li>Custom Angular Components, such as color & time picker, location widget</li>
+          <li>Progressive Web App (PWA): after the initial load, installable & runs w/o Internet</li>
+          <li>Angular 22 with TypeScript, Angular signals, zoneless change detection, and Material Design</li>
+          <li>Leaflet maps with marker clustering, overview map, and offline tile caching</li>
+          <li>MapLibre GL + PMTiles: a vector map with basemap data bundled into the app, for true offline use</li>
+          <li>Geocoding via OpenStreetMap's Nominatim &mdash; no API key required</li>
+          <li>Plus Codes and lat/long conversion (Decimal Degrees, DMS, DDM), all computed on-device</li>
+          <li>AG Grid tables with searching, sorting, filtering and export</li>
+          <li>Custom Angular components, such as the colour & time pickers and the location widget</li>
           <li>Reactive Angular Forms</li>
-          <li>Various geocode technologies: Google PlusCodes, What3Words, coordinate conversion</li>
-          <li>Ag-grid based tables with searching, sorting, filtering, etc.</li>
-          <li>No cookies, only uses LocalStorage</li>
-          <li>Cross platform: Runs on any modern browser, using only standard HTML 5 & CSS 3</li>
+          <li>No cookies, no accounts, no server: data is held in your browser's Local Storage</li>
+          <li>Cross platform: runs on any modern browser, using only standard HTML 5 & CSS 3</li>
           <br>
           <h5>FUTURE:</h5>
-          <li>Data passed to servers (when internet connectivity allows) for remote display of data & maps</li>
-          <li></li>
+          <li>What3Words address entry (previously present, currently shelved pending an SDK migration)</li>
+          <li>Downloadable offline map regions beyond the bundled pilot area</li>
+          <li>Tracking teams that have not reported in within an expected interval</li>
+          <li>Data passed to servers (when Internet connectivity allows) for remote display of data & maps</li>
         </ul>
       </small>
     </details>
     <br>
     <details>
-      <summary>©{{today | date: 'y'}} <a href="https://eoc.online/" target="_blank">eoc.online</a>, under the MIT
-        License</summary>
+      <summary>©2019&ndash;{{today | date: 'y'}} <a href="https://eoc.online/" target="_blank">eoc.online</a>, under the
+        GNU Affero General Public License v3</summary>
       <small>
         <p class="indented">
-          Permission is hereby granted, free of charge, to any person obtaining a copy of
-          this software and associated documentation files (the "Software"), to deal in
-          the Software without restriction, including without limitation the rights to
-          use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-          the Software, and to permit persons to whom the Software is furnished to do so,
-          subject to the following conditions:
+          RangerTrak is free software: you can redistribute it and/or modify it under the
+          terms of the GNU Affero General Public License as published by the Free Software
+          Foundation, either version 3 of the License, or (at your option) any later
+          version.
         </p>
         <p class="indented">
-          The above copyright notice and this permission notice shall be included in all
-          copies or substantial portions of the Software.
+          <span class="bold">Using RangerTrak &mdash; including at your EOC, exercise, or
+            incident &mdash; is completely free and always will be.</span> The licence
+          places no obligations at all on people who simply use the application. If you
+          modify RangerTrak and distribute it, or run your modified version as a network
+          service, you must make your modified source available under the same licence.
         </p>
         <p class="indented">
-          THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-          IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-          FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-          COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-          IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-          CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+          This program is distributed in the hope that it will be useful, but WITHOUT ANY
+          WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+          PARTICULAR PURPOSE. See the licence for details.
         </p>
         <p class="indented">
-          -- from
-          <a href="https://opensource.org/licenses/MIT" target="_blank">https://opensource.org/licenses/MIT</a>
+          Full text:
+          <a href="https://www.gnu.org/licenses/agpl-3.0" target="_blank">https://www.gnu.org/licenses/agpl-3.0</a>
+        </p>
+        <p class="indented">
+          Releases prior to this change were published under the MIT License and remain
+          available under those terms.
         </p>
       </small>
     </details>

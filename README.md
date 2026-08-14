@@ -1,375 +1,110 @@
 # 🌲 RangerTrak™ 📡
 
 [![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine)
-
-The RangerTrak™ application aids tracking & mapping CERT, ACS, wildland firefighters & other teams, 'rangers' & individuals roaming around, who are only reliably connected via HAM radio or other non-data supporting means. Teams or individuals can radio in their locations - in a variety of formats, and be centrally tracked. A single log of reports, locations, events and time is created for documentation and analysis. Most critically search area coverage can be determined and teams/individuals that have NOT reported in can be monitored.
-
-This [Progressive Web Application](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps), or [PWA](https://en.wikipedia.org/wiki/Progressive_web_app), will largely run even if there is inconsistent, limited, or no cell, internet or data access at the command post.  It runs entirely in a device's browser, allowing operation on most any simple, modern, basic web brower in the field. Rangers can radio in their locations - using a variety of location codes, and be centrally tracked.
-
-Verbally transmitting & transcribing latitude & longitude coordinates can be very error prone and slow. Instead RangerTrak also permits other ways to report locations: by Street Address, Google PlusCodes, and perhaps What3Words. See <https://en.wikipedia.org/wiki/Open_Location_Code#Other_geocode_systems> for a list.
-
-## 👥 For Users
-
-To use and see what this application does, simply browse to <https://Rangertrak.org>. Additional guidence follows,
-
-### ✨ Features
-
-- Open Source: *free* to use & available to enhance!
-- Progressive Web App (PWA) this should be able to function (in the future, possibly with some degredation) even if the person using this at the command post has no or intermittent access to the Internet or cell system.
-- Periodic reports can include an editable status field and include easily searched notes which can include mission specific, custom keywords.
-- Tracks mission numbers and names, plus Operational Periods.
-- Versions after 0.0.10 are generated with Angular & written in enterprise level Typescript, so will run on most modern web browsers, regardless of device/form factor.
-- Supports recording locations as: lat/long (in Decimal Degrees, Degrees Minutes and Seconds, and Degrees and Decimal Minutes), or What3Words, Google +Codes, or physical Street Addresses. Location support may factor in bounding zones or proximity to a locality.
-- Lists of reports and rangers can be saved to a CSV (comma seperated value) file for display, documentation and after action analysis - readible by any spreadsheet programs.
-- Easy entry via auto-lookup of Ham Radio teams or individuals by tactical callsign.
-- Field report statuses can be edited: name & color, future: icon/markers.
-- View locations on Google and Leaflet/ESRI maps. (Google has yet to support offline/disconnected mapping, but is working on it for the future.) Maps also have overview/locator maps.
-- Rangers can report in as individuals or teams: both are easily edited/sorted/filtered and then only that subset may be exported or displayed on maps.
-- Source code documentation uses [https://compodoc.app/guides/jsdoc-tags.html]Compodoc
-- Source code is evergreen: current with latest libraries (as of fall 2022)
-
-### 🗺️ Future Roadmap
-
-- This project is moving to using [milestones](https://github.com/EOCOnline/rangertrak/milestones) to show what is being worked on next. Dates are super approximate!
-- Also see the [Issues page](https://github.com/EOCOnline/rangertrak/issues) for what we're working on in terms of bug fixes. Feel free to add your comments to them.
-- To work with out flaws! In particular one often has to refresh some pages to get them to display - especially the Leaflet Maps page - or screen.
-- Issues should be moving from a spreadsheet to [the standard GitHub Issues Page](https://github.com/EOCOnline/rangertrak/issues)
-- Enhance map markers to better highlight paths, teams, statuses.
-- Reload data from local files.
-- Allow loading of additional map layers (e.g., an image of trails, local features)
-  perhaps with <https://github.com/publiclab/Leaflet.DistortableImage>
-- improved docs: screenshots and architectural diagrams.
-- consider <https://github.com/EventEmitter2/EventEmitter2> for multi-threaded msgs with service workers.
-- consider adding heatmaps, or <https://github.com/eurostat/gridviz>
-- Optionally publish field reports to a server if Internet access allows: for display at a central EOC or even by participants out in the field with data or cell coverage.
-
-### 🌐 Items (still) requiring online access
-
-- BLOCKING: Removed hardcoded Google API key from the secrets.json file. Either create your own from the secrets template,
-  or await my changes to SettingsService::Constructor() &/or GmapComponent::Loader
-- GeoCoding an address
-- All maps (for now)
-- 3Word functionality (for now)
-
-### 🚀 To Run
-
-Simply visit <https://www.RangerTrak.org> and follow the Workflow below:
-
-1. Enter Mission info on the[Mission Settings Screen](./non-dist-imgs/MissionSettings.png "Mission Settings Screen") once, then
-2. Enter/edit participating rangers on the [Rangers Page](https://www.RangerTrak.org/rangers "Rangers Page") as needed, then
-3. Repeatedly enter reports on the [Home (Entry) Screen](https://www.RangerTrak.org/ "Home (Entry) Screen")
-
-Moving to a different browser, or device will provide a 'fresh' RangerTrak environment. RangerTrak’s machinations are all local to each brand of browser (Firefox won’t know what you did with Chrome or Edge), so that gives you a way to experiment.
-
-All data is private: only stored locally in your browser's Local Storage.
-
-### 📸 Screenshots & Typical Workflow
-
-So you get an idea of how it looks/works here's a typical workflow. (Click images for larger versions.)
-
-#### Mission Settings Screen: Start here
-
-**WARNING: Before doing the following** Be sure you have backed up and downloaded any previous mission data, via the Export Buttons on the [Field Reports Page](https://www.RangerTrak.org/reports) and [Rangers Page](https://www.RangerTrak.org/rangers) Screens.
-
-![Mission Settings Screen](./non-dist-imgs/MissionSettings.png "Mission Settings Screen")
-
-At the start of every mission and Op Period, come to this screen and enter mission and operational period parameters and the default location to simplify location entry for each field report. Some mapping parameters can also be adjusted. Field Report statuses can be edited as desired. The background incidentally shows RangerTrak being tested in a real-world exercise.
-
-#### Rangers Screen
-
-**Secondly,** at the start of an Operational Period, come to this screen to enter/edit/record rangers participating. Afterwards this displays Rangers participating in the exercise. This can refer to individuals and/or teams as desired. Rangers can be edited as needed, and optionally exported to a CSV spreadsheet.
-![Rangers Screen](./non-dist-imgs/Rangers.png "Rangers Screen")
-
-Once those initial two steps are complete (i.e., the two screens above), **users will just primarily use the Entry Screen, below, for most of the rest of the exercise or incident.**
-
-#### Home (Entry) Screen
-
-Most users will spend most of their time entering field reports from this 'home' or entry screen. It allows a 'scribe' to record 'Field Reporrts', i.e., ranger's locations and status reports.
-
-1. Start by enter any letters of a tactical call sign in the Who field. The app filters rangers with those letters for ready selection.
-2. Next, enter a location in any of the labeled formats. Derived addresses will then be displayed and mapped for your confirmation.
-3. When defaults to the current time. Edit it if the report was previoulsy recieved.
-4. What records the report status or nature, defaulting to "normal". You can enter freeform notes as desired too, possibly entering custom, unique incident specific keywords. Those can be filtered/searched for on the Field Reports Screen if desired.
-5. Submit your report. (Mistakes can generally be edited later on in the Field Reports Screen.) Once submitted a confirmation is briefly displayed and the form is automatically reset.
-6. The Reset button clears the form of all current data, so the scribe can start over with a clean field report.
-
-![Home (Entry) Screen](./non-dist-imgs/Entry.png "Home (Entry) Screen")
-
-#### Google Maps Screen
-
-This displays Field Reports that have been entered, and optionally a filtered subset of reports.
-![Google Maps Screen](./non-dist-imgs/GoogleMaps.png "Google Maps Screen")
-
-#### Leaflet Maps Screen
-
-This displays Field Reports that have been entered, and optionally a filtered subset of reports.
-![Leaflet Maps Screen](./non-dist-imgs/LeafletMaps.png "Leaflet Maps Screen")
-
-#### Field Reports Screen
-
-The next screen displays Field Reports that have been entered, in a table or grid format, with the ability to filter, sort, and search reports on any field. Filtered reports can be mapped or exported to a CSV spreadsheet for documentation or later analysis.
-![Field Reports Screen](./non-dist-imgs/FieldReports.png "Field Reports Screen")
-
-#### About Screen
-
-This provides a bit more explaination about the application, its purpose, technologies used, how to report issues, and license model.
-![About Screen](./non-dist-imgs/About.png "About Screen")
-
-#### Logs Screen
-
-This screen is primarily used for debugging and reporting issues. It can also serve as a partial audit trail of actions taken during the mission.
-![Logs Screen](./non-dist-imgs/Logs.png "Logs Screen")
-
-
-### 🧹 To Reset/Clear all Data
-
-1. Browse to <https://www.RangerTrak.org>
-2. Go to [Settings Page](https://www.RangerTrak.org/settings) and under Advanced at the very bottom, click on “Reset Settings”, then edit the fields as desired.
-3. Go to the [Rangers Page](https://www.RangerTrak.org/rangers), then under Advanced at the bottom, click on “Delete Rangers” which should load the default ranger teams. (This will change in the future. Its convenient for testing though. You can rename Teams by clicking on the name. For ANY changes: under Advanced, remember to click “Save Rangers” to preserve changes!
-4. Go to the [Field Reports Page](https://www.RangerTrak.org/reports), then under Advanced at the bottom , click on “Delete ALL Field Reports from local storage” – if there are any! (You may enter new reports or use the mint colored block below to “Add some ## of Fake Reports” which auto generates some reports to experiment with.)
-
-### 📲 Installation
-
-At the upper right of every screen, or additinoally on the [Settings Page](https://www.RangerTrak.org/settings), You will have the option to "Install" the application, which just streamlines access with a shortcut. The application takes minimal space and doesn't consume resources in the background. You can uninstall it like any other app.
-
-## 💻 For Developers Interested in Modifying or Contributing to the Project
-
-- **NEW:** Check out [.vscode/SETUP.md](.vscode/SETUP.md) for a complete VS Code workspace setup guide
-- Also see [contributing.md](contributing.md) for contribution guidelines
-
-### ⚡ Quick Start for Developers
-
-1. Fork `Github.com/eocOnline/Rangertrak` to your own repository
-2. Install [Node.js](https://nodejs.org/) (v18 or higher)
-3. Clone and setup:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/rangertrak.git
-   cd rangertrak
-   npm install
-   ng serve -o
-   ```
-4. Open in VS Code and install recommended extensions when prompted
-
-For detailed setup instructions, environment configuration, and troubleshooting, see [.vscode/SETUP.md](.vscode/SETUP.md).
-
-- or Run `ng serve` for a dev server. Navigate to <http://localhost:4200/>. The app will automatically reload if you change any of the source files.
-
-#### For production release
-
-`ng build --configuration production`
-to serve it:
-`ng s -c production -o`
-old: `http-server dist/rangertrak`
-
-#### Run App-shell
-
-- `ng run rangertrak:app-shell:development` or `ng run rangertrak:app-shell:production` - currently fails.
-- Then browse to `./dist/rangertrak/index.html`
-- see <https://angular.io/guide/app-shell> for details
-
-### 🧪 Running unit tests
-
-- Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-- None currently!
-
-### 🎭 Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-- None currently!
-- Plans to move to Puppeter, per https://blog.angular.io/introducing-puppeteer-schematics-test-your-angular-apps-with-ease-dea6947f6299
-
-### 📚 To update documentation
-
-`npm run compodoc` to regenerate the doc.
-`compodoc -s` to serve/view the doc at <http://127.0.0.1:8080/>
-See <https://compodoc.app/guides/usage.html> and <https://compodoc.app/> for details
-
-### 🔖 To update RangerTrak version number
-
-Run `npm run release` per <https://www.npmjs.com/package/standard-version>
-
-This updates bumps the version number in package.JSON & ChangeLog.md by an increment (& deletes package-lock.json?)
-
-Then run `git push --follow-tags origin main` to publish to Github as a new release
-
-Stage any changes (or add '--allow-empty' to the following), then
-`git commit -m "Release-As: 0.11.40"`
-Some details in service/settings.service.ts & app.component.ts
-<https://github.com/googleapis/release-please#how-do-i-change-the-version-number>
-
-To verify, also check/update package.json & package-lock.json
-
-### 📦 To update 3rd party libraries
-
-Follow this sequence to update your development environment:
-
-#### 1. Check current versions (optional)
-```bash
-node -v
-npm -v
-tsc --version
-npm outdated
-```
-
-#### 2. Update Node.js and global tools
-
-**Note:** Global npm installations on Windows require running PowerShell or Command Prompt as Administrator.
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
+**RangerTrak tracks and maps CERT, ACS, SAR, wildland-fire and other teams who are
+reachable only by HAM radio.** Field teams radio in their locations; a scribe at the
+command post transcribes them; RangerTrak builds a single mapped log of who was where,
+when, and in what condition — for live situational awareness and after-action
+documentation.
+
+It is a [Progressive Web App](https://en.wikipedia.org/wiki/Progressive_web_app) that runs
+entirely in the browser. **No server, no account, no API key, and no Internet required**
+once it has been loaded — which is the point, because the command post often has none.
+
+Because reading latitude and longitude over a radio is slow and error-prone, locations can
+also be reported as street addresses or Plus Codes.
+
+**Try it: <https://RangerTrak.org>**
+
+---
+
+## 📚 Documentation
+
+| Document | For | Contents |
+| --- | --- | --- |
+| **[FIELD-GUIDE.md](FIELD-GUIDE.md)** | Operators, ECs, scribes | What each screen does, and how to prepare a device so it works when the network doesn't |
+| **[ARCHITECTURE.md](ARCHITECTURE.md)** | Developers | How the app is built: map engines, geocoding, bundle and loading strategy |
+| **[DEVELOPING.md](DEVELOPING.md)** | Developers | Running, testing, releasing, updating dependencies, deploying |
+| **[contributing.md](contributing.md)** | Everyone | Code of conduct |
+| **[CHANGELOG.md](CHANGELOG.md)** | Everyone | Release history |
+| **[.vscode/SETUP.md](.vscode/SETUP.md)** | Developers | VS Code workspace setup |
+
+**New to RangerTrak? Start with the [Field Guide](FIELD-GUIDE.md).** In particular, read
+"Before the mission" — the difference between a prepared device and an unprepared one is
+the difference between a working tool and a blank screen.
+
+---
+
+## ✨ What it does
+
+- **Works offline.** Entering reports, the roster, the report table, coordinate
+  conversion, and mission export/import are all local to your device.
+- **Multiple location formats.** Lat/long (Decimal Degrees, DMS, DDM), Plus Codes, or
+  street addresses. Plus Codes and coordinate conversion are computed on-device, so they
+  keep working with no connection.
+- **Two map engines.** A Leaflet map over standard online road maps, and an offline map
+  (MapLibre + PMTiles) whose basemap data ships inside the app. Both cluster markers and
+  have overview maps.
+- **Roster with call-sign lookup.** Fast entry by tactical call sign, for individuals or
+  teams.
+- **Editable statuses** with custom names and colours, plus searchable free-text notes.
+- **Mission and operational period tracking.**
+- **Export and import.** Reports and roster export to CSV/Excel; a whole mission
+  (settings, roster, reports) exports to a single file for backup or handover.
+- **Sample data** for demonstrations and training, loadable in one click.
+- **Free and open source**, under the AGPL — free to use, free to modify.
+
+> ⚠️ The roster contains personal information — names, addresses, phone numbers, and call
+> signs that map to public licence records — stored unencrypted on the device. See the
+> Field Guide for handling guidance.
+
+## 🗺️ Roadmap
+
+Current work is tracked in
+[milestones](https://github.com/EOCOnline/rangertrak/milestones) and the
+[issues page](https://github.com/EOCOnline/rangertrak/issues) — comments and feature
+suggestions are welcome on either. A consolidated public `ROADMAP.md` will follow once the
+next release's scope is firm.
+
+Known gaps worth stating plainly: teams that have **not** reported in are not yet flagged
+automatically, the offline map's detailed coverage is currently limited to a pilot region,
+and What3Words support is shelved pending an SDK migration.
+
+## 🚀 Quick start
+
+**Using it:** visit <https://RangerTrak.org>, then set up the mission in **Settings**, add
+people on the **Rangers** page, and enter reports on the **Home** screen. Full walkthrough
+in the [Field Guide](FIELD-GUIDE.md).
+
+**Developing it:**
 
 ```bash
-# Update npm to latest version (requires Admin on Windows)
-npm install npm@latest -g
-
-# Update TypeScript globally (requires Admin on Windows)
-npm install -g typescript
-
-# Update TypeScript type files (requires Admin on Windows)
-npm install -g typings
-
-# Update Angular CLI globally (requires Admin on Windows)
-npm install -g @angular/cli@latest
-
-# (Optional) Update Chocolatey packages - requires Admin permissions
-choco upgrade all
-```
-
-**If you get permission errors on Windows:**
-- Right-click PowerShell or Command Prompt and select "Run as Administrator"
-- Or use a package manager like Chocolatey to update Node.js/npm: `choco upgrade nodejs`
-
-#### 3. Update Angular and project dependencies
-```bash
-# Check for available Angular updates
-npx ng update
-
-# Update Angular core packages (add --force if needed for peer dependency warnings)
-y
-
-
-# Check for all package updates
-npx npm-check-updates -u
-
-# Install all updated dependencies
+git clone https://github.com/YOUR_USERNAME/rangertrak.git
+cd rangertrak
 npm install
+npm start
 ```
 
-#### 4. Alternative: Use legacy peer dependency resolution (if needed)
-```bash
-npm install --save --legacy-peer-deps
-```
-
-#### 5. Optional: Use Yarn as package manager
-```bash
-npm i yarn -g
-yarn install
-```
-
-**Additional Resources:**
-- Check <https://update.angular.io/> for Angular-specific migration guides and required code changes between versions
-- Use `npm outdated` to see which packages have newer versions available
-
-### 🚢 To Deploy
-
-Deploying via Google Firebase got WAY too complex with Google's recent security upgrades.
-
-Now I just FTP it to <https://RangerTrak.org>
-
-OLD:
-`ng deploy`
-`ng add @angular/fire`
-From Angular Projects, 2nd ed. pg 119
-See angular.json and firebase.json
-
-### 🏗️ Architecture
-
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the updated visual architectural diagram.
-
-```mermaid
-classDiagram
-    direction TB
-
-    namespace Core {
-        class AppComponent
-        class AppRoutingModule
-    }
-
-    namespace Features {
-        class EntryComponent
-        class FieldReportsComponent
-        class RangersComponent
-        class LmapComponent
-        class GmapComponent
-        class SettingsComponent
-        class LogComponent
-        class AboutComponent
-    }
-
-    namespace Shared {
-        class HeaderComponent
-        class AlertsComponent
-    }
-
-    namespace Services {
-        class FieldReportService
-        class RangerService
-        class SettingsService
-        class LogService
-        class ClockService
-        class InstallableService
-        class GoogleGeocode
-    }
-
-    AppComponent --> AppRoutingModule : Uses
-    AppRoutingModule --> EntryComponent : Route
-    AppRoutingModule --> FieldReportsComponent : Route
-    AppRoutingModule --> RangersComponent : Route
-    AppRoutingModule --> LmapComponent : Route
-    AppRoutingModule --> GmapComponent : Route
-    AppRoutingModule --> SettingsComponent : Route
-    AppRoutingModule --> LogComponent : Route
-    AppRoutingModule ..> AboutComponent : Lazy Route
-
-    EntryComponent ..> FieldReportService
-    EntryComponent ..> RangerService
-    EntryComponent ..> SettingsService
-    EntryComponent ..> LogService
-
-    FieldReportsComponent ..> FieldReportService
-    FieldReportsComponent ..> SettingsService
-    FieldReportsComponent ..> LogService
-
-    RangersComponent ..> RangerService
-    RangersComponent ..> SettingsService
-    RangersComponent ..> LogService
-
-    LmapComponent ..> FieldReportService
-    LmapComponent ..> SettingsService
-    LmapComponent ..> LogService
-
-    GmapComponent ..> FieldReportService
-    GmapComponent ..> SettingsService
-    GmapComponent ..> LogService
-    GmapComponent ..> GoogleGeocode
-
-    SettingsComponent ..> SettingsService
-    SettingsComponent ..> LogService
-
-    LogComponent ..> LogService
-    LogComponent ..> SettingsService
-
-    HeaderComponent ..> SettingsService
-    HeaderComponent ..> ClockService
-```
-
-### 🆘 Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Details, testing and release process in [DEVELOPING.md](DEVELOPING.md).
 
 ## 🌐 eoc.online
 
-<https://eoc.online> provides free tools for Emergency Operations Centers and local CERT/VOAD/Citizen Corps groups. For more information check out <https://eoc.online>. We'd LOVE to get your reports of use and suggestions for enhancement. To report issues please visit <https://github.com/EOCOnline/rangertrak/issues>.
+<https://eoc.online> provides free tools for Emergency Operations Centers and local
+CERT/VOAD/Citizen Corps groups. We'd love to hear how you use RangerTrak and what you need
+from it.
 
-### 📜 License
+## 🗣️ Feedback & contribution
+
+- **[GitHub issues](https://github.com/EOCOnline/rangertrak/issues)** — bugs and specific
+  pieces of work.
+- **GitHub discussions** — open-ended conversation about the project.
+- **Pull requests** — including small edits made entirely in GitHub's browser editor; no
+  local setup needed for a documentation fix.
+- **Email** — <RangerTeam@eoc.online>.
+
+## 📜 License
 
 Copyright © 2019–2026 eoc.online
 
@@ -378,34 +113,20 @@ the **GNU Affero General Public License** as published by the Free Software Foun
 either version 3 of the License, or (at your option) any later version. See
 [LICENSE](LICENSE) for the full text.
 
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-
-**What this means for you:**
-
 - **Using RangerTrak — including at your EOC, exercise, or incident — is completely free
   and always will be.** The AGPL places no obligations at all on people who simply *use*
   the application.
-- If you **modify** RangerTrak and distribute it, or run your modified version as a
-  network service, you must make your modified source available under the same license.
-- Contributions are welcome. Note that the project may offer commercially licensed
-  versions in future, so contributors may be asked to sign a Contributor License
-  Agreement.
+- If you **modify** RangerTrak and distribute it, or run your modified version as a network
+  service, you must make your modified source available under the same license.
+- Contributions are welcome. Note that the project may offer commercially licensed versions
+  in future, so contributors may be asked to sign a Contributor License Agreement.
 
 *(Releases prior to this change were published under the MIT License and remain available
 under those terms.)*
 
-### 🗣️ Public Feedback & Contribution
+## 💬 Testimonials
 
-We encourage your feedback and contributions to this repository. Content suggestions and discussions (specific to RangerTrak) can be communicated in the following ways:
-
-- GitHub “issues.” Each issue is a conversation about specific project work initiated by a member of the public.
-- GitHub "discussions". Each discussion is a project communication forum. Discussions are not specific to elements of work like a pull request. We encourage you to browse and join in on discussions or start a new conversation by creating a new discussion.
-- Direct changes and line edits to the content may be submitted through a "pull request" by clicking "Edit this page" on any site page in the repository. You do not need to install any software to suggest a change. You can use GitHub's in-browser editor to edit files and submit a pull request for your changes to be merged into the document. Directions on how to submit a pull request can be found on GitHub.
-- Send your content suggestions or proposed revisions to the RangerTrak team via email to RangerTeam@eoc.online.
-
-### 💬 Testimonials
-
----
-> "*(We) all agreed that this is a WOW program with high value added to SAR.  I really hope you continue to refine it!*"
+> "*(We) all agreed that this is a WOW program with high value added to SAR. I really hope
+> you continue to refine it!*"
 
 — Michael Meyer, KB7MTM, [Vashon ACS](https://vashonbeprepared.org/en-us/Partners/ACS)
