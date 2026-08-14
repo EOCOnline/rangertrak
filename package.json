@@ -54,7 +54,7 @@
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "leaflet.offline": "^3.2.0",
-    "maplibre-gl": "^5.9.0",
+    "maplibre-gl": "^6.3.0",
     "mock-browser": "^0.92.14",
     "pmtiles": "^4.5.0",
     "tslib": "^2.8.1",
