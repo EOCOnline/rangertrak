@@ -1,9 +1,9 @@
 import L, { LatLngBounds } from 'leaflet'
-import { BehaviorSubject, Observable, Observer, of, Subscription, throwError } from 'rxjs'
+import { Observable, Observer, of, ReplaySubject, Subscription, throwError } from 'rxjs'
 
 import { HttpClient } from '@angular/common/http'
 import {
-  Injectable, OnDestroy, OnInit, Optional, Pipe, PipeTransform, SkipSelf
+  Injectable, OnDestroy, OnInit, Optional, Pipe, PipeTransform, signal, SkipSelf, WritableSignal
 } from '@angular/core'
 
 import {
@@ -24,7 +24,16 @@ export class FieldReportService {
   private id = 'Field Report Service'
 
   private fieldReports!: FieldReportsType
-  private fieldReportsSubject$!: BehaviorSubject<FieldReportsType>
+  // fieldReportsSignal is the single source of truth for state.
+  // fieldReportsReplay$ is a thin, synchronously-fed notification layer for
+  // existing Observable consumers - see the equivalent, more-detailed
+  // comment in settings.service.ts for why (toObservable()'s effect-based
+  // bridge is asynchronous; several consumers need synchronous emission).
+  // Like RangerService's `rangers`, `fieldReports` is mutated in place
+  // (push/extend/etc.) rather than reassigned; updateFieldReportsAndPublish()
+  // is the single point that syncs its current contents out.
+  private fieldReportsSignal!: WritableSignal<FieldReportsType>
+  private fieldReportsReplay$ = new ReplaySubject<FieldReportsType>(1)
 
   // REVIEW: No need to enable subscription to selectedFieldReports as they are
   // auto-saved on evey selection and user is single-threaded.
@@ -88,7 +97,7 @@ export class FieldReportService {
 
     // REVIEW: bounds actually needs to be an Object, not getting done this a waitForAsync, right?!
     this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
-    this.fieldReportsSubject$ = new BehaviorSubject(this.fieldReports)
+    this.fieldReportsSignal = signal(this.fieldReports)
     this.updateFieldReportsAndPublish()
   }
 
@@ -145,7 +154,7 @@ export class FieldReportService {
    * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
    */
   public getFieldReportsObserver(): Observable<FieldReportsType> {
-    return this.fieldReportsSubject$.asObservable()
+    return this.fieldReportsReplay$.asObservable()
   }
 
   /**
@@ -163,7 +172,11 @@ export class FieldReportService {
     localStorage.setItem(this.storageLocalName, JSON.stringify(this.fieldReports))
 
     this.log.excessive(`New field reports are available to observers...`, this.id)
-    this.fieldReportsSubject$.next(this.fieldReports)
+    // Signal gets a fresh copy for the same reason as RangerService.rangers:
+    // this.fieldReports is mutated in place, so .set() with the same
+    // reference would be a no-op under the signal's default equality check.
+    this.fieldReportsSignal.set({ ...this.fieldReports })
+    this.fieldReportsReplay$.next(this.fieldReports)
   }
 
   /**
