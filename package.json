@@ -8,7 +8,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "server": "http-server -p 8080 -c-1 dist/rangertrak",
+    "server": "node tools/serve-dist.js",
     "release": "standard-version",
     "compodoc": "npx compodoc -p tsconfig.doc.json --theme=Vagrant",
     "style": "import-sort -l \"**/{src,tests,e2e}/**/*.ts\" && prettier --check \"**/{src,tests,e2e}/**/*.{*css,ts}\"",
