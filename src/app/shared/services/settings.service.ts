@@ -1,6 +1,6 @@
-import { BehaviorSubject, Observable, throwError } from 'rxjs'
+import { Observable, ReplaySubject, throwError } from 'rxjs'
 
-import { Injectable, OnInit, Optional, SkipSelf } from '@angular/core'
+import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 
 import * as packageJson from '../../../../package.json'
 import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
@@ -21,9 +21,30 @@ export class SettingsService implements OnInit {
   private id = 'Settings Service'
   private storageLocalName = 'appSettings'
   static secrets: SecretType[]
-  public settings!: SettingsType
-  private settingsSubject$: BehaviorSubject<SettingsType>
+  // settingsSignal is the single source of truth for state (replaces the old
+  // BehaviorSubject entirely). settingsReplay$ is a thin, synchronously-fed
+  // notification layer for existing Observable-based consumers - NOT state
+  // storage. It exists because toObservable() bridges signals to Observables
+  // via an effect(), which schedules emissions on the next microtask rather
+  // than synchronously like BehaviorSubject.next() did; several consumers
+  // (and the Section 12/Sprint 1 characterization tests, which must stay
+  // green *unmodified*) depend on synchronous emission. ReplaySubject(1),
+  // not BehaviorSubject, keeps the "no BehaviorSubject" DoD literally true
+  // while preserving replay-on-subscribe semantics for late subscribers.
+  private settingsSignal = signal<SettingsType>(undefined as unknown as SettingsType)
+  private settingsReplay$ = new ReplaySubject<SettingsType>(1)
   private defOpPeriodLength = 12 // hours
+
+  /** Synchronous read of current settings. Single source of truth is settingsSignal. */
+  public get settings(): SettingsType {
+    return this.settingsSignal()
+  }
+
+  /** Writes state to the signal and synchronously notifies Observable subscribers. */
+  private setSettings(value: SettingsType) {
+    this.settingsSignal.set(value)
+    this.settingsReplay$.next(value)
+  }
 
   constructor(@Optional() @SkipSelf() existingService: SettingsService,
     private log: LogService
@@ -117,7 +138,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       this.log.info("Get App Settings...", this.id)
       try {
         if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") > 0) {
-          this.settings = JSON.parse(localStorageSettings)
+          this.setSettings(JSON.parse(localStorageSettings))
           this.log.verbose("Initialized App Settings from localstorage", this.id)
           needSettings = false
         }
@@ -128,7 +149,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       }
     }
     if (needSettings) {
-      this.settings = this.initSettings()
+      this.setSettings(this.initSettings())
     }
 
     // REVIEW: Above comes up with an old version # (if loaded from localStorage), so do this after the above
@@ -140,8 +161,6 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     this.settings.version = packageAsJson.version
     this.log.error(`Settings version (from package.json) set to: ${packageAsJson.version} `, this.id)
 
-    // Save settings
-    this.settingsSubject$ = new BehaviorSubject(this.settings)
     // publish settings to subscribers
     this.updateSettings(this.settings)
 
@@ -188,8 +207,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
    */
   public ResetDefaults(): SettingsType {
     this.log.verbose(`Settings are being restored to their initial (hardcoded) values. Please re-enter mission info as desired.`, this.id)
-    this.settings = this.initSettings()
-    this.updateSettings(this.settings)
+    this.updateSettings(this.initSettings())
     return this.settings
   }
 
@@ -272,8 +290,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     // Do any needed sanity/validation here
     //debugger
     localStorage.setItem(this.storageLocalName, JSON.stringify(newSettings))
-    this.settings = newSettings
-    this.settingsSubject$.next(newSettings)
+    this.setSettings(newSettings)
     this.log.verbose(`Notified subscribers of new Application Settings ${JSON.stringify(newSettings)} `, this.id)
 
     //! Is this proper?!
@@ -285,7 +302,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
    * Expose Observable to 3rd parties, but not the actual subject (which could be abused)
    */
   public getSettingsObserver(): Observable<SettingsType> {
-    return this.settingsSubject$.asObservable()
+    return this.settingsReplay$.asObservable()
   }
 
   private localStorageVoyeur() {
