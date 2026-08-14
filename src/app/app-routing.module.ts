@@ -38,7 +38,7 @@ const routes: Routes = [
   // LAZY Routes: preloaded right after root app module (via dynamic import module)
   {
     path: 'about',
-    loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule)
+    loadChildren: () => import('./lazy/lazy.routes').then(m => m.LAZY_ROUTES)
   },
 
   // Page not found route

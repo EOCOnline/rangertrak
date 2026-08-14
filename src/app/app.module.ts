@@ -31,7 +31,6 @@ import { MiniGMapComponent } from './entry/mini-gmap.component'
 import { MiniLMapComponent } from './entry/mini-lmap.component'
 import { FieldReportsComponent } from './field-reports/field-reports.component'
 import { GmapComponent } from './gmap/gmap.component'
-import { LazyModule } from './lazy/lazy.module'
 import { LmapComponent } from './lmap/lmap.component'
 import { LogComponent } from './log/log.component'
 import { MaterialModule } from './material.module'
@@ -64,7 +63,6 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
     AgGridModule,
     // https://angular.io/guide/ngmodule-faq#what-is-the-forroot-method: singleton
     // AgmCoreModule.forRoot({ apiKey: 'API_KEY_GOES_HERE' }),
-    LazyModule,
     RouterModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production || !isDevMode(),
