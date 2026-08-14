@@ -111,10 +111,15 @@
             <input matInput type="number" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}" />
           </mat-form-field>
 
-          <!-- NOTE: Step 5: Gesture Support: mat-slider rely on HammerJS for gestures: https://v5.material.angular.io/guide/getting-started#step-5-gesture-support -->
-          <!-- TODO: The 'tickInterval' property no longer exists -->
-          <mat-slider id="enter__Fake--slider" thumbLabel step="5" min="0" max="100" aria-label="# Fake Field Reports"
-            [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}"><input matSliderThumb /></mat-slider>
+          <!-- Since Material v15 <mat-slider> is only a container: the value accessor
+               lives on the inner <input matSliderThumb>, so ngModel has to bind there.
+               Binding it on <mat-slider> threw "Cannot read properties of null (reading
+               'writeValue')" and broke the whole page. `discrete` replaces the old
+               `thumbLabel`. -->
+          <mat-slider id="enter__Fake--slider" discrete step="5" min="0" max="100">
+            <input matSliderThumb aria-label="# Fake Field Reports" [(ngModel)]="nFakes"
+              [ngModelOptions]="{standalone: true}" />
+          </mat-slider>
 
           <button (click)="generateFakeFieldReports()" type="button" id="enter__Fake--button">
             Add another {{nFakes}} FAKE Field Reports ()

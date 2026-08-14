@@ -75,13 +75,19 @@ export class FieldReportService {
     this.log.verbose("======== Constructor() ============", this.id)
     //! REVIEW: this.log.verbose(`Constructor call stack (NOT an error: why called twice?): ${new Error().stack}`, this.id)
 
-    this.fieldReports = this.LoadFieldReportsFromLocalStorage()
-
-
+    // Subscribe to Settings BEFORE loading reports: SettingsService replays its current
+    // value synchronously, so this populates this.settings first. Loading first meant a
+    // fresh install built its empty FieldReports with version '0' (initEmptyFieldReports
+    // falls back when settings are missing), which then failed the version check below
+    // and logged a bogus "does NOT match" error on every virgin start.
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
         this.log.excessive('Received new Settings via subscription.', this.id)
+
+        // this.fieldReports is undefined until the load below completes on the very
+        // first emission; the version check only makes sense once it exists.
+        if (!this.fieldReports) { return }
 
         if (this.fieldReports.version == this.settings.version) {
           this.log.excessive('Application version matches version used to store Field Reports.', this.id)
@@ -92,6 +98,8 @@ export class FieldReportService {
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
+
+    this.fieldReports = this.LoadFieldReportsFromLocalStorage()
 
     this.log.info(`Got v.${this.fieldReports.version} for event: ${this.fieldReports.event} on  ${this.fieldReports.date} with ${this.fieldReports.numReport} Field Reports from localstorage`, this.id)
 

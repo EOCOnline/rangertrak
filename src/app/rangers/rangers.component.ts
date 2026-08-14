@@ -66,7 +66,16 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   gridOptions: GridOptions = {
     // PROPERTIES
-    rowSelection: "multiple",
+    // Use the classic ag-theme-alpine CSS (imported in styles.scss) rather than v33+'s
+    // Theming API - see the ModuleRegistry comment in main.ts.
+    theme: 'legacy',
+    // v32.2+ object form - see the equivalent comment in field-reports.component.ts.
+    rowSelection: {
+      mode: 'multiRow',
+      checkboxes: false,
+      headerCheckbox: false,
+      enableClickSelection: true,
+    },
     // pagination: true,
 
     // EVENT handlers

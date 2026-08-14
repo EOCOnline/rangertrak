@@ -1,5 +1,5 @@
 import { AgGridModule } from 'ag-grid-angular'
-import { ColDef } from 'ag-grid-community'
+import { ColDef, GridOptions } from 'ag-grid-community'
 import { delay, Subscription, throwError } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
@@ -87,7 +87,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   // https://www.ag-grid.com/javascript-data-grid/row-styles/#highlighting-rows-and-columns
-  gridOptions = {
+  gridOptions: GridOptions = {
+    // Use the classic ag-theme-alpine CSS (imported in styles.scss) rather than v33+'s
+    // Theming API - see the ModuleRegistry comment in main.ts.
+    theme: 'legacy',
     //suppressRowHoverHighlight: true, // turn OFF row hover, default:on
     //columnHoverHighlight: true, // turn ON column hover, default: off
   }// rowSelection: "multiple"}

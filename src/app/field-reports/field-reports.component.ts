@@ -74,7 +74,18 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   // NOT monitored for changes on the fly: https://stackoverflow.com/questions/52519129/ag-grid-and-angular-how-to-switch-grid-options-dynamically/52519796#52519796
   gridOptions: GridOptions = {
     // PROPERTIES
-    rowSelection: "multiple",
+    // Use the classic ag-theme-alpine CSS (imported in styles.scss) rather than v33+'s
+    // Theming API - see the ModuleRegistry comment in main.ts.
+    theme: 'legacy',
+    // v32.2+ object form. checkboxes/headerCheckbox off + enableClickSelection keeps the
+    // original "multiple" behaviour (click a row to select, ctrl/shift to extend) rather
+    // than the new default, which would add a checkbox column the layout doesn't expect.
+    rowSelection: {
+      mode: 'multiRow',
+      checkboxes: false,
+      headerCheckbox: false,
+      enableClickSelection: true,
+    },
 
     // https://www.ag-grid.com/javascript-data-grid/row-pagination/#pagination-properties
     pagination: true,
