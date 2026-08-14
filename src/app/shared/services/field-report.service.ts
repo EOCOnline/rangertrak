@@ -158,6 +158,26 @@ export class FieldReportService {
   }
 
   /**
+   * Synchronous read of the current field reports (e.g. for export/backup).
+   * Prefer getFieldReportsObserver() for anything reactive.
+   */
+  public getCurrentFieldReports(): FieldReportsType {
+    return this.fieldReports
+  }
+
+  /**
+   * Replaces all field reports wholesale (e.g. restoring from a mission
+   * backup). `newFieldReports.bounds` is ignored if present - bounds are
+   * always recalculated fresh, exactly as the constructor already does on
+   * every normal load.
+   */
+  public replaceAllFieldReports(newFieldReports: Omit<FieldReportsType, 'bounds'>) {
+    this.fieldReports = { ...newFieldReports, bounds: this.fieldReports.bounds }
+    this.recalcFieldBounds(this.fieldReports)
+    this.updateFieldReportsAndPublish()
+  }
+
+  /**
    * Update localStorage with new field reports & notify observers
    */
   private updateFieldReportsAndPublish() {

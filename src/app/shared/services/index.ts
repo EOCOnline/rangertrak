@@ -1,3 +1,4 @@
+export { BackupService, MissionExport, MISSION_EXPORT_SCHEMA_VERSION } from "./backup.service"
 export { RangerService } from "./ranger.service"
 export { FieldReportService } from "./field-report.service"
 export { LogService } from "./log.service"

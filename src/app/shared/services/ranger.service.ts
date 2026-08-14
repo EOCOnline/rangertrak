@@ -260,6 +260,12 @@ export class RangerService implements OnInit {
     // localStorage.clear() // remove all localStorage keys & values from the specific domain you are on. Javascript is unable to get localStorage values from any other domains due to CORS
   }
 
+  /** Replaces the whole roster wholesale (e.g. restoring from a mission backup). */
+  replaceAllRangers(newRangers: RangerType[]) {
+    this.rangers = [...newRangers]
+    this.updateLocalStorageAndPublish()
+  }
+
   // this needs be done for the autocomplete control in the enter comonent to work correctly
   // TODO: Getting called too often?
   SortRangersByCallsign() {
