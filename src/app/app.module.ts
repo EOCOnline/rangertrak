@@ -33,7 +33,7 @@ import { FieldReportsComponent } from './field-reports/field-reports.component'
 import { GmapComponent } from './gmap/gmap.component'
 import { LmapComponent } from './lmap/lmap.component'
 import { LogComponent } from './log/log.component'
-import { MaterialModule } from './material.module'
+import { MATERIAL_IMPORTS } from './material-imports'
 import { RangersComponent } from './rangers/rangers.component'
 import { ColorEditor } from './settings/color-editor.component'
 import { SettingsComponent } from './settings/settings.component'
@@ -56,7 +56,7 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
     GoogleMapsModule,
     //    Loader,
     HttpClientModule,
-    MaterialModule,
+    ...MATERIAL_IMPORTS,
     ReactiveFormsModule,
     AppRoutingModule,   // https://giancarlobuomprisco.com/angular/understanding-angular-modules  & https://angular.io/guide/router
     //FontAwesomeModule,
@@ -128,7 +128,7 @@ import { HeaderComponent, AlertsComponent, FooterComponent, IconsComponent, Inst
     //AppShellComponent
     //   SettingsComponent
     RouterModule,
-    MaterialModule,
+    ...MATERIAL_IMPORTS,
     FormsModule,
     ReactiveFormsModule,
     CommonModule

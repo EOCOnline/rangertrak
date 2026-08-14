@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core';
 import { A11yModule } from '@angular/cdk/a11y';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { CdkStepperModule } from '@angular/cdk/stepper';
@@ -50,8 +49,10 @@ import { PortalModule } from '@angular/cdk/portal';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 
-@NgModule({
-  exports: [
+// Standalone-era replacement for the old MaterialModule NgModule re-export.
+// Spread this into a component's own `imports: [...MATERIAL_IMPORTS]` array
+// rather than importing the individual Material/CDK modules by hand.
+export const MATERIAL_IMPORTS = [
     A11yModule,
     CdkAccordionModule,
     CdkStepperModule,
@@ -99,6 +100,4 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     OverlayModule,
     PortalModule,
     ScrollingModule
-  ]
-})
-export class MaterialModule { }
+] as const

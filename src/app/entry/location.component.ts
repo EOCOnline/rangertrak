@@ -30,7 +30,7 @@ import {
   LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services'
 
-import { MaterialModule } from '../material.module'
+import { MATERIAL_IMPORTS } from '../material-imports'
 
 //! import { What3Words} from '../shared/'
 /*
@@ -43,7 +43,7 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   //moduleId: module.id,
   selector: 'rangertrak-location',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MaterialModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ...MATERIAL_IMPORTS],
   templateUrl: './location.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./location.component.scss']

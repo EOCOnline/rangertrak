@@ -21,7 +21,7 @@ import { ColorEditor } from './color-editor.component'
 //import { MoodEditor } from './mood-editor.component'
 //import { MoodRenderer } from './mood-renderer.component'
 
-import { MaterialModule } from '../material.module'
+import { MATERIAL_IMPORTS } from '../material-imports'
 
 @Component({
   selector: 'rangertrak-settings',
@@ -30,7 +30,7 @@ import { MaterialModule } from '../material.module'
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MaterialModule,
+    ...MATERIAL_IMPORTS,
     AgGridModule,
     HeaderComponent,
     TimePickerComponent,

@@ -23,7 +23,7 @@ import {
 } from '../shared/services/'
 //import { LocationComponent } from './location.component'
 
-import { MaterialModule } from '../material.module'
+import { MATERIAL_IMPORTS } from '../material-imports'
 import { LocationComponent } from './location.component'
 import { MiniLMapComponent } from './mini-lmap.component'
 
@@ -37,7 +37,7 @@ import { MiniLMapComponent } from './mini-lmap.component'
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MaterialModule,
+    ...MATERIAL_IMPORTS,
     HeaderComponent,
     TimePickerComponent,
     LocationComponent,
