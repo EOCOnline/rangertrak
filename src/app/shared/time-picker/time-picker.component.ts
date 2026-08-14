@@ -68,7 +68,9 @@ export class TimePickerComponent implements OnInit {
 
   // next 2 defaults can be overriden in parent's html: [initialDate] = "initialTime"
   @Input() datePickerLabel = "Enter Date & Time" // [datePickerLabel] = "Enter Date & Time of the Big Bang"
-  @Input() initialDate = new Date() //  [initialDate] = "initialTime"
+  // Typed to include string because that is what callers actually pass once settings have
+  // been through localStorage - see toDate() / ngOnInit().
+  @Input() initialDate: Date | string = new Date() //  [initialDate] = "initialTime"
 
   private id = "DateTime Picker"
 
@@ -130,13 +132,18 @@ export class TimePickerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Extract time from initialDate if provided
-    const hours = this.initialDate.getHours().toString().padStart(2, '0');
-    const minutes = this.initialDate.getMinutes().toString().padStart(2, '0');
+    // Settings round-trip through localStorage as JSON, which has no date type, so
+    // opPeriodStart/End come back as ISO *strings* - and [initialDate] is typed Date, so
+    // nothing flags it. Calling getHours() on a string threw "is not a function" and took
+    // the whole Settings page down. Coerce at the boundary rather than trusting the type.
+    const initial = this.toDate(this.initialDate)
+
+    const hours = initial.getHours().toString().padStart(2, '0');
+    const minutes = initial.getMinutes().toString().padStart(2, '0');
     const timeString = `${hours}:${minutes}`;
 
     this.timepickerFormGroup = this._formBuilder.group({
-      time: [this.initialDate],
+      time: [initial],
       timeOfDay: [timeString]
     });
 
@@ -146,6 +153,20 @@ export class TimePickerComponent implements OnInit {
     });
 
     this.log.verbose(`initialDate = ${this.initialDate} in ngInit`, this.id)
+  }
+
+  /**
+   * Accepts whatever actually arrives on [initialDate] - a Date, an ISO string from
+   * deserialized settings, or something unusable - and always returns a valid Date,
+   * falling back to now rather than letting an Invalid Date propagate into the form.
+   */
+  private toDate(value: Date | string): Date {
+    const date = value instanceof Date ? value : new Date(value)
+    if (isNaN(date.getTime())) {
+      this.log.error(`initialDate was not a usable date (${JSON.stringify(value)}); defaulting to now.`, this.id)
+      return new Date()
+    }
+    return date
   }
 
   onNewTime(newTime: any) {

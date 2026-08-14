@@ -378,6 +378,11 @@
         Back up this device's entire mission (settings, rangers, and field reports) to a
         single file, so it survives clearing browser storage or moves to another device.
       </span><br />
+      <span style="color:red;">
+        The exported file includes the ranger roster - legal names, home addresses,
+        personal phone numbers and call signs - and is NOT encrypted. Store it
+        accordingly and delete it when the mission is over.
+      </span><br />
       <br />
       <button (click)="onBtnExportMission()" title="Download the current mission as a JSON file">
         Export Mission
@@ -389,6 +394,26 @@
       </label>
       <input #importMissionFile id="importMissionFile" type="file" accept="application/json,.json"
         (change)="onImportFileSelected($event)" style="display:none;" />
+      <br />
+      <br />
+
+      <h2>Sample Data</h2>
+      <span class="strong">
+        Load a ready-made demonstration mission - a roster of 12 units and about 30 field
+        reports spread across Vashon Island over the last several hours.
+      </span><br />
+      Useful for showing RangerTrak to someone, or for seeing how a screen looks with
+      realistic data on a brand-new install, without hand-entering reports one at a
+      time.<br />
+      <span style="color:red;">
+        This REPLACES the rangers and field reports currently on this device. Export your
+        mission first if you need to keep it.
+      </span><br />
+      <br />
+      <button (click)="onBtnLoadSampleData()"
+        title="Replace rangers and field reports with a demonstration mission">
+        Load Sample Mission
+      </button>
       <br />
       <br />
       <h2>

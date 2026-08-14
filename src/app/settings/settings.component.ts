@@ -13,7 +13,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { HeaderComponent, TimePickerComponent } from '../shared/'
 import {
   BackupService, FieldReportService, FieldReportStatusType, InstallableService, LogService, RangerService,
-  SettingsService, SettingsType, StoragePersistenceService
+  SampleDataService, SettingsService, SettingsType, StoragePersistenceService
 } from '../shared/services/'
 //import { Color } from '@angular-material-components/color-picker';
 //import { ThemePalette } from '@angular/material/core';
@@ -232,6 +232,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     */
     //private fieldReportService: FieldReportService,
     private backupService: BackupService,
+    private sampleDataService: SampleDataService,
     private installableService: InstallableService,
     // public (not private): read directly in the template as
     // storagePersistence.persisted() - a signal, so this is zoneless-safe
@@ -364,6 +365,18 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
    * single JSON file. See PRIVATE-Roadmap.md Section 8/R3.
    */
   onBtnExportMission() {
+    // The export bundles the full ranger roster, so it carries the same personal data as
+    // the Rangers page warns about - in an unencrypted file this app can no longer
+    // protect once written.
+    if (!confirm(`Export this mission to a file?\n\n`
+      + `The file includes the full ranger roster - legal names, home addresses, personal `
+      + `phone numbers and call signs - and is NOT encrypted.\n\n`
+      + `Store it somewhere appropriate, share it only with people who need it for this `
+      + `mission, and delete it when the mission is over.`)) {
+      this.log.verbose('onBtnExportMission: user cancelled export.', this.id)
+      return
+    }
+
     this.log.verbose('onBtnExportMission: Exporting mission.', this.id)
     this.backupService.exportMission()
   }
@@ -404,6 +417,25 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
         this.log.error(`onImportFileSelected: failed to import ${file.name}: ${error.message}`, this.id)
         alert(`Could not import "${file.name}": ${error.message}`)
       })
+  }
+
+  /**
+   * Loads the built-in demonstration mission. Destructive - replaces rangers and
+   * field reports - so it confirms first, matching onImportFileSelected().
+   */
+  onBtnLoadSampleData() {
+    if (!confirm(`Load the sample mission?\n\n`
+      + `This REPLACES all rangers and field reports currently on this device with `
+      + `demonstration data, and renames the mission to make that obvious.\n\n`
+      + `This cannot be undone - export the current mission first if you want to keep it.`)) {
+      this.log.verbose('onBtnLoadSampleData: user cancelled.', this.id)
+      return
+    }
+
+    this.sampleDataService.loadSampleMission()
+    this.log.warn('Loaded the sample mission (demo data).', this.id)
+    alert('Sample mission loaded. Reloading to refresh every screen with the new data...')
+    window.location.reload()
   }
 
   /**

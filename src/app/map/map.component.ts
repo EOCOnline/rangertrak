@@ -86,6 +86,14 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       zoom: this.settings.google.defZoom
     })
 
+    // Without a listener MapLibre swallows source/tile failures into a console warning at
+    // most, so a basemap that never loads looks identical to one that loaded empty. Log
+    // them: an offline map silently showing blank is the single most confusing failure
+    // this screen can have.
+    this.map.on('error', (ev: any) => {
+      this.log.error(`MapLibre error${ev?.sourceId ? ` (source "${ev.sourceId}")` : ''}: ${ev?.error?.message ?? JSON.stringify(ev)}`, 'MapComponent')
+    })
+
     this.map.on('load', () => {
       this.addReportsSource()
       this.refreshMarkers()

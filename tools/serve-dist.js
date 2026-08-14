@@ -15,7 +15,11 @@ const ROOT = path.join(__dirname, '..', 'dist', 'rangertrak', 'browser');
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
 
 const MIME = {
-  '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css',
+  // .mjs matters as much as .js here: maplibre-gl v6's worker is a module worker, and
+  // browsers refuse to instantiate one unless it is served with a JavaScript MIME type -
+  // falling through to application/octet-stream silently kills the map. Any production
+  // host serving this build needs the same mapping.
+  '.html': 'text/html', '.js': 'application/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
   '.json': 'application/json', '.webmanifest': 'application/manifest+json',
   '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.woff': 'font/woff',
@@ -55,6 +59,17 @@ const server = http.createServer((req, res) => {
 
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
+      // Only fall back for real client-side routes. Falling back for *everything* meant a
+      // missing asset was answered with index.html and a 200, so a script or worker that
+      // failed to ship looked like a file that loaded and then misbehaved - which is
+      // exactly how the missing maplibre-gl-worker.mjs hid for so long. Anything with a
+      // file extension is an asset: if it isn't there, say so.
+      if (path.extname(urlPath)) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end(`Not found: ${urlPath}`);
+        console.warn(`404 ${urlPath}`);
+        return;
+      }
       filePath = path.join(ROOT, 'index.html'); // SPA fallback
     }
 

@@ -26,6 +26,33 @@
 <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
 <section class="main">
 
+  <!-- Deliberately outside the collapsible Instructions below: this has to be visible
+       without the user opening anything, because it applies the moment the roster is
+       on screen. -->
+  <aside class="privacy-notice">
+    <span class="privacy-notice__label">⚠️ Confidential — personal information</span>
+    <p>
+      This roster holds personal data: legal names, home addresses, personal phone
+      numbers and photos, alongside call signs that tie each row to a named,
+      publicly-searchable FCC licence. Treat it as confidential participant
+      information, not as operational data.
+    </p>
+    <ul>
+      <li>
+        It is stored <em>unencrypted</em> in this browser's local storage. Anyone with
+        access to this device and browser profile can read it.
+      </li>
+      <li>
+        Exports (CSV, Excel, and Mission Backup) are <em>unencrypted plain-text files</em>.
+        Once exported, this app can no longer protect them.
+      </li>
+      <li>
+        Share only with people who need it for this mission, and delete exports when the
+        mission is over. Follow your agency's policy on handling participant data.
+      </li>
+    </ul>
+  </aside>
+
   <details>
     <summary class="big">Instructions</summary>
     This list of participants was taken from the FCC Database February 3, 2022. <br />

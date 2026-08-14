@@ -57,6 +57,38 @@ label {
   font-weight: bold;
 }
 
+// Confidentiality notice above the roster grid. Styled as a warning rather than a
+// heading so it reads as a caution at a glance, but kept quiet enough that it does not
+// compete with the grid itself on every visit.
+.privacy-notice {
+  border          : 1px solid #d9a300;
+  border-left     : 6px solid #d9a300;
+  background-color: #fff8e1;
+  color           : #3d3d3d;
+  border-radius   : 4px;
+  padding         : .75em 1em;
+  margin          : 0 0 1em 0;
+
+  p {
+    margin: .4em 0;
+  }
+
+  ul {
+    margin       : .4em 0 0 0;
+    padding-left : 1.2em;
+  }
+
+  li {
+    margin-bottom: .25em;
+  }
+}
+
+.privacy-notice__label {
+  display    : block;
+  font-weight: bold;
+  color      : #8a6100;
+}
+
 // from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_tooltip
 // https://www.w3schools.com/howto/howto_css_tooltip.asp
 .tooltip2 {

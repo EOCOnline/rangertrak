@@ -427,6 +427,19 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     //this.log.verbose(`Got filename of "${params.fileName}"`, this.id)
     //this.gridApi.exportDataAsCsv(params);
 
+    // Confirm before the roster leaves the app: the exported file carries names, home
+    // addresses, personal phone numbers and call signs in the clear, and nothing this
+    // app does can protect it afterwards.
+    if (!Utility.getConfirmation(
+      `Export the roster to a file?\n\n`
+      + `The exported file contains PERSONAL INFORMATION - legal names, home addresses, `
+      + `personal phone numbers and call signs - and is NOT encrypted.\n\n`
+      + `Store it somewhere appropriate, share it only with people who need it for this `
+      + `mission, and delete it when the mission is over.`)) {
+      this.log.verbose('onBtnExportToExcel: user cancelled export.', this.id)
+      return
+    }
+
     // ! Is this JUST for enterprise edition?! - test...
     // https://www.ag-grid.com/javascript-data-grid/excel-export-rows/#export-all-unprocessed-rows
     this.gridApi.exportDataAsExcel({

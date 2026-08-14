@@ -1,4 +1,4 @@
-import { addProtocol, type StyleSpecification } from 'maplibre-gl'
+import { addProtocol, setWorkerUrl, type StyleSpecification } from 'maplibre-gl'
 import { Protocol } from 'pmtiles'
 
 // The v1 offline basemap: a single bundled PMTiles extract, used identically whether
@@ -8,19 +8,40 @@ import { Protocol } from 'pmtiles'
 // the planned low-res world background + region-download manager.
 export const DEFAULT_PMTILES_URL = '/assets/maps/vashon.pmtiles'
 
-let protocolRegistered = false
+/**
+ * Where the MapLibre worker bundle is served from. maplibre-gl v6 splits its worker into
+ * a separate ES module (plus a large shared chunk it imports by relative path), rather
+ * than inlining it as v5 and earlier did.
+ *
+ * By default v6 derives the worker URL from its own module URL, which after Angular's
+ * esbuild bundling resolves to `/maplibre-gl-worker.mjs` at the site root - a file no
+ * build step ever emits. The request then hit the dev-preview server's SPA fallback and
+ * came back as index.html with `Content-Type: text/html`, so the worker was constructed
+ * from HTML and died on the spot.
+ *
+ * That failure is completely silent: MapLibre fires no error event, the map still paints
+ * background layers on the main thread, and the map simply shows blank forever - because
+ * both vector tiles AND GeoJSON sources are parsed in the worker. Pointing MapLibre at a
+ * copy we actually ship (see angular.json's assets entry, which copies the worker and its
+ * shared chunk side by side so the worker's relative import resolves) is the fix.
+ */
+const MAPLIBRE_WORKER_URL = 'assets/maplibre/maplibre-gl-worker.mjs'
+
+let maplibreInitialized = false
 
 /**
- * Registers MapLibre's `pmtiles://` protocol handler. Idempotent - safe to call from
- * multiple component constructors, only wires up the handler once.
+ * One-time global MapLibre setup: points it at the worker bundle we ship, and registers
+ * the `pmtiles://` protocol handler. Idempotent - safe to call from every map
+ * component's constructor, which is exactly how it is used.
  */
 export function registerPmtilesProtocol(): void {
-  if (protocolRegistered) {
+  if (maplibreInitialized) {
     return
   }
+  setWorkerUrl(MAPLIBRE_WORKER_URL)
   const protocol = new Protocol()
   addProtocol('pmtiles', protocol.tile)
-  protocolRegistered = true
+  maplibreInitialized = true
 }
 
 /**

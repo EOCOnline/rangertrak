@@ -54,7 +54,9 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   _location = undefinedLocation
   // Use setter get notification of new locations from parent entry form (pg 182 & 188)
   @Input() set locationUpdated(newLocation: LocationType) {
-    this.log.error((`LMini-Map location Setter called! ${JSON.stringify(newLocation)}`), this.id)
+    // Normal data flow from the parent Entry form, not a fault - see the equivalent
+    // comment in settings.service.ts about keeping the Log page's errors meaningful.
+    this.log.excessive((`LMini-Map location Setter called! ${JSON.stringify(newLocation)}`), this.id)
 
     if (newLocation && (newLocation.lat != undefined)) {
       if (newLocation.address == undefinedAddressFlag) {

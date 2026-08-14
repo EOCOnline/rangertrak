@@ -159,7 +159,9 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     //this.version = packageAsJson.version
     //SettingsService.version = packageAsJson.version
     this.settings.version = packageAsJson.version
-    this.log.error(`Settings version (from package.json) set to: ${packageAsJson.version} `, this.id)
+    // Routine startup information, not a fault. Logging it at error level put a red entry
+    // at the top of the Log page on every single load and buried the real errors under it.
+    this.log.info(`Settings version (from package.json) set to: ${packageAsJson.version} `, this.id)
 
     // publish settings to subscribers
     this.updateSettings(this.settings)
