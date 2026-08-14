@@ -17,7 +17,7 @@
     "lint:fix": "run-s lint:ts:fix lint:tsc",
     "lint:ts": "tslint --config tslint.json --project . -e \"**/{test,polyfills}.ts\"",
     "lint:ts:fix": "tslint --config tslint.json --fix --project . -e \"**/{test,polyfills}.ts\"",
-    "lint:tsc": "tsc --noEmit --skipLibCheck",
+    "lint:tsc": "tsc --noEmit --skipLibCheck -p tsconfig.app.json && tsc --noEmit --skipLibCheck -p tsconfig.spec.json",
     "init:env": "init-dev-env generate-dot-env example.env -f"
   },
   "private": true,
