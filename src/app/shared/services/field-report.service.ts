@@ -19,7 +19,7 @@ import {
 
 //, deps: [LogService, RangerService, LogService]
 @Injectable({ providedIn: 'root' })
-export class FieldReportService implements OnInit, OnDestroy {
+export class FieldReportService {
 
   private id = 'Field Report Service'
 
@@ -90,11 +90,6 @@ export class FieldReportService implements OnInit, OnDestroy {
     this.recalcFieldBounds(this.fieldReports)  // Should be extraneous...
     this.fieldReportsSubject$ = new BehaviorSubject(this.fieldReports)
     this.updateFieldReportsAndPublish()
-  }
-
-
-  ngOnInit() {
-    this.log.excessive('ngOnInit', this.id)
   }
 
 
@@ -278,7 +273,7 @@ export class FieldReportService implements OnInit, OnDestroy {
         if (reports.fieldReportArray[i].location.lng > east) {
           east = reports.fieldReportArray[i].location.lng //Math.round(reports.fieldReportArray[i].location.lng * 10000) / 10000
         }
-        if (reports.fieldReportArray[i].location.lng > west) {
+        if (reports.fieldReportArray[i].location.lng < west) {
           west = reports.fieldReportArray[i].location.lng //Math.round(reports.fieldReportArray[i].location.lng * 10000) / 10000
         }
       }
@@ -360,113 +355,5 @@ export class FieldReportService implements OnInit, OnDestroy {
     }
     this.recalcFieldBounds(this.fieldReports)
     this.updateFieldReportsAndPublish()
-  }
-
-  ngOnDestroy() {
-    /* Error: Uncaught (in promise): TypeError: Cannot read properties of undefined (reading 'unsubscribe')
-       TypeError: Cannot read properties of undefined (reading 'unsubscribe')
-       at FieldReportService.ngOnDestroy (main.js:8505:35)
-    */
-    // this.rangersSubscription?.unsubscribe()
-    // this.settingsSubscription?.unsubscribe()
-  }
-
-  // ---------------------------------  UNUSED -------------------------------------------------------
-
-  /**
-   * Register new field reports here, it will update bounds and other metadata, and notify observers
-   * @param newReports
-   */
-  private setFieldReports(newReports: FieldReportType[]) {
-    this.fieldReports.fieldReportArray = newReports
-    this.recalcFieldBounds(this.fieldReports)
-    this.updateFieldReportsAndPublish()
-  }
-
-  private allFieldReportsToServer_unused() {
-    this.log.verbose("Sending all reports to server (via subscription)...", this.id)
-
-    // https://appdividend.com/2019/06/04/angular-8-tutorial-with-example-learn-angular-8-crud-from-scratch/
-
-    // TODO: replace "add" with"post" or ???
-    this.httpClient.post(`${this.serverUri}/add`, this.fieldReports.fieldReportArray)
-      .subscribe(res => this.log.excessive('Subscription of all reports to httpClient is Done', this.id))
-
-    this.log.verbose("Sent all reports to server (via subscription)...", this.id);
-  }
-
-  // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
-
-  private getFieldReport(id: number) {
-    const index = this.findFieldReportIndex(id);
-    return this.fieldReports.fieldReportArray[index];
-  }
-
-  updateFieldReport_unused(report: FieldReportType) {
-    const index = this.findFieldReportIndex(report.id)
-    this.fieldReports.fieldReportArray[index] = report
-    // TODO: recalc bounds
-    this.updateFieldReportsAndPublish()
-  }
-
-  private deleteFieldReport(id: number) {
-    const index = this.findFieldReportIndex(id);
-    this.fieldReports.fieldReportArray.splice(index, 1);
-    // TODO: recalc bounds
-    this.updateFieldReportsAndPublish();
-    // this.nextId-- // REVIEW: is this desired???
-  }
-
-  private findFieldReportIndex(id: number): number {
-    let i = this.fieldReports.fieldReportArray.findIndex((element) => element.id == id)
-    if (i > -1) {
-      return i
-    }
-    /* for (let i = 0; i < this.fieldReports.fieldReportArray.length; i++) {
-      if (this.fieldReports.fieldReportArray[i].id === id2) {
-        return i
-     }} */
-    throw new Error(`FieldReport with id ${id} was not found!`)
-    // return -1
-  }
-
-
-  //! MUlti-field sort:  data.sort((a, b) => a.city.localeCompare(b.city) || b.price - a.price)
-  private sortFieldReportsByCallsign_unused() {
-    return this.fieldReports.fieldReportArray.sort((n1, n2) => {
-      if (n1.callsign > n2.callsign) { return 1 }
-      if (n1.callsign < n2.callsign) { return -1 }
-      return 0;
-    })
-
-    // let sorted = this.fieldReports.sort((a, b) => a.callsign > b.callsign ? 1 : -1)
-    // this.log.excessive("SortFieldReportsByCallsign...DONE --- BUT ARE THEY REVERSED?!", this.id)
-  }
-
-  private sortFieldReportsByDate_unused() {
-    return this.fieldReports.fieldReportArray.sort((n1, n2) => {
-      if (n1.date > n2.date) { return 1 }
-      if (n1.date < n2.date) { return -1 }
-      return 0;
-    })
-  }
-
-  /*
-  private sortFieldReportsByTeam_unused() {
-    return this.fieldReports.fieldReportArray.sort((n1, n2) => {
-      if (n1.team > n2.team) { return 1 }
-      if (n1.team < n2.team) { return -1 }
-      return 0;
-    })
-  }
-*/
-
-  private filterFieldReportsByDate_unused(beg: Date, end: Date) { // Date(0) = January 1, 1970, 00:00:00 Universal Time (UTC)
-    const minDate = new Date(0)
-    const maxDate = new Date(2999, 0)
-    beg = beg < minDate ? beg : minDate
-    end = (end < maxDate) ? end : maxDate
-
-    return this.fieldReports.fieldReportArray.filter((report) => (report.date >= beg && report.date <= end))
   }
 }
