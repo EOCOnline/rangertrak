@@ -14,7 +14,11 @@
 @import "ag-grid-community/styles/ag-grid.css";
 @import "ag-grid-community/styles/ag-theme-alpine.css";
 
-@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+// The Material indigo-pink theme is already loaded once via angular.json's
+// top-level `styles` array - this used to be a second, redundant load via
+// a webpack/sass-loader-specific `~` tilde import, which esbuild's Sass
+// integration doesn't support anyway (removed during the esbuild builder
+// migration, not just fixed, to avoid loading the same theme CSS twice).
 
 
 // Include the common styles for Angular Material. We include this here so that you only

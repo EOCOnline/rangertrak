@@ -1,6 +1,12 @@
 //@ use '@material/switch/styles';
 
-@import url('https://fonts.googleapis.com/css2?family=Tourney:wght@500;700+family=Jacques+Francois+Shadow&display=swap');
+// Fixed a pre-existing malformed query string here during the esbuild builder
+// migration: `+family=` is invalid between two font families (Google Fonts
+// needs `&family=`; `+` inside a param means "space"). The old webpack Sass
+// loader silently left this external @import alone at runtime; esbuild tries
+// to eagerly inline external stylesheets at build time and failed loudly
+// (400 from Google's API) until this was corrected.
+@import url('https://fonts.googleapis.com/css2?family=Tourney:wght@500;700&family=Jacques+Francois+Shadow&display=swap');
 
 .main {
   margin: 0 1em;

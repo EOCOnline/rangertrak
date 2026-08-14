@@ -37,16 +37,18 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true,
     "fullTemplateTypeCheck": true
-  },
-  "paths": {
-    "@shared/*": [
-      "./src/shared/*"
-    ],
-    "@services/*": [
-      "./src/shared/services/*"
-    ]
   }
   /*
+    Removed during the esbuild builder migration: a `paths` key lived here as
+    a top-level sibling of `compilerOptions` instead of nested inside it, so
+    TypeScript never actually applied it (confirmed via grep - zero files
+    import via `@shared/` or `@services/`). It also pointed at the wrong
+    directories (`./src/shared/*`, missing the `app/` segment - the real path
+    is `src/app/shared/*`), so even nesting it correctly wouldn't have made it
+    usable. Esbuild's tsconfig parser started warning about the misplaced key
+    (the old webpack builder didn't), which is what surfaced this. Deleted
+    rather than fixed, since nothing depends on it.
+
     RE: Typeroots: see https://developers.google.com/maps/documentation/javascript/using-typescript#specifying_typeroots
     Some frameworks such as Angular may require specifying the typeRoots compiler option to include types installed from @types/google.maps and all other "@types" packages
 
