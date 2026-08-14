@@ -1,3 +1,9 @@
+// Leaflet must be *evaluated* before leaflet.markercluster: the plugin is old-style and
+// reads the global `L` at module-evaluation time ("L is not defined" otherwise). This bare
+// side-effect import guarantees that, and sorts ahead of the plugin alphabetically so
+// import-sort cannot undo it. It used to work only by accident, via the eager
+// `import L from 'leaflet'` that FieldReportService no longer has.
+import 'leaflet'
 import 'leaflet.markercluster'
 import { tileLayerOffline } from 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 //import { markerClusterGroup } from 'leaflet'
@@ -239,8 +245,9 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
       // maybe do this further down?!
       this.displayMarkers()
-      this.lMap.fitBounds(this.fieldReports.bounds)
-      //this.lMap.fitBounds()
+      const b = this.fieldReports.bounds
+      // bounds is stored as a plain, serializable BoundsType - Leaflet takes [SW, NE]
+      this.lMap.fitBounds(L.latLngBounds([b.south, b.west], [b.north, b.east]))
     } else {
       this.log.error(`initMainMap() did not have displayReports or fieldReports!`, this.id)
     }

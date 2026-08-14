@@ -10,7 +10,7 @@ export { StoragePersistenceService } from "./storage-persistence.service"
 export { InstallableService } from "./installable.service"
 export { SampleDataService } from "./sample-data.service"
 
-export { FieldReportType, FieldReportsType, FieldReportStatusType, FieldReportSource } from "./field-report.interface"
+export { FieldReportType, FieldReportsType, FieldReportStatusType, FieldReportSource, BoundsType } from "./field-report.interface"
 export { LocationType, undefinedAddressFlag, undefinedLocation } from "./location.interface"
 export { LogLevel, LogLevelNames, LogType, LogHeadings } from "./log.interface"
 export { RangerType, UnknownRanger } from "./ranger.interface"

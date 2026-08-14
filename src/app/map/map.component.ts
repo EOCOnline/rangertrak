@@ -206,7 +206,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
     const b = this.fieldReports.bounds
-    this.map.fitBounds([[b.getWest(), b.getSouth()], [b.getEast(), b.getNorth()]], { padding: 40 })
+    // MapLibre wants [[west, south], [east, north]] as [lng, lat] pairs
+    this.map.fitBounds([[b.west, b.south], [b.east, b.north]], { padding: 40 })
   }
 
   onSwitchSelectedFieldReports(): void {

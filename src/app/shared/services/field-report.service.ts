@@ -1,4 +1,3 @@
-import L, { LatLngBounds } from 'leaflet'
 import { Observable, Observer, of, ReplaySubject, Subscription, throwError } from 'rxjs'
 
 import { HttpClient } from '@angular/common/http'
@@ -150,7 +149,7 @@ export class FieldReportService {
       version: this.settings ? this.settings.version : '0',
       date: new Date(),
       event: this.settings ? this.settings.event : '',
-      bounds: new LatLngBounds([89.9, 179.9], [-89.9, -179.9]), //SW, NE
+      bounds: { north: 89.9, south: -89.9, east: 179.9, west: -179.9 }, // whole world until recalcFieldBounds() runs
       numReport: 0,
       maxId: 0,
       filter: '', // All reports or not? Guard to ensure a subset never gets writen to localstorage?
@@ -189,8 +188,6 @@ export class FieldReportService {
    * Update localStorage with new field reports & notify observers
    */
   private updateFieldReportsAndPublish() {
-    //this.log.excessive(`NEW REPORT AVAILABLE, with E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
-
     // Do any needed sanity/validation here
     if (this.fieldReports.numReport != this.fieldReports.fieldReportArray.length) {
       this.log.error(`this.fieldReports.numReport=${this.fieldReports.numReport} != this.fieldReports.fieldReportArray.length ${this.fieldReports.fieldReportArray.length}`, this.id)
@@ -219,18 +216,14 @@ export class FieldReportService {
     let newReport: FieldReportType = JSON.parse(formData) //"[object Object]" is not valid JSON
     //let newReport: FieldReportType = formData //"[object Object]" is not valid JSON
     newReport.id = this.fieldReports.maxId++
+    this.fieldReports.numReport++
     this.fieldReports.fieldReportArray.push(newReport)
 
-    let newPt = L.latLng(newReport.location.lat, newReport.location.lng)
-    //let newPt = L.latLng(newReport.lat, newReport.lng)
-    if (!newPt) {
-      this.log.error(`newPt = ${JSON.stringify(newPt)}; lat:${newReport.location.lat}, lng: ${newReport.location.lng}`)
-      // newPt is undefined, though newReport.lat, newReport.lng look good...
-      //!BUG: Not a function, entering new FR in Entry Page...
-      //debugger
-    }
-
-    this.fieldReports.bounds.extend({ lat: newReport.location.lat, lng: newReport.location.lng })
+    // Recalculate rather than widen the existing box (this used to call Leaflet's
+    // LatLngBounds.extend()). Two update paths that disagreed - extend() applied no
+    // broadening margin - was D-22; one path means one answer, and the array is small
+    // enough that a full pass costs nothing.
+    this.recalcFieldBounds(this.fieldReports)
 
     this.updateFieldReportsAndPublish() // put to localStorage & update subscribers
     return newReport
@@ -270,20 +263,17 @@ export class FieldReportService {
 
   // ------------------ BOUNDS ---------------------------
 
-  boundsToBound(bounds: LatLngBounds) {
-    this.log.verbose(`Bounds conversion -- E: ${bounds.getEast()};  N: ${bounds.getNorth()};  W: ${bounds.getWest()};  S: ${bounds.getSouth()};  `, this.id)
-    return { east: bounds.getEast(), north: bounds.getNorth(), south: bounds.getSouth(), west: bounds.getWest() }
-  }
-
   /**
    * recalcFieldBounds
+   *
+   * The single place field report bounds are computed. Writes a plain
+   * BoundsType - map engines convert it to their own type at the point of use.
    *
    * @param reports
    * @returns
    */
   recalcFieldBounds(reports: FieldReportsType) {
     this.log.verbose(`recalcFieldBounds got ${reports.fieldReportArray.length} field reports`, this.id)
-    //this.log.excessive(`OLD Value: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
 
     if (!this.settings) {
       this.log.error('this.settings is undefined', this.id)
@@ -344,8 +334,8 @@ export class FieldReportService {
       this.log.info(`recalcFieldBounds BROADENED to N:${north} S:${south} `, this.id)
     }
 
-    reports.bounds = new L.LatLngBounds([[south, west], [north, east]])//SW, NE
-    this.log.excessive(`New bounds: E: ${reports.bounds.getEast()};  N: ${reports.bounds.getNorth()};  W: ${reports.bounds.getWest()};  S: ${reports.bounds.getSouth()};  `, this.id)
+    reports.bounds = { north, south, east, west }
+    this.log.excessive(`New bounds: E: ${east};  N: ${north};  W: ${west};  S: ${south};  `, this.id)
   }
 
   generateFakeData(num: number = 15) {
@@ -392,7 +382,7 @@ export class FieldReportService {
         status: this.settings.fieldReportStatuses[Math.floor(Math.random() * this.settings.fieldReportStatuses.length)].status,
         notes: notes[Math.floor(Math.random() * notes.length)]
       })
-      this.fieldReports.numReport += num
+      this.fieldReports.numReport++
     }
     this.recalcFieldBounds(this.fieldReports)
     this.updateFieldReportsAndPublish()

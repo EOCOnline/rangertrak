@@ -88,7 +88,8 @@ export class MiniMapComponent implements OnInit, OnDestroy {
         this.setCurrentLocationMarker(this._location)
       } else if (this.fieldReports && this.fieldReports.numReport > 0) {
         const b = this.fieldReports.bounds
-        this.map.fitBounds([[b.getWest(), b.getSouth()], [b.getEast(), b.getNorth()]], { padding: 30 })
+        // MapLibre wants [[west, south], [east, north]] as [lng, lat] pairs
+        this.map.fitBounds([[b.west, b.south], [b.east, b.north]], { padding: 30 })
       }
     })
   }

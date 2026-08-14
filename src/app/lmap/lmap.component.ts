@@ -2,6 +2,12 @@
 
 // also: https://github.com/onthegomap/planetiler
 //import { openDB, deleteDB, wrap, unwrp } from 'idb'
+// Leaflet must be *evaluated* before leaflet.markercluster: the plugin is old-style and
+// reads the global `L` at module-evaluation time ("L is not defined" otherwise). This bare
+// side-effect import guarantees that, and sorts ahead of the plugin alphabetically so
+// import-sort cannot undo it. It used to work only by accident, via the eager
+// `import L from 'leaflet'` that FieldReportService no longer has.
+import 'leaflet'
 import 'leaflet.markercluster'
 import { savetiles, tileLayerOffline } from 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 //import { markerClusterGroup } from 'leaflet'
@@ -152,8 +158,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
       //this.onSwitchSelectedFieldReports()
       this.displayMarkers()
-      //! BUG: this.lMap.fitBounds(this.fieldReports.bounds)
-      //this.lMap.fitBounds(: L.LatLngBoundsExpression)
+      // Re-enabled: bounds used to be a Leaflet LatLngBounds that arrived from
+      // localStorage as a plain object, so this threw "Bounds are not valid" and was
+      // commented out - leaving markers off-screen on open. It is now a plain
+      // BoundsType, converted to Leaflet's [SW, NE] form right here.
+      const b = this.fieldReports.bounds
+      this.lMap.fitBounds(L.latLngBounds([b.south, b.west], [b.north, b.east]))
     }
 
     // ! Following is duplicate of that above?!
@@ -280,20 +290,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       // L.svgOverlay(svgElement, svgElementBounds).addTo(this.lMap);
   */
 
-    //! this.fieldReports.bounds.getEast is not a function
     if (!this.fieldReports) {
       this.log.error(`initMainMap(): this.fieldReports is null/undefined!`, this.id)
     } else {
-      this.log.info(`initMainMap() E: ${this.fieldReports.bounds.getEast()};  N: ${this.fieldReports.bounds.getNorth()};  W: ${this.fieldReports.bounds.getWest()};  S: ${this.fieldReports.bounds.getSouth()};  `, this.id)
+      const b = this.fieldReports.bounds
+      this.log.info(`initMainMap() E: ${b.east};  N: ${b.north};  W: ${b.west};  S: ${b.south};  `, this.id)
     }
-    /*
-          core.mjs:6485 ERROR Error: Bounds are not valid.
-        at NewClass.fitBounds (leaflet-src.js:3254:12)
-        at LmapComponent.initMap (lmap.component.ts:216:17)
-        at LmapComponent.ngOnInit (lmap.component.ts:162:10)
-        */
-    // bnd: L.latLngBounds = this.fieldReports.bounds
-    // ! displayedFieldReportArray
 
     this.captureLMoveAndZoom(this.lMap)
 

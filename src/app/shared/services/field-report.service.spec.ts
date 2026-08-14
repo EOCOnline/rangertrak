@@ -143,15 +143,11 @@ describe('FieldReportService', () => {
   });
 
   describe('recalcFieldBounds (bounds calc)', () => {
-    // NOTE: addfieldReport() does NOT call recalcFieldBounds() - it only
-    // calls Leaflet's native LatLngBounds.extend(), which has its own
-    // (correct) min/max unioning and applies no broadening margin. The
-    // custom min/max + broadening logic below lives ONLY in
-    // recalcFieldBounds() itself (called by the constructor and by
-    // generateFakeData()), so it must be exercised directly to actually
-    // test it - which also means calling it directly on a hand-built
-    // FieldReportsType is the correct way to pin the Sprint 0 west-bound
-    // fix (field-report.service.ts recalcFieldBounds: was `>`, now `<`).
+    // recalcFieldBounds() is now the ONLY path that computes bounds - the
+    // second path (Leaflet's LatLngBounds.extend() inside addfieldReport(),
+    // which applied no broadening margin) was D-22 and is gone. Calling it
+    // directly on a hand-built FieldReportsType still pins the Sprint 0
+    // west-bound fix (was `>`, now `<`) most precisely.
     function reportsWith(points: { lat: number, lng: number }[]): FieldReportsType {
       return {
         version: '1', date: new Date(), event: '',
@@ -173,7 +169,7 @@ describe('FieldReportService', () => {
 
       service.recalcFieldBounds(reports);
 
-      expect(reports.bounds.getWest()).toBe(-122.50);
+      expect(reports.bounds.west).toBe(-122.50);
     });
 
     it('expands the east edge to the easternmost (least negative) longitude across reports', () => {
@@ -182,7 +178,7 @@ describe('FieldReportService', () => {
 
       service.recalcFieldBounds(reports);
 
-      expect(reports.bounds.getEast()).toBe(-122.40);
+      expect(reports.bounds.east).toBe(-122.40);
     });
 
     it('tracks north/south correctly across multiple reports', () => {
@@ -191,8 +187,8 @@ describe('FieldReportService', () => {
 
       service.recalcFieldBounds(reports);
 
-      expect(reports.bounds.getNorth()).toBe(47.50);
-      expect(reports.bounds.getSouth()).toBe(47.40);
+      expect(reports.bounds.north).toBe(47.50);
+      expect(reports.bounds.south).toBe(47.40);
     });
 
     it('broadens a too-narrow bounding box to a minimum margin around a single report', () => {
@@ -202,10 +198,10 @@ describe('FieldReportService', () => {
       service.recalcFieldBounds(reports);
 
       // A single point has zero width/height, so the broadening margin must apply.
-      expect(reports.bounds.getEast()).toBeGreaterThan(-122.45);
-      expect(reports.bounds.getWest()).toBeLessThan(-122.45);
-      expect(reports.bounds.getNorth()).toBeGreaterThan(47.45);
-      expect(reports.bounds.getSouth()).toBeLessThan(47.45);
+      expect(reports.bounds.east).toBeGreaterThan(-122.45);
+      expect(reports.bounds.west).toBeLessThan(-122.45);
+      expect(reports.bounds.north).toBeGreaterThan(47.45);
+      expect(reports.bounds.south).toBeLessThan(47.45);
     });
 
     it('centers the bounds on the mission default lat/lng when there are no reports', () => {
@@ -216,7 +212,10 @@ describe('FieldReportService', () => {
 
       // Settings default is (47.4472, -122.4627); with no reports, bounds
       // fall back to that point, broadened by the margin.
-      expect(reports.bounds.contains([47.4472, -122.4627])).toBeTrue();
+      expect(reports.bounds.south).toBeLessThan(47.4472);
+      expect(reports.bounds.north).toBeGreaterThan(47.4472);
+      expect(reports.bounds.west).toBeLessThan(-122.4627);
+      expect(reports.bounds.east).toBeGreaterThan(-122.4627);
     });
   });
 });

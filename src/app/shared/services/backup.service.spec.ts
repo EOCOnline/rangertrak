@@ -130,7 +130,10 @@ describe('BackupService', () => {
       backup.importMission(exported);
 
       const bounds = fieldReports.getCurrentFieldReports().bounds;
-      expect(bounds.contains([48.0, -121.0])).toBeTrue();
+      expect(bounds.south).toBeLessThanOrEqual(48.0);
+      expect(bounds.north).toBeGreaterThanOrEqual(48.0);
+      expect(bounds.west).toBeLessThanOrEqual(-121.0);
+      expect(bounds.east).toBeGreaterThanOrEqual(-121.0);
     });
   });
 
