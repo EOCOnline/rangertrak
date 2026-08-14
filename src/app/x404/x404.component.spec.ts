@@ -8,7 +8,7 @@ describe('X404Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ X404Component ]
+      imports: [ X404Component ]
     })
     .compileComponents();
   });

@@ -8,7 +8,7 @@ describe('MiniGMapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MiniGMapComponent ]
+      imports: [ MiniGMapComponent ]
     })
     .compileComponents();
   });

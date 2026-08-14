@@ -8,7 +8,7 @@ describe('GmapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GmapComponent ]
+      imports: [ GmapComponent ]
     })
     .compileComponents();
   });

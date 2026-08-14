@@ -8,7 +8,7 @@ describe('InstallPromptComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InstallPromptComponent ]
+      imports: [ InstallPromptComponent ]
     })
     .compileComponents();
 

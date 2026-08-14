@@ -8,7 +8,7 @@ describe('IconsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ IconsComponent ]
+      imports: [ IconsComponent ]
     })
     .compileComponents();
   });

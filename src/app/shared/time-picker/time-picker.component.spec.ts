@@ -8,7 +8,7 @@ describe('TimePickerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TimePickerComponent ]
+      imports: [ TimePickerComponent ]
     })
     .compileComponents();
   });

@@ -8,7 +8,7 @@ describe('MiniLMapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MiniLMapComponent ]
+      imports: [ MiniLMapComponent ]
     })
     .compileComponents();
   });

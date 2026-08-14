@@ -8,7 +8,7 @@ describe('LmapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LmapComponent ]
+      imports: [ LmapComponent ]
     })
     .compileComponents();
   });
