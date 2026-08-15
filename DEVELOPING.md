@@ -3,6 +3,7 @@
 Day-to-day developer workflow: running, testing, releasing, and updating dependencies.
 
 - For how the app is put together, see [ARCHITECTURE.md](ARCHITECTURE.md).
+- For hosting, deploys, and the DNS cutover, see [DEPLOYING.md](DEPLOYING.md).
 - For the code of conduct, see [contributing.md](contributing.md).
 - For VS Code workspace setup, see [.vscode/SETUP.md](.vscode/SETUP.md).
 
@@ -134,8 +135,10 @@ static host, provided it:
 - supports HTTP range requests (for the PMTiles basemap), and
 - serves `.mjs` with a JavaScript MIME type (for the MapLibre worker).
 
-Current deployment is a direct upload to <https://RangerTrak.org>. Earlier Firebase-based
-deployment (`ng deploy` / `@angular/fire`) is no longer used.
+<https://RangerTrak.org> is served by a Cloudflare Worker with static assets, deployed
+from `main` by GitHub Actions. **See [DEPLOYING.md](DEPLOYING.md)** for the setup, the
+pre-deploy secret gate, the DNS cutover, and the post-deploy smoke test. Earlier
+Firebase-based deployment (`ng deploy` / `@angular/fire`) is no longer used.
 
 ## Further help
 

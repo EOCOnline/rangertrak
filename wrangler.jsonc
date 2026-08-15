@@ -1,0 +1,26 @@
+{
+  // RangerTrak deploys as a Cloudflare Worker serving static assets only —
+  // no `main`, no server code. See DEPLOYING.md.
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "rangertrak",
+  "compatibility_date": "2026-08-14",
+
+  "assets": {
+    // @angular/build:application writes the browser bundle to dist/<project>/browser.
+    "directory": "./dist/rangertrak/browser",
+
+    // Angular is a SPA with `<base href="/">` and client-side routing, so any
+    // path that isn't a real file must return index.html — otherwise a reload
+    // or a deep link (/entry, /rangers) 404s. Pages guessed at this; Workers
+    // requires it to be explicit.
+    "not_found_handling": "single-page-application"
+
+    // No "binding": that field is only valid alongside a `main` script.
+    // When the feedback endpoint (roadmap §11) lands, add `main` plus
+    // "binding": "ASSETS" and "run_worker_first": ["/api/*"].
+  },
+
+  "observability": {
+    "enabled": true
+  }
+}

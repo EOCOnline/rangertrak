@@ -1,0 +1,26 @@
+# Cloudflare Workers static-asset headers.
+# Copied to the output root by the `assets` entry in angular.json.
+#
+# Only the files that MUST NOT be cached are listed. Everything else keeps
+# Cloudflare's default ETag revalidation, which is already correct for the
+# hash-named bundles (main-XXXX.js, chunk-XXXX.js, styles-XXXX.css) since a
+# new build produces a new filename.
+#
+# These four are the service-worker control plane. If any of them is served
+# stale, browsers keep running the previous release forever — the exact
+# failure that masked the dead IONOS origin from existing users in 2026-08.
+
+/index.html
+  Cache-Control: no-cache
+
+/ngsw.json
+  Cache-Control: no-cache
+
+/ngsw-worker.js
+  Cache-Control: no-cache
+
+/safety-worker.js
+  Cache-Control: no-cache
+
+/manifest.webmanifest
+  Cache-Control: no-cache

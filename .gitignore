@@ -77,3 +77,7 @@ Thumbs.db
 .env
 node_modules
 src/app/shared/policies.json
+
+# Cloudflare Workers - local wrangler state and local secret overrides
+.wrangler
+.dev.vars*

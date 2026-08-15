@@ -38,6 +38,15 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['Chrome'],
+    // For CI: a GitHub runner has no sandbox namespace available, so plain
+    // ChromeHeadless exits immediately there. Used by .github/workflows/deploy.yml
+    // via --browsers=ChromeHeadlessCI.
+    customLaunchers: {
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
+      }
+    },
     singleRun: false,
     restartOnFileChange: true
   });

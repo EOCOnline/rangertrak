@@ -1,0 +1,55 @@
+# Build RangerTrak and deploy it to Cloudflare Workers as a static-asset Worker.
+name: Deploy to Cloudflare
+
+on:
+  push:
+    branches: [main]
+  # Manual runs, so a deploy can be triggered without pushing a commit.
+  workflow_dispatch:
+
+# Never let two deploys race; queue them instead.
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # `ng build` compiles only *reachable* files, so it is not a typecheck - an
+      # unreferenced file can carry errors indefinitely while builds stay green.
+      # See the Testing section of DEVELOPING.md.
+      - name: Typecheck
+        run: npm run lint:tsc
+
+      # The suite is expected to be all green (80 specs). Deploying past a red
+      # suite to an emergency-response tool is not a trade worth making.
+      - name: Unit tests
+        run: npm test -- --watch=false --browsers=ChromeHeadlessCI
+
+      - name: Build
+        run: npm run build
+
+      # Roadmap section 9e: keys are still inlined into main-XXXX.js by the
+      # secrets.json import in settings.service.ts. This fails the job rather
+      # than republishing them. See tools/check-no-secrets.js.
+      - name: Check for API keys in the build
+        run: npm run check:secrets
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
