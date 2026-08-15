@@ -56,18 +56,29 @@
   font-weight: reset;
 }
 
+// Was `position: absolute; right: 0`, which took this out of the flex row entirely so it
+// sat ON TOP of whatever nav items reached that far. At ~1360px "About" and "Log" were
+// rendering underneath the Install button. `margin-left: auto` pushes it right while still
+// participating in layout, so the row shrinks instead of overlapping.
 .rightAlign {
-  position: absolute;
-  right   : 0px;
+  display    : flex;
+  align-items: center;
+  margin-left: auto;
+  flex       : 0 0 auto;
 }
 
+// Was a pale cyan from no palette at 0.75 opacity, which put near-white chrome ink on a
+// light background - the washed-out look in the 0.15.0 captures.
 .installBtn {
-  background-color: rgb(147, 227, 227);
-  padding         : 5px;
-  margin-bottom   : 5px;
-  border-radius   : 10px;
+  display         : inline-flex;
+  align-items     : center;
+  gap             : 0.25em;
+  background-color: var(--rt-accent);
+  color           : var(--rt-accent-ink);
+  padding         : 0.25em 0.6em;
+  border-radius   : var(--rt-radius);
   cursor          : pointer;
-  opacity         : 0.75;
+  white-space     : nowrap;
 }
 
 .installMe_unused {

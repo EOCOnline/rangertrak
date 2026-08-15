@@ -46,13 +46,16 @@
   <!--================================================-->
   <span class="rightAlign">
 
-    <span *ngIf=isInstallable onclick="onInstallBtn()" class="installBtn"
-      title="Installing uses almost no storage and provides off-line mapping and a quick way to return to RangerTrak!">
-      <!-- button mat-button class="installMe">buggy button!</button-->
-      &nbsp;
-      <img src="../../assets/icons/install.png" height="18px" width="18px" alt="install icon" />
-      <span> Install&nbsp;</span>
-    </span>
+    <!-- E-37: was `*ngIf=isInstallable onclick="onInstallBtn()"` - shown always, and the
+         click resolved against window, where no such function exists. Now a real button,
+         gated on the browser actually offering installation. -->
+    @if (isInstallable) {
+    <button type="button" (click)="onInstallBtn()" class="installBtn"
+      title="Install RangerTrak on this device: uses almost no storage, works offline, and gives you an icon to return to.">
+      <img src="../../assets/icons/install.png" height="18px" width="18px" alt="" aria-hidden="true" />
+      <span>Install</span>
+    </button>
+    }
     &nbsp;
     <a href=" https://github.com/EOCOnline/rangertrak" target="_blank"
       title="See ya at GitHub for issue reports & source code" class="git">

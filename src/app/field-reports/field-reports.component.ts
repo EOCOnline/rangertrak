@@ -234,12 +234,15 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
   // -------------------------------------------------------------------------
 
-  // On hovering, display a larger image!
-  //  { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, tooltipField: "image", tooltipComponentParams: { color: '#ececec' }, flex: 5 },
-  imageCellRenderer_unused = (params: { data: FieldReportType }) => {
-    return `<img class="licenseImg" style="height:40px; width:40px;" alt= "Image of ${params.data.callsign}"
-      src= "${this.settings.imageDirectory}rangers/${params.data.callsign}">`
-  }
+  // REMOVED: imageCellRenderer_unused. It was wired to no column, and would not have
+  // worked if it had been - it built `src=".../rangers/${callsign}"`, a path with no file
+  // extension, so every image would have 404'd. Dead code that also lied about being
+  // ready to use.
+  //
+  // Showing the reporter's photo on this grid is a reasonable idea (E-38 now has the
+  // machinery: RangerPhotoService.photoUrl(callsign) plus the androgynous fallback), but
+  // it adds a column to a grid that is already wide, so it is a product decision rather
+  // than a revival of this.
 
   statusCellRenderer = (params: { data: FieldReportType }) => {
     let title = `Status: ${params.data.status}`

@@ -1,4 +1,5 @@
 import { ColDef, GridOptions } from 'ag-grid-community'
+import { unzipSync } from 'fflate'
 //import { TooltipModule } from 'ng2-tooltip-directive'
 import { Subscription } from 'rxjs'
 
@@ -289,6 +290,99 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // These two do the roster and nothing else.
 
   /**
+   * Imports a roster bundle zip: `roster.json` plus a `photos/` folder, which is what
+   * PRIVATE-captures/roster-build/2-make-drive-bundle.js produces.
+   *
+   * Deliberately tolerant about the layout - entries are found by basename at any depth, so
+   * it does not matter whether the operator zipped the folder or its contents, which is the
+   * single most common way a hand-made zip differs from the expected one.
+   *
+   * Roster and photos are applied together, after one confirmation, because a half-applied
+   * bundle (photos for a roster that was not replaced) is confusing in a way neither half
+   * is on its own.
+   */
+  private async importRosterBundle(file: File) {
+    let entries: Record<string, Uint8Array>
+    try {
+      const buf = new Uint8Array(await file.arrayBuffer())
+      entries = unzipSync(buf)
+    } catch (error: any) {
+      this.log.error(`Could not read ${file.name} as a zip: ${error.message}`, this.id)
+      alert(`Could not read "${file.name}" as a zip file.\n\n${error.message}`)
+      return
+    }
+
+    // Split on BOTH separators. The zip spec (APPNOTE 4.4.17.1) requires forward slashes,
+    // but Windows PowerShell's Compress-Archive writes backslashes - "photos\K7VMI.jpg" -
+    // and that is exactly the tool a volunteer on Windows will reach for. Splitting on '/'
+    // alone turned every photo's name into "photos\K7VMI", which matched no callsign, so
+    // the roster imported and all 30 photos were silently reported as unmatched.
+    const base = (p: string) => p.split(/[/\\]/).pop() || ''
+    const rosterKey = Object.keys(entries).find(k => base(k).toLowerCase() === 'roster.json')
+    if (!rosterKey) {
+      alert(`"${file.name}" does not contain a roster.json.\n\n`
+        + `Expected a zip holding roster.json and a photos/ folder.`)
+      return
+    }
+
+    let incoming: RangerType[]
+    try {
+      incoming = this.rangerService.parseRosterJson(new TextDecoder().decode(entries[rosterKey]))
+    } catch (error: any) {
+      this.log.error(`Bundle ${file.name} has an unusable roster.json: ${error.message}`, this.id)
+      alert(`"${file.name}" contains a roster.json that could not be read.\n\n${error.message}`)
+      return
+    }
+
+    // Any image in the archive, at any depth. Being strict about a `photos/` folder only
+    // rejects bundles that are otherwise perfectly usable - and a zip of images with no
+    // roster is handled by the "no roster.json" check above.
+    const photoEntries = Object.keys(entries)
+      .filter(k => !/[/\\]$/.test(k) && /\.(jpe?g|png|gif|webp|svg)$/i.test(base(k)))
+
+    const current = this.rangerService.rangers.length
+    const warnings = this.rangerService.rosterWarnings(incoming)
+    warnings.forEach(w => this.log.warn(`Bundle import warning (${file.name}): ${w}`, this.id))
+
+    if (!confirm(
+      `Import from "${file.name}"?\n\n`
+      + `  ${incoming.length} rangers\n`
+      + `  ${photoEntries.length} photos\n\n`
+      + (warnings.length ? `Note:\n  - ${warnings.join('\n  - ')}\n\n` : '')
+      + `This REPLACES the current roster of ${current}. Field reports and settings are not `
+      + `affected. Photos are stored on this device only.`)) {
+      this.log.verbose('importRosterBundle: user cancelled.', this.id)
+      return
+    }
+
+    this.rangerService.replaceAllRangers(incoming)
+
+    const files = photoEntries.map(k =>
+      new File([new Uint8Array(entries[k])], base(k), { type: this.mimeFor(base(k)) }))
+    const { stored, unmatched } = await this.photos.importFiles(
+      files, incoming.map(r => r.callsign))
+
+    this.log.warn(`Imported ${incoming.length} rangers and ${stored.length} photos from ${file.name}.`, this.id)
+
+    const lines = [`Imported ${incoming.length} rangers and ${stored.length} photos.`]
+    if (unmatched.length) {
+      lines.push('', `${unmatched.length} photo${unmatched.length === 1 ? '' : 's'} did not match a callsign and were skipped.`)
+    }
+    lines.push('', 'Reloading so every screen picks them up...')
+    alert(lines.join('\n'))
+    this.reloadPage()
+  }
+
+  private mimeFor(name: string): string {
+    const ext = (name.match(/\.([a-z0-9]+)$/i)?.[1] || '').toLowerCase()
+    return ext === 'png' ? 'image/png'
+      : ext === 'gif' ? 'image/gif'
+        : ext === 'webp' ? 'image/webp'
+          : ext === 'svg' ? 'image/svg+xml'
+            : 'image/jpeg'
+  }
+
+  /**
    * Stores photographs on this device, matched to rangers by filename = callsign.
    * They never enter the repo or a server (D-35); they are operator data.
    */
@@ -360,6 +454,15 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     input.value = '' // so re-picking the same file still fires a change event
 
     if (!file) {
+      return
+    }
+
+    // A .zip is the thumb-drive bundle: roster AND photos in one action. The two-step
+    // (import roster, then multi-select the photos) still works, but handing a volunteer
+    // one file to pick is the difference between a setup that happens and one that does
+    // not.
+    if (/\.zip$/i.test(file.name) || file.type === 'application/zip') {
+      this.importRosterBundle(file)
       return
     }
 

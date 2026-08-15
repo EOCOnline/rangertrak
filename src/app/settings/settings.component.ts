@@ -223,7 +223,9 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
   */
   ]
 
-  isInstallable = false
+  /** E-37: reads through to the one service that knows. Getter, not a field, so it is not
+   *  evaluated before the constructor's parameter properties exist. */
+  get isInstallable(): boolean { return this.installableService.installable() }
 
   fonts = ["'Open Sans'", "Montserrat", "Roboto", "'Playfair Display'", "Lato", "Merriweather", "Helvetica", "Lora", "'PT Serif'", "Spectral", "'Times New Roman'", "'Akaya Telivigala'",
     "'Open Sans Condensed'", "'Saira Extra Condensed'", "Boogaloo", "Anton", "'Faster One'", "'Arima Madurai'"]  //, "'Material Icons'"]  all loaded in Index.html
@@ -278,9 +280,9 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     // timeSubscription1$ =
     //timeSubscription2$ =
 
-    if (installableService.installableEvent) {
-      this.isInstallable = true
-    }
+    // E-37: `installableEvent` used to start as a truthy `1`, so this set isInstallable
+    // true on construction, before any browser had offered anything. The service now owns
+    // that state and `isInstallable` reads through to it.
 
     this.pangram = this.getPangram()
     //this.log.verbose('Settings set to static values. But not initialized???', this.id)
@@ -358,9 +360,10 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     //this.timepickerFormControl is where the Event comes up from...
   }
 
-  onInstallBtn() {
-    this.log.verbose(`onInstallBtn: Install Application!`, this.id)
-    //!BUG: Unimplemented!!!
+  async onInstallBtn() {
+    this.log.verbose(`onInstallBtn: user asked to install the app`, this.id)
+    const outcome = await this.installableService.promptInstall()
+    this.log.info(`Install prompt outcome: ${outcome}`, this.id)
   }
 
   onBtnResetDefaults() {

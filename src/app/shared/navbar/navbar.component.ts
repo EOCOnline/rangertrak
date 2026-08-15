@@ -24,7 +24,13 @@ export class NavbarComponent implements OnInit {
   private settings!: SettingsType
   private id = 'Navbar Component'
 
-  isInstallable = false
+  /**
+   * Reads through to the service, which is the only thing that knows (E-37). A getter
+   * rather than a field, because a field initializer runs before the constructor's
+   * parameter properties exist, so `this.installableService` would be undefined there.
+   */
+  get isInstallable(): boolean { return this.installableService.installable() }
+
   isNavigating = false
   faMapMarkedAlt = faMapMarkedAlt
   recycled = 0
@@ -65,9 +71,9 @@ export class NavbarComponent implements OnInit {
       }
     )
 
-    if (installableService.installableEvent) {
-      this.isInstallable = true
-    }
+    // E-37: `installableEvent` used to start as a truthy `1`, so this set isInstallable
+    // true on construction - before any browser had offered installation, and even on a
+    // device where the app was already installed. The service owns that state now.
 
     /* REVIEW: unused?!
     const topAppBarElement = document.querySelector('.mdc-top-app-bar')
@@ -88,17 +94,9 @@ export class NavbarComponent implements OnInit {
   }
 
 
-  onInstallBtn2() {
-    this.log.error("onInstallBtn onInstallBtn onInstallBtn onInstallBtn UNIMPLEMENTED!!!!!!!!!!!!!!!!!!!!!!", this.id)
-  }
-
-  onInstallBtn() {
-    this.log.info("User wants to install app!", this.id)
-
-    // From Angular Cookbook, pg 592
-    // https://web.dev/customize-install
-    // https://github.com/WICG/manifest-incubations
-
-    //! TODO: Implement me!!!
+  async onInstallBtn() {
+    this.log.info("User asked to install the app", this.id)
+    const outcome = await this.installableService.promptInstall()
+    this.log.info(`Install prompt outcome: ${outcome}`, this.id)
   }
 }

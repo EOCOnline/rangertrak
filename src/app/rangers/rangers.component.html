@@ -134,10 +134,10 @@
       <span class="roster-transfer__label">Roster:</span>
 
       <label for="importRosterFile" class="roster-transfer__import"
-        title="Replace the roster from a JSON file. Field reports and settings are not affected.">
-        Import roster (JSON)</label>
-      <input #importRosterFile id="importRosterFile" type="file" accept="application/json,.json"
-        (change)="onRosterFileSelected($event)" hidden />
+        title="Replace the roster from a JSON file, or load a bundle zip containing roster.json and a photos/ folder. Field reports and settings are not affected.">
+        Import roster (JSON or ZIP)</label>
+      <input #importRosterFile id="importRosterFile" type="file"
+        accept="application/json,.json,application/zip,.zip" (change)="onRosterFileSelected($event)" hidden />
 
       <button (click)="onBtnExportRangersJson()"
         title="Download just the roster as JSON - the file Import roster expects">
