@@ -6,4 +6,6 @@
 </div>
 
 <rangertrak-footer></rangertrak-footer>
-<button (click)="addToHomeScreen()" *ngIf="showButton">Add to Home Scree</button>
+@if (showButton) {
+  <button (click)="addToHomeScreen()">Add to Home Screen</button>
+}
