@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.6](https://github.com/EOCOnline/rangertrak/compare/v0.15.5...v0.15.6) (2026-08-15)
+
+
+### Features
+
+* **rangers:** one-step bundle import, and make the Install buttons real ([d801433](https://github.com/EOCOnline/rangertrak/commit/d801433d02adb5da4e693ceda037aa59e1cb802f))
+
 ### [0.15.5](https://github.com/EOCOnline/rangertrak/compare/v0.15.4...v0.15.5) (2026-08-15)
 
 
