@@ -3,10 +3,11 @@ import { ColDef, GridOptions } from 'ag-grid-community'
 import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { AgGridAngular } from 'ag-grid-angular';
-import { HeaderComponent } from '../shared/header/header.component';
+import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
+import { PageComponent } from '../shared/page/page.component';
 
 import { Utility } from '../shared'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
@@ -21,7 +22,7 @@ import { CustomTooltip } from './customTooltip'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, HeaderComponent],
+  imports: [CommonModule, AgGridAngular, PageComponent, DisclosureComponent],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
@@ -52,7 +53,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   private static readonly PRIVACY_DISMISSED_KEY = 'rangertrak.rangers.privacyNoticeDismissed'
   privacyNoticeDismissed = false
 
-  @ViewChild('privacyDetails') private privacyDetails?: ElementRef<HTMLDetailsElement>
+  @ViewChild('privacyDetails') private privacyDetails?: DisclosureComponent
 
   numSeperatorWarnings = 0
   maxSeperatorWarnings = 3
@@ -372,13 +373,11 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openPrivacyDetails() {
-    const el = this.privacyDetails?.nativeElement
-    if (!el) {
-      this.log.warn('openPrivacyDetails(): no #privacyDetails element', this.id)
+    if (!this.privacyDetails) {
+      this.log.warn('openPrivacyDetails(): no #privacyDetails disclosure', this.id)
       return
     }
-    el.open = true
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    this.privacyDetails.reveal()
   }
 
   //--------------------------------------------------------------------------

@@ -11,7 +11,8 @@ import { buildPmtilesStyle, registerPmtilesProtocol } from '../shared/mapping/ma
 import {
   FieldReportsType, FieldReportService, FieldReportType, LogService, SettingsService, SettingsType
 } from '../shared/services'
-import { HeaderComponent } from '../shared/header/header.component'
+import { DisclosureComponent } from '../shared/disclosure/disclosure.component'
+import { PageComponent } from '../shared/page/page.component'
 import { Utility } from '../shared'
 
 const REPORTS_SOURCE_ID = 'field-reports'
@@ -24,7 +25,7 @@ const REPORTS_SOURCE_ID = 'field-reports'
 @Component({
   selector: 'rangertrak-map',
   standalone: true,
-  imports: [HeaderComponent],
+  imports: [PageComponent, DisclosureComponent],
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager

@@ -10,7 +10,9 @@ import {
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 
-import { HeaderComponent, TimePickerComponent } from '../shared/'
+import { TimePickerComponent } from '../shared/'
+import { DisclosureComponent } from '../shared/disclosure/disclosure.component'
+import { PageComponent } from '../shared/page/page.component'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import {
   BackupService, FieldReportService, FieldReportStatusType, InstallableService, LogService, RangerService,
@@ -33,7 +35,8 @@ import { MATERIAL_IMPORTS } from '../material-imports'
     ReactiveFormsModule,
     ...MATERIAL_IMPORTS,
     AgGridModule,
-    HeaderComponent,
+    PageComponent,
+    DisclosureComponent,
     TimePickerComponent,
   ],
   templateUrl: './settings.component.html',

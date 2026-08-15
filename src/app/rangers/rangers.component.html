@@ -23,8 +23,7 @@
 </div>
 </div-->
 
-<pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
-<section class="main">
+<rangertrak-page [title]="title" [description]="pageDescr">
 
   <!-- The full confidentiality notice used to sit here as a permanent block that pushed
        the roster down the page on every single visit. It is now a dismissable bar, with
@@ -46,8 +45,7 @@
   </aside>
   }
 
-  <details>
-    <summary class="big">Instructions</summary>
+  <rangertrak-disclosure summary="Instructions">
     This list of participants was taken from the FCC Database February 3, 2022. <br />
     It has been significantly reformatted and your edits may alter it further.<br />
     To maintain these changes between browser sessions, a button in the Advanced sectino
@@ -79,12 +77,11 @@
         quoting it doesn't show up, so isn't working - yet.
       </li>
     </ul>
-  </details>
+  </rangertrak-disclosure>
 
   <!-- The full text the bar above summarises. Collapsed by default so it costs nothing
        on a normal visit; the bar's "What this means" opens it and scrolls here. -->
-  <details id="rangers-privacy" #privacyDetails>
-    <summary class="big">Privacy &amp; data handling</summary>
+  <rangertrak-disclosure #privacyDetails summary="Privacy & data handling">
     <p>
       This roster holds personal data: legal names, home addresses, personal phone
       numbers and photos, alongside call signs that tie each row to a named,
@@ -105,7 +102,7 @@
         mission is over. Follow your agency's policy on handling participant data.
       </li>
     </ul>
-  </details>
+  </rangertrak-disclosure>
   <br />
 
   <!-- https://www.ag-grid.com/javascript-data-grid/component-tooltip/
@@ -153,8 +150,7 @@
     </button>
     <br />
     <br />
-    <details>
-      <summary><span class="big" id="Advanced">Advanced</span></summary>
+    <rangertrak-disclosure summary="Advanced">
 
       If no rangers exist, or you would like to replace those shown above, either:
       <ol>
@@ -195,7 +191,7 @@
         </button>
         <!--button (click)="onBtnReloadPage()" type="button">Reload Page</button-->
       </div>
-    </details>
+    </rangertrak-disclosure>
 
     <br />
     <div>
@@ -206,4 +202,4 @@
       looking available.
     </div>
   </div>
-</section>
+</rangertrak-page>

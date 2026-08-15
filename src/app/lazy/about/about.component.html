@@ -1,4 +1,5 @@
-<section id="AboutBody" class="main">
+<rangertrak-page [showHeader]="false">
+  <div class="about-backdrop">
   <!-- <H1 split-by="word" word-animation="trampoline"> -->
   <!-- <h1 split-by="word" word-animation="hover"> -->
   <!-- <h1 split-by="letter" letter-animation="hover" -->
@@ -48,8 +49,7 @@
       <a href="https://github.com/EOCOnline/RangerTrak" target="_blank">https://github.com/EOCOnline/RangerTrak</a>.
     </p>
 
-    <details>
-      <summary>Technologies</summary>
+    <rangertrak-disclosure summary="Technologies">
       <small>
         <ul>
           <li>Progressive Web App (PWA): after the initial load, installable & runs w/o Internet</li>
@@ -71,11 +71,11 @@
           <li>Data passed to servers (when Internet connectivity allows) for remote display of data & maps</li>
         </ul>
       </small>
-    </details>
+    </rangertrak-disclosure>
     <br>
-    <details>
-      <summary>©2019&ndash;{{today | date: 'y'}} <a href="https://eoc.online/" target="_blank">eoc.online</a>, under the
-        GNU Affero General Public License v3</summary>
+    <rangertrak-disclosure emphasis="plain">
+      <span rtSummary>©2019&ndash;{{today | date: 'y'}} <a href="https://eoc.online/" target="_blank">eoc.online</a>,
+        under the GNU Affero General Public License v3</span>
       <small>
         <p class="indented">
           RangerTrak is free software: you can redistribute it and/or modify it under the
@@ -104,7 +104,7 @@
           available under those terms.
         </p>
       </small>
-    </details>
+    </rangertrak-disclosure>
   </div>
   <br />
   <div>
@@ -117,5 +117,6 @@
     Enter - Activate the focused menu item.<br />
     Escape - Close all open menus.<br />
   </div>
-  <div class="imgCredit">Photo credit: Shocked Marmot from Vistapoint.net, by ___</div>
-</section>
+    <div class="imgCredit">Photo credit: Shocked Marmot from Vistapoint.net, by ___</div>
+  </div>
+</rangertrak-page>

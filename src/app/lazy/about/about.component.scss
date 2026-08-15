@@ -1,7 +1,4 @@
-.main {
-  // margin: 0 1em;
-  padding: 0 1em;
-}
+// `.main` now lives in PageComponent - see shared/page/page.component.scss.
 
 // Sprint B (25a item 1): the marmot stays - About is prose and can carry a photograph -
 // but it was painted with a `to bottom` scrim that ended at rgba(8,8,8,0.5) while the text
@@ -10,14 +7,14 @@
 //
 // Now the image is a fixed, low-opacity wash on its own layer and the text is plain token
 // ink, which means it also survives dark mode instead of staying black on a dark ground.
-#AboutBody {
+.about-backdrop {
   position        : relative;
   isolation       : isolate;
   color           : var(--rt-ink);
   background-color: var(--rt-ground);
 }
 
-#AboutBody::before {
+.about-backdrop::before {
   content            : "";
   position           : absolute;
   inset              : 0;

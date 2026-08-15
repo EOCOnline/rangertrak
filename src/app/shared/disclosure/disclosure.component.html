@@ -1,0 +1,7 @@
+<details #details [open]="open">
+  <summary [class.disclosure__summary--strong]="emphasis === 'strong'">{{ summary }}<ng-content
+      select="[rtSummary]"></ng-content></summary>
+  <div class="disclosure__body">
+    <ng-content></ng-content>
+  </div>
+</details>

@@ -1,6 +1,4 @@
-<pageHeader [parentTitle]="title" [pageDescription]="pageDescr"></pageHeader>
-
-<section class="main">
+<rangertrak-page [title]="title" [description]="pageDescr">
   <div>Offline-capable map (MapLibre + PMTiles). Detailed coverage is limited to the
     bundled pilot region today; panning further out shows background only.</div>
 
@@ -21,8 +19,7 @@
   <label for="selectedFieldReportsPmtiles">Just those ({{numSelectedRows}}) selected in the Field Report
     panel</label>
 
-  <details>
-    <summary>Instructions</summary>
+  <rangertrak-disclosure summary="Instructions">
     <ul>
       <li>This displays All Field Reports for All Rangers, by default.</li>
       <li>If a subset of Field Reports are selected on the Field Reports page, then those
@@ -30,5 +27,5 @@
       <li>Click on the map to store the lat/long coordinates in the clipboard.</li>
       <li>Nearby reports are grouped into clusters; click a cluster to zoom in.</li>
     </ul>
-  </details>
-</section>
+  </rangertrak-disclosure>
+</rangertrak-page>

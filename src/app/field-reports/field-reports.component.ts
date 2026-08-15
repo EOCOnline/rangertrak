@@ -10,7 +10,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
 import { AgGridAngular } from 'ag-grid-angular';
-import { HeaderComponent } from '../shared/header/header.component';
+import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
+import { PageComponent } from '../shared/page/page.component';
 
 import { Utility } from '../shared'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
@@ -38,7 +39,8 @@ export class myUnusedPipe implements PipeTransform {
     MatFormFieldModule,
     MatInputModule,
     MatSliderModule,
-    HeaderComponent
+    PageComponent,
+    DisclosureComponent
   ],
   templateUrl: './field-reports.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

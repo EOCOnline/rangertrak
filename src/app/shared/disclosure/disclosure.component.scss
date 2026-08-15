@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+summary {
+  cursor       : pointer;
+  padding      : 0.15em 0.25em;
+  border-radius: var(--rt-radius);
+  // Below the 44px floor on purpose: this is a heading you click, not a field control,
+  // and giving every one of twelve disclosures a 44px row would push page content down.
+  min-height   : 1.75em;
+}
+
+// Was `.big` (font-size: larger; font-weight: bold), restated in four stylesheets.
+.disclosure__summary--strong {
+  font-size  : larger;
+  font-weight: bold;
+}
+
+summary:focus-visible {
+  outline       : 2px solid var(--rt-accent);
+  outline-offset: 1px;
+}
+
+.disclosure__body {
+  padding-left: 0.25em;
+}

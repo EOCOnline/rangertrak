@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  color  : var(--rt-ink);
+}
+
+// The single copy of what used to be eight. Settings' variant was `0 0 0 1em`; the
+// difference was not deliberate, so it is unified here.
+.main {
+  margin: 0 1em;
+}

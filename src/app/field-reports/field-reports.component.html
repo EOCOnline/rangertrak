@@ -1,7 +1,5 @@
-<pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
-<section class="main">
-  <details>
-    <summary class="big">Tips</summary>
+<rangertrak-page [title]="title" [description]="pageDescr">
+  <rangertrak-disclosure summary="Tips">
     <ul>
       <li style="color: red">
         If recent reports do NOT show up, refresh page or switch to another view & back: Let
@@ -24,7 +22,7 @@
       <li>Save data grid to CSV file. Comma seperated works best for Excel importing.</li>
       <li>FUTURE: Import from Excel.</li>
     </ul>
-  </details>
+  </rangertrak-disclosure>
   <br />
 
   <div id="reportsgrid">
@@ -82,10 +80,7 @@
 
 
     <br />
-    <details>
-      <summary>
-        <span class="big" id="Advanced">Advanced</span>
-      </summary>
+    <rangertrak-disclosure summary="Advanced">
       <div>
         [To be removed - should happen automatically] Force field reports refresh:
         <button (click)="refreshGrid()">Refresh Grid</button>
@@ -125,6 +120,6 @@
           <!--For Now: Click on rangers page, then back to this page to refresh view... -->
         </section>
       </div>
-    </details>
+    </rangertrak-disclosure>
   </div>
-</section>
+</rangertrak-page>

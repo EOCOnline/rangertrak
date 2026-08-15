@@ -1,6 +1,4 @@
-<pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
-
-<section class="main">
+<rangertrak-page [title]="title" [description]="pageDescr">
   <div class="lmap-container">
     <div class="lmap-frame">
       <div #mapContainer id="lmap-main" (click)="onMouseClick($event)"></div>
@@ -21,8 +19,7 @@
   <label for="selectedFieldReports">Just those ({{numSelectedRows}}) selected in the Field Report panel</label>
 
   <br />
-  <details>
-    <summary>Instructions</summary>
+  <rangertrak-disclosure summary="Instructions">
     <ul>
       <li>This displays All Field Reports for All Rangers, by default.</li>
       <li>
@@ -32,5 +29,5 @@
       <li>Click on the main leaflet map to store the lat/long coordinates in the clipboard.
       </li>
     </ul>
-  </details>
-</section>
+  </rangertrak-disclosure>
+</rangertrak-page>

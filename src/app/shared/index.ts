@@ -1,7 +1,9 @@
 
 export { Utility } from "./utility"
 export { AlertsComponent } from "./alerts/alerts.component"
+export { DisclosureComponent } from "./disclosure/disclosure.component"
 export { HeaderComponent } from "./header/header.component"
+export { PageComponent } from "./page/page.component"
 export { IconsComponent } from "./icons/icons.component"
 export { FooterComponent } from "./footer/footer.component"
 export { InstallPromptComponent } from "./install-prompt/install-prompt.component"

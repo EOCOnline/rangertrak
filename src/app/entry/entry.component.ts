@@ -19,7 +19,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 // Specific paths, not the '../shared/' barrel - see the note in location.component.ts.
 import { Utility } from '../shared/utility'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
-import { HeaderComponent } from '../shared/header/header.component'
+import { PageComponent } from '../shared/page/page.component'
 import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
 import { DDToDDM } from '../shared/mapping/coordinate'
 import {
@@ -43,7 +43,7 @@ import { MiniLMapComponent } from './mini-lmap.component'
     FormsModule,
     ReactiveFormsModule,
     ...MATERIAL_IMPORTS,
-    HeaderComponent,
+    PageComponent,
     TimePickerComponent,
     LocationComponent,
     MiniLMapComponent,

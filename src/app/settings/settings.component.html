@@ -1,5 +1,4 @@
-<pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
-<section id="SettingsBody" class="main">
+<rangertrak-page [title]="title" [description]="pageDescr">
 
   <div *ngIf=isInstallable class="installMe">
     Install application on this browser to...
@@ -20,8 +19,7 @@
 
   <form [formGroup]="settingsEditorForm" (ngSubmit)="onFormSubmit()">
     <br />
-    <details>
-      <summary>Instructions</summary>
+    <rangertrak-disclosure summary="Instructions">
       <ul>
         <li>
           When starting a new event:
@@ -66,7 +64,7 @@
         <li>FUTURE: <div id="hatchRect">Circle Hatching from https://codepen.io/JohnsPen/pen/jOYvOOq ?</div>
         </li>
       </ul>
-    </details>
+    </rangertrak-disclosure>
 
 
     <!-- ======================================= -->
@@ -112,8 +110,7 @@
     <!-- ======================================= -->
     <h2>Location Defaults</h2>
     <!--legend>Default </legend-->
-    <details>
-      <summary><span class="strong">Location Guidance</span></summary>
+    <rangertrak-disclosure summary="Location Guidance">
       <ul>
         <li>Enter Lat & Long, which will be used as initial/default values in the entry form.</li>
         <li><a href="https://maps.google.com/pluscodes/" target="_blank">PlusCodes</a> uses the Plus Code value
@@ -127,7 +124,7 @@
           centroid of all points entered and the map is then zoomed to show all points.
         </li>
       </ul>
-    </details>
+    </rangertrak-disclosure>
 
     <div class="input-group">
       <span class="strong">Latitude: &nbsp;</span>
@@ -348,8 +345,7 @@
     <br />
 
     <!-- ======================================= -->
-    <details>
-      <summary><span class="big">Advanced Options</span></summary>
+    <rangertrak-disclosure summary="Advanced Options">
       <span class="strong">At the start of a new Incident or Exercise edit the settings above, <br />
         or just reset all settings to their default value:
       </span>
@@ -425,6 +421,6 @@
           {{font}}: <span style="font-family: {{font}};">{{pangram}}</span>
         </li>
       </ul>
-    </details>
+    </rangertrak-disclosure>
   </form>
-</section>
+</rangertrak-page>

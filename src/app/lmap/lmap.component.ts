@@ -23,7 +23,8 @@ import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit,
 import { AbstractMap, Utility } from '../shared'
 import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
 
-import { HeaderComponent } from '../shared/header/header.component';
+import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
+import { PageComponent } from '../shared/page/page.component';
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // Markers are copied into project via virtue of angular.json: search it for leaflet!!!
@@ -54,7 +55,7 @@ L.Marker.prototype.options.icon = iconDefault;
 @Component({
   selector: 'rangertrak-lmap',
   standalone: true,
-  imports: [HeaderComponent],
+  imports: [PageComponent, DisclosureComponent],
   templateUrl: './lmap.component.html',
   styleUrls: [
     './lmap.component.scss'

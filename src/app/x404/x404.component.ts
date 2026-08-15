@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
-import { HeaderComponent } from '../shared/header/header.component'
+import { PageComponent } from '../shared/page/page.component'
 
 // TODO: https://bobrov.dev/blog/angular-smart-404-page/ - suggest the *right* page!
 
@@ -9,7 +9,7 @@ import { HeaderComponent } from '../shared/header/header.component'
 @Component({
   selector: 'rangertrak-x404',
   standalone: true,
-  imports: [HeaderComponent],
+  imports: [PageComponent],
   templateUrl: './x404.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./x404.component.scss']

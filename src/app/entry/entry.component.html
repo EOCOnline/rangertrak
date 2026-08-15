@@ -1,6 +1,4 @@
-<pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
-
-<section class="main bkgrnd_NotToday">
+<rangertrak-page [title]="title" [description]="pageDescr">
   <form #frm="ngForm" [formGroup]="entryDetailsForm" (ngSubmit)="onFormSubmit(frm.value)" class="enter__form">
     <!-- Deferred so Leaflet (plus leaflet.offline and the tile requests) stays out of the
          initial download and the Entry form itself paints immediately. The placeholder
@@ -133,4 +131,4 @@
     </div>
   </form>
 
-</section>
+</rangertrak-page>

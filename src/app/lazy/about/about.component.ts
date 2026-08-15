@@ -4,13 +4,16 @@ import { Subscription } from 'rxjs'
 import { Component, Inject, isDevMode, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 import { CommonModule } from '@angular/common'
 
+import { DisclosureComponent } from '../../shared/disclosure/disclosure.component'
+import { PageComponent } from '../../shared/page/page.component'
+
 import { ClockService, LogService, SettingsService, SettingsType } from '../../shared/services'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'rangertrak-about',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PageComponent, DisclosureComponent],
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
