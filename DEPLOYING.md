@@ -164,8 +164,45 @@ reports, with nothing to indicate data is missing. Observed live 2026-08-14: the
 hostnames held settings a year apart.
 
 **DECIDED 2026-08-14: `https://rangertrak.org` (no `www`) is the canonical URL.**
-`www.rangertrak.org` redirects to it via a **Page Rule** on the `.org` zone — dashboard,
-not the repo, and not a Worker change:
+
+🔴 **STILL BROKEN as of 2026-08-15 — `www.rangertrak.org` serves the app instead of
+redirecting.** A correctly written Page Rule (`www.rangertrak.org/*` → `https://rangertrak.org/$1`,
+301) does **not** fire. Verified over 100s of polling; not propagation.
+
+**Best explanation, and it fits every observation:** `www.rangertrak.org` is a **Worker
+Custom Domain** (see `wrangler.jsonc` `routes`), and a custom domain binds the hostname to
+the Worker at the edge ahead of Page Rules. The evidence:
+
+- The identical Page Rule pattern **works** on `rangertrak.com` and `www.rangertrak.com` —
+  neither of which is bound to a Worker; they are plain proxied placeholder records.
+- The rule that caused the 2026-08-14 outage **was** able to hijack `rangertrak.org`, also
+  a custom domain — but that was a **Redirect Rule**, which runs earlier in Cloudflare's
+  order of operations than Workers.
+
+So the mechanism matters here in a way it does not on `.com`. **Two ways forward:**
+
+**A. Redirect Rule instead of a Page Rule** (quick; no repo or DNS change). This is what
+this doc originally specified. Zone `rangertrak.org` → Rules → **Redirect Rules** → Create:
+
+- **If** — `hostname` **equals** `www.rangertrak.org` ← never the zone, see the warning below
+- **Then** — Dynamic redirect, **301**, preserve query string
+- **Expression** — `concat("https://rangertrak.org", http.request.uri.path)`
+
+*(An earlier attempt via the Redirect Rules **API** failed with an authorization error —
+the token lacked the scope. The dashboard is the path of least resistance.)*
+
+**B. Stop binding `www` to the Worker at all** (slower, structurally better). Remove
+`{ "pattern": "www.rangertrak.org", "custom_domain": true }` from `wrangler.jsonc`, deploy,
+then give `www` proxied placeholder records exactly like `.com` has, so the Page Rule has
+traffic to act on and nothing to compete with.
+
+**B is the more durable fix and worth doing eventually.** While `www` remains a custom
+domain, CI re-attaches it on *every* deploy, so "www must not serve the app" depends
+permanently on a redirect rule continuing to work. Under B it is structurally true: the
+Worker simply is not listening on that hostname. Sequence B *after* A is working, so `www`
+is never left unreachable.
+
+Once fixed, the rule is:
 
 - **URL (trigger)** — `www.rangertrak.org/*`
 - **Setting** — Forwarding URL, **301** Permanent Redirect
