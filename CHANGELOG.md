@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.5](https://github.com/EOCOnline/rangertrak/compare/v0.15.4...v0.15.5) (2026-08-15)
+
+
+### Features
+
+* **rangers:** ranger photos, stored on the device and never in the repo ([16e6e71](https://github.com/EOCOnline/rangertrak/commit/16e6e710b07cd1537b3a7409726d4f68ffe87eb4))
+
 ### [0.15.4](https://github.com/EOCOnline/rangertrak/compare/v0.15.3...v0.15.4) (2026-08-15)
 
 
