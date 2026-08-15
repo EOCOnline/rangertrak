@@ -22,11 +22,6 @@ div {
   margin-left: 1vw;
 }
 
-.lastChecked {
-  font-size: small;
-  opacity: 0.7;
-}
-
 // Standing "a newer build is waiting" affordance. Deliberately loud: the failure
 // it guards against is a scribe running a months-old build during an incident
 // (PRIVATE-Roadmap.md Section 8/R7).
