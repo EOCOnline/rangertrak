@@ -156,9 +156,17 @@ dashboard, so the hostname mapping is reviewable and reproducible:
 certificate. **Do not hand-create A/AAAA records for these names**, and do not add the
 same custom domains through the dashboard — the config already owns them.
 
-Note that **both hostnames serve the app**; `www` does not redirect to the apex. If a
-single canonical URL is ever wanted, that is a Redirect Rule on the `.org` zone, the same
-mechanism as the `.com` parking below — not a Worker change.
+⚠️ **Both hostnames serve the app, and that is a data-loss hazard — fix it.** `www`
+does not redirect to the apex, so `https://rangertrak.org` and `https://www.rangertrak.org`
+are **different origins**, with **separate localStorage**. A scribe who opens one today and
+the other tomorrow finds a different mission, a different roster and different field
+reports, with nothing to indicate data is missing. Observed live 2026-08-14: the two
+hostnames held settings a year apart.
+
+Pick one canonical hostname and redirect the other with a Redirect Rule on the `.org`
+zone — the same mechanism as the `.com` parking below, not a Worker change. Until then,
+tell users to always use the same URL. There is no way for the app to merge the two
+stores after the fact.
 
 ### rangertrak.com → redirect to .org
 
