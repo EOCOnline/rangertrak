@@ -3,7 +3,7 @@ import { ColDef, GridOptions } from 'ag-grid-community'
 import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { AgGridAngular } from 'ag-grid-angular';
 import { HeaderComponent } from '../shared/header/header.component';
@@ -39,6 +39,20 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   private settings!: SettingsType
 
   alert: any
+
+  // The confidentiality bar above the roster. Dismissal is remembered per browser, which
+  // is the point - it used to be a permanent block that pushed the grid down the page on
+  // every visit, and a warning that cannot be acknowledged is a warning people learn to
+  // read past. Dismissing it hides the *bar*; the full notice stays in the "Privacy &
+  // data handling" section below and cannot be removed.
+  //
+  // Deliberately its own localStorage key rather than a field on the settings object:
+  // this is a per-device UI acknowledgement, not mission data, and it must not ride along
+  // in Mission Export or trigger the settings migration 24e is tracking.
+  private static readonly PRIVACY_DISMISSED_KEY = 'rangertrak.rangers.privacyNoticeDismissed'
+  privacyNoticeDismissed = false
+
+  @ViewChild('privacyDetails') private privacyDetails?: ElementRef<HTMLDetailsElement>
 
   numSeperatorWarnings = 0
   maxSeperatorWarnings = 3
@@ -128,6 +142,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   ngOnInit(): void {
+
+    this.privacyNoticeDismissed =
+      localStorage.getItem(RangersComponent.PRIVACY_DISMISSED_KEY) === 'true'
 
     this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
     //this.teamService = teamService
@@ -339,6 +356,32 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.verbose("loadVashonRangers calling window.location.reload...", this.id)
     this.reloadPage()
   }
+
+  //--------------------------------------------------------------------------
+  // Confidentiality bar
+
+  dismissPrivacyNotice() {
+    this.privacyNoticeDismissed = true
+    try {
+      localStorage.setItem(RangersComponent.PRIVACY_DISMISSED_KEY, 'true')
+    } catch (e) {
+      // Private-browsing or a full quota. The bar still goes away for this visit; it
+      // simply comes back next time, which is the safe direction to fail in.
+      this.log.warn(`Could not persist privacy-notice dismissal: ${e}`, this.id)
+    }
+  }
+
+  openPrivacyDetails() {
+    const el = this.privacyDetails?.nativeElement
+    if (!el) {
+      this.log.warn('openPrivacyDetails(): no #privacyDetails element', this.id)
+      return
+    }
+    el.open = true
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  //--------------------------------------------------------------------------
 
   displayHide(htmlElementID: string) {
     let e = this.document.getElementById(htmlElementID)

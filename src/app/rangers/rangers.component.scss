@@ -57,36 +57,57 @@ label {
   font-weight: bold;
 }
 
-// Confidentiality notice above the roster grid. Styled as a warning rather than a
-// heading so it reads as a caution at a glance, but kept quiet enough that it does not
-// compete with the grid itself on every visit.
-.privacy-notice {
-  border          : 1px solid #d9a300;
-  border-left     : 6px solid #d9a300;
-  background-color: #fff8e1;
-  color           : #3d3d3d;
-  border-radius   : 4px;
-  padding         : .75em 1em;
+// Confidentiality bar above the roster grid. This was a multi-paragraph block that pushed
+// the grid down the page on every visit; it is now one dismissable line, with the full
+// text in the "Privacy & data handling" details below.
+//
+// Sprint B: its #d9a300 / #fff8e1 / #8a6100 are now --rt-notice-* tokens, so it follows
+// the skin and, unlike the old block, is legible in dark mode.
+.privacy-bar {
+  display         : flex;
+  align-items     : center;
+  flex-wrap       : wrap;
+  gap             : 0.5em;
+  background-color: var(--rt-notice);
+  color           : var(--rt-notice-ink);
+  border          : 1px solid var(--rt-notice-line);
+  border-left     : 6px solid var(--rt-notice-line);
+  border-radius   : var(--rt-radius);
+  padding         : 0.5em 0.75em;
   margin          : 0 0 1em 0;
-
-  p {
-    margin: .4em 0;
-  }
-
-  ul {
-    margin       : .4em 0 0 0;
-    padding-left : 1.2em;
-  }
-
-  li {
-    margin-bottom: .25em;
-  }
 }
 
-.privacy-notice__label {
-  display    : block;
-  font-weight: bold;
-  color      : #8a6100;
+.privacy-bar__text {
+  flex: 1 1 20em;
+}
+
+// Both actions read as text, not as buttons competing with the roster's own controls.
+.privacy-bar__more,
+.privacy-bar__dismiss {
+  background   : none;
+  border       : 1px solid transparent;
+  border-radius: var(--rt-radius);
+  color        : inherit;
+  cursor       : pointer;
+  font         : inherit;
+}
+
+.privacy-bar__more {
+  text-decoration: underline;
+  padding        : 0.25em 0.5em;
+}
+
+.privacy-bar__dismiss {
+  font-size  : 1.25em;
+  line-height: 1;
+  padding    : 0.1em 0.45em;
+}
+
+.privacy-bar__more:hover,
+.privacy-bar__dismiss:hover,
+.privacy-bar__more:focus-visible,
+.privacy-bar__dismiss:focus-visible {
+  border-color: var(--rt-notice-line);
 }
 
 // from https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_tooltip

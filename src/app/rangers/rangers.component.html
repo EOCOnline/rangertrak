@@ -26,32 +26,25 @@
 <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
 <section class="main">
 
-  <!-- Deliberately outside the collapsible Instructions below: this has to be visible
-       without the user opening anything, because it applies the moment the roster is
-       on screen. -->
-  <aside class="privacy-notice">
-    <span class="privacy-notice__label">⚠️ Confidential — personal information</span>
-    <p>
-      This roster holds personal data: legal names, home addresses, personal phone
-      numbers and photos, alongside call signs that tie each row to a named,
-      publicly-searchable FCC licence. Treat it as confidential participant
-      information, not as operational data.
-    </p>
-    <ul>
-      <li>
-        It is stored <em>unencrypted</em> in this browser's local storage. Anyone with
-        access to this device and browser profile can read it.
-      </li>
-      <li>
-        Exports (CSV, Excel, and Mission Backup) are <em>unencrypted plain-text files</em>.
-        Once exported, this app can no longer protect them.
-      </li>
-      <li>
-        Share only with people who need it for this mission, and delete exports when the
-        mission is over. Follow your agency's policy on handling participant data.
-      </li>
-    </ul>
+  <!-- The full confidentiality notice used to sit here as a permanent block that pushed
+       the roster down the page on every single visit. It is now a dismissable bar, with
+       the full text kept in "Privacy & data handling" below: collapsed, so it costs no
+       normal screen real estate, but always one click away and never removable. -->
+  @if (!privacyNoticeDismissed) {
+  <aside class="privacy-bar" role="note">
+    <span aria-hidden="true">⚠️</span>
+    <span class="privacy-bar__text">
+      <strong>Confidential</strong> — this roster holds participant personal data, stored
+      and exported unencrypted.
+    </span>
+    <button type="button" class="privacy-bar__more" (click)="openPrivacyDetails()">
+      What this means
+    </button>
+    <button type="button" class="privacy-bar__dismiss" (click)="dismissPrivacyNotice()"
+      aria-label="Dismiss this notice. The full notice stays under Privacy and data handling, below."
+      title="Dismiss. The full notice stays under &quot;Privacy &amp; data handling&quot; below.">×</button>
   </aside>
+  }
 
   <details>
     <summary class="big">Instructions</summary>
@@ -84,6 +77,32 @@
       <li>
         FUTURE: Import Excel button currently brings in the data - but due to imporoper
         quoting it doesn't show up, so isn't working - yet.
+      </li>
+    </ul>
+  </details>
+
+  <!-- The full text the bar above summarises. Collapsed by default so it costs nothing
+       on a normal visit; the bar's "What this means" opens it and scrolls here. -->
+  <details id="rangers-privacy" #privacyDetails>
+    <summary class="big">Privacy &amp; data handling</summary>
+    <p>
+      This roster holds personal data: legal names, home addresses, personal phone
+      numbers and photos, alongside call signs that tie each row to a named,
+      publicly-searchable FCC licence. Treat it as confidential participant
+      information, not as operational data.
+    </p>
+    <ul>
+      <li>
+        It is stored <em>unencrypted</em> in this browser's local storage. Anyone with
+        access to this device and browser profile can read it.
+      </li>
+      <li>
+        Exports (CSV, Excel, and Mission Backup) are <em>unencrypted plain-text files</em>.
+        Once exported, this app can no longer protect them.
+      </li>
+      <li>
+        Share only with people who need it for this mission, and delete exports when the
+        mission is over. Follow your agency's policy on handling participant data.
       </li>
     </ul>
   </details>

@@ -41,6 +41,16 @@ $c: skin.$chrome;
   --rt-accent: #{_pair(accent)};
   --rt-accent-ink: #{_pair(accent-ink)};
 
+  // ── Notice / caution ──────────────────────────────────────────────
+  // Deliberately NOT per-skin. A caution means the same thing under every skin, which is
+  // the same argument 22 makes for the status colours - so these live here as one set
+  // rather than three times over in _chrome.scss. Used by the Rangers confidentiality
+  // bar; the ambers still hardcoded in log.component.scss and alerts want these next
+  // (23b left them for Sprints B-F).
+  --rt-notice: #{light-dark(#FFF8E1, #2A2110)};
+  --rt-notice-ink: #{light-dark(#5C4400, #F6DFA0)};
+  --rt-notice-line: #{light-dark(#D9A300, #8A6100)};
+
   // ── Status colours (data, not brand - see _status.scss) ───────────
   @each $name, $value in status.$light {
     --rt-status-#{$name}: #{light-dark(#{$value}, #{map.get(status.$dark, $name)})};
