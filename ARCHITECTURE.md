@@ -176,6 +176,20 @@ actually defends against here is narrow, and worth being honest about:
   paid for once.
 - **Phase 3 — per-mission keys**, if agencies ask for separation between missions.
 
+## Service worker and app updates
+
+`UpdateService` (`shared/services/update.service.ts`) owns the update lifecycle and is
+started once from `AppComponent.ngOnInit()`. On `VERSION_READY` it raises a persistent
+snackbar and a standing footer indicator, and calls `SwUpdate.activateUpdate()` followed
+by `location.reload()` only when the user accepts.
+
+The reload is deliberately never automatic. This is a scribe's tool used mid-incident;
+replacing the page under an in-progress report would lose the report.
+
+Anything that only `console.warn`s here is a bug, not a placeholder: a silently stale
+service worker means an installed copy serves an old build indefinitely, which is exactly
+what happened after 0.13.0 shipped.
+
 ## Bundle and loading strategy
 
 Only the Entry route is eager; every other route is a `loadComponent` split point
@@ -189,6 +203,16 @@ Only the Entry route is eager; every other route is a `loadComponent` split poin
   barrel import pulls everything the barrel re-exports. `mapping/map-style` (MapLibre) is
   deliberately *not* re-exported from either barrel to keep this from happening by
   accident.
+- **Keep map-engine types out of the domain model.** `FieldReportsType.bounds` was a
+  Leaflet `LatLngBounds`, which put Leaflet in `FieldReportService` — and therefore in the
+  eager bundle. It is a plain `BoundsType` now, converted to an engine's own type at the
+  point of use. The same rule is why a plain object beats a class anywhere state is
+  round-tripped through `localStorage`: JSON gives back data, never methods.
+- **Leaflet must be evaluated before `leaflet.markercluster`.** The plugin reads the
+  global `L` at module-evaluation time, so both Leaflet components carry a bare
+  `import 'leaflet'` above the plugin import. It sorts first alphabetically, which keeps
+  import-sort from reordering it. Removing that line reintroduces
+  `ReferenceError: L is not defined`.
 
 `app.config.ts` registers `withPreloading(PreloadAllModules)`, so lazy chunks are still
 fetched once the app is stable — deliberate for an offline-first PWA, where everything

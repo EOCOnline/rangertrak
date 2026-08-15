@@ -229,12 +229,17 @@ the Home screen.
 Every report in a sortable, filterable, searchable table. Filter or select rows, then map
 or export just that subset for documentation and after-action analysis.
 
+You can correct a report here: click a cell and type. Corrections are saved as soon as you
+leave the cell — there is no Save button to remember. Editing a latitude or longitude moves
+that report on the maps.
+
 ![Field Reports Screen](./non-dist-imgs/FieldReports.png "Field Reports Screen")
 
 ### Maps
 
 Both map pages plot the reports entered so far, or just the subset selected on the Reports
-page.
+page — use the switch below the map to go back and forth. Each map opens zoomed to fit the
+reports you have.
 
 ![Leaflet Maps Screen](./non-dist-imgs/LeafletMaps.png "Leaflet Maps Screen")
 
@@ -316,6 +321,18 @@ complete enough — addresses can be filled in afterwards.
 
 ---
 
+## Getting a newer version
+
+RangerTrak keeps working from the copy already on your device, so a new release does not
+reach you until the app fetches it. When it has, a **new version ready — reload** button
+appears in the footer and the app offers to reload; accept when you are between reports,
+not mid-report. The footer also shows when it last checked. Nothing reloads on its own.
+
+If you suspect you are running an old copy, reload the page while holding **Ctrl+Shift**
+(**Cmd+Shift** on a Mac).
+
+---
+
 ## Your data, and who can see it
 
 Everything lives **on your device only**, in your browser's storage. Nothing is uploaded.
@@ -356,8 +373,6 @@ seeing what a busy mission looks like.
 - **The offline map covers Vashon Island only.** Outside that area you get a plain
   background with your report markers on it — correct positions, no streets. Broader
   coverage is planned.
-- **The Leaflet map does not automatically zoom to fit your reports.** Zoom out to find
-  them if they are outside the current view.
 - **Report selection resets** when you reload the page or move between pages.
 
 If something looks wrong, check the **Log** page — it records what the app did and any

@@ -46,6 +46,12 @@ npm run lint:tsc   # typecheck only (app and spec projects separately)
 > *reachable* files, so an unreferenced file can carry syntax errors indefinitely while
 > builds stay green. `npm run lint:tsc` is what catches that; treat it as a real gate.
 
+The suite is expected to be **all green** (80 specs). It was not for a long time, and the
+failures were all harness gaps rather than app defects — components that inject `SwUpdate`
+need `provideSwUpdateStub()` from `src/testing/sw-update.stub.ts`, anything with a
+`routerLink` needs `RouterTestingModule`, and services without `providedIn: 'root'` must be
+listed in `providers`. Treat a red spec as a real signal again.
+
 Note that `lint:tsc` deliberately runs against `tsconfig.app.json` and
 `tsconfig.spec.json` separately rather than the shared base config. The shared config sets
 `moduleResolution: "bundler"`, which disables TypeScript's automatic `@types` discovery for

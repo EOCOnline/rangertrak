@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## Unreleased
+
+A defect-clearing pass, ahead of the interface work: known problems fixed first, so the
+next round of changes is not built on top of them.
+
+### Fixed
+
+- **New versions were never installed.** An installed copy kept serving the build it had
+  cached, so browsers still ran 0.12.0 after 0.13.0 shipped. The app now tells you a new
+  version is ready and installs it when you accept — it will never reload the page out
+  from under you mid-report. The footer shows a standing "new version ready" button and
+  when it last checked.
+- **The Leaflet map now opens zoomed to your reports.** It could not: the map extent was
+  stored in a form that did not survive being saved, so the zoom-to-fit was switched off
+  and markers opened off-screen.
+- **The "show only selected reports" switch on the Leaflet map works.** It carried a
+  visible `[Broken:]` label because the switch and the map disagreed about its state.
+- **Corrections typed into the Field Reports grid are saved.** The grid was editable, but
+  a "Save Reports" button alerted "UNIMPLEMENTED" and every edit was lost on reload.
+  Editing a latitude or longitude now updates the report — previously those two columns
+  wrote to a field nothing read.
+- **The Entry page no longer logs errors on every load** from the mini-map being handed a
+  location before it existed.
+- **Report counts** no longer drifted: adding a report never incremented the count, and
+  the sample-data generator counted each report multiple times.
+
+### Removed
+
+- **The Rangers page's Excel and JSON import experiments**, which never worked — one read
+  the file and discarded it. Import Mission on the Settings page brings in a roster.
+
+### Internal
+
+- Field report map extents are stored as plain data rather than a Leaflet object,
+  removing Leaflet from the startup bundle (1.96 MB → 1.79 MB initial).
+- The full test suite passes: 80 specs, no known failures (was 73 of 78).
+
 ## [0.13.0](https://github.com/EOCOnline/rangertrak/compare/v0.12.0...v0.13.0) (2026-08-14)
 
 A repair-and-harden release. Several core screens had stopped working; all are
