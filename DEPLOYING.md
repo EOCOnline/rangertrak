@@ -164,17 +164,33 @@ reports, with nothing to indicate data is missing. Observed live 2026-08-14: the
 hostnames held settings a year apart.
 
 **DECIDED 2026-08-14: `https://rangertrak.org` (no `www`) is the canonical URL.**
-`www.rangertrak.org` must redirect to it with a **Cloudflare Redirect Rule** on the `.org`
-zone — dashboard, not the repo, and not a Worker change:
+`www.rangertrak.org` redirects to it via a **Page Rule** on the `.org` zone — dashboard,
+not the repo, and not a Worker change:
 
-- **If** — `hostname` equals `www.rangertrak.org`
-- **Then** — Dynamic redirect, **301**, preserve query string
-- **Expression** — `concat("https://rangertrak.org", http.request.uri.path)`
+- **URL (trigger)** — `www.rangertrak.org/*`
+- **Setting** — Forwarding URL, **301** Permanent Redirect
+- **Destination** — `https://rangertrak.org/$1`
 
-Redirect the other with a Redirect Rule on the `.org`
-zone — the same mechanism as the `.com` parking below, not a Worker change. Until then,
-tell users to always use the same URL. There is no way for the app to merge the two
-stores after the fact.
+**The `*` and the `$1` are two halves of one mechanism and are not interchangeable.** The
+`*` in the trigger *captures*; `$1` in the destination *replays* what the first `*` matched.
+Putting `$1` in the trigger makes it a literal match for a path of `$1`, which no request
+ever has, so the rule silently never fires and traffic falls through to the app — looking
+exactly like no rule at all. Both mistakes were made here on the way to getting this right.
+
+**Path is preserved for `www` → apex, and deliberately not for `.com` → `.org` (below).**
+That asymmetry is intentional: `www.rangertrak.org` is an alias for *this* app with *these*
+routes, so `www…/reports` must land on `/reports`; `rangertrak.com` is parked and will
+become a different product with routes of its own, so mapping its paths onto `.org` would
+be wrong the moment it has any.
+
+⚠️ **Whatever rule you write, scope it to the `www` hostname explicitly.** A rule matching
+the zone rather than the hostname also matches the apex, which then redirects to itself
+forever. That is not hypothetical — it took the site down for every new visitor while CI
+stayed green and the cached PWA hid it from everyone already installed. `check-deployed.js`
+now catches it (see "Post-deploy verification"), but the rule is where it starts.
+
+Until the redirect is live, tell users to always use the same URL. There is no way for the
+app to merge the two stores after the fact.
 
 ### rangertrak.com → redirect to .org
 
@@ -196,18 +212,31 @@ Those addresses are the RFC 5737 documentation range and the RFC 6666 discard pr
 deliberately unroutable. Because the records are proxied, the redirect fires at the
 edge and nothing ever connects to them.
 
-The rule itself (Zone `rangertrak.com` → Rules → Redirect Rules → Create):
+**Live 2026-08-15**, as two Page Rules on the `rangertrak.com` zone — Page Rules match one
+hostname each, so the apex and `www` need one apiece:
 
-- **If** — `hostname` equals `rangertrak.com` **or** equals `www.rangertrak.com`
-- **Then** — Dynamic redirect, status **301**, preserve query string
-- **Expression** — `concat("https://rangertrak.org", http.request.uri.path)`
+| # | URL (trigger)          | Setting                                         |
+| - | ---------------------- | ----------------------------------------------- |
+| 1 | `rangertrak.com/*`     | Forwarding URL, 301 → `https://rangertrak.org/` |
+| 2 | `www.rangertrak.com/*` | Forwarding URL, 301 → `https://rangertrak.org/` |
+
+**No `$1`, deliberately — every `.com` URL lands on the `.org` root.** `.com` is parked and
+becomes a different product later, so carrying its paths across would be wrong now and
+actively broken once `.com` has routes of its own. This is the opposite of the `www` → apex
+rule above, and the difference is the point.
 
 Verify with:
 
 ```bash
 curl -sI https://rangertrak.com/reports | grep -i "^HTTP\|^location"
-# expect: HTTP/2 301  +  location: https://rangertrak.org/reports
+# expect: HTTP/2 301  +  location: https://rangertrak.org/   (root, not /reports)
+
+curl -sL -o /dev/null -w "%{http_code} after %{num_redirects} hop(s) -> %{url_effective}\n" \
+  https://rangertrak.com/
+# expect: 200 after 1 hop(s) -> https://rangertrak.org/
 ```
+
+Both verified passing on 2026-08-15.
 
 ## Smoke test after a deploy
 
