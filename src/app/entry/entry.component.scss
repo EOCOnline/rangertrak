@@ -215,7 +215,16 @@ input[type=number] {
   margin-left     : 10px;
   margin-top      : 0px;
   margin-bottom   : 10px;
-  background-color: rgb(236, 252, 4);
+  // Sprint B: was rgb(236, 252, 4), an electric yellow that predates any palette. This is
+  // the primary action on the primary screen (10's hot path), so it takes the accent.
+  background-color: var(--rt-accent);
+  color           : var(--rt-accent-ink);
+  border          : 1px solid transparent;
+  border-radius   : var(--rt-radius);
+  min-height      : var(--rt-tap-min);
+  padding         : 0 1.25rem;
+  font-weight     : 600;
+  cursor          : pointer;
 }
 
 #enter__Submit-info {

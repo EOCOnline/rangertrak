@@ -198,29 +198,19 @@ h3 {
 }
 
 #SettingsBody {
-  //display: inline-block;
-  //background-image: './src/assets/imgs/AlpineMarmot.png' !important;
-  //height: 650 px;
-  color             : black;
-  // https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/linear-gradient()
-  //background-image: linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(8, 8, 8, 0.5)), url("../../assets/imgs/20220205_112741.jpg") ;
-
-  // Color hint: A gradient going from the left to right, starting white, getting to the midpoint color
-  // 30% of the way across the length of the gradient, taking the rest of the 70% of the length to change to allow full picture through
-  background-image: linear-gradient(.25turn, rgba(252, 252, 252, 1), 30%, rgba(221, 213, 213, 0.25)), url("../../assets/imgs/20220205_112750.png");
-
-
-  // TODO: loading="lazy"
-  // https://imagekit.io/blog/lazy-loading-images-complete-guide/#lazy-loading-css-background-images
-  // https://web.dev/lazy-loading-images/
-  // https://www.sitelint.com/blog/lazy-loading-css-background-images-for-better-website-loading-performance/
-
-  //background-image  : linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(221, 213, 213, 0.5)), url("../../assets/imgs/20220205_112750.jpg");
-  //color: black;
-  //background-image: url("../../../assets/imgs/AlpineMarmot.png") ;
-  //background-size: 100%;
-  //background-size: contain;
-  background-size: cover;
+  // Sprint B (25a item 1): this carried a full-bleed background photograph, masked by
+  //   linear-gradient(.25turn, rgba(252,252,252,1), 30%, rgba(221,213,213,0.25))
+  // which fades only the first 30% of the width - so roughly 70% of the longest form in
+  // the app sat on an unmasked photo of pavement and a hi-vis vest, and the geocoding
+  // help text was unreadable on the deployed 0.15.0.
+  //
+  // Removed rather than re-masked. This is a settings form, not a landing page: it is
+  // 429 lines of controls (21f), it is the screen 24c calls the worst one, and Sprint C
+  // is about to restructure it. Decoration behind it cannot be made to pay for itself.
+  // The About page keeps its photograph, where prose can afford one - see
+  // about.component.scss.
+  color           : var(--rt-ink);
+  background-color: var(--rt-ground);
 }
 
 // https://dev.to/nazanin_ashrafi/how-to-darken-an-image-with-css-4f5h

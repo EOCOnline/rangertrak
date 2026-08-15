@@ -79,7 +79,9 @@ $filledColor: var(--rt-surface-2);
 #derivedAddress,
 #pCodes,
 #what3Words {
-  color     : #7d1f02; //#CCC;
+  // Sprint B: was #7d1f02, a brick left over from the pre-Sprint-A palette that fought
+  // every skin but ridgeline. This is derived, secondary information - so, secondary ink.
+  color     : var(--rt-ink-2);
   font-style: italic;
 }
 

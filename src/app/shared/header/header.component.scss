@@ -3,7 +3,12 @@
   .header {
     //display      : flex;
     // background: rgb(248, 251, 252, 0.5);
-    background     : rgb(183, 244, 255);
+    // Sprint B: was rgb(183, 244, 255) - the same pale cyan Sprint A removed from the
+    // navbar, which belongs to no palette. The mission strip is where 21b's readiness
+    // light goes, so it now follows the skin like the rest of the chrome.
+    background     : var(--rt-surface-2);
+    color          : var(--rt-ink);
+    border-bottom  : 1px solid var(--rt-line);
     padding        : 0 5px 0.75em 5px;
     //margin : 0;
     display        : flex;
@@ -18,10 +23,9 @@
   }
 
   .rule {
-    background: rgb(183, 244, 255);
+    background: var(--rt-line);
     margin    : 0;
     padding   : 0;
-    ;
   }
 
   .event {

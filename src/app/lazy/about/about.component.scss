@@ -3,17 +3,32 @@
   padding: 0 1em;
 }
 
+// Sprint B (25a item 1): the marmot stays - About is prose and can carry a photograph -
+// but it was painted with a `to bottom` scrim that ended at rgba(8,8,8,0.5) while the text
+// colour was hardcoded `black`. So the further down the page you read, the closer the text
+// came to black-on-dark, and the photo credit was the least legible line of all.
+//
+// Now the image is a fixed, low-opacity wash on its own layer and the text is plain token
+// ink, which means it also survives dark mode instead of staying black on a dark ground.
 #AboutBody {
-  //display: inline-block;
-  //background-image: './src/assets/imgs/AlpineMarmot.png' !important;
-  //height: 650 px;
-  color             : black;
-  background-image  : linear-gradient(to bottom, rgba(252, 252, 252, 0.5), rgba(8, 8, 8, 0.5)), url("../../../assets/imgs/AlpineMarmot.png");
-  //color: black;
-  //background-image: url("../../../assets/imgs/AlpineMarmot.png") ;
-  //background-size: 100%;
-  //background-size: contain;
-  background-size   : cover;
+  position        : relative;
+  isolation       : isolate;
+  color           : var(--rt-ink);
+  background-color: var(--rt-ground);
+}
+
+#AboutBody::before {
+  content            : "";
+  position           : absolute;
+  inset              : 0;
+  z-index            : -1;
+  background-image   : url("../../../assets/imgs/AlpineMarmot.png");
+  background-size    : cover;
+  background-position: center;
+  // One value for both schemes on purpose: `light-dark()` takes colours, not numbers, and
+  // a scrim that needs a per-scheme opacity is a scrim that is too strong in one of them.
+  opacity            : 0.15;
+  pointer-events     : none;
 }
 
 // https://dev.to/nazanin_ashrafi/how-to-darken-an-image-with-css-4f5h

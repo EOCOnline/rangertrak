@@ -119,7 +119,11 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       style: buildPmtilesStyle(),
       center: [this.settings.defLng, this.settings.defLat],
       zoom: this.settings.google.overviewMinZoom,
-      interactive: false
+      interactive: false,
+      // The main map above carries the attribution, which is what OSM's terms require of
+      // the page. A second copy inside a 175px decorative thumbnail only wrapped to three
+      // lines and spilled out the bottom - see 25a item 6.
+      attributionControl: false
     })
 
     this.map.on('move', () => {

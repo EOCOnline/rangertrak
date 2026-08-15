@@ -41,6 +41,35 @@
   cursor: crosshair;
 }
 
+// Sprint B (25a item 5). `savetiles` renders its two actions as `.leaflet-bar` anchors,
+// and Leaflet sizes those as 26px icon squares (`width/height/line-height: 26px`). The
+// labels set in lmap.component.ts are whole sentences, so both wrapped out of their
+// squares and printed on top of each other and of the zoom control.
+//
+// Keeping the words and sizing the buttons to fit, rather than cutting the labels back to
+// bare emoji: this control is how a scribe prepares a device for an offline mission (21b
+// counts its tiles as a readiness signal), so it is worth two legible buttons.
+:host ::ng-deep .savetiles.leaflet-bar {
+  a {
+    display     : flex;
+    align-items : center;
+    width       : auto;
+    height      : auto;
+    min-height  : var(--rt-tap-min);
+    padding     : 0 0.75em;
+    line-height : 1.25;
+    white-space : nowrap;
+    text-align  : left;
+    font-size   : 0.85rem;
+    background  : var(--rt-surface);
+    color       : var(--rt-ink);
+  }
+
+  a:hover {
+    background: var(--rt-surface-2);
+  }
+}
+
 // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor
 
 .main {
