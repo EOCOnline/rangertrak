@@ -9,3 +9,22 @@
 div {
   margin-left: 1vw;
 }
+
+.lastChecked {
+  font-size: small;
+  opacity: 0.7;
+}
+
+// Standing "a newer build is waiting" affordance. Deliberately loud: the failure
+// it guards against is a scribe running a months-old build during an incident
+// (PRIVATE-Roadmap.md Section 8/R7).
+.updateReady {
+  margin-left: 0.75em;
+  padding: 0.1em 0.6em;
+  border: 1px solid currentColor;
+  border-radius: 0.8em;
+  background: #ffe9a8;
+  color: #7a4f00;
+  font-size: small;
+  cursor: pointer;
+}

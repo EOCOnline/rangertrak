@@ -1,7 +1,15 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+
+import { provideSwUpdateStub } from '../testing/sw-update.stub';
 import { AppComponent } from './app.component';
 
+/**
+ * These three specs all failed with NG0201 (no provider for SwUpdate) before
+ * reaching their assertions - see src/testing/sw-update.stub.ts for why the
+ * stub is shaped the way it is (PRIVATE-Roadmap.md Section 18/D).
+ */
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -9,6 +17,10 @@ describe('AppComponent', () => {
         RouterTestingModule,
         AppComponent
       ],
+      providers: [
+        provideHttpClient(),
+        provideSwUpdateStub()
+      ]
     }).compileComponents();
   });
 
@@ -18,16 +30,21 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'rangertrak'`, () => {
+  it(`should have as title 'RangerTrak'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('rangertrak');
+    expect(app.title).toEqual('RangerTrak');
   });
 
-  it('should render title', () => {
+  it('renders the navbar and footer chrome around the router outlet', () => {
+    // Replaces a check for "rangertrak app is running!" - the Angular CLI's
+    // starter template text, which this app has not rendered in years.
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
+
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('rangertrak app is running!');
+    expect(compiled.querySelector('rangertrak-navbar')).toBeTruthy();
+    expect(compiled.querySelector('rangertrak-footer')).toBeTruthy();
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });

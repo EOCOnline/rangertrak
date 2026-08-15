@@ -1,10 +1,8 @@
-import { Subscription } from 'rxjs'
+import { CommonModule, DOCUMENT } from '@angular/common'
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core'
 
-import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
-import { Component, Inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
+import { LogService, SettingsService, UpdateService } from '../services'
 
-import { LogService, SettingsService, SettingsType } from '../services'
-import { Utility } from '../utility';
 /**
  * Footer component
  */
@@ -16,43 +14,43 @@ import { Utility } from '../utility';
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./footer.component.scss']
 })
-export class FooterComponent implements OnInit, OnDestroy {
+export class FooterComponent {
 
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
   private id = 'Footer Component'
 
   today = new Date()
-  version!: string
 
-  msStartTime: any
-  msEndTime: any
+  /**
+   * Read through to the service rather than snapshotting into a field in
+   * ngOnInit, which is what this used to do. SettingsService.settings reads a
+   * signal, so the template picks up later emissions - Import Mission, Load
+   * Sample Mission and Reset Settings all republish settings, and the old
+   * snapshot left the footer showing the previous mission's version forever.
+   */
+  get version(): string {
+    return this.settingsService.settings?.version ?? ''
+  }
 
+  /** A newer build is downloaded and waiting - see UpdateService (R7). */
+  get updateReady(): boolean {
+    return this.updateService.updateReady()
+  }
+
+  /** When the browser last confirmed this build was current. */
+  get lastChecked(): string {
+    return this.updateService.lastChecked()
+  }
 
   constructor(
     private log: LogService,
     private settingsService: SettingsService,
+    private updateService: UpdateService,
     @Inject(DOCUMENT) private document: Document) {
 
     this.log.excessive(`======== Constructor() ============`, this.id)
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
-        this.log.excessive('Received new Settings via subscription.', this.id)
-      },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
-    })
-
-    this.msStartTime = new Date(this.settings.opPeriodStart).getTime()
-    this.msEndTime = new Date(this.settings.opPeriodEnd).getTime()
   }
 
-  ngOnInit(): void {
-    this.version = this.settings?.version
-  }
-
-  ngOnDestroy() {
-    this.settingsSubscription?.unsubscribe()
+  onReloadForUpdate(): void {
+    this.updateService.activateAndReload()
   }
 }

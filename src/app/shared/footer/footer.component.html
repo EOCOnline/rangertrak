@@ -1,6 +1,8 @@
 <!-- https://nikitahl.com/horizontal-rule-css -->
 <hr>
 <div>RangerTrak™ ֍ Version {{version}}
+  <span *ngIf="lastChecked" class="lastChecked" title="Last checked for a newer version">(checked {{lastChecked | date: 'short'}})</span>
+  <button *ngIf="updateReady" type="button" class="updateReady" (click)="onReloadForUpdate()" title="A newer version has been downloaded. Reload to start using it.">New version ready - reload</button>
   <a href="https://eoc.online" target="_blank" class="copyLeft">©{{today | date: 'y'}} https://eoc.online - Open Source
     Tools for EOCs</a>
 </div>
