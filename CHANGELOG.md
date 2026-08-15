@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.3](https://github.com/EOCOnline/rangertrak/compare/v0.15.2...v0.15.3) (2026-08-15)
+
+
+### Features
+
+* **rangers:** import and export a roster on its own, and make deletion stick ([5e60248](https://github.com/EOCOnline/rangertrak/commit/5e60248d53f422087ba801b77095b542bd83ea2e))
+
 ### [0.15.2](https://github.com/EOCOnline/rangertrak/compare/v0.15.1...v0.15.2) (2026-08-15)
 
 
