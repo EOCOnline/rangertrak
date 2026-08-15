@@ -144,7 +144,7 @@ edge and nothing ever connects to them.
 
 The rule itself (Zone `rangertrak.com` → Rules → Redirect Rules → Create):
 
-- **If** — `hostname` equals `rangertrak.com` **or** `hostname` equals `www.rangertrak.com`
+- **If** — `hostname` equals `rangertrak.com` **or** equals `www.rangertrak.com`
 - **Then** — Dynamic redirect, status **301**, preserve query string
 - **Expression** — `concat("https://rangertrak.org", http.request.uri.path)`
 
@@ -157,9 +157,12 @@ curl -sI https://rangertrak.com/reports | grep -i "^HTTP\|^location"
 
 ## Smoke test after a deploy
 
-Against the `workers.dev` URL first, then the custom domain:
+Run in a **real browser**, not headless — see the service worker note below. Against the
+`workers.dev` URL first, then the custom domain.
 
-- [ ] `/` loads and the app boots.
+### Routing and assets
+
+- [ ] `/` loads and the app boots with no console errors.
 - [ ] A deep link typed directly — `/entry`, `/rangers`, `/reports` — loads instead of
       404ing. This is `not_found_handling: "single-page-application"` working.
 - [ ] `/favicon.ico` returns 200.
@@ -167,9 +170,43 @@ Against the `workers.dev` URL first, then the custom domain:
       module worker and browsers refuse to start one unless it is served with a
       JavaScript MIME type — if the MapLibre map is blank, check the `Content-Type` on
       `/assets/maplibre/maplibre-gl-worker.mjs` first.
-- [ ] `curl -I https://<host>/ngsw.json` shows `cache-control: no-cache`.
-- [ ] An already-installed PWA picks up the new version rather than serving the old one.
-- [ ] DevTools → Network, disable the network, reload: the app still loads.
+- [ ] The offline map page renders. The PMTiles basemap is fetched by **HTTP range
+      request**; confirm a `.pmtiles` request returns **206 Partial Content**, not 200.
+      MIME type and range support are the two ways the previous host broke this page.
+- [ ] DevTools → Network, go offline, reload: the app still loads.
+
+### Cache headers
+
+- [ ] `curl -sI https://<host>/ngsw.json | grep -i cache-control` shows `no-cache`.
+- [ ] Same for `/ngsw-worker.js` and `/index.html`.
+
+If any of these is missing, [src/\_headers](src/_headers) is not being honored — stop and
+fix that before trusting the update flow, because its failure is silent.
+
+### The update path — the item that affects every existing user
+
+This is the one thing that cannot be checked from a single deploy, and it is the reason
+installed PWAs kept serving a 2022 build while the origin was dead. **Deploy twice with
+different versions**, then against an install made from the *first* deploy:
+
+- [ ] The Log page reports **"Update checks armed"** — silence used to read as success.
+- [ ] The app surfaces **"new version ready — reload"** rather than quietly staying stale.
+- [ ] Reloading actually lands on the new version.
+
+> **The service worker has never been verified end to end.** Browser testing on
+> 2026-08-14 found that `ngsw` registers, activates, and controls the page with no
+> errors and a 200 on `/ngsw.json`, but `caches.keys()` stays empty and
+> `checkForUpdate()` never settles. That was headless Chrome against the plain Node
+> preview server, so it may be an artifact of that environment — or real. **This
+> deployment is the first genuine test.** Treat a pass here as the first real evidence,
+> and do it in a normal browser so a headless quirk cannot be the explanation.
+
+One diagnostic gotcha specific to this hosting: with
+`not_found_handling: "single-page-application"`, a request for a file that does not
+exist returns **`index.html` with a 200**, not a 404. So a missing or misnamed asset
+reaches the service worker as valid-looking HTML and fails a hash check instead of
+returning an honest 404. If `ngsw` misbehaves here, check that every file listed in
+`ngsw.json` actually exists in the deployment before suspecting the service worker.
 
 ## Rollback
 

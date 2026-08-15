@@ -12,7 +12,7 @@ import { Utility } from '../shared'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import {
-  FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
+  FieldReportService, FieldReportType, LogService, RangerService, RangerType,
   SettingsService, SettingsType
 } from '../shared/services'
 import { CustomTooltip } from './customTooltip'

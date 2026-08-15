@@ -3,7 +3,7 @@ export { RangerService } from "./ranger.service"
 export { FieldReportService } from "./field-report.service"
 export { LogService } from "./log.service"
 export { GlobalErrorHandler } from "./global-error-handler"
-export { SettingsService, SecretType } from "./settings.service"
+export { SettingsService } from "./settings.service"
 export { ClockService } from "./clock.service"
 export { UpdateService } from "./update.service"
 export { StoragePersistenceService } from "./storage-persistence.service"
@@ -14,7 +14,6 @@ export { FieldReportType, FieldReportsType, FieldReportStatusType, FieldReportSo
 export { LocationType, undefinedAddressFlag, undefinedLocation } from "./location.interface"
 export { LogLevel, LogLevelNames, LogType, LogHeadings } from "./log.interface"
 export { RangerType, UnknownRanger } from "./ranger.interface"
-export { Secret } from "./secrets.interface"
 export { SettingsType } from "./settings.interface"
 
 

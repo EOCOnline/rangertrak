@@ -3,24 +3,13 @@ import { Observable, ReplaySubject, throwError } from 'rxjs'
 import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 
 import * as packageJson from '../../../../package.json'
-import * as secrets from '../../../assets/data/secrets.json' // national secrets... & API-Keys. gitignore's
 import { FieldReportStatusType, LogService, SettingsType } from './'
-
-export type SecretType = {
-  "id": number,
-  "name": string,
-  "url": string,
-  "key": string,
-  "note": string
-}
-
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService implements OnInit {
 
   private id = 'Settings Service'
   private storageLocalName = 'appSettings'
-  static secrets: SecretType[]
   // settingsSignal is the single source of truth for state (replaces the old
   // BehaviorSubject entirely). settingsReplay$ is a thin, synchronously-fed
   // notification layer for existing Observable-based consumers - NOT state
@@ -120,13 +109,14 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
 
 
 
-    // TODO: Add encryption to anything stored in a file...  https://github.com/digitalbazaar/forge
-    // https://stackoverflow.com/questions/48094647/nodejs-crypto-in-typescript-file
-    // REVIEW: Workaround for "Error: Should not import the named export (imported as 'secrets') from default-exporting module (only default export is available soon)"
-    let secretWorkaround = JSON.stringify(secrets)
-    SettingsService.secrets = JSON.parse(secretWorkaround)
-    //this.log.verbose('Got secrets from JSON file. e.g., ' + JSON.stringify(SettingsService.secrets[3]))
-    // TODO: https://developer.what3words.com/tutorial/hiding-your-api-key: environmental values, GitHub vault, or  encryption?
+    // NOTE: secrets.json used to be imported here and copied into a static
+    // SettingsService.secrets. That import inlined every key into main-*.js
+    // (PRIVATE-Roadmap.md Section 9e) and, because secrets.json is gitignored,
+    // made the project impossible to build from a clean clone - CI included.
+    // Nothing read the static: its only consumer, gmap.component.ts, went with
+    // the Google Maps removal. The Google geocoding key that survives is a
+    // user-supplied value in localStorage (see settings.interface.ts), never
+    // bundled.
 
     //  ------------------------- SETTINGS -------------------------------
 
