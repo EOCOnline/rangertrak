@@ -1,0 +1,60 @@
+// Emits the `--rt-*` custom properties every RangerTrak stylesheet reads from.
+//
+// Light and dark are expressed with `light-dark()` rather than a `prefers-color-scheme`
+// block. That is deliberate, and it is the direct fix for the defect 19a item 3 describes:
+// the previous dark block defined five variables that had NO light-mode counterpart, so they
+// were undefined in light mode and the "dark mode" only looked implemented. With
+// `light-dark()` a token cannot exist in one scheme and not the other - there is exactly one
+// definition per token, carrying both values.
+//
+// `color-scheme: light dark` on :root is what activates it, and it also tells the browser to
+// render form controls, scrollbars and the canvas in the right scheme for free.
+
+@use 'sass:map';
+@use './active-skin' as skin;
+@use './status';
+
+$c: skin.$chrome;
+
+@function _pair($key) {
+  @return light-dark(#{map.get($c, $key)}, #{map.get($c, $key + '-dark')});
+}
+
+:root {
+  color-scheme: light dark;
+
+  // ── Surfaces and ink ──────────────────────────────────────────────
+  --rt-ground: #{_pair(ground)};
+  --rt-surface: #{_pair(surface)};
+  --rt-surface-2: #{_pair(surface-2)};
+  --rt-ink: #{_pair(ink)};
+  --rt-ink-2: #{_pair(ink-2)};
+  --rt-ink-3: #{_pair(ink-3)};
+  --rt-line: #{_pair(line)};
+  --rt-line-strong: #{_pair(line-strong)};
+
+  // ── Chrome (navbar, mission strip) ────────────────────────────────
+  --rt-chrome: #{_pair(chrome)};
+  --rt-chrome-ink: #{_pair(chrome-ink)};
+
+  // ── Accent ────────────────────────────────────────────────────────
+  --rt-accent: #{_pair(accent)};
+  --rt-accent-ink: #{_pair(accent-ink)};
+
+  // ── Status colours (data, not brand - see _status.scss) ───────────
+  @each $name, $value in status.$light {
+    --rt-status-#{$name}: #{light-dark(#{$value}, #{map.get(status.$dark, $name)})};
+  }
+  --rt-status-ink: #{light-dark(status.$light-ink, status.$dark-ink)};
+
+  // ── Spacing and shape ─────────────────────────────────────────────
+  // Small scale on purpose: these exist so component stylesheets stop inventing
+  // one-off values, not to build a full design system in Sprint A.
+  --rt-radius: 6px;
+  --rt-radius-lg: 10px;
+  --rt-gap: 0.75rem;
+
+  // Field-conditions minimum. D-33 puts a phone in scope for the Entry screen, and
+  // 10 describes gloved hands outdoors - 44px is the floor for anything tappable.
+  --rt-tap-min: 44px;
+}

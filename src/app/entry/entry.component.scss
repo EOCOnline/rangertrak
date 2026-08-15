@@ -9,7 +9,10 @@ with ($primary: #962f10,
 
 //@use "contrasting-color";
 
-$filledColor : #F0F0F0;
+// Sprint A: was #F0F0F0. Now a token, so the skin controls it - see styles/_tokens.scss.
+// Kept as a Sass variable rather than inlining var(--rt-surface-2) at each of the five use
+// sites, so this file still has one place to look.
+$filledColor: var(--rt-surface-2);
 
 .filled {
   background-color: $filledColor;
@@ -30,7 +33,7 @@ $filledColor : #F0F0F0;
   background-color : $filledColor;
   border           : 2px solid black;
   border-radius    : 5px;
-  color            : #777;
+  color            : var(--rt-ink-3);
   font-style       : italic;
   text-align       : center;
   padding          : 0 1em;

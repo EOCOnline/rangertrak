@@ -13,7 +13,8 @@ ag-grid-angular {
   width : 400px;
 }
 
-$filledColor : #F0F0F0;
+// Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss.
+$filledColor: var(--rt-surface-2);
 
 .filled {
   background-color: $filledColor;

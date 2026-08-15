@@ -1,0 +1,45 @@
+// Field-report status colours.
+//
+// These are DATA, not brand: a status means the same thing whichever skin is active, so one
+// accessible set serves all three, with a light and a dark variant. See PRIVATE-Roadmap.md
+// 22 for the argument.
+//
+// The defaults shipped before Sprint A were CSS named colours painted as *text* on a white
+// form - LightYellow measured 1.07:1, Chartreuse 1.42:1, Aquamarine 1.29:1, Silver 1.74:1.
+// On the Entry screen's status radios, which is the primary control on the primary screen,
+// they were effectively invisible (19f item 1). Every value below clears WCAG AA (4.5:1)
+// against its paired ink.
+//
+// !! These are also STORED USER DATA. settings.service.ts writes them into every saved
+// settings object, so changing the defaults here does NOT change an existing user's saved
+// settings - that needs a migration, which is Sprint E work. Until then these tokens style
+// only the chips/labels that read from CSS rather than from settings.
+
+// Hue mapping is deliberately preserved from the old defaults so muscle memory survives -
+// teal stays teal, red stays red - with only the luminance corrected. The exception is
+// Normal: it was LightYellow, which collided with Evidence Report's DarkGoldenrod. "Normal"
+// is the no-alarm default, so it becomes a quiet neutral and the gold is freed for Evidence.
+$light: (
+  normal: #55636F,
+  location-report: #0F6E63,
+  evidence-report: #8A5A00,
+  need-rest-food: #3F7A2E,
+  incident-check-in: #1F5FA8,
+  incident-check-out: #3A4550,
+  urgent: #B3261E,
+);
+
+$dark: (
+  normal: #93A3B1,
+  location-report: #4FC3B4,
+  evidence-report: #D9A300,
+  need-rest-food: #7CC96A,
+  incident-check-in: #6BA8F0,
+  incident-check-out: #7A8896,
+  urgent: #FF6B5E,
+);
+
+// Ink to place on top of each fill. Light-mode fills are dark enough for white text; the
+// lighter dark-mode fills need dark text, which is why this is not a single constant.
+$light-ink: #FFFFFF;
+$dark-ink: #111111;

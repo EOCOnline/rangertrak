@@ -1,60 +1,36 @@
-// Following from https://material.angular.io/components/autocomplete/examples
+// Global styles.
+//
+// Sprint A (PRIVATE-Roadmap.md 19c, D-26) replaced what used to be here:
+//   - an M2 theme built with mat.m2-define-light-theme() and then NEVER INCLUDED - the
+//     @include line was commented out and partly garbled ("@ xx include"), so editing the
+//     palette changed nothing. What actually themed the app was the prebuilt indigo-pink.css
+//     listed in angular.json, which is now removed from both the build and test style arrays.
+//   - a `prefers-color-scheme: dark` block defining five custom properties with no
+//     light-mode counterpart, so they were undefined in light mode. See styles/_tokens.scss
+//     for why light-dark() is used instead.
 
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
-@use '@angular/material'as mat;
-// Plus imports for other components in your app.
+@use '@angular/material' as mat;
+@use './styles/active-skin' as skin;
+@use './styles/tokens';
 
+@import 'ag-grid-community/styles/ag-grid.css';
+@import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-/*
-  You can add global styles to this file, and also import other style files
-  Consider www.getBEM.com: Block__Element--Modifier style namess
-*/
-
-@import "ag-grid-community/styles/ag-grid.css";
-@import "ag-grid-community/styles/ag-theme-alpine.css";
-
-// The Material indigo-pink theme is already loaded once via angular.json's
-// top-level `styles` array - this used to be a second, redundant load via
-// a webpack/sass-loader-specific `~` tilde import, which esbuild's Sass
-// integration doesn't support anyway (removed during the esbuild builder
-// migration, not just fixed, to avoid loading the same theme CSS twice).
-
-
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
-//  The following line adds:
-//    1. Default typography styles for all components
-//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
-//  If you specify typography styles for the components you use elsewhere, you should delete this line.
-//  If you don't need the default component typographies but still want the hierarchy styles,
-//  you can delete this line and instead use:
-//    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
-// `sffes@  x i nclude mmmmmmmat.all-legacy-component-typographies();`
-// `sfe@  x in  c lude mmmmmmat.legacy-core();`
-
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$theme-primary: mat.m2-define-palette(mat.$m2-indigo-palette);
-$theme-accent : mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, A400);
-
-// The warn palette is optional (defaults to red).
-$theme-warn: mat.m2-define-palette(mat.$m2-red-palette);
-
-// Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
-$theme: mat.m2-define-light-theme((color: (primary: $theme-primary,
-      accent: $theme-accent,
-      warn: $theme-warn,
-    )));
-
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-// @ xx include mat.all-legacy-component-themes($theme);
+// The real theme. `mat.theme()` emits the `--mat-sys-*` system custom properties, which is
+// the token layer 19a item 1 said was missing on the Material side, and gives light/dark as
+// a first-class colour-scheme rather than a bolted-on media block.
+//
+// Scoped to :root rather than html so it composes with tokens.scss's :root block.
+:root {
+  @include mat.theme((
+    color: (
+      primary: skin.$primary-palette,
+      tertiary: skin.$tertiary-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
 
 html,
 body {
@@ -62,17 +38,14 @@ body {
 }
 
 body {
-  margin     : 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  // Explicit, from tokens: the app used to inherit whatever the browser painted, which is
+  // why the old dark-mode block appeared to do something on some machines and not others.
+  background: var(--rt-ground);
+  color: var(--rt-ink);
 }
 
-//From Angular Cookbook, pg 588
-@media (prefers-color-scheme: dark) {
-  :root {
-    --main-bg               : #333;
-    --text-color            : #fff;
-    --card-bg               : #000;
-    --primary-btn-color     : rgb(245, 250, 203);
-    --primary-btn-text-color: #333;
-  }
-}
+// Sprint A gate check (D-26): with a real token layer in place, changing ONE value in
+// styles/_active-skin.scss must visibly change the whole app. If that is not true, nothing
+// else in the UI phase should start.

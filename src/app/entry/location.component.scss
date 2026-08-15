@@ -5,7 +5,8 @@ with ($primary: #962f10,
 @use "@material/button/styles";
 @use "@material/banner";
 
-$filledColor : #F0F0F0;
+// Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss.
+$filledColor: var(--rt-surface-2);
 
 
 .elegant {

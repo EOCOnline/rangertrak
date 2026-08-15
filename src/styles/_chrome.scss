@@ -1,0 +1,100 @@
+// App-chrome tokens per skin.
+//
+// Angular Material's `mat.theme()` gives us a full `--mat-sys-*` token set, but it only
+// themes Material's own components. Everything RangerTrak draws itself - the navbar, the
+// mission strip, the Entry form's own furniture, the map frames - needs its own tokens, and
+// those are these. Each map here is one complete visual identity.
+//
+// Candidates and their reasoning are in PRIVATE-Roadmap.md 22.
+//
+// Each map's `accent` is deliberately close to, but not identical to, the M3 primary
+// generated from the same seed colour (see skins/_*.scss). M3 snaps a seed onto its own
+// tonal ramp; these are the literal brand values, used where we draw rather than Material.
+
+// Evolves the colour the app already used: #962f10 appeared in five component stylesheets
+// before Sprint A, with #442C2E as its dark companion.
+$ridgeline: (
+  ground: #F3F0ED,
+  ground-dark: #17110F,
+  surface: #FFFFFF,
+  surface-dark: #221A18,
+  surface-2: #EAE4DE,
+  surface-2-dark: #2C2220,
+  ink: #2A1F1D,
+  ink-dark: #F2E9E5,
+  ink-2: #5E4F4B,
+  ink-2-dark: #C4B3AD,
+  ink-3: #8C7C77,
+  ink-3-dark: #94827C,
+  line: #E0D8D2,
+  line-dark: #332724,
+  line-strong: #C9BDB5,
+  line-strong-dark: #4A3934,
+  chrome: #442C2E,
+  chrome-dark: #1A1210,
+  chrome-ink: #F7F2EE,
+  chrome-ink-dark: #EFE3DE,
+  accent: #9A3412,
+  accent-dark: #E8825A,
+  accent-ink: #FFFFFF,
+  accent-ink-dark: #2A1006,
+);
+
+// Cool neutrals, high contrast, signal blue - built for a small laptop or tablet in
+// daylight, which D-33 makes the predominant case.
+$command: (
+  ground: #EDF1F5,
+  ground-dark: #0B1119,
+  surface: #FFFFFF,
+  surface-dark: #141C26,
+  surface-2: #E1E8EF,
+  surface-2-dark: #1D2733,
+  ink: #0B1F33,
+  ink-dark: #E7EEF6,
+  ink-2: #41556B,
+  ink-2-dark: #A6B7C8,
+  ink-3: #71849A,
+  ink-3-dark: #75879A,
+  line: #DAE2EA,
+  line-dark: #232F3D,
+  line-strong: #BCC9D6,
+  line-strong-dark: #35465A,
+  chrome: #12263F,
+  chrome-dark: #060B12,
+  chrome-ink: #EAF1F8,
+  chrome-ink-dark: #DCE7F2,
+  accent: #0B5FA8,
+  accent-dark: #6BA8F0,
+  accent-ink: #FFFFFF,
+  accent-ink-dark: #04182F,
+);
+
+// Dark-first, for a command post after dark where a white screen wrecks night vision.
+// Muted teal rather than a neon accent, so nothing glows. Its "light" values are a
+// deliberately low-contrast warm-free grey rather than true white.
+$nightwatch: (
+  ground: #E8EDF0,
+  ground-dark: #0E1216,
+  surface: #FFFFFF,
+  surface-dark: #171D23,
+  surface-2: #DCE3E8,
+  surface-2-dark: #1F272E,
+  ink: #12181D,
+  ink-dark: #E6EDF3,
+  ink-2: #44525E,
+  ink-2-dark: #9FB0BF,
+  ink-3: #6B7A87,
+  ink-3-dark: #71828F,
+  line: #D2DAE0,
+  line-dark: #242E37,
+  line-strong: #B3BFC8,
+  line-strong-dark: #36434F,
+  chrome: #12181D,
+  chrome-dark: #080B0E,
+  chrome-ink: #E6EDF3,
+  chrome-ink-dark: #DDE6EC,
+  accent: #0F6E63,
+  accent-dark: #4FB3A9,
+  accent-ink: #FFFFFF,
+  accent-ink-dark: #04211E,
+);

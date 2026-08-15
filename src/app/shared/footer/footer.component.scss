@@ -1,9 +1,21 @@
+// 19f defect 5: this rendered as blue, bold, condensed, quasi-strikethrough text that read
+// as a rendering fault rather than a design choice. Cause was "Faster One" - a decorative
+// display face that is never loaded (no webfont link exists, and adding one would be a
+// third-party request this app deliberately avoids), so it fell through to whatever
+// condensed face the OS happened to offer, on top of default link colouring.
 .copyLeft {
-  text-decoration:none;
-  font-size: small;
-  float:right;
-  margin-right: 2vw;
-  font-family: "Faster One","Open Sans",Helvetica, sans-serif;
+  text-decoration: none;
+  font-size      : small;
+  float          : right;
+  margin-right   : 2vw;
+  font-family    : inherit;
+  color          : var(--rt-ink-2);
+}
+
+.copyLeft:hover,
+.copyLeft:focus-visible {
+  color          : var(--rt-accent);
+  text-decoration: underline;
 }
 
 div {
@@ -23,8 +35,9 @@ div {
   padding: 0.1em 0.6em;
   border: 1px solid currentColor;
   border-radius: 0.8em;
-  background: #ffe9a8;
-  color: #7a4f00;
+  // Stays a warning colour rather than the skin accent - it means "act", not "brand".
+  background: var(--rt-status-evidence-report);
+  color: var(--rt-status-ink);
   font-size: small;
   cursor: pointer;
 }
