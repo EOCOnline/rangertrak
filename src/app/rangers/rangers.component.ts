@@ -232,7 +232,16 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onBtnDeleteRangers() {
     this.log.verbose(`onBtnDeleteRangers: Deleteing all rangers`, this.id)
-    if (Utility.getConfirmation('REALLY delete all Rangers in LocalStorage, vs. edit the Ranger grid & Update the values in Local Storage?')) {
+    // Was: "REALLY delete all Rangers in LocalStorage, vs. edit the Ranger grid & Update
+    // the values in Local Storage?" - which asked the operator to weigh an alternative
+    // they had not chosen, in storage jargon, and never said what would actually happen.
+    const count = this.rangerService.rangers.length
+    if (Utility.getConfirmation(
+      `Delete all ${count} rangers from this browser?\n\n`
+      + `The roster will be empty until you import one or add station callsigns. `
+      + `Field reports already filed are not deleted, but they will refer to callsigns `
+      + `that are no longer in the roster.\n\n`
+      + `Export the roster first if you might want it back.`)) {
       this.log.info("Removing all rangers from local storage...", this.id)
       this.rangerService.deleteAllRangers()
       this.refreshGrid()
