@@ -27,11 +27,21 @@ $filledColor: var(--rt-surface-2);
   margin  : 10px 0px;
 }
 
+// The same rgb(236, 252, 4) electric yellow 25a item 3 replaced on Entry's Submit. That
+// fix changed the one button the review named and did not grep for the value, so this
+// twin survived a whole sprint. Same treatment: it is this page's primary action.
 .settings__Save-button {
   margin-left     : 10px;
   margin-top      : 0px;
   margin-bottom   : 10px;
-  background-color: rgb(236, 252, 4);
+  background-color: var(--rt-accent);
+  color           : var(--rt-accent-ink);
+  border          : 1px solid transparent;
+  border-radius   : var(--rt-radius);
+  min-height      : var(--rt-tap-min);
+  padding         : 0 1.25rem;
+  font-weight     : 600;
+  cursor          : pointer;
 }
 
 .eButton {
@@ -167,7 +177,8 @@ h3 {
 }
 
 #teamgrid1 {
-  background-color: rgb(215, 241, 143);
+  // Was rgb(215, 241, 143), a yellow-green from no palette.
+  background-color: var(--rt-surface-2);
   /*display       : inline-block;*/
   height          : 40em;
   width           : 40em;
