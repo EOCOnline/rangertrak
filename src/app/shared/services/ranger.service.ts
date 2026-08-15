@@ -16,7 +16,6 @@ import { formatDate } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 
-import * as rangers from '../../../assets/data/Rangers.3Feb22.json'
 //import { debounceTime, map, startWith } from 'rxjs/operators'
 import { LogService, RangerType, UnknownRanger } from './'
 
@@ -148,35 +147,20 @@ export class RangerService implements OnInit {
   // Or see code part way thru: https://www.geeksforgeeks.org/how-to-display-loading-screen-when-navigating-between-routes-using-angular/
   // for batsman.component.ts
 
-  LoadRangersFromJSON(fileName: string = '../../../assets/data/Rangers.3Feb22.json') {  // WARN: Replaces any existing Rangers
-    this.log.verbose(`loading new Rangers from ${fileName}`, this.id)
-
-    //! debugger
-
-    // also see secrets import as an example: Settings.ts
-
-    this.observeRangers$ = this.httpClient.get<RangerType[]>(fileName) // from pg 281
-
-    //this.rangers = []
-    if (rangers != null) {
-      // Use JSON file imported at the top
-      // this.rangers = JSON.parse(rangers) || []
-      // this.rangers = rangers
-      /* TODO: Add missing fields:
-      Type '{ callsign: string; label: string; fullName: string; licenseKey: string; phone: string; team: string; icon: string; }[]' is not assignable to type 'RangerType[]'.
-
-      Type '{ callsign: string; label: string; fullName: string; licenseKey: string; phone: string; team: string; icon: string; }is missing the following properties from type
-      'RangerType': address, image, status, notets(2322)
-
-      */
-    }
-
-    // REVIEW: Workaround for "Error: Should not import the named export (imported as localStorageRangerName='rangers') from default-exporting module (only default export is available soon)"
-    let rangerWorkaround = JSON.stringify(rangers)
-    this.rangers = JSON.parse(rangerWorkaround)
-    this.SortRangersByCallsign()   // TODO: Getting called too often?
-    this.log.verbose(`Got ${this.rangers.length} rangers from JSON file.`, this.id)
-  }
+  // REMOVED: LoadRangersFromJSON() and the `import * as rangers from
+  // '../../../assets/data/Rangers.3Feb22.json'` it relied on.
+  //
+  // That file is gitignored (.gitignore: /src/assets/data/ranger*.json) because it holds
+  // a real roster - 286 people with names, phone numbers and street addresses. A static
+  // import meant the bundler inlined all of it into the shipped JavaScript, so every
+  // deployed build published that roster to anyone who loaded the site. It also made the
+  // project unbuildable from a clean clone, which is why CI could not typecheck: the same
+  // defect as the secrets.json import (PRIVATE-Roadmap.md Section 9e).
+  //
+  // Nothing called the method - its only caller was the Rangers page's JSON import
+  // button, removed with the other non-working import experiments. Seed data for a fresh
+  // install comes from loadHardcodedRangers() below (station callsigns, not people), and
+  // a real roster arrives via Import Mission.
 
   //See pg. 279...
   //import * as data from filename;
