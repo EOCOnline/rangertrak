@@ -1,0 +1,166 @@
+import { Injectable } from '@angular/core'
+
+import { LogService } from './log.service'
+
+/**
+ * Ranger photographs, stored on THIS device only.
+ *
+ * D-35: a photograph of a volunteer is operator data, not an application asset. It never
+ * goes in `src/assets/`, because that is a public repo and a public site, and git history
+ * makes it a one-way door. A team leader loads the photos into their own command-post
+ * browser before a mission, and they stay there.
+ *
+ * Why this exists at all (E-38): a photo beside the callsign is how a scribe confirms *who*
+ * a report is about while entering it. The feature was removed when the repo went public
+ * and never rebuilt, which cost a real field capability to solve a publishing problem.
+ *
+ * Two deliberate choices:
+ *
+ * 1. **Photos are downscaled on import.** They are rendered at 40px in the grid and 60px on
+ *    the Entry form; the originals average ~400KB. Storing them at MAX_EDGE keeps a 200-photo
+ *    roster in single-digit MB, which matters on a tablet that also holds map tiles.
+ * 2. **Object URLs are built once, up front, into a synchronous map.** The three render
+ *    sites are string-building cell renderers that cannot await anything, so the alternative
+ *    would be rewriting all of them.
+ */
+
+const DB_NAME = 'rangertrak-photos'
+const DB_VERSION = 1
+const STORE = 'photos'
+/** Longest edge kept, in pixels. Renders at 40-60px; this leaves room for retina and zoom. */
+const MAX_EDGE = 320
+
+@Injectable({ providedIn: 'root' })
+export class RangerPhotoService {
+
+  private id = 'Ranger Photo Service'
+  private db?: IDBDatabase
+
+  /** callsign (upper-case) -> object URL. Synchronous, for the cell renderers. */
+  private urls = new Map<string, string>()
+
+  private ready: Promise<void>
+
+  constructor(private log: LogService) {
+    this.ready = this.open()
+      .then(() => this.loadAll())
+      .catch(e => this.log.warn(`Photos unavailable on this device: ${e?.message ?? e}`, this.id))
+  }
+
+  /** Resolves once stored photos have been read into memory. */
+  whenReady(): Promise<void> { return this.ready }
+
+  /** Object URL for a callsign's photo, or '' when there is none. Synchronous by design. */
+  photoUrl(callsign: string): string {
+    return this.urls.get(String(callsign || '').toUpperCase()) ?? ''
+  }
+
+  count(): number { return this.urls.size }
+
+  /**
+   * Stores photos picked from a folder. Matching is by FILENAME STEM = callsign, which is
+   * what build-roster-zip.js produces, and it also means the filename stops carrying the
+   * person's name - one less place the identity sits.
+   *
+   * Returns what happened, for a confirmation the operator can actually check.
+   */
+  async importFiles(files: File[], knownCallsigns: string[]): Promise<{ stored: string[], unmatched: string[] }> {
+    await this.ready
+    const known = new Map(knownCallsigns.map(c => [c.toUpperCase(), c]))
+    const stored: string[] = []
+    const unmatched: string[] = []
+
+    for (const file of files) {
+      const stem = file.name.replace(/\.[^.]+$/, '').trim().toUpperCase()
+      if (!known.has(stem)) { unmatched.push(file.name); continue }
+      try {
+        const blob = await this.downscale(file)
+        await this.put(stem, blob)
+        this.revoke(stem)
+        this.urls.set(stem, URL.createObjectURL(blob))
+        stored.push(known.get(stem)!)
+      } catch (e: any) {
+        this.log.error(`Could not store ${file.name}: ${e?.message ?? e}`, this.id)
+        unmatched.push(file.name)
+      }
+    }
+
+    this.log.info(`Stored ${stored.length} photos on this device; ${unmatched.length} unmatched.`, this.id)
+    return { stored, unmatched }
+  }
+
+  /** Forgets every stored photo. The roster is untouched. */
+  async clear(): Promise<void> {
+    await this.ready
+    for (const cs of [...this.urls.keys()]) this.revoke(cs)
+    this.urls.clear()
+    if (!this.db) return
+    await this.tx('readwrite', s => s.clear())
+    this.log.warn('Deleted all ranger photos from this device.', this.id)
+  }
+
+  // ── internals ────────────────────────────────────────────────────────
+
+  private open(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (typeof indexedDB === 'undefined') { reject(new Error('no IndexedDB')); return }
+      const req = indexedDB.open(DB_NAME, DB_VERSION)
+      req.onupgradeneeded = () => {
+        const db = req.result
+        if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE)
+      }
+      req.onsuccess = () => { this.db = req.result; resolve() }
+      req.onerror = () => reject(req.error)
+    })
+  }
+
+  private tx<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      if (!this.db) { reject(new Error('photo store not open')); return }
+      const req = fn(this.db.transaction(STORE, mode).objectStore(STORE))
+      req.onsuccess = () => resolve(req.result)
+      req.onerror = () => reject(req.error)
+    })
+  }
+
+  private put(callsign: string, blob: Blob) { return this.tx('readwrite', s => s.put(blob, callsign)) }
+
+  private async loadAll(): Promise<void> {
+    if (!this.db) return
+    const keys = await this.tx<IDBValidKey[]>('readonly', s => s.getAllKeys())
+    const blobs = await this.tx<Blob[]>('readonly', s => s.getAll())
+    keys.forEach((k, i) => {
+      const blob = blobs[i]
+      if (blob) this.urls.set(String(k).toUpperCase(), URL.createObjectURL(blob))
+    })
+    if (this.urls.size) this.log.info(`Loaded ${this.urls.size} ranger photos from this device.`, this.id)
+  }
+
+  private revoke(callsign: string) {
+    const existing = this.urls.get(callsign)
+    if (existing) URL.revokeObjectURL(existing)
+  }
+
+  /** Shrinks to MAX_EDGE, preserving aspect. Falls back to the original on any failure. */
+  private async downscale(file: File): Promise<Blob> {
+    try {
+      const bitmap = await createImageBitmap(file)
+      const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height))
+      if (scale === 1) { bitmap.close?.(); return file }
+
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.round(bitmap.width * scale)
+      canvas.height = Math.round(bitmap.height * scale)
+      const ctx = canvas.getContext('2d')
+      if (!ctx) { bitmap.close?.(); return file }
+      ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+      bitmap.close?.()
+
+      const blob = await new Promise<Blob | null>(r => canvas.toBlob(r, 'image/jpeg', 0.85))
+      return blob ?? file
+    } catch {
+      // A device without createImageBitmap still gets its photos, just larger.
+      return file
+    }
+  }
+}

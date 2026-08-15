@@ -147,6 +147,24 @@
         settings are untouched</span>
     </div>
 
+    <!-- Photos are operator data (D-35): they stay on this device and never reach a server
+         or the repo. Matched to rangers by filename = callsign. -->
+    <div class="roster-transfer">
+      <span class="roster-transfer__label">Photos:</span>
+
+      <label for="importPhotoFiles" class="roster-transfer__import"
+        title="Store photographs on this device. Name each file after its callsign, e.g. K7VMI.jpg">
+        Import photos</label>
+      <input #importPhotoFiles id="importPhotoFiles" type="file" accept="image/*" multiple
+        (change)="onPhotoFilesSelected($event)" hidden />
+
+      <button (click)="onBtnClearPhotos()" title="Forget every stored photo on this device">
+        Clear photos</button>
+
+      <span class="roster-transfer__note">kept on this device only &mdash; never uploaded,
+        never in the repo. Name files after the callsign.</span>
+    </div>
+
     <div>
       <button (click)="onBtnExportToExcel()">Export Rangers</button> as a spreadsheet (CSV),
       with column separator of

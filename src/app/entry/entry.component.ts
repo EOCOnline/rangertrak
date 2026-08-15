@@ -20,6 +20,8 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { Utility } from '../shared/utility'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import { PageComponent } from '../shared/page/page.component'
+// Direct path, not the shared/services barrel - see the note in rangers.component.ts.
+import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
 import { DDToDDM } from '../shared/mapping/coordinate'
 import {
@@ -119,6 +121,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private _formBuilder: UntypedFormBuilder,
     private rangerService: RangerService,
+    private photos: RangerPhotoService,
     private fieldReportService: FieldReportService,
     private log: LogService,
     private settingsService: SettingsService,
@@ -384,7 +387,18 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       this.log.verbose(`EntryForm callsignChanged looking for ${callsign}`, this.id)
 
       let ranger = this.rangerService.getRanger(callsign)
-      this.callImg.innerHTML = `<img style="height:60px; margin-bottom:-15px;" text="${ranger.fullName}" aria-hidden src="${this.settings.imageDirectory}rangers/${ranger.image}"/>`
+
+      // E-38. This is the photo's whole purpose: confirming *who* a report is about, while
+      // it is being entered. Order: a photograph stored on this device (D-35 - never in the
+      // repo), then whatever the roster names, then the generic silhouette. The silhouette
+      // matters because the previous fallback was a broken-image icon.
+      const localPhoto = this.photos.photoUrl(ranger.callsign)
+      const src = localPhoto
+        || (ranger.image
+          ? `${this.settings.imageDirectory}rangers/${ranger.image}`
+          : `${this.settings.imageDirectory}rangers/androgynous.svg`)
+
+      this.callImg.innerHTML = `<img style="height:60px; margin-bottom:-15px;" alt="Photo of ${ranger.fullName || ranger.callsign}" src="${src}"/>`
       this.callInfo.innerHTML = `<span class="enter__Callsign-info">${ranger.fullName}<br> ${ranger.phone}<br>${ranger.rew ? ranger.rew : "No REW!"}</span>`
 
     } else {

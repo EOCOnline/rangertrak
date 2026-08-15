@@ -16,6 +16,10 @@ import {
   FieldReportService, FieldReportType, LogService, RangerService, RangerType,
   SettingsService, SettingsType
 } from '../shared/services'
+// Direct path, not the barrel: importing a service used as a DI token through
+// shared/services/index.ts leaves it unresolvable to the compiler ("no suitable injection
+// token"), the same way the barrel broke `imports:` arrays during Sprint B.
+import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { CustomTooltip } from './customTooltip'
 
 
@@ -104,9 +108,24 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   // On hovering, display a larger image!
+  //
+  // Photo resolution order (E-38):
+  //   1. a photograph stored on THIS device, keyed by callsign - never in the repo (D-35)
+  //   2. whatever `image` the roster names, under the configured image directory
+  //   3. the generic androgynous silhouette
+  // Step 3 matters: before it, a ranger with no photo rendered a broken-image icon.
   imageCellRenderer = (params: { data: RangerType }) => {
-    return `<img class="licenseImg" style="height:40px; width:40px;" alt= "Image of ${params.data.fullName}"
-      src= "${this.settings.imageDirectory}rangers/${params.data.image}">`
+    const src = this.photoSrc(params.data)
+    return `<img class="licenseImg" style="height:40px; width:40px;" alt="Photo of ${params.data.fullName || params.data.callsign}"
+      src="${src}">`
+  }
+
+  /** Shared by the renderers above - see the resolution order there. */
+  photoSrc(ranger: RangerType): string {
+    const local = this.photos.photoUrl(ranger.callsign)
+    if (local) return local
+    if (ranger.image) return `${this.settings.imageDirectory}rangers/${ranger.image}`
+    return `${this.settings.imageDirectory}rangers/androgynous.svg`
   }
 
   callsignCellRenderer = (params: { data: RangerType }) => {
@@ -130,6 +149,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     private log: LogService,
     private rangerService: RangerService,
     private settingsService: SettingsService,
+    private photos: RangerPhotoService,
     private _snackBar: MatSnackBar,
     @Inject(DOCUMENT) private document: Document
   ) {
@@ -267,6 +287,45 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // in was Import Mission - which also replaces settings and every field report. That is
   // the wrong tool for "here is our roster": it discards the work already on the device.
   // These two do the roster and nothing else.
+
+  /**
+   * Stores photographs on this device, matched to rangers by filename = callsign.
+   * They never enter the repo or a server (D-35); they are operator data.
+   */
+  async onPhotoFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement
+    const files = [...(input.files ?? [])]
+    input.value = ''
+    if (!files.length) {
+      return
+    }
+
+    const { stored, unmatched } = await this.photos.importFiles(
+      files, this.rangerService.rangers.map(r => r.callsign))
+
+    const lines = [`Stored ${stored.length} photo${stored.length === 1 ? '' : 's'} on this device.`]
+    if (unmatched.length) {
+      lines.push('',
+        `${unmatched.length} did not match a callsign in the roster and were skipped:`,
+        unmatched.slice(0, 8).join(', ') + (unmatched.length > 8 ? ', ...' : ''),
+        '',
+        'Photos are matched by filename: NAME the file after the callsign, e.g. "K7VMI.jpg".')
+    }
+    alert(lines.join('\n'))
+    this.reloadPage()
+  }
+
+  /** Forgets every stored photo on this device. The roster itself is untouched. */
+  async onBtnClearPhotos() {
+    if (!Utility.getConfirmation(
+      `Delete all ${this.photos.count()} ranger photos from this browser?\n\n`
+      + `The roster is not affected. Rangers will show the generic silhouette until you `
+      + `import photos again.`)) {
+      return
+    }
+    await this.photos.clear()
+    this.reloadPage()
+  }
 
   /** Downloads just the roster as JSON - the file the importer below expects. */
   onBtnExportRangersJson() {
