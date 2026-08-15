@@ -1,13 +1,9 @@
 <pageHeader [parentTitle]="title" [pageDescription]="pageDescr">...</pageHeader>
 
 <section class="main">
-  <!--div *ngIf="apiLoaded" | async -->
-  <div>If the map isn't shown below, try refreshing the page (F5), zooming -- or even switching to a different page &
-    then
-    back.<span style="font-size: xx-small;"> (Need to have Leaflet refresh once map download is complete?)</span></div>
   <div class="lmap-container">
     <div class="lmap-frame">
-      <div id="map" leaflet (leafletMapReady)="onMapReady($event)" (click)="onMouseClick($event)"></div>
+      <div #mapContainer id="lmap-main" (click)="onMouseClick($event)"></div>
     </div>
     <div>
       Latitude: <span class="strong">{{mouseLatLng.lat.toFixed(5)}}</span> Longitude:
@@ -17,7 +13,7 @@
       <div id="Lmap-status">Click map to copy coordinates</div>
     </div>
   </div>
-  <div id="overview" overview></div>
+  <div #overviewContainer id="lmap-overview"></div>
   <br />
 
   <label for="selectedFieldReports">Field reports to show: All ({{numAllRows}})</label>

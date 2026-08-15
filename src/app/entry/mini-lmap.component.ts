@@ -14,7 +14,7 @@ import { delay, throwError } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 
 // Specific paths, not the '../shared/' barrel: the barrel re-exports the MapLibre style
 // helpers, so importing through it here pulled MapLibre (~800KB) into the eager bundle
@@ -97,6 +97,13 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
   override id = 'Leaflet MiniMap Component'
   override title = 'Leaflet MiniMap'
+
+  // static: true - the div is unconditional in the template, and the map is built in
+  // ngOnInit. Resolved from this component's own view, not by DOM id: Leaflet resolves a
+  // string container globally, and this minimap shared id="map" with two full-page maps,
+  // so navigating Entry -> /lmap handed Leaflet *this* element. See D-30.
+  @ViewChild('mapContainer', { static: true }) private mapContainer!: ElementRef<HTMLDivElement>
+
   private lMap!: L.Map
   private overviewLMap!: L.Map
 
@@ -165,7 +172,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
     // Following moved from InitMainMap to avoid: map not a leaflet or google map
     // Set intial map position, though AddMarker rescales/centers map as needed
-    this.lMap = L.map('map', {
+    this.lMap = L.map(this.mapContainer.nativeElement, {
       center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
       zoom: this.settings ? this.settings.leaflet.defZoom : 15
     }) // Default view set at map creation
@@ -308,6 +315,10 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
    *   ---------------- Init OverView Map -----------------
    *
    */
+  // Unreachable: the constructor sets hasOverviewMap = false and this template has no
+  // overview div, so the L.map('overview') below is the one global-id lookup left in the
+  // app. Left as-is rather than converted, because there is no element to convert it to -
+  // if this is ever switched on, add a #overviewContainer div and a ViewChild for it.
   initOverviewMap() {
     //! No super.initOverviewMap(), correct?!
 

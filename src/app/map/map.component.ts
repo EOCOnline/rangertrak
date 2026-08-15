@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import {
-  AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit
+  AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild
 } from '@angular/core'
 
 import { buildPmtilesStyle, registerPmtilesProtocol } from '../shared/mapping/map-style'
@@ -33,6 +33,12 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public title = 'Offline Map'
   public pageDescr = 'MapLibre + PMTiles (offline-capable)'
+
+  // Resolved from this component's own view, never by DOM id. Three map components once
+  // all used id="map", and both MapLibre and Leaflet resolve a string container globally -
+  // so whichever matching element the document happened to hold first won. See D-30.
+  @ViewChild('mapContainer') private mapContainer!: ElementRef<HTMLDivElement>
+  @ViewChild('overviewContainer') private overviewContainer!: ElementRef<HTMLDivElement>
 
   private map!: MaplibreMap
   private overviewMap: MaplibreMap | undefined
@@ -80,7 +86,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.map = new MaplibreMap({
-      container: 'map',
+      container: this.mapContainer.nativeElement,
       style: buildPmtilesStyle(),
       center: [this.settings.defLng, this.settings.defLat],
       zoom: this.settings.google.defZoom
@@ -109,7 +115,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private initOverviewMap(): void {
     this.overviewMap = new MaplibreMap({
-      container: 'overview',
+      container: this.overviewContainer.nativeElement,
       style: buildPmtilesStyle(),
       center: [this.settings.defLng, this.settings.defLat],
       zoom: this.settings.google.overviewMinZoom,

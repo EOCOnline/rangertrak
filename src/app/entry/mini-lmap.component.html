@@ -2,7 +2,7 @@
   <h2 class="Entry__LMap-head">Current Location<span id="Entry__LMinimap-subhead">(Reflects 'Where' field to the
       left)</span></h2>
   <div class="lmap-frame">
-    <div id="map" (leafletMapReady)="onMapReady($event)" (click)="onMouseClick($event)"></div>
+    <div #mapContainer id="entry-minimap" (click)="onMouseClick($event)"></div>
   </div>
 
   <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->

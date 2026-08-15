@@ -18,7 +18,7 @@ import { throwError } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 
 import { AbstractMap, Utility } from '../shared'
 import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
@@ -72,6 +72,13 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   public override id = 'Leaflet Map Component'
   public override title = 'Leaflet Map'
   public override pageDescr = 'Leaflet Map'
+
+  // static: true - these divs sit in the template unconditionally, so the query resolves
+  // before ngOnInit, which is where the maps are built. Resolved from this component's own
+  // view rather than by DOM id: Leaflet looks a string container up globally, and three map
+  // components once all used id="map". See D-30.
+  @ViewChild('mapContainer', { static: true }) private mapContainer!: ElementRef<HTMLDivElement>
+  @ViewChild('overviewContainer', { static: true }) private overviewContainer!: ElementRef<HTMLDivElement>
 
   private lMap!: L.Map
   private overviewLMap!: L.Map
@@ -234,7 +241,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // TODO: Provide fullscreen button: https://tomik23.github.io/leaflet-examples/#27.fullscreen
 
     // https://leafletjs.com/reference.html#map-locate
-    this.lMap = L.map('map', {
+    this.lMap = L.map(this.mapContainer.nativeElement, {
       center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
       zoom: this.settings ? this.settings.leaflet.defZoom : 15,
       // https://github.com/Leaflet/Leaflet.fullscreen
@@ -386,7 +393,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     // instantiate the overview map without controls
     // https://leafletjs.com/reference.html#map-example
-    this.overviewLMap = L.map('overview', {
+    this.overviewLMap = L.map(this.overviewContainer.nativeElement, {
       center: [this.settings.defLat, this.settings.defLng],
       zoom: this.settings.leaflet.defZoom,
       zoomControl: false,
