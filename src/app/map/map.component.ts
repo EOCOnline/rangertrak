@@ -32,8 +32,10 @@ const REPORTS_SOURCE_ID = 'field-reports'
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  public title = 'Offline Map'
-  public pageDescr = 'MapLibre + PMTiles (offline-capable)'
+  // D-31: "Backup map" rather than "Offline Map" - the Leaflet map is offline-capable too,
+  // so "offline" never was the distinction. This is the one that works when nothing else does.
+  public title = 'Backup map'
+  public pageDescr = 'Bundled fallback map: works with no connection, pilot region only, no street names.'
 
   // Resolved from this component's own view, never by DOM id. Three map components once
   // all used id="map", and both MapLibre and Leaflet resolve a string container globally -

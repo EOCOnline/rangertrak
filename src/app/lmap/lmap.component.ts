@@ -71,8 +71,10 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
 
   public override id = 'Leaflet Map Component'
-  public override title = 'Leaflet Map'
-  public override pageDescr = 'Leaflet Map'
+  // D-31: the page header follows the nav. "Leaflet" is an implementation detail that
+  // means nothing to a scribe; it survives in the nav item's tooltip.
+  public override title = 'Map'
+  public override pageDescr = 'Detailed worldwide map. Save an area while online to keep it available offline.'
 
   // static: true - these divs sit in the template unconditionally, so the query resolves
   // before ngOnInit, which is where the maps are built. Resolved from this component's own

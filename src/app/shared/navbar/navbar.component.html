@@ -16,8 +16,20 @@
       <a [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact:
       true}">Home</a>
     </li>
-    <li><a [routerLink]="['/lmap']" routerLinkActive="active">Map (Leaflet)</a></li>
-    <li><a [routerLink]="['/map']" routerLinkActive="active">Map (MapLibre+PMTiles)</a></li>
+    <!-- D-31. These were "Map (Leaflet)" and "Map (MapLibre+PMTiles)": a development
+         decision (two engines shipping side by side until usage picks one) that had leaked
+         into the operator's navigation. Neither is "the offline one" - both work offline,
+         differently - so the honest short names come from which one a scribe reaches for.
+         Leaflet is detailed and world-wide but its offline coverage must be prepared
+         deliberately; PMTiles is coarse and Vashon-only but is always there once warmed.
+         So: the primary takes the plain name, the fallback is the backup. Engine names
+         survive in the titles, for us, not for the scribe. -->
+    <li><a [routerLink]="['/lmap']" routerLinkActive="active"
+        title="Detailed worldwide map (Leaflet + OpenStreetMap). Needs a connection unless you have saved this area for offline use.">Map</a>
+    </li>
+    <li><a [routerLink]="['/map']" routerLinkActive="active"
+        title="Bundled fallback map (MapLibre + PMTiles). Works with no connection once opened, but covers the pilot region only and has no street names.">Backup
+        map</a></li>
     <li><a [routerLink]="['/reports']" routerLinkActive="active">Reports</a></li>
     <li><a [routerLink]="['/rangers']" routerLinkActive="active">Rangers</a></li>
     <li><a [routerLink]="['/settings']" routerLinkActive="active">Settings</a></li>
