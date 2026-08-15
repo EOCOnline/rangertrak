@@ -71,6 +71,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   private gridApi: any
   private gridColumnApi: any
+
+  /**
+   * The editable working set behind the status/colour grid. Unlike the read-only mirrors
+   * elsewhere this cannot be a getter - the user edits these rows and `addStatus()`
+   * pushes to them - so it is re-seeded from the settings subscription instead, next to
+   * the form reset that already happens there. Snapshotting it only in ngOnInit meant
+   * that after Import Mission the grid still showed the *previous* mission's statuses,
+   * and saving from that stale grid wrote them back over the imported ones.
+   */
   rowData: FieldReportStatusType[] = []
 
 
@@ -253,6 +262,7 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
 
         // reset form based on new settings...
         this.settingsEditorForm = this.getFormArrayFromSettingsArray()!
+        this.rowData = this.settings.fieldReportStatuses
 
         this.opPeriodStart = this.settings.opPeriodStart
         this.opPeriodEnd = this.settings.opPeriodEnd
@@ -277,7 +287,8 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     if (this.settings == undefined) {
       this.log.warn('Settings need to be initialized, in ngOnInit.', this.id)
     } else {
-      this.rowData = this.settings.fieldReportStatuses
+      // rowData is seeded by the settings subscription in the constructor (and re-seeded
+      // on every later emission), so it is already populated by the time we get here.
       this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
     }
 

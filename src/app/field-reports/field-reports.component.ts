@@ -51,8 +51,17 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   pageDescr = `Grid display of reported ranger positions and status throughout a mission`
 
   private fieldReportsSubscription!: Subscription
-  private fieldReportStatuses: FieldReportStatusType[] = []
-  // fieldReportStatuses!: Observable<FieldReportStatusType[]> //TODO:
+
+  /**
+   * Read through to the service rather than snapshotting in ngOnInit, which is what this
+   * used to do. The statuses (and their colours) are per-mission settings, so Import
+   * Mission, Load Sample Mission and Reset Settings all change them - and the snapshot
+   * left this grid colouring rows by the *previous* mission's status list. Read at
+   * cell-render time, so a getter is enough; SettingsService.settings reads a signal.
+   */
+  private get fieldReportStatuses(): FieldReportStatusType[] {
+    return this.settingsService.settings?.fieldReportStatuses ?? []
+  }
   public fieldReportArray: FieldReportType[] = []
   private fieldReports: FieldReportsType | undefined
 
@@ -155,10 +164,8 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    if (this.settings) {
-      this.fieldReportStatuses = this.settings.fieldReportStatuses
-    } else {
-      this.log.error(`this.settings was null in constructor`, this.id)
+    if (!this.settings) {
+      this.log.error(`this.settings was null in ngOnInit`, this.id)
     }
 
     //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?

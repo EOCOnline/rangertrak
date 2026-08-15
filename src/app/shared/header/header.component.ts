@@ -115,6 +115,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.settingsSubscription?.unsubscribe
+    // Note the parentheses: this read the property without calling it, so the header -
+    // which every page instantiates - never actually released its settings subscription.
+    this.settingsSubscription?.unsubscribe()
   }
 }
