@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.4](https://github.com/EOCOnline/rangertrak/compare/v0.15.3...v0.15.4) (2026-08-15)
+
+
+### Bug Fixes
+
+* **rangers:** say what deleting the roster actually does ([42b5b76](https://github.com/EOCOnline/rangertrak/commit/42b5b765f42696e1faa8df141c6dc37a499a22ac))
+
 ### [0.15.3](https://github.com/EOCOnline/rangertrak/compare/v0.15.2...v0.15.3) (2026-08-15)
 
 
