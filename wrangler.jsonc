@@ -5,6 +5,15 @@
   "name": "rangertrak",
   "compatibility_date": "2026-08-14",
 
+  // Custom domains, declared here rather than clicked into the dashboard so the
+  // hostname mapping is reviewable, reproducible and travels with the repo.
+  // Cloudflare creates the proxied DNS records and provisions the certificate;
+  // do NOT hand-create A/AAAA records for these names (see DEPLOYING.md).
+  "routes": [
+    { "pattern": "rangertrak.org", "custom_domain": true },
+    { "pattern": "www.rangertrak.org", "custom_domain": true }
+  ],
+
   "assets": {
     // @angular/build:application writes the browser bundle to dist/<project>/browser.
     "directory": "./dist/rangertrak/browser",
