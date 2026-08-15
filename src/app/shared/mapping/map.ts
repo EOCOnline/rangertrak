@@ -11,7 +11,6 @@ import {
   AfterViewInit, Component, ElementRef, Inject, isDevMode, NgZone, OnDestroy, OnInit, ViewChild,
   ChangeDetectionStrategy
 } from '@angular/core'
-import { MDCSwitch } from '@material/switch'
 
 import {
   FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LocationType,
@@ -79,8 +78,12 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
 
   protected hasSelectedReports = false // Guard for the following
   protected selectedReports: FieldReportsType | undefined = undefined
-  protected filterSwitch: MDCSwitch | undefined = undefined
-  protected filterButton: HTMLButtonElement | undefined = undefined
+  // Which set the map is showing. Plain component state, deliberately: this used
+  // to be read off an MDCSwitch instance built by hand from a querySelector, and
+  // the switch's own click handler raced Angular's - so the map read the state
+  // from *before* the click and appeared to reset itself to All. That is what the
+  // "[Broken:]" label in the template was apologising for.
+  protected showingSelectedOnly = false
   public numSelectedRows = 0
   public numAllRows = 0
 
@@ -122,11 +125,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    */
   ngOnInit() {
     this.log.verbose("(Abstract) ngOnInit()", this.id)
-
-    this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
-    if (this.filterButton == undefined) {
-      this.log.error("(Abstract) updateFieldReports() could not find selectedFieldReports", this.id)
-    }
 
     if (!this.settings) {
       this.log.error(`(Abstract) this.settings not yet established in ngOnInit()`, this.id)
@@ -279,63 +277,30 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
 
   // ------------------------------------  Field Reports  ---------------------------------------
 
+  /**
+   * Refresh the row counts shown beside the all/selected control.
+   *
+   * Used to also build an MDCSwitch (twice), re-query the DOM in ngOnInit before
+   * the view existed, and log an error on any map that has no such control -
+   * which is why the Entry page's mini-map complained on every load. It touches
+   * no DOM now; the template binds to numAllRows/numSelectedRows directly.
+   */
   updateFieldReports() {
     this.log.excessive(`updateFieldReports()`, this.id)
-    if (this.hasSelectedReports) {
 
-      if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
-        this.numSelectedRows = this.selectedReports.numReport
-        if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
+    this.numAllRows = this.fieldReports?.numReport ?? 0
 
-          //! BUG: At start, if no rows were selected, then this.selectedReports.fieldReportArray.length reports all rows, not zero...
-          this.log.error(`(Abstract) updateFieldReports:  # rows in selected array ${this.numSelectedRows} != # rows supposed to be there: ${this.selectedReports.fieldReportArray.length}. Resetting`, this.id)
-          this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
-          this.numSelectedRows = this.selectedReports.fieldReportArray.length
-        }
-      } else {
-        this.numSelectedRows = 0
-      }
-
-      if (this.filterButton == undefined) {
-        this.log.error("(Abstract) updateFieldReports() could not find selectedFieldReports button", this.id)
-        return
-      }
-
-      // No need to *subscribe*, as everytime there is a selection made,
-      // it currently gets stored and won't change once we're on this screen
-      this.numSelectedRows = this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
-      // Selected Field Reports are retrieved when user clicks the slider switch...but we do need the #!
-      this.filterSwitch = new MDCSwitch(this.filterButton)
-      if (!this.filterSwitch) {
-        throw ("(Abstract) updateFieldReports(): Found filterButton - but could NOT create Field Report Selection Switch!")
-      }
-
-      //! TEST: Does this get re-hit if user swittches back, adjusts # selected rows and returns???
-      // BUG: refresh page resets selected switch
-      this.onSwitchSelectedFieldReports()
-
-      // Just get the # of rows in the selection (if any), so we can properly display that # next to the switch
-      if (this.selectedReports = this.fieldReportService.getSelectedFieldReports()) {
-        this.numSelectedRows = this.selectedReports.numReport
-        if (this.numSelectedRows != this.selectedReports.fieldReportArray.length) {
-          this.log.error(`(Abstract) updateFieldReports(): ngOnInit issue w/ selected rows ${this.numSelectedRows} != ${this.selectedReports.fieldReportArray.length}`, this.id)
-          this.selectedReports.numReport = this.selectedReports.fieldReportArray.length
-          this.numSelectedRows = this.selectedReports.fieldReportArray.length
-        }
-      } else {
-        this.log.warn(`(Abstract) updateFieldReports(): Could not retrieve selected Field Reportst.`, this.id)
-        this.numSelectedRows = 0
-      }
-
-      this.filterButton = document.querySelector('#selectedFieldReports') as HTMLButtonElement
-      if (!this.filterButton) { throw ("(Abstract) updateFieldReports(): Could not find Field Report Selection button!") }
-
-      this.filterSwitch = new MDCSwitch(this.filterButton)
-      if (!this.filterSwitch) throw ("(Abstract) updateFieldReports(): Could not find Field Report Selection Switch!")
-
-    } else {
-      this.log.error(`(Abstract) updateFieldReports got no Selected reports`)
+    if (!this.hasSelectedReports) {
+      // Normal for maps without an all/selected control (e.g. the Entry mini-map).
+      return
     }
+
+    this.selectedReports = this.fieldReportService.getSelectedFieldReports()
+    this.numSelectedRows = this.selectedReports?.fieldReportArray.length ?? 0
+
+    this.displayedFieldReportArray = this.showingSelectedOnly
+      ? (this.selectedReports?.fieldReportArray ?? [])
+      : (this.fieldReports?.fieldReportArray ?? [])
   }
 
 
@@ -357,6 +322,9 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     this.fieldReports = newReports
     this.fieldReportArray = newReports.fieldReportArray
     console.assert(this.numAllRows == this.fieldReportArray.length)
+    // Keeps displayedFieldReportArray and the row counts in step with the new
+    // reports while honouring the current all/selected choice.
+    this.updateFieldReports()
     if (this.map) {
       this.refreshMap()
     }
@@ -368,35 +336,23 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    * @returns
    */
 
-  //! BUG: Resets selected reports to ALL!!!!
-  onSwitchSelectedFieldReports() { //event: any) {
+  /**
+   * User toggled the all/selected control. The caller is the template's change
+   * event, so the component owns the state and there is no second source of
+   * truth to disagree with.
+   */
+  onSwitchSelectedFieldReports() {
     if (!this.fieldReports) {
       this.log.error(`(Abstract) onSwitchSelectedFieldReports(): Field Reports not yet set`, this.id)
       return
     }
 
-    if (!this.filterSwitch) {
-      this.log.error(`(Abstract) onSwitchSelectedFieldReports(): filterSwitch not found`, this.id)
-      return
-    }
+    this.showingSelectedOnly = !this.showingSelectedOnly
+    this.updateFieldReports()
 
-    if (this.filterSwitch.selected) {
-      this.displayedFieldReportArray = this.fieldReportService.getSelectedFieldReports().fieldReportArray
-      // ! REVIEW: we did NOT grab the whole selectedFieldReports structure, JUST the report array: OK?!
-      this.numSelectedRows = this.displayedFieldReportArray.length
-      this.log.verbose(`(Abstract) onSwitchSelectedFieldReports():Displaying ${this.displayedFieldReportArray.length} SELECTED field Reports`, this.id)
-    } else {
-      this.displayedFieldReportArray = this.fieldReports.fieldReportArray
-      this.numSelectedRows = this.fieldReports.numReport
-      this.log.verbose(`(Abstract) onSwitchSelectedFieldReports():Displaying ALL ${this.displayedFieldReportArray.length} field Reports`, this.id)
-      if (this.numSelectedRows != this.displayedFieldReportArray.length) {
-        this.log.error(`(Abstract) onSwitchSelectedFieldReports():Having to update numSelectedRows ${this.numSelectedRows} to match actual array length ${this.displayedFieldReportArray.length}`, this.id)
-        this.numSelectedRows = this.displayedFieldReportArray.length
-      }
-    }
+    this.log.verbose(`(Abstract) onSwitchSelectedFieldReports(): displaying ${this.displayedFieldReportArray.length} ${this.showingSelectedOnly ? 'SELECTED' : 'ALL'} field reports`, this.id)
 
     this.refreshMap()
-    //this.reloadPage()
   }
 
   // ------------------------------------  Markers  ---------------------------------------

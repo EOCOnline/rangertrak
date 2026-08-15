@@ -78,8 +78,12 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       this._location = newLocation
 
       if (!this.lMap) {
-        // OK, happens enough that we check & handle it at end of ngOnInit()
-        this.log.warn(`Setting new location, but L.Map not yet set!!!`, this.id)
+        // Expected: an @Input setter runs before ngOnInit, which is where the map
+        // is created. Stash the location and stop - the tail of ngOnInit replays
+        // it onto the map. Calling addMarker() here anyway is what produced the
+        // "addMarker(): bad lat ... lmap: undefined" error on every Entry load.
+        this.log.verbose(`Location arrived before the map was built; ngOnInit will place it.`, this.id)
+        return
       }
       this.addMarker(newLocation.lat, newLocation.lng, newLocation.address)
       //  ! this.onNewLocation(newLocation)
@@ -174,9 +178,13 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     this.initMainMap()
     this.updateFieldReports()
 
-    // We probably got (& stored an initial location) before map was initialized just above, so add it now
-    if (this.location === undefinedLocation) {
-      this.log.error("Still have undefined location at end of ngOnInit() - ignoring...", this.id)
+    // We probably got (& stored) an initial location before the map existed, so place it now.
+    // Tested against _location, not AbstractMap's `location`: the setter above writes
+    // _location and nothing ever assigns `location`, so this compared undefined to
+    // undefinedLocation, took the else branch on a fresh page, and called addMarker with
+    // the (-1, -1) sentinel - the second source of "addMarker(): bad lat" on Entry.
+    if (this._location === undefinedLocation || this._location.address === undefinedAddressFlag) {
+      this.log.verbose("No location entered yet at end of ngOnInit() - nothing to mark.", this.id)
     } else {
       this.addMarker(this._location.lat, this._location.lng, this._location.address)
     }

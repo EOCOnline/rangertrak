@@ -155,8 +155,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     }
 
     if (this.displayReports && this.fieldReports) {
-      // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
-      //this.onSwitchSelectedFieldReports()
+      // updateFieldReports() first: it is what fills displayedFieldReportArray for
+      // the current all/selected choice, and displayMarkers() draws from that.
+      this.updateFieldReports()
       this.displayMarkers()
       // Re-enabled: bounds used to be a Leaflet LatLngBounds that arrived from
       // localStorage as a plain object, so this threw "Bounds are not valid" and was
@@ -166,8 +167,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       this.lMap.fitBounds(L.latLngBounds([b.south, b.west], [b.north, b.east]))
     }
 
-    // ! Following is duplicate of that above?!
-    this.updateFieldReports()
     this.log.excessive("out of ngOnInit()", this.id)
   }
 

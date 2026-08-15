@@ -97,6 +97,11 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     // EVENT handlers
     // onRowClicked: event => this.log.verbose('A row was clicked'),
     onSelectionChanged: (event: SelectionChangedEvent) => this.onRowSelection(event),
+    // The grid's rows ARE the service's report objects, so an edit has already
+    // mutated them by the time this fires - it just has to be written out.
+    // Previously nothing did, and a "Save Reports" button alerted UNIMPLEMENTED,
+    // so every correction a scribe typed into the grid was lost on reload.
+    onCellValueChanged: () => this.onCellEdited(),
 
     // CALLBACKS
     // getRowHeight: (params) => 25
@@ -159,7 +164,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
     //!Future: Hover over notes to show entire (multi-line) note
     this.columnDefs = [
-      { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1 }, // TODO:
+      { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1, editable: false }, // TODO:
       { headerName: "CallSign", field: "callsign", tooltipField: "team", width: 4, flex: 2 },
       // { headerName: "Team", field: "team" },
       // Dot path, not "address": the address lives on the nested location object, exactly
@@ -167,15 +172,20 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       // every report - the addresses were in the data all along.
       { headerName: "Address", field: "location.address", singleClickEdit: true, width: 3, flex: 30 }, //, maxWidth: 200
       {
+        // valueSetter, not just field: "lat" - the real value lives at location.lat,
+        // so without this an edit wrote a phantom top-level `lat` that nothing reads
+        // and the displayed coordinate snapped back on the next refresh.
         headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell',
-        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lat * 10000) / 10000.0 }
+        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lat * 10000) / 10000.0 },
+        valueSetter: (params: { data: FieldReportType, newValue: any }) => this.setCoordinate(params.data, 'lat', params.newValue)
       },
       {
         headerName: "Lng", field: "lng", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
         valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lng * 10000) / 10000.0 },
+        valueSetter: (params: { data: FieldReportType, newValue: any }) => this.setCoordinate(params.data, 'lng', params.newValue)
       },
-      { headerName: "Reported", headerTooltip: 'Report date', valueGetter: this.myDateGetter, flex: 2 },
-      { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, flex: 2 },
+      { headerName: "Reported", headerTooltip: 'Report date', valueGetter: this.myDateGetter, flex: 2, editable: false },
+      { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, flex: 2, editable: false },
       {
         headerName: "Status", field: "status", flex: 5, cellRenderer: this.statusCellRenderer,
         cellStyle: (params: { value: string; }) => {
@@ -442,13 +452,35 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Save them to localstorage & update subscribers
-  // REVIEW: SOMEHOW??? renaming the next to unused caused an error if slecting a row when running???
-  onBtnUpdateFieldReports() {
-    // https://blog.ag-grid.com/refresh-grid-after-data-change/#updating-through-variable-angular
-    // BUG: Need to send the newly edited reports...with Header properties
-    alert('onBtnUpdateFieldReports is UNIMPLEMENTED!')
-    //this.fieldReportService.updateFieldReports()
+  /**
+   * A cell was edited: persist to localStorage and republish, so the maps and
+   * any other subscriber see the correction immediately. Replaces the old
+   * "Save Reports" button, which the page itself described as something that
+   * "should happen automatically".
+   */
+  private onCellEdited() {
+    this.log.verbose(`Field report edited in grid; saving.`, this.id)
+    this.fieldReportService.saveEditedFieldReports()
+  }
+
+  /**
+   * Writes an edited Lat/Lng back onto the report's nested location object.
+   * Rejects anything non-numeric or out of range rather than storing NaN, which
+   * would put the report - and the map bounds derived from it - nowhere.
+   */
+  private setCoordinate(report: FieldReportType, axis: 'lat' | 'lng', newValue: any): boolean {
+    const parsed = Number(newValue)
+    const limit = axis === 'lat' ? 90 : 180
+
+    if (newValue === '' || newValue === null || isNaN(parsed) || Math.abs(parsed) > limit) {
+      this.log.warn(`Ignoring invalid ${axis} "${newValue}" for report ${report.id}.`, this.id)
+      return false
+    }
+
+    report.location[axis] = parsed
+    // An edited coordinate is no longer whatever the address geocoded to.
+    report.location.derivedFromAddress = false
+    return true
   }
 
   onBtnImportFieldReportsFromJSON_unused() {

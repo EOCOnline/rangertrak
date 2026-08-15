@@ -229,6 +229,17 @@ export class FieldReportService {
     return newReport
   }
 
+  /**
+   * Persist edits made in place to existing reports - the Field Reports grid
+   * binds directly to fieldReportArray, so AG Grid's cell editing mutates these
+   * very objects; all that was missing was writing them back out. Bounds are
+   * recalculated because an edited lat/lng can move the map's extent.
+   */
+  public saveEditedFieldReports() {
+    this.recalcFieldBounds(this.fieldReports)
+    this.updateFieldReportsAndPublish()
+  }
+
   public setSelectedFieldReports(selection: FieldReportType[]) {
     if (this.selectedFieldReports == null) {
       this.selectedFieldReports = this.initEmptyFieldReports()

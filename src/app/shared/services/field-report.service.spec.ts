@@ -107,6 +107,39 @@ describe('FieldReportService', () => {
     });
   });
 
+  describe('saveEditedFieldReports (grid edits)', () => {
+    it('persists in-place edits to localStorage and republishes them', () => {
+      const service = TestBed.inject(FieldReportService);
+      const added = service.addfieldReport(makeReport({ callsign: 'EDIT1' }));
+
+      // Exactly what AG Grid does when a cell is edited: the grid binds to the
+      // service's own report objects, so it mutates this object directly.
+      added.notes = 'corrected by scribe';
+      added.location.lat = 47.5;
+      service.saveEditedFieldReports();
+
+      const stored: FieldReportsType = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+      expect(stored.fieldReportArray[0].notes).toBe('corrected by scribe');
+
+      let latest!: FieldReportsType;
+      service.getFieldReportsObserver().subscribe(r => latest = r);
+      expect(latest.fieldReportArray[0].notes).toBe('corrected by scribe');
+    });
+
+    it('recalculates bounds so an edited coordinate moves the map extent', () => {
+      const service = TestBed.inject(FieldReportService);
+      const added = service.addfieldReport(makeReport());
+
+      added.location.lat = 48.5;
+      added.location.lng = -120.5;
+      service.saveEditedFieldReports();
+
+      const bounds = service.getCurrentFieldReports().bounds;
+      expect(bounds.north).toBeGreaterThanOrEqual(48.5);
+      expect(bounds.west).toBeLessThanOrEqual(-120.5);
+    });
+  });
+
   describe('setSelectedFieldReports / getSelectedFieldReports (select)', () => {
     it('returns an empty selection before anything has been selected', () => {
       const service = TestBed.inject(FieldReportService);

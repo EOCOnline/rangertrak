@@ -179,72 +179,12 @@
     </details>
 
     <br />
-    <details>
-      <summary><span class="big">Untested or unlikely to work!</span></summary>
-      <ul>
-        <li>
-          FUTURE: Import Rangers from a JSON file:
-          <button (click)="onBtnImportJson($event)" style="margin-bottom: 5px" title="Import Rangers from JSON file">
-            Import Rangers (JSON)</button><br />, or
-        </li>
-        <li>
-          FUTURE: Replace existing Rangers with those from an Excel file:
-          <input type="file" (change)="onBtnImportExcel($event)" multiple="false" accept=".csv, .xls, .xslt" />
-          Then SAVE RANGERS below and then REFRESH PAGE!
-        </li>
-      </ul>
-
-      FUTURE: Import Excel button currently 'works', but imports wrong spreadsheet and does
-      nothing with it!<br />
-      // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
-      <label for="myfile">Select a file:</label>
-      <input type="file" id="myfile" name="myfile" />
-
-      <label for="avatar">Choose a png OR jpg only test:</label>
-      <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg" />
-
-      <!-- Events
-      https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event
-      https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event
-      https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement#properties_file
-      <input placeholder="Enter some text" name="name"/>
-      <p id="values"></p>
-      const input = document.querySelector('input');
-      const log = document.getElementById('values');
-      input.addEventListener('input', updateValue);
-      function updateValue(e) {
-        log.textContent = e.target.value;
-      }
-    -->
-      <hr />
-
-      <br />
-      <label for="myfile2">Select a file:</label>
-      <input type="file2" id="myfile2" name="myfile2" />
-
-      <!-- Array<Array<any>> neatly maps to this table
-         https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/  -->
-      excelData:
-      <table class="sjs-table">
-        <tr *ngFor="let row of excelData">
-          <td *ngFor="let val of row">
-            {{val}}
-          </td>
-        </tr>
-      </table>
-
-      <hr />
-      <div id="ranger__ImportExcel--zzzzzz">
-        FUTURE - attempt import of an Excel file:
-        <input type="file" (change)="onFileChange($event)" multiple="false" />
-        <button ion-button color="secondary" (click)="import()">Import Data</button>
-        <button ion-button color="secondary" (click)="export()">Export Data</button>
-        Code from <a href="https://sheetjs.com" target="_blank">https://sheetjs.com</a>,
-        specifically
-        <a href="https://oss.sheetjs.com/" target="_blank">https://oss.sheetjs.com/</a> &
-        <a href="https://github.com/SheetJS/SheetJS.github.io/"
-          target="_blank">https://github.com/SheetJS/SheetJS.github.io/</a>
-      </div>
-    </details>
+    <div>
+      To bring in Rangers from another computer, use <strong>Import Mission</strong> on the
+      Settings page: a mission file carries the roster along with the settings and field
+      reports. The Excel and JSON import experiments that used to sit here never worked -
+      they read a file and discarded it - so they have been removed rather than left
+      looking available.
+    </div>
   </div>
 </section>

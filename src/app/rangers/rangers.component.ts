@@ -1,11 +1,6 @@
 import { ColDef, GridOptions } from 'ag-grid-community'
 //import { TooltipModule } from 'ng2-tooltip-directive'
 import { Subscription } from 'rxjs'
-/* Following gets:
-index.js:553 [webpack-dev-server] WARNING
-D:\Projects\RangerTrak\rangertrak\src\app\log\log.component.ts depends on 'xlsx'. CommonJS or AMD dependencies can cause optimization bailouts.
-For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies */
-import * as XLSX from 'xlsx'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
@@ -20,14 +15,8 @@ import {
   FieldReportService, FieldReportType, LogService, RangerService, RangerType, SecretType,
   SettingsService, SettingsType
 } from '../shared/services'
-import { csvImport } from './csvImport'
 import { CustomTooltip } from './customTooltip'
 
-type AOA = any[][]  // array of arrays
-/* xlsx.js (C) 2013-present SheetJS -- https://sheetjs.com */
-// https://github.com/SheetJS/SheetJS.github.io
-// D:\Projects\ImportExcel\sheetjs-master\demos\angular2\src\app\sheetjs.component.ts
-// D:\Projects\ImportExcel\sheetjs-master\demos\angular2\ionic.ts
 
 @Component({
   selector: 'rangertrak-rangers',
@@ -49,17 +38,12 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   private settingsSubscription!: Subscription
   private settings!: SettingsType
 
-  localUrl: any[] = []
-
   alert: any
 
   numSeperatorWarnings = 0
   maxSeperatorWarnings = 3
 
   now: Date
-
-  excelData: AOA = [[1, 2, 3], [4, 5, 6]];
-  excelData2: RangerType[] = [] //[[1, 2, 3], [4, 5, 6]];
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   private gridApi: any
@@ -251,156 +235,12 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   //--------------------------------------------------------------------------
-  onBtnImportJson(e: any): void { // PointerEvent ?!
-    // https://developers.google.com/maps/documentation/javascript/importing_data
-    this.log.verbose(`onBtnImportJson() `, this.id)
-    // TODO: Move to RangerService...
-    let Logo: string
-
-    //!debugger
-
-    if (e != null && e.target != null) {
-      let Logo2 = e.target
-
-      // e.target.files is undefined...
-      if (e.target.files && e.target.files[0]) {
-        var reader = new FileReader();
-        reader.onload = (event: any) => {
-          this.localUrl = event.target.result;
-        }
-        reader.readAsDataURL(e.target.files[0]);
-      }
-    }
-    else {
-      this.log.verbose(`${e} &&& ${e.target}`, this.id)
-    }
-    //this.localUrl //: any[]
-    //this.rangerService.LoadRangersFromJSON(e.target.files[0])
-    this.log.verbose(`Reloading window!`, this.id)
-    this.reloadPage()
-  }
-
-
-  //--------------------------------------------------------------------------
-  onBtnImportRangers() {
-    //this.log.verbose
-    alert(`onBtnImportRangers: Ranger Import from Excel file is unimoplemented currently`)
-    // TODO: look at: https://www.npmjs.com/package/fs-browsers
-  }
-  /*
-  from https://blog.ag-grid.com/refresh-grid-after-data-change/
-    this.http
-    .get(
-      "https://raw.githubusercontent.com/ag-grid/ag-grid/master/grid-packages/ag-grid-docs/src/olympicWinnersSmall.json"
-    )
-    .subscribe((data: any[]) => {
-      data.length = 10;
-      data = data.map((row, index) => {
-        return { ...row, id: index + 1 };
-      });
-      this.backupRowData = data;
-      this.rowData = data;
-    });
-    */
-
-  //--------------------------------------------------------------------------
-  // https://ag-grid.com/javascript-data-grid/excel-import/#example-excel-import"
-  // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
-  onBtnImportExcel(evt: any) {
-    // TODO: look at: https://www.npmjs.com/package/fs-browsers
-    this.excelData2 = this.rangerService.LoadRangersFromExcel(evt.target)
-    this.log.verbose("excelData2: " + JSON.stringify(this.excelData2), this.id)
-    this.log.verbose(`Reloading window!`, this.id)
-    this.reloadPage()
-  }
-
-  //--------------------------------------------------------------------------
-  onBtnImportExcel2() {
-    this.rangerService.loadRangersFromExcel2()
-    this.log.verbose(`Got excel file`, this.id)
-    this.log.verbose(`Reloading window!`, this.id)
-    this.reloadPage()
-  }
-
-  /* File Input element for browser */
-  onFileChange(evt: any) {
-    /* wire up file reader */
-    const target: DataTransfer = (evt.target as DataTransfer);
-    if (target.files.length !== 1) { throw new Error('Cannot use multiple files'); }
-    const reader: FileReader = new FileReader();
-    reader.onload = (e: any) => {
-      const ab: ArrayBuffer = e.target.result;
-      this.read(ab);
-    };
-    reader.readAsArrayBuffer(target.files[0]);
-    this.log.verbose(`got file name: ${target.files[0].name}`, this.id)
-  };
-
-  /* Import button for mobile */
-  async import() {
-    alert(`IMPORT NOT IMPLEMENTED YET (how to resolve FILE?)`)
-    try {
-      // const target: string = this.file.documentsDirectory || this.file.externalDataDirectory || this.file.dataDirectory || '';
-      // const dentry = await this.file.resolveDirectoryUrl(target);
-      // const url: string = dentry.nativeURL || '';
-      // alert(`Attempting to read SheetJSIonic.xlsx from ${url}`);
-      // const ab: ArrayBuffer = await this.file.readAsArrayBuffer(url, 'SheetJSIonic.xlsx');
-      // this.read(ab);
-    } catch (e: any) {
-      const m: string = e.message;
-      alert(m.match(/It was determined/) ? 'Use File Input control' : `Error: ${m}`);
-    }
-  };
-
-  /* Export button */
-  async export() {
-    const wb: XLSX.WorkBook = this.write();
-    const filename = 'SheetJSIonic.xlsx';
-    alert(`EXPORT NOT IMPLEMENTED YET (how to resolve FILE?)`)
-    try {
-      /* generate Blob */
-      const wbout: ArrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-
-      /* find appropriate path for mobile */
-      // const target: string = this.file.documentsDirectory || this.file.externalDataDirectory || this.file.dataDirectory || '';
-      //const dentry = await this.file.resolveDirectoryUrl(target);
-      //const url: string = dentry.nativeURL || '';
-
-      /* attempt to save blob to file */
-      //await this.file.writeFile(url, filename, wbout, { replace: true });
-      //alert(`Wrote to SheetJSIonic.xlsx in ${url}`);
-    } catch (e: any) {
-      if (e.message.match(/It was determined/)) {
-        /* in the browser, use writeFile */
-        XLSX.writeFile(wb, filename);
-      } else {
-        alert(`Error name: ${e.name}; msg: ${e.message}`);
-      }
-    }
-  };
-
-  read(ab: ArrayBuffer) {
-    /* read workbook */
-    const wb: XLSX.WorkBook = XLSX.read(new Uint8Array(ab), { type: 'array' });
-
-    /* grab first sheet */
-    const wsname: string = wb.SheetNames[0];
-    const ws: XLSX.WorkSheet = wb.Sheets[wsname];
-
-    /* save data */
-    this.excelData = (XLSX.utils.sheet_to_json(ws, { header: 1 }) as AOA);
-  };
-
-  write(): XLSX.WorkBook {
-    /* generate worksheet */
-    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(this.excelData);
-
-    /* generate workbook and add the worksheet */
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'SheetJS');
-
-    return wb;
-  };
+  // Removed: onBtnImportJson / onBtnImportExcel / onBtnImportExcel2 / onFileChange /
+  // import / export / read / write. They were SheetJS demo code and half-finished
+  // experiments - the JSON one read the file into a data URL and threw it away, the
+  // Excel ones imported the wrong sheet or alerted "NOT IMPLEMENTED" - all shown in
+  // the UI behind a "may not work" disclaimer. Importing a roster is what
+  // BackupService's Import Mission does, for real (Roadmap Section 18/E).
 
   //--------------------------------------------------------------------------
   onBtnReloadPage() {
@@ -520,20 +360,3 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.settingsSubscription?.unsubscribe()
   }
 }
-
-// works - but Unused....
-// https://www.angulartutorial.net/2018/01/show-preview-image-while-uploading.html
-/*
-  showPreviewImage(event: any) {
-    if (event.target.files && event.target.files[0]) {
-      var reader = new FileReader();
-      reader.onload = (event: any) => {
-        this.localUrl = event.target.result;
-      }
-      reader.readAsDataURL(event.target.files[0]);
-    }
-  }
-  with following HTML:
-  <input type="file" (change)="showPreviewImage($event)">
-  <img [src]="localUrl" *ngIf="localUrl" class="imgPlaceholder">
-*/
