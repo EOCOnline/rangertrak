@@ -53,3 +53,11 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # A successful deploy and a working site are two different facts. Roadmap 19g:
+      # a mis-scoped Cloudflare redirect rule made the apex 301 to itself for days
+      # while this workflow stayed green, and the cached PWA hid it from the only
+      # person likely to notice. This asserts the hostname actually serves the bundle
+      # we just built - see tools/check-deployed.js.
+      - name: Verify the deploy reached the public hostname
+        run: node tools/check-deployed.js

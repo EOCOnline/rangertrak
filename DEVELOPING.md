@@ -126,6 +126,26 @@ npx compodoc -s           # serve at http://127.0.0.1:8080/
 
 See <https://compodoc.app/> for details.
 
+## Screenshots
+
+**Screen captures of RangerTrak are confidential by default and are not kept in this
+repository.** Keep them outside the working tree; promote individual images in only after
+reviewing them, with a descriptive filename.
+
+This is not fussiness about repo tidiness. A screenshot of this app in real use contains
+whatever was on screen: field reports, which can hold personal information about missing
+persons; the roster, which pairs legal names with home addresses; and whatever browser
+chrome was captured with it — bookmarks, other tabs, account avatars. A capture taken while
+configuring hosting can contain an API token in plaintext. All of those have turned up in
+practice.
+
+A `.gitignore` rule is deliberately **not** the mechanism here, for two reasons. It does not
+actually protect anything — `git add -f`, an edited rule, or a `git clean -xdf` (which
+deletes the files outright) all defeat it, and this project has already shipped a correctly
+gitignored file to production once. And a rule is itself a published statement about what
+you are withholding. Keeping the material outside the tree means there is nothing to ignore
+and nothing to advertise.
+
 ## Deploying
 
 The production build in `dist/rangertrak/browser` is a static site and can be served by any
