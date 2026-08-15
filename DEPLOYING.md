@@ -165,48 +165,37 @@ hostnames held settings a year apart.
 
 **DECIDED 2026-08-14: `https://rangertrak.org` (no `www`) is the canonical URL.**
 
-🔴 **STILL BROKEN as of 2026-08-15 — `www.rangertrak.org` serves the app instead of
-redirecting.** A correctly written Page Rule (`www.rangertrak.org/*` → `https://rangertrak.org/$1`,
-301) does **not** fire. Verified over 100s of polling; not propagation.
+✅ **Working as of 2026-08-15.** `www.rangertrak.org` is a **redirect-only hostname** — it
+is deliberately *not* bound to the Worker. Three parts, and all three are required:
 
-**Best explanation, and it fits every observation:** `www.rangertrak.org` is a **Worker
-Custom Domain** (see `wrangler.jsonc` `routes`), and a custom domain binds the hostname to
-the Worker at the edge ahead of Page Rules. The evidence:
+1. **`www` is NOT in `wrangler.jsonc` `routes`.** A Worker Custom Domain binds a hostname
+   to the Worker *ahead of Page Rules*, so while `www` was listed there a perfectly correct
+   Page Rule silently never fired and `www` served the app directly. **Re-adding it would
+   break the redirect again on the next deploy, with no error and nothing failing** — which
+   is why the config carries a comment saying so.
+2. **A proxied placeholder A record** for `www.rangertrak.org` → `192.0.2.1`, the same
+   pattern as the `.com` parking below. Cloudflare's edge needs traffic to act on.
+3. **A Page Rule** on the `.org` zone:
+   - **URL (trigger)** — `www.rangertrak.org/*`
+   - **Setting** — Forwarding URL, **301** Permanent Redirect
+   - **Destination** — `https://rangertrak.org/$1`
 
-- The identical Page Rule pattern **works** on `rangertrak.com` and `www.rangertrak.com` —
-  neither of which is bound to a Worker; they are plain proxied placeholder records.
-- The rule that caused the 2026-08-14 outage **was** able to hijack `rangertrak.org`, also
-  a custom domain — but that was a **Redirect Rule**, which runs earlier in Cloudflare's
-  order of operations than Workers.
+**How the diagnosis went, since the symptom is confusing:** a correct Page Rule that simply
+never fires looks identical to no rule at all. What distinguished it was that the *same*
+pattern worked on `rangertrak.com` and `www.rangertrak.com` — neither bound to a Worker —
+while the rule that caused the 2026-08-14 outage *was* able to hijack the apex, also a
+custom domain, because that one was a **Redirect Rule**, which runs earlier than Workers in
+Cloudflare's order of operations. Page Rules do not; custom domains win.
 
-So the mechanism matters here in a way it does not on `.com`. **Two ways forward:**
+Verify with:
 
-**A. Redirect Rule instead of a Page Rule** (quick; no repo or DNS change). This is what
-this doc originally specified. Zone `rangertrak.org` → Rules → **Redirect Rules** → Create:
-
-- **If** — `hostname` **equals** `www.rangertrak.org` ← never the zone, see the warning below
-- **Then** — Dynamic redirect, **301**, preserve query string
-- **Expression** — `concat("https://rangertrak.org", http.request.uri.path)`
-
-*(An earlier attempt via the Redirect Rules **API** failed with an authorization error —
-the token lacked the scope. The dashboard is the path of least resistance.)*
-
-**B. Stop binding `www` to the Worker at all** (slower, structurally better). Remove
-`{ "pattern": "www.rangertrak.org", "custom_domain": true }` from `wrangler.jsonc`, deploy,
-then give `www` proxied placeholder records exactly like `.com` has, so the Page Rule has
-traffic to act on and nothing to compete with.
-
-**B is the more durable fix and worth doing eventually.** While `www` remains a custom
-domain, CI re-attaches it on *every* deploy, so "www must not serve the app" depends
-permanently on a redirect rule continuing to work. Under B it is structurally true: the
-Worker simply is not listening on that hostname. Sequence B *after* A is working, so `www`
-is never left unreachable.
-
-Once fixed, the rule is:
-
-- **URL (trigger)** — `www.rangertrak.org/*`
-- **Setting** — Forwarding URL, **301** Permanent Redirect
-- **Destination** — `https://rangertrak.org/$1`
+```bash
+for p in / /about "/reports?x=1"; do
+  curl -sI "https://www.rangertrak.org$p" | grep -i "^HTTP\|^location"
+done
+# expect 301 each, with location carrying the path AND query through:
+#   https://rangertrak.org/ , /about , /reports?x=1
+```
 
 **The `*` and the `$1` are two halves of one mechanism and are not interchangeable.** The
 `*` in the trigger *captures*; `$1` in the destination *replays* what the first `*` matched.
