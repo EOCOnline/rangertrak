@@ -127,9 +127,29 @@
     <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
       <button (click)="onBtNormal()">Normal Layout</button-->
 
+    <!-- Moving a roster between devices. Kept out of "Advanced" on purpose: getting a
+         team's roster onto a device is setup, not an expert operation, and burying it is
+         why Import Mission was being used for a job it does badly. -->
+    <div class="roster-transfer">
+      <span class="roster-transfer__label">Roster:</span>
+
+      <label for="importRosterFile" class="roster-transfer__import"
+        title="Replace the roster from a JSON file. Field reports and settings are not affected.">
+        Import roster (JSON)</label>
+      <input #importRosterFile id="importRosterFile" type="file" accept="application/json,.json"
+        (change)="onRosterFileSelected($event)" hidden />
+
+      <button (click)="onBtnExportRangersJson()"
+        title="Download just the roster as JSON - the file Import roster expects">
+        Export roster (JSON)</button>
+
+      <span class="roster-transfer__note">replaces the roster only &mdash; field reports and
+        settings are untouched</span>
+    </div>
+
     <div>
-      <button (click)="onBtnExportToExcel()">Export Rangers</button> with column separator
-      of
+      <button (click)="onBtnExportToExcel()">Export Rangers</button> as a spreadsheet (CSV),
+      with column separator of
       <select (change)="onSeperatorChange()" id="columnSeparator">
         <option value="none">comma (,)</option>
         <option value="tab">tab</option>
@@ -137,8 +157,8 @@
       </select>
       <label class="option" for="allRows" title="By default only filtered & sorted rows are exported.">
         <input id="allRows" type="checkbox" />All Rows</label>
-
-
+      <span class="roster-transfer__note">for Excel &mdash; cannot be imported back in; use
+        JSON for that</span>
     </div>
     <br />
     <button (click)="onDeselectAll()">Clear Selection</button>
@@ -152,54 +172,64 @@
     <br />
     <rangertrak-disclosure summary="Advanced">
 
-      If no rangers exist, or you would like to replace those shown above, either:
-      <ol>
-        <li>
-          BEST: Use the "Add Vashon Rangers" button to import all known HAM Radio licensees.
-          <p>
-            This list of potential Rangers was taken from the FCC Database Feb 3, 2022.
-            <br />
-            It has been significantly reformatted and your edits may alter it further.<br />
-            Contact John with a better list if desired...
-          </p>
-        </li>
-
-        <li>
-          Add new rangers (or other tactical signs such as Team Names/CERTs) into the grid.
-        </li>
-      </ol>
-      <hr />
-
       <p>
-        To maintain these changes between browser sessions, we write the table above to the
-        Browser Local Storage where it will remain until deleted. Use this "Save Data"
-        button to save the current state of the grid above, so it will be restored the next
-        time this web page is opened on this browser & device
+        The roster is saved in this browser on this device. It is <em>not</em> shared with
+        other devices, and it is not sent anywhere.
       </p>
-      Save Rangers to Local Storage:
-      <button (click)="onBtnUpdateLocalStorage()" style="margin-bottom: 5px"
-        title="Preserve the edits above to the Rangers stored on this browser">
-        Save Rangers</button><br />
 
-      Delete ALL Rangers from Local Storage (NOTE: they will immediately get replaced with the hardcoded names!):
-      <button (click)="onBtnDeleteRangers()">Delete Rangers</button><br />
+      <h3>Replace the roster</h3>
+      <p>
+        <strong>Import roster</strong> above replaces the whole roster from a JSON file and
+        leaves your field reports and settings alone. Use it to bring a team's roster onto a
+        device. The file can be one this app exported, a mission export, or any JSON list of
+        rangers &mdash; each entry needs at least a <code>callsign</code>.
+      </p>
+      <p>
+        <strong>Export roster</strong> writes that file back out. Do it before importing if
+        you want to keep the roster you already have.
+      </p>
 
-      <div id="rangers__Fake">
-        Add the large list of Vashon rangers to any existing rangers:
-        <button (click)="loadVashonRangers()" type="button" id="enter__Fake--button">
-          Add Vashon Rangers
-        </button>
-        <!--button (click)="onBtnReloadPage()" type="button">Reload Page</button-->
+      <h3>Start from the built-in station list</h3>
+      <p>
+        <strong>Add station callsigns</strong> appends the 18 built-in Vashon station signs
+        (command post, ACS, CERT and MERT teams) to whatever is already there. They are
+        stations, not people. It <em>adds</em> rather than replaces, so pressing it twice
+        gives you duplicates.
+      </p>
+
+      <h3>Empty the roster</h3>
+      <p>
+        <strong>Delete all rangers</strong> empties it and it stays empty &mdash; including
+        after a reload. (Before v0.15.3 the built-in station list came straight back, which
+        made loading your own roster a fight.)
+      </p>
+
+      <h3>Saving edits</h3>
+      <p>
+        Edits made directly in the grid are held in memory until you press
+        <strong>Save edits</strong>. Importing, adding and deleting save themselves.
+      </p>
+
+      <div class="roster-actions">
+        <button (click)="onBtnUpdateLocalStorage()"
+          title="Write the edits you have made in the grid above to this browser">
+          Save edits</button>
+
+        <button (click)="onBtnDeleteRangers()"
+          title="Empty the roster. It stays empty until you import or add rangers.">
+          Delete all rangers</button>
+
+        <button (click)="loadVashonRangers()" type="button" id="enter__Fake--button"
+          title="Append the 18 built-in Vashon station callsigns to the current roster">
+          Add station callsigns</button>
       </div>
     </rangertrak-disclosure>
 
     <br />
     <div>
-      To bring in Rangers from another computer, use <strong>Import Mission</strong> on the
-      Settings page: a mission file carries the roster along with the settings and field
-      reports. The Excel and JSON import experiments that used to sit here never worked -
-      they read a file and discarded it - so they have been removed rather than left
-      looking available.
+      To move a <em>whole mission</em> &mdash; roster, settings and field reports together
+      &mdash; use <strong>Export/Import Mission</strong> on the Settings page. To move only
+      the roster, use Import/Export roster above.
     </div>
   </div>
 </rangertrak-page>

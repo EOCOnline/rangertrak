@@ -24,6 +24,95 @@ describe('RangerService', () => {
     localStorage.clear();
   });
 
+  describe('emptying the roster (0.15.3)', () => {
+    it('stays empty across a reload, instead of reseeding the built-in stations', () => {
+      const service = TestBed.inject(RangerService);
+      expect(service.rangers.length).toBeGreaterThan(0);
+
+      service.deleteAllRangers();
+      expect(service.rangers.length).toBe(0);
+
+      // The key must still exist, holding an empty list - that is what tells a rebuilt
+      // service "emptied on purpose" rather than "never used this app".
+      expect(localStorage.getItem(STORAGE_KEY)).toBe('[]');
+
+      // Simulate the page reload that onBtnDeleteRangers() performs.
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ providers: [provideHttpClient()] });
+      const afterReload = TestBed.inject(RangerService);
+
+      expect(afterReload.rangers.length)
+        .withContext('an intentionally emptied roster must not be refilled by the seed')
+        .toBe(0);
+    });
+  });
+
+  describe('parseRosterJson', () => {
+    const one = { callsign: 'AA1', fullName: 'Alpha One' };
+
+    it('accepts a bare array', () => {
+      const service = TestBed.inject(RangerService);
+      const parsed = service.parseRosterJson(JSON.stringify([one]));
+      expect(parsed.length).toBe(1);
+      expect(parsed[0].callsign).toBe('AA1');
+    });
+
+    it('accepts a { rangers: [...] } wrapper and a full mission export', () => {
+      const service = TestBed.inject(RangerService);
+      expect(service.parseRosterJson(JSON.stringify({ rangers: [one] })).length).toBe(1);
+      expect(service.parseRosterJson(JSON.stringify({
+        schemaVersion: 1, settings: {}, fieldReports: { fieldReportArray: [] }, rangers: [one]
+      })).length).toBe(1);
+    });
+
+    it('fills missing optional fields with empty strings rather than undefined', () => {
+      const service = TestBed.inject(RangerService);
+      const parsed = service.parseRosterJson(JSON.stringify([one]));
+      // Otherwise the grid and the CSV export render "undefined" to an operator.
+      expect(parsed[0].phone).toBe('');
+      expect(parsed[0].note).toBe('');
+      expect(parsed[0].team).toBe('');
+    });
+
+    it('rejects entries with no callsign, naming the row', () => {
+      const service = TestBed.inject(RangerService);
+      expect(() => service.parseRosterJson(JSON.stringify([one, { fullName: 'No Sign' }])))
+        .toThrowError(/Entry 2 has no "callsign"/);
+    });
+
+    it('maps the field names a real FCC-derived roster actually uses', () => {
+      const service = TestBed.inject(RangerService);
+      const parsed = service.parseRosterJson(JSON.stringify([{
+        callsign: 'AH6B', licensee: 'Some Person', icon: 'ham.png', status: 'Licensed'
+      }]));
+      expect(parsed[0].fullName).toBe('Some Person');
+      expect(parsed[0].image).toBe('ham.png');
+      expect(parsed[0].role).toBe('Licensed');
+    });
+
+    it('warns about duplicate callsigns rather than rejecting the whole roster', () => {
+      const service = TestBed.inject(RangerService);
+      // Refusing a 286-entry roster over one repeated row is the wrong trade.
+      const parsed = service.parseRosterJson(JSON.stringify([one, { callsign: 'aa1' }]));
+      expect(parsed.length).toBe(2);
+      expect(service.rosterWarnings(parsed).join(' ')).toMatch(/duplicate callsign/i);
+    });
+
+    it('rejects invalid JSON, an empty roster, and a file with no roster in it', () => {
+      const service = TestBed.inject(RangerService);
+      expect(() => service.parseRosterJson('{oops')).toThrowError(/not valid JSON/);
+      expect(() => service.parseRosterJson('[]')).toThrowError(/empty roster/);
+      expect(() => service.parseRosterJson('{"settings":{}}')).toThrowError(/does not contain a roster/);
+    });
+
+    it('round-trips what the exporter writes', () => {
+      const service = TestBed.inject(RangerService);
+      const exported = JSON.stringify({ rangers: service.rangers }, null, 2);
+      const parsed = service.parseRosterJson(exported);
+      expect(parsed.map(r => r.callsign)).toEqual(service.rangers.map(r => r.callsign));
+    });
+  });
+
   describe('construction / localStorage round-trip', () => {
     it('loads the hardcoded default roster when localStorage is empty', () => {
       const service = TestBed.inject(RangerService);
@@ -136,14 +225,18 @@ describe('RangerService', () => {
   });
 
   describe('deleteAllRangers', () => {
-    it('clears the in-memory roster and removes the localStorage key', () => {
+    // Changed deliberately in 0.15.3. This used to assert the key was REMOVED, which is
+    // what made "Delete Rangers" impossible to complete: the next page load saw no stored
+    // roster, concluded it was a first run, and seeded the 18 built-in stations again.
+    // Storing an empty list is what makes the deletion stick - see the reload test above.
+    it('clears the in-memory roster and stores an empty list, keeping the key', () => {
       const service = TestBed.inject(RangerService);
       expect(service.rangers.length).toBeGreaterThan(0);
 
       service.deleteAllRangers();
 
       expect(service.rangers.length).toBe(0);
-      expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+      expect(localStorage.getItem(STORAGE_KEY)).toBe('[]');
     });
   });
 });

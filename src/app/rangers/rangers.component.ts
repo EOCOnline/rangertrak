@@ -247,8 +247,92 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onBtnUpdateLocalStorage() {
-    this.log.verbose(`onBtnUpdateLocalStorage: Deleteing all rangers`, this.id)
+    this.log.verbose(`onBtnUpdateLocalStorage: saving the edited roster to local storage`, this.id)
     this.rangerService.updateLocalStorageAndPublish()
+  }
+
+  //--------------------------------------------------------------------------
+  // Roster import / export (JSON)
+  //
+  // The roster is the one thing a team must bring with them, and until now the only way
+  // in was Import Mission - which also replaces settings and every field report. That is
+  // the wrong tool for "here is our roster": it discards the work already on the device.
+  // These two do the roster and nothing else.
+
+  /** Downloads just the roster as JSON - the file the importer below expects. */
+  onBtnExportRangersJson() {
+    const rangers = this.rangerService.rangers
+    if (!rangers.length) {
+      alert('There are no rangers to export.')
+      return
+    }
+
+    const json = JSON.stringify({ rangers }, null, 2)
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const stamp = new Date().toISOString().slice(0, 10)
+
+    const a = this.document.createElement('a')
+    a.href = url
+    a.download = `rangertrak-roster-${stamp}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+
+    this.log.info(`Exported ${rangers.length} rangers as JSON.`, this.id)
+  }
+
+  /**
+   * Handles a file picked via "Import roster". Replaces the roster only; field reports
+   * and settings are untouched, which is the whole point of it being separate from
+   * Import Mission.
+   */
+  onRosterFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    input.value = '' // so re-picking the same file still fires a change event
+
+    if (!file) {
+      return
+    }
+
+    const reader = new FileReader()
+
+    reader.onerror = () => {
+      this.log.error(`onRosterFileSelected: could not read ${file.name}`, this.id)
+      alert(`Could not read "${file.name}".`)
+    }
+
+    reader.onload = () => {
+      let incoming: RangerType[]
+      try {
+        incoming = this.rangerService.parseRosterJson(reader.result as string)
+      } catch (error: any) {
+        this.log.error(`onRosterFileSelected: ${file.name} rejected: ${error.message}`, this.id)
+        alert(`Could not import "${file.name}".\n\n${error.message}`)
+        return
+      }
+
+      const current = this.rangerService.rangers.length
+      const warnings = this.rangerService.rosterWarnings(incoming)
+      warnings.forEach(w => this.log.warn(`Roster import warning (${file.name}): ${w}`, this.id))
+
+      if (!confirm(
+        `Import ${incoming.length} rangers from "${file.name}"?\n\n`
+        + (warnings.length ? `Note:\n  - ${warnings.join('\n  - ')}\n\n` : '')
+        + `This REPLACES the current roster of ${current}. `
+        + `Field reports and settings are not affected.\n\n`
+        + `Tip: use "Export roster (JSON)" first if you want to keep the current one.`)) {
+        this.log.verbose('onRosterFileSelected: user cancelled import.', this.id)
+        return
+      }
+
+      this.rangerService.replaceAllRangers(incoming)
+      this.log.warn(`Imported ${incoming.length} rangers from ${file.name}.`, this.id)
+      alert(`Imported ${incoming.length} rangers. Reloading so every screen picks them up...`)
+      this.reloadPage()
+    }
+
+    reader.readAsText(file)
   }
 
 

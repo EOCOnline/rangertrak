@@ -75,14 +75,13 @@ export class RangerService implements OnInit {
     this.LoadRangersFromLocalStorage()
     this.log.verbose(`Got ${this.rangers.length} from Local Storage`, this.id)
 
-    if (this.rangers.length == 0) {
-      // TODO: Have user use button to load from their own CSV file
-
-      // BUG: load from JSON isn't "quite" working so grab hardcoded values in code below!!!
+    // Seed only when there was no readable roster at all. An empty roster that was saved
+    // deliberately must survive a reload; testing `rangers.length == 0` instead - as this
+    // did - made deleteAllRangers() unable to take effect, because the seed ran again on
+    // the very next page load. Corrupt storage still falls through to the seed.
+    if (!this.storedRosterWasReadable && this.rangers.length == 0) {
       this.loadHardcodedRangers()
-      this.log.verbose(`No Rangers in Local storage, so grabbed ${this.rangers.length} from
-      hardcoded values.`, this.id)
-      //Rangers.2Feb22.json file.`, this.id)
+      this.log.verbose(`First run on this browser: seeded ${this.rangers.length} station callsigns. A real roster arrives via Import roster or Import Mission.`, this.id)
     }
 
     // Ensures state is published regardless of which branch above populated
@@ -131,12 +130,28 @@ export class RangerService implements OnInit {
   }
 
   //--------------------------------------------------------------------------
+  /**
+   * True only when localStorage held a roster we could actually read - so an empty roster
+   * that was saved deliberately is distinguishable from "nothing stored" AND from
+   * "stored, but corrupt". Corrupt is NOT a deliberate empty: it must fall back to the
+   * seed rather than silently presenting an empty roster as if the user had asked for it.
+   */
+  private storedRosterWasReadable = false
+
   LoadRangersFromLocalStorage() { // WARN: Replaces any existing Rangers
     let localStorageRangers = localStorage.getItem(this.localStorageRangerName)
+    this.storedRosterWasReadable = false
     try {
-      this.rangers = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : []   //TODO: clean up
+      const parsed = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : []
+      if (localStorageRangers != null && Array.isArray(parsed)) {
+        this.rangers = parsed
+        this.storedRosterWasReadable = true
+      } else {
+        this.rangers = []
+      }
       this.log.excessive(`Loaded ${this.rangers.length} rangers from local storage`, this.id)
     } catch (error: any) {
+      this.rangers = []
       this.log.verbose(`Unable to parse Rangers from Local Storage. Error: ${error.message}`, this.id)
     }
     this.SortRangersByCallsign()   // TODO: Getting called too often?
@@ -246,17 +261,126 @@ export class RangerService implements OnInit {
     return this.rangers
   }
 
+  /**
+   * Empties the roster and *records* that it is deliberately empty.
+   *
+   * This used to `localStorage.removeItem()`, which made "Delete Rangers" impossible to
+   * actually complete: the page reloads, the constructor finds no stored roster, decides
+   * this must be a first run, and seeds the 18 hardcoded stations straight back. The old
+   * UI text admitted it - "they will immediately get replaced with the hardcoded names!"
+   * - but it meant anyone clearing the roster to load their own fought the app.
+   *
+   * Writing an empty array instead keeps the key present, which is how the constructor
+   * now tells "never used this app" from "emptied it on purpose".
+   */
   deleteAllRangers() {
     this.rangers = []
-    localStorage.removeItem(this.localStorageRangerName)
-    this.log.warn(`Deleted ${this.localStorageRangerName} from Local Storage.`, this.id)
-    // localStorage.clear() // remove all localStorage keys & values from the specific domain you are on. Javascript is unable to get localStorage values from any other domains due to CORS
+    this.updateLocalStorageAndPublish()
+    this.log.warn(`Emptied the roster (stored as an empty list, so it stays empty).`, this.id)
   }
 
   /** Replaces the whole roster wholesale (e.g. restoring from a mission backup). */
   replaceAllRangers(newRangers: RangerType[]) {
     this.rangers = [...newRangers]
     this.updateLocalStorageAndPublish()
+  }
+
+  /**
+   * Parses a roster from JSON text, for "Import roster" on the Rangers page.
+   *
+   * Deliberately liberal about the wrapper, because the file a team actually has in hand
+   * could reasonably be any of these:
+   *   - a bare array:            [ {callsign: ...}, ... ]
+   *   - a mission export:        { schemaVersion, settings, rangers: [...], ... }
+   *   - a hand-made wrapper:     { rangers: [...] }
+   * Importing a roster should not require knowing which of those someone produced.
+   *
+   * Strict about the contents, though: every entry needs a callsign, because callsign is
+   * the key the Entry form's autocomplete and every field report join on. A roster whose
+   * rows cannot be referenced is worse than no roster - it looks loaded and is not.
+   *
+   * Missing optional fields are filled with empty strings rather than left undefined, so
+   * the grid and the CSV export do not render "undefined" to an operator.
+   *
+   * Throws with a message meant to be shown to a user, not logged.
+   */
+  parseRosterJson(text: string): RangerType[] {
+    let parsed: any
+    try {
+      parsed = JSON.parse(text)
+    } catch (error: any) {
+      throw new Error(`That file is not valid JSON (${error.message}).`)
+    }
+
+    const raw =
+      Array.isArray(parsed) ? parsed :
+        Array.isArray(parsed?.rangers) ? parsed.rangers :
+          null
+
+    if (raw === null) {
+      throw new Error(
+        'That file does not contain a roster. Expected either a list of rangers, or a mission export with a "rangers" list.')
+    }
+
+    if (raw.length === 0) {
+      throw new Error('That file contains an empty roster - nothing to import.')
+    }
+
+    const rangers: RangerType[] = raw.map((entry: any, i: number) => {
+      if (!entry || typeof entry !== 'object') {
+        throw new Error(`Entry ${i + 1} is not a ranger record.`)
+      }
+      const callsign = String(entry.callsign ?? '').trim()
+      if (!callsign) {
+        throw new Error(
+          `Entry ${i + 1} has no "callsign". Every ranger needs one - it is what field reports are filed against.`)
+      }
+      return {
+        callsign,
+        // Field-name aliases. Real rosters in hand do not use this app's field names: an
+        // FCC-derived export calls the person "licensee", and carries "icon"/"status"
+        // where RangerType has "image"/"role". Accepting the aliases is the difference
+        // between a roster importing and importing with every Full Name blank.
+        fullName: String(entry.fullName ?? entry.licensee ?? entry.name ?? ''),
+        phone: String(entry.phone ?? ''),
+        address: String(entry.address ?? ''),
+        image: String(entry.image ?? entry.icon ?? ''),
+        rew: String(entry.rew ?? ''),
+        team: String(entry.team ?? ''),
+        role: String(entry.role ?? entry.status ?? ''),
+        note: String(entry.note ?? entry.notes ?? ''),
+      } as RangerType
+    })
+
+    return rangers
+  }
+
+  /**
+   * Non-fatal problems worth showing someone before they commit to an import.
+   *
+   * Duplicate callsigns are the interesting case. Callsign is the key every field report
+   * joins on, so duplicates are genuinely ambiguous - but refusing a 286-entry roster over
+   * one repeated row is the wrong trade when a team is trying to get set up. Report it and
+   * let them decide.
+   */
+  rosterWarnings(rangers: RangerType[]): string[] {
+    const warnings: string[] = []
+
+    const signs = rangers.map(r => r.callsign.toUpperCase())
+    const duplicates = [...new Set(signs.filter((c, i) => signs.indexOf(c) !== i))]
+    if (duplicates.length) {
+      warnings.push(
+        `${duplicates.length} duplicate callsign${duplicates.length > 1 ? 's' : ''}: `
+        + `${duplicates.slice(0, 5).join(', ')}${duplicates.length > 5 ? '...' : ''}. `
+        + `Field reports filed against these cannot tell the rows apart.`)
+    }
+
+    const nameless = rangers.filter(r => !r.fullName.trim()).length
+    if (nameless) {
+      warnings.push(`${nameless} of ${rangers.length} entries have no name - only a callsign.`)
+    }
+
+    return warnings
   }
 
   // this needs be done for the autocomplete control in the enter comonent to work correctly

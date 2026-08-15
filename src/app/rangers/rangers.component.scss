@@ -53,6 +53,49 @@ label {
   font-weight: bold;
 }
 
+// Roster import/export. The <label> is the file input's trigger, so it has to look and
+// size like the button beside it.
+.roster-transfer {
+  display    : flex;
+  align-items: center;
+  flex-wrap  : wrap;
+  gap        : 0.5em;
+  margin     : 0.5em 0;
+}
+
+.roster-transfer__label {
+  font-weight: bold;
+}
+
+.roster-transfer__import {
+  display      : inline-block;
+  cursor       : pointer;
+  padding      : 0.25em 0.75em;
+  min-height   : var(--rt-tap-min);
+  line-height  : var(--rt-tap-min);
+  border       : 1px solid var(--rt-line-strong);
+  border-radius: var(--rt-radius);
+  background   : var(--rt-surface-2);
+  color        : var(--rt-ink);
+}
+
+.roster-transfer__import:hover,
+.roster-transfer__import:focus-within {
+  border-color: var(--rt-accent);
+}
+
+.roster-transfer__note {
+  color    : var(--rt-ink-2);
+  font-size: smaller;
+}
+
+.roster-actions {
+  display  : flex;
+  flex-wrap: wrap;
+  gap      : 0.5em;
+  margin   : 0.5em 0;
+}
+
 // Confidentiality bar above the roster grid. This was a multi-paragraph block that pushed
 // the grid down the page on every visit; it is now one dismissable line, with the full
 // text in the "Privacy & data handling" details below.
