@@ -163,7 +163,15 @@ the other tomorrow finds a different mission, a different roster and different f
 reports, with nothing to indicate data is missing. Observed live 2026-08-14: the two
 hostnames held settings a year apart.
 
-Pick one canonical hostname and redirect the other with a Redirect Rule on the `.org`
+**DECIDED 2026-08-14: `https://rangertrak.org` (no `www`) is the canonical URL.**
+`www.rangertrak.org` must redirect to it with a **Cloudflare Redirect Rule** on the `.org`
+zone — dashboard, not the repo, and not a Worker change:
+
+- **If** — `hostname` equals `www.rangertrak.org`
+- **Then** — Dynamic redirect, **301**, preserve query string
+- **Expression** — `concat("https://rangertrak.org", http.request.uri.path)`
+
+Redirect the other with a Redirect Rule on the `.org`
 zone — the same mechanism as the `.com` parking below, not a Worker change. Until then,
 tell users to always use the same URL. There is no way for the app to merge the two
 stores after the fact.
