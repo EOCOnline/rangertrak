@@ -1,7 +1,9 @@
 {
-  // RangerTrak deploys as a Cloudflare Worker serving static assets only —
-  // no `main`, no server code. See DEPLOYING.md.
+  // RangerTrak deploys as a Cloudflare Worker serving static assets, plus one
+  // small piece of server code: a Range-request shim for the PMTiles basemap,
+  // because Workers' asset store does not do byte serving. See DEPLOYING.md.
   "$schema": "./node_modules/wrangler/config-schema.json",
+  "main": "worker/index.js",
   "name": "rangertrak",
   "compatibility_date": "2026-08-14",
 
@@ -22,11 +24,23 @@
     // path that isn't a real file must return index.html — otherwise a reload
     // or a deep link (/entry, /rangers) 404s. Pages guessed at this; Workers
     // requires it to be explicit.
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
 
-    // No "binding": that field is only valid alongside a `main` script.
-    // When the feedback endpoint (roadmap §11) lands, add `main` plus
-    // "binding": "ASSETS" and "run_worker_first": ["/api/*"].
+    // REQUIRED, and not cosmetic. The default ("auto-trailing-slash") answers a
+    // request for /index.html with a 307 to /. The Angular service worker
+    // prefetches /index.html, follows that redirect, and then calls cache.put()
+    // — which the Cache API *refuses* for a redirected response (TypeError). The
+    // install throws, ngsw caches nothing at all, and the app silently has no
+    // offline capability and never notices new versions. Serving /index.html
+    // directly is what makes the PWA a PWA.
+    "html_handling": "none",
+
+    // The Worker reaches the asset store through this binding.
+    "binding": "ASSETS",
+
+    // Everything except the basemap is served straight from the asset store,
+    // untouched by the Worker. Only .pmtiles needs the Range shim.
+    "run_worker_first": ["/assets/maps/*"]
   },
 
   "observability": {

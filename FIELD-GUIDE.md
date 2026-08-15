@@ -20,7 +20,7 @@ server, no account, and no login — nothing you type is sent anywhere.
 | **Reports** | Every report so far, in a sortable, filterable table. Select rows here to focus the maps on just those reports. |
 | **Rangers** | Your roster — call signs, names, contact details, teams. |
 | **Map (Leaflet)** | Full-page map using standard online road maps. Best detail, anywhere in the world, but needs Internet. |
-| **Map (Offline)** | Full-page map using map data built into the app. Works with no Internet at all, but currently only covers Vashon Island in detail. |
+| **Map (MapLibre+PMTiles)** | Full-page map using map data built into the app. Works with no Internet at all, but currently only covers Vashon Island in detail. |
 | **Settings** | Mission name, operating period, default location, status labels and colours, backup and restore. |
 | **Log** | A running record of what the app did, including warnings and crashes. Export it when reporting a problem. |
 
@@ -136,7 +136,7 @@ not mid-mission.
 
 **6. Prime the maps — the step people forget.**
 
-- Open **Map (Offline)** once. The built-in map data is only stored on your device the
+- Open **Map (MapLibre+PMTiles)** once. The built-in map data is only stored on your device the
   first time you open that page, so visiting it once while connected is what makes it
   available later with no Internet.
 - Open **Map (Leaflet)**, navigate to your operating area at the zoom levels you expect to
@@ -314,7 +314,7 @@ complete enough — addresses can be filled in afterwards.
 | Roster, Reports table, Settings, Log | ✅ Works |
 | Exporting and importing missions | ✅ Works |
 | Coordinate entry and conversion | ✅ Works |
-| **Map (Offline)** | ✅ Works — *if that page was opened once while connected* |
+| **Map (MapLibre+PMTiles)** | ✅ Works — *if that page was opened once while connected* |
 | **Map (Leaflet)** | ⚠️ Only the areas you saved in advance |
 | Address lookup (typing an address to get coordinates) | ❌ Needs Internet |
 | Reverse lookup (coordinates to a street address) | ❌ Needs Internet |

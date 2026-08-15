@@ -171,10 +171,20 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   }
 
   /**
-     * Called once all HTML elements have been created
-     */
+   * Called once all HTML elements have been created.
+   *
+   * Leaflet measures its container when the map is constructed, and ngOnInit runs
+   * before the view is laid out. On a full page load that happened to work; on a
+   * client-side navigation to /lmap the container was still 0x0, so Leaflet loaded
+   * no tiles and the page looked blank until a manual refresh. invalidateSize()
+   * re-measures. The extra tick lets the browser finish layout first - calling it
+   * synchronously here still measures 0 in some browsers.
+   */
   ngAfterViewInit() {
-
+    setTimeout(() => {
+      this.lMap?.invalidateSize()
+      this.overviewLMap?.invalidateSize()
+    })
   }
 
   onInstallBtn() {
