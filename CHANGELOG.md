@@ -60,7 +60,8 @@ cleared out before the interface work starts.
 
 - **The navbar and page layouts are unpolished** — the interface pass is the next work.
 - **`rangertrak.com` does not yet redirect** to `.org`.
-- Offline operation after the first visit is not yet confirmed on the live site.
+- Offline operation after the first visit is not yet confirmed on the live site, though
+  the update mechanism proves the app is being cached.
 
 ## [0.13.0](https://github.com/EOCOnline/rangertrak/compare/v0.12.0...v0.13.0) (2026-08-14)
 

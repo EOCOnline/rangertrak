@@ -238,22 +238,16 @@ different versions**, then against an install made from the *first* deploy:
 - [ ] The app surfaces **"new version ready — reload"** rather than quietly staying stale.
 - [ ] Reloading actually lands on the new version.
 
-> **Status 2026-08-14, after the first deploys.** Two of the three unknowns closed:
+> **VERIFIED 2026-08-14, end to end.** An install made from the 0.13.0 deploy detected
+> 0.14.0 and offered it on both surfaces: the standing footer button ("New version ready
+> - reload") and the snackbar ("A new version of RangerTrak is available - Reload now").
+> The footer's "(checked ...)" stamp was current.
 >
-> - **The update mechanism runs.** A real browser against the live site logged
->   `Update Service: Update check complete; new version found: false` — the service
->   worker answered, so detection is armed and working. The *positive* case (an existing
->   install being offered a genuinely newer build) is what the next release tests.
-> - **One cause of the caching failure was found and fixed**: the `/index.html` 307,
->   above.
-> - **Still open: does `ngsw` populate its caches?** In headless Chrome — against the
->   live site, on a virgin profile, after the fix — `caches.keys()` stays empty and an
->   offline reload gets the browser's error page. But the same build answers update
->   checks in a normal browser, which `ngsw` can only do once initialised, so headless is
->   the likely anomaly. **Settle it in a normal browser**: DevTools → Application → Cache
->   Storage should list `ngsw:*` entries, and Network → Offline → reload should still
->   render the app. If it does not, the offline promise in
->   [FIELD-GUIDE.md](FIELD-GUIDE.md) is false, and that is a release blocker.
+> This also settles whether `ngsw` populates its caches: `VERSION_READY` is only emitted
+> after the service worker has downloaded and cached the *entire* new version, so caching
+> works. Headless Chrome reporting an empty `caches.keys()` was an artifact of that
+> environment, not a fault in the deployment - which is exactly why this checklist says to
+> run in a real browser.
 
 One diagnostic gotcha specific to this hosting: with
 `not_found_handling: "single-page-application"`, a request for a file that does not
