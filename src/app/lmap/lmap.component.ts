@@ -483,6 +483,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // Try map.remove(); before you try to reload the map. This removes the previous map element using Leaflet's library
     if (this.lMap) {
       this.lMap.invalidateSize() // https://github.com/Leaflet/Leaflet/issues/690
+      // Redraw the markers too: this only resized the canvas, so every caller that
+      // changed *which* reports should be shown (the all/selected switch, a new
+      // report arriving) left the old markers on screen.
+      if (this.displayReports) {
+        this.displayMarkers()
+      }
       //or
       // this.lMap.off()
       // this.lMap.remove() // removing ALSO destroys the div id reference, so then rebuild the map div
@@ -516,31 +522,32 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   // ------------------------------------  Markers  ---------------------------------------
 
   override hideMarkers() {
-    //! unimplemented
-    this.log.error(`hideMarkers(): UNIMPLEMENTED!`, this.id)
+    this.clearMarkers()
   }
 
   override clearMarkers() {
-    this.log.error(`clearMarkers(): UNIMPLEMENTED!`, this.id)
-    //this.mymarkers = []
+    // Every marker on this map lives in the cluster group, so emptying it is the
+    // whole job. Both of these logged "UNIMPLEMENTED!" and did nothing, which is
+    // why switching to "just the selected reports" could never remove anything.
+    this.myMarkerCluster.clearLayers()
   }
 
   override displayMarkers() {
     super.displayMarkers()
 
-    //!BUG  HACK HACK !!!!
-    this.displayedFieldReportArray = this.fieldReportArray
-
-
-
-
 
     // REVIEW: wipes out any manually dropped markers. Could save 'em, but no request for that...
-    //! This needs to be rerun & ONLY display selected rows/markers: i.e., to use  displayedFieldReportArray
     if (!this.displayedFieldReportArray) {
       this.log.error(`displayAllMarkers did not find field reports to display`, this.id)
       return
     }
+
+    // Redraw from scratch. Without this, toggling all/selected or receiving new
+    // reports piled fresh markers on top of the old ones - and the line removed
+    // just above reassigned displayedFieldReportArray to *all* reports, so the
+    // selected-only view could never be honoured no matter what the switch said.
+    this.clearMarkers()
+
     this.log.verbose(`displayMarkers: ${this.displayedFieldReportArray.length} of 'em`, this.id)
     this.displayedFieldReportArray.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???

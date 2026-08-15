@@ -24,7 +24,6 @@ import { AlertsComponent } from './shared/alerts/alerts.component'
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  @HostListener('window:beforeinstallprompt', ['$event'])
 
   private id = "AppComponent"
   title = 'RangerTrak'
@@ -62,8 +61,17 @@ export class AppComponent implements OnInit {
   }
 
 
+  /**
+   * The decorator belongs HERE, on the handler. It used to sit at the top of the
+   * class, where a blank line separated it from `private id` - so Angular bound
+   * the host listener to the id *property* and called ctx.id($event), throwing
+   * "TypeError: ctx.id is not a function" into the error handler on every load of
+   * an installable page. It also meant this method never ran, so `showButton`
+   * stayed false and the "Add to Home Screen" button never appeared.
+   */
+  @HostListener('window:beforeinstallprompt', ['$event'])
   onbeforeinstallprompt(e: Event) {
-    console.log(e);
+    this.log.verbose(`Browser offered an install prompt; stashing it for the A2HS button.`, this.id)
     // Prevent Chrome 67 and earlier from automatically showing the prompt
     e.preventDefault();
     // Stash the event so it can be triggered later.

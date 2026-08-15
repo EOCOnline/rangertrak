@@ -54,6 +54,11 @@ export class UpdateService {
       return
     }
 
+    // Logged unconditionally so the Log page can answer "is update checking even
+    // armed?" after a deploy. Without it, an update flow that never fires and one
+    // that fires and finds nothing look identical - silence.
+    this.log.info(`Update checks armed; watching for new versions.`, this.id)
+
     this.updates.versionUpdates.subscribe(evt => {
       switch (evt.type) {
         case 'VERSION_DETECTED':
