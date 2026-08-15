@@ -20,6 +20,12 @@ RangerTrak-secrets.json
 /dist
 /tmp
 /out-tsc
+
+# Generated API docs (`npm run compodoc`). Was tracked - 181 files, 8.2 MB - and went
+# stale enough to be a liability: it still described AppModule and LazyModule long after
+# both were deleted, and it republished a roster of real names and a key-shaped string
+# that had already been removed from src/. Regenerate on demand; don't commit it.
+/documentation
 # Only exists if Bazel was run
 /bazel-out
 

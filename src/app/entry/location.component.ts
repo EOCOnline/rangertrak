@@ -710,18 +710,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   // https://developer.what3words.com/tutorial/detecting-if-text-is-in-the-format-of-a-3-word-address
   chk3Words(tWords: string) {
     this.log.verbose("chk3Words", this.id)
-    /*let settings = {
-      "async": true,
-      "crossDomain": true,
-      "url": "https://api.what3words.com/v3/autosuggest?key=0M5I8UPF&input=index.home.r&n-results=5&focus=51.521251%2C-0.203586&clip-to-country=BE%2CGB",
-      "method": "GET",
-      "headers": {}
-    }
-
-    $.ajax(settings).done(function (response) {
-      this.log.excessive("ddd=" +response, this.id);
-    });
-    */
+    // A commented-out jQuery $.ajax call to the w3w autosuggest endpoint used to sit
+    // here, carrying an API key. It was verbatim from what3words' own tutorial (London
+    // coordinates, clip-to-country=BE,GB), so the key was theirs rather than ours - but a
+    // key-shaped string in tracked source is a finding whoever reads the repo, and the
+    // snippet was dead anyway (jQuery is not a dependency). Removed; see
+    // PRIVATE-Roadmap.md Section 9d item 1b. The real integration lives in
+    // shared/mapping/3words.ts and takes its key from settings.
 
     // No 3 word results outside these values allowed!!
     // south_lat <= north_lat & west_lng <= east_lng
