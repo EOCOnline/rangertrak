@@ -84,6 +84,35 @@ running the previous release indefinitely — which is exactly what happened in 
 and every new visitor got a 525 error. Everything else keeps Cloudflare's default ETag
 revalidation, which is already correct because the bundles have hashed filenames.
 
+### `html_handling: "none"` — required, and not cosmetic
+
+[wrangler.jsonc](wrangler.jsonc) sets `assets.html_handling` to `"none"`. Do not remove
+it. The default (`auto-trailing-slash`) answers a request for `/index.html` with a **307
+to `/`**. The Angular service worker prefetches `/index.html`, follows that redirect, and
+then calls `cache.put()` — which the Cache API **refuses** for a redirected response,
+throwing a `TypeError`. The install aborts, `ngsw` caches nothing at all, and the app
+silently has no offline capability and never notices a new version.
+
+Confirmed 2026-08-14 by hashing every URL in `ngsw.json`'s prefetch group against what
+the site actually served: `/index.html` was the single mismatch, returning 0 bytes (the
+307's empty body) where a SHA-1 was expected. Every other file matched.
+
+To check it is still right: `curl -sI https://<host>/index.html` must return **200**, not
+307.
+
+### PMTiles needs byte serving, and the asset store does not do it
+
+Workers' static-asset store ignores `Range` and returns the whole file with a 200.
+`pmtiles` reads its header and directory by byte range, so the offline map rendered blank
+with *"Check that your storage backend supports HTTP Byte Serving"*.
+
+[worker/index.js](worker/index.js) is a Range shim for `/assets/maps/*.pmtiles` **only** —
+`run_worker_first` in [wrangler.jsonc](wrangler.jsonc) routes just those paths through the
+Worker, so every other request is still served straight from the asset store with no
+Worker invocation. The file is ~1.7 MB, small enough to buffer and slice. **If the basemap
+ever grows past a few tens of MB, move it to R2** (which does byte serving natively)
+rather than raising the buffer.
+
 ## DNS
 
 Both zones are registered at and served by Cloudflare. Nothing has ever been
@@ -113,14 +142,23 @@ python cf.py dns rangertrak.org      # in D:\Projects\domainManagement\Claude
 
 ### rangertrak.org → the Worker
 
-Deploy first and verify on the `rangertrak.<subdomain>.workers.dev` URL. Then attach
-the custom domain: Workers & Pages → `rangertrak` → Settings → Domains & Routes → Add
-custom domain, for both `rangertrak.org` and `www.rangertrak.org`.
+**Done, and declared in [wrangler.jsonc](wrangler.jsonc)** rather than clicked into the
+dashboard, so the hostname mapping is reviewable and reproducible:
 
-Cloudflare creates the proxied records and provisions the certificate itself. **Do not
-hand-create A/AAAA records** — the conflicting records that used to be there are gone
-precisely so this attach is clean. Wait for the certificate to go active, then run the
-smoke test below against the real hostname.
+```jsonc
+"routes": [
+  { "pattern": "rangertrak.org", "custom_domain": true },
+  { "pattern": "www.rangertrak.org", "custom_domain": true }
+]
+```
+
+`wrangler deploy` creates the custom domains, the proxied DNS records and the
+certificate. **Do not hand-create A/AAAA records for these names**, and do not add the
+same custom domains through the dashboard — the config already owns them.
+
+Note that **both hostnames serve the app**; `www` does not redirect to the apex. If a
+single canonical URL is ever wanted, that is a Redirect Rule on the `.org` zone, the same
+mechanism as the `.com` parking below — not a Worker change.
 
 ### rangertrak.com → redirect to .org
 
@@ -157,8 +195,10 @@ curl -sI https://rangertrak.com/reports | grep -i "^HTTP\|^location"
 
 ## Smoke test after a deploy
 
-Run in a **real browser**, not headless — see the service worker note below. Against the
-`workers.dev` URL first, then the custom domain.
+Run in a **real browser**, not headless — see the service worker note below.
+
+> The `workers.dev` URL returns 404 now that the custom domains are attached; test
+> against `https://rangertrak.org` directly.
 
 ### Routing and assets
 
@@ -179,6 +219,11 @@ Run in a **real browser**, not headless — see the service worker note below. A
 
 - [ ] `curl -sI https://<host>/ngsw.json | grep -i cache-control` shows `no-cache`.
 - [ ] Same for `/ngsw-worker.js` and `/index.html`.
+- [ ] `curl -sI https://<host>/index.html` returns **200, not 307** — see
+      `html_handling` above. A 307 here means no offline support and no update
+      detection, silently.
+- [ ] `curl -sI -H 'Range: bytes=0-99' https://<host>/assets/maps/vashon.pmtiles`
+      returns **206** with a `Content-Range` header.
 
 If any of these is missing, [src/\_headers](src/_headers) is not being honored — stop and
 fix that before trusting the update flow, because its failure is silent.
@@ -193,13 +238,22 @@ different versions**, then against an install made from the *first* deploy:
 - [ ] The app surfaces **"new version ready — reload"** rather than quietly staying stale.
 - [ ] Reloading actually lands on the new version.
 
-> **The service worker has never been verified end to end.** Browser testing on
-> 2026-08-14 found that `ngsw` registers, activates, and controls the page with no
-> errors and a 200 on `/ngsw.json`, but `caches.keys()` stays empty and
-> `checkForUpdate()` never settles. That was headless Chrome against the plain Node
-> preview server, so it may be an artifact of that environment — or real. **This
-> deployment is the first genuine test.** Treat a pass here as the first real evidence,
-> and do it in a normal browser so a headless quirk cannot be the explanation.
+> **Status 2026-08-14, after the first deploys.** Two of the three unknowns closed:
+>
+> - **The update mechanism runs.** A real browser against the live site logged
+>   `Update Service: Update check complete; new version found: false` — the service
+>   worker answered, so detection is armed and working. The *positive* case (an existing
+>   install being offered a genuinely newer build) is what the next release tests.
+> - **One cause of the caching failure was found and fixed**: the `/index.html` 307,
+>   above.
+> - **Still open: does `ngsw` populate its caches?** In headless Chrome — against the
+>   live site, on a virgin profile, after the fix — `caches.keys()` stays empty and an
+>   offline reload gets the browser's error page. But the same build answers update
+>   checks in a normal browser, which `ngsw` can only do once initialised, so headless is
+>   the likely anomaly. **Settle it in a normal browser**: DevTools → Application → Cache
+>   Storage should list `ngsw:*` entries, and Network → Offline → reload should still
+>   render the app. If it does not, the offline promise in
+>   [FIELD-GUIDE.md](FIELD-GUIDE.md) is false, and that is a release blocker.
 
 One diagnostic gotcha specific to this hosting: with
 `not_found_handling: "single-page-application"`, a request for a file that does not
@@ -207,6 +261,11 @@ exist returns **`index.html` with a 200**, not a 404. So a missing or misnamed a
 reaches the service worker as valid-looking HTML and fails a hash check instead of
 returning an honest 404. If `ngsw` misbehaves here, check that every file listed in
 `ngsw.json` actually exists in the deployment before suspecting the service worker.
+
+That hypothesis proved correct on the first real deploy, though by a different route: it
+was not a *missing* file but `/index.html` itself, redirected. The diagnostic is the same
+one, and it is worth running first — fetch every URL in `ngsw.json`, SHA-1 each body, and
+compare against the manifest's `hashTable`. The mismatch names the culprit immediately.
 
 ## Rollback
 
