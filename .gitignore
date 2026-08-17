@@ -15,9 +15,9 @@ RangerTrak-secrets.json
 # They live outside the repository entirely, next to the planning doc, so there is
 # nothing to ignore and nothing to advertise. See DEVELOPING.md, "Screenshots".
 
-# The internal planning/roadmap doc (unremediated security findings, named agency
-# contacts, commercial strategy) now lives outside the repo entirely, one directory up,
-# at ../PRIVATE-Roadmap.md - not relying on a gitignore rule to keep it out of the
+# The internal planning/roadmap docs (unremediated security findings, named agency
+# contacts, commercial strategy) live outside the repo entirely, in
+# ../rangertrak-InternalDocs/ - not relying on a gitignore rule to keep them out of the
 # public repo.
 
 # compiled output
