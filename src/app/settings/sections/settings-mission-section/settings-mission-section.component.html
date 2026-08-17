@@ -1,0 +1,41 @@
+<div [formGroup]="form">
+  <!-- ======================================= -->
+  <h2>Mission</h2>
+  <div class="input-group">
+    <span class="strong">ID or #: </span>
+    <input formControlName="mission" placeholder="Mission #" [style.width.px]="100" type="text"
+      data-lpignore="true" />
+  </div>
+
+  <div class="input-group">
+    <span class="strong">Name: </span>
+    <input formControlName="event" placeholder="Event Name" [style.width.px]="100" type="text" data-lpignore="true" />
+  </div>
+
+  <div class="input-group">
+    <span class="strong">Notes: </span><br />
+    <textarea appearance="fill" formControlName="eventNotes" class="input-group settings__OpPeriod--notes" cols="60"
+      rows="4" placeholder="Event description, if needed"></textarea>
+  </div>
+
+  <!-- ======================================= -->
+  <div class="input-group">
+    <h2>Operational Period</h2>
+    Name: <input formControlName="opPeriod" placeholder="Operational Period" [style.width.px]="120" type="text"
+      data-lpignore="true" />
+  </div>
+
+  <!-- ======================================= -->
+  <!--span class="strong">OpPeriod Start: </span-->
+  <div FormControl="timepickerFormControlStart" class="filled timepicker">
+    <rangertrak-time-picker [initialDate]="opPeriodStart" [datePickerLabel]="timePickerLabelStart"
+      (newTimeEvent)="timeEventStart.emit($event)">
+    </rangertrak-time-picker>
+  </div>
+
+  <!--span class="strong">OpPeriod End: </span -->
+  <div FormControl="timepickerFormControlEnd" class="filled timepicker">
+    <rangertrak-time-picker [initialDate]="opPeriodEnd" [datePickerLabel]="timePickerLabelEnd"
+      (newTimeEvent)="timeEventEnd.emit($event)"></rangertrak-time-picker>
+  </div>
+</div>

@@ -1,0 +1,127 @@
+<div [formGroup]="form">
+  <!-- ======================================= -->
+  <h2>Maps</h2>
+  <div class="input-group">
+    <div class="strong">Markers: </div>
+    <input type="checkbox" formControlName="allowManualPinDrops" placeholder="allowManualPinDrops" />
+    Clicking on Google & Leaflet maps should make new markers - but won't be saved.<br />
+    (Default on Leaflet maps: clicking saves Lat/Long to clipboard.)
+  </div>
+
+  <!-- ======================================= -->
+  <h3>Leaflet Map Settings</h3>
+  <div formGroupName="leaflet">
+    <!-- settingsEditorForm -->
+    <div class="input-group">
+      <span class="strong">Default Zoom: </span>
+
+      <input formControlName="defZoom" placeholder="15" type="number" min="1" max="22" [style.width.px]="50" />
+    </div>
+
+    <!-- markerScheme - unused for now -->
+
+    <div class="input-group">
+      <span class="strong">Overview Map Zoom Difference: </span>
+      <input
+        [class.border-danger]="form.get('overviewDifference')?.touched && form.get('overviewDifference')?.invalid"
+        type="number" [style.width.px]="50" formControlName="overviewDifference" placeholder="5" min="1" max="10" />
+      <div
+        *ngIf="form.get('overviewDifference')?.touched && form.get('overviewDifference')?.hasError('required')"
+        class="text-sm text-danger">
+        overviewDifference is required
+      </div>
+    </div>
+
+    <div class="input-group">
+      <span class="strong">Overview Map Min Zoom: </span>
+      <input
+        [class.border-danger]="form.get('overviewMinZoom')?.touched && form.get('overviewMinZoom')?.invalid"
+        type="number" formControlName="overviewMinZoom" placeholder="5" min="1" max="10" />
+      <div
+        *ngIf="form.get('overviewMinZoom')?.touched && form.get('overviewMinZoom')?.hasError('required')"
+        class="text-sm text-danger">
+        overviewMinZoom is required
+      </div>
+    </div>
+
+    <div class="input-group">
+      <span class="strong">Overview Map Max Zoom: </span>
+      <input
+        [class.border-danger]="form.get('overviewMaxZoom')?.touched && form.get('overviewMaxZoom')?.invalid"
+        type="number" [style.width.px]="50" formControlName="overviewMaxZoom" placeholder="21" min="3" max="22" />
+      <div
+        *ngIf="form.get('overviewMaxZoom')?.touched && form.get('overviewMaxZoom')?.hasError('required')"
+        class="text-sm text-danger">
+        overviewMaxZoom is required
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================= -->
+  <h3>Geocoding</h3>
+  <div class="input-group">
+    <span class="strong">Google Geocoding API Key (optional): </span>
+    <input formControlName="googleGeocodingApiKey" placeholder="leave blank to use Nominatim (OpenStreetMap)"
+      type="text" [style.width.px]="320" />
+    <div class="text-sm">
+      By default, address lookup uses Nominatim (OpenStreetMap) - no key required, but requires Internet.
+      Supplying your own Google API key here switches address lookup to Google Geocoding instead. This key is
+      stored only in your browser and is your own billing responsibility.
+    </div>
+  </div>
+
+  <!-- ======================================= -->
+  <h3>Offline Map (PMTiles) Settings</h3>
+  <div formGroupName="google">
+    <!-- settingsEditorForm -->
+    <div class="input-group">
+      <span class="strong">Default Zoom: </span>
+      <input
+        [class.border-danger]="form.get('defZoom')?.touched && form.get('defZoom')?.invalid"
+        type="number" [style.width.px]="50" formControlName="defZoom" placeholder="15" min="3" max="22" />
+      <div
+        *ngIf="form.get('defZoom')?.touched && form.get('defZoom')?.hasError('required')"
+        class="text-sm text-danger">
+        zoom is required
+      </div>
+    </div>
+
+    <!-- markerScheme - unused for now -->
+
+    <div class="input-group">
+      <span class="strong">Overview Map Zoom Difference: </span>
+      <input
+        [class.border-danger]="form.get('overviewDifference')?.touched && form.get('overviewDifference')?.invalid"
+        type="number" [style.width.px]="50" formControlName="overviewDifference" placeholder="5" min="1" max="10" />
+      <div
+        *ngIf="form.get('overviewDifference')?.touched && form.get('overviewDifference')?.hasError('required')"
+        class="text-sm text-danger">
+        overviewDifference is required
+      </div>
+    </div>
+
+    <div class="input-group">
+      <span class="strong">Overview Map Min Zoom: </span>
+      <input
+        [class.border-danger]="form.get('overviewMinZoom')?.touched && form.get('overviewMinZoom')?.invalid"
+        type="number" [style.width.px]="50" formControlName="overviewMinZoom" placeholder="5" min="1" max="10" />
+      <div
+        *ngIf="form.get('overviewMinZoom')?.touched && form.get('overviewMinZoom')?.hasError('required')"
+        class="text-sm text-danger">
+        overviewMinZoom is required
+      </div>
+    </div>
+
+    <div class="input-group">
+      <span class="strong">Overview Map Max Zoom: </span>
+      <input
+        [class.border-danger]="form.get('overviewMaxZoom')?.touched && form.get('overviewMaxZoom')?.invalid"
+        type="number" [style.width.px]="50" formControlName="overviewMaxZoom" placeholder="21" min="3" max="22" />
+      <div
+        *ngIf="form.get('overviewMaxZoom')?.touched && form.get('overviewMaxZoom')?.hasError('required')"
+        class="text-sm text-danger">
+        overviewMaxZoom is required
+      </div>
+    </div>
+  </div>
+</div>

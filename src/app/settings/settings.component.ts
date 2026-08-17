@@ -1,6 +1,4 @@
-import { AgGridModule } from 'ag-grid-angular'
-import { ColDef, GridOptions } from 'ag-grid-community'
-import { delay, Subscription, throwError } from 'rxjs'
+import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { Component, enableProdMode, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
@@ -10,21 +8,22 @@ import {
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 
-import { TimePickerComponent } from '../shared/'
-import { DisclosureComponent } from '../shared/disclosure/disclosure.component'
 import { PageComponent } from '../shared/page/page.component'
-import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import {
-  BackupService, FieldReportService, FieldReportStatusType, InstallableService, LogService, RangerService,
-  SampleDataService, SettingsService, SettingsType, StoragePersistenceService
+  FieldReportStatusType, InstallableService, LogService, SettingsService, SettingsType
 } from '../shared/services/'
 //import { Color } from '@angular-material-components/color-picker';
 //import { ThemePalette } from '@angular/material/core';
-import { ColorEditor } from './color-editor.component'
 //import { MoodEditor } from './mood-editor.component'
 //import { MoodRenderer } from './mood-renderer.component'
 
 import { MATERIAL_IMPORTS } from '../material-imports'
+import { SettingsInstructionsComponent } from './sections/settings-instructions/settings-instructions.component'
+import { SettingsMissionSectionComponent } from './sections/settings-mission-section/settings-mission-section.component'
+import { SettingsLocationSectionComponent } from './sections/settings-location-section/settings-location-section.component'
+import { SettingsMapsSectionComponent } from './sections/settings-maps-section/settings-maps-section.component'
+import { SettingsFieldReportStatusesComponent } from './sections/settings-field-report-statuses/settings-field-report-statuses.component'
+import { SettingsAdvancedOptionsComponent } from './sections/settings-advanced-options/settings-advanced-options.component'
 
 @Component({
   selector: 'rangertrak-settings',
@@ -34,10 +33,13 @@ import { MATERIAL_IMPORTS } from '../material-imports'
     FormsModule,
     ReactiveFormsModule,
     ...MATERIAL_IMPORTS,
-    AgGridModule,
     PageComponent,
-    DisclosureComponent,
-    TimePickerComponent,
+    SettingsInstructionsComponent,
+    SettingsMissionSectionComponent,
+    SettingsLocationSectionComponent,
+    SettingsMapsSectionComponent,
+    SettingsFieldReportStatusesComponent,
+    SettingsAdvancedOptionsComponent,
   ],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
@@ -72,23 +74,17 @@ export class SettingsComponent implements OnInit, OnDestroy {
   timePickerLabelEnd = 'Operational Period End Time'
   imgDir = "./assets/imgs/"  //! NOTE: Hardcoded, not possible to edit & potential security risk?!
 
-  private gridApi: any
-  private gridColumnApi: any
-
   /**
-   * The editable working set behind the status/colour grid. Unlike the read-only mirrors
-   * elsewhere this cannot be a getter - the user edits these rows and `addStatus()`
-   * pushes to them - so it is re-seeded from the settings subscription instead, next to
-   * the form reset that already happens there. Snapshotting it only in ngOnInit meant
-   * that after Import Mission the grid still showed the *previous* mission's statuses,
-   * and saving from that stale grid wrote them back over the imported ones.
+   * The editable working set behind the status/colour grid, owned here and handed to
+   * `SettingsFieldReportStatusesComponent` by reference. Unlike the read-only mirrors
+   * elsewhere this cannot be a getter - the user edits these rows and the grid's
+   * `addStatus()` pushes to them - so it is re-seeded from the settings subscription
+   * instead, next to the form reset that already happens there. Snapshotting it only in
+   * ngOnInit meant that after Import Mission the grid still showed the *previous*
+   * mission's statuses, and saving from that stale grid wrote them back over the imported
+   * ones.
    */
   rowData: FieldReportStatusType[] = []
-
-
-
-
-
 
   /*
   colorCtr: AbstractControl = new FormControl(new Color(255, 243, 200), [Validators.required])
@@ -98,146 +94,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public color: ThemePalette = 'primary';
 */
 
-  // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
-  // https://www.ag-grid.com/javascript-data-grid/row-styles/#highlighting-rows-and-columns
-  gridOptions: GridOptions = {
-    // Use the classic ag-theme-alpine CSS (imported in styles.scss) rather than v33+'s
-    // Theming API - see the ModuleRegistry comment in main.ts.
-    theme: 'legacy',
-    //suppressRowHoverHighlight: true, // turn OFF row hover, default:on
-    //columnHoverHighlight: true, // turn ON column hover, default: off
-  }// rowSelection: "multiple"}
-
-  defaultColDef: ColDef = {
-    flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
-    minWidth: 30,
-    editable: true,
-    singleClickEdit: true,
-    resizable: true,
-    sortable: true,
-    filter: true,
-    //floatingFilter: true
-  }
-
-  //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
-  columnDefs = [
-    {
-      headerName: "Status", field: "status", flex: 50,
-      cellStyle: (params: { value: string; }) => {
-        let stat = this.rowData.find(el => el.status == params.value)
-        return { 'background-color': `${stat ? stat.color : '#A3A3A3'}` }
-        // for (let i = 0; i < this.rowData.length; i++) {
-        //   if (params.value === this.rowData[i].status) {
-        //     return { backgroundColor: this.rowData[i].color }
-        //   }
-        // }
-        // return null
-      }
-    },
-    {
-      headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code",
-      cellStyle: (params: { value: string; }) => {
-        //  this.log.verbose(`editor returned: ${params.value}`)
-        // TODO: typically the colorPicker only should stay up while hovered over...we have to click away because????
-
-        let newColor = params.value
-        //params.node.data.color = newColor
-        //params.api.rowModel.rowsToDisplay[1].data.color
-        // params.api.rowRenderer.allRowCtrls[1].rowNode.data.color
-        // params.rowIndex = 3
-        // params.value = "6e6970"
-        // params.node.data.color
-        // params.node.data.status = "Objective Update"
-        // params.node.id = 3
-        // TODO: force row redraw with new color...
-        // https://www.ag-grid.com/angular-data-grid/data-update-single-row-cell/#view-refresh
-        // see https://www.ag-grid.com/javascript-data-grid/row-styles/#refresh-of-styles
-
-        /*
-        <div comp-id="39" style="transform: translateY(123px); height: 41px;" row-index="3" aria-rowindex="5" class="ag-row-odd ag-row ag-row-level-0 ag-row-position-absolute ag-row-focus ag-row-not-inline-editing" role="row" row-id="3">
-
-        <div comp-id="52" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height" aria-colindex="1" tabindex="-1" col-id="status" role="gridcell" style="left: 0px; width: 239.011px; background-color: aqua;">Objective Update</div>
-
-        <div comp-id="53" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-focus" aria-colindex="2" tabindex="-1" col-id="color" role="gridcell" style="left: 239.011px; width: 359px; background-color: rgb(255, 64, 0);">ff4000</div>
-        </div>
-        */
-
-        //  params => params.api.getValue("result", params.node) < 60,
-
-        /* indices: Array<number> = [1,4,5]; // color these rows
-
-gridOptions.getRowStyle = (params) => { // should use params, not indices in the first braces. Binds the component to this. Can use indices in the function now
-    if (this.indices.includes(params.node.rowIndex)) {
-        return { background: 'red' }
-    }
-}
-*/
-        // https://www.ag-grid.com/javascript-data-grid/row-styles/
-        // https://www.ag-grid.com/angular-data-grid/accessing-data/
-        // https://www.ag-grid.com/angular-data-grid/accessing-data/#example-using-for-each
-        // https://www.ag-grid.com/angular-data-grid/data-update-single-row-cell/
-        // https://www.ag-grid.com/javascript-data-grid/row-selection/
-        // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
-        // https://angular-get-selected-rows.stackblitz.io
-
-        //let row = this.getSelectedRowData()
-        //setData
-
-        // iterate through every node in the grid
-        //let rowNode:any //Cannot redeclare block-scoped variable 'rowNode'
-        /*this.gridApi.forEachNode((rowNode: { data: string; }, index: any) => {
-          this.log.verbose('node ' + rowNode.data + ' is in the grid');
-        });
-*/
-        //this.getRowNodeId = data => data.id;
-        // get the row node with ID 55
-        //      const rowNode = this.gridApi.getRowNode('55');
-
-        // do something with the row, e.g. select it
-        //    rowNode.setSelected(true);
-        //   let meRow = this.gridApi.getRowNode()
-        //rowNode.setData
-        //const setData = (data: any) //=> void;
-
-        //params.value = ("444" + newColor + "kkkk")
-
-        //this.gridApi.refreshCells() -- breaks things!
-        this.refreshStatusGrid()
-        return { backgroundColor: newColor }
-      },
-      //cellRenderer: ColorRenderer,
-      cellEditor: ColorEditor, // new ColorEditor(255,0,100)
-      cellEditorPopup: true,
-      editable: true,
-      width: 300,
-    }
-    //REVIEW: No need for ICONS associated with statuses, is there? They should be associated with Callsign/Team, etc: Or are these the interior icon WITHIN the marker?!
-    /*  {
-        headerName: "Icon", field: "icon",
-        cellRenderer: MoodRenderer,
-        cellEditor: MoodEditor,
-        cellEditorPopup: true,
-        editable: true,
-        width: 300,
-      } //, minWidth: "25px" }
-  */
-  ]
-
   /** E-37: reads through to the one service that knows. Getter, not a field, so it is not
    *  evaluated before the constructor's parameter properties exist. */
   get isInstallable(): boolean { return this.installableService.installable() }
-
-  fonts = ["'Open Sans'", "Montserrat", "Roboto", "'Playfair Display'", "Lato", "Merriweather", "Helvetica", "Lora", "'PT Serif'", "Spectral", "'Times New Roman'", "'Akaya Telivigala'",
-    "'Open Sans Condensed'", "'Saira Extra Condensed'", "Boogaloo", "Anton", "'Faster One'", "'Arima Madurai'"]  //, "'Material Icons'"]  all loaded in Index.html
-  // https://en.wikipedia.org/wiki/Pangram
-  pangrams = ["Pack my box with five dozen liquor jugs",
-    "The quick brown fox jumps over the lazy dog",
-    "Glib jocks quiz nymph to vex dwarf.",
-    "Sphinx of black quartz, judge my vow.",
-    "How vexingly quick daft zebras jump!",
-    "The five boxing wizards jump quickly.",
-    "Jackdaws love my big sphinx of quartz."]
-  pangram
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -246,19 +105,12 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
       settings.component.ts(155, 17): This type does not have a value, so it cannot be used as injection token.
     */
     //private fieldReportService: FieldReportService,
-    private backupService: BackupService,
-    private sampleDataService: SampleDataService,
     private installableService: InstallableService,
-    // public (not private): read directly in the template as
-    // storagePersistence.persisted() - a signal, so this is zoneless-safe
-    // without any manual subscription/markForCheck().
-    public storagePersistence: StoragePersistenceService,
     private log: LogService,
     //private rangerService: RangerService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
     this.log.verbose('======== Constructor() ============', this.id)
-    ensureAgGridRegistered()
 
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
@@ -284,7 +136,6 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     // true on construction, before any browser had offered anything. The service now owns
     // that state and `isInstallable` reads through to it.
 
-    this.pangram = this.getPangram()
     //this.log.verbose('Settings set to static values. But not initialized???', this.id)
   }
 
@@ -370,91 +221,6 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     this.log.verbose(`onBtnResetDefaults: Reset Settings.`, this.id)
     this.settings = this.settingsService.ResetDefaults() // need to refresh page?!
     //this.reloadPage_unused()
-  }
-
-  /** Re-requests persistent storage - e.g. after the user installs the app, which
-   *  can change whether the browser is willing to grant it. */
-  onBtnRequestPersistence() {
-    this.log.verbose('onBtnRequestPersistence: re-requesting persistent storage.', this.id)
-    this.storagePersistence.requestPersistence()
-  }
-
-  /**
-   * Downloads the current mission (settings + rangers + field reports) as a
-   * single JSON file. See PRIVATE-Roadmap.md Section 8/R3.
-   */
-  onBtnExportMission() {
-    // The export bundles the full ranger roster, so it carries the same personal data as
-    // the Rangers page warns about - in an unencrypted file this app can no longer
-    // protect once written.
-    if (!confirm(`Export this mission to a file?\n\n`
-      + `The file includes the full ranger roster - legal names, home addresses, personal `
-      + `phone numbers and call signs - and is NOT encrypted.\n\n`
-      + `Store it somewhere appropriate, share it only with people who need it for this `
-      + `mission, and delete it when the mission is over.`)) {
-      this.log.verbose('onBtnExportMission: user cancelled export.', this.id)
-      return
-    }
-
-    this.log.verbose('onBtnExportMission: Exporting mission.', this.id)
-    this.backupService.exportMission()
-  }
-
-  /**
-   * Handles a file picked via the "Import Mission" <input type="file">.
-   * Destructive - replaces current settings/rangers/field reports entirely -
-   * so this confirms with the user before applying.
-   */
-  onImportFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement
-    const file = input.files?.[0]
-    input.value = '' // allow re-selecting the same file later
-
-    if (!file) {
-      return
-    }
-
-    this.backupService.readFileAsMissionExport(file)
-      .then(payload => {
-        const summary = `Mission "${payload.settings.mission || '(unnamed)'}" exported `
-          + `${payload.exportedAt}, with ${payload.rangers.length} rangers and `
-          + `${payload.fieldReports.fieldReportArray.length} field reports.`
-
-        if (!confirm(`Import this mission?\n\n${summary}\n\n`
-          + `This REPLACES all current settings, rangers, and field reports on this device. `
-          + `This cannot be undone - export the current mission first if you want to keep it.`)) {
-          this.log.verbose('onImportFileSelected: user cancelled import.', this.id)
-          return
-        }
-
-        this.backupService.importMission(payload)
-        this.log.warn(`Imported mission from ${file.name}.`, this.id)
-        alert('Mission imported. Reloading to refresh every screen with the new data...')
-        window.location.reload()
-      })
-      .catch(error => {
-        this.log.error(`onImportFileSelected: failed to import ${file.name}: ${error.message}`, this.id)
-        alert(`Could not import "${file.name}": ${error.message}`)
-      })
-  }
-
-  /**
-   * Loads the built-in demonstration mission. Destructive - replaces rangers and
-   * field reports - so it confirms first, matching onImportFileSelected().
-   */
-  onBtnLoadSampleData() {
-    if (!confirm(`Load the sample mission?\n\n`
-      + `This REPLACES all rangers and field reports currently on this device with `
-      + `demonstration data, and renames the mission to make that obvious.\n\n`
-      + `This cannot be undone - export the current mission first if you want to keep it.`)) {
-      this.log.verbose('onBtnLoadSampleData: user cancelled.', this.id)
-      return
-    }
-
-    this.sampleDataService.loadSampleMission()
-    this.log.warn('Loaded the sample mission (demo data).', this.id)
-    alert('Sample mission loaded. Reloading to refresh every screen with the new data...')
-    window.location.reload()
   }
 
   /**
@@ -580,60 +346,6 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     }
   }
 
-  onGridReady = (params: any) => {
-    this.log.verbose(" onGridReady", this.id)
-
-    this.gridApi = params.api
-    this.gridColumnApi = params.columnApi
-
-    this.refreshStatusGrid()
-    //https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing // TODO: use this line, or next routine?!
-  }
-
-  onFirstDataRendered(params: any) {
-    this.refreshStatusGrid() // REVIEW: needed???
-  }
-
-  onBtnAddFRStatus() {
-    this.rowData.push({ status: 'New Status', color: '', icon: '' })
-    this.refreshStatusGrid()
-    this.log.verbose(`Reloading window!`, this.id)
-    this.reloadPage()
-  }
-
-  refreshStatusGrid() {
-    if (this.gridApi) {
-      this.gridApi.refreshCells()
-      this.gridApi.sizeColumnsToFit();
-    } else {
-      this.log.verbose("no this.gridApi yet in refreshStatusGrid()", this.id)
-    }
-    // this.log.verbose(`Reloading window!`, this.id)
-    //window.location.reload() -- reloads endlessly!
-    // TODO: try   getSelectedRowData() & then refresh row color instead - set color by row, vs cell
-    /*
-     async delayedAction() {
-    this.dbug("resetMap");
-    await this.sleep(2000);  // use delay(2000) instead
-    this.dbug("resetMap has slept");
-    this.filterLeafletMap();
-    this.dbug("resetMap complete");
-  }
-
-  this.util.sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-  */
-  }
-
-  // https://angular-get-selected-rows.stackblitz.io
-  getSelectedRowData() {
-    let selectedNodes = this.gridApi.getSelectedNodes();
-    //let selectedData = selectedNodes.map(node => node.data);
-    //alert(`Selected Nodes:\n${JSON.stringify(selectedData)}`);
-    //      return selectedData;
-  }
-
   reloadPage() {
     //REVIEW: Does this zap existing changes elsewhere on the page (used for reseting field statuses..)
     this.log.verbose(`Reloading window!`, this.id)
@@ -670,10 +382,6 @@ gridOptions.getRowStyle = (params) => { // should use params, not indices in the
     // TODO:
     this.log.error("getPlatform: UNIMPLEMENTED", this.id)
     // https://material.angular.io/cdk/platform/overview
-  }
-
-  getPangram() {
-    return this.pangrams[Math.floor(Math.random() * this.pangrams.length)]
   }
 
   ngOnDestroy() {

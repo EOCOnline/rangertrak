@@ -1,0 +1,31 @@
+// Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss.
+$filledColor: var(--rt-surface-2);
+
+.filled {
+  background-color: $filledColor;
+}
+
+.timepicker {
+  position: relative;
+  width   : 240px;
+  border  : 1px solid black;
+  margin  : 10px 0px;
+}
+
+.settings__OpPeriod--notes {
+  border          : 1px dotted rgb(52, 28, 192);
+  border-radius   : 6px;
+  background-color: $filledColor;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+h1,
+h2,
+h3 {
+  margin-top   : 20px !important;
+  margin-bottom: 0px !important;
+  font-weight  : 600 !important;
+}

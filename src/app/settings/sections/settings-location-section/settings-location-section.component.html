@@ -1,0 +1,71 @@
+<div [formGroup]="form">
+  <!-- ======================================= -->
+  <h2>Location Defaults</h2>
+  <!--legend>Default </legend-->
+  <rangertrak-disclosure summary="Location Guidance">
+    <ul>
+      <li>Enter Lat & Long, which will be used as initial/default values in the entry form.</li>
+      <li><a href="https://maps.google.com/pluscodes/" target="_blank">PlusCodes</a> uses the Plus Code value
+        entered for converting short to full/global codes.</li>
+      <li>
+        <a href="https://www.What3Words.com" target="_blank">What3Words</a> uses the 'w3wLocale' to set the focus,
+        prioritizing suggested results (for incorrect words) by proximity to this nearby locality/town/place.
+      </li>
+      <li>
+        Maps do NOT use any of these. Maps are auto-centered on the bounding coordinates
+        centroid of all points entered and the map is then zoomed to show all points.
+      </li>
+    </ul>
+  </rangertrak-disclosure>
+
+  <div class="input-group">
+    <span class="strong">Latitude: &nbsp;</span>
+    <input
+      [class.border-danger]="form.get('defLat')?.touched && form.get('defLat')?.invalid"
+      type="number" formControlName="defLat" step=".01" min="-89.99" max="89.99"
+      placeholder="{{settings.defLat.toFixed(4)}}" value="{{settings.defLat.toFixed(4)}}" [style.width.px]="75"
+      data-lpignore="true" />
+    <div *ngIf="form.get('defLat')?.touched && form.get('defLat')?.hasError('required')"
+      class="text-sm text-danger">
+      latitude is required
+    </div>
+  </div>
+
+  <div class="input-group">
+    <span class="strong">Longitude: </span>
+    <input
+      [class.border-danger]="form.get('defLng')?.touched && form.get('defLng')?.invalid"
+      type="number" formControlName="defLng" step=".01" min="-179.99" max="179.99"
+      placeholder="{{settings!.defLng.toFixed(4)}}" [style.width.px]="75" data-lpignore="true" />
+    <div *ngIf="form.get('defLng')?.touched && form.get('defLng')?.hasError('required')"
+      class="text-sm text-danger">
+      longitude is required
+    </div>
+  </div>
+
+  <div class="input-group">
+    <span class="strong">Plus Code: </span>
+    <input
+      [class.border-danger]="form.get('defPlusCode')?.touched && form.get('defPlusCode')?.invalid"
+      type="text" formControlName="defPlusCode" placeholder="84VVCGWP+VW" [style.width.px]="100"
+      data-lpignore="true" />
+    &nbsp;&nbsp;<button onclick="window.open('https://plus.codes/map/','_blank')">Find a +Code</button>
+    <div
+      *ngIf="form.get('defPlusCode')?.touched && form.get('defPlusCode')?.hasError('required')"
+      class="text-sm text-danger">
+      plusCode is required
+    </div>
+  </div>
+
+  <div class="input-group">
+    <span class="strong">w3wLocale: </span>
+    <input
+      [class.border-danger]="form.get('w3wLocale')?.touched && form.get('w3wLocale')?.invalid"
+      type="text" formControlName="w3wLocale" placeholder="Vashon, WA" [style.width.px]="100" data-lpignore="true" />
+    <div
+      *ngIf="form.get('w3wLocale')?.touched && form.get('w3wLocale')?.hasError('required')"
+      class="text-sm text-danger">
+      plusCode is required
+    </div>
+  </div>
+</div>

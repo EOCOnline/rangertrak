@@ -1,0 +1,20 @@
+<!-- ======================================= -->
+<!-- FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options? -->
+<h2>Field Report Statuses</h2>
+(Don't edit status names - <b>if</b> they've already <br />
+been used for this event.<br />
+Add new statuses anytime.)
+
+<ag-grid-angular class="ag-theme-alpine" (gridReady)="onGridReady($event)" [gridOptions]="gridOptions"
+  [defaultColDef]="defaultColDef" [tooltipShowDelay]="500" [rowData]="rowData" [columnDefs]="columnDefs">
+</ag-grid-angular>
+
+<button (click)="onBtnAddFRStatus()" title="Add a new Field Report Status">
+  Add new row
+</button>
+&nbsp;&nbsp;&nbsp;
+<button (click)="this.refreshStatusGrid()" title="Refresh Report Statuses">
+  Refresh Statuses Grid
+</button>
+<br />
+<br />

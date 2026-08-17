@@ -28,6 +28,13 @@
   margin         : 0;
   display        : flex;
   flex           : 8;
+  // Was a single un-wrapping row: at any viewport narrower than the links' combined
+  // width (~650px) the row simply didn't fit, and mobile browsers respond to that by
+  // widening the whole page's layout viewport to avoid clipping it - so every route was
+  // forced to a ~650-1100px minimum width on phones, not just this nav. Wrapping is the
+  // minimal fix for that; a real collapsed/hamburger treatment is Sprint E's job.
+  flex-wrap      : wrap;
+  row-gap        : 0.2em;
 }
 
 .main-nav li {
@@ -133,15 +140,12 @@
   opacity: 1;
 }
 
-// TODO: Doesn't collapse into a hamburger!!!
 @media screen and (max-width: 575px) {
   .main-nav {
     flex-direction: column;
   }
 
   .main-nav ul {
-    flex-direction: row;
-    /* Change this to 'column' to stack the links */
-    margin-bottom : 0.1em;
+    margin-bottom: 0.1em;
   }
 }

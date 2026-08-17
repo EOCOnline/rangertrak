@@ -1,3 +1,7 @@
+// Sprint C (theme-token-layer memory): this @use block is a documented dead-config trap -
+// the MDC packages whose every @include here is commented out, except
+// "@material/button/styles" which DOES emit real CSS. Left alone deliberately - do not
+// remove or relocate without first confirming nothing depends on that one live include.
 @use "@material/theme"
 with ($primary: #962f10,
   $on-primary: #442C2E);
@@ -5,43 +9,12 @@ with ($primary: #962f10,
 @use "@material/button/styles";
 @use "@material/banner";
 
-@import "ag-grid-community/styles/ag-grid.css";
-@import "ag-grid-community/styles/ag-theme-balham.css";
-
-ag-grid-angular {
-  height: 400px;
-  width : 400px;
+.strong {
+  font-weight: bold;
 }
 
-// Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss.
-$filledColor: var(--rt-surface-2);
-
-.filled {
-  background-color: $filledColor;
-}
-
-.timepicker {
-  position: relative;
-  width   : 240px;
-  border  : 1px solid black;
-  margin  : 10px 0px;
-}
-
-// The same rgb(236, 252, 4) electric yellow 25a item 3 replaced on Entry's Submit. That
-// fix changed the one button the review named and did not grep for the value, so this
-// twin survived a whole sprint. Same treatment: it is this page's primary action.
-.settings__Save-button {
-  margin-left     : 10px;
-  margin-top      : 0px;
-  margin-bottom   : 10px;
-  background-color: var(--rt-accent);
-  color           : var(--rt-accent-ink);
-  border          : 1px solid transparent;
-  border-radius   : var(--rt-radius);
-  min-height      : var(--rt-tap-min);
-  padding         : 0 1.25rem;
-  font-weight     : 600;
-  cursor          : pointer;
+button {
+  max-width: 300px;
 }
 
 .eButton {
@@ -53,27 +26,6 @@ $filledColor: var(--rt-surface-2);
   //padding: 10px;
 }
 
-// https://www.codingtag.com/remove-arrows-from-input-type-number
-// to hide spinners
-/* Chrome, Safari, Edge, Opera /
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin            : 0;
-}
-
-/* Specilly used for Firefox /
-input[type=number] {
-  -moz-appearance: textfield;
-}
-*/
-
-.settings__OpPeriod--notes {
-  border          : 1px dotted rgb(52, 28, 192);
-  border-radius   : 6px;
-  background-color: $filledColor;
-}
-
 label {
   font-weight   : bold;
   padding-bottom: .5rem;
@@ -81,9 +33,17 @@ label {
   display       : inline-block;
 }
 
-button {
-  max-width: 300px;
+h1,
+h2,
+h3 {
+  margin-top   : 20px !important;
+  margin-bottom: 0px !important;
+  font-weight  : 600 !important;
 }
+
+// Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss. Still needed here
+// for .installMe below, even though .filled itself moved to the Mission section (Sprint C).
+$filledColor: var(--rt-surface-2);
 
 .big {
   font-size  : large;
@@ -99,20 +59,8 @@ button {
   margin-bottom: 0px;
 }
 
-.strong {
-  font-weight: bold;
-}
-
 .strongish {
   font-weight: 500;
-}
-
-h1,
-h2,
-h3 {
-  margin-top   : 20px !important;
-  margin-bottom: 0px !important;
-  font-weight  : 600 !important;
 }
 
 .bordered {
