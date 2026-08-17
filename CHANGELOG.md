@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.7](https://github.com/EOCOnline/rangertrak/compare/v0.15.6...v0.15.7) (2026-08-17)
+
+
+### Features
+
+* **settings:** break settings.component into sections (Sprint C) ([0a66e49](https://github.com/EOCOnline/rangertrak/commit/0a66e49cba64f87b2b20ddfad0dfde425842a455))
+
 ### [0.15.6](https://github.com/EOCOnline/rangertrak/compare/v0.15.5...v0.15.6) (2026-08-15)
 
 
