@@ -5,14 +5,13 @@ import {
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
-  AfterViewInit, Component, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy, OnInit,
-  Output, ViewChild,
+  AfterViewInit, Component, ElementRef, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy,
+  OnInit, Output, signal, ViewChild,
   ChangeDetectionStrategy
 } from '@angular/core'
-import {
-  FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder,
-  UntypedFormControl, UntypedFormGroup, Validators
-} from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
+import { form, FormField } from '@angular/forms/signals'
+import { SignalFormControl } from '@angular/forms/signals/compat'
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
@@ -42,8 +41,8 @@ import { MiniLMapComponent } from './mini-lmap.component'
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     ReactiveFormsModule,
+    FormField,
     ...MATERIAL_IMPORTS,
     PageComponent,
     TimePickerComponent,
@@ -61,6 +60,11 @@ import { MiniLMapComponent } from './mini-lmap.component'
 export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // following is never referenced: not really in use?!
   @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
+
+  // Sprint D keyboard-first pass: one mechanism covers both initial-load focus and
+  // post-submit focus restore (see ngAfterViewInit()/resetEntryForm() below), rather than
+  // mixing cdkFocusInitial with a separate manual path.
+  @ViewChild('callsignInput') private callsignInputRef?: ElementRef<HTMLInputElement>
 
   //  @ViewChild('LocationComponent') myLocationPickerInstance: any//LocationComponent;
   /** Likely NOT needed...
@@ -97,9 +101,27 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   alert: AlertsComponent
 
   // --------------- ENTRY FORM -----------------
-  // control creation in a component class = immediate access to listen for, update, and validate state of the form input: https://angular.io/guide/reactive-forms#adding-a-basic-form-control
-  // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 & https://github.com/angular/angular/pull/43834
-  public entryDetailsForm!: FormGroup //UntypedFormGroup
+  // Sprint D: id/location/date/notes never touch Material controls that lack [formField]
+  // support, so they're a native signal form. callsign (mat-autocomplete) and status
+  // (mat-radio-group) don't support [formField] in the installed Angular Material
+  // (angular/components#32072, still open) - those two stay classic FormControls, upgraded
+  // to SignalFormControl for signal-side readability, living in their own small FormGroup
+  // bound the old way (formControlName) in the template. See plan §3 / Context.
+  // Real initial value (location: this.locationParent) is set by initEntryForm(), called
+  // from ngOnInit() - NOT here, since this field initializer runs before locationParent's
+  // own declaration below is assigned.
+  private entryModel = signal({ id: -1, location: undefinedLocation, date: new Date(), notes: '' })
+  public entryForm = form(this.entryModel)
+
+  // Constructed once, here, as a field initializer - like entryForm above. SignalFormControl's
+  // constructor needs an injection context (NG0203), which a field initializer is but a method
+  // called from ngOnInit() is not. initEntryForm()/resetAll() below set VALUES on these existing
+  // controls rather than constructing new ones. Initial status is corrected once settings
+  // arrive - see initEntryForm().
+  public entryControlsForm = new FormGroup({
+    callsign: new SignalFormControl(''),
+    status: new SignalFormControl('')
+  })
   callsignCtrl = new FormControl() //Untyped
   //readonly imagePath = "'./assets/imgs/rangers/'" // not yet used by *.html
 
@@ -119,7 +141,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   constructor(
-    private _formBuilder: UntypedFormBuilder,
     private rangerService: RangerService,
     private photos: RangerPhotoService,
     private fieldReportService: FieldReportService,
@@ -204,11 +225,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     //this.locationParent.lat += 0.0000001  //! REMOVE ME!
     this.log.info(`locationParent now: ${JSON.stringify(this.locationParent)}`, this.id)
 
-
-    // patch entryForm object - as THAT is what gets saved with on form submit
-    this.entryDetailsForm.patchValue({ location: newLocation }, { emitEvent: false })
-    //! NOTE: emit Event causes endless notification loop; BUT how to notify mini-map?!
-    //this.log.info(`Entry form (parent) recorded the new locationParent: ${JSON.stringify(this.locationParent)}`, this.id)
+    // patch entryForm's model - as THAT is what gets saved with on form submit
+    this.entryModel.update(m => ({ ...m, location: newLocation }))
   }
 
   /**
@@ -222,7 +240,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   onNewTimeEvent(newTime: Date) {
     this.log.verbose(`Got new Report time: ${newTime}`, this.id)
-    this.entryDetailsForm.patchValue({ date: newTime })
+    this.entryModel.update(m => ({ ...m, date: newTime }))
   }
 
   /**
@@ -299,7 +317,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    * Called once all HTML elements have been created
    */
   ngAfterViewInit() {
-
+    this.callsignInputRef?.nativeElement.focus()
   }
 
   /**
@@ -311,7 +329,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.excessive(`_filterRangers  value changed: ${value} `, this.id)
 
     const filterValue = value.toLowerCase()
-    this.entryDetailsForm.value.callsign = filterValue
     return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
   }
 
@@ -325,16 +342,34 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
 
-    this.entryDetailsForm = this._formBuilder.group({
-      // matches html's FormControlName="whatever"
+    this.entryModel.set({
       id: -1,
-      callsign: [''],
-      // team: ['T1'],
       location: this.locationParent,
-      date: [new Date()],
-      status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status],
-      notes: ['']
+      date: new Date(),
+      notes: ''
     })
+    this.entryControlsForm.setValue({
+      callsign: '',
+      status: this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status
+    })
+  }
+
+  /**
+   * Combined value across both form halves - split only because of the mat-autocomplete/
+   * mat-radio-group [formField] interop gap (see entryControlsForm above), not a
+   * meaningful data boundary. Used for both submission and the debug regurgitation panel.
+   */
+  mergedFormValue() {
+    return {
+      ...this.entryModel(),
+      callsign: this.entryControlsForm.value.callsign,
+      status: this.entryControlsForm.value.status
+    }
+  }
+
+  /** Combined validity across both form halves - drives Submit's [disabled] and the debug panel. */
+  formValid() {
+    return this.entryForm().valid() && this.entryControlsForm.valid
   }
 
   initFilteredRangers() {
@@ -360,22 +395,35 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
     this.log.verbose("Resetting form...", this.id)
-    this.entryDetailsForm.reset() // this clears flags on the model like touched, dirty, etc.
-
-    // !REVIEW: Should we reset locationParent to default location (from settings)?
-    this.entryDetailsForm.setValue({
-      id: -2,
-      callsign: [''],
-      //team: ['T0'],
-      location: this.locationParent,
-      date: [new Date()],
-      status: [this.settings.fieldReportStatuses[this.settings.defFieldReportStatus]],
-      notes: ['']
-    })
+    this.resetAll()
 
     // !BUG: Need to reset callsign too: otherwise filtered to just this one!
     //this._filterRangers("")
     this.initFilteredRangers()
+
+    // After the reset values above have settled, not before - restores focus to callsign
+    // for the next entry, same as the initial-load focus in ngAfterViewInit().
+    this.callsignInputRef?.nativeElement.focus()
+  }
+
+  /**
+   * Resets both halves of the split form together - the native signal form (id/location/
+   * date/notes) and the classic FormGroup (callsign/status, kept classic for the
+   * mat-autocomplete/mat-radio-group interop gap - see entryControlsForm above). One
+   * helper covering both so a future edit can't reset one half and forget the other.
+   */
+  private resetAll() {
+    // !REVIEW: Should we reset locationParent to default location (from settings)?
+    this.entryModel.set({
+      id: -2,
+      location: this.locationParent,
+      date: new Date(),
+      notes: ''
+    })
+    this.entryControlsForm.reset({
+      callsign: '',
+      status: this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status
+    })
   }
 
   callsignChanged(callsign: string) { // Just serves timer for input field - post interaction
@@ -424,7 +472,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param formData1
    *
    */
-  onFormSubmit(formData: string): void {
+  onFormSubmit(): void {
     this.log.excessive(`Submit Form`, this.id)
 
     // NOTE: Afterward, we will just reset the form. Otherwise (if reusing the form) create a deep copy of the form-model:
@@ -435,7 +483,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     return (<FormArray>this.entryDetailsForm.get('keywords')).controls
     }   */
 
-    let formDataJSON = JSON.stringify(this.entryDetailsForm.value)
+    let formDataJSON = JSON.stringify(this.mergedFormValue())
 
     let newReport = this.fieldReportService.addfieldReport(formDataJSON)
     this.log.info(`Report id # ${newReport.id} has been added with: ${formDataJSON} `, this.id)

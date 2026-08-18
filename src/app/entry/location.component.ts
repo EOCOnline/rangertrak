@@ -54,6 +54,19 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   @Input() location: LocationType = undefinedLocation
   @Output() locationChange = new EventEmitter<LocationType>()
 
+  // Base tabindex for this leaf's 19 fields (DD/DDM/DMS lat+lng, then address), in the
+  // exact top-to-bottom/left-to-right DOM order the template renders them. Unset (no
+  // tabindex attribute rendered) unless Entry's keyboard-first pass supplies one - see
+  // ti() below and Entry's usage. All 19 fields are unconditionally visible (confirmed by
+  // reading both this component's template and stylesheet - no *ngIf/display:none anywhere
+  // in this file), so a flat, fixed offset sequence is safe without a live-UI check.
+  @Input() tabIndexStart?: number
+
+  /** Field position within this leaf, 0-18 in template order. See tabIndexStart above. */
+  ti(offset: number): number | null {
+    return this.tabIndexStart != null ? this.tabIndexStart + offset : null
+  }
+
   private id = "Location Component"
 
   // Single source of truth for the whole component - replaces the old locationFormModel
