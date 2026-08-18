@@ -1,18 +1,11 @@
-//import assert from 'assert'
-import {
-  BehaviorSubject, debounceTime, fromEvent, map, merge, Observable, Subscription, takeWhile
-} from 'rxjs'
+import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
 import {
-  AfterViewInit, Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, SkipSelf,
-  ViewChild,
-  ChangeDetectionStrategy
+  AfterViewInit, Component, EventEmitter, Inject, Input, linkedSignal, OnChanges, OnDestroy,
+  OnInit, Output, signal, SimpleChanges, ChangeDetectionStrategy
 } from '@angular/core'
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import {
-  FormArray, FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators
-} from '@angular/forms'
+import { form, FormField } from '@angular/forms/signals'
 
 // https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
 //import { computePosition } from '@floating-ui/dom'
@@ -28,7 +21,7 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 // though this page never shows a MapLibre map. Same reasoning as app.config.ts.
 import { DDMToDD, DDToDDM, DDToDMS, DMSToDD } from '../shared/mapping/coordinate'
 import { GEOCODING_PROVIDER, GeocodingProvider } from '../shared/mapping/geocoding-provider.interface'
-import { CodeArea, OpenLocationCode } from '../shared/mapping/open-location-code'
+import { OpenLocationCode } from '../shared/mapping/open-location-code'
 
 import {
   LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
@@ -47,40 +40,13 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   //moduleId: module.id,
   selector: 'rangertrak-location',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormField, ...MATERIAL_IMPORTS],
   templateUrl: './location.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./location.component.scss']
 })
-export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
+export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
-  /*
-  //!TODO: If we do end up using this getter/setter, we should keep the _location updated elsewhere!
-  private _location = undefinedLocation
-
-  // Use setter to get immediate notification of changes to inputs (pg 182 & 188)
-  // !but also see 9.2.1 for ngOnChange() implementation...
-  @Input() set location(location: LocationType) {
-    if (location !== undefined) {
-      this._location = location
-      this.log.error(`Setter got new location: ${JSON.stringify(location)}`, this.id)
-    }
-    // Check if object's contents equal: _.isEqual( obj1 , obj2 ) OR JSON.stringify(obj1) === JSON.stringify(obj2)
-    if (JSON.stringify(location) === JSON.stringify(undefinedLocation)) {
-      this.log.error("Got new location, but it still was 'undefined'", this.id)
-    } else {
-      this.log.warn(`Got new location: ${JSON.stringify(location)}`, this.id)
-      // Initially called after constructor, but BEFORE ngOnInit()
-      // Populate form with initial (& any subsequent updates) from parent
-      // Also re-emits address changes which (via parent) can get picked up by other (peer) children.
-      this.newLocationToFormAndEmit(location)
-    }
-  }
-  get location(): LocationType {
-    return this._location
-  }
-  // see pg 182 (& 188) in AngDev w/TS
-*/
   // Using mediation pattern (pg 188), this child component emits following event to parent,
   // parent's template has: (newLocationEvent)="onNewLocationParent($event)"
   // Parent's onNewLocationParent($event) gets called.
@@ -89,8 +55,60 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() locationChange = new EventEmitter<LocationType>()
 
   private id = "Location Component"
-  locationFormModel!: FormGroup
-  // Untyped : https://angular.io/guide/update-to-latest-version#changes-and-deprecations-in-version-14 & https://github.com/angular/angular/pull/43834
+
+  // Single source of truth for the whole component - replaces the old locationFormModel
+  // FormGroup. Every displayed representation (DD/DDM/DMS) below is a *pure* linkedSignal
+  // derived from this. linkedSignal's "recompute fresh from source, but stay manually
+  // writable until the source changes again" semantics are exactly what replaces the old
+  // debounce/merge/switch dispatcher (mergeForm()) and its `{ emitEvent: false }` loop guard -
+  // no manual loop-breaking is needed anywhere in this file anymore.
+  private canonical = signal<{ lat: number; lng: number }>({ lat: 0, lng: 0 })
+
+  // Coordinates as Decimal Degrees (DD)
+  ddModel = linkedSignal(() => {
+    const { lat, lng } = this.canonical()
+    const latI = Math.trunc(lat)
+    const lngI = Math.trunc(lng)
+    return {
+      latI,
+      latF: Math.abs(Math.round((lat - latI) * 10000)),
+      lngI,
+      lngF: Math.abs(Math.round((lng - lngI) * 10000)),
+    }
+  })
+  ddForm = form(this.ddModel)
+
+  // Coordinates as Degrees & Decimal Minutes (DDM)
+  ddmModel = linkedSignal(() => {
+    const { lat, lng } = this.canonical()
+    const latDDM = DDToDDM(lat)
+    const lngDDM = DDToDDM(lng, true)
+    // DDToDDM()'s `.min` property is scaled *100 - divide back down to real decimal minutes
+    // for display/editing. DDMToDD() (used in onDdmChg() below) takes real minutes back, no
+    // scaling. This exact scaling was already load-bearing in the pre-conversion code
+    // (`latDdmM: latDDM.min / 100`) - easy to get backwards, preserved precisely here.
+    return {
+      latDdmQ: latDDM.dir, latDdmD: latDDM.deg, latDdmM: latDDM.min / 100,
+      lngDdmQ: lngDDM.dir, lngDdmD: lngDDM.deg, lngDdmM: lngDDM.min / 100,
+    }
+  })
+  ddmForm = form(this.ddmModel)
+
+  // Coordinates as Degrees, Minutes & Seconds (DMS)
+  dmsModel = linkedSignal(() => {
+    const { lat, lng } = this.canonical()
+    const latDMS = DDToDMS(lat)
+    const lngDMS = DDToDMS(lng, true)
+    // Unlike DDM above, DDToDMS's min/sec need no scaling - direct pass-through.
+    return {
+      latQ: latDMS.dir, latD: latDMS.deg, latM: latDMS.min, latS: latDMS.sec,
+      lngQ: lngDMS.dir, lngD: lngDMS.deg, lngM: lngDMS.min, lngS: lngDMS.sec,
+    }
+  })
+  dmsForm = form(this.dmsModel)
+
+  addressModel = signal('')
+  addressForm = form(this.addressModel)
 
   //!w3w = new What3Words()
 
@@ -102,9 +120,14 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   private settingsSubscription!: Subscription
   private settings!: SettingsType
 
+  // Tracks our own most recent emission so ngOnChanges (the opportunistic re-centering fix,
+  // see below) can tell "parent gave us a genuinely new location" apart from "parent just
+  // echoed back the [(location)] value we ourselves emitted a moment ago" - without this guard
+  // that echo would loop forever.
+  private lastEmitted: { lat: number; lng: number } | null = null
+
   constructor(
     private settingsService: SettingsService,
-    private _formBuilder: UntypedFormBuilder,
     private log: LogService,
     @Inject(GEOCODING_PROVIDER) private geocodingProvider: GeocodingProvider,
     // private _toppy: Toppy,
@@ -122,8 +145,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
 
-    this.initForm() // creates blank locationFormModel
-
     this.log.verbose("Out of constructor", this.id)
   }
 
@@ -131,149 +152,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.log.info("ngOnInit", this.id)
 
-    /**
-     * Get notified when user enters various loction elements - & update the rest of the location
-     *
-     * Capture user's location component changes, then call
-     * subroutines to recalc/update the rest of the form & update parent & peers (i.e., mini-map)
-     *
-     * per:
-     * https://stackoverflow.com/questions/70366847/angular-on-form-change-event
-     * https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
-     */
-    if (this.locationFormModel) {
-      /* Original ideas...NOT used
-        this.locationFormModel.valueChanges.pipe(debounceTime(800)).subscribe(x => {
-        //this.log.info(`locationFormModel value changed: ${JSON.stringify(x)}`, this.id)
-          this.log.info(`locationFormModel NOT updating: process valueChanges()`, this.id)
-          // REVIEW: If we're updating form, ignore any updates (or unsubscribe temporarily - but HOW?!)
-          this.valueChanges(x)
-
-        this.locationFrmGrp.get('address')!.valueChanges.pipe(debounceTime(700)).subscribe(newAddr => this.addressCtrlChanged2(newAddr))
-
-        / *
-        https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
-
-        https://stackoverflow.com/questions/49861281/angular-reactive-forms-valuechanges-ui-changes-only
-
-
-        Or use dirty: https://www.usefuldev.com/post/Angular%20Forms:%20how%20to%20get%20only%20the%20changed%20values
-
-        Or can use !yourFormName.pristine to detect only UI changes
-
-        yourControl.valueChanges.pipe(
-          filter(() => yourControl.touched)).subscribe(() => {
-            ....
-          })
-
-        https://stackoverflow.com/questions/58558831/angular-reactive-form-value-changes
-        use rxjs and pipeable operators
-
-      })
-
-      Or subscribe to each element in the form...(verbose)
-      let latf = this.locationFrmGrp.get("latF")
-      if (latf) {
-        latf.valueChanges.pipe(debounceTime(700)).subscribe(x => {
-          this.log.info('########## lat float value changed: ' + x, this.id)
-        })
-        this.log.warn('########## lat float value WAS FOUND!!!!', this.id)
-      }
-      else {
-        this.log.error('########## lat float value NOT FOUND!!!!', this.id)
-      }
-      TODO: How to subscribe to the valueChanges observable?
-        listen for changes in the form's value in the *template* using AsyncPipe or in the *component class* w/ subscribe() method
-
-        https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
-        https://angular.io/api/common/AsyncPipe
-        https://angular.io/api/forms/AbstractControl
-        https://angular.io/api/forms/NgControlStatus ARE CSS Classes.
-        https://angular.io/api/forms
-        https://www.danvega.dev/blog/2017/06/07/angular-forms-clear-input-field/
-        https://www.tektutorialshub.com/angular/valuechanges-in-angular-forms/
-        https://qansoft.wordpress.com/2021/05/27/reactive-forms-in-angular-listening-for-changes/
- */
-
-      const alive: boolean = true // from original sample, but unused by us
-
-      setTimeout(() => {
-        //console.log(this.reactiveForm.value)
-      }) // Pause to let parent form get the change event bubbled up from the control
-
-      this.mergeForm(this.locationFormModel, '')
-        .pipe(debounceTime(700))  // BUG: If too long, changes (leaving field) get skipped!
-        .pipe(takeWhile((_) => alive))
-        .subscribe((ctrl: any) => {
-          this.log.verbose(`${ctrl.name} changed to: ${ctrl.value}`, this.id)
-
-          switch (ctrl.name) {
-
-            // Coordinates as Decimal Degrees (DD)
-            case 'DD.latI':
-            case 'DD.latF':
-            case 'DD.lngI':
-            case 'DD.lngF':
-              {
-                this.onDdChg()
-                break
-              }
-
-            // Cooordinates as Degrees & Decimal Minutes (DDM)
-            case 'DDM.latDdmQ':
-            case 'DDM.latDdmD':
-            case 'DDM.latDdmM':
-            case 'DDM.lngDdmQ':
-            case 'DDM.lngDdmD':
-            case 'DDM.lngDdmM':
-              {
-                this.onDdmChg()
-                break
-              }
-
-            // Cooordinates as Degrees, Minutes & Seconds (DMS)
-            case 'DMS.latQ':
-            case 'DMS.latD':
-            case 'DMS.latM':
-            case 'DMS.latS':
-            case 'DMS.lngQ':
-            case 'DMS.lngD':
-            case 'DMS.lngM':
-            case 'DMS.lngS':
-              {
-                this.onDmsChg()
-                break
-              }
-
-            case 'address':
-              {
-                this.onAddressChg()
-                break
-              }
-
-            default:
-              this.log.error(`Unexpected form change: ${ctrl.name}`, this.id)
-              break;
-          }
-        })
-    }
-
-    // !BUG: Doesn't center on initial (previously received) location...
+    // NOTE: gets called before ngOnInit, during parent's construction (via ngOnChanges too,
+    // if the input already had a non-default value at that point)
     this.newLocationToFormAndEmit(this.location)
-
-    // =========================================================
-    /*  if using floating-ui.com...
-        const referenceElement = document.querySelector('#blockDD');
-        const floatingElement = document.querySelector('#tooltipDD') as HTMLBodyElement
-
-        this.applyStyles
-
-        computePosition(referenceElement!, floatingElement, {
-          placement: 'top',
-        }).then(this.applyStyles)
-    */
-
-
   }
 
   /**
@@ -284,154 +165,54 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.newLocationToFormAndEmit(this.location)
   }
 
-  /*  if using floating-ui.com...
-    applyStyles({ x = 0, y = 0, strategy = 'absolute' }) {
-      // const referenceElement = document.querySelector('#button');
-      const floatingElement = document.querySelector('#tooltipDD') as HTMLBodyElement
-      Object.assign(floatingElement!.style, {
-        position: strategy,
-        left: `${x}px`,
-        top: `${y}px`,
-      });
-    }
-   */
-
   /**
-   * Create Form Model, so we can readily set values & respond to user input
-   * NOTE: We never have an OnSubmit() routine...instead subscribing & immediately reacting to changes
+   * Opportunistic fix (Sprint D): the pre-conversion code never re-centered on later changes
+   * to [location] after its initial value (flagged there as `!BUG: Doesn't center on initial
+   * (previously received) location...`). Guarded via lastEmitted against re-processing our
+   * own [(location)] echo, which would otherwise loop forever through the parent's two-way
+   * binding.
    */
-  initForm() {
-    this.locationFormModel = this._formBuilder.group({
-      // Coordinates as Decimal Degrees (DD)
-      DD: this._formBuilder.group({
-        latI: [0], // Integer portion
-        latF: [0], // Float portion
-        lngI: [0],
-        lngF: [0]
-      }),
-      // Cooordinates as Degrees & Decimal Minutes (DDM)
-      DDM: this._formBuilder.group({
-        latDdmQ: ["N"], // Quadrant
-        latDdmD: [0], // Degrees
-        latDdmM: [0], // Minutes
-        lngDdmQ: ["E"],
-        lngDdmD: [0],
-        lngDdmM: [0]
-      }),
-      // Cooordinates as Degrees, Minutes & Seconds (DMS)
-      DMS: this._formBuilder.group({
-        latQ: ["N"], // Quadrant
-        latD: [0], // Degrees
-        latM: [0], // Minutes
-        latS: [0], // Seconds
-        lngQ: ["E"],
-        lngD: [0],
-        lngM: [0],
-        lngS: [0]
-      }),
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['location'] || changes['location'].firstChange) return
 
-      address: [''] //, Validators.required],
-    })
-
-
-    /*
-    https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
-    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
-    let addr = this.locationFrmGrp.get("address")
-    if (addr) {
-      addr.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
-      this.log.verbose("Made reservations!", this.id)
-    } else {
-      console.warn("could NOT Make reservations")
+    const incoming = this.location
+    if (this.lastEmitted && incoming.lat === this.lastEmitted.lat && incoming.lng === this.lastEmitted.lng) {
+      return // our own emission, echoed back via the parent's [(location)] binding
     }
-    this.locationFrmGrp.valueChanges.pipe(debounceTime(500)).subscribe(locationFrmGrp => this.locationChanged_noLongerNeeded(locationFrmGrp))
-    return this.locationFrmGrp
-    */
-  }
-
-  /**
-   * Extract only form values that have changed...
-   * from https://stackoverflow.com/questions/70366847/angular-on-form-change-event
-   * @param form
-   * @param prefix - unused, but allows adding a prefix to the control name
-   * @returns {name: controlName, value: newValue}
-   */
-  mergeForm(form: FormGroup | FormArray, prefix: string): any {
-    if (form instanceof FormArray) {
-      // FormArray
-      console.error(`prefix is: ${prefix}`, this.id)
-      const formArray = form as FormArray;
-      const arr = [];
-      for (let i = 0; i < formArray.controls.length; i++) {
-        const control = formArray.at(i);
-        arr.push(
-          control instanceof FormGroup
-            ? this.mergeForm(control, prefix + i + '.')
-            : control.valueChanges.pipe(
-              map((value) => ({ name: prefix + i, value: value }))
-            )
-        );
-      }
-      return merge(...arr);
+    const current = this.canonical()
+    if (incoming.lat === current.lat && incoming.lng === current.lng) {
+      return // no real change
     }
-    // FormGroup
-    return merge(
-      ...Object.keys(form.controls).map((controlName: string) => {
-        const control = form.get(controlName);
-        return control instanceof FormGroup || control instanceof FormArray
-          ? this.mergeForm(control, prefix + controlName + '.')
-
-          : control!.valueChanges.pipe(
-            map((value) => ({ name: prefix + controlName, value: value }))
-          );
-      })
-    );
+    this.newLocationToFormAndEmit(incoming)
   }
-
 
   /**
    * https://angular.io/guide/template-reference-variables
    */
   onDdChg() {
-    //this.log.excessive(`Grab DD values from locationFormModel`, this.id)
-    let latI = this.locationFormModel.get("DD.latI")?.value
-    let latF = this.locationFormModel.get("DD.latF")?.value
-    let lngI = this.locationFormModel.get("DD.lngI")?.value
-    let lngF = this.locationFormModel.get("DD.lngF")?.value
+    const { latI, latF, lngI, lngF } = this.ddModel()
     this.log.verbose(`new DD values: ${latI}.${latF}°, ${lngI}.${lngF}°`, this.id)
 
-    let lat = parseFloat(latI + "." + latF)
-    let lng = parseFloat(lngI + "." + lngF)
-
-    let enteredLocation = {
-      lat: lat,
-      lng: lng,
+    const enteredLocation = {
+      lat: parseFloat(`${latI}.${latF}`),
+      lng: parseFloat(`${lngI}.${lngF}`),
       address: undefinedAddressFlag,
       derivedFromAddress: false
     }
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
-
-
   onDdmChg() {
-    //this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
-    let latDdmD = this.locationFormModel.get("DDM.latDdmD")?.value
-    let latDdmM = this.locationFormModel.get("DDM.latDdmM")?.value
-    let latDdmQ = this.locationFormModel.get("DDM.latDdmQ")?.value
-    let lngDdmD = this.locationFormModel.get("DDM.lngDdmD")?.value
-    let lngDdmM = this.locationFormModel.get("DDM.lngDdmM")?.value
-    let lngDdmQ = this.locationFormModel.get("DDM.lngDdmQ")?.value
+    const { latDdmD, latDdmM, latDdmQ, lngDdmD, lngDdmM, lngDdmQ } = this.ddmModel()
+    this.log.excessive(`DDM value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
 
-    this.log.excessive(`DMS value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
-
-    let latLng = {
+    const latLng = {
       lat: DDMToDD(<string>latDdmQ, latDdmD, latDdmM)!,
       lng: DDMToDD(<string>lngDdmQ, lngDdmD, lngDdmM)!
     }
     this.log.verbose(`DDM converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
 
-    let enteredLocation = {
+    const enteredLocation = {
       lat: latLng.lat,
       lng: latLng.lng,
       address: undefinedAddressFlag,
@@ -442,25 +223,16 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onDmsChg() {
-    //this.log.excessive(`Grabbing DMSvalue changes from locationFormModel`, this.id)
-    let latD = this.locationFormModel.get("DMS.latD")?.value
-    let latM = this.locationFormModel.get("DMS.latM")?.value
-    let latS = this.locationFormModel.get("DMS.latS")?.value
-    let latQ = this.locationFormModel.get("DMS.latQ")?.value
-    let lngD = this.locationFormModel.get("DMS.lngD")?.value
-    let lngM = this.locationFormModel.get("DMS.lngM")?.value
-    let lngS = this.locationFormModel.get("DMS.lngS")?.value
-    let lngQ = this.locationFormModel.get("DMS.lngQ")?.value
-
+    const { latD, latM, latS, latQ, lngD, lngM, lngS, lngQ } = this.dmsModel()
     this.log.verbose(`DMS value changed:  ${latD}° ${latM}' ${latS}" ${latQ}, ${lngD}° ${lngM}' ${lngS}" ${lngQ}`, this.id)
 
-    let latLng = {
+    const latLng = {
       lat: DMSToDD(latQ, latD, latM, latS)!,
       lng: DMSToDD(lngQ, lngD, lngM, lngS)!
     }
     this.log.verbose(`DMS converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
 
-    let enteredLocation = {
+    const enteredLocation = {
       lat: latLng.lat,
       lng: latLng.lng,
       address: undefinedAddressFlag,
@@ -469,13 +241,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
-
-
   /**
-   * Any user changes to the location form triggers an updated location (above) &
-   * now we update form & model with new location.
-   *
-   * Also emit new location to notify parent (& any peers - like a mini-map)
+   * Any user change to a coordinate representation (above), an address lookup (below), or the
+   * parent handing us a new @Input() location (via ngOnChanges) funnels through here: update
+   * the canonical lat/lng - which every DD/DDM/DMS linkedSignal above recomputes from
+   * automatically - resolve/derive the address, and notify the parent.
    *
    * NOTE: gets called before ngOnInit, during parent's construction
    * !TODO: Validate values here or in calling routines?
@@ -485,8 +255,8 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   newLocationToFormAndEmit(newLocation: LocationType) {
     this.log.info(`newLocationToFormAndEmit() got a new Location: ${JSON.stringify(newLocation)}`, this.id);
 
-    let latDD = newLocation.lat
-    let lngDD = newLocation.lng
+    this.canonical.set({ lat: newLocation.lat, lng: newLocation.lng })
+    this.lastEmitted = { lat: newLocation.lat, lng: newLocation.lng }
 
     let address = ''
     if (newLocation.derivedFromAddress) {
@@ -499,55 +269,8 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       // DDToAddress (asynchroniously) calls updateDerivedLocations() too
       this.DDToAddress(newLocation)
     }
-
-    let latI = Math.trunc(latDD)
-    // this.latF = Math.abs(Number((latDD - this.latI).toFixed(4))) * 10000  // works too...
-    let latF = Math.abs(Math.round((latDD - latI) * 10000))
-
-    let lngI = Math.trunc(lngDD)
-    let lngF = Math.abs(Math.round((lngDD - lngI) * 10000))
-
-    let latDDM = DDToDDM(latDD)
-    let lngDDM = DDToDDM(lngDD, true)
-    this.log.excessive(`new DDM Location: ${latDDM.dir} ${latDDM.deg}° ${latDDM.min / 100}' lat; ${lngDDM.dir} ${lngDDM.deg}° ${lngDDM.min / 100}' lng`, this.id)
-
-    let latDMS = DDToDMS(latDD)
-    let lngDMS = DDToDMS(lngDD, true)
-    this.log.excessive(`new DMS Location: ${latDMS.dir} ${latDMS.deg}° ${latDMS.min}' ${latDMS.sec}" lat; ${lngDMS.dir} ${lngDMS.deg}° ${lngDMS.min}' ${lngDMS.sec}" lng`, this.id);
-
-    // Set model values - which updates the display & is the only place the current location is kept.
-    this.locationFormModel.setValue({
-      DD: {
-        latI: latI,
-        latF: latF,
-        lngI: lngI,
-        lngF: lngF
-      },
-      DDM: {
-        latDdmQ: latDDM.dir,
-        latDdmD: latDDM.deg,
-        latDdmM: latDDM.min / 100,
-
-        lngDdmQ: lngDDM.dir,
-        lngDdmD: lngDDM.deg,
-        lngDdmM: lngDDM.min / 100
-      },
-      DMS: {
-        latQ: latDMS.dir,
-        latD: latDMS.deg,
-        latM: latDMS.min,
-        latS: latDMS.sec,
-
-        lngQ: lngDMS.dir,
-        lngD: lngDMS.deg,
-        lngM: lngDMS.min,
-        lngS: lngDMS.sec
-      },
-      address: address
-    },
-      { emitEvent: false }  // Prevent enless loop...
-      // https://netbasal.com/angular-reactive-forms-tips-and-tricks-bb0c85400b58
-    )
+    // Set model value - which updates the display & is the only place the current address is kept.
+    this.addressModel.set(address)
 
     // Emit new location event to parent: so it & any children can react
     this.log.warn(`newLocationToFormAndEmit() Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
@@ -655,7 +378,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
     // Only show address in model during location emition
     // This control ONLY shows main address if user entered it there
     // for this control/widget: differentiate between derived & 'primary' or user entered addresses
-    this.locationFormModel.patchValue({ address: "" }, { emitEvent: false })
+    this.addressModel.set("")
 
     this.geocodingProvider.reverseGeocode(location.lat, location.lng)
       .then((result) => {
@@ -678,8 +401,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onAddressChg() { //newAddress: string = "undefined address"
-    //let tWords // = document.getElementById("addresses")!.innerText // as HTMLInputElement).value
-    let newAddress = this.locationFormModel.get("address")?.value
+    const newAddress = this.addressModel()
     this.log.verbose(`onAddressChg got newAddress: ${JSON.stringify(newAddress)}`, this.id)
 
     if (!newAddress || !newAddress.length) {
@@ -788,99 +510,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnDestroy {
       this.newLocationToFormAndEmit(enteredLocation)
     })
   }
-
-  // --------------------------- TOOLTIPS ---------------------------
-  /*
-  https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
-
-    show() {
-      if (this.tooltip) {
-        this.tooltip.setAttribute('data-show', '');
-      }
-
-      // Enable the event listeners
-      this.popperInstance.setOptions((options: { modifiers: any }) => ({
-        ...options,
-        modifiers: [
-          ...options.modifiers,
-          { name: 'eventListeners', enabled: true },
-        ],
-      }))
-
-      // update the tooltip position
-      if (this.popperInstance) {
-        //this.popperInstance.update();
-      }
-    }
-
-    hide() {
-      if (this.tooltip) {
-        this.tooltip.removeAttribute('data-show')
-      }
-
-      // Disable the event listeners
-      this.popperInstance.setOptions((options: { modifiers: any }) => ({
-        ...options,
-        modifiers: [
-          ...options.modifiers,
-          { name: 'eventListeners', enabled: false },
-        ],
-      }))
-    }
-
-    myPop() {  // TODO: Not supposed to be hidden in a routine...
-      const showEvents = ['mouseenter', 'focus']
-      const hideEvents = ['mouseleave', 'blur']
-
-      showEvents.forEach((event) => {
-        if (this.button) {
-          this.button.addEventListener(event, this.show)
-        }
-      })
-
-      hideEvents.forEach((event) => {
-        if (this.button) {
-          this.button.addEventListener(event, this.hide);
-        }
-      })
-  }
-
-  https://floating-ui.com superceeds popper.js
-
-  The hint to display @Input() target!: HTMLElement
-  Its positioning (check docs for available options)
-  @Input() placement?: string;
-  Optional hint target if you desire using other element than specified one
-  @Input() appPopper?: HTMLElement;
-
-  The popper instance
-  popper: popper;
-  private readonly defaultConfig: PopperOptions = {
-    placement: 'top',
-    removeOnDestroy: true
-  };
-  constructor(private readonly el: ElementRef) {}
-  ngOnInit(): void {
-    // An element to position the hint relative to
-    const reference = this.appPopper ? this.appPopper : this.el.nativeElement;
-    this.popper = new Popper(reference, this.target, this.defaultConfig);
-  }
-  ngOnDestroy(): void {
-    if (!this.popper) {
-      return;
-    }
-
-    this.popper.destroy();
-  }
-
-    popcorn = this.document.querySelector('#popcorn') as HTMLAnchorElement // BUG:
-    tooltip = this.document.querySelector('#tooltip') as HTMLAnchorElement
-
-    createPopper(popcorn: HTMLAnchorElement, tooltip: HTMLAnchorElement, {
-      //   placement: 'top-end',
-    }) {
-    }
-  */
 
   ngOnDestroy() {
     this.settingsSubscription?.unsubscribe()
