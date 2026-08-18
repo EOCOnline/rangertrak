@@ -1,14 +1,10 @@
 //import dayjs from 'dayjs'
-import {
-  debounceTime, map, Observable, startWith, subscribeOn, Subscription, switchMap
-} from 'rxjs'
-
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 import {
-  FormControl, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup,
-  Validators
-} from '@angular/forms'
+  Component, computed, EventEmitter, Inject, Input, OnInit, Output, signal, ViewChild,
+  ChangeDetectionStrategy
+} from '@angular/core'
+import { form, FormField } from '@angular/forms/signals'
 import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
@@ -44,8 +40,7 @@ import {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
+    FormField,
     MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
@@ -56,12 +51,8 @@ import {
   styleUrls: ['./time-picker.component.scss']
 })
 export class TimePickerComponent implements OnInit {
-  //!TODO: Is this really needed as @Input, or just a variable?!
-  //@Input()
-  // Untyped
-  public timepickerFormGroup!: FormGroup // input from entry.component.ts
-  //  @Input() public timepickerFormControl: FormControl // input from entry.component.ts
-  //@Input() public timepickerFormControl: FormControl // input from entry.component.ts
+  private timeModel = signal({ time: new Date(), timeOfDay: '' })
+  public timeForm = form(this.timeModel)
 
   @Output() newTimeEvent = new EventEmitter<Date>()
   // ! @ViewChild('timePicker') timePicker: any; // https://blog.angular-university.io/angular-viewchild/
@@ -71,6 +62,11 @@ export class TimePickerComponent implements OnInit {
   // Typed to include string because that is what callers actually pass once settings have
   // been through localStorage - see toDate() / ngOnInit().
   @Input() initialDate: Date | string = new Date() //  [initialDate] = "initialTime"
+
+  // Left unset (no tabindex attribute rendered) unless a parent needs this leaf slotted
+  // into an explicit keyboard-first tab sequence - see Entry's usage vs. Settings'.
+  @Input() dateTabIndex?: number
+  @Input() timeTabIndex?: number
 
   private id = "DateTime Picker"
 
@@ -113,7 +109,6 @@ export class TimePickerComponent implements OnInit {
 
   constructor(
     private log: LogService,
-    private _formBuilder: UntypedFormBuilder,
     @Inject(DOCUMENT) private document: Document) {
     this.log.excessive(`======== Constructor() ============`, this.id)
 
@@ -142,15 +137,7 @@ export class TimePickerComponent implements OnInit {
     const minutes = initial.getMinutes().toString().padStart(2, '0');
     const timeString = `${hours}:${minutes}`;
 
-    this.timepickerFormGroup = this._formBuilder.group({
-      time: [initial],
-      timeOfDay: [timeString]
-    });
-
-    // Listen to both date and time changes to emit combined datetime
-    this.timepickerFormGroup.valueChanges.subscribe(() => {
-      this.combineDateTime();
-    });
+    this.timeModel.set({ time: initial, timeOfDay: timeString })
 
     this.log.verbose(`initialDate = ${this.initialDate} in ngInit`, this.id)
   }
@@ -169,32 +156,28 @@ export class TimePickerComponent implements OnInit {
     return date
   }
 
-  onNewTime(newTime: any) {
-    // Do any needed sanity/validation here
-    // Based on listing 8.8 in TS dev w/ TS, pg 188
+  /**
+   * Pure derivation of the combined date+time from the model - replaces the old
+   * FormGroup.valueChanges subscription. Read, not subscribed to: onNewTime() below
+   * still fires emission explicitly, matching the original event-driven-only behaviour
+   * (no emission on load, only on user-facing date/time DOM events).
+   */
+  private combinedTime = computed<Date>(() => {
+    const { time, timeOfDay } = this.timeModel()
+    if (!time || !timeOfDay) return time
 
+    const [hours, minutes] = timeOfDay.split(':').map(Number)
+    const combined = new Date(time)
+    combined.setHours(hours, minutes, 0, 0)
+    return combined
+  })
+
+  onNewTime() {
     // todo : validate min/max time?
-    this.log.verbose(`Got new time: ${newTime.value}: Emitting!`, this.id)
-
-    this.combineDateTime();
-  }
-
-  private combineDateTime() {
-    const dateValue = this.timepickerFormGroup.get('time')?.value;
-    const timeValue = this.timepickerFormGroup.get('timeOfDay')?.value;
-
-    if (dateValue && timeValue) {
-      const [hours, minutes] = timeValue.split(':').map(Number);
-      const combinedDate = new Date(dateValue);
-      combinedDate.setHours(hours, minutes, 0, 0);
-
-      this.time = combinedDate;
-      this.newTimeEvent.emit(this.time);
-      this.log.verbose(`Combined date/time emitted: ${this.time}`, this.id);
-    } else if (dateValue) {
-      this.time = new Date(dateValue);
-      this.newTimeEvent.emit(this.time);
-    }
+    const combined = this.combinedTime()
+    this.time = combined
+    this.newTimeEvent.emit(combined)
+    this.log.verbose(`Combined date/time emitted: ${combined}`, this.id)
   }
 
   toggleMinDate(evt: any) {

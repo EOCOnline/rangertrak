@@ -1,9 +1,10 @@
 <!-- Simplified datetime picker using native Angular Material -->
-<div appearance="filled" class="input-group rounded" [formGroup]="timepickerFormGroup">
+<div appearance="filled" class="input-group rounded">
   <mat-form-field class="innerElement">
     <mat-label>{{datePickerLabel}}</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="time" placeholder="Enter a date and time"
-      class="timepicker__When-input" data-lpignore="true" tabindex="6" (dateChange)="onNewTime($event)" />
+    <input matInput [matDatepicker]="picker" [formField]="timeForm.time" placeholder="Enter a date and time"
+      class="timepicker__When-input" data-lpignore="true" [attr.tabindex]="dateTabIndex ?? null"
+      (dateChange)="onNewTime()" />
 
     <mat-datepicker-toggle matSuffix [for]="picker" title="Click me to display a date picker">
     </mat-datepicker-toggle>
@@ -14,7 +15,7 @@
   <!-- Time input field (HTML5 time input) -->
   <mat-form-field class="innerElement">
     <mat-label>Time</mat-label>
-    <input matInput type="time" formControlName="timeOfDay" step="60" class="timepicker__time-input"
-      data-lpignore="true" tabindex="7" />
+    <input matInput type="time" [formField]="timeForm.timeOfDay" step="60" class="timepicker__time-input"
+      data-lpignore="true" [attr.tabindex]="timeTabIndex ?? null" (change)="onNewTime()" />
   </mat-form-field>
 </div>
