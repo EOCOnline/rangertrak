@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.14](https://github.com/EOCOnline/rangertrak/compare/v0.15.13...v0.15.14) (2026-08-19)
+
+
+### Features
+
+* **sprint-h:** add MGRS, UTM, and Maidenhead coordinate systems ([762b417](https://github.com/EOCOnline/rangertrak/commit/762b417739c962b2358a6e8cd76acb7efdcda949))
+
 ### [0.15.13](https://github.com/EOCOnline/rangertrak/compare/v0.15.12...v0.15.13) (2026-08-19)
 
 
