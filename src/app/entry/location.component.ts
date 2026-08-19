@@ -351,23 +351,42 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
           // Attempt to trim the first characters from a code; may return same innerText...
           pCode = OpenLocationCode.shorten(fullCode, this.settings.defLat, this.settings.defLng)
         }
-        this.log.verbose(`New PlusCodes: ${pCode} ; Global: ${fullCode}`, this.id);
-        //(document.getElementById("addresses") as HTMLInputElement).value = pCode
-        //document.getElementById("defaultPCode")!.innerHTML = this.settings.defPlusCode; // as HTMLLabelElement
-        (document.getElementById("pCodes") as HTMLLabelElement).innerText = `Derived PlusCodes: +Code: ${pCode} +GlobalPCode: ${fullCode}`
+        this.log.verbose(`New PlusCodes: ${pCode} ; Global: ${fullCode}`, this.id)
+        this.setDerivedText("pCodes", `Derived PlusCodes: +Code: ${pCode} +GlobalPCode: ${fullCode}`)
       } else {
         this.log.verbose(`Invalid +PlusCode: ${pCode}`, this.id)
-        document.getElementById("pCodes")!.innerText = "Derived +Codes: &nbsp; Unable to get +Code"
-        //document.getElementById("derivedAddress")!.innerHTML = "  is <strong style='color: darkorange;'>Invalid </strong> Try: " // as HTMLLabelElement
+        this.setDerivedText("pCodes", "Derived +Codes:   Unable to get +Code")
       }
     }
 
-    this.document.getElementById("derivedAddress")!.innerText = `Derived Address: ${location.address}`
+    this.setDerivedText("derivedAddress", `Derived Address: ${location.address}`)
 
     // Get & update What3Words
     let w3w = "Not.Implemented.Yet!"
-    this.document.getElementById("what3Words")!.innerText = `Derived What3Words Code: ${w3w}`
+    this.setDerivedText("what3Words", `Derived What3Words Code: ${w3w}`)
+  }
 
+  /**
+   * Writes one of the read-only "derived location" lines at the bottom of the template.
+   *
+   * Guarded because this runs from ASYNC callbacks (the geocoder's, via DDToAddress()) that
+   * can land after this component's DOM is gone - navigate away from Entry with a geocode in
+   * flight and the old unguarded `getElementById(...)!.innerText` threw
+   * "Cannot set properties of null". It surfaced as an intermittent unit-test failure once
+   * the suite grew long enough for a stray callback to outlive its fixture, but the
+   * production path is the same one.
+   *
+   * These stay direct DOM writes rather than becoming bindings: they are display-only strings
+   * with no model behind them, and converting them properly belongs with the wider
+   * signals cleanup (roadmap Sprint G), not here.
+   */
+  private setDerivedText(elementId: string, text: string) {
+    const el = this.document.getElementById(elementId)
+    if (el) {
+      el.innerText = text
+    } else {
+      this.log.verbose(`No #${elementId} element to update - view likely destroyed`, this.id)
+    }
   }
 
 
