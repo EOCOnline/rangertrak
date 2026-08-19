@@ -1,3 +1,56 @@
+// Sprint F phone carve-out: a card-per-report read view of the comms log. The grid vs.
+// cards split is driven entirely by field-reports.component.ts's isPhone signal
+// (@if in the template, matching styles/_breakpoints.scss's 575px phone breakpoint),
+// so these rules need no media query of their own - they only ever render on a phone.
+// Read-only by design - see the Sprint F plan for why editing stays on the grid.
+.field-reports-cards {
+  display       : flex;
+  flex-direction: column;
+  gap           : var(--rt-gap);
+}
+
+.field-reports-cards__card {
+  border       : 1px solid var(--rt-line);
+  border-radius: var(--rt-radius-lg);
+  padding      : var(--rt-gap);
+  background   : var(--rt-surface);
+}
+
+.field-reports-cards__header {
+  display        : flex;
+  justify-content: space-between;
+  align-items    : center;
+  gap            : var(--rt-gap);
+  margin-bottom  : 0.35em;
+}
+
+.field-reports-cards__callsign {
+  font-weight: bold;
+  font-size  : larger;
+}
+
+.field-reports-cards__status {
+  padding      : 0.15em 0.6em;
+  border-radius: var(--rt-radius);
+  font-weight  : bold;
+  white-space  : nowrap;
+}
+
+.field-reports-cards__row {
+  color        : var(--rt-ink-2);
+  margin-bottom: 0.2em;
+}
+
+.field-reports-cards__coords {
+  font-variant-numeric: tabular-nums;
+}
+
+.field-reports-cards__notes {
+  margin-top : 0.4em;
+  padding-top: 0.4em;
+  border-top : 1px solid var(--rt-line);
+}
+
 .big {
   font-size  : larger;
   font-weight: bold;

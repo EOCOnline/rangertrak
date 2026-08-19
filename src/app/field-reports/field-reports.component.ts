@@ -3,7 +3,7 @@ import { GridOptions, SelectionChangedEvent } from 'ag-grid-community'
 import { Observable, subscribeOn, Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
-import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef, ChangeDetectionStrategy, signal } from '@angular/core';
 
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms'
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,6 +15,7 @@ import { PageComponent } from '../shared/page/page.component';
 
 import { Utility } from '../shared'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
+import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 import {
   FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
   RangerService, SettingsService, SettingsType, statusColorValue, statusInkValue
@@ -72,6 +73,16 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
   public selectedRows = 0
   public columnDefs!: any
+
+  /**
+   * Sprint F phone carve-out: the grid is never constructed on a phone (not just
+   * hidden), so this drives an @if in the template rather than CSS display:none.
+   * Same breakpoint as styles/_breakpoints.scss's `phone` mixin (<=575px).
+   */
+  private phoneMediaQuery = window.matchMedia('(max-width: 575px)')
+  public isPhone = signal(this.phoneMediaQuery.matches)
+  private onPhoneMediaChange = (e: MediaQueryListEvent) => this.isPhone.set(e.matches)
+
   private gridApi: any
   private gridColumnApi
   private now: Date
@@ -86,9 +97,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   // NOT monitored for changes on the fly: https://stackoverflow.com/questions/52519129/ag-grid-and-angular-how-to-switch-grid-options-dynamically/52519796#52519796
   gridOptions: GridOptions = {
     // PROPERTIES
-    // Use the classic ag-theme-alpine CSS (imported in styles.scss) rather than v33+'s
-    // Theming API - see the ModuleRegistry comment in main.ts.
-    theme: 'legacy',
+    theme: rangertrakGridTheme,
     // v32.2+ object form. checkboxes/headerCheckbox off + enableClickSelection keeps the
     // original "multiple" behaviour (click a row to select, ctrl/shift to extend) rather
     // than the new default, which would add a checkbox column the layout doesn't expect.
@@ -148,6 +157,8 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     this.now = new Date()
     this.gridApi = ""
     this.gridColumnApi = ""
+
+    this.phoneMediaQuery.addEventListener('change', this.onPhoneMediaChange)
   }
 
 
@@ -257,6 +268,20 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   notesCellRenderer = (params: { data: FieldReportType }) => {
     let title = `Note: ${params.data.notes}`
     return `<span aria-hidden title="${title}"> ${params.data.notes}</span>`
+  }
+
+  /**
+   * Same fill/ink resolution the grid's Status column cellStyle uses (see columnDefs
+   * above) - one source of truth for status colour, reused by the phone card view.
+   */
+  statusFill(status: string): string {
+    const stat = this.fieldReportStatuses.find(el => el.status == status)
+    return statusColorValue(stat ? stat.color : '#A3A3A3')
+  }
+
+  statusInk(status: string): string {
+    const stat = this.fieldReportStatuses.find(el => el.status == status)
+    return statusInkValue(stat ? stat.color : '#A3A3A3')
   }
 
   //--------------------------------------------------------------------------
@@ -602,5 +627,6 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.fieldReportsSubscription?.unsubscribe()
     this.settingsSubscription?.unsubscribe()
+    this.phoneMediaQuery.removeEventListener('change', this.onPhoneMediaChange)
   }
 }

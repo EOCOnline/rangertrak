@@ -7,6 +7,7 @@ import {
 } from '@angular/core'
 
 import { ensureAgGridRegistered } from '../../../shared/ag-grid-setup'
+import { rangertrakGridTheme } from '../../../shared/ag-grid-theme'
 import {
   FieldReportStatusType, LogService, statusColorMeetsAA, statusColorValue, statusInkValue
 } from '../../../shared/services/'
@@ -41,9 +42,7 @@ export class SettingsFieldReportStatusesComponent implements OnChanges {
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   // https://www.ag-grid.com/javascript-data-grid/row-styles/#highlighting-rows-and-columns
   gridOptions: GridOptions = {
-    // Use the classic ag-theme-alpine CSS (imported in styles.scss) rather than v33+'s
-    // Theming API - see the ModuleRegistry comment in main.ts.
-    theme: 'legacy',
+    theme: rangertrakGridTheme,
   }
 
   defaultColDef: ColDef = {

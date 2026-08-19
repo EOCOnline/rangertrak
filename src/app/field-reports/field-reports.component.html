@@ -27,10 +27,11 @@
 
   <h2 class="visually-hidden">Field Reports</h2>
   <div id="reportsgrid">
-    <ag-grid-angular #reportsGrid rowAnimation style="width: 100%; height: 60vh;" (gridReady)="onGridReady($event)"
-      [gridOptions]="gridOptions" class="ag-theme-alpine" [rowData]="fieldReportArray" [columnDefs]="columnDefs"
-      [tooltipShowDelay]="500">
-      <!--
+    @if (!isPhone()) {
+      <ag-grid-angular #reportsGrid rowAnimation style="width: 100%; height: 60vh;" (gridReady)="onGridReady($event)"
+        [gridOptions]="gridOptions" [rowData]="fieldReportArray" [columnDefs]="columnDefs"
+        [tooltipShowDelay]="500">
+        <!--
 [defaultColDef]="defaultColDef"
 [columnDefs]="columnDefs"
 
@@ -41,44 +42,74 @@
           [columns]="columns"
           [showToolPanel]="showToolPanel"
         -->
-    </ag-grid-angular>
-    <div class="rows">
-      <span class="selected"><span class="strong">Selected Rows: {{selectedRows}} </span> &nbsp; (Maps have a switch to
-        only show these rows)</span>
-      <span class="pager">
-        <label for="pet-select"># Rows per Page: &nbsp;</label>
-        <select name="rowPerPage" id="rowPerPage-select" (change)="onRowsPerPage()">
-          <!-- option value="">--Please choose an option--</option -->
-          <option value="Auto">Auto</option>
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="infinite">All</option>
-        </select>
-      </span>
-    </div>
-    <br />
-    <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
+      </ag-grid-angular>
+      <div class="rows">
+        <span class="selected"><span class="strong">Selected Rows: {{selectedRows}} </span> &nbsp; (Maps have a switch to
+          only show these rows)</span>
+        <span class="pager">
+          <label for="pet-select"># Rows per Page: &nbsp;</label>
+          <select name="rowPerPage" id="rowPerPage-select" (change)="onRowsPerPage()">
+            <!-- option value="">--Please choose an option--</option -->
+            <option value="Auto">Auto</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="infinite">All</option>
+          </select>
+        </span>
+      </div>
+      <br />
+      <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
       <button (click)="onBtNormal()">Normal Layout</button-->
-    <!--div><button (click)="/">Add a new Field Report</button></div-->
+      <!--div><button (click)="/">Add a new Field Report</button></div-->
 
-    <div>
-      <button (click)="onBtnExport()">Export Field Reports</button> with column separator of
-      <select (change)="onSeperatorChange()" id="columnSeparator">
-        <option value="none">comma (,)</option>
-        <option value="tab">tab</option>
-        <option value="|">bar (|)</option>
-      </select>
-      &nbsp;
-      <label class="option" for="allRows"
-        title="By default only filtered & sorted rows are exported-May require AG-Grid ENTERPRISE?.">
-        <input id="allRows" type="checkbox" />All Rows</label>
-    </div>
-    <!--button (click)="this.gridApi.deselectAll()">Clear Selection</button-->
-    <!--div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div-->
+      <div>
+        <button (click)="onBtnExport()">Export Field Reports</button> with column separator of
+        <select (change)="onSeperatorChange()" id="columnSeparator">
+          <option value="none">comma (,)</option>
+          <option value="tab">tab</option>
+          <option value="|">bar (|)</option>
+        </select>
+        &nbsp;
+        <label class="option" for="allRows"
+          title="By default only filtered & sorted rows are exported-May require AG-Grid ENTERPRISE?.">
+          <input id="allRows" type="checkbox" />All Rows</label>
+      </div>
+      <!--button (click)="this.gridApi.deselectAll()">Clear Selection</button-->
+      <!--div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div-->
+    }
 
+    @if (isPhone()) {
+      <!-- Phone carve-out (Sprint F): a completed comms log read on a phone away from
+           the command post, per Private Roadmap.md's Field Reports/ICS-309 carve-out.
+           Read-only - corrections still happen on a wider screen where the grid runs. -->
+      <div class="field-reports-cards" role="list">
+        @for (report of fieldReportArray; track report.id) {
+          <article class="field-reports-cards__card" role="listitem">
+            <header class="field-reports-cards__header">
+              <span class="field-reports-cards__callsign">{{ report.callsign }}</span>
+              <span class="field-reports-cards__status" [style.background-color]="statusFill(report.status)"
+                [style.color]="statusInk(report.status)">{{ report.status }}</span>
+            </header>
+            <div class="field-reports-cards__row">
+              <span class="field-reports-cards__reported">{{ myDateGetter({ data: report }) }}</span>
+              <span class="field-reports-cards__elapsed">{{ myMinuteGetter({ data: report }) }}</span>
+            </div>
+            <div class="field-reports-cards__row">{{ report.location.address }}</div>
+            <div class="field-reports-cards__row field-reports-cards__coords">
+              {{ report.location.lat | number:'1.0-4' }}, {{ report.location.lng | number:'1.0-4' }}
+            </div>
+            @if (report.notes) {
+              <div class="field-reports-cards__notes">{{ report.notes }}</div>
+            }
+          </article>
+        } @empty {
+          <p>No field reports yet.</p>
+        }
+      </div>
+    }
 
     <br />
     <rangertrak-disclosure summary="Advanced">

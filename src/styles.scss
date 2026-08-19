@@ -13,9 +13,6 @@
 @use './styles/active-skin' as skin;
 @use './styles/tokens';
 
-@import 'ag-grid-community/styles/ag-grid.css';
-@import 'ag-grid-community/styles/ag-theme-alpine.css';
-
 // The real theme. `mat.theme()` emits the `--mat-sys-*` system custom properties, which is
 // the token layer 19a item 1 said was missing on the Material side, and gives light/dark as
 // a first-class colour-scheme rather than a bolted-on media block.

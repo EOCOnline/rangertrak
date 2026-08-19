@@ -12,6 +12,7 @@ import { PageComponent } from '../shared/page/page.component';
 
 import { Utility } from '../shared'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
+import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import {
   FieldReportService, FieldReportType, LogService, RangerService, RangerType,
@@ -71,9 +72,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   gridOptions: GridOptions = {
     // PROPERTIES
-    // Use the classic ag-theme-alpine CSS (imported in styles.scss) rather than v33+'s
-    // Theming API - see the ModuleRegistry comment in main.ts.
-    theme: 'legacy',
+    theme: rangertrakGridTheme,
     // v32.2+ object form - see the equivalent comment in field-reports.component.ts.
     rowSelection: {
       mode: 'multiRow',

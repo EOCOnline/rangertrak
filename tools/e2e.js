@@ -444,6 +444,55 @@ async function checkLocationDdDdmDmsSync() {
   check('the lng edit is still there too', Math.abs(Number(rapid.lngFinal)), 120)
 }
 
+async function checkFieldReportsPhoneLayout() {
+  console.log('\nField Reports: phone width shows cards not the grid, tablet-up shows the grid not cards (Sprint F carve-out)')
+  await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 3, mobile: true })
+  await goto('/reports')
+  const phone = await evaluate(`(() => ({
+    grid: !!document.querySelector('#reportsgrid ag-grid-angular .ag-root-wrapper'),
+    cards: !!document.querySelector('.field-reports-cards'),
+  }))()`)
+  check('phone width: no ag-grid root is constructed', phone.grid, false)
+  check('phone width: the card list renders instead', phone.cards, true)
+  await send('Emulation.clearDeviceMetricsOverride')
+
+  // Tablet-up (D-33): a folding-table command post, not a phone.
+  await send('Emulation.setDeviceMetricsOverride', { width: 900, height: 800, deviceScaleFactor: 1, mobile: false })
+  await goto('/reports')
+  const tablet = await evaluate(`(() => ({
+    grid: !!document.querySelector('#reportsgrid ag-grid-angular .ag-root-wrapper'),
+    cards: !!document.querySelector('.field-reports-cards'),
+  }))()`)
+  check('tablet-up: the grid renders', tablet.grid, true)
+  check('tablet-up: no card list is present', tablet.cards, false)
+  await send('Emulation.clearDeviceMetricsOverride')
+}
+
+async function checkGridThemeUsesTokens() {
+  console.log('\nAG Grid Theming API resolves through --rt-* tokens (Sprint F: legacy ag-theme-alpine.css is gone)')
+  const read = async () => {
+    await goto('/reports')
+    return evaluate(`(() => {
+      const root = getComputedStyle(document.documentElement);
+      const header = document.querySelector('#reportsgrid .ag-header');
+      return {
+        tokenSurface2: root.getPropertyValue('--rt-surface-2').trim(),
+        headerBg: header ? getComputedStyle(header).backgroundColor : null,
+      };
+    })()`)
+  }
+  const light = await withColorScheme('light', read)
+  const dark = await withColorScheme('dark', read)
+
+  // The token and the grid header must both be readable, and - the actual point of Sprint F -
+  // the header must not be sitting at ag-theme-alpine's old hardcoded default, and must change
+  // between schemes exactly as the token does (light-dark() resolves per scheme with no separate
+  // AG Grid dark-mode config, per ag-grid-theme.ts).
+  check('a header cell is present in both schemes', !!light.headerBg && !!dark.headerBg, true)
+  check('the grid header colour changes between light and dark, tracking the token', light.headerBg !== dark.headerBg, true)
+  if (light.headerBg) note(`--rt-surface-2 light=${light.tokenSurface2} dark=${dark.tokenSurface2} | header bg light=${light.headerBg} dark=${dark.headerBg}`)
+}
+
 /**
  * Runs `body` with the browser emulating a given prefers-color-scheme, then restores.
  *
@@ -814,6 +863,8 @@ async function main() {
     await checkEntryTabOrder()
     await checkEntryPhoneWidth()
     await checkLocationDdDdmDmsSync()
+    await checkFieldReportsPhoneLayout()
+    await checkGridThemeUsesTokens()
 
     if (READ_ONLY) {
       note('read-only: skipping roster, photo, submit and mission checks')
