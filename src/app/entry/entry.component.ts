@@ -52,7 +52,12 @@ import { MiniLMapComponent } from './mini-lmap.component'
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [RangerService, FieldReportService, SettingsService]
+  // BUG-2 (2026-08-19): this used to be
+  //   providers: [RangerService, FieldReportService, SettingsService]
+  // All three are @Injectable({providedIn:'root'}). Re-declaring them here gave Entry its
+  // OWN instances, so submitted reports went into a private FieldReportService while the
+  // Reports page read the root one - which still held its startup-empty list. The page
+  // looked empty until a full reload made every instance re-read localStorage.
   //, TeamService
   // https://angular.io/guide/architecture-services#providing-services: 1 or multiple instances?!
   // per https://angular.io/guide/singleton-services
@@ -119,10 +124,11 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // controls rather than constructing new ones. Initial status is corrected once settings
   // arrive - see initEntryForm().
   public entryControlsForm = new FormGroup({
-    callsign: new SignalFormControl(''),
     status: new SignalFormControl('')
   })
-  callsignCtrl = new FormControl() //Untyped
+  // The one and only callsign control. It drives the mat-autocomplete's filtering AND is what
+  // gets saved - see BUG-1 in entry.component.html. Typed to string so .value needs no cast.
+  callsignCtrl = new FormControl<string>('', { nonNullable: true })
   //readonly imagePath = "'./assets/imgs/rangers/'" // not yet used by *.html
 
   // Get location events from <location> component
@@ -348,8 +354,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       date: new Date(),
       notes: ''
     })
+    this.callsignCtrl.setValue('')
     this.entryControlsForm.setValue({
-      callsign: '',
       status: this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status
     })
   }
@@ -362,7 +368,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   mergedFormValue() {
     return {
       ...this.entryModel(),
-      callsign: this.entryControlsForm.value.callsign,
+      callsign: this.callsignCtrl.value,
       status: this.entryControlsForm.value.status
     }
   }
@@ -378,7 +384,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** Combined validity across both form halves - drives Submit's [disabled] and the debug panel. */
   formValid() {
-    return this.entryForm().valid() && this.entryControlsForm.valid
+    return this.entryForm().valid() && this.entryControlsForm.valid && this.callsignCtrl.valid
   }
 
   initFilteredRangers() {
@@ -416,10 +422,11 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Resets both halves of the split form together - the native signal form (id/location/
-   * date/notes) and the classic FormGroup (callsign/status, kept classic for the
-   * mat-autocomplete/mat-radio-group interop gap - see entryControlsForm above). One
-   * helper covering both so a future edit can't reset one half and forget the other.
+   * Resets all three pieces of the split form together - the native signal form
+   * (id/location/date/notes), the standalone callsignCtrl, and the classic FormGroup holding
+   * status (both kept classic for the mat-autocomplete/mat-radio-group interop gap - see
+   * entryControlsForm above). One helper covering all of them so a future edit cannot reset
+   * some and forget the rest.
    */
   private resetAll() {
     // !REVIEW: Should we reset locationParent to default location (from settings)?
@@ -429,8 +436,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       date: new Date(),
       notes: ''
     })
+    this.callsignCtrl.reset('')
     this.entryControlsForm.reset({
-      callsign: '',
       status: this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status
     })
   }
@@ -441,6 +448,16 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.callImg = this.document.getElementById("enter__Callsign-image")
     this.callInfo = this.document.getElementById("enter__Callsign-upshot")
     if (this.callImg && this.callInfo) {
+      // An empty callsign is the normal state right after a reset (see resetAll()) - not an
+      // "unknown" one. Routing it through getRanger() logged a false GetRanger error on
+      // every single submit, once callsignCtrl started actually being reset (BUG-1 fix,
+      // 2026-08-19) instead of being silently orphaned as it was before.
+      if (!callsign) {
+        this.callImg.innerHTML = ''
+        this.callInfo.innerHTML = ''
+        return
+      }
+
       this.log.verbose(`EntryForm callsignChanged looking for ${callsign}`, this.id)
 
       let ranger = this.rangerService.getRanger(callsign)

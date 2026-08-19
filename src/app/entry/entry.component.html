@@ -22,8 +22,13 @@
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->
     <mat-form-field class="enter__Callsign filled">
       <mat-label>CallSign</mat-label>
+      <!-- BUG-1 (2026-08-19): this carried BOTH [formControl]="callsignCtrl" and
+           formControlName="callsign". Only one directive can be the value accessor, so
+           entryControlsForm.callsign stayed '' and every saved report lost its callsign
+           while the autocomplete (which reads callsignCtrl) looked perfectly fine.
+           callsignCtrl is now the single source of truth for this field. -->
       <input #callsignInput matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one"
-        aria-label="Callsigns" formControlName="callsign" [matAutocomplete]="auto"
+        aria-label="Callsigns" [matAutocomplete]="auto"
         (change)="this.callsignCtrlChanged()" id="enter__Callsign-input" tabindex="1" data-lpignore="true"
         spellcheck="false" />
       <mat-autocomplete #auto="matAutocomplete">
