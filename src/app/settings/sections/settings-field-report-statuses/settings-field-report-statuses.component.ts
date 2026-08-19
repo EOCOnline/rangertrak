@@ -7,7 +7,9 @@ import {
 } from '@angular/core'
 
 import { ensureAgGridRegistered } from '../../../shared/ag-grid-setup'
-import { FieldReportStatusType, LogService } from '../../../shared/services/'
+import {
+  FieldReportStatusType, LogService, statusColorMeetsAA, statusColorValue, statusInkValue
+} from '../../../shared/services/'
 import { ColorEditor } from '../../color-editor.component'
 
 /**
@@ -59,16 +61,27 @@ export class SettingsFieldReportStatusesComponent implements OnChanges {
     {
       headerName: "Status", field: "status", flex: 50,
       cellStyle: (params: { value: string; }) => {
-        let stat = this.rowData.find(el => el.status == params.value)
-        return { 'background-color': `${stat ? stat.color : '#A3A3A3'}` }
+        // Same fill+ink resolution as the Field Reports grid - see field-reports.component.ts.
+        const stat = this.rowData.find(el => el.status == params.value)
+        const stored = stat ? stat.color : '#A3A3A3'
+        return { 'background-color': statusColorValue(stored), 'color': statusInkValue(stored) }
       }
     },
     {
-      headerName: "Color", field: "color", tooltipField: "enter a color name or 3 letter code",
+      headerName: "Color", field: "color",
+      tooltipField: "one of the built-in accessible colours, or your own CSS colour",
       cellStyle: (params: { value: string; }) => {
-        let newColor = params.value
         this.refreshStatusGrid()
-        return { backgroundColor: newColor }
+        const stored = String(params.value ?? '')
+        return {
+          backgroundColor: statusColorValue(stored),
+          color: statusInkValue(stored),
+          // A custom colour that fails WCAG AA against its own ink is flagged rather than
+          // silently accepted - the whole point of Sprint E's colour work is that an
+          // unreadable status is a safety problem, not a taste one. Built-in keys always pass.
+          outline: statusColorMeetsAA(stored) ? 'none' : '2px dashed #B3261E',
+          outlineOffset: '-3px',
+        }
       },
       cellEditor: ColorEditor,
       cellEditorPopup: true,

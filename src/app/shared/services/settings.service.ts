@@ -4,6 +4,7 @@ import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 
 import * as packageJson from '../../../../package.json'
 import { FieldReportStatusType, LogService, SettingsType } from './'
+import { DEFAULT_FIELD_REPORT_STATUSES, SETTINGS_SCHEMA_VERSION, migrateSettings } from './settings-migration'
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService implements OnInit {
@@ -128,7 +129,10 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       this.log.info("Get App Settings...", this.id)
       try {
         if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") > 0) {
-          this.setSettings(JSON.parse(localStorageSettings))
+          // Migrate BEFORE publishing: subscribers (and the Settings form) must never see a
+          // pre-migration shape. See settings-migration.ts. The other entry point that can
+          // introduce foreign settings is Import Mission - backup.service.ts migrates there too.
+          this.setSettings(migrateSettings(JSON.parse(localStorageSettings)))
           this.log.verbose("Initialized App Settings from localstorage", this.id)
           needSettings = false
         }
@@ -217,6 +221,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     this.log.verbose(`OpPeriod: ${dt.toLocaleString("en-US")}, plus ${this.defOpPeriodLength} hours = ${endDt.toLocaleString("en-US")} `, this.id)
 
     return {
+      schemaVersion: SETTINGS_SCHEMA_VERSION,
       settingsName: '', // FUTURE: Use if people want to load and saveas, or have various 'templates'
       settingsDate: dt, // when last created/edited...
 
@@ -263,15 +268,12 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       // https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#fully_saturated_colors
       // https://m3.material.io/styles/icons/applying-icons#ebb3ae7d-d274-4a25-9356-436e82084f1f
       // https://fonts.google.com/icons
-      fieldReportStatuses: [
-        { status: 'Normal', color: 'LightYellow', icon: 'check_FILL0_wght400_GRAD0_opsz48.png' },
-        { status: 'Location Report', color: 'Aquamarine', icon: 'where_to_vote_FILL0_wght400_GRAD0_opsz48.png' },
-        { status: 'Evidence Report', color: 'DarkGoldenrod', icon: 'add_photo_alternate_FILL0_wght400_GRAD0_opsz48.png' },
-        { status: 'Need Rest/Food', color: 'Chartreuse', icon: 'mood_bad_FILL0_wght400_GRAD0_opsz48.png' },
-        { status: 'Incident Check-in', color: 'Silver', icon: 'person_add_FILL0_wght400_GRAD0_opsz48.png' },
-        { status: 'Incident Check-out', color: 'DimGray', icon: 'person_remove_FILL0_wght400_GRAD0_opsz48.png' },
-        { status: 'Urgent', color: 'Crimson', icon: 'crisis_alert_FILL0_wght400_GRAD0_opsz48.png' }
-      ],
+      // Sprint E: these are semantic keys resolving to --rt-status-*, not raw CSS colours.
+      // The old CSS named colours (LightYellow, Chartreuse, Aquamarine, Silver...) were
+      // painted as TEXT on the Entry status radios and measured as low as 1.07:1 - a fresh
+      // install shipped inaccessible, not just upgraded ones. See settings-migration.ts,
+      // which maps the old values forward for existing users.
+      fieldReportStatuses: [...DEFAULT_FIELD_REPORT_STATUSES],
       // fieldReportKeywords: [''],  // Future...could also just search notes field
     }
   }

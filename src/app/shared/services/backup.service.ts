@@ -5,6 +5,7 @@ import {
   FieldReportsType, FieldReportService, LogService, RangerService, RangerType, SettingsService,
   SettingsType
 } from './'
+import { migrateSettings } from './settings-migration'
 
 /**
  * A full mission backup: everything needed to restore the app to its
@@ -97,7 +98,11 @@ export class BackupService {
     // the settings->FieldReportService subscription is synchronous (both are
     // signal+ReplaySubject-backed - see settings.service.ts), so this
     // ordering is safe.
-    this.settingsService.updateSettings(payload.settings)
+    // Migrated, not applied raw: an export can be arbitrarily old (this is the restore-after-
+    // disaster path, and a mission file may sit on a thumb drive for months), and this call
+    // bypasses settings.service.ts's load path entirely - so without this the import would
+    // reinstate a pre-migration shape over freshly-migrated settings. See settings-migration.ts.
+    this.settingsService.updateSettings(migrateSettings(payload.settings))
     this.rangerService.replaceAllRangers(payload.rangers)
     this.fieldReportService.replaceAllFieldReports(payload.fieldReports)
 

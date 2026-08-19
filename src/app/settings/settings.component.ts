@@ -7,7 +7,8 @@ import { form, FormField, required } from '@angular/forms/signals'
 
 import { PageComponent } from '../shared/page/page.component'
 import {
-  FieldReportStatusType, InstallableService, LogService, SettingsService, SettingsType
+  FieldReportStatusType, InstallableService, LogService, SETTINGS_SCHEMA_VERSION, SettingsService,
+  SettingsType
 } from '../shared/services/'
 
 import { MATERIAL_IMPORTS } from '../material-imports'
@@ -23,6 +24,7 @@ import { SettingsAdvancedOptionsComponent } from './sections/settings-advanced-o
 // synchronously to a new subscriber, so this is overwritten before first render) - mirrors
 // LocationType's undefinedLocation. Field values here are never shown to the user.
 const blankSettings: SettingsType = {
+  schemaVersion: SETTINGS_SCHEMA_VERSION,
   settingsName: '', settingsDate: new Date(0),
   mission: '', event: '', eventNotes: '', opPeriod: '',
   opPeriodStart: new Date(0), opPeriodEnd: new Date(0),

@@ -5,6 +5,11 @@ import { FieldReportStatusType } from './field-report.interface'
  * for readily serialization/dehydration
  */
 export type SettingsType = {
+  // Persisted-shape version, owned by settings-migration.ts (SETTINGS_SCHEMA_VERSION).
+  // Distinct from `version` below, which is the *app* version stamped from package.json on
+  // every load and plays no part in migration decisions.
+  schemaVersion: number,
+
   settingsName: string, // FUTURE: Use if people want to load and saveas, or have various 'templates'
   settingsDate: Date, // when last edited...
 

@@ -25,7 +25,7 @@ import { TimePickerComponent } from '../shared/time-picker/time-picker.component
 import { DDToDDM } from '../shared/mapping/coordinate'
 import {
   FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
-  SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
+  SettingsService, SettingsType, statusColorValue, undefinedAddressFlag, undefinedLocation
 } from '../shared/services/'
 //import { LocationComponent } from './location.component'
 
@@ -365,6 +365,15 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       callsign: this.entryControlsForm.value.callsign,
       status: this.entryControlsForm.value.status
     }
+  }
+
+  /**
+   * Stored status colour -> a CSS colour for the status radio labels. Semantic keys resolve
+   * to their --rt-status-* token (which carries light/dark); a custom colour passes through.
+   * See status-color.ts.
+   */
+  statusColor(stored: string): string {
+    return statusColorValue(stored)
   }
 
   /** Combined validity across both form halves - drives Submit's [disabled] and the debug panel. */

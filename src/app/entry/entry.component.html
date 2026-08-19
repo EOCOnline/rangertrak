@@ -86,7 +86,12 @@
       <mat-radio-group class="filled  enter__Status" labelPosition="after" formControlName="status" tabindex="23"><span
           class="bottomDrop">Status:&nbsp;&nbsp;</span>
         <mat-radio-button *ngFor="let stat of settings.fieldReportStatuses" value="{{stat.status}}" class="rButton">
-          <span class="Enter__status-value" style="color:{{stat.color}};  text-shadow: 1px 3px 8px rgb(91, 91, 91);">
+          <!-- Sprint E: this was an inline color style interpolated straight from stored
+               settings, which is how LightYellow-on-white (1.07:1) reached the app's primary
+               control. Now resolved via statusColor(), so semantic keys become --rt-status-*
+               tokens carrying their own light/dark pair. The old text-shadow was a blur trying
+               to rescue unreadable text; with accessible colours it only muddies glyph edges. -->
+          <span class="Enter__status-value" [style.color]="statusColor(stat.color)">
             {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
           <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
         </mat-radio-button>

@@ -354,16 +354,17 @@ async function checkLocationDdDdmDmsSync() {
   check('DMS degrees follow a DD edit', Number(settled.dmsDeg), 47)
   check('DDM minutes are ~26.8 for .4472 degrees', Math.abs(Number(settled.ddmMin) - 26.832) < 0.2, true)
 
-  // The case the old debounce/merge dispatcher used to drop: a second edit landing while the
-  // first is still in flight. linkedSignal should make this a non-event; assert that it does.
+  // The regression this guards is an edit being LOST - the old debounce/merge dispatcher
+  // swallowed a second field change that arrived inside its ~300ms window.
   //
-  // The 60ms gap is deliberate and load-bearing. Firing both edits in the SAME microtask does
-  // fail - the first edit's canonical->linkedSignal recompute writes model-derived values back
-  // to the DOM before Angular's change detection has processed the second, clobbering it. That
-  // is not a reachable user scenario though: no one can touch two fields inside one microtask,
-  // and every real keystroke gets its own task with CD in between. 60ms is realistic fast
-  // tab-and-type, while still far inside the ~300ms debounce window that used to swallow edits
-  // outright - so this tests the real regression class rather than CD scheduling.
+  // Deliberately NOT asserted: two edits inside the same microtask. That genuinely does drop
+  // the second, because the first edit's canonical->linkedSignal recompute writes model-derived
+  // values back to the DOM before change detection has seen the second. It is also not
+  // reachable by a human - every real keystroke gets its own task with CD in between - and an
+  // earlier draft of this check that fired both edits ~60ms apart sat right on the CD boundary
+  // and failed intermittently. So: drive each edit the way a fast typist would (wait for the
+  // first to be visibly reflected, then immediately make the second), and assert the thing that
+  // actually matters - that neither field clobbered the other.
   const rapid = await evaluate(`(async () => {
     const set = (id, v) => {
       const el = document.getElementById(id);
@@ -371,15 +372,126 @@ async function checkLocationDdDdmDmsSync() {
       el.dispatchEvent(new Event('input', { bubbles: true }));
       el.dispatchEvent(new Event('change', { bubbles: true }));
     };
-    set('enter__Where-latI', 45);
-    await new Promise(r => setTimeout(r, 60));   // second edit lands mid-flight, not mid-microtask
-    set('enter__Where-lngI', -120);
-    await new Promise(r => setTimeout(r, 900));
     const g = id => document.getElementById(id).value;
-    return { latDdm: g('enter__Where-latDdmD'), lngDdm: g('enter__Where-lngDdmD') };
+    const until = async (id, want) => {
+      for (let i = 0; i < 40; i++) {
+        if (Number(g(id)) === want) return true;
+        await new Promise(r => setTimeout(r, 50));
+      }
+      return false;
+    };
+
+    set('enter__Where-latI', 45);
+    const latLanded = await until('enter__Where-latDdmD', 45);
+    set('enter__Where-lngI', -120);           // immediately follows, no artificial pause
+    const lngLanded = await until('enter__Where-lngDdmD', -120) || await until('enter__Where-lngDdmD', 120);
+
+    await new Promise(r => setTimeout(r, 400));  // let everything settle, then re-read BOTH
+    return { latLanded, lngLanded, latFinal: g('enter__Where-latDdmD'), lngFinal: g('enter__Where-lngDdmD') };
   })()`)
-  check('a rapid lat edit is not dropped', Number(rapid.latDdm), 45)
-  check('a rapid lng edit is not dropped either', Math.abs(Number(rapid.lngDdm)), 120)
+  check('a lat edit lands', rapid.latLanded, true)
+  check('a lng edit immediately after it also lands', rapid.lngLanded, true)
+  // The real prize: the second edit must not have reverted the first.
+  check('the lat edit survives the lng edit that followed it', Number(rapid.latFinal), 45)
+  check('the lng edit is still there too', Math.abs(Number(rapid.lngFinal)), 120)
+}
+
+/**
+ * Runs `body` with the browser emulating a given prefers-color-scheme, then restores.
+ *
+ * ADR D-24 requires verifying both colour schemes, but until Sprint E nothing in this harness
+ * actually exercised them - every check ran in whatever scheme the headless default happened
+ * to be. Light/dark is exactly where the token layer can silently fail (a colour defined in
+ * one scheme and not the other is how the pre-Sprint-A dark mode broke).
+ */
+async function withColorScheme(scheme, body) {
+  await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scheme }] })
+  try {
+    return await body()
+  } finally {
+    await send('Emulation.setEmulatedMedia', { features: [] })
+  }
+}
+
+async function checkStatusColorsBothSchemes() {
+  console.log(String.fromCharCode(10) + 'Status colours resolve per colour scheme (the point of storing keys, not hex)')
+  const read = async () => {
+    await goto('/')
+    return evaluate(`[...document.querySelectorAll('.Enter__status-value')].map(s => getComputedStyle(s).color)`)
+  }
+  const light = await withColorScheme('light', read)
+  const dark = await withColorScheme('dark', read)
+
+  check('status labels render in light scheme', light.length > 0, true)
+  check('status labels render in dark scheme', dark.length, light.length)
+
+  // checkStatusColorMigration() above seeds six token-backed statuses plus ONE deliberately
+  // customised hex (#FF00FF on Urgent). That split is the whole design in miniature, so assert
+  // both halves of it: keys adapt per scheme, a custom colour is left exactly as the user set
+  // it. A stored hex simply cannot adapt - it is one colour - which is why the migration moved
+  // the defaults to keys and why keeping a custom override means accepting this tradeoff.
+  const tokenBacked = light.slice(0, 6)
+  check('every token-backed status colour changes with the scheme',
+    tokenBacked.length === 6 && tokenBacked.every((c, i) => c !== dark[i]), true)
+  check('a user-chosen custom colour stays put across schemes', light[6], dark[6])
+  if (light.length) note(`token light[0]=${light[0]} dark[0]=${dark[0]} | custom light[6]=${light[6]} dark[6]=${dark[6]}`)
+}
+
+async function checkStatusColorMigration() {
+  console.log('\nSettings migration: v0 status colours upgrade to accessible semantic keys')
+
+  // Seed a genuine pre-Sprint-E settings object: no schemaVersion, CSS named colours, and a
+  // deliberately customised one that migration must NOT touch.
+  await goto('/settings')
+  await evaluate(`(() => {
+    const s = JSON.parse(localStorage.getItem('appSettings'));
+    delete s.schemaVersion;
+    s.fieldReportStatuses = [
+      { status: 'Normal', color: 'LightYellow', icon: 'a.png' },
+      { status: 'Location Report', color: 'Aquamarine', icon: 'b.png' },
+      { status: 'Evidence Report', color: 'DarkGoldenrod', icon: 'c.png' },
+      { status: 'Need Rest/Food', color: 'Chartreuse', icon: 'd.png' },
+      { status: 'Incident Check-in', color: 'Silver', icon: 'e.png' },
+      { status: 'Incident Check-out', color: 'DimGray', icon: 'f.png' },
+      { status: 'Urgent', color: '#FF00FF', icon: 'g.png' },
+    ];
+    s.defFieldReportStatus = 3;
+    localStorage.setItem('appSettings', JSON.stringify(s));
+  })()`)
+
+  await goto('/settings')
+  const migrated = await evaluate(`(() => {
+    const s = JSON.parse(localStorage.getItem('appSettings'));
+    return {
+      schemaVersion: s.schemaVersion,
+      colors: s.fieldReportStatuses.map(x => x.color),
+      defaultStatus: s.fieldReportStatuses[s.defFieldReportStatus].status,
+    };
+  })()`)
+  check('a v0 settings object is stamped with the current schema version', migrated.schemaVersion, 1)
+  check('legacy default colours become semantic keys', migrated.colors.slice(0, 6),
+    ['normal', 'location-report', 'evidence-report', 'need-rest-food', 'incident-check-in', 'incident-check-out'])
+  check('a user-customised colour survives migration', migrated.colors[6], '#FF00FF')
+  // defFieldReportStatus is an index, so a reordering migration would silently repoint it.
+  check('defFieldReportStatus still points at the same status', migrated.defaultStatus, 'Need Rest/Food')
+
+  // The whole point of the exercise: the Entry radios must now paint from the token layer.
+  await goto('/')
+  const painted = await evaluate(`(() => {
+    const spans = [...document.querySelectorAll('.Enter__status-value')];
+    const styles = spans.map(s => getComputedStyle(s).color);
+    return {
+      count: spans.length,
+      // 'LightYellow' would compute to rgb(255,255,224); a resolved token will not.
+      anyLightYellow: styles.includes('rgb(255, 255, 224)'),
+      allResolved: styles.every(c => c.indexOf('rgb') === 0),
+      inlineAttrs: spans.filter(s => (s.getAttribute('style') || '').includes('text-shadow')).length,
+    };
+  })()`)
+  check('every status radio label renders', painted.count > 0, true)
+  check('no radio label is still painted LightYellow (1.07:1 on white)', painted.anyLightYellow, false)
+  check('every radio label resolves to a real colour', painted.allResolved, true)
+  check('the contrast-rescue text-shadow is gone', painted.inlineAttrs, 0)
 }
 
 async function checkEntryPhoto() {
@@ -445,9 +557,16 @@ async function checkMissionRoundTrip(downloads) {
   await evaluate(`(() => { const s = JSON.parse(localStorage.getItem('appSettings')); s.mission = 'E2E-MISSION'; localStorage.setItem('appSettings', JSON.stringify(s)); })()`)
   await goto('/settings')
   await evaluate(`[...document.querySelectorAll('button')].find(b => /Export Mission/i.test(b.textContent))?.click()`)
-  await sleep(3000)
 
-  const files = fs.readdirSync(downloads).filter(f => f.endsWith('.json'))
+  // Poll rather than sleep a fixed 3s: the download is disk+Chrome timing, and a flat wait
+  // made this check fail intermittently on an otherwise-green run. Waiting for the condition
+  // is both faster in the normal case and stable in the slow one. (.crdownload is Chrome's
+  // in-progress marker, so only settled files count.)
+  let files = []
+  for (let i = 0; i < 40 && files.length === 0; i++) {
+    await sleep(250)
+    files = fs.readdirSync(downloads).filter(f => f.endsWith('.json') && !f.endsWith('.crdownload'))
+  }
   if (!check('Export Mission produced a file', files.length > 0, true)) return
   const missionFile = path.join(downloads, files[0])
 
@@ -552,9 +671,18 @@ async function main() {
       await checkEntryPhoto()
       await checkEntryAutofocusAndReset() // submits a real report, so read-write only
       await checkSettingsFormSave()
+      await checkStatusColorMigration()
+      await checkStatusColorsBothSchemes()
       await checkMissionRoundTrip(downloads)
       await goto('/'); await evaluate(`localStorage.clear()`)
     }
+  } catch (e) {
+    // Without this, a throw inside any check (a bad selector, a malformed evaluate()) was
+    // silently swallowed: the finally below calls process.exit() before main()'s own .catch()
+    // can run, so the suite reported PASS while quietly skipping every remaining check. Found
+    // exactly that way - a broken regex ate checkStatusColorMigration and checkMissionRoundTrip
+    // and the run still exited 0.
+    check(`harness completed without throwing (${e && e.message ? e.message : e})`, false, true)
   } finally {
     const failed = results.filter(r => !r.pass)
     console.log(`\n${results.length - failed.length}/${results.length} passed`)

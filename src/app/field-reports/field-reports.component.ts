@@ -17,7 +17,7 @@ import { Utility } from '../shared'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import {
   FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
-  RangerService, SettingsService, SettingsType
+  RangerService, SettingsService, SettingsType, statusColorValue, statusInkValue
 } from '../shared/services'
 
 @Pipe({ name: 'myUnusedPipe' })
@@ -198,8 +198,13 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       {
         headerName: "Status", field: "status", flex: 5, cellRenderer: this.statusCellRenderer,
         cellStyle: (params: { value: string; }) => {
-          let stat = this.fieldReportStatuses.find(el => el.status == params.value)
-          return { 'background-color': `${stat ? stat.color : '#A3A3A3'}` }
+          // Sprint E: the fill now resolves through the token layer (semantic key ->
+          // --rt-status-*, custom colour passes through), and an explicit ink colour is set
+          // alongside it. Previously only background-color was set, so the label inherited
+          // whatever text colour was in scope - which is unreadable on roughly half the palette.
+          const stat = this.fieldReportStatuses.find(el => el.status == params.value)
+          const stored = stat ? stat.color : '#A3A3A3'
+          return { 'background-color': statusColorValue(stored), 'color': statusInkValue(stored) }
         }
         //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
       },

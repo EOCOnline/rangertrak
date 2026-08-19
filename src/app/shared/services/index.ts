@@ -16,6 +16,11 @@ export { LocationType, undefinedAddressFlag, undefinedLocation } from "./locatio
 export { LogLevel, LogLevelNames, LogType, LogHeadings } from "./log.interface"
 export { RangerType, UnknownRanger } from "./ranger.interface"
 export { SettingsType } from "./settings.interface"
+export { SETTINGS_SCHEMA_VERSION, DEFAULT_FIELD_REPORT_STATUSES, migrateSettings } from "./settings-migration"
+export {
+  STATUS_KEYS, StatusKey, isStatusKey, statusColorValue, statusInkValue, statusColorMeetsAA,
+  contrastRatio, relativeLuminance, parseColor, Rgb
+} from "./status-color"
 
 
 //export { ShapeService } from "../unused/shape.service"
