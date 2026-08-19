@@ -247,6 +247,141 @@ async function checkBundleZip(fx) {
   check('zip stores photos despite backslash paths', r.photoKeys, ['E2E-AA1', 'E2E-CC3'])
 }
 
+// ── Sprint D's keyboard-first pass and phone-width fix, retro-fitted with the checks its
+// own plan specified but never committed. Written at the START of Sprint E, before any
+// layout work, so they capture current-good behaviour rather than whatever Sprint E leaves
+// behind. See the Sprint E plan, Step 0.
+//
+// NOTE for all synthetic edits below: Signal Forms' [formField] listens for the 'input' DOM
+// event ONLY, never 'change' (nativeControlCreate in @angular/forms/fesm2022/signals.mjs).
+// A real click/keystroke fires both; a dispatched 'change' alone silently does nothing.
+
+async function checkEntryTabOrder() {
+  console.log('\nEntry form: tab order is a strictly increasing sequence (Sprint D keyboard-first)')
+  await goto('/')
+  const r = await evaluate(`(() => {
+    const form = document.querySelector('.enter__form');
+    if (!form) return { error: 'no .enter__form' };
+    // Only positive, explicitly-assigned tabindexes participate in the keyboard-first
+    // sequence; -1 (programmatic focus only) and 0 (natural order) are deliberately excluded.
+    const idx = [...form.querySelectorAll('[tabindex]')]
+      .map(el => Number(el.getAttribute('tabindex')))
+      .filter(n => Number.isFinite(n) && n > 0);
+    const dupes = idx.filter((n, i) => idx.indexOf(n) !== i);
+    let ascending = true;
+    for (let i = 1; i < idx.length; i++) if (idx[i] <= idx[i - 1]) ascending = false;
+    const contiguous = idx.length > 0 && idx.every((n, i) => n === i + 1);
+    return { count: idx.length, first: idx[0], last: idx[idx.length - 1], dupes, ascending, contiguous };
+  })()`)
+  if (r.error) { check('Entry form present for tab-order check', r.error, null); return }
+  check('every Entry tabindex is unique', r.dupes, [])
+  check('Entry tabindexes ascend in DOM order', r.ascending, true)
+  check('the sequence starts at callsign (tabindex 1)', r.first, 1)
+  // callsign(1) + Location's 19 DD/DDM/DMS+address fields(2-20) + time-picker date(21) and
+  // time(22) + status(23) + notes(24) + reset(25) + submit(26). Asserting CONTIGUITY rather
+  // than just a count: a gap means a field was removed without renumbering, and a changed
+  // total means one was added without re-planning the sequence. Sprint H adds coordinate
+  // systems here and must renumber deliberately - this is the check that will tell it so.
+  check('Entry tab stops are contiguous 1..N with no gaps', r.contiguous, true)
+  check('Entry exposes the expected number of keyboard stops', r.count, 26)
+}
+
+async function checkEntryAutofocusAndReset() {
+  console.log('\nEntry form: callsign holds focus on load and again after submit (no mouse needed)')
+  await goto('/')
+  const onLoad = await evaluate(`(document.activeElement && document.activeElement.id) || ''`)
+  check('callsign is focused on load', onLoad, 'enter__Callsign-input')
+
+  const submitted = await evaluate(`(async () => {
+    const input = document.getElementById('enter__Callsign-input');
+    const set = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    set.call(input, 'E2E-AA1');
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise(r => setTimeout(r, 600));
+    const btn = document.querySelector('.enter__Submit-button');
+    const wasDisabled = btn.disabled;
+    btn.click();
+    await new Promise(r => setTimeout(r, 1200)); // let resetEntryForm() settle before reading focus
+    return {
+      wasDisabled,
+      focusedAfter: (document.activeElement && document.activeElement.id) || '',
+      callsignCleared: document.getElementById('enter__Callsign-input').value === '',
+    };
+  })()`)
+  check('Submit is enabled for a minimal valid entry', submitted.wasDisabled, false)
+  check('callsign is re-focused after submit+reset', submitted.focusedAfter, 'enter__Callsign-input')
+  check('callsign is cleared for the next report', submitted.callsignCleared, true)
+}
+
+async function checkEntryPhoneWidth() {
+  console.log('\nEntry form fits a phone (regression: .enter__Callsign min-width:350px beat width:35%)')
+  // 390x844 = iPhone 12/13/14 class. mobile:true so the layout viewport behaves like a phone's.
+  await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 3, mobile: true })
+  await goto('/')
+  const r = await evaluate(`(() => {
+    const form = document.querySelector('.enter__form');
+    return {
+      formScroll: form ? Math.ceil(form.scrollWidth) : -1,
+      docScroll: Math.ceil(document.documentElement.scrollWidth),
+      inner: window.innerWidth,
+    };
+  })()`)
+  check('the Entry form does not exceed a phone viewport', r.formScroll <= r.inner, true)
+  check('the page itself does not scroll horizontally on a phone', r.docScroll <= r.inner, true)
+  if (r.formScroll > r.inner || r.docScroll > r.inner) {
+    note(`widths: form ${r.formScroll}px, document ${r.docScroll}px, viewport ${r.inner}px`)
+  }
+  await send('Emulation.clearDeviceMetricsOverride')
+}
+
+async function checkLocationDdDdmDmsSync() {
+  console.log('\nLocation: DD / DDM / DMS stay in sync, including a rapid second edit')
+  await goto('/')
+  // Vashon EOC-ish: 47.4472, -122.4627 -> 47deg 26.832' N / 47deg 26' 49.9" N
+  const settled = await evaluate(`(async () => {
+    const set = (id, v) => {
+      const el = document.getElementById(id);
+      Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, String(v));
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true })); // (change) handlers drive the conversion
+    };
+    set('enter__Where-latI', 47); set('enter__Where-latF', 4472);
+    await new Promise(r => setTimeout(r, 900));
+    const g = id => document.getElementById(id).value;
+    return { ddmDeg: g('enter__Where-latDdmD'), ddmMin: g('enter__Where-latDdmM'), dmsDeg: g('enter__Where-latD') };
+  })()`)
+  check('DDM degrees follow a DD edit', Number(settled.ddmDeg), 47)
+  check('DMS degrees follow a DD edit', Number(settled.dmsDeg), 47)
+  check('DDM minutes are ~26.8 for .4472 degrees', Math.abs(Number(settled.ddmMin) - 26.832) < 0.2, true)
+
+  // The case the old debounce/merge dispatcher used to drop: a second edit landing while the
+  // first is still in flight. linkedSignal should make this a non-event; assert that it does.
+  //
+  // The 60ms gap is deliberate and load-bearing. Firing both edits in the SAME microtask does
+  // fail - the first edit's canonical->linkedSignal recompute writes model-derived values back
+  // to the DOM before Angular's change detection has processed the second, clobbering it. That
+  // is not a reachable user scenario though: no one can touch two fields inside one microtask,
+  // and every real keystroke gets its own task with CD in between. 60ms is realistic fast
+  // tab-and-type, while still far inside the ~300ms debounce window that used to swallow edits
+  // outright - so this tests the real regression class rather than CD scheduling.
+  const rapid = await evaluate(`(async () => {
+    const set = (id, v) => {
+      const el = document.getElementById(id);
+      Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, String(v));
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    set('enter__Where-latI', 45);
+    await new Promise(r => setTimeout(r, 60));   // second edit lands mid-flight, not mid-microtask
+    set('enter__Where-lngI', -120);
+    await new Promise(r => setTimeout(r, 900));
+    const g = id => document.getElementById(id).value;
+    return { latDdm: g('enter__Where-latDdmD'), lngDdm: g('enter__Where-lngDdmD') };
+  })()`)
+  check('a rapid lat edit is not dropped', Number(rapid.latDdm), 45)
+  check('a rapid lng edit is not dropped either', Math.abs(Number(rapid.lngDdm)), 120)
+}
+
 async function checkEntryPhoto() {
   console.log('\nEntry form: the photo that confirms who a report is about (E-38)')
   for (const [callsign, expectDevicePhoto] of [['E2E-AA1', true], ['E2E-BB2', false]]) {
@@ -401,15 +536,21 @@ async function main() {
 
     await checkRoutesRender()
     await checkNavbarLayout()
+    // Read-only: pure DOM/layout reads and in-memory form edits, nothing persisted - so these
+    // are safe against production too, which is where phone-width regressions actually bite.
+    await checkEntryTabOrder()
+    await checkEntryPhoneWidth()
+    await checkLocationDdDdmDmsSync()
 
     if (READ_ONLY) {
-      note('read-only: skipping roster, photo and mission checks')
+      note('read-only: skipping roster, photo, submit and mission checks')
     } else {
       const fx = makeFixtures(path.join(tmp, 'fixtures'))
       await checkRosterLifecycle(fx)
       await checkFieldNameAliases(fx)
       await checkBundleZip(fx)
       await checkEntryPhoto()
+      await checkEntryAutofocusAndReset() // submits a real report, so read-write only
       await checkSettingsFormSave()
       await checkMissionRoundTrip(downloads)
       await goto('/'); await evaluate(`localStorage.clear()`)
