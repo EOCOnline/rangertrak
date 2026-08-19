@@ -9,45 +9,51 @@
 
       <span>
         <input #latI [formField]="ddForm.latI" type="number" (change)="onDdChg()"
-          id="enter__Where-latI" [attr.tabindex]="ti(0)" />
-
-        <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
-          class="text-sm text-danger">lat is required
-          [class.border-danger]="location.get('latD')?.touched && location.get('latD')?.invalid"
-        </span-->
-
+          id="enter__Where-latI" [attr.tabindex]="ti(0)"
+          [class.border-danger]="ddForm.latI().touched() && ddForm.latI().invalid()" />
         <strong>.</strong>
         <input #latF [formField]="ddForm.latF" type="number" (change)="onDdChg()" step="100"
-          id="enter__Where-latF" [attr.tabindex]="ti(1)" />
+          id="enter__Where-latF" [attr.tabindex]="ti(1)"
+          [class.border-danger]="ddForm.latF().touched() && ddForm.latF().invalid()" />
         <strong>° </strong>
       </span>
       <span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
 
       <span>
         <input #latDdmD [formField]="ddmForm.latDdmD" id="enter__Where-latDdmD" type="number"
-          (change)="onDdmChg()" [attr.tabindex]="ti(2)" /><strong>°
+          (change)="onDdmChg()" [attr.tabindex]="ti(2)"
+          [class.border-danger]="ddmForm.latDdmD().touched() && ddmForm.latDdmD().invalid()" /><strong>°
         </strong>
         <input #latDdmM [formField]="ddmForm.latDdmM" id="enter__Where-latDdmM" type="number"
-          (change)="onDdmChg()" [attr.tabindex]="ti(3)" /><strong>'
+          (change)="onDdmChg()" [attr.tabindex]="ti(3)"
+          [class.border-danger]="ddmForm.latDdmM().touched() && ddmForm.latDdmM().invalid()" /><strong>'
         </strong>
         <input #latDdmQ [formField]="ddmForm.latDdmQ" id="enter__Where-latDdmQ" type="text"
-          title="E or W" (change)="onDdmChg()" [attr.tabindex]="ti(4)" />
+          title="N or S" (change)="onDdmChg()" [attr.tabindex]="ti(4)"
+          [class.border-danger]="ddmForm.latDdmQ().touched() && ddmForm.latDdmQ().invalid()" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>&nbsp; or &nbsp;
       </span>
 
 
       <span>
         <input #latD [formField]="dmsForm.latD" id="enter__Where-latD" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(5)" /><strong>° </strong>
+          (change)="onDmsChg()" [attr.tabindex]="ti(5)"
+          [class.border-danger]="dmsForm.latD().touched() && dmsForm.latD().invalid()" /><strong>° </strong>
         <input #latM [formField]="dmsForm.latM" id="enter__Where-latM" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(6)" /><strong>' </strong>
+          (change)="onDmsChg()" [attr.tabindex]="ti(6)"
+          [class.border-danger]="dmsForm.latM().touched() && dmsForm.latM().invalid()" /><strong>' </strong>
         <input #latS [formField]="dmsForm.latS" id="enter__Where-latS" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(7)" /><strong>"
+          (change)="onDmsChg()" [attr.tabindex]="ti(7)"
+          [class.border-danger]="dmsForm.latS().touched() && dmsForm.latS().invalid()" /><strong>"
         </strong>
-        <input #latQ [formField]="dmsForm.latQ" id="enter__Where-latQ" type="text" title="E or W"
-          (change)="onDmsChg()" [attr.tabindex]="ti(8)" />
+        <input #latQ [formField]="dmsForm.latQ" id="enter__Where-latQ" type="text" title="N or S"
+          (change)="onDmsChg()" [attr.tabindex]="ti(8)"
+          [class.border-danger]="dmsForm.latQ().touched() && dmsForm.latQ().invalid()" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
       </span>
+      @if (latInvalid()) {
+      <div class="text-sm text-danger">Latitude must be -90 to 90&deg;, minutes/seconds in range, direction N or S.</div>
+      }
     </div>
 
 
@@ -58,37 +64,49 @@
 
       <span>
         <input #lngI [formField]="ddForm.lngI" type="number" id="enter__Where-lngI"
-          (change)="onDdChg()" [attr.tabindex]="ti(9)" /><strong>.</strong>
+          (change)="onDdChg()" [attr.tabindex]="ti(9)"
+          [class.border-danger]="ddForm.lngI().touched() && ddForm.lngI().invalid()" /><strong>.</strong>
         <input #lngF [formField]="ddForm.lngF" type="number" step="100" id="enter__Where-lngF"
-          (change)="onDdChg()" [attr.tabindex]="ti(10)" />
+          (change)="onDdChg()" [attr.tabindex]="ti(10)"
+          [class.border-danger]="ddForm.lngF().touched() && ddForm.lngF().invalid()" />
         <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
       </span>
 
 
       <span>
         <input #lngDdmD [formField]="ddmForm.lngDdmD" id="enter__Where-lngDdmD" type="number"
-          (change)="onDdmChg()" [attr.tabindex]="ti(11)" /><strong>°
+          (change)="onDdmChg()" [attr.tabindex]="ti(11)"
+          [class.border-danger]="ddmForm.lngDdmD().touched() && ddmForm.lngDdmD().invalid()" /><strong>°
         </strong>
         <input #lngDdmM [formField]="ddmForm.lngDdmM" id="enter__Where-lngDdmM" type="number"
-          (change)="onDdmChg()" [attr.tabindex]="ti(12)" /><strong>'
+          (change)="onDdmChg()" [attr.tabindex]="ti(12)"
+          [class.border-danger]="ddmForm.lngDdmM().touched() && ddmForm.lngDdmM().invalid()" /><strong>'
         </strong>
         <input #lngDdmQ [formField]="ddmForm.lngDdmQ" id="enter__Where-lngDdmQ" type="text"
-          title="N or S" (change)="onDdmChg()" [attr.tabindex]="ti(13)" />
+          title="E or W" (change)="onDdmChg()" [attr.tabindex]="ti(13)"
+          [class.border-danger]="ddmForm.lngDdmQ().touched() && ddmForm.lngDdmQ().invalid()" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>&nbsp; or &nbsp;
       </span>
 
 
       <span>
         <input [formField]="dmsForm.lngD" id="enter__Where-lngD" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(14)" /><strong>° </strong>
+          (change)="onDmsChg()" [attr.tabindex]="ti(14)"
+          [class.border-danger]="dmsForm.lngD().touched() && dmsForm.lngD().invalid()" /><strong>° </strong>
         <input [formField]="dmsForm.lngM" id="enter__Where-lngM" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(15)" /><strong>' </strong>
+          (change)="onDmsChg()" [attr.tabindex]="ti(15)"
+          [class.border-danger]="dmsForm.lngM().touched() && dmsForm.lngM().invalid()" /><strong>' </strong>
         <input [formField]="dmsForm.lngS" id="enter__Where-lngS" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(16)" /><strong>" </strong>
-        <input [formField]="dmsForm.lngQ" id="enter__Where-lngQ" type="text" title="N or S"
-          (change)="onDmsChg()" [attr.tabindex]="ti(17)" />
+          (change)="onDmsChg()" [attr.tabindex]="ti(16)"
+          [class.border-danger]="dmsForm.lngS().touched() && dmsForm.lngS().invalid()" /><strong>" </strong>
+        <input [formField]="dmsForm.lngQ" id="enter__Where-lngQ" type="text" title="E or W"
+          (change)="onDmsChg()" [attr.tabindex]="ti(17)"
+          [class.border-danger]="dmsForm.lngQ().touched() && dmsForm.lngQ().invalid()" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
       </span>
+      @if (lngInvalid()) {
+      <div class="text-sm text-danger">Longitude must be -180 to 180&deg;, minutes/seconds in range, direction E or W.</div>
+      }
     </div>
 
 

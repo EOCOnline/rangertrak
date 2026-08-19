@@ -14,7 +14,12 @@
     <div class="input-group">
       <span class="strong">Default Zoom: </span>
 
-      <input [formField]="form.leaflet.defZoom" placeholder="15" type="number" [style.width.px]="50" />
+      <input
+        [class.border-danger]="form.leaflet.defZoom().touched() && form.leaflet.defZoom().invalid()"
+        [formField]="form.leaflet.defZoom" placeholder="15" type="number" [style.width.px]="50" />
+      @if (form.leaflet.defZoom().touched() && form.leaflet.defZoom().invalid()) {
+      <div class="text-sm text-danger">must be between 1 and 22</div>
+      }
     </div>
 
     <!-- markerScheme - unused for now -->
@@ -26,7 +31,7 @@
         type="number" [style.width.px]="50" [formField]="form.leaflet.overviewDifference" placeholder="5" />
       @if (form.leaflet.overviewDifference().touched() && form.leaflet.overviewDifference().invalid()) {
       <div class="text-sm text-danger">
-        overviewDifference is required
+        must be between 1 and 10
       </div>
       }
     </div>
@@ -38,7 +43,7 @@
         type="number" [formField]="form.leaflet.overviewMinZoom" placeholder="5" />
       @if (form.leaflet.overviewMinZoom().touched() && form.leaflet.overviewMinZoom().invalid()) {
       <div class="text-sm text-danger">
-        overviewMinZoom is required
+        must be between 1 and 10
       </div>
       }
     </div>
@@ -50,7 +55,7 @@
         type="number" [style.width.px]="50" [formField]="form.leaflet.overviewMaxZoom" placeholder="21" />
       @if (form.leaflet.overviewMaxZoom().touched() && form.leaflet.overviewMaxZoom().invalid()) {
       <div class="text-sm text-danger">
-        overviewMaxZoom is required
+        must be between 3 and 22
       </div>
       }
     </div>
@@ -79,7 +84,7 @@
         type="number" [style.width.px]="50" [formField]="form.google.defZoom" placeholder="15" />
       @if (form.google.defZoom().touched() && form.google.defZoom().invalid()) {
       <div class="text-sm text-danger">
-        zoom is required
+        must be between 3 and 22
       </div>
       }
     </div>
@@ -93,7 +98,7 @@
         type="number" [style.width.px]="50" [formField]="form.google.overviewDifference" placeholder="5" />
       @if (form.google.overviewDifference().touched() && form.google.overviewDifference().invalid()) {
       <div class="text-sm text-danger">
-        overviewDifference is required
+        must be between 1 and 10
       </div>
       }
     </div>
@@ -105,7 +110,7 @@
         type="number" [style.width.px]="50" [formField]="form.google.overviewMinZoom" placeholder="5" />
       @if (form.google.overviewMinZoom().touched() && form.google.overviewMinZoom().invalid()) {
       <div class="text-sm text-danger">
-        overviewMinZoom is required
+        must be between 1 and 10
       </div>
       }
     </div>
@@ -117,7 +122,7 @@
         type="number" [style.width.px]="50" [formField]="form.google.overviewMaxZoom" placeholder="21" />
       @if (form.google.overviewMaxZoom().touched() && form.google.overviewMaxZoom().invalid()) {
       <div class="text-sm text-danger">
-        overviewMaxZoom is required
+        must be between 3 and 22
       </div>
       }
     </div>

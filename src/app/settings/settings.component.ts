@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs'
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { form, FormField, required } from '@angular/forms/signals'
+import { form, FormField, max, min, required } from '@angular/forms/signals'
 
 import { PageComponent } from '../shared/page/page.component'
 import {
@@ -78,9 +78,22 @@ export class SettingsComponent implements OnInit, OnDestroy {
   // unvalidated (some sections' *.hasError('required') template checks were already dead
   // code against fields with no such validator - preserved as-is, not fixed here).
   private settingsModel = signal<SettingsType>(blankSettings)
+  // min/max restored here (Sprint E step 5, 2026-08-19) after being stripped as static HTML
+  // attributes to fix NG8022 - Signal Forms owns them from schema, not the template. Values
+  // are exactly what the old Reactive Forms template attributes were.
   public settingsForm = form(this.settingsModel, (path) => {
-    required(path.defLat)
-    required(path.defLng)
+    required(path.defLat); min(path.defLat, -89.99); max(path.defLat, 89.99)
+    required(path.defLng); min(path.defLng, -179.99); max(path.defLng, 179.99)
+
+    min(path.leaflet.defZoom, 1); max(path.leaflet.defZoom, 22)
+    min(path.leaflet.overviewDifference, 1); max(path.leaflet.overviewDifference, 10)
+    min(path.leaflet.overviewMinZoom, 1); max(path.leaflet.overviewMinZoom, 10)
+    min(path.leaflet.overviewMaxZoom, 3); max(path.leaflet.overviewMaxZoom, 22)
+
+    min(path.google.defZoom, 3); max(path.google.defZoom, 22)
+    min(path.google.overviewDifference, 1); max(path.google.overviewDifference, 10)
+    min(path.google.overviewMinZoom, 1); max(path.google.overviewMinZoom, 10)
+    min(path.google.overviewMaxZoom, 3); max(path.google.overviewMaxZoom, 22)
   })
 
   opPeriodStart = new Date()

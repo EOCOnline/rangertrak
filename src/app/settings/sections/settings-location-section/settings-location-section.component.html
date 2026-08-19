@@ -27,7 +27,7 @@
       data-lpignore="true" />
     @if (form.defLat().touched() && form.defLat().invalid()) {
     <div class="text-sm text-danger">
-      latitude is required
+      latitude is required, and must be between -89.99&deg; and 89.99&deg;
     </div>
     }
   </div>
@@ -40,7 +40,7 @@
       placeholder="{{settings!.defLng.toFixed(4)}}" [style.width.px]="75" data-lpignore="true" />
     @if (form.defLng().touched() && form.defLng().invalid()) {
     <div class="text-sm text-danger">
-      longitude is required
+      longitude is required, and must be between -179.99&deg; and 179.99&deg;
     </div>
     }
   </div>

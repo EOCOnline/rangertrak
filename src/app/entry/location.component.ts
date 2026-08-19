@@ -5,7 +5,7 @@ import {
   AfterViewInit, Component, EventEmitter, Inject, Input, linkedSignal, OnChanges, OnDestroy,
   OnInit, Output, signal, SimpleChanges, ChangeDetectionStrategy
 } from '@angular/core'
-import { form, FormField } from '@angular/forms/signals'
+import { form, FormField, max, min, pattern } from '@angular/forms/signals'
 
 // https://floating-ui.com superceeds popper.js; https://lokesh-coder.github.io/toppy may be simpler!
 //import { computePosition } from '@floating-ui/dom'
@@ -89,7 +89,17 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       lngF: Math.abs(Math.round((lng - lngI) * 10000)),
     }
   })
-  ddForm = form(this.ddModel)
+  // Sprint E, step 5 (2026-08-19): min/max were static HTML attributes stripped to fix
+  // NG8022 ([formField] cannot coexist with them - Signal Forms owns them from schema). This
+  // schema restores them as real validators AND fixes two bugs found while restoring it:
+  // latI's range was -180..180 (longitude's range, copy-pasted onto latitude) rather than
+  // the correct -90..90.
+  ddForm = form(this.ddModel, (p) => {
+    min(p.latI, -90); max(p.latI, 90)
+    min(p.latF, 0); max(p.latF, 99999)
+    min(p.lngI, -180); max(p.lngI, 180)
+    min(p.lngF, 0); max(p.lngF, 99999)
+  })
 
   // Coordinates as Degrees & Decimal Minutes (DDM)
   ddmModel = linkedSignal(() => {
@@ -105,7 +115,21 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       lngDdmQ: lngDDM.dir, lngDdmD: lngDDM.deg, lngDdmM: lngDDM.min / 100,
     }
   })
-  ddmForm = form(this.ddmModel)
+  // Same restoration, plus the same latitude-range-onto-longitude bug for the degrees
+  // component (lngDdmD was capped at 90, not 180), AND a separate, longstanding one: the
+  // direction-letter pattern (and the template's title=) were SWAPPED between lat and lng -
+  // latDdmQ validated/labelled E-or-W, lngDdmQ validated/labelled N-or-S. DDMToDD()'s parser
+  // only checks for a literal 'w' or 's' to negate, so it silently accepted whichever letter
+  // arrived regardless of which field it came from - the math was never wrong, only the
+  // on-screen hint telling the user which letters were valid where.
+  ddmForm = form(this.ddmModel, (p) => {
+    min(p.latDdmD, 0); max(p.latDdmD, 90)
+    min(p.latDdmM, 0); max(p.latDdmM, 59)
+    pattern(p.latDdmQ, /^[NnSs]$/)
+    min(p.lngDdmD, 0); max(p.lngDdmD, 180)
+    min(p.lngDdmM, 0); max(p.lngDdmM, 59)
+    pattern(p.lngDdmQ, /^[EeWw]$/)
+  })
 
   // Coordinates as Degrees, Minutes & Seconds (DMS)
   dmsModel = linkedSignal(() => {
@@ -118,10 +142,50 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       lngQ: lngDMS.dir, lngD: lngDMS.deg, lngM: lngDMS.min, lngS: lngDMS.sec,
     }
   })
-  dmsForm = form(this.dmsModel)
+  // Same two fixes as ddmForm above, applied to the DMS representation.
+  dmsForm = form(this.dmsModel, (p) => {
+    min(p.latD, 0); max(p.latD, 90)
+    min(p.latM, 0); max(p.latM, 59)
+    min(p.latS, 0); max(p.latS, 59.99)
+    pattern(p.latQ, /^[NnSs]$/)
+    min(p.lngD, 0); max(p.lngD, 180)
+    min(p.lngM, 0); max(p.lngM, 59)
+    min(p.lngS, 0); max(p.lngS, 59.99)
+    pattern(p.lngQ, /^[EeWw]$/)
+  })
 
   addressModel = signal('')
   addressForm = form(this.addressModel)
+
+  /**
+   * One summary error line per coordinate, rather than nine - three representations (DD/
+   * DDM/DMS) times three-ish fields each would otherwise need nine separate messages
+   * crammed into an already-dense row. `touched()` gates each check so nothing shows before
+   * the user has actually reached that field.
+   */
+  latInvalid(): boolean {
+    return (this.ddForm.latI().touched() && this.ddForm.latI().invalid())
+      || (this.ddForm.latF().touched() && this.ddForm.latF().invalid())
+      || (this.ddmForm.latDdmD().touched() && this.ddmForm.latDdmD().invalid())
+      || (this.ddmForm.latDdmM().touched() && this.ddmForm.latDdmM().invalid())
+      || (this.ddmForm.latDdmQ().touched() && this.ddmForm.latDdmQ().invalid())
+      || (this.dmsForm.latD().touched() && this.dmsForm.latD().invalid())
+      || (this.dmsForm.latM().touched() && this.dmsForm.latM().invalid())
+      || (this.dmsForm.latS().touched() && this.dmsForm.latS().invalid())
+      || (this.dmsForm.latQ().touched() && this.dmsForm.latQ().invalid())
+  }
+
+  lngInvalid(): boolean {
+    return (this.ddForm.lngI().touched() && this.ddForm.lngI().invalid())
+      || (this.ddForm.lngF().touched() && this.ddForm.lngF().invalid())
+      || (this.ddmForm.lngDdmD().touched() && this.ddmForm.lngDdmD().invalid())
+      || (this.ddmForm.lngDdmM().touched() && this.ddmForm.lngDdmM().invalid())
+      || (this.ddmForm.lngDdmQ().touched() && this.ddmForm.lngDdmQ().invalid())
+      || (this.dmsForm.lngD().touched() && this.dmsForm.lngD().invalid())
+      || (this.dmsForm.lngM().touched() && this.dmsForm.lngM().invalid())
+      || (this.dmsForm.lngS().touched() && this.dmsForm.lngS().invalid())
+      || (this.dmsForm.lngQ().touched() && this.dmsForm.lngQ().invalid())
+  }
 
   //!w3w = new What3Words()
 
