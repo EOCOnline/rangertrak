@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.13](https://github.com/EOCOnline/rangertrak/compare/v0.15.12...v0.15.13) (2026-08-19)
+
+
+### Features
+
+* **sprint-g:** convert remaining callback-mutated fields to signals ([5f7a496](https://github.com/EOCOnline/rangertrak/commit/5f7a496742b62fdbbec7e9acdbc31406bb2a9bb0))
+
 ### [0.15.12](https://github.com/EOCOnline/rangertrak/compare/v0.15.11...v0.15.12) (2026-08-19)
 
 
