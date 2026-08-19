@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.9](https://github.com/EOCOnline/rangertrak/compare/v0.15.8...v0.15.9) (2026-08-19)
+
+
+### Features
+
+* **settings:** migrate status colours to accessible semantic keys ([1aaa8ec](https://github.com/EOCOnline/rangertrak/commit/1aaa8ec3fac513a163030432a93e3f6f3bf4be1a))
+
+
+### Bug Fixes
+
+* **entry:** callsign was never actually saved to the report (BUG-1) ([fb1cdb3](https://github.com/EOCOnline/rangertrak/commit/fb1cdb3d4bf0d688b7491407eda8d7ba15255328))
+* **entry:** guard the derived-location DOM writes against a destroyed view ([a84fa4a](https://github.com/EOCOnline/rangertrak/commit/a84fa4a485c19a75aa280e35307e2ee7001ee370))
+* **services:** five components ran their own private singleton (BUG-2) ([3964a4d](https://github.com/EOCOnline/rangertrak/commit/3964a4d958fdb215731388200bb2724655a456d2))
+* **settings:** backfill fields added after a settings object was saved (BUG-3) ([4e30ff5](https://github.com/EOCOnline/rangertrak/commit/4e30ff59ad44de5bc48249d45e77e1cc29854452))
+
 ### [0.15.8](https://github.com/EOCOnline/rangertrak/compare/v0.15.7...v0.15.8) (2026-08-19)
 
 
