@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.11](https://github.com/EOCOnline/rangertrak/compare/v0.15.10...v0.15.11) (2026-08-19)
+
+
+### Features
+
+* **sprint-e:** accessibility sweep, evidence-based via Lighthouse (step 6) ([72378b2](https://github.com/EOCOnline/rangertrak/commit/72378b259867f26c7188a3372aecd0e253b31023)), closes [#e1e8](https://github.com/EOCOnline/rangertrak/issues/e1e8)
+
 ### [0.15.10](https://github.com/EOCOnline/rangertrak/compare/v0.15.9...v0.15.10) (2026-08-19)
 
 
