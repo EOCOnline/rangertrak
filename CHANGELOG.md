@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.10](https://github.com/EOCOnline/rangertrak/compare/v0.15.9...v0.15.10) (2026-08-19)
+
+
+### Features
+
+* **sprint-e:** restore min/max/pattern as Signal Forms schema validators (step 5) ([4faa7f6](https://github.com/EOCOnline/rangertrak/commit/4faa7f6355c666fcd79bd6a9412972fb8a1bcb60))
+
 ### [0.15.9](https://github.com/EOCOnline/rangertrak/compare/v0.15.8...v0.15.9) (2026-08-19)
 
 
