@@ -100,6 +100,51 @@ describe('migrateSettings', () => {
     const out = migrateSettings(broken)
     expect(out.fieldReportStatuses).toEqual([...DEFAULT_FIELD_REPORT_STATUSES])
   })
+
+  // BUG-3 (2026-08-19): settings saved before googleGeocodingApiKey existed had no such key,
+  // and [formField]="form.googleGeocodingApiKey" cannot build a field for a model property
+  // that is absent - it threw on every change-detection pass. This backfill is the fix.
+  describe('backfilling fields added after a settings object was saved (BUG-3)', () => {
+    function defaults(): SettingsType {
+      return { ...v0Settings(), googleGeocodingApiKey: 'DEFAULT-KEY', w3wLocale: 'Default Locale' }
+    }
+
+    it('adds a top-level key the stored object never had, from the supplied defaults', () => {
+      const stored = v0Settings() as unknown as Record<string, unknown>
+      delete stored['googleGeocodingApiKey']
+      const out = migrateSettings(stored as unknown as SettingsType, defaults())
+      expect(out.googleGeocodingApiKey).toBe('DEFAULT-KEY')
+    })
+
+    it('does not overwrite a value the stored object already has, even an empty string', () => {
+      const stored = { ...v0Settings(), googleGeocodingApiKey: 'USERS-OWN-KEY' }
+      const out = migrateSettings(stored, defaults())
+      expect(out.googleGeocodingApiKey).toBe('USERS-OWN-KEY')
+
+      const emptyOnPurpose = { ...v0Settings(), w3wLocale: '' }
+      const out2 = migrateSettings(emptyOnPurpose, defaults())
+      expect(out2.w3wLocale).toBe('') // '' is a real, deliberate value - not "missing"
+    })
+
+    it('backfills one level into nested objects like leaflet/google', () => {
+      const stored = v0Settings() as unknown as Record<string, unknown>
+      delete (stored['leaflet'] as Record<string, unknown>)['markerScheme']
+      const withDefaults = defaults()
+      ;(withDefaults as unknown as Record<string, unknown>)['leaflet'] =
+        { ...withDefaults.leaflet, markerScheme: 'default-scheme' }
+
+      const out = migrateSettings(stored as unknown as SettingsType, withDefaults)
+      expect(out.leaflet.markerScheme).toBe('default-scheme')
+      expect(out.leaflet.defZoom).toBe(17) // the user's existing sibling value is untouched
+    })
+
+    it('does nothing when no defaults are supplied - callers must opt in deliberately', () => {
+      const stored = v0Settings() as unknown as Record<string, unknown>
+      delete stored['googleGeocodingApiKey']
+      const out = migrateSettings(stored as unknown as SettingsType)
+      expect('googleGeocodingApiKey' in out).toBe(false)
+    })
+  })
 })
 
 describe('status colours', () => {

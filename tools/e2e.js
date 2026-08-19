@@ -118,11 +118,10 @@ const results = []
  * that is announced loudly - it means the fix landed and the entry should be deleted from
  * here. See the Sprint E plan's "Known-open production bugs" section for diagnoses.
  */
-const KNOWN_OPEN = new Set([
-  'the saved report carries the callsign that was entered',
-  'the Reports grid shows the reports that were just entered',
-  'the Settings page throws nothing for a returning user',
-])
+// All three 2026-08-19 production bugs are fixed as of this commit - see the Sprint E plan's
+// "Known-open production bugs" section for the (now-historical) diagnoses. Empty rather than
+// deleted: the mechanism stays ready for whatever's found next.
+const KNOWN_OPEN = new Set([])
 
 function check(label, actual, expected) {
   const pass = JSON.stringify(actual) === JSON.stringify(expected)
@@ -606,7 +605,10 @@ async function checkStatusColorMigration() {
       defaultStatus: s.fieldReportStatuses[s.defFieldReportStatus].status,
     };
   })()`)
-  check('a v0 settings object is stamped with the current schema version', migrated.schemaVersion, 1)
+  // Not pinned to a literal: SETTINGS_SCHEMA_VERSION moves as migration steps are added
+  // (it went 1 -> 2 for BUG-3, 2026-08-19), and this check has no way to import the TS
+  // constant from a page evaluate() string. The real assertion is just "some migration ran".
+  check('a v0 settings object is stamped with a schema version', migrated.schemaVersion >= 1, true)
   check('legacy default colours become semantic keys', migrated.colors.slice(0, 6),
     ['normal', 'location-report', 'evidence-report', 'need-rest-food', 'incident-check-in', 'incident-check-out'])
   check('a user-customised colour survives migration', migrated.colors[6], '#FF00FF')
@@ -637,7 +639,11 @@ async function checkEntryPhoto() {
   for (const [callsign, expectDevicePhoto] of [['E2E-AA1', true], ['E2E-BB2', false]]) {
     await goto('/')
     const r = await evaluate(`(async () => {
-      const input = document.querySelector('input[formcontrolname="callsign"]') || document.querySelector('input');
+      // #enter__Callsign-input is a stable id in the template; formcontrolname="callsign" was
+      // REMOVED from this element as part of the BUG-1 fix (2026-08-19, callsignCtrl became
+      // the single source of truth) and the old selector's querySelector('input') fallback
+      // was silently grabbing the wrong element - first <input> in DOM order, not callsign.
+      const input = document.getElementById('enter__Callsign-input');
       if (!input) return { error: 'no callsign input' };
       const set = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
       set.call(input, ${JSON.stringify(callsign)});

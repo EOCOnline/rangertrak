@@ -102,7 +102,7 @@ export class BackupService {
     // disaster path, and a mission file may sit on a thumb drive for months), and this call
     // bypasses settings.service.ts's load path entirely - so without this the import would
     // reinstate a pre-migration shape over freshly-migrated settings. See settings-migration.ts.
-    this.settingsService.updateSettings(migrateSettings(payload.settings))
+    this.settingsService.updateSettings(migrateSettings(payload.settings, this.settingsService.initSettings()))
     this.rangerService.replaceAllRangers(payload.rangers)
     this.fieldReportService.replaceAllFieldReports(payload.fieldReports)
 

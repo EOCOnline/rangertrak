@@ -22,8 +22,9 @@ import { StatusKey } from './status-color'
  * convention.
  *
  * 1 - status colours become semantic keys rather than raw CSS colour strings.
+ * 2 - backfill any field SettingsType declares that the stored object lacks (BUG-3).
  */
-export const SETTINGS_SCHEMA_VERSION = 1
+export const SETTINGS_SCHEMA_VERSION = 2
 
 /**
  * The status colours as shipped before v1, paired with the semantic key each becomes.
@@ -64,7 +65,7 @@ export const DEFAULT_FIELD_REPORT_STATUSES: ReadonlyArray<FieldReportStatusType>
  * older build against newer data, and silently "downgrading" their settings would lose
  * information.
  */
-export function migrateSettings(raw: SettingsType): SettingsType {
+export function migrateSettings(raw: SettingsType, defaults?: SettingsType): SettingsType {
   const incoming = (raw ?? {}) as SettingsType & { schemaVersion?: unknown }
   const version = typeof incoming.schemaVersion === 'number' ? incoming.schemaVersion : 0
 
@@ -80,7 +81,56 @@ export function migrateSettings(raw: SettingsType): SettingsType {
     settings = { ...settings, fieldReportStatuses: toSemanticStatusColors(settings.fieldReportStatuses) }
   }
 
+  if (version < 2) {
+    settings = backfillMissingFields(settings, defaults)
+  }
+
   return { ...settings, schemaVersion: SETTINGS_SCHEMA_VERSION }
+}
+
+/**
+ * v1 -> v2. Adds any top-level key `SettingsType` has that this stored object does not.
+ *
+ * Why this exists (BUG-3, 2026-08-19): settings saved before `googleGeocodingApiKey` was
+ * introduced simply have no such property. `settings-maps-section` binds
+ * `[formField]="form.googleGeocodingApiKey"`, and Signal Forms cannot build a field for a
+ * property absent from the model - it threw `this.field(...) is not a function` on every
+ * change-detection pass, making the whole Settings page unusable for returning users while a
+ * fresh install was perfectly fine.
+ *
+ * Deliberately GENERAL rather than special-casing that one key: every setting added from now
+ * on has exactly the same failure mode, and a targeted patch would only postpone the next
+ * occurrence. Nested objects (`google`, `leaflet`) are filled one level deep for the same
+ * reason.
+ *
+ * Only ever ADDS. An existing value - including a falsy one like `false` or `''` - is the
+ * user's and is never overwritten.
+ */
+function backfillMissingFields(settings: SettingsType, defaults?: SettingsType): SettingsType {
+  if (!defaults) return settings
+
+  const out = { ...settings } as Record<string, unknown>
+  const src = defaults as unknown as Record<string, unknown>
+
+  for (const key of Object.keys(src)) {
+    if (!(key in out) || out[key] === undefined || out[key] === null) {
+      out[key] = src[key]
+      continue
+    }
+    // One level of nesting covers `google` and `leaflet`, whose sub-keys can go missing the
+    // same way the top-level ones do.
+    const defaultValue = src[key]
+    const currentValue = out[key]
+    if (isPlainObject(defaultValue) && isPlainObject(currentValue)) {
+      out[key] = { ...defaultValue, ...currentValue }
+    }
+  }
+
+  return out as unknown as SettingsType
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value) && !(value instanceof Date)
 }
 
 /**
