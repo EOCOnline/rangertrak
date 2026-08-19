@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.12](https://github.com/EOCOnline/rangertrak/compare/v0.15.11...v0.15.12) (2026-08-19)
+
+
+### Features
+
+* **sprint-f:** re-theme AG Grid onto the v35 Theming API, phone card carve-out for Field Reports ([972b48d](https://github.com/EOCOnline/rangertrak/commit/972b48de010a8c44656a533ce19d88b9c2a84a37))
+
 ### [0.15.11](https://github.com/EOCOnline/rangertrak/compare/v0.15.10...v0.15.11) (2026-08-19)
 
 
