@@ -70,4 +70,29 @@
     </div>
     }
   </div>
+
+  <!-- Sprint H: which coordinate systems Entry's Location widget shows. All default
+       on; a mission that only cares about one or two formats can hide the rest here.
+       Entry also has its own session-only "Show all systems" override. -->
+  <div class="input-group">
+    <span class="strong">Coordinate systems shown on Entry: </span>
+    <label class="option">
+      <input type="checkbox" [formField]="form.showDD" /> Decimal Degrees
+    </label>
+    <label class="option">
+      <input type="checkbox" [formField]="form.showDDM" /> Degrees Decimal Minutes
+    </label>
+    <label class="option">
+      <input type="checkbox" [formField]="form.showDMS" /> Degrees Minutes Seconds
+    </label>
+    <label class="option">
+      <input type="checkbox" [formField]="form.showMGRS" /> MGRS
+    </label>
+    <label class="option">
+      <input type="checkbox" [formField]="form.showUTM" /> UTM
+    </label>
+    <label class="option">
+      <input type="checkbox" [formField]="form.showMaidenhead" /> Maidenhead grid locator
+    </label>
+  </div>
 </div>

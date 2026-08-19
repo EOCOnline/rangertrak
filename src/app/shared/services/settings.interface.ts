@@ -30,6 +30,17 @@ export type SettingsType = {
   w3wLocale: string,
   allowManualPinDrops: boolean,
 
+  // Per-mission coordinate system visibility (Sprint H). Each independently gates a
+  // block in location.component.html; Entry's own "Show all systems" checkbox
+  // overrides all six for the current session without changing this setting. All
+  // default true - hiding a system is something a mission opts into.
+  showDD: boolean,
+  showDDM: boolean,
+  showDMS: boolean,
+  showMGRS: boolean,
+  showUTM: boolean,
+  showMaidenhead: boolean,
+
   // User-supplied Google Geocoding API key (optional). Activates GoogleGeocoder as the
   // GeocodingProvider instead of the default, no-key Nominatim. Lives only in this
   // user's localStorage - never in secrets.json, never bundled. Empty string = disabled.

@@ -37,6 +37,14 @@
       the Field Guide for how to prepare a device before a mission.
     </p>
 
+    <p>
+      Supported coordinate formats: Decimal Degrees, Degrees/Decimal Minutes, Degrees
+      Minutes Seconds, MGRS (the US military/FEMA grid standard), UTM, and Maidenhead grid
+      locators (typed into the address field alongside Plus Codes and street addresses). All
+      formats assume WGS84/modern GPS &mdash; a position read off an older paper topo quad
+      may use the NAD27 datum instead, which can be 100&ndash;200m off in the western US.
+    </p>
+
     <p>An overview of using location codes (instead of lat/long) can be found at:<br>
       <a href="https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems"
         target="_blank">https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems</a>
@@ -57,7 +65,7 @@
           <li>Leaflet maps with marker clustering, overview map, and offline tile caching</li>
           <li>MapLibre GL + PMTiles: a vector map with basemap data bundled into the app, for true offline use</li>
           <li>Geocoding via OpenStreetMap's Nominatim &mdash; no API key required</li>
-          <li>Plus Codes and lat/long conversion (Decimal Degrees, DMS, DDM), all computed on-device</li>
+          <li>Plus Codes and lat/long conversion (Decimal Degrees, DMS, DDM, MGRS, UTM, Maidenhead), all computed on-device</li>
           <li>AG Grid tables with searching, sorting, filtering and export</li>
           <li>Custom Angular components, such as the colour & time pickers and the location widget</li>
           <li>Reactive Angular Forms</li>

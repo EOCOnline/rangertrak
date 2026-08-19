@@ -3,6 +3,11 @@
 
 import { UpperCasePipe } from '@angular/common'
 
+// Sprint H: MGRS/UTM/Maidenhead - the coordinate systems SAR, wildland fire, and the
+// National Guard actually use over voice radio. See PRIVATE-Roadmap.md Sprint H.
+import { forward as mgrsForward, toPoint as mgrsToPoint } from 'mgrs'
+import { fromLatLon as utmFromLatLon, toLatLon as utmToLatLon } from 'utm'
+
 // REVIEW: Much of this is overlap with:
 // https://developers.google.com/maps/documentation/javascript/coordinates
 // https://developers.google.com/maps/documentation/javascript/reference/coordinates
@@ -154,6 +159,144 @@ export function DDMToDD(Q: string, D: number, M: number) {
   // console.info(`DDMToDD got:  ${D}° ${M} ' ${Q}`)
   return (((Q.toLowerCase() == 'w' || Q.toLowerCase() == 's') ? -1 : 1) * (D
     + Math.round((M / 60) * 10 ** 4) / 10 ** 4)) // float portion to 4 decimals
+}
+
+/**
+ * Convert Decimal Degrees to MGRS, split for entry as three fields (Grid Reference,
+ * Easting, Northing) rather than one opaque string - matches how MGRS is actually
+ * read aloud over radio (zone/square as one chunk, then two digit groups), and keeps
+ * the same "split by component" convention DD/DDM/DMS already use.
+ *
+ * accuracy=5 (1m precision) gives a 5-digit easting and 5-digit northing - the `mgrs`
+ * package concatenates zone+band+100km-square+easting+northing into one string with
+ * no separators, so gridRef is "everything except the last 10 digits".
+ *
+ * @param lat
+ * @param lng
+ */
+export function DDToMGRS(lat: number, lng: number): { gridRef: string; easting: number; northing: number } {
+  const full = mgrsForward([lng, lat], 5)
+  const digits = 10 // 5-digit easting + 5-digit northing at accuracy 5
+  return {
+    gridRef: full.slice(0, full.length - digits),
+    easting: Number(full.slice(full.length - digits, full.length - digits / 2)),
+    northing: Number(full.slice(full.length - digits / 2)),
+  }
+}
+
+/**
+ * Convert MGRS (as the three split fields above) back to Decimal Degrees.
+ * Returns null for a gridRef/easting/northing combination the `mgrs` package rejects.
+ */
+export function MGRSToDD(gridRef: string, easting: number, northing: number): { lat: number; lng: number } | null {
+  try {
+    const eastingStr = String(Math.trunc(easting)).padStart(5, '0')
+    const northingStr = String(Math.trunc(northing)).padStart(5, '0')
+    const [lng, lat] = mgrsToPoint(`${gridRef}${eastingStr}${northingStr}`)
+    return { lat, lng }
+  } catch {
+    return null // invalid grid reference - let the caller's validation handle it
+  }
+}
+
+/**
+ * Convert Decimal Degrees to UTM, split as Zone/Hemisphere/Easting/Northing.
+ *
+ * Hemisphere is a plain N/S letter - the same idiom the DDM/DMS lat-direction fields
+ * already use - rather than the `utm` package's own latitude-BAND letter (e.g. 'T'),
+ * which would force users to learn a second letter system just to enter a position.
+ * Computed directly from the sign of `lat`, not from the package's own zoneLetter.
+ *
+ * @param lat
+ * @param lng
+ */
+export function DDToUTM(lat: number, lng: number): { zone: number; hemisphere: string; easting: number; northing: number } {
+  const { easting, northing, zoneNum } = utmFromLatLon(lat, lng)
+  return {
+    zone: zoneNum,
+    hemisphere: lat >= 0 ? 'N' : 'S',
+    easting: Math.round(easting),
+    northing: Math.round(northing),
+  }
+}
+
+/**
+ * Convert UTM (Zone/Hemisphere/Easting/Northing) back to Decimal Degrees.
+ * Returns null for values the `utm` package rejects (e.g. easting/northing out of
+ * range for the given zone).
+ */
+export function UTMToDD(zone: number, hemisphere: string, easting: number, northing: number): { lat: number; lng: number } | null {
+  try {
+    const { latitude, longitude } = utmToLatLon(easting, northing, zone, undefined, hemisphere.toUpperCase() === 'N')
+    return { lat: latitude, lng: longitude }
+  } catch {
+    return null
+  }
+}
+
+// Maidenhead grid locator (used natively by ARES/RACES ham operators). Field (18
+// letters A-R, each 20°lon x 10°lat) + Square (10 digits 0-9, each 2°lon x 1°lat) +
+// Subsquare (24 letters a-x, each 5'lon x 2.5'lat) = 6-character precision, the level
+// most ham operators actually use. No dependency - this is the entire algorithm.
+const MAIDENHEAD_FIELD = 'ABCDEFGHIJKLMNOPQR'
+const MAIDENHEAD_SUBSQUARE = 'abcdefghijklmnopqrstuvwx'
+const MAIDENHEAD_PATTERN = /^[A-Ra-r]{2}[0-9]{2}([A-Xa-x]{2})?$/
+
+export function DDToMaidenhead(lat: number, lng: number): string {
+  let lonRemainder = lng + 180 // 0..360
+  let latRemainder = lat + 90  // 0..180
+
+  const fieldLon = Math.floor(lonRemainder / 20)
+  const fieldLat = Math.floor(latRemainder / 10)
+  lonRemainder -= fieldLon * 20
+  latRemainder -= fieldLat * 10
+
+  const squareLon = Math.floor(lonRemainder / 2)
+  const squareLat = Math.floor(latRemainder / 1)
+  lonRemainder -= squareLon * 2
+  latRemainder -= squareLat * 1
+
+  const subLon = Math.floor(lonRemainder / (2 / 24))
+  const subLat = Math.floor(latRemainder / (1 / 24))
+
+  return MAIDENHEAD_FIELD[fieldLon] + MAIDENHEAD_FIELD[fieldLat]
+    + squareLon + squareLat
+    + MAIDENHEAD_SUBSQUARE[subLon] + MAIDENHEAD_SUBSQUARE[subLat]
+}
+
+/** Returns null for anything that isn't a well-formed 4- or 6-character locator. */
+export function MaidenheadToDD(locator: string): { lat: number; lng: number } | null {
+  if (!MAIDENHEAD_PATTERN.test(locator)) return null
+
+  const upper = locator.toUpperCase()
+  const fieldLon = upper.charCodeAt(0) - 65 // 'A'
+  const fieldLat = upper.charCodeAt(1) - 65
+  const squareLon = Number(upper[2])
+  const squareLat = Number(upper[3])
+
+  let lng = fieldLon * 20 + squareLon * 2 - 180
+  let lat = fieldLat * 10 + squareLat * 1 - 90
+
+  if (upper.length >= 6) {
+    // Center of the subsquare
+    const subLon = upper.charCodeAt(4) - 65 // 'A'
+    const subLat = upper.charCodeAt(5) - 65
+    lng += (subLon + 0.5) * (2 / 24)
+    lat += (subLat + 0.5) * (1 / 24)
+  } else {
+    // Center of the 2°x1° square
+    lng += 1
+    lat += 0.5
+  }
+
+  return { lat, lng }
+}
+
+/** True if `text` looks like a Maidenhead grid locator - checked ahead of the street-
+ * address fallback in location.component.ts's onAddressChg(), the same way Plus Codes
+ * and What3Words are already detected there. */
+export function isMaidenhead(text: string): boolean {
+  return MAIDENHEAD_PATTERN.test(text)
 }
 
 

@@ -29,7 +29,7 @@
            callsignCtrl is now the single source of truth for this field. -->
       <input #callsignInput matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one"
         aria-label="Callsigns" [matAutocomplete]="auto"
-        (change)="this.callsignCtrlChanged()" id="enter__Callsign-input" tabindex="1" data-lpignore="true"
+        (change)="this.callsignCtrlChanged()" id="enter__Callsign-input" [attr.tabindex]="callsignTabIndex" data-lpignore="true"
         spellcheck="false" />
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
@@ -53,7 +53,7 @@
     <div>
 
       <rangertrak-location [(location)]="locationParent" (locationChange)="onNewLocationEvent($event)"
-        [tabIndexStart]="2">
+        [tabIndexStart]="locationTabIndexStart">
         <!--
           https://www.appsloveworld.com/angular/100/13/angular-two-way-data-binding-and-watching-for-changes-in-parent-component
 
@@ -77,7 +77,7 @@
     </h2>
     <div FormControl="timepickerFormControl" class="filled timepicker timepicker_When-input">
       <rangertrak-time-picker #picker [datePickerLabel]="timePickerLabel" (newTimeEvent)="onNewTimeEvent($event)"
-        [dateTabIndex]="21" [timeTabIndex]="22">
+        [dateTabIndex]="dateTabIndex" [timeTabIndex]="timeTabIndex">
         <!-- [initialDate] = "initialTime" works, but we just use default - current time -->
       </rangertrak-time-picker>
     </div>
@@ -88,7 +88,7 @@
     </h2>
     <div class="input-group bordered">
       <!-- mat-label><div class="strong bottomDrop">Status:</div></mat-label -->
-      <mat-radio-group class="filled  enter__Status" labelPosition="after" formControlName="status" tabindex="23"><span
+      <mat-radio-group class="filled  enter__Status" labelPosition="after" formControlName="status" [attr.tabindex]="statusTabIndex"><span
           class="bottomDrop">Status:&nbsp;&nbsp;</span>
         <mat-radio-button *ngFor="let stat of settings.fieldReportStatuses" value="{{stat.status}}" class="rButton">
           <!-- Sprint E: this was an inline color style interpolated straight from stored
@@ -105,7 +105,7 @@
       <br>
       <br>
       <textarea class="input-group enter__What--area" [formField]="entryForm.notes" id="enter__What--area" cols="80"
-        rows="5" placeholder="Enter Any Notes" tabindex="24"></textarea>
+        rows="5" placeholder="Enter Any Notes" [attr.tabindex]="notesTabIndex"></textarea>
     </div>
 
     <!-- ======================================= -->
@@ -128,12 +128,12 @@
     <!-- ======================================= -->
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
     <button (click)="resetEntryForm()" title="Reset all form fields to their defaults" class="eButton" type="button"
-      tabindex="25">
+      [attr.tabindex]="resetTabIndex">
       Reset
     </button>
 
     <button class="enter__Submit-button eButton"
-      [disabled]="!formValid()" type="submit" tabindex="26">
+      [disabled]="!formValid()" type="submit" [attr.tabindex]="submitTabIndex">
       Submit
     </button>
 

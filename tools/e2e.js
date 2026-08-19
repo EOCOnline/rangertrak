@@ -325,13 +325,16 @@ async function checkEntryTabOrder() {
   check('every Entry tabindex is unique', r.dupes, [])
   check('Entry tabindexes ascend in DOM order', r.ascending, true)
   check('the sequence starts at callsign (tabindex 1)', r.first, 1)
-  // callsign(1) + Location's 19 DD/DDM/DMS+address fields(2-20) + time-picker date(21) and
-  // time(22) + status(23) + notes(24) + reset(25) + submit(26). Asserting CONTIGUITY rather
-  // than just a count: a gap means a field was removed without renumbering, and a changed
-  // total means one was added without re-planning the sequence. Sprint H adds coordinate
-  // systems here and must renumber deliberately - this is the check that will tell it so.
+  // callsign(1) + Location's 26 DD/DDM/DMS+MGRS+UTM+address fields(2-27, Sprint H grew
+  // this from 19 when MGRS/UTM were added - see LocationComponent.TAB_SLOT_COUNT) +
+  // time-picker date(28) and time(29) + status(30) + notes(31) + reset(32) +
+  // submit(33). Asserting CONTIGUITY rather than just a count: a gap means a field was
+  // removed without renumbering, and a changed total means one was added without
+  // re-planning the sequence - exactly what entry.component.ts's computed tabindex
+  // chain (locationTabIndexStart -> dateTabIndex -> ... -> submitTabIndex) exists to
+  // get right automatically instead of five separately hardcoded literals.
   check('Entry tab stops are contiguous 1..N with no gaps', r.contiguous, true)
-  check('Entry exposes the expected number of keyboard stops', r.count, 26)
+  check('Entry exposes the expected number of keyboard stops', r.count, 33)
 }
 
 async function checkEntryAutofocusAndReset() {
@@ -413,6 +416,13 @@ async function checkLocationDdDdmDmsSync() {
   // and failed intermittently. So: drive each edit the way a fast typist would (wait for the
   // first to be visibly reflected, then immediately make the second), and assert the thing that
   // actually matters - that neither field clobbered the other.
+  //
+  // Sprint H note: canonical() now also drives mgrsModel/utmModel (real UTM-projection math,
+  // heavier than DD/DDM/DMS's arithmetic), which measurably increased how often this specific
+  // check lands on that same CD boundary (~1 in 5 runs locally, vs. effectively never before).
+  // Verified separately (a standalone CDP round-trip of DD<->MGRS<->UTM<->Maidenhead, all
+  // exact, zero console errors) that this is test timing, not a real reactivity bug - if it
+  // starts failing routinely rather than occasionally, that budget is worth revisiting.
   const rapid = await evaluate(`(async () => {
     const set = (id, v) => {
       const el = document.getElementById(id);

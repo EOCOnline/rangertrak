@@ -87,6 +87,20 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // Get time events from <location> component
   //private locationSubscription!: Subscription
 
+  // Keyboard-first tab order (Sprint D), Sprint H revision: these used to be five
+  // separate hardcoded literals in the template (21, 22, 23, 24, 25, 26), each
+  // silently assuming Location's field count was fixed at 19. Adding MGRS/UTM grew
+  // that count, so the whole chain is now computed from one base plus each field's
+  // own slot count - correct once, instead of five places each hardcoding an offset.
+  callsignTabIndex = 1
+  locationTabIndexStart = 2
+  dateTabIndex = this.locationTabIndexStart + LocationComponent.TAB_SLOT_COUNT
+  timeTabIndex = this.dateTabIndex + 1
+  statusTabIndex = this.timeTabIndex + 1
+  notesTabIndex = this.statusTabIndex + 1
+  resetTabIndex = this.notesTabIndex + 1
+  submitTabIndex = this.resetTabIndex + 1
+
   private id = 'Entry Form'
   title = 'Field Report Entry'
   pageDescr = `Enter data associated with ranger's name, location, status for tracking on maps & spreadsheets`

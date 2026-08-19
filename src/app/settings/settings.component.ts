@@ -31,6 +31,7 @@ const blankSettings: SettingsType = {
   application: '', version: '', debugMode: false,
   defLat: 0, defLng: 0, defPlusCode: '', w3wLocale: '', allowManualPinDrops: false,
   googleGeocodingApiKey: '',
+  showDD: true, showDDM: true, showDMS: true, showMGRS: true, showUTM: true, showMaidenhead: true,
   google: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   leaflet: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   imageDirectory: '', defFieldReportStatus: 0, fieldReportStatuses: [],

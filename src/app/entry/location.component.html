@@ -6,51 +6,57 @@
     <div class="input-group">
       &nbsp;&nbsp;&nbsp;Latitude:
 
+      @if (isVisible('DD')) {
+        <span>
+          <input #latI [formField]="ddForm.latI" type="number" (change)="onDdChg()"
+            id="enter__Where-latI" aria-label="Latitude degrees, decimal degrees format" [attr.tabindex]="ti(0)"
+            [class.border-danger]="ddForm.latI().touched() && ddForm.latI().invalid()" />
+          <strong>.</strong>
+          <input #latF [formField]="ddForm.latF" type="number" (change)="onDdChg()" step="100"
+            id="enter__Where-latF" aria-label="Latitude decimal fraction, decimal degrees format" [attr.tabindex]="ti(1)"
+            [class.border-danger]="ddForm.latF().touched() && ddForm.latF().invalid()" />
+          <strong>° </strong>
+        </span>
+        <span title="Decimal Degrees"><strong>DD</strong></span>
+      }
 
-      <span>
-        <input #latI [formField]="ddForm.latI" type="number" (change)="onDdChg()"
-          id="enter__Where-latI" aria-label="Latitude degrees, decimal degrees format" [attr.tabindex]="ti(0)"
-          [class.border-danger]="ddForm.latI().touched() && ddForm.latI().invalid()" />
-        <strong>.</strong>
-        <input #latF [formField]="ddForm.latF" type="number" (change)="onDdChg()" step="100"
-          id="enter__Where-latF" aria-label="Latitude decimal fraction, decimal degrees format" [attr.tabindex]="ti(1)"
-          [class.border-danger]="ddForm.latF().touched() && ddForm.latF().invalid()" />
-        <strong>° </strong>
-      </span>
-      <span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
+      @if (orBefore('DDM')) { &nbsp; or &nbsp; }
+      @if (isVisible('DDM')) {
+        <span>
+          <input #latDdmD [formField]="ddmForm.latDdmD" id="enter__Where-latDdmD" aria-label="Latitude degrees, degrees and decimal minutes format" type="number"
+            (change)="onDdmChg()" [attr.tabindex]="ti(2)"
+            [class.border-danger]="ddmForm.latDdmD().touched() && ddmForm.latDdmD().invalid()" /><strong>°
+          </strong>
+          <input #latDdmM [formField]="ddmForm.latDdmM" id="enter__Where-latDdmM" aria-label="Latitude minutes, degrees and decimal minutes format" type="number"
+            (change)="onDdmChg()" [attr.tabindex]="ti(3)"
+            [class.border-danger]="ddmForm.latDdmM().touched() && ddmForm.latDdmM().invalid()" /><strong>'
+          </strong>
+          <input #latDdmQ [formField]="ddmForm.latDdmQ" id="enter__Where-latDdmQ" aria-label="Latitude direction, N or S, degrees and decimal minutes format" type="text"
+            title="N or S" (change)="onDdmChg()" [attr.tabindex]="ti(4)"
+            [class.border-danger]="ddmForm.latDdmQ().touched() && ddmForm.latDdmQ().invalid()" />
+          <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
+        </span>
+      }
 
-      <span>
-        <input #latDdmD [formField]="ddmForm.latDdmD" id="enter__Where-latDdmD" aria-label="Latitude degrees, degrees and decimal minutes format" type="number"
-          (change)="onDdmChg()" [attr.tabindex]="ti(2)"
-          [class.border-danger]="ddmForm.latDdmD().touched() && ddmForm.latDdmD().invalid()" /><strong>°
-        </strong>
-        <input #latDdmM [formField]="ddmForm.latDdmM" id="enter__Where-latDdmM" aria-label="Latitude minutes, degrees and decimal minutes format" type="number"
-          (change)="onDdmChg()" [attr.tabindex]="ti(3)"
-          [class.border-danger]="ddmForm.latDdmM().touched() && ddmForm.latDdmM().invalid()" /><strong>'
-        </strong>
-        <input #latDdmQ [formField]="ddmForm.latDdmQ" id="enter__Where-latDdmQ" aria-label="Latitude direction, N or S, degrees and decimal minutes format" type="text"
-          title="N or S" (change)="onDdmChg()" [attr.tabindex]="ti(4)"
-          [class.border-danger]="ddmForm.latDdmQ().touched() && ddmForm.latDdmQ().invalid()" />
-        <span title="Degree Decimal Minutes"><strong>DDM</strong></span>&nbsp; or &nbsp;
-      </span>
-
-
-      <span>
-        <input #latD [formField]="dmsForm.latD" id="enter__Where-latD" aria-label="Latitude degrees, degrees minutes seconds format" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(5)"
-          [class.border-danger]="dmsForm.latD().touched() && dmsForm.latD().invalid()" /><strong>° </strong>
-        <input #latM [formField]="dmsForm.latM" id="enter__Where-latM" aria-label="Latitude minutes, degrees minutes seconds format" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(6)"
-          [class.border-danger]="dmsForm.latM().touched() && dmsForm.latM().invalid()" /><strong>' </strong>
-        <input #latS [formField]="dmsForm.latS" id="enter__Where-latS" aria-label="Latitude seconds, degrees minutes seconds format" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(7)"
-          [class.border-danger]="dmsForm.latS().touched() && dmsForm.latS().invalid()" /><strong>"
-        </strong>
-        <input #latQ [formField]="dmsForm.latQ" id="enter__Where-latQ" aria-label="Latitude direction, N or S, degrees minutes seconds format" type="text" title="N or S"
-          (change)="onDmsChg()" [attr.tabindex]="ti(8)"
-          [class.border-danger]="dmsForm.latQ().touched() && dmsForm.latQ().invalid()" />
-        <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
-      </span>
+      @if (orBefore('DMS')) { &nbsp; or &nbsp; }
+      @if (isVisible('DMS')) {
+        <span>
+          <input #latD [formField]="dmsForm.latD" id="enter__Where-latD" aria-label="Latitude degrees, degrees minutes seconds format" type="number"
+            (change)="onDmsChg()" [attr.tabindex]="ti(5)"
+            [class.border-danger]="dmsForm.latD().touched() && dmsForm.latD().invalid()" /><strong>° </strong>
+          <input #latM [formField]="dmsForm.latM" id="enter__Where-latM" aria-label="Latitude minutes, degrees minutes seconds format" type="number"
+            (change)="onDmsChg()" [attr.tabindex]="ti(6)"
+            [class.border-danger]="dmsForm.latM().touched() && dmsForm.latM().invalid()" /><strong>' </strong>
+          <input #latS [formField]="dmsForm.latS" id="enter__Where-latS" aria-label="Latitude seconds, degrees minutes seconds format" type="number"
+            (change)="onDmsChg()" [attr.tabindex]="ti(7)"
+            [class.border-danger]="dmsForm.latS().touched() && dmsForm.latS().invalid()" /><strong>"
+          </strong>
+          <input #latQ [formField]="dmsForm.latQ" id="enter__Where-latQ" aria-label="Latitude direction, N or S, degrees minutes seconds format" type="text" title="N or S"
+            (change)="onDmsChg()" [attr.tabindex]="ti(8)"
+            [class.border-danger]="dmsForm.latQ().touched() && dmsForm.latQ().invalid()" />
+          <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
+        </span>
+      }
       @if (latInvalid()) {
       <div class="text-sm text-danger">Latitude must be -90 to 90&deg;, minutes/seconds in range, direction N or S.</div>
       }
@@ -61,64 +67,134 @@
     <div class="input-group">
       Longitude:
 
+      @if (isVisible('DD')) {
+        <span>
+          <input #lngI [formField]="ddForm.lngI" type="number" id="enter__Where-lngI" aria-label="Longitude degrees, decimal degrees format"
+            (change)="onDdChg()" [attr.tabindex]="ti(9)"
+            [class.border-danger]="ddForm.lngI().touched() && ddForm.lngI().invalid()" /><strong>.</strong>
+          <input #lngF [formField]="ddForm.lngF" type="number" step="100" id="enter__Where-lngF" aria-label="Longitude decimal fraction, decimal degrees format"
+            (change)="onDdChg()" [attr.tabindex]="ti(10)"
+            [class.border-danger]="ddForm.lngF().touched() && ddForm.lngF().invalid()" />
+          <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>
+        </span>
+      }
 
-      <span>
-        <input #lngI [formField]="ddForm.lngI" type="number" id="enter__Where-lngI" aria-label="Longitude degrees, decimal degrees format"
-          (change)="onDdChg()" [attr.tabindex]="ti(9)"
-          [class.border-danger]="ddForm.lngI().touched() && ddForm.lngI().invalid()" /><strong>.</strong>
-        <input #lngF [formField]="ddForm.lngF" type="number" step="100" id="enter__Where-lngF" aria-label="Longitude decimal fraction, decimal degrees format"
-          (change)="onDdChg()" [attr.tabindex]="ti(10)"
-          [class.border-danger]="ddForm.lngF().touched() && ddForm.lngF().invalid()" />
-        <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
-      </span>
+      @if (orBefore('DDM')) { &nbsp; or &nbsp; }
+      @if (isVisible('DDM')) {
+        <span>
+          <input #lngDdmD [formField]="ddmForm.lngDdmD" id="enter__Where-lngDdmD" aria-label="Longitude degrees, degrees and decimal minutes format" type="number"
+            (change)="onDdmChg()" [attr.tabindex]="ti(11)"
+            [class.border-danger]="ddmForm.lngDdmD().touched() && ddmForm.lngDdmD().invalid()" /><strong>°
+          </strong>
+          <input #lngDdmM [formField]="ddmForm.lngDdmM" id="enter__Where-lngDdmM" aria-label="Longitude minutes, degrees and decimal minutes format" type="number"
+            (change)="onDdmChg()" [attr.tabindex]="ti(12)"
+            [class.border-danger]="ddmForm.lngDdmM().touched() && ddmForm.lngDdmM().invalid()" /><strong>'
+          </strong>
+          <input #lngDdmQ [formField]="ddmForm.lngDdmQ" id="enter__Where-lngDdmQ" aria-label="Longitude direction, E or W, degrees and decimal minutes format" type="text"
+            title="E or W" (change)="onDdmChg()" [attr.tabindex]="ti(13)"
+            [class.border-danger]="ddmForm.lngDdmQ().touched() && ddmForm.lngDdmQ().invalid()" />
+          <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
+        </span>
+      }
 
-
-      <span>
-        <input #lngDdmD [formField]="ddmForm.lngDdmD" id="enter__Where-lngDdmD" aria-label="Longitude degrees, degrees and decimal minutes format" type="number"
-          (change)="onDdmChg()" [attr.tabindex]="ti(11)"
-          [class.border-danger]="ddmForm.lngDdmD().touched() && ddmForm.lngDdmD().invalid()" /><strong>°
-        </strong>
-        <input #lngDdmM [formField]="ddmForm.lngDdmM" id="enter__Where-lngDdmM" aria-label="Longitude minutes, degrees and decimal minutes format" type="number"
-          (change)="onDdmChg()" [attr.tabindex]="ti(12)"
-          [class.border-danger]="ddmForm.lngDdmM().touched() && ddmForm.lngDdmM().invalid()" /><strong>'
-        </strong>
-        <input #lngDdmQ [formField]="ddmForm.lngDdmQ" id="enter__Where-lngDdmQ" aria-label="Longitude direction, E or W, degrees and decimal minutes format" type="text"
-          title="E or W" (change)="onDdmChg()" [attr.tabindex]="ti(13)"
-          [class.border-danger]="ddmForm.lngDdmQ().touched() && ddmForm.lngDdmQ().invalid()" />
-        <span title="Degree Decimal Minutes"><strong>DDM</strong></span>&nbsp; or &nbsp;
-      </span>
-
-
-      <span>
-        <input [formField]="dmsForm.lngD" id="enter__Where-lngD" aria-label="Longitude degrees, degrees minutes seconds format" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(14)"
-          [class.border-danger]="dmsForm.lngD().touched() && dmsForm.lngD().invalid()" /><strong>° </strong>
-        <input [formField]="dmsForm.lngM" id="enter__Where-lngM" aria-label="Longitude minutes, degrees minutes seconds format" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(15)"
-          [class.border-danger]="dmsForm.lngM().touched() && dmsForm.lngM().invalid()" /><strong>' </strong>
-        <input [formField]="dmsForm.lngS" id="enter__Where-lngS" aria-label="Longitude seconds, degrees minutes seconds format" type="number"
-          (change)="onDmsChg()" [attr.tabindex]="ti(16)"
-          [class.border-danger]="dmsForm.lngS().touched() && dmsForm.lngS().invalid()" /><strong>" </strong>
-        <input [formField]="dmsForm.lngQ" id="enter__Where-lngQ" aria-label="Longitude direction, E or W, degrees minutes seconds format" type="text" title="E or W"
-          (change)="onDmsChg()" [attr.tabindex]="ti(17)"
-          [class.border-danger]="dmsForm.lngQ().touched() && dmsForm.lngQ().invalid()" />
-        <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
-      </span>
+      @if (orBefore('DMS')) { &nbsp; or &nbsp; }
+      @if (isVisible('DMS')) {
+        <span>
+          <input [formField]="dmsForm.lngD" id="enter__Where-lngD" aria-label="Longitude degrees, degrees minutes seconds format" type="number"
+            (change)="onDmsChg()" [attr.tabindex]="ti(14)"
+            [class.border-danger]="dmsForm.lngD().touched() && dmsForm.lngD().invalid()" /><strong>° </strong>
+          <input [formField]="dmsForm.lngM" id="enter__Where-lngM" aria-label="Longitude minutes, degrees minutes seconds format" type="number"
+            (change)="onDmsChg()" [attr.tabindex]="ti(15)"
+            [class.border-danger]="dmsForm.lngM().touched() && dmsForm.lngM().invalid()" /><strong>' </strong>
+          <input [formField]="dmsForm.lngS" id="enter__Where-lngS" aria-label="Longitude seconds, degrees minutes seconds format" type="number"
+            (change)="onDmsChg()" [attr.tabindex]="ti(16)"
+            [class.border-danger]="dmsForm.lngS().touched() && dmsForm.lngS().invalid()" /><strong>" </strong>
+          <input [formField]="dmsForm.lngQ" id="enter__Where-lngQ" aria-label="Longitude direction, E or W, degrees minutes seconds format" type="text" title="E or W"
+            (change)="onDmsChg()" [attr.tabindex]="ti(17)"
+            [class.border-danger]="dmsForm.lngQ().touched() && dmsForm.lngQ().invalid()" />
+          <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
+        </span>
+      }
       @if (lngInvalid()) {
       <div class="text-sm text-danger">Longitude must be -180 to 180&deg;, minutes/seconds in range, direction E or W.</div>
       }
     </div>
 
 
+    <!------------------------------------------------------------>
+    @if (isVisible('MGRS')) {
+      <div class="input-group">
+        MGRS:
+        <span>
+          <input #mgrsGridRef [formField]="mgrsForm.gridRef" type="text" (change)="onMgrsChg()"
+            id="enter__Where-mgrsGridRef" aria-label="MGRS grid zone, band, and 100km square" title="e.g. 10TFS"
+            placeholder="10TFS" [attr.tabindex]="ti(18)"
+            [class.border-danger]="mgrsForm.gridRef().touched() && mgrsForm.gridRef().invalid()" />
+          <input #mgrsEasting [formField]="mgrsForm.easting" type="number" (change)="onMgrsChg()"
+            id="enter__Where-mgrsEasting" aria-label="MGRS easting" title="Easting" placeholder="Easting"
+            [attr.tabindex]="ti(19)"
+            [class.border-danger]="mgrsForm.easting().touched() && mgrsForm.easting().invalid()" />
+          <input #mgrsNorthing [formField]="mgrsForm.northing" type="number" (change)="onMgrsChg()"
+            id="enter__Where-mgrsNorthing" aria-label="MGRS northing" title="Northing" placeholder="Northing"
+            [attr.tabindex]="ti(20)"
+            [class.border-danger]="mgrsForm.northing().touched() && mgrsForm.northing().invalid()" />
+          <span title="Military Grid Reference System"><strong>MGRS</strong></span>
+        </span>
+        @if (mgrsInvalid()) {
+        <div class="text-sm text-danger">MGRS needs a valid grid zone/band/square (e.g. 10TFS) and easting/northing 0-99999.</div>
+        }
+      </div>
+    }
+
+
+    <!------------------------------------------------------------>
+    @if (isVisible('UTM')) {
+      <div class="input-group">
+        UTM:
+        <span>
+          <input #utmZone [formField]="utmForm.zone" type="number" (change)="onUtmChg()"
+            id="enter__Where-utmZone" aria-label="UTM zone number" title="Zone" placeholder="Zone"
+            [attr.tabindex]="ti(21)"
+            [class.border-danger]="utmForm.zone().touched() && utmForm.zone().invalid()" />
+          <input #utmHemisphere [formField]="utmForm.hemisphere" type="text" (change)="onUtmChg()"
+            id="enter__Where-utmHemisphere" aria-label="UTM hemisphere, N or S" title="N or S"
+            [attr.tabindex]="ti(22)"
+            [class.border-danger]="utmForm.hemisphere().touched() && utmForm.hemisphere().invalid()" />
+          <input #utmEasting [formField]="utmForm.easting" type="number" (change)="onUtmChg()"
+            id="enter__Where-utmEasting" aria-label="UTM easting" title="Easting" placeholder="Easting"
+            [attr.tabindex]="ti(23)"
+            [class.border-danger]="utmForm.easting().touched() && utmForm.easting().invalid()" />
+          <input #utmNorthing [formField]="utmForm.northing" type="number" (change)="onUtmChg()"
+            id="enter__Where-utmNorthing" aria-label="UTM northing" title="Northing" placeholder="Northing"
+            [attr.tabindex]="ti(24)"
+            [class.border-danger]="utmForm.northing().touched() && utmForm.northing().invalid()" />
+          <span title="Universal Transverse Mercator"><strong>UTM</strong></span>
+        </span>
+        @if (utmInvalid()) {
+        <div class="text-sm text-danger">UTM needs zone 1-60, hemisphere N or S, and easting/northing in range.</div>
+        }
+      </div>
+    }
+
+    <label class="option">
+      <input type="checkbox" [checked]="showAllSystems()" (change)="showAllSystems.set(!showAllSystems())" />
+      Show all coordinate systems (this session only - see Settings to change what's shown by default)
+    </label>
+
+    <div class="text-sm">
+      All formats assume WGS84/modern GPS. A position read off an older paper topo quad
+      may use the NAD27 datum instead, which can be 100-200m off in the western US.
+    </div>
 
     <!------------------------------------------------------------>
     Street Address,
-    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>, or
-    <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>:
+    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>,
+    <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>, or
+    Maidenhead grid locator:
 
     <input #address type="text" id="enter__Where-Address"
-      title="Optionally enter www.Plus.Codes, www.What3Words.com, or streeet address for geocoding."
-      [formField]="addressForm" data-lpignore="true" (change)="onAddressChg()" [attr.tabindex]="ti(18)" />
+      title="Optionally enter www.Plus.Codes, www.What3Words.com, a Maidenhead grid locator (e.g. CN87ux), or street address for geocoding."
+      [formField]="addressForm" data-lpignore="true" (change)="onAddressChg()" [attr.tabindex]="ti(25)" />
   </form>
 
 
@@ -129,7 +205,10 @@
     <!--Derived Locations: -->
     <span id="derivedAddress" title="Normalized Address">Address:</span><br>
     <span id="pCodes" title="Global & short (Google) Plus Codes">+Codes:</span><br>
-    <span id="what3Words" title="What3Words">What3Words:</span>
+    <span id="what3Words" title="What3Words">What3Words:</span><br>
+    @if (showAllSystems() || settings.showMaidenhead) {
+      <span id="maidenhead" title="Maidenhead Grid Locator">Maidenhead:</span>
+    }
   </div>
 </div>
 

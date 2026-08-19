@@ -19,7 +19,10 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 // barrel also re-exports the MapLibre style helpers, so pulling anything through it from
 // the eagerly-loaded Entry page drags MapLibre (~800KB) into the initial bundle even
 // though this page never shows a MapLibre map. Same reasoning as app.config.ts.
-import { DDMToDD, DDToDDM, DDToDMS, DMSToDD } from '../shared/mapping/coordinate'
+import {
+  DDMToDD, DDToDDM, DDToDMS, DDToMaidenhead, DDToMGRS, DDToUTM, DMSToDD, isMaidenhead,
+  MaidenheadToDD, MGRSToDD, UTMToDD
+} from '../shared/mapping/coordinate'
 import { GEOCODING_PROVIDER, GeocodingProvider } from '../shared/mapping/geocoding-provider.interface'
 import { OpenLocationCode } from '../shared/mapping/open-location-code'
 
@@ -54,17 +57,57 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   @Input() location: LocationType = undefinedLocation
   @Output() locationChange = new EventEmitter<LocationType>()
 
-  // Base tabindex for this leaf's 19 fields (DD/DDM/DMS lat+lng, then address), in the
-  // exact top-to-bottom/left-to-right DOM order the template renders them. Unset (no
-  // tabindex attribute rendered) unless Entry's keyboard-first pass supplies one - see
-  // ti() below and Entry's usage. All 19 fields are unconditionally visible (confirmed by
-  // reading both this component's template and stylesheet - no *ngIf/display:none anywhere
-  // in this file), so a flat, fixed offset sequence is safe without a live-UI check.
+  // Base tabindex for this leaf's fields (DD/DDM/DMS lat+lng, MGRS, UTM, then address),
+  // in the exact top-to-bottom/left-to-right DOM order the template renders them.
+  // Unset (no tabindex attribute rendered) unless Entry's keyboard-first pass supplies
+  // one - see ti() below and Entry's usage.
+  //
+  // Sprint H: each field still gets a fixed offset slot regardless of whether its
+  // system is currently visible - hiding a system just leaves a gap, which is harmless
+  // (tab order stays monotonic, per the roadmap's own reasoning) and far simpler than
+  // recomputing offsets from the live-visible set on every settings change.
+  // TAB_SLOT_COUNT is the total reservation the parent (Entry) needs to leave before
+  // its own next tabbable field - see entry.component.ts.
   @Input() tabIndexStart?: number
 
-  /** Field position within this leaf, 0-18 in template order. See tabIndexStart above. */
+  static readonly TAB_SLOT_COUNT = 26 // DD(4) + DDM(6) + DMS(8) + MGRS(3) + UTM(4) + address(1)
+
+  /** Field position within this leaf, 0-25 in template order. See tabIndexStart above. */
   ti(offset: number): number | null {
     return this.tabIndexStart != null ? this.tabIndexStart + offset : null
+  }
+
+  /**
+   * Entry-side, per-session override: shows every coordinate system regardless of the
+   * settings.showXxx flags below. Not persisted - a scribe flips it on when they need
+   * to see a format the mission hid, not a mission-wide setting change.
+   */
+  showAllSystems = signal(false)
+
+  /**
+   * True if `system` is visible AND at least one earlier-in-order system is also
+   * visible - used to render the "or" separator DD/DDM/DMS already join each Lat/Lng
+   * group with, without ever leaving a dangling one when something is hidden. Only
+   * DD/DDM/DMS participate in this inline join - MGRS and UTM encode a whole position
+   * rather than one axis, so they render as their own standalone rows below, with no
+   * "or" to manage.
+   */
+  orBefore(system: 'DDM' | 'DMS'): boolean {
+    if (!this.isVisible(system)) return false
+    const order: ('DD' | 'DDM' | 'DMS')[] = ['DD', 'DDM', 'DMS']
+    return order.slice(0, order.indexOf(system)).some(s => this.isVisible(s))
+  }
+
+  isVisible(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): boolean {
+    if (this.showAllSystems()) return true
+    if (!this.settings) return true // before settings arrive, show everything
+    switch (system) {
+      case 'DD': return this.settings.showDD
+      case 'DDM': return this.settings.showDDM
+      case 'DMS': return this.settings.showDMS
+      case 'MGRS': return this.settings.showMGRS
+      case 'UTM': return this.settings.showUTM
+    }
   }
 
   private id = "Location Component"
@@ -154,6 +197,35 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     pattern(p.lngQ, /^[EeWw]$/)
   })
 
+  // Coordinates as MGRS (US military / FEMA grid standard), split into three fields -
+  // Grid Reference (zone+band+100km-square), Easting, Northing - rather than one
+  // opaque string, matching how MGRS is actually read aloud over radio and the same
+  // "split by component" convention DD/DDM/DMS use above. Sprint H.
+  mgrsModel = linkedSignal(() => {
+    const { lat, lng } = this.canonical()
+    return DDToMGRS(lat, lng)
+  })
+  mgrsForm = form(this.mgrsModel, (p) => {
+    pattern(p.gridRef, /^[0-9]{1,2}[C-HJ-NP-Xc-hj-np-x][A-HJ-NP-Za-hj-np-z]{2}$/)
+    min(p.easting, 0); max(p.easting, 99999)
+    min(p.northing, 0); max(p.northing, 99999)
+  })
+
+  // Coordinates as UTM - Zone/Hemisphere/Easting/Northing. Hemisphere is a plain N/S
+  // letter (same pattern idiom as the DDM/DMS lat-direction fields), not the `utm`
+  // package's own latitude-band letter, which would need a second letter system users
+  // don't otherwise touch. Sprint H.
+  utmModel = linkedSignal(() => {
+    const { lat, lng } = this.canonical()
+    return DDToUTM(lat, lng)
+  })
+  utmForm = form(this.utmModel, (p) => {
+    min(p.zone, 1); max(p.zone, 60)
+    pattern(p.hemisphere, /^[NnSs]$/)
+    min(p.easting, 0); max(p.easting, 999999)
+    min(p.northing, 0); max(p.northing, 10000000)
+  })
+
   addressModel = signal('')
   addressForm = form(this.addressModel)
 
@@ -187,6 +259,21 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       || (this.dmsForm.lngQ().touched() && this.dmsForm.lngQ().invalid())
   }
 
+  /** MGRS and UTM each encode one whole position (not separate lat/lng blocks like
+   * DD/DDM/DMS above), so one combined check each is enough. */
+  mgrsInvalid(): boolean {
+    return (this.mgrsForm.gridRef().touched() && this.mgrsForm.gridRef().invalid())
+      || (this.mgrsForm.easting().touched() && this.mgrsForm.easting().invalid())
+      || (this.mgrsForm.northing().touched() && this.mgrsForm.northing().invalid())
+  }
+
+  utmInvalid(): boolean {
+    return (this.utmForm.zone().touched() && this.utmForm.zone().invalid())
+      || (this.utmForm.hemisphere().touched() && this.utmForm.hemisphere().invalid())
+      || (this.utmForm.easting().touched() && this.utmForm.easting().invalid())
+      || (this.utmForm.northing().touched() && this.utmForm.northing().invalid())
+  }
+
   //!w3w = new What3Words()
 
   faInfoCircle = faInfoCircle
@@ -195,7 +282,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   mdiInformationOutline: string = mdiInformationOutline
 
   private settingsSubscription!: Subscription
-  private settings!: SettingsType
+  // Public (not private): the template reads settings.showXxx to decide which
+  // coordinate systems to render (Sprint H).
+  public settings!: SettingsType
 
   // Tracks our own most recent emission so ngOnChanges (the opportunistic re-centering fix,
   // see below) can tell "parent gave us a genuinely new location" apart from "parent just
@@ -318,6 +407,46 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
+  onMgrsChg() {
+    const { gridRef, easting, northing } = this.mgrsModel()
+    this.log.verbose(`MGRS value changed: ${gridRef} ${easting} ${northing}`, this.id)
+
+    const converted = MGRSToDD(gridRef, easting, northing)
+    if (!converted) {
+      this.log.warn(`onMgrsChg: MGRSToDD rejected "${gridRef}" ${easting} ${northing}`, this.id)
+      return
+    }
+    this.log.verbose(`MGRS converted to DD: ${converted.lat}° ${converted.lng}°`, this.id)
+
+    const enteredLocation = {
+      lat: converted.lat,
+      lng: converted.lng,
+      address: undefinedAddressFlag,
+      derivedFromAddress: false
+    }
+    this.newLocationToFormAndEmit(enteredLocation)
+  }
+
+  onUtmChg() {
+    const { zone, hemisphere, easting, northing } = this.utmModel()
+    this.log.verbose(`UTM value changed: ${zone}${hemisphere} ${easting} ${northing}`, this.id)
+
+    const converted = UTMToDD(zone, hemisphere, easting, northing)
+    if (!converted) {
+      this.log.warn(`onUtmChg: UTMToDD rejected ${zone}${hemisphere} ${easting} ${northing}`, this.id)
+      return
+    }
+    this.log.verbose(`UTM converted to DD: ${converted.lat}° ${converted.lng}°`, this.id)
+
+    const enteredLocation = {
+      lat: converted.lat,
+      lng: converted.lng,
+      address: undefinedAddressFlag,
+      derivedFromAddress: false
+    }
+    this.newLocationToFormAndEmit(enteredLocation)
+  }
+
   /**
    * Any user change to a coordinate representation (above), an address lookup (below), or the
    * parent handing us a new @Input() location (via ngOnChanges) funnels through here: update
@@ -389,6 +518,22 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     }
   }
 
+  /**
+   * Sprint H: Maidenhead grid locators typed into the shared address/Plus-Code/
+   * What3Words field, detected the same way those two already are - checked by
+   * onAddressChg() before the street-address fallback. No dedicated input field: a
+   * 4-6 character token has no natural sub-component split the way DD/DDM/DMS do.
+   */
+  chkMaidenhead(locator: string) {
+    this.log.verbose(`User entered potential Maidenhead locator: '${locator}'. Verify it.`, this.id)
+    const converted = MaidenheadToDD(locator)
+    if (!converted) {
+      this.log.warn(`chkMaidenhead: MaidenheadToDD rejected "${locator}"`, this.id)
+      return
+    }
+    this.newLocationToFormAndEmit({ lat: converted.lat, lng: converted.lng, address: "", derivedFromAddress: false })
+  }
+
   updateDerivedLocations(location: LocationType) {
     this.log.verbose(`updateDerivedLocations()`, this.id)
 
@@ -428,6 +573,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     // Get & update What3Words
     let w3w = "Not.Implemented.Yet!"
     this.setDerivedText("what3Words", `Derived What3Words Code: ${w3w}`)
+
+    // Sprint H: no dedicated Maidenhead input field, but the position is still shown
+    // here as a derived readout - setDerivedText() already no-ops if the element isn't
+    // rendered (showMaidenhead off, and showAllSystems off).
+    this.setDerivedText("maidenhead", `Derived Maidenhead Grid Locator: ${DDToMaidenhead(location.lat, location.lng)}`)
   }
 
   /**
@@ -514,6 +664,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       if (tWords.length == 3) {
         this.log.verbose("Got What 3 Words: " + newAddress, this.id)
         this.chk3Words(newAddress)
+      } else if (isMaidenhead(newAddress)) {
+        this.log.verbose("Got Maidenhead grid locator: " + newAddress, this.id)
+        this.chkMaidenhead(newAddress)
       } else {
         this.chkStreetAddress(newAddress)
       }

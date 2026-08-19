@@ -45,7 +45,7 @@ up for, nothing to pay for, and no key to obtain before you can work:
 
 | What you're doing | Needs a key or account? |
 | --- | --- |
-| Coordinate entry (decimal, DMS, DDM) | No — calculated on your device |
+| Coordinate entry (decimal, DMS, DDM, MGRS, UTM, Maidenhead) | No — calculated on your device |
 | Plus Codes | No — calculated on your device, works offline |
 | Both map displays | No |
 | Address lookup | No (but does need Internet) |
@@ -166,6 +166,32 @@ status, add notes, and submit. Reports save to the device immediately.
 **Setting a location.** You can enter coordinates directly, or type an address and let
 RangerTrak look it up. You can also click any map to copy the coordinates under your
 cursor, then paste them in.
+
+RangerTrak accepts a position in whichever format it was called in over the radio:
+
+- **Decimal Degrees, Degrees/Decimal Minutes, or Degrees-Minutes-Seconds** — the usual
+  latitude/longitude formats, entered side by side so you can use whichever one the
+  field team reads out.
+- **MGRS** (the grid system US SAR, wildland fire, and the National Guard use, printed
+  on every USGS topo quad) and **UTM** — each entered as its own set of boxes (grid
+  zone, easting, northing, and so on), matching how they're actually read aloud in
+  digit groups over the air.
+- **Maidenhead grid locators** (used by ham radio operators) — typed into the same box
+  as a street address, Plus Code, or What3Words address; RangerTrak recognizes the
+  shape and converts it automatically.
+
+> All of these assume a modern GPS position (WGS84). A coordinate read off an **older
+> paper topo map** may use an older reference (NAD27) instead, which can be off by
+> 100–200m in the western US — worth knowing if a position looks slightly wrong
+> compared to what you see on the map.
+
+Not every mission wants all six formats cluttering the screen. **Settings → Location
+Defaults** lets you turn any of them off; Home also has its own "Show all coordinate
+systems" checkbox for the current session only, if you need to see a format the
+mission has hidden. Don't see a coordinate system your team actually uses (e.g. PLSS
+Township/Range/Section, or another country's national grid)? Open an issue on
+[GitHub](https://github.com/EOCOnline/RangerTrak/issues) — genuine field use is exactly
+what decides what gets added next.
 
 > Address lookup needs Internet. Without it, you'll see a message saying so. Coordinates
 > always work offline — so if the network is down, work in coordinates.

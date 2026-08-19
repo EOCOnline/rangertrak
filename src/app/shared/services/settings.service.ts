@@ -248,6 +248,13 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       allowManualPinDrops: false,
       googleGeocodingApiKey: '',
 
+      showDD: true,
+      showDDM: true,
+      showDMS: true,
+      showMGRS: true,
+      showUTM: true,
+      showMaidenhead: true,
+
       leaflet: {
         defZoom: 17,  // or just zoom to bounds?
         markerScheme: '',
