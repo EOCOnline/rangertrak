@@ -1,3 +1,4 @@
+@use "../../styles/breakpoints" as bp;
 @use "@material/theme"
 with ($primary: #962f10,
   $on-primary: #442C2E);
@@ -142,8 +143,8 @@ input[type=number] {
 }
 
 // Sprint D: 35% of a phone-width viewport is well under 350px, so the min-width above wins
-// and forces the whole form wider than the screen. Same breakpoint as navbar.component.scss.
-@media screen and (max-width: 575px) {
+// and forces the whole form wider than the screen.
+@include bp.phone {
   .enter__Callsign {
     width    : 100%;
     min-width: 0;

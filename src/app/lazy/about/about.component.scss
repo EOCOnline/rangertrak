@@ -69,7 +69,11 @@ filter: brightness(30%);
   }
 
   [letter-animation=breath] {
-    --glow-color: white;
+    // Sprint E: light-dark() rather than the prefers-color-scheme override that used to
+    // follow this rule. A prefers-color-scheme block lets a value exist in one scheme and
+    // not the other, which is exactly how the pre-Sprint-A dark mode ended up non-functional
+    // (see styles/_tokens.scss). light-dark() makes both halves structurally mandatory.
+    --glow-color: light-dark(black, white);
   }
 
   [letter-animation=breath]>span {
@@ -77,9 +81,3 @@ filter: brightness(30%);
   }
 }
 
-//(prefers-reduced-motion:no-preference) and
-@media (prefers-color-scheme: light) {
-  [letter-animation=breath] {
-    --glow-color: black;
-  }
-}

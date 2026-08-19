@@ -1,0 +1,67 @@
+// ─────────────────────────────────────────────────────────────────────────────
+//  SCREEN CLASSES
+//
+//  ADR D-33 defines three device classes, in priority order:
+//
+//    small laptop  (>= 1024px)  the likely predominant device
+//    tablet        (576-1023px) the command-post-on-a-folding-table case
+//    phone         (<= 575px)   must genuinely work, not merely avoid breaking
+//
+//  Before Sprint E these existed only as the bare literal `575px`, written twice - in
+//  navbar.component.scss and entry.component.scss - with a comment in the latter saying
+//  "Same breakpoint as navbar.component.scss", which is a comment doing a shared
+//  definition's job. Everything now derives from the two values below.
+//
+//  USE CONTAINER QUERIES WHERE THE ELEMENT IS EMBEDDED. D-33 is explicit that panels
+//  (the Entry mini-map, grid panels) should respond to the space THEY have, not to the
+//  window - a panel in a sidebar is narrow even on a wide screen. `narrow-container()`
+//  below is for those; the viewport mixins are for page-level structure only.
+//
+//  These are SCSS variables rather than CSS custom properties on purpose: custom
+//  properties cannot be used in a media query condition.
+// ─────────────────────────────────────────────────────────────────────────────
+
+$phone-max: 575px;
+$tablet-max: 1023px;
+
+/// Phone only.
+@mixin phone {
+  @media screen and (max-width: $phone-max) { @content; }
+}
+
+/// Tablet and wider - i.e. everything that is not a phone.
+@mixin tablet-up {
+  @media screen and (min-width: $phone-max + 1) { @content; }
+}
+
+/// Tablet only, excluding small laptops and up.
+@mixin tablet-only {
+  @media screen and (min-width: $phone-max + 1) and (max-width: $tablet-max) { @content; }
+}
+
+/// Small laptop and wider.
+@mixin laptop-up {
+  @media screen and (min-width: $tablet-max + 1) { @content; }
+}
+
+/// Tablet and narrower - the "space is tight" case, phones included.
+@mixin tablet-down {
+  @media screen and (max-width: $tablet-max) { @content; }
+}
+
+/// Applies when the nearest container is narrower than $max.
+///
+/// Requires an ancestor to declare `container-type: inline-size` - use `containable()`
+/// below on that ancestor. Prefer this over the viewport mixins for anything embedded.
+@mixin narrow-container($max: 480px) {
+  @container (max-width: #{$max}) { @content; }
+}
+
+/// Marks an element as a query container for `narrow-container()`.
+///
+/// `inline-size` (not `size`) so only the width is constrained: `container-type: size`
+/// requires a fixed block size too, which would collapse auto-height panels.
+@mixin containable($name: null) {
+  container-type: inline-size;
+  @if $name != null { container-name: $name; }
+}
