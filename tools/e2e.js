@@ -77,6 +77,28 @@ async function goto(route, settleMs = 3500) {
   await sleep(settleMs)
 }
 
+/**
+ * Navigates by CLICKING a nav link, i.e. Angular client-side routing - not a page load.
+ *
+ * This distinction turned out to be load-bearing. goto() issues Page.navigate, which is a
+ * full reload: every service is reconstructed and re-reads localStorage, so state is always
+ * fresh. Users don't do that - they click the nav, services stay alive, and stale in-memory
+ * state survives. Two production bugs reported on 2026-08-19 reproduce ONLY this way and
+ * were invisible to a suite that navigated exclusively by reload.
+ */
+async function navigateInApp(linkText, settleMs = 2500) {
+  consoleErrors.length = 0
+  const clicked = await evaluate(`(() => {
+    const link = [...document.querySelectorAll('.main-nav ul a')]
+      .find(a => a.textContent.trim().toLowerCase() === ${JSON.stringify(linkText)}.toLowerCase());
+    if (!link) return false;
+    link.click();
+    return true;
+  })()`)
+  if (!clicked) throw new Error(`no nav link labelled "${linkText}"`)
+  await sleep(settleMs)
+}
+
 async function setFileInput(selector, filePath) {
   const doc = await send('DOM.getDocument', { depth: -1 })
   const node = await send('DOM.querySelector', { nodeId: doc.root.nodeId, selector })
@@ -87,11 +109,28 @@ async function setFileInput(selector, filePath) {
 // ── result tracking ──────────────────────────────────────────────────────────
 
 const results = []
+
+/**
+ * Bugs KNOWN to be open and not yet fixed.
+ *
+ * A permanently red suite is one people stop reading, so these are tracked separately:
+ * reported as KNOWN rather than FAIL, and they do not fail the run. If one starts PASSING
+ * that is announced loudly - it means the fix landed and the entry should be deleted from
+ * here. See the Sprint E plan's "Known-open production bugs" section for diagnoses.
+ */
+const KNOWN_OPEN = new Set([
+  'the saved report carries the callsign that was entered',
+  'the Reports grid shows the reports that were just entered',
+  'the Settings page throws nothing for a returning user',
+])
+
 function check(label, actual, expected) {
   const pass = JSON.stringify(actual) === JSON.stringify(expected)
-  results.push({ pass, label, actual, expected })
-  console.log(`  ${pass ? 'PASS' : 'FAIL'}  ${label}`)
-  if (!pass) console.log(`        expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`)
+  const known = KNOWN_OPEN.has(label)
+  results.push({ pass, label, actual, expected, known })
+  console.log(`  ${pass ? (known ? 'FIXED!' : 'PASS  ') : (known ? 'KNOWN ' : 'FAIL  ')}${label}`)
+  if (!pass && !known) console.log(`        expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`)
+  if (pass && known) console.log(`        ^ on the KNOWN_OPEN list but passing - delete it from that list`)
   return pass
 }
 function note(text) { console.log(`  ....  ${text}`) }
@@ -437,6 +476,105 @@ async function checkStatusColorsBothSchemes() {
   if (light.length) note(`token light[0]=${light[0]} dark[0]=${dark[0]} | custom light[6]=${light[6]} dark[6]=${dark[6]}`)
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+//  KNOWN-OPEN BUGS, reported from production v0.15.8 on 2026-08-19.
+//
+//  These three checks are EXPECTED TO FAIL until the fixes land. They are committed
+//  failing on purpose: each one reproduces a real defect a user hit on rangertrak.org that
+//  this suite did not catch, and a red check is the only honest record of that. See the
+//  Sprint E plan's "Known-open production bugs" section for the diagnosis and fix plan.
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function checkCallsignIsSaved() {
+  console.log('\nBUG-1 (open): the callsign chosen on Entry must reach the saved report')
+  await goto('/')
+  const saved = await evaluate(`(async () => {
+    const input = document.getElementById('enter__Callsign-input');
+    const set = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    set.call(input, 'E2E-AA1');
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    await new Promise(r => setTimeout(r, 1200));   // past the 700ms autocomplete debounce
+    document.querySelector('.enter__Submit-button').click();
+    await new Promise(r => setTimeout(r, 1200));
+    const reports = JSON.parse(localStorage.getItem('fieldReports') || '{}');
+    const list = reports.fieldReportArray || [];
+    const last = list[list.length - 1] || {};
+    return { count: list.length, callsign: last.callsign, typedInto: 'E2E-AA1' };
+  })()`)
+  check('a report was actually stored', saved.count > 0, true)
+  // The input has BOTH [formControl]="callsignCtrl" AND formControlName="callsign"; only one
+  // can be the value accessor, so entryControlsForm.callsign never receives what was typed
+  // and mergedFormValue() saves ''. The ICS-309 log is worthless without who filed the report.
+  check('the saved report carries the callsign that was entered', saved.callsign, 'E2E-AA1')
+}
+
+async function checkReportsSurviveNavigation() {
+  console.log('\nBUG-2 (open): reports entered on Entry must be visible on the Reports page')
+  await goto('/')
+  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await goto('/')
+
+  for (const note of ['E2E-FIRST', 'E2E-SECOND']) {
+    await evaluate(`(async () => {
+      const ta = document.querySelector('textarea[placeholder="Enter Any Notes"]');
+      if (ta) {
+        Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set.call(ta, ${JSON.stringify(note)});
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      await new Promise(r => setTimeout(r, 300));
+      document.querySelector('.enter__Submit-button').click();
+      await new Promise(r => setTimeout(r, 1200));
+    })()`)
+  }
+
+  const stored = await evaluate(`(() => {
+    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
+    return (r.fieldReportArray || []).length;
+  })()`)
+  check('both reports reached storage', stored, 2)
+
+  // Click through, do NOT reload: a reload rebuilds every service and hides the bug.
+  await navigateInApp('Reports', 3500)
+  const shown = await evaluate(`(() => {
+    const rows = document.querySelectorAll('.ag-center-cols-container .ag-row');
+    return rows.length;
+  })()`)
+  // Entry declares providers:[FieldReportService,...], so it edits its OWN instance while the
+  // Reports page reads the root one, which still holds its stale in-memory list.
+  check('the Reports grid shows the reports that were just entered', shown, 2)
+}
+
+async function checkSettingsWithPersistedSettings() {
+  console.log('\nBUG-3 (open): /settings must not throw for a RETURNING user (dates as ISO strings)')
+  // A fresh browser gets initSettings() with real Date objects and never reproduces this.
+  // A returning user's settings have round-tripped through JSON, so opPeriodStart/End come
+  // back as STRINGS - which is the case the Settings page actually fails on. Seed that shape.
+  await goto('/settings')
+  await evaluate(`(() => {
+    const s = JSON.parse(localStorage.getItem('appSettings'));
+    s.opPeriodStart = new Date('2025-08-24T17:34:40.396Z').toISOString();
+    s.opPeriodEnd = new Date('2025-08-25T05:34:40.396Z').toISOString();
+    s.settingsDate = new Date('2025-08-24T17:34:40.396Z').toISOString();
+    // The reporter's stored settings PREDATE googleGeocodingApiKey, so the key is simply
+    // absent. settings-maps-section binds [formField]="form.googleGeocodingApiKey", and
+    // Signal Forms cannot build a field for a property the model does not have. Reproduce
+    // the real shape by removing it, not just by ageing the dates.
+    delete s.googleGeocodingApiKey;
+    delete s.schemaVersion;
+    localStorage.setItem('appSettings', JSON.stringify(s));
+  })()`)
+
+  // Reached by CLICKING through, as the reporter did - the failure needs the live services
+  // and the router, not a fresh page load.
+  await goto('/')
+  await navigateInApp('Rangers')
+  await navigateInApp('Settings', 6000)   // the error repeats about once a second; give it room
+  const errs = consoleErrors.slice(0, 3)
+  check('the Settings page throws nothing for a returning user', errs, [])
+  if (errs.length) note(`first error: ${String(errs[0]).slice(0, 160)}`)
+}
+
 async function checkStatusColorMigration() {
   console.log('\nSettings migration: v0 status colours upgrade to accessible semantic keys')
 
@@ -673,6 +811,11 @@ async function main() {
       await checkSettingsFormSave()
       await checkStatusColorMigration()
       await checkStatusColorsBothSchemes()
+
+      // Known-open production bugs - see the banner above these three.
+      await checkCallsignIsSaved()
+      await checkReportsSurviveNavigation()
+      await checkSettingsWithPersistedSettings()
       await checkMissionRoundTrip(downloads)
       await goto('/'); await evaluate(`localStorage.clear()`)
     }
@@ -684,8 +827,18 @@ async function main() {
     // and the run still exited 0.
     check(`harness completed without throwing (${e && e.message ? e.message : e})`, false, true)
   } finally {
-    const failed = results.filter(r => !r.pass)
-    console.log(`\n${results.length - failed.length}/${results.length} passed`)
+    const failed = results.filter(r => !r.pass && !r.known)
+    const knownOpen = results.filter(r => !r.pass && r.known)
+    const fixed = results.filter(r => r.pass && r.known)
+    console.log(`\n${results.filter(r => r.pass).length}/${results.length} passed`)
+    if (knownOpen.length) {
+      console.log(`\nKNOWN-OPEN (${knownOpen.length}) - already reported, not yet fixed; does not fail the run:`)
+      knownOpen.forEach(f => console.log(`  - ${f.label}`))
+    }
+    if (fixed.length) {
+      console.log(`\nNOW FIXED (${fixed.length}) - delete these from KNOWN_OPEN:`)
+      fixed.forEach(f => console.log(`  - ${f.label}`))
+    }
     if (failed.length) {
       console.log('\nFAILURES:')
       failed.forEach(f => console.log(`  - ${f.label}: expected ${JSON.stringify(f.expected)}, got ${JSON.stringify(f.actual)}`))
