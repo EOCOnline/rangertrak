@@ -265,9 +265,13 @@ async function checkBundleZip(fx) {
   console.log('\nBundle zip: roster + photos in one action, with BACKSLASH separators')
   await goto('/rangers')
   await setFileInput('#importRosterFile', fx.zipPath)
-  await sleep(7000)
 
-  const r = await evaluate(`(async () => {
+  // Poll for both photo keys rather than a flat sleep(7000): two IndexedDB photo writes
+  // sometimes take longer than that under load. This check passed reliably earlier in this
+  // same session, then failed twice in a row later, always missing exactly the SECOND
+  // photo - the classic signature of a timeout that is usually enough but not tied to the
+  // real completion condition. Same fix already applied twice elsewhere in this file.
+  const readState = `(async () => {
     const rangers = JSON.parse(localStorage.getItem('rangers')||'[]');
     const photos = await new Promise(res => {
       const req = indexedDB.open('rangertrak-photos');
@@ -278,7 +282,13 @@ async function checkBundleZip(fx) {
       req.onerror = () => res([]);
     });
     return { rangers: rangers.length, photoKeys: photos.sort() };
-  })()`)
+  })()`
+
+  let r = { rangers: 0, photoKeys: [] }
+  for (let i = 0; i < 20 && r.photoKeys.length < 2; i++) {
+    await sleep(500)
+    r = await evaluate(readState)
+  }
   check('zip imports the roster', r.rangers, fx.rangers.length)
   // The 0.15.6 regression: backslash paths made every photo "unmatched" while the roster
   // imported fine, and the dialog reported success.
