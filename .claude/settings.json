@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tasklist *)",
+      "Bash(curl -sI *)",
+      "mcp__claude_ai_Cloudflare_Developer_Platform__search_cloudflare_documentation",
+      "mcp__claude_ai_Cloudflare_Developer_Platform__workers_list"
+    ]
+  }
+}
