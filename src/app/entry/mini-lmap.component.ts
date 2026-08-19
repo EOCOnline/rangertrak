@@ -57,7 +57,8 @@ L.Marker.prototype.options.icon = iconDefault;
   styleUrls: ['./mini-lmap.component.scss',
     '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)]
   changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [SettingsService]
+  // Deliberately NOT providing SettingsService: it is providedIn:'root' and a second
+  // instance here would diverge from everyone else's. See BUG-2 in entry.component.ts.
 })
 export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {
 

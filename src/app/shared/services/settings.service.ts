@@ -1,4 +1,4 @@
-import { Observable, ReplaySubject, throwError } from 'rxjs'
+import { Observable, ReplaySubject } from 'rxjs'
 
 import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 
@@ -49,10 +49,12 @@ export class SettingsService implements OnInit {
        * future modules don't provide extra copies of this singleton service
        * per pg 84 of Angular Cookbook: do NOT add services to *.module.ts!
        */
-      throwError(() => {
-        this.log.error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
-        new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
-      })
+      // Was `throwError(() => {...})` - the rxjs creation function, which only BUILDS an
+      // observable. Nothing subscribed, so this guard never fired and five components quietly
+      // ran their own SettingsService for months (BUG-2). Throw for real.
+      const msg = `SettingsService has already been provided. It is providedIn:'root' - do not list it in a component's providers.`
+      this.log.error(msg, this.id)
+      throw new Error(msg)
     }
 
     // on page transition between Entry Screen or Google Maps pages ONLY (others use only static settings)
@@ -132,7 +134,9 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
           // Migrate BEFORE publishing: subscribers (and the Settings form) must never see a
           // pre-migration shape. See settings-migration.ts. The other entry point that can
           // introduce foreign settings is Import Mission - backup.service.ts migrates there too.
-          this.setSettings(migrateSettings(JSON.parse(localStorageSettings)))
+          // initSettings() supplies the backfill source, so a stored object written before a
+          // field existed gains it rather than breaking the Settings page (BUG-3).
+          this.setSettings(migrateSettings(JSON.parse(localStorageSettings), this.initSettings()))
           this.log.verbose("Initialized App Settings from localstorage", this.id)
           needSettings = false
         }
@@ -211,7 +215,8 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
    *   populate Field Report Statuses
    *
    */
-  private initSettings() { // settings: SettingsType
+  /** Factory defaults. Also the backfill source for migrateSettings() - see BUG-3. */
+  public initSettings(): SettingsType { // settings: SettingsType
     //original hardcoded defaults... not updated until form is submitted... Settings.component.ts' form doesn't allow editing of all values
     this.log.verbose("Initialize App Settings from hardcoded values", this.id)
 

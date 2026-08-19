@@ -17,7 +17,8 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [SettingsService]
+  // Deliberately NOT providing SettingsService: it is providedIn:'root' and a second
+  // instance here would diverge from everyone else's. See BUG-2 in entry.component.ts.
 })
 export class AboutComponent implements OnDestroy, OnInit {
 

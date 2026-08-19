@@ -55,7 +55,8 @@ const blankSettings: SettingsType = {
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [SettingsService]
+  // Deliberately NOT providing SettingsService: it is providedIn:'root' and a second
+  // instance here would diverge from everyone else's. See BUG-2 in entry.component.ts.
 })
 export class SettingsComponent implements OnInit, OnDestroy {
   private id = 'Settings Component'
