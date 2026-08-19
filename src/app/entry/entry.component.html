@@ -33,7 +33,7 @@
         spellcheck="false" />
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
-          <img class="enter__Callsign-img" aria-hidden [src]="'./assets/imgs/rangers/'+(ranger.image)" height="40">
+          <img class="enter__Callsign-img" aria-hidden="true" [src]="'./assets/imgs/rangers/'+(ranger.image)" height="40">
           <span> {{ranger.callsign}}</span> |
           <small> {{ranger.fullName}} | {{ranger.phone}}</small>
         </mat-option>
@@ -140,7 +140,7 @@
     <span id="enter__Submit-info"> </span>
 
     <div id="enter__frm-reguritation">
-      <h4>Entry Form Details:</h4>
+      <h3>Entry Form Details:</h3>
       <pre><strong>EntryForm valid:</strong> {{formValid() | json}}</pre>
       <pre><strong>EntryForm value:</strong> {{mergedFormValue() | json}}</pre>
     </div>

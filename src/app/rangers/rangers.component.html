@@ -168,7 +168,7 @@
     <div>
       <button (click)="onBtnExportToExcel()">Export Rangers</button> as a spreadsheet (CSV),
       with column separator of
-      <select (change)="onSeperatorChange()" id="columnSeparator">
+      <select (change)="onSeperatorChange()" id="columnSeparator" aria-label="Column separator for exported CSV">
         <option value="none">comma (,)</option>
         <option value="tab">tab</option>
         <option value="|">bar (|)</option>

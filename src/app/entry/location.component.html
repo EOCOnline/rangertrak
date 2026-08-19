@@ -9,26 +9,26 @@
 
       <span>
         <input #latI [formField]="ddForm.latI" type="number" (change)="onDdChg()"
-          id="enter__Where-latI" [attr.tabindex]="ti(0)"
+          id="enter__Where-latI" aria-label="Latitude degrees, decimal degrees format" [attr.tabindex]="ti(0)"
           [class.border-danger]="ddForm.latI().touched() && ddForm.latI().invalid()" />
         <strong>.</strong>
         <input #latF [formField]="ddForm.latF" type="number" (change)="onDdChg()" step="100"
-          id="enter__Where-latF" [attr.tabindex]="ti(1)"
+          id="enter__Where-latF" aria-label="Latitude decimal fraction, decimal degrees format" [attr.tabindex]="ti(1)"
           [class.border-danger]="ddForm.latF().touched() && ddForm.latF().invalid()" />
         <strong>° </strong>
       </span>
       <span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
 
       <span>
-        <input #latDdmD [formField]="ddmForm.latDdmD" id="enter__Where-latDdmD" type="number"
+        <input #latDdmD [formField]="ddmForm.latDdmD" id="enter__Where-latDdmD" aria-label="Latitude degrees, degrees and decimal minutes format" type="number"
           (change)="onDdmChg()" [attr.tabindex]="ti(2)"
           [class.border-danger]="ddmForm.latDdmD().touched() && ddmForm.latDdmD().invalid()" /><strong>°
         </strong>
-        <input #latDdmM [formField]="ddmForm.latDdmM" id="enter__Where-latDdmM" type="number"
+        <input #latDdmM [formField]="ddmForm.latDdmM" id="enter__Where-latDdmM" aria-label="Latitude minutes, degrees and decimal minutes format" type="number"
           (change)="onDdmChg()" [attr.tabindex]="ti(3)"
           [class.border-danger]="ddmForm.latDdmM().touched() && ddmForm.latDdmM().invalid()" /><strong>'
         </strong>
-        <input #latDdmQ [formField]="ddmForm.latDdmQ" id="enter__Where-latDdmQ" type="text"
+        <input #latDdmQ [formField]="ddmForm.latDdmQ" id="enter__Where-latDdmQ" aria-label="Latitude direction, N or S, degrees and decimal minutes format" type="text"
           title="N or S" (change)="onDdmChg()" [attr.tabindex]="ti(4)"
           [class.border-danger]="ddmForm.latDdmQ().touched() && ddmForm.latDdmQ().invalid()" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>&nbsp; or &nbsp;
@@ -36,17 +36,17 @@
 
 
       <span>
-        <input #latD [formField]="dmsForm.latD" id="enter__Where-latD" type="number"
+        <input #latD [formField]="dmsForm.latD" id="enter__Where-latD" aria-label="Latitude degrees, degrees minutes seconds format" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(5)"
           [class.border-danger]="dmsForm.latD().touched() && dmsForm.latD().invalid()" /><strong>° </strong>
-        <input #latM [formField]="dmsForm.latM" id="enter__Where-latM" type="number"
+        <input #latM [formField]="dmsForm.latM" id="enter__Where-latM" aria-label="Latitude minutes, degrees minutes seconds format" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(6)"
           [class.border-danger]="dmsForm.latM().touched() && dmsForm.latM().invalid()" /><strong>' </strong>
-        <input #latS [formField]="dmsForm.latS" id="enter__Where-latS" type="number"
+        <input #latS [formField]="dmsForm.latS" id="enter__Where-latS" aria-label="Latitude seconds, degrees minutes seconds format" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(7)"
           [class.border-danger]="dmsForm.latS().touched() && dmsForm.latS().invalid()" /><strong>"
         </strong>
-        <input #latQ [formField]="dmsForm.latQ" id="enter__Where-latQ" type="text" title="N or S"
+        <input #latQ [formField]="dmsForm.latQ" id="enter__Where-latQ" aria-label="Latitude direction, N or S, degrees minutes seconds format" type="text" title="N or S"
           (change)="onDmsChg()" [attr.tabindex]="ti(8)"
           [class.border-danger]="dmsForm.latQ().touched() && dmsForm.latQ().invalid()" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
@@ -63,10 +63,10 @@
 
 
       <span>
-        <input #lngI [formField]="ddForm.lngI" type="number" id="enter__Where-lngI"
+        <input #lngI [formField]="ddForm.lngI" type="number" id="enter__Where-lngI" aria-label="Longitude degrees, decimal degrees format"
           (change)="onDdChg()" [attr.tabindex]="ti(9)"
           [class.border-danger]="ddForm.lngI().touched() && ddForm.lngI().invalid()" /><strong>.</strong>
-        <input #lngF [formField]="ddForm.lngF" type="number" step="100" id="enter__Where-lngF"
+        <input #lngF [formField]="ddForm.lngF" type="number" step="100" id="enter__Where-lngF" aria-label="Longitude decimal fraction, decimal degrees format"
           (change)="onDdChg()" [attr.tabindex]="ti(10)"
           [class.border-danger]="ddForm.lngF().touched() && ddForm.lngF().invalid()" />
         <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
@@ -74,15 +74,15 @@
 
 
       <span>
-        <input #lngDdmD [formField]="ddmForm.lngDdmD" id="enter__Where-lngDdmD" type="number"
+        <input #lngDdmD [formField]="ddmForm.lngDdmD" id="enter__Where-lngDdmD" aria-label="Longitude degrees, degrees and decimal minutes format" type="number"
           (change)="onDdmChg()" [attr.tabindex]="ti(11)"
           [class.border-danger]="ddmForm.lngDdmD().touched() && ddmForm.lngDdmD().invalid()" /><strong>°
         </strong>
-        <input #lngDdmM [formField]="ddmForm.lngDdmM" id="enter__Where-lngDdmM" type="number"
+        <input #lngDdmM [formField]="ddmForm.lngDdmM" id="enter__Where-lngDdmM" aria-label="Longitude minutes, degrees and decimal minutes format" type="number"
           (change)="onDdmChg()" [attr.tabindex]="ti(12)"
           [class.border-danger]="ddmForm.lngDdmM().touched() && ddmForm.lngDdmM().invalid()" /><strong>'
         </strong>
-        <input #lngDdmQ [formField]="ddmForm.lngDdmQ" id="enter__Where-lngDdmQ" type="text"
+        <input #lngDdmQ [formField]="ddmForm.lngDdmQ" id="enter__Where-lngDdmQ" aria-label="Longitude direction, E or W, degrees and decimal minutes format" type="text"
           title="E or W" (change)="onDdmChg()" [attr.tabindex]="ti(13)"
           [class.border-danger]="ddmForm.lngDdmQ().touched() && ddmForm.lngDdmQ().invalid()" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>&nbsp; or &nbsp;
@@ -90,16 +90,16 @@
 
 
       <span>
-        <input [formField]="dmsForm.lngD" id="enter__Where-lngD" type="number"
+        <input [formField]="dmsForm.lngD" id="enter__Where-lngD" aria-label="Longitude degrees, degrees minutes seconds format" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(14)"
           [class.border-danger]="dmsForm.lngD().touched() && dmsForm.lngD().invalid()" /><strong>° </strong>
-        <input [formField]="dmsForm.lngM" id="enter__Where-lngM" type="number"
+        <input [formField]="dmsForm.lngM" id="enter__Where-lngM" aria-label="Longitude minutes, degrees minutes seconds format" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(15)"
           [class.border-danger]="dmsForm.lngM().touched() && dmsForm.lngM().invalid()" /><strong>' </strong>
-        <input [formField]="dmsForm.lngS" id="enter__Where-lngS" type="number"
+        <input [formField]="dmsForm.lngS" id="enter__Where-lngS" aria-label="Longitude seconds, degrees minutes seconds format" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(16)"
           [class.border-danger]="dmsForm.lngS().touched() && dmsForm.lngS().invalid()" /><strong>" </strong>
-        <input [formField]="dmsForm.lngQ" id="enter__Where-lngQ" type="text" title="E or W"
+        <input [formField]="dmsForm.lngQ" id="enter__Where-lngQ" aria-label="Longitude direction, E or W, degrees minutes seconds format" type="text" title="E or W"
           (change)="onDmsChg()" [attr.tabindex]="ti(17)"
           [class.border-danger]="dmsForm.lngQ().touched() && dmsForm.lngQ().invalid()" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
