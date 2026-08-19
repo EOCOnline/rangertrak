@@ -8,7 +8,7 @@
 
 
       <span>
-        <input #latI [formField]="ddForm.latI" type="number" (change)="onDdChg()" min="-180" max="180"
+        <input #latI [formField]="ddForm.latI" type="number" (change)="onDdChg()"
           id="enter__Where-latI" [attr.tabindex]="ti(0)" />
 
         <!--span *ngIf="location.get('latI')?.touched && location.get('latI')?.hasError('required')"
@@ -17,34 +17,34 @@
         </span-->
 
         <strong>.</strong>
-        <input #latF [formField]="ddForm.latF" type="number" (change)="onDdChg()" step="100" min="0" max="99999"
+        <input #latF [formField]="ddForm.latF" type="number" (change)="onDdChg()" step="100"
           id="enter__Where-latF" [attr.tabindex]="ti(1)" />
         <strong>° </strong>
       </span>
       <span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
 
       <span>
-        <input #latDdmD [formField]="ddmForm.latDdmD" id="enter__Where-latDdmD" type="number" min="0" max="90"
+        <input #latDdmD [formField]="ddmForm.latDdmD" id="enter__Where-latDdmD" type="number"
           (change)="onDdmChg()" [attr.tabindex]="ti(2)" /><strong>°
         </strong>
-        <input #latDdmM [formField]="ddmForm.latDdmM" id="enter__Where-latDdmM" type="number" min="0" max="59"
+        <input #latDdmM [formField]="ddmForm.latDdmM" id="enter__Where-latDdmM" type="number"
           (change)="onDdmChg()" [attr.tabindex]="ti(3)" /><strong>'
         </strong>
-        <input #latDdmQ [formField]="ddmForm.latDdmQ" id="enter__Where-latDdmQ" type="text" pattern="'e','E','w','W'"
+        <input #latDdmQ [formField]="ddmForm.latDdmQ" id="enter__Where-latDdmQ" type="text"
           title="E or W" (change)="onDdmChg()" [attr.tabindex]="ti(4)" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>&nbsp; or &nbsp;
       </span>
 
 
       <span>
-        <input #latD [formField]="dmsForm.latD" id="enter__Where-latD" type="number" min="0" max="90"
+        <input #latD [formField]="dmsForm.latD" id="enter__Where-latD" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(5)" /><strong>° </strong>
-        <input #latM [formField]="dmsForm.latM" id="enter__Where-latM" type="number" min="0" max="59"
+        <input #latM [formField]="dmsForm.latM" id="enter__Where-latM" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(6)" /><strong>' </strong>
-        <input #latS [formField]="dmsForm.latS" id="enter__Where-latS" type="number" min="0" max="59.99"
+        <input #latS [formField]="dmsForm.latS" id="enter__Where-latS" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(7)" /><strong>"
         </strong>
-        <input #latQ [formField]="dmsForm.latQ" id="enter__Where-latQ" type="text" pattern="'e','E','w','W'" title="E or W"
+        <input #latQ [formField]="dmsForm.latQ" id="enter__Where-latQ" type="text" title="E or W"
           (change)="onDmsChg()" [attr.tabindex]="ti(8)" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
       </span>
@@ -57,35 +57,35 @@
 
 
       <span>
-        <input #lngI [formField]="ddForm.lngI" type="number" min="-180" max="180" id="enter__Where-lngI"
+        <input #lngI [formField]="ddForm.lngI" type="number" id="enter__Where-lngI"
           (change)="onDdChg()" [attr.tabindex]="ti(9)" /><strong>.</strong>
-        <input #lngF [formField]="ddForm.lngF" type="number" step="100" min="0" max="99999" id="enter__Where-lngF"
+        <input #lngF [formField]="ddForm.lngF" type="number" step="100" id="enter__Where-lngF"
           (change)="onDdChg()" [attr.tabindex]="ti(10)" />
         <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>&nbsp; or &nbsp;
       </span>
 
 
       <span>
-        <input #lngDdmD [formField]="ddmForm.lngDdmD" id="enter__Where-lngDdmD" type="number" min="0" max="90"
+        <input #lngDdmD [formField]="ddmForm.lngDdmD" id="enter__Where-lngDdmD" type="number"
           (change)="onDdmChg()" [attr.tabindex]="ti(11)" /><strong>°
         </strong>
-        <input #lngDdmM [formField]="ddmForm.lngDdmM" id="enter__Where-lngDdmM" type="number" min="0" max="59"
+        <input #lngDdmM [formField]="ddmForm.lngDdmM" id="enter__Where-lngDdmM" type="number"
           (change)="onDdmChg()" [attr.tabindex]="ti(12)" /><strong>'
         </strong>
-        <input #lngDdmQ [formField]="ddmForm.lngDdmQ" id="enter__Where-lngDdmQ" type="text" pattern="'n','N','s','S'"
+        <input #lngDdmQ [formField]="ddmForm.lngDdmQ" id="enter__Where-lngDdmQ" type="text"
           title="N or S" (change)="onDdmChg()" [attr.tabindex]="ti(13)" />
         <span title="Degree Decimal Minutes"><strong>DDM</strong></span>&nbsp; or &nbsp;
       </span>
 
 
       <span>
-        <input [formField]="dmsForm.lngD" id="enter__Where-lngD" type="number" min="0" max="90"
+        <input [formField]="dmsForm.lngD" id="enter__Where-lngD" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(14)" /><strong>° </strong>
-        <input [formField]="dmsForm.lngM" id="enter__Where-lngM" type="number" min="0" max="59"
+        <input [formField]="dmsForm.lngM" id="enter__Where-lngM" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(15)" /><strong>' </strong>
-        <input [formField]="dmsForm.lngS" id="enter__Where-lngS" type="number" min="0" max="59.99"
+        <input [formField]="dmsForm.lngS" id="enter__Where-lngS" type="number"
           (change)="onDmsChg()" [attr.tabindex]="ti(16)" /><strong>" </strong>
-        <input [formField]="dmsForm.lngQ" id="enter__Where-lngQ" type="text" pattern="'n','N','s','S'" title="N or S"
+        <input [formField]="dmsForm.lngQ" id="enter__Where-lngQ" type="text" title="N or S"
           (change)="onDmsChg()" [attr.tabindex]="ti(17)" />
         <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
       </span>
