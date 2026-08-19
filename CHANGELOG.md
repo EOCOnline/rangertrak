@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.8](https://github.com/EOCOnline/rangertrak/compare/v0.15.7...v0.15.8) (2026-08-19)
+
+
+### Features
+
+* **sprint-d:** convert Entry to Angular Signal Forms ([2a25bf5](https://github.com/EOCOnline/rangertrak/commit/2a25bf528742ef944d3a478060cf7be5ca5f523b)), closes [angular/components#32072](https://github.com/angular/components/issues/32072)
+* **sprint-d:** convert Location to Angular Signal Forms ([60d6008](https://github.com/EOCOnline/rangertrak/commit/60d6008a2ece80df16cf62bd4a19d78518daf2c4))
+* **sprint-d:** convert Settings to Angular Signal Forms ([a65bb95](https://github.com/EOCOnline/rangertrak/commit/a65bb95aec41ddf5c10d61bbd2fe35c20572cd65))
+* **sprint-d:** convert Time-picker to Angular Signal Forms ([9dcff2e](https://github.com/EOCOnline/rangertrak/commit/9dcff2ec675819deba63d006897fd4408c1c3bf4))
+
+
+### Bug Fixes
+
+* **sprint-d:** remove min/max/pattern attributes NG8022 disallows on [formField] ([dd9c98e](https://github.com/EOCOnline/rangertrak/commit/dd9c98ea6cbaeb5420865f64723cfcb0a9daf35d))
+
 ### [0.15.7](https://github.com/EOCOnline/rangertrak/compare/v0.15.6...v0.15.7) (2026-08-17)
 
 
