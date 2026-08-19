@@ -1,4 +1,4 @@
-<div [formGroup]="form">
+<div>
   <!-- ======================================= -->
   <h2>Location Defaults</h2>
   <!--legend>Default </legend-->
@@ -21,51 +21,53 @@
   <div class="input-group">
     <span class="strong">Latitude: &nbsp;</span>
     <input
-      [class.border-danger]="form.get('defLat')?.touched && form.get('defLat')?.invalid"
-      type="number" formControlName="defLat" step=".01" min="-89.99" max="89.99"
-      placeholder="{{settings.defLat.toFixed(4)}}" value="{{settings.defLat.toFixed(4)}}" [style.width.px]="75"
+      [class.border-danger]="form.defLat().touched() && form.defLat().invalid()"
+      type="number" [formField]="form.defLat" step=".01"
+      placeholder="{{settings.defLat.toFixed(4)}}" [style.width.px]="75"
       data-lpignore="true" />
-    <div *ngIf="form.get('defLat')?.touched && form.get('defLat')?.hasError('required')"
-      class="text-sm text-danger">
+    @if (form.defLat().touched() && form.defLat().invalid()) {
+    <div class="text-sm text-danger">
       latitude is required
     </div>
+    }
   </div>
 
   <div class="input-group">
     <span class="strong">Longitude: </span>
     <input
-      [class.border-danger]="form.get('defLng')?.touched && form.get('defLng')?.invalid"
-      type="number" formControlName="defLng" step=".01" min="-179.99" max="179.99"
+      [class.border-danger]="form.defLng().touched() && form.defLng().invalid()"
+      type="number" [formField]="form.defLng" step=".01"
       placeholder="{{settings!.defLng.toFixed(4)}}" [style.width.px]="75" data-lpignore="true" />
-    <div *ngIf="form.get('defLng')?.touched && form.get('defLng')?.hasError('required')"
-      class="text-sm text-danger">
+    @if (form.defLng().touched() && form.defLng().invalid()) {
+    <div class="text-sm text-danger">
       longitude is required
     </div>
+    }
   </div>
 
   <div class="input-group">
     <span class="strong">Plus Code: </span>
     <input
-      [class.border-danger]="form.get('defPlusCode')?.touched && form.get('defPlusCode')?.invalid"
-      type="text" formControlName="defPlusCode" placeholder="84VVCGWP+VW" [style.width.px]="100"
+      [class.border-danger]="form.defPlusCode().touched() && form.defPlusCode().invalid()"
+      type="text" [formField]="form.defPlusCode" placeholder="84VVCGWP+VW" [style.width.px]="100"
       data-lpignore="true" />
     &nbsp;&nbsp;<button onclick="window.open('https://plus.codes/map/','_blank')">Find a +Code</button>
-    <div
-      *ngIf="form.get('defPlusCode')?.touched && form.get('defPlusCode')?.hasError('required')"
-      class="text-sm text-danger">
+    @if (form.defPlusCode().touched() && form.defPlusCode().invalid()) {
+    <div class="text-sm text-danger">
       plusCode is required
     </div>
+    }
   </div>
 
   <div class="input-group">
     <span class="strong">w3wLocale: </span>
     <input
-      [class.border-danger]="form.get('w3wLocale')?.touched && form.get('w3wLocale')?.invalid"
-      type="text" formControlName="w3wLocale" placeholder="Vashon, WA" [style.width.px]="100" data-lpignore="true" />
-    <div
-      *ngIf="form.get('w3wLocale')?.touched && form.get('w3wLocale')?.hasError('required')"
-      class="text-sm text-danger">
+      [class.border-danger]="form.w3wLocale().touched() && form.w3wLocale().invalid()"
+      type="text" [formField]="form.w3wLocale" placeholder="Vashon, WA" [style.width.px]="100" data-lpignore="true" />
+    @if (form.w3wLocale().touched() && form.w3wLocale().invalid()) {
+    <div class="text-sm text-danger">
       plusCode is required
     </div>
+    }
   </div>
 </div>

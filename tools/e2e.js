@@ -269,6 +269,41 @@ async function checkEntryPhoto() {
   }
 }
 
+async function checkSettingsFormSave() {
+  console.log('\nSettings form (Sprint D, Signal Forms): edit fields in the UI, Save, reload, values persisted')
+  await goto('/settings')
+  const before = await evaluate(`(() => {
+    const mission = document.querySelector('input[placeholder="Mission #"]');
+    const debugMode = document.querySelector('input[placeholder="debugMode"]');
+    const setNative = (el, value) => {
+      Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, value);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    setNative(mission, 'E2E-SIGNAL-FORMS');
+    debugMode.checked = !debugMode.checked;
+    const debugModeSet = debugMode.checked;
+    // Signal Forms' [formField] only listens for 'input' (see nativeControlCreate in
+    // @angular/forms/signals), same as every other control - not 'change'. A real click
+    // fires both natively; this synthetic toggle needs 'input' explicitly.
+    debugMode.dispatchEvent(new Event('input', { bubbles: true }));
+    const saveBtn = document.querySelector('.settings__Save-button');
+    return { hasMission: !!mission, hasDebugMode: !!debugMode, hasSaveBtn: !!saveBtn, saveDisabled: saveBtn?.disabled, debugModeSet };
+  })()`)
+  check('mission input found', before.hasMission, true)
+  check('debugMode checkbox found', before.hasDebugMode, true)
+  check('Save button found and not disabled by required-field validation', before.hasSaveBtn && !before.saveDisabled, true)
+
+  await evaluate(`document.querySelector('.settings__Save-button').click()`)
+  await sleep(3000) // onFormSubmit() writes localStorage synchronously, then window.location.reload()
+
+  const after = await evaluate(`(() => {
+    const s = JSON.parse(localStorage.getItem('appSettings') || '{}');
+    return { mission: s.mission, debugMode: s.debugMode };
+  })()`)
+  check('edited mission value survived Save + reload', after.mission, 'E2E-SIGNAL-FORMS')
+  check('edited debugMode value survived Save + reload', after.debugMode, before.debugModeSet)
+}
+
 async function checkMissionRoundTrip(downloads) {
   console.log('\nMission export -> wipe all storage -> import: the disaster path')
   await goto('/settings')
@@ -375,6 +410,7 @@ async function main() {
       await checkFieldNameAliases(fx)
       await checkBundleZip(fx)
       await checkEntryPhoto()
+      await checkSettingsFormSave()
       await checkMissionRoundTrip(downloads)
       await goto('/'); await evaluate(`localStorage.clear()`)
     }
