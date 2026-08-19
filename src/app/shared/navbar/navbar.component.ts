@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
+import { Component, OnInit, ChangeDetectionStrategy, signal } from '@angular/core'
 import { NavigationEnd, NavigationError, NavigationStart, Router, RouterModule } from '@angular/router';
 import { faL, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
@@ -31,7 +31,11 @@ export class NavbarComponent implements OnInit {
    */
   get isInstallable(): boolean { return this.installableService.installable() }
 
-  isNavigating = false
+  // Mutated inside a raw this.router.events.subscribe() callback, not an Angular
+  // template binding - this app is zoneless, so a plain field written there has no
+  // guaranteed path back into change detection. Signals close that gap (Sprint G).
+  // Rendered on every page.
+  isNavigating = signal(false)
   faMapMarkedAlt = faMapMarkedAlt
   recycled = 0
 
@@ -49,7 +53,7 @@ export class NavbarComponent implements OnInit {
         if (event instanceof NavigationStart) {
           // REVIEW: This seems to help page get properly loaded????
           Utility.sleep(100)
-          this.isNavigating = true
+          this.isNavigating.set(true)
 
           if (false) {
             //if (this.recycled++ < 3) {
@@ -60,12 +64,12 @@ export class NavbarComponent implements OnInit {
           }
         }
         if (event instanceof NavigationEnd) {
-          this.isNavigating = false
+          this.isNavigating.set(false)
         }
         if (event instanceof NavigationError) {
           // https://angular.io/api/router/NavigationError
           this.log.error(`Navigation Error event: to "${event.target?.toString()}" got "${event.toString()}"`, this.id)
-          //this.isNavigating = false
+          //this.isNavigating.set(false)
 
         }
       }

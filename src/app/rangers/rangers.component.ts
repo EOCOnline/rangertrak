@@ -4,7 +4,7 @@ import { unzipSync } from 'fflate'
 import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { AgGridAngular } from 'ag-grid-angular';
 import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
@@ -40,7 +40,10 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   pageDescr = `Grid display of rangers & teams on this mission`
 
   private rangersSubscription!: Subscription
-  public rangers: RangerType[] = []
+  // Mutated inside the rangersSubscription's subscribe() callback, not an Angular
+  // template binding - this app is zoneless, so a plain field written there has no
+  // guaranteed path back into change detection. Signals close that gap (Sprint G).
+  public rangers = signal<RangerType[]>([])
 
   private settingsSubscription!: Subscription
   private settings!: SettingsType
@@ -182,20 +185,20 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.rangersSubscription = this.rangerService.getRangersObserver().subscribe({
       next: (newRangers) => {
-        this.rangers = newRangers
+        this.rangers.set(newRangers)
         this.log.verbose('Received new Rangers via subscription.', this.id)
       },
       error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
       complete: () => this.log.info('Rangers Subscription complete', this.id)
     })
 
-    this.log.verbose(`ngInit: ${this.rangers.length} Rangers retrieved from Local Storage`, this.id)
+    this.log.verbose(`ngInit: ${this.rangers().length} Rangers retrieved from Local Storage`, this.id)
 
-    if (this.rangers.length < 1) {
+    if (this.rangers().length < 1) {
       this.alert.Banner("No Rangers have been entered yet. Go to the bottom & click on 'Advanced' to resolve.")
       //this.alert.OpenSnackBar(`No Rangers found. Please enter them into the grid and then use the Update button,  or provide a Rangers.JSON file to import from or FUTUREE: Import them from an Excel file.`, `Nota Bene`, 1000)
     } else {
-      //this.alert.OpenSnackBar(`Imported "${this.rangers.length}" rangers.`, `Nota Bene`, 1000)
+      //this.alert.OpenSnackBar(`Imported "${this.rangers().length}" rangers.`, `Nota Bene`, 1000)
     }
 
     if (!this.settings?.debugMode) {

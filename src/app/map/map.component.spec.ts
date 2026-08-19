@@ -28,7 +28,7 @@ describe('MapComponent', () => {
   });
 
   it('reads the current field report count on init', () => {
-    expect(component.numAllRows).toBeGreaterThanOrEqual(0);
+    expect(component.numAllRows()).toBeGreaterThanOrEqual(0);
   });
 
   it('toggles selected-reports display without throwing', () => {

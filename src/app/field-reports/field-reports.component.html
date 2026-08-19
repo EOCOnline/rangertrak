@@ -29,7 +29,7 @@
   <div id="reportsgrid">
     @if (!isPhone()) {
       <ag-grid-angular #reportsGrid rowAnimation style="width: 100%; height: 60vh;" (gridReady)="onGridReady($event)"
-        [gridOptions]="gridOptions" [rowData]="fieldReportArray" [columnDefs]="columnDefs"
+        [gridOptions]="gridOptions" [rowData]="fieldReportArray()" [columnDefs]="columnDefs"
         [tooltipShowDelay]="500">
         <!--
 [defaultColDef]="defaultColDef"
@@ -44,7 +44,7 @@
         -->
       </ag-grid-angular>
       <div class="rows">
-        <span class="selected"><span class="strong">Selected Rows: {{selectedRows}} </span> &nbsp; (Maps have a switch to
+        <span class="selected"><span class="strong">Selected Rows: {{selectedRows()}} </span> &nbsp; (Maps have a switch to
           only show these rows)</span>
         <span class="pager">
           <label for="pet-select"># Rows per Page: &nbsp;</label>
@@ -86,7 +86,7 @@
            the command post, per Private Roadmap.md's Field Reports/ICS-309 carve-out.
            Read-only - corrections still happen on a wider screen where the grid runs. -->
       <div class="field-reports-cards" role="list">
-        @for (report of fieldReportArray; track report.id) {
+        @for (report of fieldReportArray(); track report.id) {
           <article class="field-reports-cards__card" role="listitem">
             <header class="field-reports-cards__header">
               <span class="field-reports-cards__callsign">{{ report.callsign }}</span>

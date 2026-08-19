@@ -1,7 +1,7 @@
 import { interval, map, Observable, Subscription } from 'rxjs'
 
 import { CommonModule } from '@angular/common'
-import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core'
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, signal } from '@angular/core'
 
 import { ClockService, LogService, SettingsService, SettingsType } from '../services'
 import { Utility } from '../'
@@ -33,10 +33,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private settingsSubscription!: Subscription
   private settings!: SettingsType
 
-  public eventInfo = ''
-  public eventDetails = ''
-  public opPeriod = ''
-  public opPeriodDetails = ''
+  // Mutated from onNewSettings(), itself called from a raw RxJS subscribe() callback,
+  // not an Angular template binding - this app is zoneless, so a plain field written
+  // there has no guaranteed path back into change detection. Signals close that gap
+  // (Sprint G). Rendered on every page, so a stale value here would be widely visible.
+  public eventInfo = signal('')
+  public eventDetails = signal('')
+  public opPeriod = signal('')
+  public opPeriodDetails = signal('')
 
   public opPeriodStart = new Date()
 
@@ -80,14 +84,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.settings = newSettings
     // debugger
-    this.eventInfo = `#${this.settings.mission}: ${this.settings.event}`
-    this.eventDetails = `Mission #: ${this.settings.mission}; Mission Name: ${this.settings.event}; Notes: ${this.settings.eventNotes}`
-    this.opPeriod = `${this.settings.opPeriod}`
+    this.eventInfo.set(`#${this.settings.mission}: ${this.settings.event}`)
+    this.eventDetails.set(`Mission #: ${this.settings.mission}; Mission Name: ${this.settings.event}; Notes: ${this.settings.eventNotes}`)
+    this.opPeriod.set(`${this.settings.opPeriod}`)
     //   let start: Date = this.settings.opPeriodStart
     // let end: Date = this.settings.opPeriodEnd
     //  let s: string = start.toDateString()
     //  let e: string = end.toDateString()
-    this.opPeriodDetails = `${this.settings.opPeriod}: ${this.settings.opPeriodStart} to ${this.settings.opPeriodEnd}`
+    this.opPeriodDetails.set(`${this.settings.opPeriod}: ${this.settings.opPeriodStart} to ${this.settings.opPeriodEnd}`)
 
     // if (!this.settings.opPeriodStart) {
     //   console.error(`OpPeriod had no Start time! Reset to 2 hours ago...`, this.id)

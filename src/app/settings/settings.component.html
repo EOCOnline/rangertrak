@@ -25,8 +25,8 @@
 
     <rangertrak-settings-instructions></rangertrak-settings-instructions>
 
-    <rangertrak-settings-mission-section [form]="settingsForm" [opPeriodStart]="opPeriodStart"
-      [opPeriodEnd]="opPeriodEnd" [timePickerLabelStart]="timePickerLabelStart"
+    <rangertrak-settings-mission-section [form]="settingsForm" [opPeriodStart]="opPeriodStart()"
+      [opPeriodEnd]="opPeriodEnd()" [timePickerLabelStart]="timePickerLabelStart"
       [timePickerLabelEnd]="timePickerLabelEnd" (timeEventStart)="onNewTimeEventStart($event)"
       (timeEventEnd)="onNewTimeEventEnd($event)">
     </rangertrak-settings-mission-section>
@@ -36,7 +36,7 @@
 
     <rangertrak-settings-maps-section [form]="settingsForm"></rangertrak-settings-maps-section>
 
-    <rangertrak-settings-field-report-statuses [rowData]="rowData"></rangertrak-settings-field-report-statuses>
+    <rangertrak-settings-field-report-statuses [rowData]="rowData()"></rangertrak-settings-field-report-statuses>
 
     <!-- ======================================= -->
     <h2>Debug</h2>

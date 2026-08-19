@@ -4,9 +4,9 @@
       <div #mapContainer id="lmap-main" (click)="onMouseClick($event)"></div>
     </div>
     <div>
-      Latitude: <span class="strong">{{mouseLatLng.lat.toFixed(5)}}</span> Longitude:
-      <span class="strong">{{mouseLatLng.lng.toFixed(5)}}</span> Zoom:
-      <span class="strong">{{zoom}}</span>
+      Latitude: <span class="strong">{{mouseLatLng().lat.toFixed(5)}}</span> Longitude:
+      <span class="strong">{{mouseLatLng().lng.toFixed(5)}}</span> Zoom:
+      <span class="strong">{{zoom()}}</span>
 
       <div id="Lmap-status">Click map to copy coordinates</div>
     </div>
@@ -14,9 +14,9 @@
   <div #overviewContainer id="lmap-overview"></div>
   <br />
 
-  <label for="selectedFieldReports">Field reports to show: All ({{numAllRows}})</label>
+  <label for="selectedFieldReports">Field reports to show: All ({{numAllRows()}})</label>
   <input id="selectedFieldReports" type="checkbox" (change)="onSwitchSelectedFieldReports()" />
-  <label for="selectedFieldReports">Just those ({{numSelectedRows}}) selected in the Field Report panel</label>
+  <label for="selectedFieldReports">Just those ({{numSelectedRows()}}) selected in the Field Report panel</label>
 
   <br />
   <rangertrak-disclosure summary="Instructions">
@@ -24,7 +24,7 @@
       <li>This displays All Field Reports for All Rangers, by default.</li>
       <li>
         If a subset of Field Reports are selected on the Field Reports page, then those
-        {{this.numSelectedRows}} reports can be displayed, with the switch just above.
+        {{numSelectedRows()}} reports can be displayed, with the switch just above.
       </li>
       <li>Click on the main leaflet map to store the lat/long coordinates in the clipboard.
       </li>

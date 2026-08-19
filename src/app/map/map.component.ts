@@ -4,7 +4,8 @@ import { Subscription } from 'rxjs'
 
 import { DOCUMENT } from '@angular/common'
 import {
-  AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild
+  AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild,
+  signal
 } from '@angular/core'
 
 import { buildPmtilesStyle, registerPmtilesProtocol } from '../shared/mapping/map-style'
@@ -52,9 +53,12 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   private settingsSubscription!: Subscription
   private fieldReportsSubscription!: Subscription
 
-  public numAllRows = 0
-  public numSelectedRows = 0
-  public zoomDisplay = 15
+  // Mutated from MapLibre's own event listeners / an RxJS subscribe callback, not
+  // Angular template bindings - this app is zoneless, so a plain field written there
+  // has no guaranteed path back into change detection. Signals close that gap. (Sprint G)
+  public numAllRows = signal(0)
+  public numSelectedRows = signal(0)
+  public zoomDisplay = signal(15)
 
   constructor(
     private settingsService: SettingsService,
@@ -72,7 +76,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
       next: (newReports) => {
         this.fieldReports = newReports
-        this.numAllRows = newReports.numReport
+        this.numAllRows.set(newReports.numReport)
         this.refreshMarkers()
       },
       error: (e) => this.log.error('MapComponent field reports subscription error: ' + e, 'MapComponent')
@@ -81,10 +85,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.fieldReports = this.fieldReportService.getCurrentFieldReports()
-    this.numAllRows = this.fieldReports.numReport
-    // Set before the first change-detection pass, not in ngAfterViewInit - mutating a
-    // template-bound property there trips NG0100 (ExpressionChangedAfterItHasBeenChecked).
-    this.zoomDisplay = this.settings.google.defZoom
+    this.numAllRows.set(this.fieldReports.numReport)
+    this.zoomDisplay.set(this.settings.google.defZoom)
   }
 
   ngAfterViewInit(): void {
@@ -109,7 +111,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.fitToBounds()
     })
 
-    this.map.on('zoomend', () => { this.zoomDisplay = Math.round(this.map.getZoom()) })
+    this.map.on('zoomend', () => { this.zoomDisplay.set(Math.round(this.map.getZoom())) })
 
     this.map.on('click', (ev: MapMouseEvent) => this.onMapClick(ev))
 
@@ -225,9 +227,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onSwitchSelectedFieldReports(): void {
     this.showingSelectedOnly = !this.showingSelectedOnly
-    this.numSelectedRows = this.showingSelectedOnly
-      ? this.fieldReportService.getSelectedFieldReports().fieldReportArray.length
-      : this.numSelectedRows
+    if (this.showingSelectedOnly) {
+      this.numSelectedRows.set(this.fieldReportService.getSelectedFieldReports().fieldReportArray.length)
+    }
     this.refreshMarkers()
   }
 

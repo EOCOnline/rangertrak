@@ -9,7 +9,7 @@ import { DOCUMENT, JsonPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
   AfterViewInit, Component, ElementRef, Inject, isDevMode, NgZone, OnDestroy, OnInit, ViewChild,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy, signal
 } from '@angular/core'
 
 import {
@@ -64,9 +64,12 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   protected map!: Map
   public location!: LocationType
   public center = { lat: 0, lng: 0 }
-  public mouseLatLng = this.center // google.maps.LatLngLiteral |
-  public zoom = 10 // actual zoom level of main map
-  public zoomDisplay = 10 // what's displayed below main map
+  // Mutated from Leaflet's own event listeners (captureLMoveAndZoom, subclass zoomend
+  // handlers), not Angular template bindings - this app is zoneless
+  // (provideZonelessChangeDetection), so a plain field written there has no guaranteed
+  // path back into change detection. Signals close that gap. (Sprint G)
+  public mouseLatLng = signal(this.center) // google.maps.LatLngLiteral |
+  public zoom = signal(10) // actual zoom level of main map
 
   protected displayReports = false // Guard for the following
   protected fieldReportsSubscription!: Subscription
@@ -84,8 +87,8 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   // from *before* the click and appeared to reset itself to All. That is what the
   // "[Broken:]" label in the template was apologising for.
   protected showingSelectedOnly = false
-  public numSelectedRows = 0
-  public numAllRows = 0
+  public numSelectedRows = signal(0)
+  public numAllRows = signal(0)
 
   protected hasOverviewMap = false // Guard for overview map logic
   protected overviewMap: L.Map | undefined = undefined
@@ -131,7 +134,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       // REVIEW: Can initMap run OK w/ defaults, but w/o settings?
     } else {
       this.center = { lat: this.settings.defLat, lng: this.settings.defLng }
-      this.mouseLatLng = this.center
+      this.mouseLatLng.set(this.center)
     }
 
     // Derivitive maps should call this.initMap() themselves!
@@ -150,7 +153,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     }
 
     this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
-    this.mouseLatLng = this.center
+    this.mouseLatLng.set(this.center)
 
     if (!this.fieldReports) { //! or displayedFieldReportArray
       this.log.error(`(Abstract) initMainMap(): fieldReports not yet initialized while initializing abstract Map!`, this.id)
@@ -178,11 +181,8 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     }
 
     map.on('mousemove', ($event: L.LeafletMouseEvent) => {
-      // if (this.zoomDisplay) {
-      this.zoomDisplay = map.getZoom()
-      //}
       if ($event.latlng) {
-        this.mouseLatLng = $event.latlng //.toJSON()
+        this.mouseLatLng.set($event.latlng) //.toJSON()
       } else {
         this.log.warn(`(Abstract) No latlng on event in captureLMoveAndZoom()`, this.id)
       }
@@ -260,12 +260,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   //   }
   // }
 
-  onMapZoomed() {
-    if (this.zoom && this.map) {
-      this.zoom = this.map.getZoom()!
-    }
-  }
-
   clamp(num: number, min: number, max: number) {
     return Math.min(Math.max(num, min), max)
   }
@@ -288,7 +282,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   updateFieldReports() {
     this.log.excessive(`updateFieldReports()`, this.id)
 
-    this.numAllRows = this.fieldReports?.numReport ?? 0
+    this.numAllRows.set(this.fieldReports?.numReport ?? 0)
 
     if (!this.hasSelectedReports) {
       // Normal for maps without an all/selected control (e.g. the Entry mini-map).
@@ -296,7 +290,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     }
 
     this.selectedReports = this.fieldReportService.getSelectedFieldReports()
-    this.numSelectedRows = this.selectedReports?.fieldReportArray.length ?? 0
+    this.numSelectedRows.set(this.selectedReports?.fieldReportArray.length ?? 0)
 
     this.displayedFieldReportArray = this.showingSelectedOnly
       ? (this.selectedReports?.fieldReportArray ?? [])
@@ -318,10 +312,10 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   gotNewFieldReports(newReports: FieldReportsType) {
     this.log.verbose(`(Abstract) gotNewFieldReports(): New collection of ${newReports.numReport} Field Reports observed.`, this.id)
 
-    this.numAllRows = newReports.numReport
+    this.numAllRows.set(newReports.numReport)
     this.fieldReports = newReports
     this.fieldReportArray = newReports.fieldReportArray
-    console.assert(this.numAllRows == this.fieldReportArray.length)
+    console.assert(this.numAllRows() == this.fieldReportArray.length)
     // Keeps displayedFieldReportArray and the row counts in step with the new
     // reports while honouring the current all/selected choice.
     this.updateFieldReports()

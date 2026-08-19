@@ -96,8 +96,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
     min(path.google.overviewMaxZoom, 3); max(path.google.overviewMaxZoom, 22)
   })
 
-  opPeriodStart = new Date()
-  opPeriodEnd = new Date()
+  // Mutated in the constructor's settings-subscription next callback, alongside the
+  // already-signal settingsModel below - bringing these two in line with it (Sprint G).
+  opPeriodStart = signal(new Date())
+  opPeriodEnd = signal(new Date())
   timePickerLabelStart = 'Operational Period Start Time'
   timePickerLabelEnd = 'Operational Period End Time'
   imgDir = "./assets/imgs/"  //! NOTE: Hardcoded, not possible to edit & potential security risk?!
@@ -113,7 +115,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
    * ones. Same array reference as settingsModel().fieldReportStatuses - grid mutations are
    * visible on submit without any explicit sync.
    */
-  rowData: FieldReportStatusType[] = []
+  rowData = signal<FieldReportStatusType[]>([])
 
   /** E-37: reads through to the one service that knows. Getter, not a field, so it is not
    *  evaluated before the constructor's parameter properties exist. */
@@ -133,10 +135,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
         // reset form based on new settings...
         this.settingsModel.set(newSettings)
-        this.rowData = this.settings.fieldReportStatuses
+        this.rowData.set(this.settings.fieldReportStatuses)
 
-        this.opPeriodStart = this.settings.opPeriodStart
-        this.opPeriodEnd = this.settings.opPeriodEnd
+        this.opPeriodStart.set(this.settings.opPeriodStart)
+        this.opPeriodEnd.set(this.settings.opPeriodEnd)
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -163,7 +165,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     }
     this.log.verbose(`Got new start OpPeriod time: ${(newTime)}`, this.id)
     this.settings.opPeriodStart = newTime
-    this.opPeriodStart = newTime
+    this.opPeriodStart.set(newTime)
     this.settingsModel.update(m => ({ ...m, opPeriodStart: newTime }))
   }
 
@@ -174,7 +176,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     }
     this.log.verbose(`Got new end OpPeriod time: ${newTime}`, this.id)
     this.settings.opPeriodEnd = newTime
-    this.opPeriodEnd = newTime
+    this.opPeriodEnd.set(newTime)
     this.settingsModel.update(m => ({ ...m, opPeriodEnd: newTime }))
   }
 

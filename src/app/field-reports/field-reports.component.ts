@@ -65,13 +65,19 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   private get fieldReportStatuses(): FieldReportStatusType[] {
     return this.settingsService.settings?.fieldReportStatuses ?? []
   }
-  public fieldReportArray: FieldReportType[] = []
+  // Mutated inside gotNewFieldReports(), reached from the fieldReportsSubscription's
+  // subscribe() callback, not an Angular template binding - this app is zoneless, so a
+  // plain field written there has no guaranteed path back into change detection.
+  // Signals close that gap (Sprint G).
+  public fieldReportArray = signal<FieldReportType[]>([])
   private fieldReports: FieldReportsType | undefined
 
   private settingsSubscription!: Subscription
   private settings!: SettingsType
 
-  public selectedRows = 0
+  // Mutated inside onRowSelection(), itself invoked from gridOptions.onSelectionChanged
+  // - an ag-grid-native callback, not a template event binding. Same reasoning as above.
+  public selectedRows = signal(0)
   public columnDefs!: any
 
   /**
@@ -341,7 +347,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   // https://www.ag-grid.com/javascript-data-grid/grid-events/#reference-selection-selectionChanged
   onRowSelection(event: SelectionChangedEvent) {
     let selectedNodes = this.gridApi.getSelectedNodes()
-    this.selectedRows = selectedNodes.length
+    this.selectedRows.set(selectedNodes.length)
     let selectedData = selectedNodes.map((node: { data: FieldReportType; }) => node.data)
     this.log.verbose(`Selected Row Data obtained ${selectedNodes.length} selected rows`, this.id)
     this.fieldReportService.setSelectedFieldReports(selectedData)
@@ -368,7 +374,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`, this.id)
 
     this.fieldReports = newReports
-    this.fieldReportArray = newReports.fieldReportArray
+    this.fieldReportArray.set(newReports.fieldReportArray)
     this.refreshGrid()
     //this.reloadPage()  // TODO: needed? - creates endless loop!
   }

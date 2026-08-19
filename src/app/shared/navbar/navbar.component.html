@@ -35,7 +35,7 @@
     <li><a [routerLink]="['/settings']" routerLinkActive="active">Settings</a></li>
     <li><a [routerLink]="['/about']" routerLinkActive="active">About</a></li>
     <li><a [routerLink]="['/log']" routerLinkActive="active">Log</a></li>
-    <li *ngIf="isNavigating" class="Navbar__progressBar">Loading... <span class="smaller"> (Please 'Refresh' the
+    <li *ngIf="isNavigating()" class="Navbar__progressBar">Loading... <span class="smaller"> (Please 'Refresh' the
         page.)</span>
       <mat-progress-bar mode="indeterminate">
       </mat-progress-bar>

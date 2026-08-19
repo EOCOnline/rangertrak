@@ -236,8 +236,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     //? Per guidence on settings page: Maps do not use defLat/lng... They are auto-centered on the bounding coordinates centroid of all points entered and the map is then zoomed to show all points.
 
-    this.zoom = this.settings ? this.settings.leaflet.defZoom : 15
-    this.zoomDisplay = this.settings ? this.settings.leaflet.defZoom : 15
+    this.zoom.set(this.settings ? this.settings.leaflet.defZoom : 15)
 
     // this.log.excessive("initMainMap(): 3", this.id)
 
@@ -318,6 +317,15 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     }
 
     this.captureLMoveAndZoom(this.lMap)
+
+    // Sprint G: this.zoom was previously only set once, above, at init - never on an
+    // actual zoom, so the "Zoom:" display went stale as soon as the user touched the
+    // map. Mirrors mini-lmap.component.ts's zoomend handler.
+    this.lMap.on('zoomend', () => {
+      if (this.lMap) {
+        this.zoom.set(this.lMap.getZoom() ?? this.settings.leaflet.defZoom)
+      }
+    })
 
     // this.lMap.on('moveend', ($event: L.LeafletEvent) => {
     //   rectangle.setBounds(this.lMap.getBounds())

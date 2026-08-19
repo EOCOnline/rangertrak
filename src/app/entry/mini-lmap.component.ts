@@ -271,13 +271,12 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     L.DomUtil.addClass(this.lMap.getContainer(), 'crosshair-cursor-enabled')  //  Enable crosshairs
 
     this.lMap.on('zoomend', (ev: L.LeafletEvent) => { //: MouseEvent  :PointerEvent //HTMLDivElement L.LeafletEvent L.LeafletMouseEvent
-      if (this.zoomDisplay && this.lMap) {
+      if (this.lMap) {
         let z = this.lMap.getZoom()
         if (z === undefined) {
           z = this.settings.leaflet.defZoom
         }
-        this.zoom = z
-        this.zoomDisplay = z
+        this.zoom.set(z)
       }
     })
 
