@@ -24,7 +24,6 @@ import { AbstractMap, Utility } from '../shared'
 import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
 
 import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
-import { PageComponent } from '../shared/page/page.component';
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // Markers are copied into project via virtue of angular.json: search it for leaflet!!!
@@ -55,7 +54,7 @@ L.Marker.prototype.options.icon = iconDefault;
 @Component({
   selector: 'rangertrak-lmap',
   standalone: true,
-  imports: [PageComponent, DisclosureComponent],
+  imports: [DisclosureComponent],
   templateUrl: './lmap.component.html',
   styleUrls: [
     './lmap.component.scss'
@@ -72,10 +71,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
 
   public override id = 'Leaflet Map Component'
-  // D-31: the page header follows the nav. "Leaflet" is an implementation detail that
-  // means nothing to a scribe; it survives in the nav item's tooltip.
-  public override title = 'Map'
-  public override pageDescr = 'Detailed worldwide map. Save an area while online to keep it available offline.'
 
   // static: true - these divs sit in the template unconditionally, so the query resolves
   // before ngOnInit, which is where the maps are built. Resolved from this component's own
@@ -191,8 +186,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    * re-measures. The extra tick lets the browser finish layout first - calling it
    * synchronously here still measures 0 in some browsers.
    */
+  // Cleared in ngOnDestroy - see there for why this became necessary once that method
+  // actually removes the maps instead of leaving them dangling.
+  private afterViewInitTimer?: ReturnType<typeof setTimeout>
+
   ngAfterViewInit() {
-    setTimeout(() => {
+    this.afterViewInitTimer = setTimeout(() => {
       this.lMap?.invalidateSize()
       this.overviewLMap?.invalidateSize()
     })
@@ -867,7 +866,29 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   */
   }
 
-
-
-
+  /**
+   * E-64/E-70 blocker: this class declared `implements OnDestroy` but never defined one,
+   * so it inherited AbstractMap.ngOnDestroy() (unsubscribes only) and never called
+   * `.remove()` on either Leaflet instance. Invisible on a route change - the DOM node
+   * goes away and nobody notices the map, its tile layer, its markercluster group, its
+   * zoomend/moveend listeners, and leaflet.offline's handles are all still alive and
+   * detached. E-64's engine switch turns that latent leak into a real one: a user
+   * repeatedly flipping the "try the other map" toggle constructs a fresh Leaflet
+   * instance on every flip back and abandons the previous one. The old "removing ALSO
+   * destroys the div id reference" worry above (refreshMap()) does not apply here: with
+   * @if, Angular destroys and recreates the container element along with the component,
+   * so the container is fresh every time by construction.
+   *
+   * Also clears ngAfterViewInit's deferred invalidateSize() timer: with .remove() now
+   * actually running, a component destroyed before that timer fires (confirmed live by
+   * this fix's own unit test, which destroys immediately after detectChanges()) would
+   * otherwise call invalidateSize() on an already-removed map and throw - previously
+   * harmless only because the map was never really removed.
+   */
+  override ngOnDestroy(): void {
+    super.ngOnDestroy()
+    clearTimeout(this.afterViewInitTimer)
+    this.lMap?.remove()
+    this.overviewLMap?.remove()
+  }
 }

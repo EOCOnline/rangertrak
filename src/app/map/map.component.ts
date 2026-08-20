@@ -13,7 +13,6 @@ import {
   FieldReportsType, FieldReportService, FieldReportType, LogService, SettingsService, SettingsType
 } from '../shared/services'
 import { DisclosureComponent } from '../shared/disclosure/disclosure.component'
-import { PageComponent } from '../shared/page/page.component'
 import { Utility } from '../shared'
 
 const REPORTS_SOURCE_ID = 'field-reports'
@@ -26,17 +25,12 @@ const REPORTS_SOURCE_ID = 'field-reports'
 @Component({
   selector: 'rangertrak-map',
   standalone: true,
-  imports: [PageComponent, DisclosureComponent],
+  imports: [DisclosureComponent],
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
-
-  // D-31: "Backup map" rather than "Offline Map" - the Leaflet map is offline-capable too,
-  // so "offline" never was the distinction. This is the one that works when nothing else does.
-  public title = 'Backup map'
-  public pageDescr = 'Bundled fallback map: works with no connection, pilot region only, no street names.'
 
   // Resolved from this component's own view, never by DOM id. Three map components once
   // all used id="map", and both MapLibre and Leaflet resolve a string container globally -
@@ -59,6 +53,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   public numAllRows = signal(0)
   public numSelectedRows = signal(0)
   public zoomDisplay = signal(15)
+  // E-64: mirrors LmapComponent's readout - cheap to add since the map/mousemove idiom is
+  // already used here for zoomend. Stays at its initial value on touch devices (no
+  // `mousemove` event there), same as the Leaflet readout - not a regression.
+  public mouseLatLng = signal({ lat: 0, lng: 0 })
 
   constructor(
     private settingsService: SettingsService,
@@ -87,6 +85,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fieldReports = this.fieldReportService.getCurrentFieldReports()
     this.numAllRows.set(this.fieldReports.numReport)
     this.zoomDisplay.set(this.settings.maplibre.defZoom)
+    this.mouseLatLng.set({ lat: this.settings.defLat, lng: this.settings.defLng })
   }
 
   ngAfterViewInit(): void {
@@ -112,6 +111,14 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     this.map.on('zoomend', () => { this.zoomDisplay.set(Math.round(this.map.getZoom())) })
+
+    // Mirrors LmapComponent's own readout. `mousemove` fires continuously - if this ever
+    // causes jank, throttle it - but Leaflet's own mousemove-driven readout does the same
+    // thing today with no reported issue, so this is not a new pattern. No-op on touch
+    // devices (no `mousemove` there), same as the Leaflet readout - not a regression.
+    this.map.on('mousemove', (ev: MapMouseEvent) => {
+      this.mouseLatLng.set({ lat: ev.lngLat.lat, lng: ev.lngLat.lng })
+    })
 
     this.map.on('click', (ev: MapMouseEvent) => this.onMapClick(ev))
 

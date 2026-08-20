@@ -194,7 +194,7 @@ function makeFixtures(dir) {
 
 // ── the checks ───────────────────────────────────────────────────────────────
 
-const ROUTES = ['/', '/lmap', '/map', '/reports', '/rangers', '/settings', '/about', '/log']
+const ROUTES = ['/', '/map', '/reports', '/rangers', '/settings', '/about', '/log']
 
 async function checkRoutesRender() {
   console.log('\nEvery route renders, with no console errors')
@@ -229,8 +229,48 @@ async function checkNavbarLayout() {
     return { overlaps, labels: links.map(a => a.textContent.trim()) };
   })()`)
   check('no overlapping nav items at 1360px', nav.overlaps, 0)
-  check('D-31 map names are in the nav', nav.labels.includes('Map') && nav.labels.includes('Backup map'), true)
+  // E-64: the two engines collapsed onto one page/one nav item. This asserts BOTH halves
+  // of that collapse deliberately - by design this fails if a future change reintroduces a
+  // second map nav item, the exact regression a copy-paste revert could reintroduce.
+  check('D-31/E-64: a single Map nav item, not two', nav.labels.filter(l => /map/i.test(l)), ['Map'])
   await send('Emulation.clearDeviceMetricsOverride')
+}
+
+async function checkMapEngineSwitch() {
+  console.log('\nMap page: the switch mounts exactly one engine at a time, never both (E-64)')
+  await goto('/map')
+  const before = await evaluate(`(() => ({
+    leaflet: !!document.querySelector('.lmap-container'),
+    maplibre: !!document.querySelector('.map-container'),
+  }))()`)
+  check('Leaflet is the default engine on load', before.leaflet && !before.maplibre, true)
+
+  await evaluate(`(() => {
+    const cb = document.getElementById('mapEngineSwitch')
+    cb.checked = true
+    cb.dispatchEvent(new Event('change'))
+  })()`)
+  await sleep(2500) // dynamic import() of the MapLibre chunk + map construction
+
+  const afterSwitch = await evaluate(`(() => ({
+    leaflet: !!document.querySelector('.lmap-container'),
+    maplibre: !!document.querySelector('.map-container'),
+  }))()`)
+  check('flipping the switch mounts MapLibre and unmounts Leaflet', !afterSwitch.leaflet && afterSwitch.maplibre, true)
+
+  await evaluate(`(() => {
+    const cb = document.getElementById('mapEngineSwitch')
+    cb.checked = false
+    cb.dispatchEvent(new Event('change'))
+  })()`)
+  await sleep(1500)
+
+  const afterFlipBack = await evaluate(`(() => ({
+    leaflet: !!document.querySelector('.lmap-container'),
+    maplibre: !!document.querySelector('.map-container'),
+  }))()`)
+  check('flipping back mounts Leaflet and unmounts MapLibre', afterFlipBack.leaflet && !afterFlipBack.maplibre, true)
+  check('no console errors across the round trip', consoleErrors.slice(0, 2), [])
 }
 
 async function checkRosterLifecycle(fx) {
@@ -1077,6 +1117,7 @@ async function main() {
 
     await checkRoutesRender()
     await checkNavbarLayout()
+    await checkMapEngineSwitch()
     // Read-only: pure DOM/layout reads and in-memory form edits, nothing persisted - so these
     // are safe against production too, which is where phone-width regressions actually bite.
     await checkEntryTabOrder()

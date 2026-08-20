@@ -1,0 +1,15 @@
+<rangertrak-page [title]="title" [description]="pageDescr">
+  <div class="map-engine-switch">
+    <label for="mapEngineSwitch">
+      <input id="mapEngineSwitch" type="checkbox" [checked]="engine() === 'maplibre'"
+        (change)="onEngineSwitchChanged($event)" />
+      Try the Backup map (MapLibre + PMTiles) instead of Leaflet
+    </label>
+  </div>
+
+  @if (engine() === 'leaflet') {
+    <rangertrak-lmap></rangertrak-lmap>
+  } @else if (maplibreComponentType(); as MaplibreEngine) {
+    <ng-container *ngComponentOutlet="MaplibreEngine"></ng-container>
+  }
+</rangertrak-page>

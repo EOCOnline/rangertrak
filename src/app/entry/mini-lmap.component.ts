@@ -648,5 +648,14 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   addManualMarkerEvent(event: any): void {
     //throw new Error('Method not implemented.')
   }
+
+  // E-64/E-70 blocker (see LmapComponent.ngOnDestroy() for the full explanation): this
+  // class had the same gap - declared OnDestroy, never defined it, so the Leaflet instance
+  // was never removed on navigation away from Entry. Entry is the app's most-visited page,
+  // so this is the same leak firing on every visit.
+  override ngOnDestroy(): void {
+    super.ngOnDestroy()
+    this.lMap?.remove()
+  }
 }
 

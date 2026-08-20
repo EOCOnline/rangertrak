@@ -266,9 +266,11 @@ that report on the maps.
 
 ### Maps
 
-Both map pages plot the reports entered so far, or just the subset selected on the Reports
-page — use the switch below the map to go back and forth. Each map opens zoomed to fit the
-reports you have.
+The Map page plots the reports entered so far, or just the subset selected on the Reports
+page — use the switch below the map to go back and forth. It opens zoomed to fit the
+reports you have. Leaflet is shown by default; a separate switch above the map lets you try
+the bundled MapLibre + PMTiles engine instead — see [What needs Internet, and what
+doesn't](#what-needs-internet-and-what-doesnt) for how the two differ offline.
 
 ![Leaflet Maps Screen](./non-dist-imgs/LeafletMaps.png "Leaflet Maps Screen")
 
@@ -343,8 +345,8 @@ complete enough — addresses can be filled in afterwards.
 | Roster, Reports table, Settings, Log | ✅ Works |
 | Exporting and importing missions | ✅ Works |
 | Coordinate entry and conversion | ✅ Works |
-| **Map (MapLibre+PMTiles)** | ✅ Works — *if that page was opened once while connected* |
-| **Map (Leaflet)** | ⚠️ Only the areas you saved in advance |
+| **Map — Leaflet (the default engine)** | ⚠️ Only the areas you saved in advance |
+| **Map — Backup switch (MapLibre + PMTiles)** | ✅ Works — *if you opened it once while connected* |
 | Address lookup (typing an address to get coordinates) | ❌ Needs Internet |
 | Reverse lookup (coordinates to a street address) | ❌ Needs Internet |
 
