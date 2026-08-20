@@ -1,12 +1,14 @@
 @if (updateReady) {
-  <div class="rt-install-update rt-install-update--update">
+  <!-- E-43: [fixed] gets its own class so it can be pinned to the viewport (see .scss) -
+       independent of whatever this instance is nested inside (navbar, footer). -->
+  <div class="rt-install-update rt-install-update--update" [class.rt-install-update--fixed]="fixed">
     <span class="rt-install-update__text">A new version of RangerTrak is ready.</span>
     <button type="button" class="rt-install-update__action" (click)="onReload()"
       title="Reload now to start using the new version">
       Reload now
     </button>
   </div>
-} @else if (installable) {
+} @else if (installable && !fixed) {
   <div class="rt-install-update rt-install-update--install">
     @if (detailed) {
       <p class="rt-install-update__text">

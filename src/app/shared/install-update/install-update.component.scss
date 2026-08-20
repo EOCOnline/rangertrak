@@ -29,6 +29,32 @@
   border    : 1px solid var(--rt-line-strong);
 }
 
+// E-43: the navbar this normally renders in is `position: static`, so it scrolls away on
+// any page taller than one screen - confirmed live (see the component's doc comment). This
+// variant is placed once, separately, directly in app.component.html BEFORE the navbar, and
+// stays visible regardless of scroll position or which page the scribe is on.
+//
+// `sticky`, not `fixed`: `fixed` takes the element out of flow entirely, which would
+// overlap the navbar's own top edge the instant both are on screen together (right at
+// scroll position zero, which is exactly when this first appears). `sticky` still occupies
+// real space in the document - the navbar is simply pushed down by this element's own
+// height while it's present - so there is no overlap to reason about, and nothing to do
+// when it's absent (the @if renders zero elements, zero height).
+.rt-install-update--fixed {
+  position       : sticky;
+  top            : 0;
+  z-index        : 1000; // above the back-to-top control (900)
+  width          : 100%;
+  display        : flex;
+  justify-content: center;
+  border-radius  : 0;
+  border-width   : 0 0 1px 0;
+  padding        : 0.5rem 1rem;
+  padding-top    : calc(0.5rem + env(safe-area-inset-top, 0px));
+  box-shadow     : 0 2px 8px rgb(0 0 0 / 25%);
+  box-sizing     : border-box;
+}
+
 .rt-install-update__text {
   margin: 0;
 }

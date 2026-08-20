@@ -9,6 +9,7 @@ import { NavbarComponent } from './shared/navbar/navbar.component'
 import { FooterComponent } from './shared/footer/footer.component'
 import { AlertsComponent } from './shared/alerts/alerts.component'
 import { BackToTopComponent } from './shared/back-to-top/back-to-top.component'
+import { InstallUpdateComponent } from './shared/install-update/install-update.component'
 
 @Component({
   selector: 'rangertrak-root',
@@ -19,7 +20,8 @@ import { BackToTopComponent } from './shared/back-to-top/back-to-top.component'
     MatSnackBarModule,
     NavbarComponent,
     FooterComponent,
-    BackToTopComponent
+    BackToTopComponent,
+    InstallUpdateComponent
   ],
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

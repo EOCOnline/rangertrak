@@ -16,6 +16,17 @@ import { InstallableService, UpdateService } from '../services'
  *
  * An update takes priority over an install offer when both are true at once - a stuck-on-
  * old-build incident (E-43) matters more than a missed install opportunity.
+ *
+ * E-43 follow-up (2026-08-20): the navbar this renders in is `position: static`, not
+ * sticky - confirmed live, scrolling any page 800px hid it completely (top: -47px). A
+ * scribe deep in a long Field Reports/Log page during an incident, which is exactly the
+ * "stuck on an old build" scenario UpdateService exists for, would not see this instance at
+ * all. `[fixed]="true"` (used once, in app.component.html, alongside the back-to-top
+ * control) renders ONLY the update-ready state as a `position: fixed` banner independent of
+ * scroll and independent of every other instance of this component - it never shows the
+ * install offer, since that isn't the urgent case. The navbar/footer/Settings instances are
+ * unchanged and still worth keeping: they're the reference a scribe checks deliberately,
+ * where the fixed instance is the one that reaches someone who wasn't looking.
  */
 @Component({
   selector: 'rangertrak-install-update',
@@ -31,6 +42,13 @@ export class InstallUpdateComponent {
 
   /** Settings gets the fuller explanation; navbar/footer get the compact form only. */
   @Input() detailed = false
+
+  /**
+   * E-43: renders only the update-ready state, as a viewport-fixed banner, ignoring
+   * `installable` entirely - see the class doc comment. Not meant to be combined with
+   * `detailed`.
+   */
+  @Input() fixed = false
 
   constructor(
     private installableService: InstallableService,
