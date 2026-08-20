@@ -1,0 +1,14 @@
+@if (visible) {
+  <div class="stale-origin-notice" role="alert">
+    <span class="stale-origin-notice__text">
+      You're on RangerTrak's old address (<strong>www.</strong>rangertrak.org). It may not
+      receive updates. Please visit
+      <a [href]="canonicalUrl">rangertrak.org</a> directly, and re-bookmark or reinstall the
+      app from there.
+    </span>
+    <button type="button" class="stale-origin-notice__dismiss" (click)="dismiss()"
+      title="Dismiss for this visit" aria-label="Dismiss">
+      &times;
+    </button>
+  </div>
+}

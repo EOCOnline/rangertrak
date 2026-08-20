@@ -10,6 +10,7 @@ import { FooterComponent } from './shared/footer/footer.component'
 import { AlertsComponent } from './shared/alerts/alerts.component'
 import { BackToTopComponent } from './shared/back-to-top/back-to-top.component'
 import { InstallUpdateComponent } from './shared/install-update/install-update.component'
+import { StaleOriginNoticeComponent } from './shared/stale-origin-notice/stale-origin-notice.component'
 
 @Component({
   selector: 'rangertrak-root',
@@ -21,7 +22,8 @@ import { InstallUpdateComponent } from './shared/install-update/install-update.c
     NavbarComponent,
     FooterComponent,
     BackToTopComponent,
-    InstallUpdateComponent
+    InstallUpdateComponent,
+    StaleOriginNoticeComponent
   ],
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

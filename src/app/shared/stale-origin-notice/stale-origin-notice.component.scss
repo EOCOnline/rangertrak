@@ -1,0 +1,44 @@
+@use "../../../styles/typography" as type;
+
+// E-45: same sticky-banner treatment as InstallUpdateComponent's [fixed] mode, and for the
+// same reason - a visitor stranded on the old www. origin needs to see this regardless of
+// scroll position or which page their stranded cache happens to be showing. Deliberately a
+// separate component/stylesheet rather than sharing InstallUpdateComponent's, so the whole
+// thing can be deleted as one unit later (see the component's own removal note) without
+// touching a component that isn't temporary.
+.stale-origin-notice {
+  position       : sticky;
+  top            : 0;
+  z-index        : 1000; // same plane as InstallUpdateComponent's [fixed] banner
+  width          : 100%;
+  box-sizing     : border-box;
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  gap            : 0.75rem;
+  padding        : 0.5rem 1rem;
+  padding-top    : calc(0.5rem + env(safe-area-inset-top, 0px));
+  background     : var(--rt-notice);
+  color          : var(--rt-notice-ink);
+  border-bottom  : 1px solid var(--rt-notice-line);
+  box-shadow     : 0 2px 8px rgb(0 0 0 / 25%);
+  @include type.type-body-sm;
+}
+
+.stale-origin-notice__text a {
+  color          : inherit;
+  font-weight    : 700;
+  text-decoration: underline;
+}
+
+.stale-origin-notice__dismiss {
+  flex-shrink   : 0;
+  min-width     : var(--rt-tap-min);
+  min-height    : var(--rt-tap-min);
+  border        : none;
+  background    : transparent;
+  color         : inherit;
+  font-size     : 1.25rem;
+  line-height   : 1;
+  cursor        : pointer;
+}
