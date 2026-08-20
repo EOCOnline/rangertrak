@@ -1,0 +1,40 @@
+// E-57(3): "a floating circled back-to-top arrow on any tall screen."
+.back-to-top {
+  position       : fixed;
+  // Sits above the footer rather than on top of it, and clear of the right edge on a
+  // phone. Uses the safe-area inset so it isn't under a home indicator on iOS.
+  right          : calc(1rem + env(safe-area-inset-right, 0px));
+  bottom         : calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  z-index        : 900;
+
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  // Round, and at least the field-conditions tap minimum - this is as likely to be
+  // pressed with a gloved thumb as anything else on the page (D-33 / --rt-tap-min).
+  width          : var(--rt-tap-min);
+  height         : var(--rt-tap-min);
+  border-radius  : 50%;
+
+  background     : var(--rt-accent);
+  color          : var(--rt-accent-ink);
+  border         : 1px solid transparent;
+  cursor         : pointer;
+  // Enough shadow to read as floating above content in both schemes without a heavy
+  // drop shadow that would look wrong on the dark ground.
+  box-shadow     : 0 2px 8px rgb(0 0 0 / 35%);
+}
+
+.back-to-top:hover,
+.back-to-top:focus-visible {
+  // Focus must be visible: this is a keyboard-reachable control on a keyboard-first app.
+  outline       : 2px solid var(--rt-ink);
+  outline-offset: 2px;
+}
+
+// Printing a floating button onto an ICS-309 log would be noise on the page.
+@media print {
+  .back-to-top {
+    display: none;
+  }
+}

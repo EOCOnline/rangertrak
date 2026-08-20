@@ -1,6 +1,7 @@
 
 export { Utility } from "./utility"
 export { AlertsComponent } from "./alerts/alerts.component"
+export { BackToTopComponent } from "./back-to-top/back-to-top.component"
 export { DisclosureComponent } from "./disclosure/disclosure.component"
 export { HeaderComponent } from "./header/header.component"
 export { PageComponent } from "./page/page.component"

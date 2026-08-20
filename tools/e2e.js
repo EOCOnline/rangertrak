@@ -432,6 +432,47 @@ async function checkAllRoutesPhoneWidth() {
   await send('Emulation.clearDeviceMetricsOverride')
 }
 
+/**
+ * E-57(3): the back-to-top control appears only when it should, and works.
+ *
+ * The interesting assertion is the NEGATIVE one - a floating button that shows up on a
+ * short, unscrolled page is worse than no button, because it covers content for no reason.
+ */
+async function checkBackToTop() {
+  console.log('\nBack-to-top appears only on a tall, scrolled page - and returns to the top (E-57)')
+  await goto('/')
+  check('hidden on a page that has not been scrolled', await evaluate(`!!document.querySelector('.back-to-top')`), false)
+
+  await goto('/log')
+  // Force real height rather than depending on how much log a fresh profile happens to hold.
+  await evaluate(`(() => {
+    const f = document.createElement('div'); f.style.height = '4000px'; f.id = 'e2e-tall-filler';
+    document.querySelector('.content')?.appendChild(f);
+  })()`)
+  check('still hidden while at the top of a tall page', await evaluate(`!!document.querySelector('.back-to-top')`), false)
+
+  await evaluate(`window.scrollTo(0, 1200)`)
+  await sleep(600)
+  const shown = await evaluate(`(() => {
+    const b = document.querySelector('.back-to-top')
+    if (!b) return null
+    const r = b.getBoundingClientRect()
+    return { tag: b.tagName, w: Math.round(r.width), h: Math.round(r.height), named: !!b.getAttribute('aria-label') }
+  })()`)
+  check('appears once scrolled down a tall page', shown !== null, true)
+  if (shown) {
+    check('is a real, accessibly-named button', shown.tag === 'BUTTON' && shown.named, true)
+    // D-33 / --rt-tap-min: gloved hands outdoors.
+    check('meets the 44px field tap minimum', shown.w >= 44 && shown.h >= 44, true)
+  }
+
+  await evaluate(`document.querySelector('.back-to-top')?.click()`)
+  await sleep(1200)
+  const after = await evaluate(`({ y: Math.round(window.scrollY), still: !!document.querySelector('.back-to-top') })`)
+  check('clicking it returns to the top', after.y, 0)
+  check('and it hides itself again once there', after.still, false)
+}
+
 async function checkLocationDdDdmDmsSync() {
   console.log('\nLocation: DD / DDM / DMS stay in sync, including a rapid second edit')
   await goto('/')
@@ -920,6 +961,7 @@ async function main() {
     await checkEntryTabOrder()
     await checkEntryPhoneWidth()
     await checkAllRoutesPhoneWidth()
+    await checkBackToTop()
     await checkLocationDdDdmDmsSync()
     await checkFieldReportsPhoneLayout()
     await checkGridThemeUsesTokens()

@@ -1,0 +1,11 @@
+@if (visible()) {
+  <button type="button" class="back-to-top" (click)="toTop()"
+    title="Back to the top of this page" aria-label="Back to the top of this page">
+    <!-- Inline SVG rather than a glyph or an icon font: this app loads no icon font (see
+         ADR D-39 on the fonts that are and aren't actually loaded), and an inline arrow
+         cannot fall back to a missing-glyph box. -->
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+      <path d="M12 5l-7 7h4v7h6v-7h4z" fill="currentColor" />
+    </svg>
+  </button>
+}
