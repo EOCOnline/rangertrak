@@ -149,6 +149,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   //public locationChange: Subscription
   public locationParent = undefinedLocation
 
+  // E-48(1): bumped on every reset (see resetAll() below) so LocationComponent can tell
+  // "a fresh report started" apart from "the position changed" - see its own comment.
+  formGeneration = 0
+
   minDate = new Date()
 
   submitInfo: HTMLElement | null = null
@@ -454,6 +458,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.entryControlsForm.reset({
       status: this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status
     })
+    this.formGeneration++
   }
 
   callsignChanged(callsign: string) { // Just serves timer for input field - post interaction

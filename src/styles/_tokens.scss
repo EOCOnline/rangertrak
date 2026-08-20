@@ -67,4 +67,18 @@ $c: skin.$chrome;
   // Field-conditions minimum. D-33 puts a phone in scope for the Entry screen, and
   // 10 describes gloved hands outdoors - 44px is the floor for anything tappable.
   --rt-tap-min: 44px;
+
+  // ── Type scale (ADR D-39) ──────────────────────────────────────────
+  // Five roles, small on purpose - same reasoning as the spacing tokens above. Applied
+  // via the mixins in styles/_typography.scss rather than read directly by components.
+  --rt-type-title-lg-size: 1.75rem;
+  --rt-type-title-lg-line: 2.25rem;
+  --rt-type-title-size: 1.25rem;
+  --rt-type-title-line: 1.75rem;
+  --rt-type-body-size: 1rem;
+  --rt-type-body-line: 1.5rem;
+  --rt-type-body-sm-size: 0.875rem;
+  --rt-type-body-sm-line: 1.25rem;
+  --rt-type-label-size: 0.75rem;
+  --rt-type-label-line: 1rem;
 }

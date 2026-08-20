@@ -4,28 +4,62 @@ with ($primary: #962f10,
 @use "@material/button";
 @use "@material/button/styles";
 @use "@material/banner";
+@use "../../styles/typography" as type;
+@use "../../styles/section" as section;
 
 // Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss.
 $filledColor: var(--rt-surface-2);
 
 
 .elegant {
-  margin-top   : 25px;
-  margin-bottom: 0px;
+  @include section.section-header;
 }
 
 .filled {
   background-color: $filledColor;
 }
 
+// ADR D-39: was `background-color: #f4f4f4` - a raw hex outside the token layer, and
+// visually indistinguishable from $filledColor anyway.
 .enter__Where-Results {
-  background-color: #f4f4f4
+  background-color: $filledColor;
 }
 
+// E-48(1): hides the derived-output block without ever removing its elements from the
+// DOM - see updateDerivedLocations()'s own comment on why a structural @if would race the
+// render. `display:none` (not `visibility:hidden`) so it also doesn't reserve layout space
+// while empty.
+.enter__Where-Results--hidden {
+  display: none;
+}
+
+// E-48(2): the derived Address/+Codes/What3Words/Maidenhead readouts are `readonly`
+// inputs, not spans (see location.component.html and setDerivedText()), specifically so
+// they read as - and are - selectable/copyable data rather than plain label text.
+.enter__Where-derived-row {
+  display: block;
+  margin-bottom: 2px;
+
+  input {
+    border        : 1px solid var(--rt-line-strong);
+    border-radius : var(--rt-radius);
+    background    : var(--rt-surface);
+    color         : var(--rt-ink-2);
+    font-style    : italic;
+    padding       : 1px 4px;
+    width         : min(100%, 320px);
+    cursor        : text;
+  }
+}
+
+// E-48(5): was a fixed 600px, which is exactly why the block overflowed and wrapped badly
+// once MGRS/UTM pushed the total content past that width - it could neither shrink to fit
+// a phone nor grow to fit its own content. max-width keeps it from ever exceeding its
+// container instead.
 .enter__Where-div {
   background-color: $filledColor;
-  width           : 600px;
-  padding         : 4px 0 2px 5px;
+  max-width       : 100%;
+  padding         : 4px 8px 6px 5px;
   border-radius   : 5px;
 }
 
@@ -34,55 +68,77 @@ $filledColor: var(--rt-surface-2);
   //width           : 700px;
 }
 
+// E-48(3)/(4): every coordinate input used to render with no border or background of its
+// own - bare numbers sitting directly on the panel, which is very likely why DDM/DMS read
+// as inert text rather than an obvious place to type (the reporter's (4), "where does an
+// operator enter DM and other formats?"). A visible field boundary on every input in this
+// form answers both complaints with one rule.
+.enter__Where-input input[type=number],
+.enter__Where-input input[type=text] {
+  border       : 1px solid var(--rt-line-strong);
+  border-radius: var(--rt-radius);
+  background   : var(--rt-surface);
+  color        : var(--rt-ink);
+  padding      : 1px 3px;
+}
+
+// E-48(5): each format's fields (the <span> wrapping DD, or DDM, or DMS, etc.) now wrap as
+// a whole unit instead of breaking mid-group - the wrap that used to land "DMS" alone below
+// "Latitude" with nothing to say why.
+.input-group {
+  display   : flex;
+  align-items: baseline;
+  flex-wrap : wrap;
+  gap       : 0.15rem 0.6rem;
+}
+
 #enter__Where-latI,
 #enter__Where-lngI,
 #enter__Where-latD,
 #enter__Where-lngD,
 #enter__Where-latDdmD,
 #enter__Where-lngDdmD {
-  width     : 30px;
+  width     : 34px;
   text-align: right;
 }
 
 #enter__Where-latF,
 #enter__Where-lngF {
-  width: 35px;
+  width: 40px;
 }
 
 #enter__Where-latQ,
 #enter__Where-lngQ,
 #enter__Where-latDdmQ,
 #enter__Where-lngDdmQ {
-  width       : 12px;
+  width       : 18px;
   margin-right: 3px;
 }
 
 #enter__Where-latM,
 #enter__Where-lngM {
-  width: 18px;
+  width: 24px;
 }
 
 #enter__Where-latS,
 #enter__Where-lngS {
-  width: 40px;
+  width: 44px;
 }
 
 #enter__Where-latDdmM,
 #enter__Where-lngDdmM {
-  width: 45px;
+  width: 50px;
 }
 
 #enter__Where-Address {
   width: 295px;
 }
 
-#derivedAddress,
-#pCodes,
-#what3Words {
-  // Sprint B: was #7d1f02, a brick left over from the pre-Sprint-A palette that fought
-  // every skin but ridgeline. This is derived, secondary information - so, secondary ink.
+// E-49: was a checkbox + a parenthetical sentence; now a minor note under a slide toggle.
+.enter__Where-toggle {
+  @include type.type-body-sm;
+  margin-top: 0.5rem;
   color     : var(--rt-ink-2);
-  font-style: italic;
 }
 
 // https://www.codingtag.com/remove-arrows-from-input-type-number
@@ -99,12 +155,9 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+// ADR D-39: was `font-size: 12px` - now the named body-sm role.
 .small {
-  font-size: 12px;
-}
-
-.bordered {
-  border: 2 px solid rgb(62, 189, 189);
+  @include type.type-body-sm;
 }
 
 hr {

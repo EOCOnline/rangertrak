@@ -6,7 +6,7 @@
          it swaps in. `on viewport` would be wrong here - the map sits at the top of the
          form and is visible right away - so this loads as soon as the app is idle. -->
     @defer (on idle) {
-      <mini-lmap [locationUpdated]="locationParent">LMAP HERE</mini-lmap>
+      <mini-lmap [locationUpdated]="locationParent" (locationChange)="onNewLocationEvent($event)">LMAP HERE</mini-lmap>
     } @placeholder {
       <div class="minimap-placeholder">Map still loading&hellip;</div>
     } @error {
@@ -20,27 +20,32 @@
       <mat-label>Who</mat-label>
     </h2>
     <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->
-    <mat-form-field class="enter__Callsign filled">
-      <mat-label>CallSign</mat-label>
-      <!-- BUG-1 (2026-08-19): this carried BOTH [formControl]="callsignCtrl" and
-           formControlName="callsign". Only one directive can be the value accessor, so
-           entryControlsForm.callsign stayed '' and every saved report lost its callsign
-           while the autocomplete (which reads callsignCtrl) looked perfectly fine.
-           callsignCtrl is now the single source of truth for this field. -->
-      <input #callsignInput matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one"
-        aria-label="Callsigns" [matAutocomplete]="auto"
-        (change)="this.callsignCtrlChanged()" id="enter__Callsign-input" [attr.tabindex]="callsignTabIndex" data-lpignore="true"
-        spellcheck="false" />
-      <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
-          <img class="enter__Callsign-img" aria-hidden="true" [src]="'./assets/imgs/rangers/'+(ranger.image)" height="40">
-          <span> {{ranger.callsign}}</span> |
-          <small> {{ranger.fullName}} | {{ranger.phone}}</small>
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
-    <span id="enter__Callsign-image"> </span>
-    <span id="enter__Callsign-upshot"> </span>
+    <!-- E-47: was `enter__Callsign filled` - a tinted background whose bounds didn't line up
+         with the field chrome. ADR D-39 decided this wasn't earning its place: the
+         enter__section left-rule below now supplies the grouping cue instead. -->
+    <div class="enter__section">
+      <mat-form-field class="enter__Callsign">
+        <mat-label>CallSign</mat-label>
+        <!-- BUG-1 (2026-08-19): this carried BOTH [formControl]="callsignCtrl" and
+             formControlName="callsign". Only one directive can be the value accessor, so
+             entryControlsForm.callsign stayed '' and every saved report lost its callsign
+             while the autocomplete (which reads callsignCtrl) looked perfectly fine.
+             callsignCtrl is now the single source of truth for this field. -->
+        <input #callsignInput matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one"
+          aria-label="Callsigns" [matAutocomplete]="auto"
+          (change)="this.callsignCtrlChanged()" id="enter__Callsign-input" [attr.tabindex]="callsignTabIndex" data-lpignore="true"
+          spellcheck="false" />
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
+            <img class="enter__Callsign-img" aria-hidden="true" [src]="'./assets/imgs/rangers/'+(ranger.image)" height="40">
+            <span> {{ranger.callsign}}</span> |
+            <small> {{ranger.fullName}} | {{ranger.phone}}</small>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <span id="enter__Callsign-image"> </span>
+      <span id="enter__Callsign-upshot"> </span>
+    </div>
 
     <!-- ======================================= -->
     <h2 class="elegant"
@@ -50,10 +55,10 @@
         src="../../assets/icons/information-outline.png" height="14px" width="14px" alt="info icon"
         style="opacity:0.5;" />
     </h2>
-    <div>
+    <div class="enter__section">
 
       <rangertrak-location [(location)]="locationParent" (locationChange)="onNewLocationEvent($event)"
-        [tabIndexStart]="locationTabIndexStart">
+        [tabIndexStart]="locationTabIndexStart" [formGeneration]="formGeneration">
         <!--
           https://www.appsloveworld.com/angular/100/13/angular-two-way-data-binding-and-watching-for-changes-in-parent-component
 
@@ -75,7 +80,9 @@
     <h2 class="elegant">
       <mat-label>When</mat-label>
     </h2>
-    <div FormControl="timepickerFormControl" class="filled timepicker timepicker_When-input">
+    <!-- E-47: was `filled timepicker timepicker_When-input` - same dropped-tint decision as
+         Who above. -->
+    <div FormControl="timepickerFormControl" class="timepicker timepicker_When-input enter__section">
       <rangertrak-time-picker #picker [datePickerLabel]="timePickerLabel" (newTimeEvent)="onNewTimeEvent($event)"
         [dateTabIndex]="dateTabIndex" [timeTabIndex]="timeTabIndex">
         <!-- [initialDate] = "initialTime" works, but we just use default - current time -->
@@ -83,21 +90,34 @@
     </div>
 
     <!-- ======================================= -->
-    <h2 class="elegant bordered">
+    <h2 class="elegant">
       <mat-label>What</mat-label>
     </h2>
-    <div class="input-group bordered">
+    <!-- E-47/E-52: was `input-group bordered` - .bordered's own declaration
+         (`border: 2 px solid ...`) was invalid CSS (stray space) and never actually
+         rendered a border, another instance of the "looks configured, does nothing" trap
+         (ADR D-39). enter__section replaces it with the real section-group rule. -->
+    <div class="input-group enter__section">
       <!-- mat-label><div class="strong bottomDrop">Status:</div></mat-label -->
-      <mat-radio-group class="filled  enter__Status" labelPosition="after" formControlName="status" [attr.tabindex]="statusTabIndex"><span
+      <!-- E-51: kept mat-radio-group/mat-radio-button rather than switching to
+           mat-button-toggle-group - ADR D-39's call, so Sprint E's contrast-fixed status
+           colours (statusColor(), below) stay wired to the same labels rather than being
+           re-litigated for a component swap with no accessibility gain. Each radio now
+           reads as a segmented chip via CSS (enter__status-selected below) instead of a
+           bare radio row - the "improve from the present UI" middle ground the mockup's
+           heavier button group was asked to find. -->
+      <mat-radio-group class="enter__Status" labelPosition="after" formControlName="status" [attr.tabindex]="statusTabIndex"><span
           class="bottomDrop">Status:&nbsp;&nbsp;</span>
-        <mat-radio-button *ngFor="let stat of settings.fieldReportStatuses" value="{{stat.status}}" class="rButton">
+        <mat-radio-button *ngFor="let stat of settings.fieldReportStatuses" value="{{stat.status}}" class="rButton"
+          [class.enter__status-selected]="entryControlsForm.value.status === stat.status"
+          [style.--rt-status-current]="statusColor(stat.color)">
           <!-- Sprint E: this was an inline color style interpolated straight from stored
                settings, which is how LightYellow-on-white (1.07:1) reached the app's primary
                control. Now resolved via statusColor(), so semantic keys become --rt-status-*
                tokens carrying their own light/dark pair. The old text-shadow was a blur trying
                to rescue unreadable text; with accessible colours it only muddies glyph edges. -->
           <span class="Enter__status-value" [style.color]="statusColor(stat.color)">
-            {{stat.status}} </span>&nbsp;&nbsp;&nbsp;
+            {{stat.status}}</span>
           <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
         </mat-radio-button>
       </mat-radio-group>

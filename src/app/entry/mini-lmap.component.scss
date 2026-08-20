@@ -1,3 +1,5 @@
+@use "../../styles/typography" as type;
+
 .lmap-container {
   display               : block;
   float                 : right;
@@ -23,9 +25,11 @@
   font-weight: bold;
 }
 
+// ADR D-39: was `font-size: x-small; color: #AAA` - a raw hex outside the token layer.
+// Currently only reachable inside the commented-out debug block below.
 .small {
-  font-size: x-small;
-  color    : #AAA;
+  @include type.type-label;
+  color: var(--rt-ink-3);
 }
 
 #Entry__LMinimap-debug {
@@ -43,18 +47,24 @@
 
 // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor
 
+// ADR D-39: named explicitly in the type-scale spec as a --rt-type-body-sm target.
 #Entry__LMinimap-subhead {
-  font-size: x-small;
-  color    : #999;
-  float    : right;
-  margin   : 0 5px;
+  @include type.type-body-sm;
+  color  : var(--rt-ink-3);
+  float  : right;
+  margin : 0 5px;
 }
 
 .Entry__LMap-footer {
   padding: 5px;
 }
 
-#Entry__Minimap-status {
+// E-46: was #Entry__Minimap-status - missing the "L" in "LMinimap" that the actual
+// element id (see mini-lmap.component.html) carries, so this rule never matched
+// anything and the fade never fired. This is the cause of the pre-existing
+// `//! BUG: doesn't work?!` comment that used to sit on the resetMaterialFadeAnimation()
+// call in mini-lmap.component.ts.
+#Entry__LMinimap-status {
   opacity  : 0;
   animation: fadeout 4s ease-out;
 }

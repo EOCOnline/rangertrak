@@ -8,8 +8,15 @@ with ($primary: #962f10,
 // Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss.
 $filledColor: var(--rt-surface-2);
 
+// E-50: date and time now sit side by side - was a plain block, so the two
+// mat-form-fields (each effectively block-level once `.timepicker__When-input`'s old
+// 400px width is gone) stacked with the time field wasting a full row's height below
+// the date. `flex-wrap` keeps a graceful fallback at phone width.
 .rounded {
-  border-radius: 30px; // !important;
+  display    : flex;
+  align-items: flex-end;
+  gap        : var(--rt-gap);
+  flex-wrap  : wrap;
 }
 
 .innerElement {
@@ -22,16 +29,43 @@ $filledColor: var(--rt-surface-2);
   background-color: $filledColor;
 }
 
-.bordered {
-  border                    : 2 px solid rgb(62, 189, 189);
-  //padding               : 4px;
-  //border-radius           : 25px !important;
+// E-50: was `width: 400px` - a fixed width already wider than the row had space for,
+// which forced the time field onto its own line regardless of the flex row above. A
+// locale-formatted short date needs nowhere near that.
+.timepicker__When-input {
+  width: 140px;
 }
 
-.timepicker__When-input {
-  width                     : 400px;
-  //padding               : 4px;
-  //border-radius           : 25p !important;
+// E-50: the native time input's own increment arrows are easy to miss (small, and not
+// every browser/OS theme renders them the same way) on a keyboard-first screen where
+// that's the one interaction that isn't otherwise self-evident. Two explicit buttons
+// next to the field, using the same tonal vocabulary as ADR D-39, rather than relying on
+// a native control that most people never notice offers keyboard-adjustable steps at all.
+.timepicker__time-stepper {
+  display      : inline-flex;
+  flex-direction: column;
+  margin-left  : 2px;
+}
+
+.timepicker__time-step {
+  min-width    : 1.5rem;
+  min-height   : 1.125rem;
+  padding      : 0;
+  line-height  : 1;
+  font-size    : 0.65rem;
+  border       : 1px solid var(--rt-line-strong);
+  background   : var(--rt-surface-2);
+  color        : var(--rt-ink);
+  cursor       : pointer;
+
+  &:first-child {
+    border-bottom       : none;
+    border-radius       : var(--rt-radius) var(--rt-radius) 0 0;
+  }
+
+  &:last-child {
+    border-radius: 0 0 var(--rt-radius) var(--rt-radius);
+  }
 }
 
 //.elegant {

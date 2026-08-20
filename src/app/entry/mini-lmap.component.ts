@@ -14,7 +14,10 @@ import { delay, throwError } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
+import {
+  AfterViewInit, Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, OnInit, Output,
+  signal, ViewChild, ChangeDetectionStrategy
+} from '@angular/core'
 
 // Specific paths, not the '../shared/' barrel: the barrel re-exports the MapLibre style
 // helpers, so importing through it here pulled MapLibre (~800KB) into the eager bundle
@@ -95,6 +98,17 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   get locationUpdated(): LocationType {
     return this._location
   }
+
+  // E-46: the missing half of the mediator pattern location.component.ts already has
+  // (@Input location / @Output locationChange). Before this, clicking the mini-map only
+  // ever wrote to the clipboard - there was no channel to report the click back up to
+  // the parent Entry form, so the marker didn't move and the Where fields didn't update.
+  @Output() locationChange = new EventEmitter<LocationType>()
+
+  // Replaces a direct `document.getElementById('Entry__LMinimap-status').innerText =`
+  // write (the pre-Sprint-G pattern) - see clickStatus below and the template binding.
+  clickStatus = signal('Click map to copy coordinates')
+  @ViewChild('statusEl') private statusEl!: ElementRef<HTMLDivElement>
 
   override id = 'Leaflet MiniMap Component'
   override title = 'Leaflet MiniMap'
@@ -387,7 +401,9 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   }
 
   /**
-   * Store Lat/Lng in Clipboard
+   * Move the marker to the clicked position, emit it to the parent Entry form (which
+   * feeds it into the same Where fields a typed-in coordinate would), and copy it to
+   * the clipboard as a convenience.
    * @param ev
    */
   override onMouseClick(ev: MouseEvent) {
@@ -396,16 +412,25 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       return
     }
     let latlng = this.lMap.mouseEventToLatLng(ev)
-    let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
+    const lat = Math.round(latlng.lat * 10000) / 10000
+    const lng = Math.round(latlng.lng * 10000) / 10000
+    let coords = `${lat}, ${lng}`
+
+    this.addMarker(lat, lng, coords)
+    this.locationChange.emit({
+      lat,
+      lng,
+      address: undefinedAddressFlag,
+      derivedFromAddress: false
+    })
+
     navigator.clipboard.writeText(coords)
       .then(() => {
-        let status = document.getElementById('Entry__LMinimap-status')
-        if (status) {
-          status.innerText = `${coords} copied to clipboard`
-          //status.style.visibility = "visible"
-          Utility.resetMaterialFadeAnimation(status) //! BUG: doesn't work?!
+        this.clickStatus.set(`${coords} copied to clipboard`)
+        if (this.statusEl) {
+          Utility.resetMaterialFadeAnimation(this.statusEl.nativeElement)
         } else {
-          this.log.info(`Entry__LMinimap-status not found!`, this.id)
+          this.log.info(`statusEl not found!`, this.id)
         }
         this.log.excessive(`${coords} copied to clipboard`, this.id)
       })

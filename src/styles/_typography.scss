@@ -1,0 +1,37 @@
+// ─────────────────────────────────────────────────────────────────────────────
+//  TYPE SCALE (ADR D-39)
+//
+//  Five roles, reading the --rt-type-* custom properties emitted by _tokens.scss.
+//  Weight lives here rather than as a token: it doesn't vary by skin, so a Sass
+//  constant is enough and keeps _tokens.scss to genuinely themeable values.
+// ─────────────────────────────────────────────────────────────────────────────
+
+@mixin type-title-lg {
+  font-size: var(--rt-type-title-lg-size);
+  line-height: var(--rt-type-title-lg-line);
+  font-weight: 500;
+}
+
+@mixin type-title {
+  font-size: var(--rt-type-title-size);
+  line-height: var(--rt-type-title-line);
+  font-weight: 600;
+}
+
+@mixin type-body {
+  font-size: var(--rt-type-body-size);
+  line-height: var(--rt-type-body-line);
+  font-weight: 400;
+}
+
+@mixin type-body-sm {
+  font-size: var(--rt-type-body-sm-size);
+  line-height: var(--rt-type-body-sm-line);
+  font-weight: 400;
+}
+
+@mixin type-label {
+  font-size: var(--rt-type-label-size);
+  line-height: var(--rt-type-label-line);
+  font-weight: 500;
+}

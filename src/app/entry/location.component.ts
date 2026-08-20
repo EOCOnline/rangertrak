@@ -57,6 +57,20 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   @Input() location: LocationType = undefinedLocation
   @Output() locationChange = new EventEmitter<LocationType>()
 
+  // E-48(1): bumped by the parent Entry form on submit/reset (see resetAll() there) so the
+  // derived-output block below can be told "a fresh report started" independently of
+  // whether the position itself also changed - a scribe entering several reports from the
+  // same spot keeps the coordinates but shouldn't keep seeing the PREVIOUS report's derived
+  // Address/+Codes/What3Words text as if it belonged to the new one.
+  @Input() formGeneration = 0
+
+  // E-48(1): starts false so the block stays hidden until a derivation has actually
+  // completed for the current report - set true at the end of updateDerivedLocations()
+  // below, reset to false in ngOnChanges whenever formGeneration bumps (submit/reset). This
+  // is what stops a fresh report from briefly showing the PREVIOUS report's derived
+  // Address/+Codes/What3Words text before its own position has resolved.
+  showDerived = signal(false)
+
   // Base tabindex for this leaf's fields (DD/DDM/DMS lat+lng, MGRS, UTM, then address),
   // in the exact top-to-bottom/left-to-right DOM order the template renders them.
   // Unset (no tabindex attribute rendered) unless Entry's keyboard-first pass supplies
@@ -339,6 +353,20 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * binding.
    */
   ngOnChanges(changes: SimpleChanges): void {
+    // E-48(1): a fresh report started - clear the previous report's derived output and
+    // recompute it from the CURRENT position, rather than leaving it stale until something
+    // else happens to touch `location`. Consecutive reports from the same spot are common
+    // (the position is deliberately left as-is on reset - see resetAll() in entry.component),
+    // so "the position didn't change" cannot be the signal to skip re-deriving; formGeneration
+    // is a separate, explicit one. Uses updateDerivedLocations() directly rather than
+    // newLocationToFormAndEmit() so this doesn't also re-run the emit/echo-guard machinery
+    // below for what is not actually a new location.
+    if (changes['formGeneration'] && !changes['formGeneration'].firstChange) {
+      this.showDerived.set(false)
+      const { lat, lng } = this.canonical()
+      this.updateDerivedLocations({ lat, lng, address: this.addressModel(), derivedFromAddress: false })
+    }
+
     if (!changes['location'] || changes['location'].firstChange) return
 
     const incoming = this.location
@@ -561,23 +589,29 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
           pCode = OpenLocationCode.shorten(fullCode, this.settings.defLat, this.settings.defLng)
         }
         this.log.verbose(`New PlusCodes: ${pCode} ; Global: ${fullCode}`, this.id)
-        this.setDerivedText("pCodes", `Derived PlusCodes: +Code: ${pCode} +GlobalPCode: ${fullCode}`)
+        this.setDerivedText("pCodes", `+Code: ${pCode}  Global: ${fullCode}`)
       } else {
         this.log.verbose(`Invalid +PlusCode: ${pCode}`, this.id)
-        this.setDerivedText("pCodes", "Derived +Codes:   Unable to get +Code")
+        this.setDerivedText("pCodes", "Unable to get +Code")
       }
     }
 
-    this.setDerivedText("derivedAddress", `Derived Address: ${location.address}`)
+    this.setDerivedText("derivedAddress", location.address)
 
     // Get & update What3Words
     let w3w = "Not.Implemented.Yet!"
-    this.setDerivedText("what3Words", `Derived What3Words Code: ${w3w}`)
+    this.setDerivedText("what3Words", w3w)
 
     // Sprint H: no dedicated Maidenhead input field, but the position is still shown
     // here as a derived readout - setDerivedText() already no-ops if the element isn't
     // rendered (showMaidenhead off, and showAllSystems off).
-    this.setDerivedText("maidenhead", `Derived Maidenhead Grid Locator: ${DDToMaidenhead(location.lat, location.lng)}`)
+    this.setDerivedText("maidenhead", DDToMaidenhead(location.lat, location.lng))
+
+    // E-48(1): now that every line above has real text, the block can actually be shown.
+    // Deliberately after the setDerivedText() calls, not before - the elements themselves
+    // stay permanently in the DOM (see the --hidden class on .enter__Where-Results in the
+    // template) rather than an @if, specifically so this ordering can't race a render.
+    this.showDerived.set(true)
   }
 
   /**
@@ -593,11 +627,14 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * These stay direct DOM writes rather than becoming bindings: they are display-only strings
    * with no model behind them, and converting them properly belongs with the wider
    * signals cleanup (roadmap Sprint G), not here.
+   *
+   * E-48(2): the targets are `readonly` inputs, not spans, as of Sprint I - `.value`, not
+   * `.innerText`, is what actually shows.
    */
   private setDerivedText(elementId: string, text: string) {
-    const el = this.document.getElementById(elementId)
+    const el = this.document.getElementById(elementId) as HTMLInputElement | null
     if (el) {
-      el.innerText = text
+      el.value = text
     } else {
       this.log.verbose(`No #${elementId} element to update - view likely destroyed`, this.id)
     }

@@ -11,7 +11,7 @@
     <span class="strong">{{mouseLatLng().lng.toFixed(5)}}</span> Zoom:
     <span class="strong">{{zoom()}}</span>
 
-    <div id="Entry__LMinimap-status">Click map to copy coordinates</div>
+    <div #statusEl id="Entry__LMinimap-status">{{clickStatus()}}</div>
   </div>
   <!--div id="Entry__LMinimap-debug">
     <span class="small">And meanwhile, back in the mini-map:

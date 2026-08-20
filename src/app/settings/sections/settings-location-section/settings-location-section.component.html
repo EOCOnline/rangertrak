@@ -95,4 +95,12 @@
       <input type="checkbox" [formField]="form.showMaidenhead" /> Maidenhead grid locator
     </label>
   </div>
+
+  <!-- E-48(6): moved here (and to FIELD-GUIDE.md) from the Entry screen, which isn't the
+       place for a datum-correctness caveat on every report. -->
+  <div class="text-sm">
+    All coordinate formats above assume WGS84/modern GPS. A position read off an older
+    paper topo quad may use the NAD27 datum instead, which can be 100-200m off in the
+    western US.
+  </div>
 </div>

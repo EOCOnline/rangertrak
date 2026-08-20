@@ -18,4 +18,14 @@
     <input matInput type="time" [formField]="timeForm.timeOfDay" step="60" class="timepicker__time-input"
       data-lpignore="true" [attr.tabindex]="timeTabIndex ?? null" (change)="onNewTime()" />
   </mat-form-field>
+
+  <!-- E-50: the native time input's own up/down arrows are easy to miss - these are an
+       explicit, always-visible affordance for the same one-minute step the arrow keys
+       already do while a field is focused. -->
+  <span class="timepicker__time-stepper">
+    <button type="button" class="timepicker__time-step" (click)="adjustTime(1)"
+      title="Add one minute" aria-label="Add one minute">&#9650;</button>
+    <button type="button" class="timepicker__time-step" (click)="adjustTime(-1)"
+      title="Subtract one minute" aria-label="Subtract one minute">&#9660;</button>
+  </span>
 </div>

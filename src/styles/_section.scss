@@ -1,0 +1,26 @@
+// ─────────────────────────────────────────────────────────────────────────────
+//  SECTION PATTERN (ADR D-39 / Sprint I Phase 2)
+//
+//  One spec for a form's section head and the field group under it, so a page stops
+//  growing its own per-block styling (E-52). Applied first to Entry's Who/Where/When/
+//  What (Phase 2) - propagate to other pages' subheaders only after that's confirmed
+//  live, not speculatively in the same pass.
+// ─────────────────────────────────────────────────────────────────────────────
+
+@use './typography' as type;
+
+@mixin section-header {
+  @include type.type-title;
+  color: var(--rt-ink);
+  margin: 1.5rem 0 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid var(--rt-accent);
+}
+
+// Grouping cue for a section's fields, replacing the tinted-background containers E-47
+// flagged as not earning their place (ADR D-39) - a left rule reads as "these fields
+// belong to the header above" without needing field chrome to line up with a fill.
+@mixin section-group {
+  border-left: 3px solid var(--rt-line);
+  padding-left: var(--rt-gap);
+}

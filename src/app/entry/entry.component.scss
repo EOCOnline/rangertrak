@@ -1,4 +1,6 @@
 @use "../../styles/breakpoints" as bp;
+@use "../../styles/section" as section;
+@use "../../styles/typography" as type;
 @use "@material/theme"
 with ($primary: #962f10,
   $on-primary: #442C2E);
@@ -53,13 +55,19 @@ h3 {
   margin-bottom: 0px;
 }
 
+// ADR D-39 / Sprint I Phase 2: was a bespoke margin-only rule, restated with different
+// values in settings.component.scss (that file's h1,h2,h3 needs !important to win against
+// its own six duplicated copies - see D-39). Entry is the first page to move onto the
+// shared spec; propagate to Settings' headers in a later pass once this is confirmed live.
 .elegant {
-  margin-top   : 25px;
-  margin-bottom: 0px;
+  @include section.section-header;
 }
 
-.bordered {
-  border: 2 px solid rgb(62, 189, 189);
+// ADR D-39 / Sprint I Phase 2: each Who/Where/When/What field group, replacing the tinted
+// backgrounds (E-47) and the never-actually-rendered .bordered box (its own
+// `border: 2 px solid ...` was invalid CSS - a stray space - and silently did nothing).
+.enter__section {
+  @include section.section-group;
 }
 
 #addresses {
@@ -90,25 +98,50 @@ input[type=number] {
   //appearance:unset;
 }
 
+// ADR D-39: was `font-size: x-small; color: #AAA` - a raw hex outside the token layer.
 .small {
-  font-size: x-small;
-  color    : #AAA;
+  @include type.type-label;
+  color: var(--rt-ink-3);
 }
 
+// E-50: was `width: 250px` - too narrow for the date and time mat-form-fields to sit
+// side by side, which is why time fell to its own line below the date with a lot of dead
+// vertical space. The row layout itself lives in time-picker.component.scss (.rounded);
+// this wrapper just needs to stop capping the width that layout has to work with.
 .timepicker_When-input {
-  width   : 250px;
-  //height: 80px;
+  width: auto;
 }
 
+// E-51: was a bare mat-radio-group on a single tinted background - each mat-radio-button
+// below now reads as its own chip instead.
 .enter__Status {
-  padding               : 8px 0;
-  //border              : 1px solid red;
-  border-radius         : 5px;
-  padding-left          : 5px;
-  //width           : 650px;
-  background-color      : $filledColor;
-  line-height           : 35px;
-  //margin            : 20px 0;
+  display    : flex;
+  flex-wrap  : wrap;
+  align-items: center;
+  gap        : 0.5rem;
+  padding    : 8px 0;
+}
+
+// ADR D-39's segmented-chip decision: kept mat-radio-group/mat-radio-button rather than
+// mat-button-toggle-group, restyled as tonal (unselected) / tinted-and-bordered in the
+// status's own colour (selected) - the colour itself, not a generic accent, is deliberate:
+// it's the information Sprint E's contrast work already settled, so the selected state
+// should carry it rather than a one-size accent that says nothing about the status.
+.rButton {
+  border          : 1px solid var(--rt-line);
+  border-radius   : var(--rt-radius-lg);
+  background-color: var(--rt-surface-2);
+  padding         : 0.15rem 0.6rem 0.15rem 0.3rem;
+  transition      : background-color 120ms ease, border-color 120ms ease;
+}
+
+.enter__status-selected {
+  border-color    : var(--rt-status-current, var(--rt-accent));
+  background-color: color-mix(in srgb, var(--rt-status-current, var(--rt-accent)) 20%, var(--rt-surface));
+
+  .Enter__status-value {
+    font-weight: 600;
+  }
 }
 
 .bottomDrop {
@@ -118,13 +151,22 @@ input[type=number] {
 
 }
 
+// E-61: Reset and Submit share this box model (min-height, padding, border-radius,
+// font-weight, margin) so they read as a sized pair. Before this, Reset fell back to
+// default browser button sizing - this rule's own `margin: 30 px` is invalid CSS (a
+// stray space breaks the value) and was silently dropped - while Submit got real
+// values via .enter__Submit-button below, which is why they never lined up.
 .eButton {
-  //display: inline-block;
-  width             : 80px;
-  font-weight       : bold;
-  //background-color: red;
-  margin            : 30 px;
-  //padding: 10px;
+  min-width        : 80px;
+  min-height       : var(--rt-tap-min);
+  padding          : 0 1.25rem;
+  margin           : 0 10px 10px 0;
+  font-weight      : 600;
+  border           : 1px solid var(--rt-line-strong);
+  border-radius    : var(--rt-radius);
+  background-color : transparent;
+  color            : var(--rt-ink);
+  cursor           : pointer;
 }
 
 .enter__form {
@@ -153,7 +195,7 @@ input[type=number] {
 
 #enter__Callsign-image {
   margin   : 0 10px;
-  font-size: small;
+  @include type.type-body-sm;
   display  : inline-block;
 }
 
@@ -165,7 +207,7 @@ input[type=number] {
 
 //@at-root   - matche the document's root element
 #enter__Callsign-upshot {
-  font-size: smaller;
+  @include type.type-body-sm;
   display  : inline-block;
 }
 
@@ -218,19 +260,13 @@ input[type=number] {
 }
 
 .enter__Submit-button {
-  margin-left     : 10px;
-  margin-top      : 0px;
-  margin-bottom   : 10px;
   // Sprint B: was rgb(236, 252, 4), an electric yellow that predates any palette. This is
-  // the primary action on the primary screen (10's hot path), so it takes the accent.
+  // the primary action on the primary screen (10's hot path), so it takes the accent -
+  // the one thing that still sets it apart from Reset now that E-61 unified their box
+  // model in .eButton above.
   background-color: var(--rt-accent);
   color           : var(--rt-accent-ink);
-  border          : 1px solid transparent;
-  border-radius   : var(--rt-radius);
-  min-height      : var(--rt-tap-min);
-  padding         : 0 1.25rem;
-  font-weight     : 600;
-  cursor          : pointer;
+  border-color    : transparent;
 }
 
 #enter__Submit-info {

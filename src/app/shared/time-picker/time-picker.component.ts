@@ -180,6 +180,22 @@ export class TimePickerComponent implements OnInit {
     this.log.verbose(`Combined date/time emitted: ${combined}`, this.id)
   }
 
+  /**
+   * E-50: the explicit up/down stepper buttons next to the time field - a visible
+   * equivalent to the native time input's own (easy-to-miss) arrow-key stepping.
+   * Wraps within a single day rather than rolling the date over, matching what the
+   * native control's own up/down arrows do.
+   */
+  adjustTime(deltaMinutes: number) {
+    const { timeOfDay } = this.timeModel()
+    const [hours, minutes] = timeOfDay.split(':').map(Number)
+    const total = (((hours * 60 + minutes + deltaMinutes) % 1440) + 1440) % 1440
+    const newHours = Math.floor(total / 60).toString().padStart(2, '0')
+    const newMinutes = (total % 60).toString().padStart(2, '0')
+    this.timeModel.update(s => ({ ...s, timeOfDay: `${newHours}:${newMinutes}` }))
+    this.onNewTime()
+  }
+
   toggleMinDate(evt: any) {
     if (evt.checked) {
       this._setMinDate();

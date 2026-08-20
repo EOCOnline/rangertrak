@@ -164,8 +164,11 @@ of this now is worth more than any checklist. Delete the test report afterwards.
 status, add notes, and submit. Reports save to the device immediately.
 
 **Setting a location.** You can enter coordinates directly, or type an address and let
-RangerTrak look it up. You can also click any map to copy the coordinates under your
-cursor, then paste them in.
+RangerTrak look it up. The small "Current Location" map right on the Home page is the
+fastest way — click anywhere on it and that position is set immediately, no typing or
+pasting needed (it's also copied to your clipboard, in case you want it elsewhere too).
+The full Map and Backup Map pages don't set the location this way; clicking them copies
+the coordinates under your cursor so you can paste them into Home yourself.
 
 RangerTrak accepts a position in whichever format it was called in over the radio:
 
@@ -187,7 +190,7 @@ RangerTrak accepts a position in whichever format it was called in over the radi
 
 Not every mission wants all six formats cluttering the screen. **Settings → Location
 Defaults** lets you turn any of them off; Home also has its own "Show all coordinate
-systems" checkbox for the current session only, if you need to see a format the
+systems" toggle for the current session only, if you need to see a format the
 mission has hidden. Don't see a coordinate system your team actually uses (e.g. PLSS
 Township/Range/Section, or another country's national grid)? Open an issue on
 [GitHub](https://github.com/EOCOnline/RangerTrak/issues) — genuine field use is exactly
