@@ -77,4 +77,51 @@ describe('MissionReadinessService', () => {
     setAll(false);
     expect(service.level()).toBe('red');
   });
+
+  // Found live on rangertrak.org: this originally called leaflet.offline's own
+  // getStorageLength() via a dynamic import(), which broke silently in production -
+  // esbuild splits a dynamically-imported CJS dependency into a chunk whose real ESM
+  // exports are internal interop helpers, not the package's named exports, so the
+  // destructured getStorageLength was undefined and every call threw. Reimplemented with
+  // raw IndexedDB, matching leaflet.offline's own schema (TileManager.ts: db name
+  // 'leaflet.offline', store 'tileStore') so it reads what the real library writes.
+  //
+  // Deliberately does NOT test the "database doesn't exist yet" / "doesn't create it"
+  // safety properties here, and deliberately never deletes the 'leaflet.offline' database:
+  // Karma runs every spec file in one shared browser tab, and lmap.component.spec.ts /
+  // mini-lmap.component.spec.ts construct real Leaflet maps with real leaflet.offline
+  // connections that are never explicitly closed (openTilesDataBase() caches its
+  // connection for the app's lifetime, by design). `indexedDB.deleteDatabase(...)` blocks
+  // until every open connection closes, so calling it here hung the whole suite whenever
+  // an lmap-family spec had already run in the same session - confirmed by removing it and
+  // watching the timeout disappear. The safety reasoning itself (never open before
+  // confirming existence, never supply a version) is documented on countOfflineTiles()'s
+  // own doc comment instead, verified by reading leaflet.offline's real source rather than
+  // by a test that can't run reliably in this shared environment. Live-verified directly
+  // against the served production build instead (both the "no database yet" and "tiles
+  // exist" paths, each in a fresh browser profile).
+  describe('countOfflineTiles (via refresh())', () => {
+    it('is true once tiles exist, using the exact schema leaflet.offline itself writes', async () => {
+      await new Promise<void>((resolve, reject) => {
+        const req = indexedDB.open('leaflet.offline', 2);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          const store = db.createObjectStore('tileStore', { keyPath: 'key' });
+          store.createIndex('urlTemplate', 'urlTemplate');
+          store.createIndex('z', 'z');
+        };
+        req.onsuccess = () => {
+          const db = req.result;
+          const tx = db.transaction('tileStore', 'readwrite');
+          tx.objectStore('tileStore').put({ key: 'a', url: 'x', urlTemplate: 'x', x: 1, y: 1, z: 15, createdAt: Date.now() });
+          tx.oncomplete = () => { db.close(); resolve(); };
+          tx.onerror = () => { db.close(); reject(tx.error); };
+        };
+        req.onerror = () => reject(req.error);
+      });
+
+      await service.refresh();
+      expect(service.offlineTilesSaved()).toBe(true);
+    });
+  });
 });

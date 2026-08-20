@@ -79,16 +79,10 @@ export class MissionReadinessService {
     this.storagePersisted.set(this.storagePersistenceService.persisted() === true)
 
     try {
-      // Dynamic, not static: leaflet.offline pulls in Leaflet itself, and this service is
-      // root-provided and rendered on every page (including the eager Entry page) via
-      // HeaderComponent - a static import here measurably grew the INITIAL bundle (~160KB
-      // raw, caught by comparing `npm run build` output before/after). Same fix as E-64
-      // used for MapLibre: keep it out of the eager graph, fetch only when actually needed.
-      const { getStorageLength } = await import('leaflet.offline')
-      const tileCount = await getStorageLength()
+      const tileCount = await this.countOfflineTiles()
       this.offlineTilesSaved.set(tileCount > 0)
     } catch (e) {
-      this.log.warn(`getStorageLength() failed: ${e}`, this.id)
+      this.log.warn(`countOfflineTiles() failed: ${e}`, this.id)
       this.offlineTilesSaved.set(false)
     }
 
@@ -99,5 +93,62 @@ export class MissionReadinessService {
       this.log.warn(`caches.match() failed: ${e}`, this.id)
       this.bundledMapWarmed.set(false)
     }
+  }
+
+  /**
+   * Counts saved offline map tiles without importing leaflet.offline at all.
+   *
+   * Found live on rangertrak.org (2026-08-20, from a real user's Log page export) after
+   * this originally called leaflet.offline's own `getStorageLength()` via a dynamic
+   * `import()` - chosen specifically to keep the ~160KB package out of the eager bundle
+   * (see git history). That import broke silently in production: esbuild splits a
+   * dynamically-imported CJS dependency into its own chunk whose only real ESM exports are
+   * internal interop helpers, not the package's named exports - `const { getStorageLength
+   * } = await import(...)` destructured `undefined`, and every call threw "is not a
+   * function". Reproduced locally the same way once actually tested across several page
+   * navigations rather than a single page load (which happened to dodge it) - see
+   * [[verify-the-measurement-itself]].
+   *
+   * `getStorageLength()`'s own implementation (leaflet.offline's TileManager.ts) is just an
+   * IndexedDB count - `openDB('leaflet.offline', 2, {...}).count('tileStore')` - simple
+   * enough to do directly with the raw IndexedDB API, sidestepping the bundler issue
+   * entirely rather than working around it.
+   *
+   * Safety constraint that shapes this whole method: `LmapComponent`/`MiniLMapComponent`
+   * elsewhere in the app open this exact database via leaflet.offline's own `openDB`,
+   * which creates the `tileStore` object store the FIRST time the database is opened at
+   * all (an `onupgradeneeded` with `oldVersion < 1`). If this method opened the database
+   * first - before a user ever visited a map page - it would create an empty schema at
+   * version 1 with no upgrade logic of its own, and leaflet.offline's later `openDB(...,
+   * 2, ...)` would then see `oldVersion` as 1, not 0, and skip creating `tileStore`
+   * entirely - silently breaking the real offline-tile-saving feature for anyone whose
+   * first interaction with this database happened to be the readiness check. So this only
+   * ever opens the database after confirming (via `indexedDB.databases()`) that it already
+   * exists, and never supplies a version or an upgrade handler.
+   */
+  private async countOfflineTiles(): Promise<number> {
+    if (typeof indexedDB === 'undefined' || typeof indexedDB.databases !== 'function') {
+      return 0
+    }
+    const existing = await indexedDB.databases()
+    if (!existing.some(d => d.name === 'leaflet.offline')) {
+      return 0
+    }
+
+    return new Promise<number>(resolve => {
+      const openRequest = indexedDB.open('leaflet.offline')
+      openRequest.onerror = () => resolve(0)
+      openRequest.onsuccess = () => {
+        const db = openRequest.result
+        if (!db.objectStoreNames.contains('tileStore')) {
+          db.close()
+          resolve(0)
+          return
+        }
+        const countRequest = db.transaction('tileStore', 'readonly').objectStore('tileStore').count()
+        countRequest.onsuccess = () => { resolve(countRequest.result); db.close() }
+        countRequest.onerror = () => { resolve(0); db.close() }
+      }
+    })
   }
 }
