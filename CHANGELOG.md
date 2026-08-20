@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.17.0](https://github.com/EOCOnline/rangertrak/compare/v0.16.9...v0.17.0) (2026-08-20)
+
+
+### Bug Fixes
+
+* **navbar:** route brand link internally instead of opening stale www origin ([a507970](https://github.com/EOCOnline/rangertrak/commit/a507970b3686c20c2d22619f56cc4055de422ea5))
+
 ### [0.16.9](https://github.com/EOCOnline/rangertrak/compare/v0.16.8...v0.16.9) (2026-08-20)
 
 
