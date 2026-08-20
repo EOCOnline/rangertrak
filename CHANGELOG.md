@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.20.0](https://github.com/EOCOnline/rangertrak/compare/v0.19.0...v0.20.0) (2026-08-20)
+
+
+### Features
+
+* **map:** collapse Map/Backup map into one page with an engine switch ([482ad62](https://github.com/EOCOnline/rangertrak/commit/482ad62d4bd023b0d8f9a0d46e2b3c60b380ac1b))
+
 ## [0.19.0](https://github.com/EOCOnline/rangertrak/compare/v0.18.0...v0.19.0) (2026-08-20)
 
 
