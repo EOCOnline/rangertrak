@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.18.0](https://github.com/EOCOnline/rangertrak/compare/v0.17.0...v0.18.0) (2026-08-20)
+
+
+### Bug Fixes
+
+* **entry:** stop section-header rules from running under the mini-map ([fc07f98](https://github.com/EOCOnline/rangertrak/commit/fc07f980cea8d2751da7d9ddb70d96af526dc913))
+
 ## [0.17.0](https://github.com/EOCOnline/rangertrak/compare/v0.16.9...v0.17.0) (2026-08-20)
 
 
