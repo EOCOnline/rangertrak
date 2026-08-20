@@ -69,23 +69,29 @@ export function migrateSettings(raw: SettingsType, defaults?: SettingsType): Set
   const incoming = (raw ?? {}) as SettingsType & { schemaVersion?: unknown }
   const version = typeof incoming.schemaVersion === 'number' ? incoming.schemaVersion : 0
 
-  if (version >= SETTINGS_SCHEMA_VERSION) {
-    // Already current (or newer - see above). Still stamp a numeric version so a missing or
-    // malformed one does not keep re-triggering this path on every load.
-    return { ...incoming, schemaVersion: version }
-  }
-
   let settings: SettingsType = { ...incoming }
 
-  if (version < 1) {
-    settings = { ...settings, fieldReportStatuses: toSemanticStatusColors(settings.fieldReportStatuses) }
+  if (version < SETTINGS_SCHEMA_VERSION) {
+    if (version < 1) {
+      settings = { ...settings, fieldReportStatuses: toSemanticStatusColors(settings.fieldReportStatuses) }
+    }
+    settings = { ...settings, schemaVersion: SETTINGS_SCHEMA_VERSION }
   }
 
-  if (version < 2) {
-    settings = backfillMissingFields(settings, defaults)
-  }
-
-  return { ...settings, schemaVersion: SETTINGS_SCHEMA_VERSION }
+  // Recurrence of BUG-3 (2026-08-20): Sprint H added six new SettingsType fields
+  // (showDD/showDDM/showDMS/showMGRS/showUTM/showMaidenhead) without bumping
+  // SETTINGS_SCHEMA_VERSION, so this ran once for every user already at version 2 and never
+  // again - `this.field() is not a function`, firing on every change-detection pass (once a
+  // second, from the live clock in Header), for every returning user who had settings before
+  // Sprint H shipped. Confirmed live on 0.16.7 from a real user's exported log: schemaVersion
+  // was 2, and none of the six fields were present.
+  //
+  // Fixed at the root rather than by bumping to a version 3 that only defers the next
+  // occurrence: backfillMissingFields is deliberately unconditional now, run on EVERY load
+  // regardless of the version comparison above, not gated behind `version < N`. It was
+  // already documented as safe to call repeatedly (pure, additive-only, never overwrites a
+  // real value) - the version gate around it was the bug, not the function itself.
+  return backfillMissingFields(settings, defaults)
 }
 
 /**

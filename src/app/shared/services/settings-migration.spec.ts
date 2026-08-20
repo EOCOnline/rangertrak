@@ -144,6 +144,22 @@ describe('migrateSettings', () => {
       const out = migrateSettings(stored as unknown as SettingsType)
       expect('googleGeocodingApiKey' in out).toBe(false)
     })
+
+    // Recurrence (2026-08-20), confirmed live on 0.16.7 from a real user's exported log:
+    // Sprint H added six new SettingsType fields (showDD/showDDM/showDMS/showMGRS/showUTM/
+    // showMaidenhead) without bumping SETTINGS_SCHEMA_VERSION. Every user already stamped at
+    // version 2 - i.e. everyone who had opened the app before Sprint H shipped - hit
+    // `this.field() is not a function` on Settings' six new checkboxes, every change-
+    // detection pass, because the version gate skipped backfillMissingFields entirely for
+    // anyone already "current". This is the exact scenario: an object already at the
+    // CURRENT schema version, still missing a field the live SettingsType now declares.
+    it('backfills a field even when the stored object is already at the current schema version', () => {
+      const alreadyCurrent = { ...v0Settings(), schemaVersion: SETTINGS_SCHEMA_VERSION } as unknown as Record<string, unknown>
+      delete alreadyCurrent['w3wLocale'] // stands in for a field added after this user's last save
+      const out = migrateSettings(alreadyCurrent as unknown as SettingsType, defaults())
+      expect(out.w3wLocale).toBe('Default Locale')
+      expect(out.schemaVersion).toBe(SETTINGS_SCHEMA_VERSION) // not bumped further
+    })
   })
 })
 
