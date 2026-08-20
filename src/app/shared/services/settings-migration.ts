@@ -23,8 +23,9 @@ import { StatusKey } from './status-color'
  *
  * 1 - status colours become semantic keys rather than raw CSS colour strings.
  * 2 - backfill any field SettingsType declares that the stored object lacks (BUG-3).
+ * 3 - rename the legacy `google` settings block to `maplibre` (E-70).
  */
-export const SETTINGS_SCHEMA_VERSION = 2
+export const SETTINGS_SCHEMA_VERSION = 3
 
 /**
  * The status colours as shipped before v1, paired with the semantic key each becomes.
@@ -74,6 +75,9 @@ export function migrateSettings(raw: SettingsType, defaults?: SettingsType): Set
   if (version < SETTINGS_SCHEMA_VERSION) {
     if (version < 1) {
       settings = { ...settings, fieldReportStatuses: toSemanticStatusColors(settings.fieldReportStatuses) }
+    }
+    if (version < 3) {
+      settings = renameGoogleToMaplibre(settings)
     }
     settings = { ...settings, schemaVersion: SETTINGS_SCHEMA_VERSION }
   }
@@ -133,6 +137,21 @@ function backfillMissingFields(settings: SettingsType, defaults?: SettingsType):
   }
 
   return out as unknown as SettingsType
+}
+
+/**
+ * v2 -> v3 (E-70): `google` was a legacy name for the MapLibre + PMTiles map's zoom/overview
+ * settings, left over from the old Google Maps display this block predates (GmapComponent is
+ * long gone). Renames the key in place, preserving every sub-value untouched. A stored object
+ * with no `google` key at all - either written after this migration already shipped, or
+ * pre-dating the block entirely - is left alone; backfillMissingFields (below) supplies a
+ * fresh `maplibre` default the same way it would for any other missing field.
+ */
+function renameGoogleToMaplibre(settings: SettingsType): SettingsType {
+  const raw = settings as unknown as Record<string, unknown>
+  if (!('google' in raw)) return settings
+  const { google, ...rest } = raw
+  return { ...rest, maplibre: google } as unknown as SettingsType
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

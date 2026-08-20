@@ -33,7 +33,7 @@ const blankSettings: SettingsType = {
   defLat: 0, defLng: 0, defPlusCode: '', w3wLocale: '', allowManualPinDrops: false,
   googleGeocodingApiKey: '',
   showDD: true, showDDM: true, showDMS: true, showMGRS: true, showUTM: true, showMaidenhead: true,
-  google: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
+  maplibre: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   leaflet: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   imageDirectory: '', defFieldReportStatus: 0, fieldReportStatuses: [],
 }
@@ -93,10 +93,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
     min(path.leaflet.overviewMinZoom, 1); max(path.leaflet.overviewMinZoom, 10)
     min(path.leaflet.overviewMaxZoom, 3); max(path.leaflet.overviewMaxZoom, 22)
 
-    min(path.google.defZoom, 3); max(path.google.defZoom, 22)
-    min(path.google.overviewDifference, 1); max(path.google.overviewDifference, 10)
-    min(path.google.overviewMinZoom, 1); max(path.google.overviewMinZoom, 10)
-    min(path.google.overviewMaxZoom, 3); max(path.google.overviewMaxZoom, 22)
+    min(path.maplibre.defZoom, 3); max(path.maplibre.defZoom, 22)
+    min(path.maplibre.overviewDifference, 1); max(path.maplibre.overviewDifference, 10)
+    min(path.maplibre.overviewMinZoom, 1); max(path.maplibre.overviewMinZoom, 10)
+    min(path.maplibre.overviewMaxZoom, 3); max(path.maplibre.overviewMaxZoom, 22)
   })
 
   // Mutated in the constructor's settings-subscription next callback, alongside the

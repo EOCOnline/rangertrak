@@ -86,7 +86,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.fieldReports = this.fieldReportService.getCurrentFieldReports()
     this.numAllRows.set(this.fieldReports.numReport)
-    this.zoomDisplay.set(this.settings.google.defZoom)
+    this.zoomDisplay.set(this.settings.maplibre.defZoom)
   }
 
   ngAfterViewInit(): void {
@@ -94,7 +94,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       container: this.mapContainer.nativeElement,
       style: buildPmtilesStyle(),
       center: [this.settings.defLng, this.settings.defLat],
-      zoom: this.settings.google.defZoom
+      zoom: this.settings.maplibre.defZoom
     })
 
     // Without a listener MapLibre swallows source/tile failures into a console warning at
@@ -123,7 +123,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       container: this.overviewContainer.nativeElement,
       style: buildPmtilesStyle(),
       center: [this.settings.defLng, this.settings.defLat],
-      zoom: this.settings.google.overviewMinZoom,
+      zoom: this.settings.maplibre.overviewMinZoom,
       interactive: false,
       // The main map above carries the attribution, which is what OSM's terms require of
       // the page. A second copy inside a 175px decorative thumbnail only wrapped to three
@@ -137,9 +137,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       const center = this.map.getCenter()
       const targetZoom = this.clamp(
-        this.map.getZoom() - this.settings.google.overviewDifference,
-        this.settings.google.overviewMinZoom,
-        this.settings.google.overviewMaxZoom
+        this.map.getZoom() - this.settings.maplibre.overviewDifference,
+        this.settings.maplibre.overviewMinZoom,
+        this.settings.maplibre.overviewMaxZoom
       )
       this.overviewMap.jumpTo({ center, zoom: targetZoom })
     })

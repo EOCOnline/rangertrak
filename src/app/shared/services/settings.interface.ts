@@ -46,10 +46,10 @@ export type SettingsType = {
   // user's localStorage - never in secrets.json, never bundled. Empty string = disabled.
   googleGeocodingApiKey: string,
 
-  // Zoom/overview settings for the MapLibre + PMTiles map (repurposed from its original
-  // Google Maps *display* meaning now that GmapComponent is gone - the field name is
-  // legacy, the settings UI section is labeled for its current purpose).
-  google: {
+  // Zoom/overview settings for the MapLibre + PMTiles map. E-70: was `google`, a legacy
+  // name left over from the old Google Maps display this field predates - renamed once
+  // that engine (and GmapComponent) was fully gone, via a schemaVersion 2->3 migration.
+  maplibre: {
     defZoom: number,  // or just zoom to bounds?
     markerScheme: string,
     overviewDifference: number,

@@ -401,7 +401,7 @@ seeing what a busy mission looks like.
 
 - **Roster edits are not saved automatically.** Press **Save Rangers** on the Rangers page,
   or your changes are lost on reload.
-- **The offline map covers Vashon Island only.** Outside that area you get a plain
+- **The Backup map covers Vashon Island only.** Outside that area you get a plain
   background with your report markers on it — correct positions, no streets. Broader
   coverage is planned.
 - **Report selection resets** when you reload the page or move between pages.

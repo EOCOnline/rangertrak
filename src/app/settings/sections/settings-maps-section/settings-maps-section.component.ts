@@ -5,11 +5,11 @@ import { FieldTree, FormField } from '@angular/forms/signals'
 import { SettingsType } from '../../../shared/services/'
 
 /**
- * Maps checkbox, Leaflet settings, Geocoding, and Offline Map (PMTiles) settings. Sprint C
- * split out of the 429-line settings.component template - see settings.component.ts.
+ * Maps checkbox, Leaflet settings, Geocoding, and Backup Map (MapLibre + PMTiles) settings.
+ * Sprint C split out of the 429-line settings.component template - see settings.component.ts.
  *
  * The old `formGroupName="leaflet"`/`"google"` wrapper divs are gone - Signal Forms' native
- * dot-path nesting (`form.leaflet.defZoom`, `form.google.defZoom`) needs no ambient group
+ * dot-path nesting (`form.leaflet.defZoom`, `form.maplibre.defZoom`) needs no ambient group
  * context, cross-component or otherwise.
  */
 @Component({

@@ -53,7 +53,7 @@ describe('SettingsService', () => {
         defLat: 1.111, defLng: 2.222, defPlusCode: 'CUSTOM+CODE',
         w3wLocale: 'Nowhere', allowManualPinDrops: false,
         leaflet: { defZoom: 1, markerScheme: '', overviewDifference: 1, overviewMinZoom: 1, overviewMaxZoom: 1 },
-        google: { defZoom: 1, markerScheme: '', overviewDifference: 1, overviewMinZoom: 1, overviewMaxZoom: 1 },
+        maplibre: { defZoom: 1, markerScheme: '', overviewDifference: 1, overviewMinZoom: 1, overviewMaxZoom: 1 },
         imageDirectory: './assets/imgs/', defFieldReportStatus: 0,
         fieldReportStatuses: []
       };

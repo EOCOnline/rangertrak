@@ -263,7 +263,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
         overviewMaxZoom: 16
       },
 
-      google: {
+      maplibre: {
         defZoom: 17,  // used? or just zoom to bounds?
         markerScheme: '',
         overviewDifference: 5,

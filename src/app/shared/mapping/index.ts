@@ -7,8 +7,8 @@ export { NominatimGeocoder } from "./nominatim-geocoder"
 export { GoogleGeocoder } from "./google-geocoder"
 // NOTE: ./map-style is deliberately NOT re-exported here (nor from ../index.ts). It pulls
 // in MapLibre (~800KB), and anything importing this barrel for an unrelated symbol would
-// drag MapLibre along with it into the eager bundle. Its two consumers - MapComponent and
-// MiniMapComponent - import it directly from './mapping/map-style' instead, which keeps
-// MapLibre inside the lazily-loaded /map route chunk.
+// drag MapLibre along with it into the eager bundle. Its consumer, MapComponent, imports it
+// directly from './mapping/map-style' instead, which keeps MapLibre inside the lazily-loaded
+// /map route chunk. (E-70: the unwired MiniMapComponent, formerly a second consumer, is gone.)
 export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./coordinate"
 export { AbstractMap } from "./map"

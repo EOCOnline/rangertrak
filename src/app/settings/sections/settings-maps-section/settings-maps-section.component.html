@@ -4,7 +4,7 @@
   <div class="input-group">
     <div class="strong">Markers: </div>
     <input type="checkbox" [formField]="form.allowManualPinDrops" placeholder="allowManualPinDrops" />
-    Clicking on Google & Leaflet maps should make new markers - but won't be saved.<br />
+    Clicking on Leaflet or MapLibre maps should make new markers - but won't be saved.<br />
     (Default on Leaflet maps: clicking saves Lat/Long to clipboard.)
   </div>
 
@@ -75,14 +75,17 @@
   </div>
 
   <!-- ======================================= -->
-  <h3>Offline Map (PMTiles) Settings</h3>
+  <!-- D-31: named "Backup Map" to match the nav/Entry labels - not "Offline", since Leaflet
+       is also usable offline once tiles are saved for the area (see Leaflet Map Settings
+       above). Neither engine is "the offline one". -->
+  <h3>Backup Map (MapLibre + PMTiles) Settings</h3>
   <div>
     <div class="input-group">
       <span class="strong">Default Zoom: </span>
       <input
-        [class.border-danger]="form.google.defZoom().touched() && form.google.defZoom().invalid()"
-        type="number" [style.width.px]="50" [formField]="form.google.defZoom" placeholder="15" />
-      @if (form.google.defZoom().touched() && form.google.defZoom().invalid()) {
+        [class.border-danger]="form.maplibre.defZoom().touched() && form.maplibre.defZoom().invalid()"
+        type="number" [style.width.px]="50" [formField]="form.maplibre.defZoom" placeholder="15" />
+      @if (form.maplibre.defZoom().touched() && form.maplibre.defZoom().invalid()) {
       <div class="text-sm text-danger">
         must be between 3 and 22
       </div>
@@ -94,9 +97,9 @@
     <div class="input-group">
       <span class="strong">Overview Map Zoom Difference: </span>
       <input
-        [class.border-danger]="form.google.overviewDifference().touched() && form.google.overviewDifference().invalid()"
-        type="number" [style.width.px]="50" [formField]="form.google.overviewDifference" placeholder="5" />
-      @if (form.google.overviewDifference().touched() && form.google.overviewDifference().invalid()) {
+        [class.border-danger]="form.maplibre.overviewDifference().touched() && form.maplibre.overviewDifference().invalid()"
+        type="number" [style.width.px]="50" [formField]="form.maplibre.overviewDifference" placeholder="5" />
+      @if (form.maplibre.overviewDifference().touched() && form.maplibre.overviewDifference().invalid()) {
       <div class="text-sm text-danger">
         must be between 1 and 10
       </div>
@@ -106,9 +109,9 @@
     <div class="input-group">
       <span class="strong">Overview Map Min Zoom: </span>
       <input
-        [class.border-danger]="form.google.overviewMinZoom().touched() && form.google.overviewMinZoom().invalid()"
-        type="number" [style.width.px]="50" [formField]="form.google.overviewMinZoom" placeholder="5" />
-      @if (form.google.overviewMinZoom().touched() && form.google.overviewMinZoom().invalid()) {
+        [class.border-danger]="form.maplibre.overviewMinZoom().touched() && form.maplibre.overviewMinZoom().invalid()"
+        type="number" [style.width.px]="50" [formField]="form.maplibre.overviewMinZoom" placeholder="5" />
+      @if (form.maplibre.overviewMinZoom().touched() && form.maplibre.overviewMinZoom().invalid()) {
       <div class="text-sm text-danger">
         must be between 1 and 10
       </div>
@@ -118,9 +121,9 @@
     <div class="input-group">
       <span class="strong">Overview Map Max Zoom: </span>
       <input
-        [class.border-danger]="form.google.overviewMaxZoom().touched() && form.google.overviewMaxZoom().invalid()"
-        type="number" [style.width.px]="50" [formField]="form.google.overviewMaxZoom" placeholder="21" />
-      @if (form.google.overviewMaxZoom().touched() && form.google.overviewMaxZoom().invalid()) {
+        [class.border-danger]="form.maplibre.overviewMaxZoom().touched() && form.maplibre.overviewMaxZoom().invalid()"
+        type="number" [style.width.px]="50" [formField]="form.maplibre.overviewMaxZoom" placeholder="21" />
+      @if (form.maplibre.overviewMaxZoom().touched() && form.maplibre.overviewMaxZoom().invalid()) {
       <div class="text-sm text-danger">
         must be between 3 and 22
       </div>

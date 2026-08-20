@@ -161,6 +161,44 @@ describe('migrateSettings', () => {
       expect(out.schemaVersion).toBe(SETTINGS_SCHEMA_VERSION) // not bumped further
     })
   })
+
+  describe('google -> maplibre rename (E-70, schemaVersion 2 -> 3)', () => {
+    it('renames a returning user\'s stored `google` block to `maplibre`, preserving every value', () => {
+      const stored = {
+        ...v0Settings(), schemaVersion: 2,
+        google: { defZoom: 12, markerScheme: 'custom', overviewDifference: 4, overviewMinZoom: 3, overviewMaxZoom: 20 },
+      } as unknown as Record<string, unknown>
+      delete stored['leaflet'] // irrelevant to this migration - present in a real object
+
+      const out = migrateSettings(stored as unknown as SettingsType)
+      const outAsRecord = out as unknown as Record<string, unknown>
+
+      expect(outAsRecord['maplibre']).toEqual({
+        defZoom: 12, markerScheme: 'custom', overviewDifference: 4, overviewMinZoom: 3, overviewMaxZoom: 20
+      })
+      expect('google' in outAsRecord).toBe(false)
+      expect(out.schemaVersion).toBe(SETTINGS_SCHEMA_VERSION)
+    })
+
+    it('leaves an object with no `google` key alone rather than inventing one', () => {
+      const stored = v0Settings() as unknown as Record<string, unknown>
+      delete stored['google']
+      const out = migrateSettings(stored as unknown as SettingsType) as unknown as Record<string, unknown>
+      expect('google' in out).toBe(false)
+      expect('maplibre' in out).toBe(false) // no defaults supplied, so nothing backfills it either
+    })
+
+    it('is idempotent - an already-renamed object is untouched by a second pass', () => {
+      const alreadyRenamed = {
+        ...v0Settings(), schemaVersion: SETTINGS_SCHEMA_VERSION,
+        maplibre: { defZoom: 12, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
+      } as unknown as Record<string, unknown>
+      delete alreadyRenamed['google']
+
+      const out = migrateSettings(alreadyRenamed as unknown as SettingsType) as unknown as Record<string, unknown>
+      expect(out['maplibre']).toEqual({ defZoom: 12, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 })
+    })
+  })
 })
 
 describe('status colours', () => {
