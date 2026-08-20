@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.19.0](https://github.com/EOCOnline/rangertrak/compare/v0.18.0...v0.19.0) (2026-08-20)
+
+
+### Bug Fixes
+
+* **maps:** purge Google Maps leftovers, rename settings.google to maplibre ([e389ddf](https://github.com/EOCOnline/rangertrak/commit/e389ddf4e250ecf8c46576e700e44b1f35cb163a))
+
 ## [0.18.0](https://github.com/EOCOnline/rangertrak/compare/v0.17.0...v0.18.0) (2026-08-20)
 
 
