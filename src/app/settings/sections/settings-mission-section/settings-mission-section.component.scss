@@ -1,3 +1,4 @@
+@use "../../../../styles/section" as section;
 // Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss.
 $filledColor: var(--rt-surface-2);
 
@@ -33,10 +34,13 @@ $filledColor: var(--rt-surface-2);
   font-weight: bold;
 }
 
-h1,
-h2,
+// E-52 / ADR D-39: was this same six-times-duplicated h1,h2,h3 block with !important on
+// every declaration. h2 is a section head here, h3 is a subhead inside one - they now get
+// visibly different treatments from the shared spec instead of one identical rule.
+h2 {
+  @include section.section-header;
+}
+
 h3 {
-  margin-top   : 20px !important;
-  margin-bottom: 0px !important;
-  font-weight  : 600 !important;
+  @include section.subsection-header;
 }

@@ -8,6 +8,8 @@ with ($primary: #962f10,
 @use "@material/button";
 @use "@material/button/styles";
 @use "@material/banner";
+@use "../../styles/section" as section;
+@use "../../styles/typography" as type;
 
 .strong {
   font-weight: bold;
@@ -33,12 +35,15 @@ label {
   display       : inline-block;
 }
 
-h1,
-h2,
+// E-52 / ADR D-39: was the sixth copy of the same h1,h2,h3 !important block. Settings
+// only has an <h2> of its own ("Debug"); h3 is covered here too for the section
+// components' sake being consistent.
+h2 {
+  @include section.section-header;
+}
+
 h3 {
-  margin-top   : 20px !important;
-  margin-bottom: 0px !important;
-  font-weight  : 600 !important;
+  @include section.subsection-header;
 }
 
 // Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss. Still needed here
@@ -50,13 +55,13 @@ $filledColor: var(--rt-surface-2);
   font-weight: bold;
 }
 
+// ADR D-39: was `font-size: 12px`, now the named body-sm role.
 .small {
-  font-size: 12px;
+  @include type.type-body-sm;
 }
 
 .elegant {
-  margin-top   : 25px;
-  margin-bottom: 0px;
+  @include section.section-header;
 }
 
 .strongish {

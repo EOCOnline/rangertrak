@@ -17,6 +17,18 @@
   border-bottom: 2px solid var(--rt-accent);
 }
 
+// A heading INSIDE a section (Settings' Maps page has three: Leaflet / Geocoding /
+// Offline Map). Deliberately lighter than section-header: no accent rule, smaller role,
+// less space above - if every heading gets the same underline, the underline stops
+// meaning "new section". E-52 asked for section heads to be set off; that only works if
+// subheads are visibly subordinate to them.
+@mixin subsection-header {
+  @include type.type-body;
+  font-weight: 600;
+  color: var(--rt-ink-2);
+  margin: 1rem 0 0.35rem;
+}
+
 // Grouping cue for a section's fields, replacing the tinted-background containers E-47
 // flagged as not earning their place (ADR D-39) - a left rule reads as "these fields
 // belong to the header above" without needing field chrome to line up with a fill.
