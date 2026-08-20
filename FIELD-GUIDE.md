@@ -104,7 +104,7 @@ below for what to do if you're caught this way.
 
 ---
 
-## Before the mission: getting to a hot start
+## Before the mission: getting to a hot start (the setup phase)
 
 Do this while you still have Internet and mains power. It takes a few minutes and is the
 difference between a working tool and a blank screen.
@@ -136,12 +136,15 @@ not mid-mission.
 
 **6. Prime the maps — the step people forget.**
 
-- Open **Map (MapLibre+PMTiles)** once. The built-in map data is only stored on your device the
-  first time you open that page, so visiting it once while connected is what makes it
-  available later with no Internet.
-- Open **Map (Leaflet)**, navigate to your operating area at the zoom levels you expect to
-  use, and press **💾 Save this area for offline use**. This stores those road map tiles
-  on the device. Only the areas and zoom levels you actually save will be available later.
+Both engines live on the one **Map** page now, switched with the toggle above the map.
+
+- With the default **Leaflet** map showing, navigate to your operating area at the zoom
+  levels you expect to use, and press **💾 Save this area for offline use**. This stores
+  those road map tiles on the device. Only the areas and zoom levels you actually save will
+  be available later.
+- Flip the switch to try the **Backup map (MapLibre + PMTiles)** at least once. The bundled
+  map data is only stored on your device the first time you open it, so visiting it once
+  while connected is what makes it available later with no Internet.
 
 **7. Take a backup.**
 On **Settings**, press **Export Mission**. This writes a single file containing your
@@ -158,7 +161,11 @@ of this now is worth more than any checklist. Delete the test report afterwards.
 
 ---
 
-## During the mission
+## During the mission (the entry phase)
+
+Setup is infrequent and considered; entry is repetitive and time-critical — the same person
+may do both, but they're different modes of working. See the in-app About page for more on
+the distinction.
 
 **Entering a report.** On the **Home** page, pick the call sign, set the location, choose a
 status, add notes, and submit. Reports save to the device immediately.
@@ -218,6 +225,9 @@ incoming operator, who imports it on their device.
 layout has changed in places, but the workflow has not.)*
 
 ### Settings — start here
+
+*This is the setup phase's home screen — see [Before the mission](#before-the-mission-getting-to-a-hot-start-the-setup-phase)
+above for the full checklist. Everything below is reference for what's on this one screen.*
 
 > ⚠️ **Before changing settings**, export anything you need to keep. Setup steps can
 > replace existing data.
