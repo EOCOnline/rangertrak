@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.27.0](https://github.com/EOCOnline/rangertrak/compare/v0.26.0...v0.27.0) (2026-08-20)
+
+
+### Features
+
+* **header:** group the mission status readout into one cluster ([d342aed](https://github.com/EOCOnline/rangertrak/commit/d342aedbe10256c0af6c2b256de76af36916bc92))
+
 ## [0.26.0](https://github.com/EOCOnline/rangertrak/compare/v0.25.0...v0.26.0) (2026-08-20)
 
 
