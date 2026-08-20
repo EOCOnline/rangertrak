@@ -38,4 +38,11 @@
 
 div {
   margin-left: 1vw;
+  // E-57(1): the install/update pill is `position: fixed`, bottom-left (see
+  // install-update.component.scss's `--sticky-bottom` modifier) - confirmed live that
+  // without this, it visually overlapped the brand text right here once scrolled to the
+  // true bottom of a page. This reserves room for it whether or not it's currently
+  // showing, the same tradeoff back-to-top.component.scss's own `bottom: 1.5rem` offset
+  // already accepts for its corner.
+  padding-bottom: 3.5rem;
 }

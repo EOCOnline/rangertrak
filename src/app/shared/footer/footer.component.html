@@ -2,8 +2,11 @@
 <hr>
 <div><span class="brand" [title]="versionTitle">RangerTrak™ ֍ Version {{version}}</span>
   <!-- E-55: was this component's own updateReady button, styled differently from the
-       navbar's and Settings' install surfaces - see InstallUpdateComponent's doc comment. -->
-  <rangertrak-install-update></rangertrak-install-update>
+       navbar's and Settings' install surfaces - see InstallUpdateComponent's doc comment.
+       E-57(1): [stickyBottom] replaced the old separate top-fixed banner (previously in
+       app.component.html) - this instance now floats bottom-left regardless of scroll,
+       so it's both "in the footer" and always reachable. -->
+  <rangertrak-install-update [stickyBottom]="true"></rangertrak-install-update>
   <a href="https://eoc.online" target="_blank" class="copyLeft">©{{today | date: 'y'}} https://eoc.online - Open Source
     Tools for EOCs</a>
 </div>

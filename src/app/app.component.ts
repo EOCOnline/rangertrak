@@ -9,7 +9,6 @@ import { NavbarComponent } from './shared/navbar/navbar.component'
 import { FooterComponent } from './shared/footer/footer.component'
 import { AlertsComponent } from './shared/alerts/alerts.component'
 import { BackToTopComponent } from './shared/back-to-top/back-to-top.component'
-import { InstallUpdateComponent } from './shared/install-update/install-update.component'
 import { StaleOriginNoticeComponent } from './shared/stale-origin-notice/stale-origin-notice.component'
 
 @Component({
@@ -22,7 +21,6 @@ import { StaleOriginNoticeComponent } from './shared/stale-origin-notice/stale-o
     NavbarComponent,
     FooterComponent,
     BackToTopComponent,
-    InstallUpdateComponent,
     StaleOriginNoticeComponent
   ],
   templateUrl: './app.component.html',

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core'
+import { RouterLink } from '@angular/router'
 
 import { InstallableService, UpdateService } from '../services'
 
@@ -17,21 +18,28 @@ import { InstallableService, UpdateService } from '../services'
  * An update takes priority over an install offer when both are true at once - a stuck-on-
  * old-build incident (E-43) matters more than a missed install opportunity.
  *
- * E-43 follow-up (2026-08-20): the navbar this renders in is `position: static`, not
- * sticky - confirmed live, scrolling any page 800px hid it completely (top: -47px). A
- * scribe deep in a long Field Reports/Log page during an incident, which is exactly the
- * "stuck on an old build" scenario UpdateService exists for, would not see this instance at
- * all. `[fixed]="true"` (used once, in app.component.html, alongside the back-to-top
- * control) renders ONLY the update-ready state as a `position: fixed` banner independent of
- * scroll and independent of every other instance of this component - it never shows the
- * install offer, since that isn't the urgent case. The navbar/footer/Settings instances are
- * unchanged and still worth keeping: they're the reference a scribe checks deliberately,
- * where the fixed instance is the one that reaches someone who wasn't looking.
+ * E-57(1) simplification (2026-08-20): the compact form (navbar/footer) went back to a
+ * v0.12-era shape - one small pill: an icon, a short label, done, no separate sentence next
+ * to a separate CTA button. The maintainer, comparing mockups: "the install button can be
+ * much simplified, as it used to be, say in version 11 or so" (see git history around
+ * v0.12.0 for the actual shape this revives). Install and update-ready now share one pill
+ * silhouette with only the icon/label/tint differing, so they visibly read as the same
+ * affordance rather than two unrelated widgets.
+ *
+ * E-43's original top-sticky `[fixed]` banner is gone, replaced by `[stickyBottom]`, used
+ * once, in footer.component.html: "I like the button on the bottom more than a bar. can it
+ * go into the footer though?" `position: sticky; bottom: 0` on the footer's own instance
+ * settles into normal flow once the real footer is reached and pins to the viewport bottom
+ * otherwise - the same guarantee the old top banner made (visible regardless of scroll, so
+ * a scribe deep in a tall Field Reports/Log page still sees it), without a second,
+ * update-only instance living outside the footer. Because it's the footer's own instance
+ * rather than a dedicated urgent-only one, it shows the install offer too, not just
+ * update-ready - a small extra visibility win, not something asked for on its own.
  */
 @Component({
   selector: 'rangertrak-install-update',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './install-update.component.html',
   styleUrls: ['./install-update.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -40,15 +48,15 @@ export class InstallUpdateComponent {
 
   private id = 'Install/Update Component'
 
-  /** Settings gets the fuller explanation; navbar/footer get the compact form only. */
+  /** Settings gets the fuller explanation; navbar/footer get the compact pill only. */
   @Input() detailed = false
 
   /**
-   * E-43: renders only the update-ready state, as a viewport-fixed banner, ignoring
-   * `installable` entirely - see the class doc comment. Not meant to be combined with
-   * `detailed`.
+   * The footer's own instance: `position: sticky; bottom: 0`, so it stays reachable
+   * regardless of scroll position the same way the old top-fixed banner did - see the
+   * class doc comment for why this replaced `[fixed]`.
    */
-  @Input() fixed = false
+  @Input() stickyBottom = false
 
   constructor(
     private installableService: InstallableService,

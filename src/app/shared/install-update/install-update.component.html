@@ -1,28 +1,62 @@
 @if (updateReady) {
-  <!-- E-43: [fixed] gets its own class so it can be pinned to the viewport (see .scss) -
-       independent of whatever this instance is nested inside (navbar, footer). -->
-  <div class="rt-install-update rt-install-update--update" [class.rt-install-update--fixed]="fixed">
-    <span class="rt-install-update__text">A new version of RangerTrak is ready.</span>
-    <button type="button" class="rt-install-update__action" (click)="onReload()"
-      title="Reload now to start using the new version">
-      Reload now
-    </button>
+  <!-- [stickyBottom] gets its own class so it can be pinned to the viewport (see .scss) -
+       independent of whatever this instance is nested inside (currently only the footer). -->
+  <div class="rt-install-update rt-install-update--update" [class.rt-install-update--sticky-bottom]="stickyBottom">
+    @if (detailed) {
+      <button type="button" class="rt-install-update__main" (click)="onReload()"
+        title="A new version of RangerTrak is ready. Reload now to start using it.">
+        <svg class="rt-install-update__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20 12a8 8 0 10-2.34 5.66M20 12V6m0 6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Reload now &mdash; a new version is ready
+      </button>
+    } @else {
+      <button type="button" class="rt-install-update__main" (click)="onReload()"
+        title="A new version of RangerTrak is ready. Reload now to start using it.">
+        <svg class="rt-install-update__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20 12a8 8 0 10-2.34 5.66M20 12V6m0 6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Update ready
+      </button>
+      <a class="rt-install-update__help" routerLink="/about" title="What changed? See About.">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" />
+          <path d="M12 11v5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <circle cx="12" cy="7.75" r="1" fill="currentColor" />
+        </svg>
+      </a>
+    }
   </div>
-} @else if (installable && !fixed) {
-  <div class="rt-install-update rt-install-update--install">
+} @else if (installable) {
+  <div class="rt-install-update rt-install-update--install" [class.rt-install-update--sticky-bottom]="stickyBottom">
     @if (detailed) {
       <p class="rt-install-update__text">
         Install RangerTrak on this device to work offline, get a ready icon to return to,
         and skip the browser address bar. It uses almost no storage and is easily
         uninstalled.
       </p>
+      <button type="button" class="rt-install-update__main" (click)="onInstall()"
+        title="Install RangerTrak on this device: uses almost no storage, works offline, and gives you an icon to return to.">
+        <svg class="rt-install-update__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Install
+      </button>
     } @else {
-      <span class="rt-install-update__text">Install RangerTrak on this device</span>
+      <button type="button" class="rt-install-update__main" (click)="onInstall()"
+        title="Install RangerTrak on this device: uses almost no storage, works offline, and gives you an icon to return to.">
+        <svg class="rt-install-update__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Install
+      </button>
+      <a class="rt-install-update__help" routerLink="/about" title="What does installing do? See About.">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" />
+          <path d="M12 11v5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <circle cx="12" cy="7.75" r="1" fill="currentColor" />
+        </svg>
+      </a>
     }
-    <button type="button" class="rt-install-update__action" (click)="onInstall()"
-      title="Install RangerTrak on this device: uses almost no storage, works offline, and gives you an icon to return to.">
-      <img src="../../../assets/icons/install.png" height="16" width="16" alt="" aria-hidden="true" />
-      Install
-    </button>
   </div>
 }

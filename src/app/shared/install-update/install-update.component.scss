@@ -1,15 +1,15 @@
 @use "../../../styles/typography" as type;
 
-// E-55: one presentation for both states, used everywhere this component is placed
-// (navbar, footer, Settings) - see the component's own doc comment for what this
-// replaces.
+// E-57(1): simplified back to a v0.12-era shape - one small pill, icon + short label, no
+// separate sentence next to a separate CTA. One presentation for both states (update-ready
+// takes visual priority - see the component's own doc comment) so install and update read
+// as the same affordance wherever this renders (navbar, footer, Settings).
 .rt-install-update {
   display      : inline-flex;
-  align-items  : center;
-  flex-wrap    : wrap;
-  gap          : 0.5rem;
-  padding      : 0.35rem 0.6rem;
-  border-radius: var(--rt-radius);
+  align-items  : stretch;
+  border-radius: 999px;
+  overflow     : hidden;
+  border       : 1px solid transparent;
   @include type.type-body-sm;
 }
 
@@ -18,58 +18,87 @@
 // "brand" - and takes visual priority when both states are true, since a stuck-on-old-
 // build incident (E-43) matters more than a missed install opportunity.
 .rt-install-update--update {
-  background: var(--rt-notice);
-  color     : var(--rt-notice-ink);
-  border    : 1px solid var(--rt-notice-line);
+  background : var(--rt-notice);
+  color      : var(--rt-notice-ink);
+  border-color: var(--rt-notice-line);
 }
 
 .rt-install-update--install {
-  background: var(--rt-surface-2);
-  color     : var(--rt-ink);
-  border    : 1px solid var(--rt-line-strong);
+  background : var(--rt-surface);
+  color      : var(--rt-ink);
+  border-color: var(--rt-line-strong);
 }
 
-// E-43: the navbar this normally renders in is `position: static`, so it scrolls away on
-// any page taller than one screen - confirmed live (see the component's doc comment). This
-// variant is placed once, separately, directly in app.component.html BEFORE the navbar, and
-// stays visible regardless of scroll position or which page the scribe is on.
-//
-// `sticky`, not `fixed`: `fixed` takes the element out of flow entirely, which would
-// overlap the navbar's own top edge the instant both are on screen together (right at
-// scroll position zero, which is exactly when this first appears). `sticky` still occupies
-// real space in the document - the navbar is simply pushed down by this element's own
-// height while it's present - so there is no overlap to reason about, and nothing to do
-// when it's absent (the @if renders zero elements, zero height).
-.rt-install-update--fixed {
-  position       : sticky;
-  top            : 0;
-  z-index        : 1000; // above the back-to-top control (900)
-  width          : 100%;
-  display        : flex;
-  justify-content: center;
-  border-radius  : 0;
-  border-width   : 0 0 1px 0;
-  padding        : 0.5rem 1rem;
-  padding-top    : calc(0.5rem + env(safe-area-inset-top, 0px));
-  box-shadow     : 0 2px 8px rgb(0 0 0 / 25%);
-  box-sizing     : border-box;
-}
-
-.rt-install-update__text {
-  margin: 0;
-}
-
-.rt-install-update__action {
+// The primary action: icon + short label, no background/border of its own - the pill
+// around it (.rt-install-update) already carries those.
+.rt-install-update__main {
   display      : inline-flex;
   align-items  : center;
-  gap          : 0.3em;
+  gap          : 6px;
   min-height   : var(--rt-tap-min);
-  padding      : 0 0.9rem;
+  padding      : 0 12px 0 10px;
   border       : none;
-  border-radius: var(--rt-radius);
-  background   : var(--rt-accent);
-  color        : var(--rt-accent-ink);
+  background   : transparent;
+  color        : inherit;
   font-weight  : 600;
+  font-size    : inherit;
+  line-height  : inherit;
   cursor       : pointer;
   white-space  : nowrap;
+}
+
+.rt-install-update__icon {
+  flex: none;
+}
+
+// E-57(1): "circled I... integrated into it, so 2 places on the button to click" - a
+// second, smaller click target sharing the same pill rather than a separate element
+// floating beside it. Thin border stands in for the divider between the two zones.
+.rt-install-update__help {
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  width          : var(--rt-tap-min);
+  min-height     : var(--rt-tap-min);
+  border-left    : 1px solid currentColor;
+  opacity        : 0.65;
+  color          : inherit;
+}
+
+.rt-install-update__help:hover,
+.rt-install-update__help:focus-visible {
+  opacity   : 1;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+// Used only in Settings' `[detailed]` mode - the fuller explanation replaces the split
+// help zone (Settings already IS the "more info" destination), so this is a plain
+// paragraph ahead of the same .rt-install-update__main button.
+.rt-install-update__text {
+  margin: 0 0 0.5rem;
+  @include type.type-body;
+}
+
+// E-57(1): replaces the old top-sticky `[fixed]` banner. Used once, on the footer's own
+// instance: "I like the button on the bottom more than a bar. can it go into the footer
+// though?" `position: fixed` (not `sticky`) for the same reason back-to-top.component.scss
+// already uses `fixed` here - a simple floating control, not a banner that needs to push
+// content down. Bottom-LEFT, mirroring back-to-top's bottom-right placement so the two
+// floating controls never overlap; z-index above it (900) for the same reason the old
+// top banner stood above it - if both are relevant at once, this is the one still worth
+// noticing.
+.rt-install-update--sticky-bottom {
+  position  : fixed;
+  left      : calc(0.75rem + env(safe-area-inset-left, 0px));
+  bottom    : calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  z-index   : 1000;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+}
+
+// Printing a floating pill onto an ICS-309 log would be noise on the page, same reasoning
+// as back-to-top.component.scss.
+@media print {
+  .rt-install-update--sticky-bottom {
+    display: none;
+  }
 }
