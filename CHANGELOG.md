@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.1](https://github.com/EOCOnline/rangertrak/compare/v0.16.0...v0.16.1) (2026-08-20)
+
+
+### Features
+
+* **sprint-i:** app chrome polish - phase 4, sprint complete (E-53, E-54, E-55, E-42) ([5396b02](https://github.com/EOCOnline/rangertrak/commit/5396b020d7bd4db305814e5449446ed2209b2d2e)), closes [#0B5FA8](https://github.com/EOCOnline/rangertrak/issues/0B5FA8) [#1976d2](https://github.com/EOCOnline/rangertrak/issues/1976d2)
+
 ## [0.16.0](https://github.com/EOCOnline/rangertrak/compare/v0.15.14...v0.16.0) (2026-08-20)
 
 
