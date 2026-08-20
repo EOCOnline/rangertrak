@@ -40,9 +40,19 @@
   cursor: crosshair;
 }
 
+// E-67: `display: flow-root` establishes a new block formatting context, which contains
+// the floated subhead below (#Entry__LMinimap-subhead) inside this header. Without it, the
+// float escaped past this element's own bottom edge into the FOLLOWING sibling
+// (.lmap-frame)'s layout - confirmed by measurement, not guessed: the subhead's rendered
+// box extended to y=356 against a 29px-tall header, and the Leaflet map div measured
+// exactly 338px wide the instant this was added, versus 122px (36% of its box) without it.
+// Leaflet measures its container's width ONCE at construction and never re-measures
+// without an explicit invalidateSize() call, so that wrong 122px was permanent for the
+// life of the page, not a transient layout hiccup.
 .Entry__LMap-head {
-  padding: 0 5px;
-  margin : auto;
+  padding   : 0 5px;
+  margin    : auto;
+  display   : flow-root;
 }
 
 // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor

@@ -325,6 +325,39 @@ async function checkBundleZip(fx) {
 // event ONLY, never 'change' (nativeControlCreate in @angular/forms/fesm2022/signals.mjs).
 // A real click/keystroke fires both; a dispatched 'change' alone silently does nothing.
 
+/**
+ * E-67: the Entry mini-map fills the box it's given, at every screen size, not ~36% of it.
+ *
+ * Root cause was a genuinely surprising one, worth guarding precisely rather than just
+ * "the map looks about right": #Entry__LMinimap-subhead floats right inside the "Current
+ * Location" heading (.Entry__LMap-head), and without `display: flow-root` containing it,
+ * the float escaped past the heading's own bottom edge into the FOLLOWING sibling
+ * (.lmap-frame)'s formatting context - shrinking the space Leaflet measured for its
+ * container at construction time. Leaflet measures once and never re-measures without an
+ * explicit invalidateSize(), so the wrong width was permanent for the life of the page,
+ * not a transient layout hiccup - confirmed present at desktop and tablet width too, not
+ * just phone, despite being found while investigating E-57(1)'s phone-only question.
+ */
+async function checkMiniMapFillsItsBox() {
+  console.log('\nEntry mini-map fills its box; the "Current Location" subhead float stays contained (E-67)')
+  await goto('/')
+  const r = await evaluate(`(() => {
+    const frame = document.querySelector('.lmap-frame')
+    const minimap = document.getElementById('entry-minimap')
+    const subhead = document.getElementById('Entry__LMinimap-subhead')
+    const head = document.querySelector('.Entry__LMap-head')
+    return {
+      frameW: frame ? Math.round(frame.getBoundingClientRect().width) : null,
+      minimapW: minimap ? Math.round(minimap.getBoundingClientRect().width) : null,
+      subheadBottom: subhead ? Math.round(subhead.getBoundingClientRect().bottom) : null,
+      headBottom: head ? Math.round(head.getBoundingClientRect().bottom) : null,
+    }
+  })()`)
+  check('the mini-map div is as wide as the frame that holds it', r.minimapW, r.frameW)
+  check('the subhead float does not escape past its own heading', r.subheadBottom <= r.headBottom + 1, true)
+  if (r.minimapW !== r.frameW) note(`mini-map ${r.minimapW}px vs frame ${r.frameW}px`)
+}
+
 async function checkEntryTabOrder() {
   console.log('\nEntry form: tab order is a strictly increasing sequence (Sprint D keyboard-first)')
   await goto('/')
@@ -1047,6 +1080,7 @@ async function main() {
     // Read-only: pure DOM/layout reads and in-memory form edits, nothing persisted - so these
     // are safe against production too, which is where phone-width regressions actually bite.
     await checkEntryTabOrder()
+    await checkMiniMapFillsItsBox()
     await checkEntryPhoneWidth()
     await checkAllRoutesPhoneWidth()
     await checkBackToTop()
