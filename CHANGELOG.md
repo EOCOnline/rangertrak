@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.24.0](https://github.com/EOCOnline/rangertrak/compare/v0.23.0...v0.24.0) (2026-08-20)
+
+
+### Features
+
+* **nav:** rename About to Help, move Log off the main menu ([b83582f](https://github.com/EOCOnline/rangertrak/commit/b83582ffff0bf81efd2b04e0d31e2e4781437918))
+
 ## [0.23.0](https://github.com/EOCOnline/rangertrak/compare/v0.22.0...v0.23.0) (2026-08-20)
 
 
