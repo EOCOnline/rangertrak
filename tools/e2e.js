@@ -367,20 +367,67 @@ async function checkEntryAutofocusAndReset() {
 async function checkEntryPhoneWidth() {
   console.log('\nEntry form fits a phone (regression: .enter__Callsign min-width:350px beat width:35%)')
   // 390x844 = iPhone 12/13/14 class. mobile:true so the layout viewport behaves like a phone's.
-  await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 3, mobile: true })
+  const PHONE_WIDTH = 390
+  await send('Emulation.setDeviceMetricsOverride', { width: PHONE_WIDTH, height: 844, deviceScaleFactor: 3, mobile: true })
   await goto('/')
   const r = await evaluate(`(() => {
     const form = document.querySelector('.enter__form');
     return {
       formScroll: form ? Math.ceil(form.scrollWidth) : -1,
       docScroll: Math.ceil(document.documentElement.scrollWidth),
+      // E-65: BOTH of these are needed, and they are not interchangeable.
+      //   innerWidth  = the LAYOUT viewport, which a mobile browser WIDENS when content
+      //                 overflows, so it inflates in lockstep with the very bug this
+      //                 check exists to catch.
+      //   clientWidth = the emulated device width, which does not move.
+      // Comparing content against innerWidth alone is what let Entry render ~1085px wide
+      // inside a "390px" phone for several releases while this check reported PASS: the
+      // form was 1085, innerWidth had been dragged out to 1101, 1085 <= 1101, green.
       inner: window.innerWidth,
+      client: document.documentElement.clientWidth,
     };
   })()`)
-  check('the Entry form does not exceed a phone viewport', r.formScroll <= r.inner, true)
-  check('the page itself does not scroll horizontally on a phone', r.docScroll <= r.inner, true)
-  if (r.formScroll > r.inner || r.docScroll > r.inner) {
-    note(`widths: form ${r.formScroll}px, document ${r.docScroll}px, viewport ${r.inner}px`)
+  // The real assertion: content fits the DEVICE, not the viewport the content itself moved.
+  check('the Entry form does not exceed a phone viewport', r.formScroll <= r.client, true)
+  check('the page itself does not scroll horizontally on a phone', r.docScroll <= r.client, true)
+  // Independent of the two above: if the layout viewport had to grow past the device width
+  // at all, something overflowed, even if every element then "fits" that widened viewport.
+  check('the layout viewport was not widened past the device width', r.inner <= r.client, true)
+  if (r.formScroll > r.client || r.docScroll > r.client || r.inner > r.client) {
+    note(`widths: form ${r.formScroll}px, document ${r.docScroll}px, layout viewport ${r.inner}px, device ${r.client}px`)
+  }
+  await send('Emulation.clearDeviceMetricsOverride')
+}
+
+/**
+ * E-65: the same "does it fit a phone" question as checkEntryPhoneWidth above, asked of
+ * EVERY route rather than just Entry.
+ *
+ * Entry-only coverage was half of why E-65 survived so long: Settings had been forcing the
+ * page to ~466px since before Sprint C (the roadmap recorded the number and the culprit and
+ * deferred it), and nothing failed, because nothing looked. The other half was comparing
+ * against window.innerWidth - see the note in checkEntryPhoneWidth.
+ *
+ * What this deliberately does NOT assert: that no element anywhere is wider than the phone.
+ * A grid scrolling horizontally INSIDE its own container is the accepted outcome for
+ * Rangers and the Settings status grid (see the roadmap's deferred phone-layout decision).
+ * The line this draws is that the PAGE must not be dragged wider - that moves every element
+ * on it, which is a different and worse thing than an opt-in scroll inside one panel.
+ */
+async function checkAllRoutesPhoneWidth() {
+  console.log('\nEvery route fits a phone: no route drags the layout viewport wider (E-65)')
+  const PHONE_WIDTH = 390
+  await send('Emulation.setDeviceMetricsOverride', { width: PHONE_WIDTH, height: 844, deviceScaleFactor: 3, mobile: true })
+  for (const route of ROUTES) {
+    await goto(route)
+    const r = await evaluate(`({
+      device: document.documentElement.clientWidth,
+      inner: window.innerWidth,
+      docScroll: Math.ceil(document.documentElement.scrollWidth),
+    })`)
+    const ok = r.inner <= r.device && r.docScroll <= r.device + 1
+    check(`${route} does not widen the page past the device`, ok, true)
+    if (!ok) note(`${route}: device ${r.device}px, layout viewport ${r.inner}px, document ${r.docScroll}px`)
   }
   await send('Emulation.clearDeviceMetricsOverride')
 }
@@ -872,6 +919,7 @@ async function main() {
     // are safe against production too, which is where phone-width regressions actually bite.
     await checkEntryTabOrder()
     await checkEntryPhoneWidth()
+    await checkAllRoutesPhoneWidth()
     await checkLocationDdDdmDmsSync()
     await checkFieldReportsPhoneLayout()
     await checkGridThemeUsesTokens()

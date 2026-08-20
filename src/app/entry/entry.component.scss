@@ -230,6 +230,11 @@ input[type=number] {
   visibility: hidden;
 }
 
+// E-65: `visibility: hidden` still participates in layout, so this debug panel was
+// contributing to page width even for users who never enable debug mode - and the long
+// unwrapped JSON in its <pre> children (see below) pushed its scrollable area to ~828px.
+// `overflow: auto` stops that content from extending every ancestor's scroll width;
+// max-width keeps the panel itself inside a phone.
 #enter__frm-reguritation {
   visibility        : hidden;
   //margin-right    : 35vw;
@@ -237,17 +242,36 @@ input[type=number] {
   float             : right;
   height            : 250px;
   width             : 20vw;
+  max-width         : 100%;
+  overflow          : auto;
   border            : 3px solid brown;
   background-color  : $filledColor;
   padding           : 10px;
   font              : 0.8em sans-serif;
 }
 
+// E-65: the regurgitated form JSON is one long unbroken line; without wrapping it forced
+// the panel's scroll width to ~10x the panel itself. Wrapping also makes it readable when
+// debug mode actually is on, which was the point of the panel.
+#enter__frm-reguritation pre {
+  white-space: pre-wrap;
+  word-break : break-word;
+  margin     : 0.25em 0;
+}
+
 .enter__What--note {
   margin-bottom: 0px;
 }
 
+// E-65: the template's `cols="80"` sized this to ~591px regardless of viewport - the
+// single largest contributor to Entry rendering ~1085px wide inside a 390px phone. `cols`
+// is only a fallback for when CSS says nothing about width, so giving it a real width here
+// overrides it; box-sizing keeps the border/padding inside that width rather than adding
+// to it. Kept `cols` in the template as the no-CSS fallback.
 .enter__What--area {
+  width               : 100%;
+  max-width           : 100%;
+  box-sizing          : border-box;
   border              : 1px dotted rgb(52, 28, 192);
   border-radius       : 5px;
   background-color    : $filledColor;

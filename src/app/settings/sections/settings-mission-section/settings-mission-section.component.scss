@@ -12,7 +12,18 @@ $filledColor: var(--rt-surface-2);
   margin  : 10px 0px;
 }
 
+// E-65: the template's `cols="60"` sized this to ~450px regardless of viewport, which is
+// what forced the WHOLE Settings page's layout viewport to ~466px on a phone - the exact
+// number, and the exact culprit, the roadmap's Sprint C notes predicted. Same fix as
+// Entry's notes textarea (.enter__What--area): give it a real width so `cols` (only a
+// fallback for when CSS says nothing) stops deciding, and keep the border inside it.
+// Note this is a page-width distortion, not the "horizontal scroll inside its own
+// container is acceptable" case the deferred phone-layout work covers - it moved every
+// element on the page, not just this one.
 .settings__OpPeriod--notes {
+  width           : 100%;
+  max-width       : 100%;
+  box-sizing      : border-box;
   border          : 1px dotted rgb(52, 28, 192);
   border-radius   : 6px;
   background-color: $filledColor;
