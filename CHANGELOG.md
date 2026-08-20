@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.25.0](https://github.com/EOCOnline/rangertrak/compare/v0.24.0...v0.25.0) (2026-08-20)
+
+
+### Bug Fixes
+
+* **readiness:** stop crashing getStorageLength() on every page view ([23ab061](https://github.com/EOCOnline/rangertrak/commit/23ab061598271f008b64ac1991290fdc1efe966d))
+
 ## [0.24.0](https://github.com/EOCOnline/rangertrak/compare/v0.23.0...v0.24.0) (2026-08-20)
 
 
