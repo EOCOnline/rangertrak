@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.3](https://github.com/EOCOnline/rangertrak/compare/v0.16.2...v0.16.3) (2026-08-20)
+
+
+### Bug Fixes
+
+* **e67:** mini-map now fills its box - it had been rendering at ~36% width, at every size ([a6e50c6](https://github.com/EOCOnline/rangertrak/commit/a6e50c64eeba9a9eb2394c69842478fc25ffc45a))
+
 ### [0.16.2](https://github.com/EOCOnline/rangertrak/compare/v0.16.1...v0.16.2) (2026-08-20)
 
 
