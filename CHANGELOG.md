@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.8](https://github.com/EOCOnline/rangertrak/compare/v0.16.7...v0.16.8) (2026-08-20)
+
+
+### Bug Fixes
+
+* **settings:** backfill missing fields on every load, not just a version bump ([6ae1d9c](https://github.com/EOCOnline/rangertrak/commit/6ae1d9c35c9c6e00dc97f244af65444b3dddddf0))
+
 ### [0.16.7](https://github.com/EOCOnline/rangertrak/compare/v0.16.6...v0.16.7) (2026-08-20)
 
 
