@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.2](https://github.com/EOCOnline/rangertrak/compare/v0.16.1...v0.16.2) (2026-08-20)
+
+
+### Features
+
+* **e57:** floating back-to-top control on tall pages ([6fe078b](https://github.com/EOCOnline/rangertrak/commit/6fe078b5a8bea7ae1e8df63156b01dc930eb40e4))
+
+
+### Bug Fixes
+
+* **e48:** derived values actually clear on submit; harden a flaky file-input lookup ([79689c7](https://github.com/EOCOnline/rangertrak/commit/79689c794754a504327a773bca56160945d03e13))
+* **e65:** every route now fits a phone, and the e2e check can finally see when one doesn't ([ff1622c](https://github.com/EOCOnline/rangertrak/commit/ff1622ca2d5fab2f440d845503e029dcb63b20a2))
+
 ### [0.16.1](https://github.com/EOCOnline/rangertrak/compare/v0.16.0...v0.16.1) (2026-08-20)
 
 
