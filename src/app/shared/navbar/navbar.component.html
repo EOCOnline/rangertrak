@@ -46,16 +46,10 @@
   <!--================================================-->
   <span class="rightAlign">
 
-    <!-- E-37: was `*ngIf=isInstallable onclick="onInstallBtn()"` - shown always, and the
-         click resolved against window, where no such function exists. Now a real button,
-         gated on the browser actually offering installation. -->
-    @if (isInstallable) {
-    <button type="button" (click)="onInstallBtn()" class="installBtn"
-      title="Install RangerTrak on this device: uses almost no storage, works offline, and gives you an icon to return to.">
-      <img src="../../assets/icons/install.png" height="18px" width="18px" alt="" aria-hidden="true" />
-      <span>Install</span>
-    </button>
-    }
+    <!-- E-55: was this component's own installBtn, styled differently from Settings' and
+         the footer's separate implementations of the same concept - see
+         InstallUpdateComponent's doc comment. -->
+    <rangertrak-install-update></rangertrak-install-update>
     &nbsp;
     <a href=" https://github.com/EOCOnline/rangertrak" target="_blank"
       title="See ya at GitHub for issue reports & source code" class="git">

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, HostListener, ChangeDetectionStrategy } from '@angular/core'
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { MatSnackBarModule } from '@angular/material/snack-bar'
 
@@ -23,16 +23,18 @@ import { AlertsComponent } from './shared/alerts/alerts.component'
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.component.scss']
 })
+// E-55: this used to also carry its own "Add to Home Screen" button - a fourth,
+// undocumented install surface alongside the navbar's, Settings', and the footer's,
+// with its own duplicate `beforeinstallprompt` @HostListener and `deferredPrompt`/
+// `showButton` state instead of InstallableService. Unlike the other three (fixed by
+// E-37), this one never hid itself after the app was actually installed, since it never
+// listened for `appinstalled`. Removed - the navbar and footer both now render
+// InstallUpdateComponent, which is real and correct.
 export class AppComponent implements OnInit {
 
   private id = "AppComponent"
   title = 'RangerTrak'
   pageDescr = `Track & map Rangers' progress & reports on a mission`
-
-  // https://stackoverflow.com/questions/53871586/angular-catch-beforeinstallprompt-event-add-to-homescreen-in-dev-tools-applic
-  deferredPrompt: any;
-  showButton = false;
-
 
   constructor(
     private log: LogService,
@@ -59,45 +61,4 @@ export class AppComponent implements OnInit {
     // on every single load and never actually updated anything.
     this.updateService.init()
   }
-
-
-  /**
-   * The decorator belongs HERE, on the handler. It used to sit at the top of the
-   * class, where a blank line separated it from `private id` - so Angular bound
-   * the host listener to the id *property* and called ctx.id($event), throwing
-   * "TypeError: ctx.id is not a function" into the error handler on every load of
-   * an installable page. It also meant this method never ran, so `showButton`
-   * stayed false and the "Add to Home Screen" button never appeared.
-   */
-  @HostListener('window:beforeinstallprompt', ['$event'])
-  onbeforeinstallprompt(e: Event) {
-    this.log.verbose(`Browser offered an install prompt; stashing it for the A2HS button.`, this.id)
-    // Prevent Chrome 67 and earlier from automatically showing the prompt
-    e.preventDefault();
-    // Stash the event so it can be triggered later.
-    this.deferredPrompt = e;
-    this.showButton = true;
-  }
-
-
-  addToHomeScreen() {
-    // hide our user interface that shows our A2HS button
-    this.showButton = false;
-    // Show the prompt
-    this.deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
-    /*this.deferredPrompt.userChoice
-      .then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the A2HS prompt');
-        } else {
-          console.log('User dismissed the A2HS prompt');
-        }
-        this.deferredPrompt = null;
-      });
-      */
-  }
-
-
-
 }

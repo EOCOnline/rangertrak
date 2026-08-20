@@ -1,14 +1,32 @@
+@use "../../../styles/typography" as type;
+
+// E-54: was plain, unstyled body text - the reporter expected the app's secondary/
+// display face here, but ADR D-39 confirmed there isn't one: "Lato" was referenced in
+// header.component.scss but never actually loaded (only in a commented-out old Google
+// Fonts link), the same class of defect .copyLeft below already hit once with "Faster
+// One" and fixed by falling back to the real, loaded font rather than a dead reference.
+// This gets a deliberate brand treatment using that same real font (Roboto), not a
+// second unloaded webfont request.
+.brand {
+  @include type.type-body-sm;
+  font-weight: 600;
+}
+
 // 19f defect 5: this rendered as blue, bold, condensed, quasi-strikethrough text that read
 // as a rendering fault rather than a design choice. Cause was "Faster One" - a decorative
 // display face that is never loaded (no webfont link exists, and adding one would be a
 // third-party request this app deliberately avoids), so it fell through to whatever
 // condensed face the OS happened to offer, on top of default link colouring.
+//
+// E-54: now uses the real type-label role (rather than the keyword `font-size: small`)
+// plus italic for a distinct "tagline" feel - still the app's one real font, per the note
+// above, not a second dead reference.
 .copyLeft {
   text-decoration: none;
-  font-size      : small;
+  @include type.type-label;
+  font-style     : italic;
   float          : right;
   margin-right   : 2vw;
-  font-family    : inherit;
   color          : var(--rt-ink-2);
 }
 
@@ -20,19 +38,4 @@
 
 div {
   margin-left: 1vw;
-}
-
-// Standing "a newer build is waiting" affordance. Deliberately loud: the failure
-// it guards against is a scribe running a months-old build during an incident
-// (PRIVATE-Roadmap.md Section 8/R7).
-.updateReady {
-  margin-left: 0.75em;
-  padding: 0.1em 0.6em;
-  border: 1px solid currentColor;
-  border-radius: 0.8em;
-  // Stays a warning colour rather than the skin accent - it means "act", not "brand".
-  background: var(--rt-status-evidence-report);
-  color: var(--rt-status-ink);
-  font-size: small;
-  cursor: pointer;
 }

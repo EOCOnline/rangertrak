@@ -9,7 +9,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta
     name="RangerTrak is a free, open-source browser based tool to allow Search &amp; Rescue command to map their rangers with only radio contact">
-  <meta name="" theme-color" content="" #8711fc" <accept-encoding: gzip,="" compress,="" br="">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 
   <!--lik rel="icon" type="image/svg+xml" href="/src/favicon.svg">
@@ -24,8 +23,14 @@
     href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Saira+Extra+Condensed|Roboto|Boogaloo|Anton|Faster+One|Arima+Madurai|Black+Ops+One"
     rel="stylesheet">
 
+  <!-- E-42: theme-color was Angular Material's default blue (#1976d2), unrelated to the
+       app's actual Command skin accent (#0B5FA8, ADR D-37) - this is what colours the
+       browser chrome/status bar around an installed PWA, so it was one more place the
+       Angular-default identity was leaking through. Was also duplicated (this link/meta
+       pair appeared twice) and, above, a malformed meta tag that mixed an HTTP header
+       fragment into an HTML attribute and never set a real theme-color value at all. -->
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#1976d2">
+  <meta name="theme-color" content="#0B5FA8">
   <script>
       // Uncaught ReferenceError: System is not defined
       // System.import('app').catch(function (err) { console.error(err); });
@@ -33,8 +38,6 @@
   <!-- sc ript src="https://leafletjs-cdn.s3.amazonaws.com/content/le   aflet/main/leaflet-src.js"></scri   pt -->
 
   <script src="https://assets.what3words.com/sdk/v3/what3words.js?key="></script>
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#1976d2">
 </head>
 
 <body class="mat-typography mat-app-background">

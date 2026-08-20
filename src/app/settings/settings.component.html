@@ -1,24 +1,10 @@
 <rangertrak-page [title]="title" [description]="pageDescr">
 
-  <!-- E-37: was shown unconditionally (the service's `installableEvent` started as a truthy
-       `1`), with a click that resolved against `window`. Now gated on the browser actually
-       offering installation, and wired to the service that owns it. -->
-  @if (isInstallable) {
-  <div class="installMe">
-    Install application on this browser to...
-    <ul>
-      <li>Permit offline viewing of leaflet maps</li>
-      <li>Provide a convenient icon to quickly return to the application</li>
-      <li>(Requires little storage)</li>
-    </ul>
-
-    <button type="button" (click)="onInstallBtn()" class="installBtn"
-      title="Install RangerTrak on this device: uses almost no storage, works offline, and gives you an icon to return to.">
-      <img src="../../assets/icons/install.png" height="18px" width="18px" alt="" aria-hidden="true" />
-      <span>Install</span>
-    </button>
-  </div>
-  }
+  <!-- E-55: was this page's own install panel - raw hex colours, a fixed 250px width,
+       opacity:0.8 - styled differently from the navbar's and footer's own separate
+       implementations of the same concept. See InstallUpdateComponent's doc comment.
+       `detailed` keeps this page's fuller explanation; navbar/footer get the compact form. -->
+  <rangertrak-install-update [detailed]="true"></rangertrak-install-update>
 
   <form (ngSubmit)="onFormSubmit()">
     <br />

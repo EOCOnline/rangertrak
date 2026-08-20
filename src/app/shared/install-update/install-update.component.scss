@@ -1,0 +1,49 @@
+@use "../../../styles/typography" as type;
+
+// E-55: one presentation for both states, used everywhere this component is placed
+// (navbar, footer, Settings) - see the component's own doc comment for what this
+// replaces.
+.rt-install-update {
+  display      : inline-flex;
+  align-items  : center;
+  flex-wrap    : wrap;
+  gap          : 0.5rem;
+  padding      : 0.35rem 0.6rem;
+  border-radius: var(--rt-radius);
+  @include type.type-body-sm;
+}
+
+// Update-ready reuses --rt-notice rather than the skin accent, matching the existing
+// convention (see footer.component.scss's history) that this state means "act", not
+// "brand" - and takes visual priority when both states are true, since a stuck-on-old-
+// build incident (E-43) matters more than a missed install opportunity.
+.rt-install-update--update {
+  background: var(--rt-notice);
+  color     : var(--rt-notice-ink);
+  border    : 1px solid var(--rt-notice-line);
+}
+
+.rt-install-update--install {
+  background: var(--rt-surface-2);
+  color     : var(--rt-ink);
+  border    : 1px solid var(--rt-line-strong);
+}
+
+.rt-install-update__text {
+  margin: 0;
+}
+
+.rt-install-update__action {
+  display      : inline-flex;
+  align-items  : center;
+  gap          : 0.3em;
+  min-height   : var(--rt-tap-min);
+  padding      : 0 0.9rem;
+  border       : none;
+  border-radius: var(--rt-radius);
+  background   : var(--rt-accent);
+  color        : var(--rt-accent-ink);
+  font-weight  : 600;
+  cursor       : pointer;
+  white-space  : nowrap;
+}

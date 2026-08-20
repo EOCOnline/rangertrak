@@ -1,0 +1,26 @@
+@if (updateReady) {
+  <div class="rt-install-update rt-install-update--update">
+    <span class="rt-install-update__text">A new version of RangerTrak is ready.</span>
+    <button type="button" class="rt-install-update__action" (click)="onReload()"
+      title="Reload now to start using the new version">
+      Reload now
+    </button>
+  </div>
+} @else if (installable) {
+  <div class="rt-install-update rt-install-update--install">
+    @if (detailed) {
+      <p class="rt-install-update__text">
+        Install RangerTrak on this device to work offline, get a ready icon to return to,
+        and skip the browser address bar. It uses almost no storage and is easily
+        uninstalled.
+      </p>
+    } @else {
+      <span class="rt-install-update__text">Install RangerTrak on this device</span>
+    }
+    <button type="button" class="rt-install-update__action" (click)="onInstall()"
+      title="Install RangerTrak on this device: uses almost no storage, works offline, and gives you an icon to return to.">
+      <img src="../../../assets/icons/install.png" height="16" width="16" alt="" aria-hidden="true" />
+      Install
+    </button>
+  </div>
+}

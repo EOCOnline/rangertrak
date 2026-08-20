@@ -1,3 +1,5 @@
+@use "../../../styles/typography" as type;
+
   // Flex Layout: https://tburleson-layouts-demos.firebaseapp.com/#/docs
 
   .header {
@@ -16,10 +18,14 @@
     justify-content: space-between;
   }
 
+  // ADR D-39/E-54: all four rules below used to reference `Lato, 'Arial Narrow Bold',
+  // sans-serif` - Lato was never actually loaded (only in a commented-out old Google
+  // Fonts link in index.html), so this was silently falling through to whatever
+  // sans-serif the OS substituted. Now uses the real type-scale tokens (Roboto, already
+  // loaded) rather than a second dead font reference.
   .title {
-    font-weight: bolder;
-    font-size  : 20px;
-    font-family: Lato, 'Arial Narrow Bold', sans-serif;
+    @include type.type-title-lg;
+    font-weight: 700;
   }
 
   .rule {
@@ -29,23 +35,20 @@
   }
 
   .event {
-    font-weight: bold;
-    font-size  : 16px;
-    font-family: Lato, 'Arial Narrow Bold', sans-serif;
+    @include type.type-body;
+    font-weight: 700;
     font-style : italic;
     text-align : center;
   }
 
   .opPeriod {
     text-align : right;
-    font-weight: bold;
-    font-size  : 14px;
-    font-family: Lato, 'Arial Narrow Bold', sans-serif;
+    @include type.type-body-sm;
+    font-weight: 700;
   }
 
   .clock {
     text-align : right;
-    font-weight: bold;
-    font-size  : 16px;
-    font-family: Lato, 'Arial Narrow Bold', sans-serif;
+    @include type.type-body;
+    font-weight: 700;
   }

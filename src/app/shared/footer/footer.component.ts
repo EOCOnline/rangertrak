@@ -2,6 +2,7 @@ import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
 import { Component, Inject, ChangeDetectionStrategy } from '@angular/core'
 
 import { LogService, SettingsService, UpdateService } from '../services'
+import { InstallUpdateComponent } from '../install-update/install-update.component'
 
 /**
  * Footer component
@@ -9,7 +10,7 @@ import { LogService, SettingsService, UpdateService } from '../services'
 @Component({
   selector: 'rangertrak-footer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, InstallUpdateComponent],
   templateUrl: './footer.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./footer.component.scss']
@@ -29,11 +30,6 @@ export class FooterComponent {
    */
   get version(): string {
     return this.settingsService.settings?.version ?? ''
-  }
-
-  /** A newer build is downloaded and waiting - see UpdateService (R7). */
-  get updateReady(): boolean {
-    return this.updateService.updateReady()
   }
 
   /** When the browser last confirmed this build was current. */
@@ -61,9 +57,5 @@ export class FooterComponent {
     @Inject(DOCUMENT) private document: Document) {
 
     this.log.excessive(`======== Constructor() ============`, this.id)
-  }
-
-  onReloadForUpdate(): void {
-    this.updateService.activateAndReload()
   }
 }

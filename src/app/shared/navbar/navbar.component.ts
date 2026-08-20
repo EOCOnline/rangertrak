@@ -7,14 +7,15 @@ import { MDCTopAppBar } from '@material/top-app-bar'
 // import { MatButton } from '@angular/material/button'
 // import { MatButtonModule } from '@angular/material/button'
 import { subscribeOn } from 'rxjs';
-import { InstallableService, LogService, SettingsService, SettingsType } from '../services';
+import { LogService, SettingsService, SettingsType } from '../services';
+import { InstallUpdateComponent } from '../install-update/install-update.component';
 import { Utility } from '../utility';
 //https://material.io/components/app-bars-top/web#regular-top-app-bar
 
 @Component({
   selector: 'rangertrak-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatProgressBarModule],
+  imports: [CommonModule, RouterModule, MatProgressBarModule, InstallUpdateComponent],
   templateUrl: './navbar.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./navbar.component.scss']
@@ -23,13 +24,6 @@ export class NavbarComponent implements OnInit {
 
   private settings!: SettingsType
   private id = 'Navbar Component'
-
-  /**
-   * Reads through to the service, which is the only thing that knows (E-37). A getter
-   * rather than a field, because a field initializer runs before the constructor's
-   * parameter properties exist, so `this.installableService` would be undefined there.
-   */
-  get isInstallable(): boolean { return this.installableService.installable() }
 
   // Mutated inside a raw this.router.events.subscribe() callback, not an Angular
   // template binding - this app is zoneless, so a plain field written there has no
@@ -42,7 +36,6 @@ export class NavbarComponent implements OnInit {
   constructor(
     private log: LogService,
     //private settingsService: SettingsService,
-    private installableService: InstallableService,
     private router: Router
   ) {
     this.log.verbose("constructor", this.id)
@@ -75,10 +68,6 @@ export class NavbarComponent implements OnInit {
       }
     )
 
-    // E-37: `installableEvent` used to start as a truthy `1`, so this set isInstallable
-    // true on construction - before any browser had offered installation, and even on a
-    // device where the app was already installed. The service owns that state now.
-
     /* REVIEW: unused?!
     const topAppBarElement = document.querySelector('.mdc-top-app-bar')
     if (!topAppBarElement) {
@@ -95,12 +84,5 @@ export class NavbarComponent implements OnInit {
 
   Search() {
     this.log.error("Search: unimplemented yet", this.id)
-  }
-
-
-  async onInstallBtn() {
-    this.log.info("User asked to install the app", this.id)
-    const outcome = await this.installableService.promptInstall()
-    this.log.info(`Install prompt outcome: ${outcome}`, this.id)
   }
 }

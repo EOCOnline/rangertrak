@@ -1,7 +1,9 @@
 <!-- https://nikitahl.com/horizontal-rule-css -->
 <hr>
-<div><span [title]="versionTitle">RangerTrak™ ֍ Version {{version}}</span>
-  <button *ngIf="updateReady" type="button" class="updateReady" (click)="onReloadForUpdate()" title="A newer version has been downloaded. Reload to start using it.">New version ready - reload</button>
+<div><span class="brand" [title]="versionTitle">RangerTrak™ ֍ Version {{version}}</span>
+  <!-- E-55: was this component's own updateReady button, styled differently from the
+       navbar's and Settings' install surfaces - see InstallUpdateComponent's doc comment. -->
+  <rangertrak-install-update></rangertrak-install-update>
   <a href="https://eoc.online" target="_blank" class="copyLeft">©{{today | date: 'y'}} https://eoc.online - Open Source
     Tools for EOCs</a>
 </div>

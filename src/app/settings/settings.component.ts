@@ -7,9 +7,10 @@ import { form, FormField, max, min, required } from '@angular/forms/signals'
 
 import { PageComponent } from '../shared/page/page.component'
 import {
-  FieldReportStatusType, InstallableService, LogService, SETTINGS_SCHEMA_VERSION, SettingsService,
+  FieldReportStatusType, LogService, SETTINGS_SCHEMA_VERSION, SettingsService,
   SettingsType
 } from '../shared/services/'
+import { InstallUpdateComponent } from '../shared/install-update/install-update.component'
 
 import { MATERIAL_IMPORTS } from '../material-imports'
 import { SettingsInstructionsComponent } from './sections/settings-instructions/settings-instructions.component'
@@ -52,6 +53,7 @@ const blankSettings: SettingsType = {
     SettingsMapsSectionComponent,
     SettingsFieldReportStatusesComponent,
     SettingsAdvancedOptionsComponent,
+    InstallUpdateComponent,
   ],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
@@ -118,12 +120,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
    */
   rowData = signal<FieldReportStatusType[]>([])
 
-  /** E-37: reads through to the one service that knows. Getter, not a field, so it is not
-   *  evaluated before the constructor's parameter properties exist. */
-  get isInstallable(): boolean { return this.installableService.installable() }
-
   constructor(
-    private installableService: InstallableService,
     private log: LogService,
     private settingsService: SettingsService,
     @Inject(DOCUMENT) private document: Document) {
@@ -179,12 +176,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.settings.opPeriodEnd = newTime
     this.opPeriodEnd.set(newTime)
     this.settingsModel.update(m => ({ ...m, opPeriodEnd: newTime }))
-  }
-
-  async onInstallBtn() {
-    this.log.verbose(`onInstallBtn: user asked to install the app`, this.id)
-    const outcome = await this.installableService.promptInstall()
-    this.log.info(`Install prompt outcome: ${outcome}`, this.id)
   }
 
   onBtnResetDefaults() {
