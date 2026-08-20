@@ -1,7 +1,41 @@
 # Cloudflare Workers static-asset headers.
 # Copied to the output root by the `assets` entry in angular.json.
+
+# E-44 (2026-08-20): security headers, applied to every path. The release-gating
+# table (Private Roadmap.md) flags these as unreviewed - "nothing in this
+# document set records these ever having been reviewed" - which was simply true
+# until now.
 #
-# Only the files that MUST NOT be cached are listed. Everything else keeps
+# Four are enforcing immediately: they're well-understood and, critically,
+# cannot break anything this app actually does, because none of them restrict
+# WHERE the app is allowed to load scripts/styles/images/fetches FROM - they
+# only harden things (HSTS, no-sniff, no-framing, referrer trimming) that no
+# legitimate RangerTrak behaviour depends on.
+#
+# The Content-Security-Policy is NOT one of those four, and is deliberately
+# Report-Only rather than enforcing. RangerTrak fetches from a real, non-trivial
+# set of external origins at runtime - OpenStreetMap tiles, Nominatim geocoding,
+# optionally Google's Geocoding API if a user configures a key in Settings, the
+# What3Words SDK script tag in index.html (shelved feature, E-14, but still
+# loaded on every page), Google Fonts. An enforcing CSP that's missed one of
+# those would SILENTLY break a real feature - most likely the offline map tiles
+# or address geocoding, both of which a search-and-rescue exercise depends on -
+# and there is no way to catch that from a local build: this repo's local static
+# server does not read or apply `_headers` at all (that's a Cloudflare-only
+# mechanism), so this policy is genuinely untested until it reaches the live
+# edge. Report-Only logs violations to the browser console without blocking
+# anything, which is the standard safe way to roll one out. Switching to
+# enforcing needs someone actually using the deployed app for a while first and
+# checking DevTools for violation reports - not a decision to make blind.
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://assets.what3words.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org; connect-src 'self' https://nominatim.openstreetmap.org https://maps.googleapis.com https://api.what3words.com https://*.tile.openstreetmap.org; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+
+# Only the files that MUST NOT be cached are listed below. Everything else keeps
 # Cloudflare's default ETag revalidation, which is already correct for the
 # hash-named bundles (main-XXXX.js, chunk-XXXX.js, styles-XXXX.css) since a
 # new build produces a new filename.

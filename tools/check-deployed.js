@@ -13,14 +13,17 @@
 //
 // So this checks the thing that was actually broken, not a proxy for it:
 //   1. the apex answers 200 and not a redirect,
-//   2. /ngsw.json - what the service worker polls to discover new versions - is 200 and
+//   2. the four enforcing security headers from src/_headers (E-44) match exactly - the
+//      one thing this repo has no OTHER way to verify, since the local dev server never
+//      reads that file,
+//   3. /ngsw.json - what the service worker polls to discover new versions - is 200 and
 //      parses as JSON, since that is the file whose failure made the app go quiet,
-//   3. the index.html being served references the SAME main-*.js hash we just built,
+//   4. the index.html being served references the SAME main-*.js hash we just built,
 //      which is the only assertion that proves this deploy reached users rather than
 //      merely succeeding.
 //
-// Check 3 is what makes this more than an uptime ping: a stale-but-healthy origin passes
-// 1 and 2 happily.
+// Check 4 is what makes this more than an uptime ping: a stale-but-healthy origin passes
+// 1-3 happily.
 const fs = require('fs');
 const path = require('path');
 
@@ -47,6 +50,35 @@ function expectedBundle() {
     process.exit(1);
   }
   return bundle;
+}
+
+// E-44 (2026-08-20): the four enforcing security headers from src/_headers, checked
+// against the LIVE response rather than trusted from the file - the file is Cloudflare-only
+// syntax with no local enforcement to verify it against (see its own comment), so a typo or
+// a scoping mistake would otherwise ship silently and stay unnoticed indefinitely, same
+// shape of blind spot as the 19g redirect outage this whole file exists to catch. Exact
+// values are checked, not just presence, since "the header exists but says the wrong thing"
+// is a real and easy way for a future edit to this file to look fine while doing nothing -
+// the class of bug this project has hit more than once (see ADR D-39's "looks configured,
+// does nothing" catalogue). The Content-Security-Policy is deliberately NOT checked here:
+// it's Report-Only by design (src/_headers explains why), so its presence isn't a
+// pass/fail-worthy fact the way an enforcing header's is.
+const EXPECTED_HEADERS = {
+  'strict-transport-security': 'max-age=31536000; includeSubDomains',
+  'x-content-type-options': 'nosniff',
+  'x-frame-options': 'DENY',
+  'referrer-policy': 'strict-origin-when-cross-origin',
+};
+
+/** Returns a failure message, or null if every expected header matches exactly. */
+function checkSecurityHeaders(headers) {
+  for (const [name, expected] of Object.entries(EXPECTED_HEADERS)) {
+    const actual = headers.get(name);
+    if (actual !== expected) {
+      return `${ORIGIN}/ header "${name}" is ${actual ? `"${actual}"` : 'missing'}, expected "${expected}"`;
+    }
+  }
+  return null;
 }
 
 // redirect: 'manual' on purpose. Following redirects is what made this class of failure
@@ -93,8 +125,24 @@ hostname EQUALS www.rangertrak.org, never the apex.
     } else if (root.status === 200) {
       const html = await root.body.text();
       const ngsw = await fetchNoFollow(`${ORIGIN}/ngsw.json`);
+      const headerFailure = checkSecurityHeaders(root.body.headers);
 
-      if (ngsw.status !== 200) {
+      if (headerFailure) {
+        console.error(`\nFAIL: ${headerFailure}`);
+        console.error(`
+The deploy and the hostname both look fine - this is specifically about the
+_headers file (src/_headers) not reaching the edge as written. Since the local
+static server used for development never reads _headers at all (that's a
+Cloudflare-only mechanism, see E-44 in _headers' own comment), this check is the
+only place these headers are ever actually verified. Check:
+  1. src/_headers is still listed in angular.json's "assets" array.
+  2. The built dist/rangertrak/browser/_headers contains the expected lines
+     (npm run build, then inspect it directly).
+  3. Whether a Cloudflare Transform Rule or another _headers-like mechanism is
+     overriding these at the edge.
+`);
+        process.exit(1);
+      } else if (ngsw.status !== 200) {
         last = `/ngsw.json returned ${ngsw.status}`;
       } else if (html.includes(bundle)) {
         // Confirm ngsw.json is really JSON - a SPA fallback would hand back index.html
@@ -107,7 +155,7 @@ hostname EQUALS www.rangertrak.org, never the apex.
           console.error('silently disable update detection for every installed client.');
           process.exit(1);
         }
-        console.log(`OK: ${ORIGIN} serves ${bundle}, and /ngsw.json is valid JSON.`);
+        console.log(`OK: ${ORIGIN} serves ${bundle}, /ngsw.json is valid JSON, and the security headers match.`);
         return;
       } else {
         const live = html.match(/main-[A-Za-z0-9]+\.js/)?.[0] ?? '(none found)';
