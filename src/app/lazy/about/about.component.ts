@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs'
 
 import { Component, Inject, isDevMode, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 import { CommonModule } from '@angular/common'
+import { RouterLink } from '@angular/router'
 
 import { DisclosureComponent } from '../../shared/disclosure/disclosure.component'
 import { PageComponent } from '../../shared/page/page.component'
@@ -13,7 +14,7 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 @Component({
   selector: 'rangertrak-about',
   standalone: true,
-  imports: [CommonModule, PageComponent, DisclosureComponent],
+  imports: [CommonModule, PageComponent, DisclosureComponent, RouterLink],
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

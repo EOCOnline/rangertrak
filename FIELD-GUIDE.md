@@ -164,7 +164,7 @@ of this now is worth more than any checklist. Delete the test report afterwards.
 ## During the mission (the entry phase)
 
 Setup is infrequent and considered; entry is repetitive and time-critical — the same person
-may do both, but they're different modes of working. See the in-app About page for more on
+may do both, but they're different modes of working. See the in-app Help page for more on
 the distinction.
 
 **Entering a report.** On the **Home** page, pick the call sign, set the location, choose a
@@ -284,10 +284,13 @@ doesn't](#what-needs-internet-and-what-doesnt) for how the two differ offline.
 
 ![Leaflet Maps Screen](./non-dist-imgs/LeafletMaps.png "Leaflet Maps Screen")
 
-### About and Log
+### Help and Log
 
-**About** explains the application, the technologies behind it, how to report issues, and
-the licence.
+**Help** (was named "About" — renamed to keep the main menu to what a scribe actually
+reaches for day to day) explains the application, the technologies behind it, how to
+report issues, and the licence. It's also where to find the **Log** page now: Log no
+longer has its own main-menu item, and is linked from Help instead, right beside the
+report-an-issue instructions.
 
 **Log** records what the app did during the session, colour-coded by severity, including
 any errors or crashes. Tick the level checkboxes to control how much detail is shown —

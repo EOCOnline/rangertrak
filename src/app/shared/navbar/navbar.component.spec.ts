@@ -30,4 +30,14 @@ describe('NavbarComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  // E-57(1): "Rename the About page to Help... but not link to Log from the main menu.
+  // Too many confusing things are on the main menu!"
+  it('says Help, not About, and has no Log item', () => {
+    const labels = [...fixture.nativeElement.querySelectorAll('.main-nav > ul > li > a')]
+      .map((a: HTMLAnchorElement) => a.textContent?.trim());
+    expect(labels).toContain('Help');
+    expect(labels).not.toContain('About');
+    expect(labels).not.toContain('Log');
+  });
 });
