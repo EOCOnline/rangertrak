@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.4](https://github.com/EOCOnline/rangertrak/compare/v0.16.3...v0.16.4) (2026-08-20)
+
+
+### Bug Fixes
+
+* **e43:** update-ready notice now stays visible regardless of scroll position ([bdee1e3](https://github.com/EOCOnline/rangertrak/commit/bdee1e3a5cfeca8d10165f9116b8e23631b80208))
+
 ### [0.16.3](https://github.com/EOCOnline/rangertrak/compare/v0.16.2...v0.16.3) (2026-08-20)
 
 
