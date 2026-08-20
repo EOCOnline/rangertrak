@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.22.0](https://github.com/EOCOnline/rangertrak/compare/v0.21.0...v0.22.0) (2026-08-20)
+
+
+### Features
+
+* **header:** add the mission readiness indicator ([891d51a](https://github.com/EOCOnline/rangertrak/commit/891d51ac2a632f4bf9411fefccd70f11f876c889))
+
 ## [0.21.0](https://github.com/EOCOnline/rangertrak/compare/v0.20.0...v0.21.0) (2026-08-20)
 
 ## [0.20.0](https://github.com/EOCOnline/rangertrak/compare/v0.19.0...v0.20.0) (2026-08-20)
