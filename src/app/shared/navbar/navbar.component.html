@@ -3,19 +3,24 @@
  -->
 
 <nav class="main-nav">
+  <!-- E-63b: the brand mark IS the Home affordance now - the separate "Home" nav item is
+       gone. Icon is favicon.svg's own path (Material's "explore"/compass mark, already the
+       app's real icon per E-42/E-62 - not a new logo), inlined with currentColor so it
+       follows .title's colour with no separate asset request. routerLinkActive mirrors
+       what "Home" used to show: active only on an exact match, not on every route (this
+       link's target). -->
   <span title="RangerTrak" class="title">
-    <a routerLink="/">RangerTrak™
-      <!--fa-icon [icon]="faMapMarkedAlt" class="fa-lg"></fa-icon
-      https://en.wikipedia.org/wiki/Trademark
-    -->
+    <a class="brand" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <svg class="brand-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z"
+          fill="currentColor" />
+      </svg>
+      RangerTrak™
     </a>
   </span>
 
   <ul>
-    <li>
-      <a [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact:
-      true}">Home</a>
-    </li>
     <!-- D-31 named these by what a scribe reaches for, not by engine, back when the two
          engines shipped as separate nav items/pages. E-64 collapsed that to one page: one
          route, Leaflet shown by default, with an on-page switch to try MapLibre + PMTiles.

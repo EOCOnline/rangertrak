@@ -10,6 +10,12 @@
   <meta
     name="RangerTrak is a free, open-source browser based tool to allow Search &amp; Rescue command to map their rangers with only radio contact">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- E-62 cheap tier: iOS/iPadOS ignores favicon.ico and manifest.webmanifest's icons
+       for "Add to Home Screen" - without this it fell back to a screenshot thumbnail
+       instead of the app's actual mark. Flattened onto the app's ground token (#EDF1F5)
+       rather than left transparent - Apple's own guidance, since iOS composites this
+       under its own rounded-corner mask and does not handle alpha well. -->
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 
   <!--lik rel="icon" type="image/svg+xml" href="/src/favicon.svg">
   <lik rel="icon" type="image/ico" href="/src/favicon.ico" -->

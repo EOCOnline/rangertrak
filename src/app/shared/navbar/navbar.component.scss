@@ -1,4 +1,5 @@
 @use "../../../styles/breakpoints" as bp;
+@use "../../../styles/typography" as type;
 @use "@material/icon-button";
 @use "@material/button";
 @use "@material/top-app-bar/mdc-top-app-bar";
@@ -49,8 +50,37 @@
   flex           : 1;
 }
 
-.title_UNused {
-  margin-right: 2em;
+// E-63b: the brand mark replaces the old separate "Home" nav item, so it needs a real
+// affordance of its own - not just plain text - to read as clickable. E-62 cheap-tier
+// wordmark treatment: weight + letter-spacing only, still Roboto (D-39 already settled
+// against a second webfont, twice - Faster One and Lato, see ADR D-39).
+.brand {
+  display     : inline-flex;
+  align-items : center;
+  gap         : 0.4em;
+  padding     : 0.15em 0.4em;
+  margin-left : -0.4em; // visually align with the nav row below despite the padding above
+  border-radius: 6px;
+  @include type.type-title;
+  font-weight   : 700;
+  letter-spacing: 0.2px;
+}
+
+.brand:hover,
+.brand:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.brand.active {
+  // The wordmark itself already signals "you are here" via the icon/position; the
+  // shared .active underline (inset box-shadow) would sit oddly under an icon+text pair
+  // of uneven width, so this opts out of it rather than reusing it awkwardly.
+  box-shadow: none;
+  opacity   : 1;
+}
+
+.brand-icon {
+  flex: none;
 }
 
 .Navbar__progressBar {

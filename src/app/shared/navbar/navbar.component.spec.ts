@@ -40,4 +40,17 @@ describe('NavbarComponent', () => {
     expect(labels).not.toContain('About');
     expect(labels).not.toContain('Log');
   });
+
+  // E-63b: "why is there still a 'Home' button on the top navbar? It was supposed to be
+  // replaced with the RangerTrak(tm) service mark."
+  it('has no separate Home nav item - the brand mark is the Home link', () => {
+    const labels = [...fixture.nativeElement.querySelectorAll('.main-nav > ul > li > a')]
+      .map((a: HTMLAnchorElement) => a.textContent?.trim());
+    expect(labels).not.toContain('Home');
+
+    const brand: HTMLAnchorElement = fixture.nativeElement.querySelector('a.brand');
+    expect(brand).not.toBeNull();
+    expect(brand.getAttribute('href')).toBe('/');
+    expect(brand.querySelector('svg.brand-icon')).not.toBeNull();
+  });
 });
