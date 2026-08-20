@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.5](https://github.com/EOCOnline/rangertrak/compare/v0.16.4...v0.16.5) (2026-08-20)
+
+
+### Features
+
+* **e45:** nudge visitors stranded on the old www. origin toward the canonical host ([7cd9562](https://github.com/EOCOnline/rangertrak/commit/7cd95627b174cc41b0dbabf208cc9bc80b04596c))
+
 ### [0.16.4](https://github.com/EOCOnline/rangertrak/compare/v0.16.3...v0.16.4) (2026-08-20)
 
 
