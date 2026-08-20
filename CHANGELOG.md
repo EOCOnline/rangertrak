@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.9](https://github.com/EOCOnline/rangertrak/compare/v0.16.8...v0.16.9) (2026-08-20)
+
+
+### Bug Fixes
+
+* **about:** restore Menu Keyboard interaction section, mislabeled AG Grid ([185fa46](https://github.com/EOCOnline/rangertrak/commit/185fa463963b0749b45619832445c20dcabfcc2a))
+
 ### [0.16.8](https://github.com/EOCOnline/rangertrak/compare/v0.16.7...v0.16.8) (2026-08-20)
 
 
