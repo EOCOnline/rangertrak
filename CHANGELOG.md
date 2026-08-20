@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.7](https://github.com/EOCOnline/rangertrak/compare/v0.16.6...v0.16.7) (2026-08-20)
+
+
+### Bug Fixes
+
+* **e44:** stop declaring a Strict-Transport-Security header nobody reads ([f9ab27f](https://github.com/EOCOnline/rangertrak/commit/f9ab27f41f82cb4d8e16fabe851f5499fdd5f888))
+
 ### [0.16.6](https://github.com/EOCOnline/rangertrak/compare/v0.16.5...v0.16.6) (2026-08-20)
 
 
