@@ -85,7 +85,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.settings = newSettings
     // debugger
-    this.eventInfo.set(`#${this.settings.mission}: ${this.settings.event}`)
+    // E-57(1): was always `#${mission}: ${event}`, so a settings object with neither set
+    // yet (a fresh install, or before Settings has been filled in) rendered as the bare
+    // literal "#:" - the isolated fragment visible in the maintainer's own live
+    // screenshots. Empty until there's something real to show.
+    const mission = this.settings.mission.trim()
+    const event = this.settings.event.trim()
+    this.eventInfo.set(mission || event ? `#${mission}: ${event}` : '')
     this.eventDetails.set(`Mission #: ${this.settings.mission}; Mission Name: ${this.settings.event}; Notes: ${this.settings.eventNotes}`)
     this.opPeriod.set(`${this.settings.opPeriod}`)
     //   let start: Date = this.settings.opPeriodStart

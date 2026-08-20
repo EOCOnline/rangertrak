@@ -34,6 +34,30 @@
     padding   : 0;
   }
 
+  // E-57(1): the grouped status readout - readiness dot, mission info, op-period timers,
+  // clock - as one visual unit (surface card + dividers) rather than four independent flex
+  // items spread by the header's own space-between. Wraps on narrow screens rather than
+  // overflowing; each piece still collapses to nothing when its own content is empty
+  // (Angular's interpolation), but now that emptiness reads as "a shorter pill", not as
+  // debris floating in open space.
+  .status-cluster {
+    display      : flex;
+    align-items  : center;
+    gap          : 0.6em;
+    flex-wrap    : wrap;
+    background   : var(--rt-surface);
+    border       : 1px solid var(--rt-line);
+    border-radius: 999px;
+    padding      : 0.3em 0.9em;
+  }
+
+  .status-divider {
+    width      : 1px;
+    height     : 1em;
+    background : var(--rt-line-strong);
+    flex       : none;
+  }
+
   .event {
     @include type.type-body;
     font-weight: 700;

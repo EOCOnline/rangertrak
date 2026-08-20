@@ -1,12 +1,20 @@
 <!-- hr class="rule"-->
+<!-- E-57(1): the readiness dot, mission info, op-period timers and clock used to be four
+     independent flex items spread by `justify-content: space-between` - fine when all four
+     have content, but with nothing set yet (a fresh install, or the maintainer's own
+     screenshots mid-setup) it read as scattered fragments ("#:" floating alone, a lone "&").
+     Grouped into one visual cluster instead, with dividers, so it reads as one status
+     readout rather than several independent pieces of debris. -->
 <div class="header">
   <h1 class="title" title="{{pageDescription}}">{{parentTitle}} </h1>
-  <rangertrak-mission-readiness></rangertrak-mission-readiness>
-  <span class="event" title={{eventDetails()}}> {{eventInfo()}} </span>
-  <span class="opPeriod" title={{opPeriodDetails()}}> {{opPeriod()}} {{timeElapsed$ | async}} &
-    {{timeLeft$ | async}} </span>
-  <!--span class="opPeriod"
-    >{{(time.getTime() - opPeriodStart.getTime()) | async | date: 'hh:mm:ss'}}</span
-  -->
-  <span class="clock"> {{timeCurrent | async | date: 'MMM d, hh:mm:ss'}}</span>
+  <div class="status-cluster">
+    <rangertrak-mission-readiness></rangertrak-mission-readiness>
+    <span class="status-divider"></span>
+    <span class="event" title={{eventDetails()}}>{{eventInfo()}}</span>
+    <span class="status-divider"></span>
+    <span class="opPeriod" title={{opPeriodDetails()}}>{{opPeriod()}} {{timeElapsed$ | async}} &
+      {{timeLeft$ | async}}</span>
+    <span class="status-divider"></span>
+    <span class="clock">{{timeCurrent | async | date: 'MMM d, hh:mm:ss'}}</span>
+  </div>
 </div>
