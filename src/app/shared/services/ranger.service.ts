@@ -102,6 +102,33 @@ export class RangerService implements OnInit {
     return this.rangersReplay$.asObservable()
   }
 
+  // D-32: the callsigns loadHardcodedRangers() seeds on first run - kept as a standalone
+  // list (rather than deriving it from that method) so the readiness signal below has
+  // nothing to do with the seed method's own execution or side effects. Keep in sync with
+  // loadHardcodedRangers() if that list ever changes; it hasn't since this was written.
+  private static readonly HARDCODED_CALLSIGNS: ReadonlySet<string> = new Set([
+    '!CmdPost', 'ACS1', 'ACS2', 'ACS3', 'ACS4',
+    'CERT1', 'CERT2', 'CERT3', 'CERT4', 'CERT5', 'CERT6',
+    'MERT1', 'MERT2', 'MERT3', 'MERT4', 'MERT5', 'MERT6',
+    'Mobile',
+  ])
+
+  /**
+   * D-32 readiness signal: true once a real roster has been imported or edited, as opposed
+   * to a fresh install still running on the 18 hardcoded station callsigns nobody chose.
+   * Every fresh install seeds those 18 on first run (see the constructor above), so a plain
+   * `rangers.length > 0` check can never distinguish "prepared" from "untouched default" -
+   * this compares the actual callsign set instead. Any addition, removal, or a callsign
+   * outside the hardcoded set counts as real; only an EXACT match to the untouched seed
+   * (same 18, nothing added or removed) counts as not-yet-loaded.
+   */
+  public static isRealRosterLoaded(rangers: RangerType[]): boolean {
+    if (rangers.length !== RangerService.HARDCODED_CALLSIGNS.size) {
+      return true
+    }
+    return !rangers.every(r => RangerService.HARDCODED_CALLSIGNS.has(r.callsign))
+  }
+
   /**
     * Update localStorage with new rangers & notify observers
     * REVIEW: ALSO called from RangerComponent with new updates!

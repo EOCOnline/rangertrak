@@ -5,6 +5,7 @@ import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, signal } 
 
 import { ClockService, LogService, SettingsService, SettingsType } from '../services'
 import { Utility } from '../'
+import { MissionReadinessComponent } from '../mission-readiness/mission-readiness.component'
 
 /**
  * HaaderComponent
@@ -19,7 +20,7 @@ import { Utility } from '../'
 @Component({
   selector: 'pageHeader',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MissionReadinessComponent],
   templateUrl: './header.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./header.component.scss']

@@ -1,6 +1,7 @@
 <!-- hr class="rule"-->
 <div class="header">
   <h1 class="title" title="{{pageDescription}}">{{parentTitle}} </h1>
+  <rangertrak-mission-readiness></rangertrak-mission-readiness>
   <span class="event" title={{eventDetails()}}> {{eventInfo()}} </span>
   <span class="opPeriod" title={{opPeriodDetails()}}> {{opPeriod()}} {{timeElapsed$ | async}} &
     {{timeLeft$ | async}} </span>

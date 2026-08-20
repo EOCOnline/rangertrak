@@ -239,4 +239,38 @@ describe('RangerService', () => {
       expect(localStorage.getItem(STORAGE_KEY)).toBe('[]');
     });
   });
+
+  // D-32 readiness signal: a fresh install seeds 18 hardcoded stations, so `length > 0`
+  // alone can never distinguish "prepared" from "untouched default".
+  describe('isRealRosterLoaded (D-32)', () => {
+    it('is false for the untouched hardcoded seed, straight off a fresh instance', () => {
+      const service = TestBed.inject(RangerService);
+      expect(RangerService.isRealRosterLoaded(service.rangers)).toBe(false);
+    });
+
+    it('is false regardless of array order (order is not identity)', () => {
+      const service = TestBed.inject(RangerService);
+      const reversed = [...service.rangers].reverse();
+      expect(RangerService.isRealRosterLoaded(reversed)).toBe(false);
+    });
+
+    it('is true once the roster is emptied', () => {
+      expect(RangerService.isRealRosterLoaded([])).toBe(true);
+    });
+
+    it('is true when a real callsign is added alongside the hardcoded set', () => {
+      const service = TestBed.inject(RangerService);
+      const withExtra: RangerType[] = [
+        ...service.rangers,
+        { callsign: 'REAL1', fullName: 'A Real Person', phone: '', address: '', image: '', rew: '', team: '', role: '', note: '' },
+      ];
+      expect(RangerService.isRealRosterLoaded(withExtra)).toBe(true);
+    });
+
+    it('is true when the hardcoded set is edited (same count, different callsign)', () => {
+      const service = TestBed.inject(RangerService);
+      const edited = service.rangers.map((r, i) => i === 0 ? { ...r, callsign: 'RENAMED' } : r);
+      expect(RangerService.isRealRosterLoaded(edited)).toBe(true);
+    });
+  });
 });

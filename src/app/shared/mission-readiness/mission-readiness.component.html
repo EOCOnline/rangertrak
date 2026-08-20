@@ -1,0 +1,4 @@
+<span class="readiness-dot" [class.readiness-dot--red]="readiness.level() === 'red'"
+  [class.readiness-dot--amber]="readiness.level() === 'amber'"
+  [class.readiness-dot--green]="readiness.level() === 'green'" [attr.title]="tooltip"
+  [attr.aria-label]="tooltip" role="img"></span>

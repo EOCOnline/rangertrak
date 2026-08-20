@@ -1,0 +1,24 @@
+// A dot, not text/icon - the header strip is already dense on a phone. Full breakdown lives
+// in the title tooltip (see the component's `tooltip` getter) and the aria-label carries the
+// same text for screen readers, so this is never colour-only information.
+.readiness-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--rt-line-strong);
+  vertical-align: middle;
+  cursor: help;
+}
+
+.readiness-dot--red {
+  background-color: var(--rt-readiness-red);
+}
+
+.readiness-dot--amber {
+  background-color: var(--rt-readiness-amber);
+}
+
+.readiness-dot--green {
+  background-color: var(--rt-readiness-green);
+}

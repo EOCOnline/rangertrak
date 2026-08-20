@@ -1,17 +1,9 @@
 import { addProtocol, setWorkerUrl, type StyleSpecification } from 'maplibre-gl'
 import { Protocol } from 'pmtiles'
 
-// The v1 offline basemap: a single bundled PMTiles extract, used identically whether
-// online or offline. Panning outside this region shows blank background - only the Vashon
-// Island pilot area is bundled today. See PRIVATE-Roadmap.md "Future map features" for the
-// planned low-res world background + region-download manager.
-//
-// NOTE: this is a normal static asset under /assets/**, which ngsw-config.json caches with
-// installMode "lazy" - so it is cached on FIRST REQUEST, not at install time. The offline
-// map therefore only works offline after the /map page has been opened once while
-// connected. See FIELD-GUIDE.md ("Warm start"); switching that asset group to "prefetch"
-// would trade a ~1.6MB up-front download for true cold-start offline capability.
-export const DEFAULT_PMTILES_URL = '/assets/maps/vashon.pmtiles'
+import { DEFAULT_PMTILES_URL } from './pmtiles-config'
+
+export { DEFAULT_PMTILES_URL }
 
 /**
  * Where the MapLibre worker bundle is served from. maplibre-gl v6 splits its worker into
