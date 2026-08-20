@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.23.0](https://github.com/EOCOnline/rangertrak/compare/v0.22.0...v0.23.0) (2026-08-20)
+
+
+### Features
+
+* **install-update:** simplify to a v0.12-era pill, move to a footer chip ([c338bfb](https://github.com/EOCOnline/rangertrak/commit/c338bfbe3d49d38fa470ca78890dbf3173f06314))
+
 ## [0.22.0](https://github.com/EOCOnline/rangertrak/compare/v0.21.0...v0.22.0) (2026-08-20)
 
 
