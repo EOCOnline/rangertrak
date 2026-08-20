@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.16.6](https://github.com/EOCOnline/rangertrak/compare/v0.16.5...v0.16.6) (2026-08-20)
+
+
+### Features
+
+* **e44:** security headers - HSTS/nosniff/frame-deny/referrer-policy enforcing, CSP report-only ([da0dd48](https://github.com/EOCOnline/rangertrak/commit/da0dd48aaf7800d58aa73255568ec6140a2454f8))
+
 ### [0.16.5](https://github.com/EOCOnline/rangertrak/compare/v0.16.4...v0.16.5) (2026-08-20)
 
 
