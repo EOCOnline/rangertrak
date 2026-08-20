@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.16.0](https://github.com/EOCOnline/rangertrak/compare/v0.15.14...v0.16.0) (2026-08-20)
+
+
+### Features
+
+* **sprint-i:** entry screen polish - phases 1-3 (E-46, E-61, E-47, E-52, E-48, E-49, E-50, E-51) ([0795cef](https://github.com/EOCOnline/rangertrak/commit/0795cef0037d459f8f06590d3bc966d68317273a))
+
 ### [0.15.14](https://github.com/EOCOnline/rangertrak/compare/v0.15.13...v0.15.14) (2026-08-19)
 
 
