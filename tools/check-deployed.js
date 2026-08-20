@@ -13,9 +13,8 @@
 //
 // So this checks the thing that was actually broken, not a proxy for it:
 //   1. the apex answers 200 and not a redirect,
-//   2. the four enforcing security headers from src/_headers (E-44) match exactly - the
-//      one thing this repo has no OTHER way to verify, since the local dev server never
-//      reads that file,
+//   2. the enforcing security headers (E-44) match exactly - the one thing this repo has
+//      no OTHER way to verify, since the local dev server never reads src/_headers,
 //   3. /ngsw.json - what the service worker polls to discover new versions - is 200 and
 //      parses as JSON, since that is the file whose failure made the app go quiet,
 //   4. the index.html being served references the SAME main-*.js hash we just built,
@@ -52,22 +51,31 @@ function expectedBundle() {
   return bundle;
 }
 
-// E-44 (2026-08-20): the four enforcing security headers from src/_headers, checked
-// against the LIVE response rather than trusted from the file - the file is Cloudflare-only
-// syntax with no local enforcement to verify it against (see its own comment), so a typo or
-// a scoping mistake would otherwise ship silently and stay unnoticed indefinitely, same
-// shape of blind spot as the 19g redirect outage this whole file exists to catch. Exact
-// values are checked, not just presence, since "the header exists but says the wrong thing"
-// is a real and easy way for a future edit to this file to look fine while doing nothing -
-// the class of bug this project has hit more than once (see ADR D-39's "looks configured,
-// does nothing" catalogue). The Content-Security-Policy is deliberately NOT checked here:
-// it's Report-Only by design (src/_headers explains why), so its presence isn't a
-// pass/fail-worthy fact the way an enforcing header's is.
+// E-44 (2026-08-20): the enforcing security headers from src/_headers, checked against the
+// LIVE response rather than trusted from the file - the file is Cloudflare-only syntax with
+// no local enforcement to verify it against (see its own comment), so a typo or a scoping
+// mistake would otherwise ship silently and stay unnoticed indefinitely, same shape of blind
+// spot as the 19g redirect outage this whole file exists to catch. Exact values are checked,
+// not just presence, since "the header exists but says the wrong thing" is a real and easy
+// way for a future edit to this file to look fine while doing nothing - the class of bug
+// this project has hit more than once (see ADR D-39's "looks configured, does nothing"
+// catalogue). The Content-Security-Policy is deliberately NOT checked here: it's Report-Only
+// by design (src/_headers explains why), so its presence isn't a pass/fail-worthy fact the
+// way an enforcing header's is.
+//
+// No strict-transport-security entry - it very nearly was one, at a value src/_headers used
+// to declare, until checking the FIRST live deploy of this file (2026-08-20) showed the zone
+// actually serves `max-age=15552000; includeSubDomains; preload` - Cloudflare's own
+// dashboard-level HSTS setting, which takes precedence over whatever an origin header says.
+// Checking the origin's own (unread) declaration here would have meant this script passing
+// forever while asserting a fact that was never true - the exact bug class this whole file
+// exists to prevent, just self-inflicted. If HSTS is ever worth verifying again, check
+// against the zone-level value above, not an origin declaration.
 const EXPECTED_HEADERS = {
-  'strict-transport-security': 'max-age=31536000; includeSubDomains',
   'x-content-type-options': 'nosniff',
   'x-frame-options': 'DENY',
   'referrer-policy': 'strict-origin-when-cross-origin',
+  'permissions-policy': 'geolocation=(), camera=(), microphone=(), payment=(), usb=()',
 };
 
 /** Returns a failure message, or null if every expected header matches exactly. */

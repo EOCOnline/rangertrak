@@ -27,8 +27,19 @@
 # anything, which is the standard safe way to roll one out. Switching to
 # enforcing needs someone actually using the deployed app for a while first and
 # checking DevTools for violation reports - not a decision to make blind.
+#
+# No Strict-Transport-Security line here - confirmed live 2026-08-20 (curl
+# against the deployed edge, twice, cache bypassed both times) that the zone
+# already has Cloudflare's own dashboard-level HSTS enabled
+# (SSL/TLS -> Edge Certificates -> HTTP Strict Transport Security), serving
+# `max-age=15552000; includeSubDomains; preload` - which INCLUDES preload, a
+# stronger commitment than this file was asking for, and which Cloudflare's
+# zone-level feature serves regardless of what an origin header says. An origin
+# HSTS declaration here would have been the exact "looks configured, does
+# nothing" trap this project keeps finding (ADR D-39's catalogue) - it's not
+# wrong, it's just never read. tools/check-deployed.js verifies the real
+# zone-level value instead of a redundant origin declaration.
 /*
-  Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
