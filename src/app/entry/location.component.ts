@@ -353,18 +353,20 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * binding.
    */
   ngOnChanges(changes: SimpleChanges): void {
-    // E-48(1): a fresh report started - clear the previous report's derived output and
-    // recompute it from the CURRENT position, rather than leaving it stale until something
-    // else happens to touch `location`. Consecutive reports from the same spot are common
-    // (the position is deliberately left as-is on reset - see resetAll() in entry.component),
-    // so "the position didn't change" cannot be the signal to skip re-deriving; formGeneration
-    // is a separate, explicit one. Uses updateDerivedLocations() directly rather than
-    // newLocationToFormAndEmit() so this doesn't also re-run the emit/echo-guard machinery
-    // below for what is not actually a new location.
+    // E-48(1): a fresh report started, so the derived block clears - which is the
+    // requirement as stated ("should clear once the report is submitted"), not merely a
+    // side effect. It stays cleared until this report's own position resolves; it is NOT
+    // re-derived from the outgoing position here.
+    //
+    // That distinction is deliberate and was got wrong once. The position deliberately
+    // survives a reset (consecutive reports from one spot are normal - see resetAll() in
+    // entry.component.ts), so re-deriving "for free" is tempting. But the whole complaint
+    // was that this block showed text belonging to a report the scribe had already filed;
+    // anything auto-refilled before the new report has a position of its own recreates
+    // exactly that, just one step later. Empty is honest.
     if (changes['formGeneration'] && !changes['formGeneration'].firstChange) {
       this.showDerived.set(false)
-      const { lat, lng } = this.canonical()
-      this.updateDerivedLocations({ lat, lng, address: this.addressModel(), derivedFromAddress: false })
+      this.clearDerivedText()
     }
 
     if (!changes['location'] || changes['location'].firstChange) return
@@ -631,6 +633,18 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * E-48(2): the targets are `readonly` inputs, not spans, as of Sprint I - `.value`, not
    * `.innerText`, is what actually shows.
    */
+  /**
+   * E-48(1): blanks every derived readout. Separate from hiding the block, because the
+   * elements stay in the DOM either way (see the template's --hidden class) - leaving the
+   * previous report's text sitting in a hidden element would mean it flashes back the
+   * moment the block is shown again for the next report.
+   */
+  private clearDerivedText() {
+    for (const id of ['derivedAddress', 'pCodes', 'what3Words', 'maidenhead']) {
+      this.setDerivedText(id, '')
+    }
+  }
+
   private setDerivedText(elementId: string, text: string) {
     const el = this.document.getElementById(elementId) as HTMLInputElement | null
     if (el) {

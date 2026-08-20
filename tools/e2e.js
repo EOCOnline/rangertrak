@@ -99,11 +99,32 @@ async function navigateInApp(linkText, settleMs = 2500) {
   await sleep(settleMs)
 }
 
+/**
+ * Attaches a file to an <input type=file>.
+ *
+ * Polls rather than looking the node up once. DOM.getDocument/DOM.querySelector work
+ * against the DOM agent's snapshot of the document, which goes stale across a navigation -
+ * so a single lookup issued too soon after goto() can return nodeId 0 for an element that
+ * is present and about to be found on the very next try. That produced an intermittent
+ * "no element matching #importRosterFile" in checkFieldNameAliases, on a page where the
+ * check immediately before it had just used the same selector successfully - i.e. the page
+ * was fine and the lookup was early.
+ *
+ * Same fix, and same reasoning, as the three fixed sleep()s Sprint E replaced with polls:
+ * wait for the real condition, don't guess a duration.
+ */
 async function setFileInput(selector, filePath) {
-  const doc = await send('DOM.getDocument', { depth: -1 })
-  const node = await send('DOM.querySelector', { nodeId: doc.root.nodeId, selector })
-  if (!node.nodeId) throw new Error(`no element matching ${selector}`)
-  await send('DOM.setFileInputFiles', { files: [filePath], nodeId: node.nodeId })
+  let nodeId = 0
+  for (let i = 0; i < 20 && !nodeId; i++) {
+    if (i) await sleep(250)
+    // Re-fetch the document each attempt: after a navigation the previous root nodeId is
+    // itself stale, so reusing it would keep querying a document that no longer exists.
+    const doc = await send('DOM.getDocument', { depth: -1 })
+    const node = await send('DOM.querySelector', { nodeId: doc.root.nodeId, selector })
+    nodeId = node.nodeId
+  }
+  if (!nodeId) throw new Error(`no element matching ${selector}`)
+  await send('DOM.setFileInputFiles', { files: [filePath], nodeId })
 }
 
 // ── result tracking ──────────────────────────────────────────────────────────
@@ -471,6 +492,73 @@ async function checkBackToTop() {
   const after = await evaluate(`({ y: Math.round(window.scrollY), still: !!document.querySelector('.back-to-top') })`)
   check('clicking it returns to the top', after.y, 0)
   check('and it hides itself again once there', after.still, false)
+}
+
+/**
+ * E-48(1): the derived Address / +Codes / What3Words block belongs to the report being
+ * entered right now, not the previous one.
+ *
+ * Worth a permanent check because the failure is silent and plausible-looking: the block
+ * shows a real, correctly-formatted address - just the *last* report's. A scribe confirming
+ * a position against it would be confirming against the wrong thing, which is worse than
+ * showing nothing. The fix (a formGeneration counter, since the position deliberately does
+ * NOT reset between reports) is also the kind of indirection a later edit could quietly
+ * sever without any test noticing.
+ */
+async function checkDerivedValuesDoNotCarryOver() {
+  console.log('\nDerived address/+Codes belong to the CURRENT report, not the previous one (E-48)')
+  await goto('/')
+
+  const hiddenAtFirst = await evaluate(`(() => {
+    const b = document.querySelector('.enter__Where-Results')
+    return b ? b.classList.contains('enter__Where-Results--hidden') : null
+  })()`)
+  // Not asserted as a hard true: on a fast machine the initial reverse-geocode for the
+  // default position may already have resolved by now, which legitimately reveals it.
+  note(`derived block hidden immediately after load: ${hiddenAtFirst}`)
+
+  // Wait for the initial derivation to actually land, then confirm it is populated.
+  let populated = false
+  for (let i = 0; i < 20 && !populated; i++) {
+    await sleep(500)
+    populated = await evaluate(`!!document.getElementById('derivedAddress')?.value`)
+  }
+  check('derived values populate once a position resolves', populated, true)
+  const firstAddress = await evaluate(`document.getElementById('derivedAddress')?.value`)
+
+  // Submit a report. resetAll() bumps formGeneration, which must clear and re-derive.
+  await evaluate(`(() => {
+    const cs = document.getElementById('enter__Callsign-input')
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+    setter.call(cs, 'E2E-DERIVED')
+    cs.dispatchEvent(new Event('input', { bubbles: true }))
+    cs.dispatchEvent(new Event('change', { bubbles: true }))
+  })()`)
+  await sleep(900)
+  await evaluate(`document.querySelector('.enter__Submit-button')?.click()`)
+  await sleep(1500)
+
+  // The requirement, in the reporter's words, is that these "clear once the report is
+  // submitted". The position deliberately survives a reset (consecutive reports from one
+  // spot are normal), which makes re-deriving them tempting - but anything auto-refilled
+  // before the NEW report has a position of its own reproduces the original complaint,
+  // just one step later. So: cleared, and staying cleared, is the pass condition.
+  await sleep(2500) // long enough that a stray re-derivation would have landed
+  const after = await evaluate(`(() => {
+    const block = document.querySelector('.enter__Where-Results')
+    return {
+      address: document.getElementById('derivedAddress')?.value,
+      pCodes: document.getElementById('pCodes')?.value,
+      hidden: block ? block.classList.contains('enter__Where-Results--hidden') : null,
+    }
+  })()`)
+  note(`after submit: ${JSON.stringify(after)}`)
+  check('the derived block is hidden again after submit', after.hidden, true)
+  check('the previous report address does not survive the submit', after.address, '')
+  check('...nor its +Codes', after.pCodes, '')
+  // Guards the specific regression this replaced: text left in a hidden element flashes
+  // back the instant the block is shown again for the next report.
+  check('firstAddress was genuinely non-empty, so the above means something', !!firstAddress, true)
 }
 
 async function checkLocationDdDdmDmsSync() {
@@ -975,6 +1063,7 @@ async function main() {
       await checkBundleZip(fx)
       await checkEntryPhoto()
       await checkEntryAutofocusAndReset() // submits a real report, so read-write only
+      await checkDerivedValuesDoNotCarryOver() // also submits, same reason
       await checkSettingsFormSave()
       await checkStatusColorMigration()
       await checkStatusColorsBothSchemes()
