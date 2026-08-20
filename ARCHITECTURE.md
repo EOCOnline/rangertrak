@@ -180,8 +180,14 @@ actually defends against here is narrow, and worth being honest about:
 
 `UpdateService` (`shared/services/update.service.ts`) owns the update lifecycle and is
 started once from `AppComponent.ngOnInit()`. On `VERSION_READY` it raises a persistent
-snackbar and a standing footer indicator, and calls `SwUpdate.activateUpdate()` followed
-by `location.reload()` only when the user accepts.
+snackbar, and `updateReady()` (a signal) drives `InstallUpdateComponent`
+(`shared/install-update/`) — the one component now used for both "install this app" and
+"a new version is ready" everywhere they appear: inline instances in the navbar, footer,
+and Settings, plus one `[fixed]="true"` instance rendered once in `app.component.html`
+that stays `position: sticky` at the top of the viewport regardless of scroll position or
+route (E-43 — the navbar's own inline instance is `position: static` and was confirmed to
+scroll out of view on any tall page). `SwUpdate.activateUpdate()` followed by
+`location.reload()` runs only when the user accepts, from either surface.
 
 The reload is deliberately never automatic. This is a scribe's tool used mid-incident;
 replacing the page under an in-progress report would lose the report.

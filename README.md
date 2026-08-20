@@ -41,9 +41,10 @@ the difference between a working tool and a blank screen.
 
 - **Works offline.** Entering reports, the roster, the report table, coordinate
   conversion, and mission export/import are all local to your device.
-- **Multiple location formats.** Lat/long (Decimal Degrees, DMS, DDM), Plus Codes, or
-  street addresses. Plus Codes and coordinate conversion are computed on-device, so they
-  keep working with no connection.
+- **Six coordinate formats**, entered however the field team read them out: Decimal
+  Degrees, Degrees/Decimal Minutes, Degrees-Minutes-Seconds, MGRS, UTM, and Maidenhead grid
+  locators — plus Plus Codes and street addresses. All lat/long and grid conversion is
+  computed on-device, so it keeps working with no connection.
 - **Two map engines.** A Leaflet map over standard online road maps, and an offline map
   (MapLibre + PMTiles) whose basemap data ships inside the app. Both cluster markers and
   have overview maps.

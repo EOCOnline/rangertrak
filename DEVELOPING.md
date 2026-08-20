@@ -10,7 +10,10 @@ Day-to-day developer workflow: running, testing, releasing, and updating depende
 ## Quick start
 
 1. Fork `github.com/EOCOnline/rangertrak` to your own account.
-2. Install [Node.js](https://nodejs.org/) (v18 or higher).
+2. Install [Node.js](https://nodejs.org/). Angular 22's own `package.json` pins
+   `"node": "^22.22.3 || ^24.15.0 || >=26.0.0"` — an older major (v18, v20, or most of v21)
+   will not install it. CI builds and deploys on Node 24; that's the version to match if in
+   doubt.
 3. Clone and run:
 
    ```bash
@@ -47,7 +50,9 @@ npm run lint:tsc   # typecheck only (app and spec projects separately)
 > *reachable* files, so an unreferenced file can carry syntax errors indefinitely while
 > builds stay green. `npm run lint:tsc` is what catches that; treat it as a real gate.
 
-The suite is expected to be **all green** (80 specs). It was not for a long time, and the
+The suite is expected to be **all green** (124 specs as of this writing — check the run's
+own "Executed N of N" line for the current count rather than trusting this number to stay
+put; it grows with the app). It was not for a long time, and the
 failures were all harness gaps rather than app defects — components that inject `SwUpdate`
 need `provideSwUpdateStub()` from `src/testing/sw-update.stub.ts`, anything with a
 `routerLink` needs `RouterTestingModule`, and services without `providedIn: 'root'` must be

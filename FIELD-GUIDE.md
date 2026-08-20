@@ -353,9 +353,11 @@ complete enough — addresses can be filled in afterwards.
 ## Getting a newer version
 
 RangerTrak keeps working from the copy already on your device, so a new release does not
-reach you until the app fetches it. When it has, a **new version ready — reload** button
-appears in the footer and the app offers to reload; accept when you are between reports,
-not mid-report. The footer also shows when it last checked. Nothing reloads on its own.
+reach you until the app fetches it. When it has, a banner appears at the **top of the
+screen, no matter which page you're on or how far you've scrolled**, telling you a new
+version is ready with a **Reload now** button; accept when you are between reports, not
+mid-report. The footer also names the running version and shows when it last checked.
+Nothing reloads on its own.
 
 If you suspect you are running an old copy, reload the page while holding **Ctrl+Shift**
 (**Cmd+Shift** on a Mac).
