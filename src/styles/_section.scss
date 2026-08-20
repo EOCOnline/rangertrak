@@ -15,6 +15,12 @@
   margin: 1.5rem 0 0.5rem;
   padding-bottom: 0.25rem;
   border-bottom: 2px solid var(--rt-accent);
+  // E-69: a float shortens a block's line boxes but not its border box, so without this
+  // the border-bottom ran under a floated sibling (Entry's mini-map) and re-emerged past
+  // it. flow-root establishes a BFC, whose border box is required not to overlap a float -
+  // same trick already used for the same class of bug at mini-lmap.component.scss's
+  // .Entry__LMap-head (E-67).
+  display: flow-root;
 }
 
 // A heading INSIDE a section (Settings' Maps page has three: Leaflet / Geocoding /
