@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.28.0](https://github.com/EOCOnline/rangertrak/compare/v0.27.0...v0.28.0) (2026-08-21)
+
+
+### Bug Fixes
+
+* **settings:** unify the date/time picker widget; single update notice; restore footer font ([0080649](https://github.com/EOCOnline/rangertrak/commit/00806490e73f038f2cd027ed73d041f590770555))
+
 ## [0.27.0](https://github.com/EOCOnline/rangertrak/compare/v0.26.0...v0.27.0) (2026-08-20)
 
 
