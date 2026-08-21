@@ -178,9 +178,17 @@ $filledColor: var(--rt-surface-2);
   // `height: var(--mat-slide-toggle-track-height, 32px)` - Angular's own theming layer,
   // different names than the raw MDC tokens - so setting just these two, inherited
   // normally with no cascade fight at all, is both the correct fix and the simpler one.
+  // Maintainer, live review: the handle overflowed the shrunk 32x18 track, which the
+  // rule above alone doesn't govern - M3's own default handle sizes (16px unselected,
+  // 24px selected, sized for the stock 52x32 track) are a separate token set. Scaled down
+  // in the same proportion as the track above.
   ::ng-deep mat-slide-toggle {
-    --mat-slide-toggle-track-width : 32px;
-    --mat-slide-toggle-track-height: 18px;
+    --mat-slide-toggle-track-width          : 32px;
+    --mat-slide-toggle-track-height         : 18px;
+    --mat-slide-toggle-selected-handle-size  : 14px;
+    --mat-slide-toggle-unselected-handle-size: 10px;
+    --mat-slide-toggle-pressed-handle-size   : 16px;
+    --mat-slide-toggle-with-icon-handle-size : 14px;
   }
 }
 

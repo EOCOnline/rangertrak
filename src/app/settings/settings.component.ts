@@ -63,7 +63,7 @@ const blankSettings: SettingsType = {
 })
 export class SettingsComponent implements OnInit, OnDestroy {
   private id = 'Settings Component'
-  title = 'Application Settings'
+  title = 'Mission Settings'
   pageDescr = `Set various defaults and values for use in the program`
 
   private settingsSubscription!: Subscription

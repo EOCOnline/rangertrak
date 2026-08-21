@@ -16,6 +16,9 @@
 
 .main-nav {
   display        : flex;
+  // Requested in live review: the brand mark, nav links, and right-side icons were each
+  // sitting at their own natural top-of-line height instead of a shared centreline.
+  align-items    : center;
   // Sprint A: was rgb(183, 244, 255), a pale cyan that belonged to no palette.
   background     : var(--rt-chrome);
   color          : var(--rt-chrome-ink);
@@ -28,7 +31,11 @@
   list-style-type: none;
   padding        : 0;
   margin         : 0;
+  // Requested in live review: separates the brand mark from "Map" - at 0 they sat flush
+  // against each other.
+  margin-left    : 20px;
   display        : flex;
+  align-items    : center;
   flex           : 8;
   // Was a single un-wrapping row: at any viewport narrower than the links' combined
   // width (~650px) the row simply didn't fit, and mobile browsers respond to that by
@@ -105,6 +112,29 @@
   flex       : 0 0 auto;
 }
 
+// Same hover treatment as .brand:hover - safe unconditionally because the chrome bar is
+// dark under every skin in both light and dark scheme (see #gitLogo's note below), so a
+// white-alpha hover reads correctly regardless of which theme mode is active.
+.theme-toggle {
+  display        : inline-flex;
+  align-items    : center;
+  justify-content: center;
+  width          : var(--rt-tap-min);
+  height         : var(--rt-tap-min);
+  margin-right   : 0.2em;
+  padding        : 0;
+  border         : 0;
+  border-radius  : 50%;
+  background     : transparent;
+  color          : inherit;
+  cursor         : pointer;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .git_NOTUSED {
   //align-self: flex-end;
   position          : absolute;
@@ -135,7 +165,12 @@
   margin-right: 3px;
 }
 
-.main-nav button {
+// :not(.theme-toggle) - this was blanket-hiding every <button> under .main-nav (meant for
+// the disabled "(Future) Search" button below), which silently applied to the theme toggle
+// too and beat its own rules on specificity (class+element here vs. .theme-toggle's single
+// class) regardless of source order - found live: the button occupied its 44x24 box but
+// rendered fully invisible.
+.main-nav button:not(.theme-toggle) {
   visibility   : hidden;
   background   : white;
   border       : 0;

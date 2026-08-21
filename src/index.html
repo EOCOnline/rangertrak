@@ -38,6 +38,19 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0B5FA8">
   <script>
+      // Applies a saved light/dark override before Angular (and its stylesheet) loads, so a
+      // scribe who picked one doesn't see a flash of the OS-default scheme first. 'themeMode'
+      // must match THEME_MODE_KEY in src/app/shared/services/theme.service.ts, which owns this
+      // key from here on; 'auto' (or nothing stored) leaves color-scheme unset, so styles.scss's
+      // `light dark` default (follow the OS/browser) applies untouched.
+      try {
+        var rtThemeMode = localStorage.getItem('themeMode');
+        if (rtThemeMode === 'light' || rtThemeMode === 'dark') {
+          document.documentElement.style.colorScheme = rtThemeMode;
+        }
+      } catch (e) { /* localStorage unavailable (e.g. blocked in this context) - fall back to auto */ }
+  </script>
+  <script>
       // Uncaught ReferenceError: System is not defined
       // System.import('app').catch(function (err) { console.error(err); });
   </script>

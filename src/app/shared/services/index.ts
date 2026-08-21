@@ -11,6 +11,7 @@ export { StoragePersistenceService } from "./storage-persistence.service"
 export { InstallableService } from "./installable.service"
 export { SampleDataService } from "./sample-data.service"
 export { MissionReadinessService, ReadinessLevel } from "./mission-readiness.service"
+export { ThemeService, ThemeMode } from "./theme.service"
 
 export { FieldReportType, FieldReportsType, FieldReportStatusType, FieldReportSource, BoundsType } from "./field-report.interface"
 export { LocationType, undefinedAddressFlag, undefinedLocation } from "./location.interface"

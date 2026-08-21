@@ -101,13 +101,16 @@
   padding: 5px;
 }
 
-// Same reasoning as #Entry__LMinimap-subhead above: the Where section's own DD/DDM/DMS/
-// MGRS/UTM block directly above already shows this position in full - the click-to-set
-// status feedback (#Entry__LMinimap-status, a sibling, untouched here) is what still
-// earns its space at this size.
+// 2026-08-21: was `display: none` at tablet-down - reasoned at the time that the Where
+// section's own DD/DDM/DMS/MGRS/UTM block directly above already shows this position, so
+// hiding it was redundant. Maintainer: the text disappearing once the map reflows under
+// Where reads as broken, not redundant - this is the map's own last-clicked/hovered
+// position, not necessarily what's in the Where fields. Kept visible, but shrunk the same
+// way .Entry__LMap-head is above - that's what the wrapping/overflow this was originally
+// hiding to fix actually needed.
 .Entry__LMap-footer-coords {
   @include bp.tablet-down {
-    display: none;
+    @include type.type-label;
   }
 }
 

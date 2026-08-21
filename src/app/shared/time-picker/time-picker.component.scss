@@ -41,8 +41,18 @@ with ($primary: #962f10,
   // to reserve for a floated label above the value was dead space once the label was
   // removed, and was the main contributor to this widget reading as oversized/"horrid"
   // for what it actually shows.
+  //
+  // 2026-08-21 (live review): still ~90px of dead space ahead of the calendar icon/divider
+  // at the widest values - `.mat-mdc-form-field-infix` carries a hardcoded `width: 180px`
+  // from Material's own structural CSS (sized for a typical labeled field), which the two
+  // rules above never touched (found by reading the compiled rule directly - `min-width`
+  // there is already 0; `width` is the actual 180px source, confirmed live before landing
+  // on this). `width: auto` lets the infix (and the flex/wrapper ancestors around it,
+  // which were only ever as wide as the infix forced them) shrink to what
+  // "12/31/2026"/"12:59 PM" actually need.
   ::ng-deep .mat-mdc-form-field-infix {
     min-height    : 0;
+    width         : auto;
     padding-top   : 0.35em;
     padding-bottom: 0.35em;
   }

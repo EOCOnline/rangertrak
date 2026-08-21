@@ -1,4 +1,19 @@
-<a class="readiness-dot" routerLink="/settings" [class.readiness-dot--red]="readiness.level() === 'red'"
-  [class.readiness-dot--amber]="readiness.level() === 'amber'"
-  [class.readiness-dot--green]="readiness.level() === 'green'" [attr.title]="tooltip"
-  [attr.aria-label]="tooltip + '. Go to Settings to resolve issues.'" role="img"></a>
+<span class="readiness">
+  <a class="readiness-dot" routerLink="/settings" [class.readiness-dot--red]="readiness.level() === 'red'"
+    [class.readiness-dot--amber]="readiness.level() === 'amber'"
+    [class.readiness-dot--green]="readiness.level() === 'green'"
+    [attr.aria-label]="tooltip + '. Go to Mission to resolve issues.'" role="img"></a>
+
+  <!-- Custom hover/focus panel, not a native `title` - a browser tooltip can't colour
+       individual characters, and green ✓ / red ✗ was the whole point of this pass. -->
+  <div class="readiness-tooltip" role="tooltip">
+    <div class="readiness-tooltip__level">Mission readiness: {{ readiness.level() }}</div>
+    @for (item of items; track item.label) {
+      <div class="readiness-tooltip__row">
+        <span class="readiness-tooltip__mark" [class.readiness-tooltip__mark--ok]="item.ok"
+          [class.readiness-tooltip__mark--bad]="!item.ok">{{ item.ok ? '✓' : '✗' }}</span>
+        {{ item.label }}
+      </div>
+    }
+  </div>
+</span>

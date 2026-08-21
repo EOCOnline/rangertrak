@@ -7,7 +7,7 @@ import { MDCTopAppBar } from '@material/top-app-bar'
 // import { MatButton } from '@angular/material/button'
 // import { MatButtonModule } from '@angular/material/button'
 import { subscribeOn } from 'rxjs';
-import { LogService, SettingsService, SettingsType } from '../services';
+import { LogService, SettingsService, SettingsType, ThemeService } from '../services';
 import { Utility } from '../utility';
 //https://material.io/components/app-bars-top/web#regular-top-app-bar
 
@@ -35,7 +35,8 @@ export class NavbarComponent implements OnInit {
   constructor(
     private log: LogService,
     //private settingsService: SettingsService,
-    private router: Router
+    private router: Router,
+    protected theme: ThemeService
   ) {
     this.log.verbose("constructor", this.id)
 

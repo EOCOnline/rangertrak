@@ -31,7 +31,7 @@
     </li>
     <li><a [routerLink]="['/reports']" routerLinkActive="active">Reports</a></li>
     <li><a [routerLink]="['/rangers']" routerLinkActive="active">Rangers</a></li>
-    <li><a [routerLink]="['/settings']" routerLinkActive="active">Settings</a></li>
+    <li><a [routerLink]="['/settings']" routerLinkActive="active">Mission</a></li>
     <!-- Renamed from "About" to "Help" - the maintainer's framing: "Too many confusing
          things are on the main menu!" Log's own nav item is gone the same day; it's
          reachable from this Help page instead (see about.component.html). Route stays
@@ -47,6 +47,39 @@
 
   <!--================================================-->
   <span class="rightAlign">
+
+    <!-- Light/dark override. 'auto' follows the OS/browser scheme (styles/_tokens.scss's
+         light-dark() default); 'light'/'dark' pin it. A sun/moon toggle beats relying on the
+         OS setting alone here - a scribe's device theme rarely tracks actual field light,
+         daylight glare vs. a dim vehicle cab at night, the way it would used indoors all day. -->
+    <button type="button" class="theme-toggle" (click)="theme.cycle()"
+      [attr.aria-label]="'Theme: ' + theme.mode() + '. Click to change.'"
+      [title]="'Theme: ' + theme.mode() + ' (click to change)'">
+      @if (theme.mode() === 'light') {
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <circle cx="12" cy="12" r="5" fill="currentColor" />
+          <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </g>
+        </svg>
+      } @else if (theme.mode() === 'dark') {
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor" />
+        </svg>
+      } @else {
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />
+          <path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" />
+        </svg>
+      }
+    </button>
 
     <!-- E-57(1) follow-up: install/update used to render here too, plus the footer's
          [stickyBottom] instance, plus a separate MatSnackBar UpdateService opened

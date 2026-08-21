@@ -31,6 +31,9 @@ export class MissionReadinessComponent implements OnInit {
     this.readiness.refresh()
   }
 
+  // Plain-text form, kept for the accessible name (aria-label) - a screen reader has no
+  // use for the coloured HTML breakdown below, and this is what the existing spec asserts
+  // against.
   get tooltip(): string {
     const r = this.readiness
     const line = (ok: boolean, label: string) => `${ok ? '✓' : '✗'} ${label}`
@@ -43,5 +46,20 @@ export class MissionReadinessComponent implements OnInit {
       line(r.bundledMapWarmed(), 'Backup map warmed (MapLibre)'),
       line(r.storagePersisted(), 'Storage protected from eviction'),
     ].join('\n')
+  }
+
+  // Structured form of the same six signals, for the visual tooltip - lets the template
+  // colour each mark (green ✓ / red ✗) instead of the plain-text glyphs a native `title`
+  // attribute is stuck rendering in whatever colour the OS tooltip uses.
+  get items(): { ok: boolean, label: string }[] {
+    const r = this.readiness
+    return [
+      { ok: r.missionNamed(), label: 'Mission named' },
+      { ok: r.rosterLoaded(), label: 'Real roster loaded' },
+      { ok: r.opPeriodCurrent(), label: 'Operating period current' },
+      { ok: r.offlineTilesSaved(), label: 'Offline map tiles saved (Leaflet)' },
+      { ok: r.bundledMapWarmed(), label: 'Backup map warmed (MapLibre)' },
+      { ok: r.storagePersisted(), label: 'Storage protected from eviction' },
+    ]
   }
 }
