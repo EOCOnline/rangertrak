@@ -72,6 +72,19 @@
   padding   : 0 5px;
   margin    : auto;
   display   : flow-root;
+
+  // Maintainer, 2026-08-20: "goes way small[er] than it needs to" - live measurement
+  // found the map TILES were sized correctly (10.5vh, as scoped), but this un-sized `<h2>`
+  // (default browser heading size) wrapped "Current Location..." across 5+ lines at the
+  // new 10.5vw width, and the footer coords below did the same - together 280px of
+  // wrapped text dwarfing the 115px map they surrounded, which is what actually read as
+  // "way too small": not the map, the box around it. Shrinking the title here, and hiding
+  // the now-redundant subhead/coords below, brings the box back down to roughly the map's
+  // own size.
+  @include bp.tablet-down {
+    @include type.type-label;
+    font-weight: 600;
+  }
 }
 
 // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor
@@ -82,10 +95,27 @@
   color  : var(--rt-ink-3);
   float  : right;
   margin : 0 5px;
+
+  // Redundant at this width - the map now sits directly under the Where section this text
+  // exists to point back to, and it was a large share of what inflated the shrunk map's
+  // box far past its own 30%-sized tiles (see .Entry__LMap-head above).
+  @include bp.tablet-down {
+    display: none;
+  }
 }
 
 .Entry__LMap-footer {
   padding: 5px;
+}
+
+// Same reasoning as #Entry__LMinimap-subhead above: the Where section's own DD/DDM/DMS/
+// MGRS/UTM block directly above already shows this position in full - the click-to-set
+// status feedback (#Entry__LMinimap-status, a sibling, untouched here) is what still
+// earns its space at this size.
+.Entry__LMap-footer-coords {
+  @include bp.tablet-down {
+    display: none;
+  }
 }
 
 // E-46: was #Entry__Minimap-status - missing the "L" in "LMinimap" that the actual

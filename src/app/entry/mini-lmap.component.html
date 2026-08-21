@@ -7,9 +7,15 @@
 
   <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->
   <div class="Entry__LMap-footer">
-    Latitude: <span class="strong">{{mouseLatLng().lat.toFixed(5)}}</span> Longitude:
-    <span class="strong">{{mouseLatLng().lng.toFixed(5)}}</span> Zoom:
-    <span class="strong">{{zoom()}}</span>
+    <!-- Hidden at tablet-down (see .Entry__LMap-footer-coords in mini-lmap.component.scss)
+         - redundant once the map sits directly under the Where section's own, fuller
+         DD/DDM/DMS/MGRS/UTM readout, and this exact text was what was wrapping the shrunk
+         map's box into a tall, awkward sliver instead of a compact thumbnail. -->
+    <span class="Entry__LMap-footer-coords">
+      Latitude: <span class="strong">{{mouseLatLng().lat.toFixed(5)}}</span> Longitude:
+      <span class="strong">{{mouseLatLng().lng.toFixed(5)}}</span> Zoom:
+      <span class="strong">{{zoom()}}</span>
+    </span>
 
     <div #statusEl id="Entry__LMinimap-status">{{clickStatus()}}</div>
   </div>
