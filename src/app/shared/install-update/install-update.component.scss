@@ -160,3 +160,56 @@
     display: none;
   }
 }
+
+// 2026-08-22: "hovering over the install/update button should explain what is involved,
+// ease any concerns" - replaces the compact pill's native `title` (easy to miss, slow to
+// appear, and only ever covered the main button, not the help-icon half of the pill) with
+// a real panel, same idea as the mission-readiness tooltip elsewhere in the app. Wraps the
+// WHOLE pill rather than living inside it: `.rt-install-update` has its own
+// `overflow: hidden` (needed to clip the button/help-icon zones to the pill's rounded
+// ends), which would clip this panel too if it were a child instead of a sibling.
+.rt-install-update__anchor {
+  position: relative;
+  display : inline-block;
+}
+
+.rt-install-update__panel {
+  position     : absolute;
+  // Opens upward, not downward: this pill's only real-world placement (the footer, often
+  // sticky to the viewport bottom) has little to no room below it.
+  bottom       : calc(100% + 8px);
+  left         : 0;
+  z-index      : 20;
+  // This app has no global box-sizing:border-box reset, so max-width alone would cap only
+  // the content box and let padding push the true rendered width past it - confirmed live
+  // (280px intended, 303.75px measured) before adding this.
+  box-sizing   : border-box;
+  width        : max-content;
+  max-width    : min(280px, calc(100vw - 2rem));
+  background   : var(--rt-surface);
+  color        : var(--rt-ink);
+  border       : 1px solid var(--rt-line);
+  border-radius: var(--rt-radius);
+  box-shadow   : 0 4px 12px rgba(0, 0, 0, 0.25);
+  padding      : 0.6em 0.8em;
+  font-size    : 0.85rem;
+  line-height  : 1.4;
+  text-align   : left;
+
+  opacity       : 0;
+  visibility    : hidden;
+  pointer-events: none;
+  transition    : opacity 0.1s ease;
+}
+
+.rt-install-update__anchor:hover .rt-install-update__panel,
+.rt-install-update__anchor:focus-within .rt-install-update__panel {
+  opacity   : 1;
+  visibility: visible;
+}
+
+@media print {
+  .rt-install-update__panel {
+    display: none;
+  }
+}
