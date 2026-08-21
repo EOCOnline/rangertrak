@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { HeaderComponent } from './header.component';
 import { SettingsType } from '../services';
@@ -16,7 +17,10 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ HeaderComponent ]
+      imports: [ HeaderComponent ],
+      // Renders MissionReadinessComponent, whose readiness dot is now a routerLink to
+      // /settings - needs a Router present.
+      providers: [ provideRouter([]) ]
     })
     .compileComponents();
   });

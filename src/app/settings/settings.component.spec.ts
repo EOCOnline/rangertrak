@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { SettingsComponent } from './settings.component';
 import { provideSwUpdateStub } from '../../testing/sw-update.stub';
@@ -10,10 +11,16 @@ describe('SettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ SettingsComponent ],
-      // E-55: Settings now renders InstallUpdateComponent, which injects UpdateService,
-      // which needs SwUpdate present even though it stays disabled here (same reasoning as
-      // footer.component.spec.ts).
-      providers: [ provideSwUpdateStub() ]
+      providers: [
+        // E-55: Settings now renders InstallUpdateComponent, which injects UpdateService,
+        // which needs SwUpdate present even though it stays disabled here (same reasoning
+        // as footer.component.spec.ts).
+        provideSwUpdateStub(),
+        // HeaderComponent renders MissionReadinessComponent, whose readiness dot is now a
+        // routerLink to /settings - needs a Router in every test that mounts the shared
+        // page chrome, not just specs that touch routing directly.
+        provideRouter([]),
+      ]
     })
     .compileComponents();
   });

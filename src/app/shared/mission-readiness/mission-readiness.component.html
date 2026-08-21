@@ -1,4 +1,4 @@
-<span class="readiness-dot" [class.readiness-dot--red]="readiness.level() === 'red'"
+<a class="readiness-dot" routerLink="/settings" [class.readiness-dot--red]="readiness.level() === 'red'"
   [class.readiness-dot--amber]="readiness.level() === 'amber'"
   [class.readiness-dot--green]="readiness.level() === 'green'" [attr.title]="tooltip"
-  [attr.aria-label]="tooltip" role="img"></span>
+  [attr.aria-label]="tooltip + '. Go to Settings to resolve issues.'" role="img"></a>

@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
+import { RouterLink } from '@angular/router'
 
 import { MissionReadinessService } from '../services'
 
@@ -7,11 +8,15 @@ import { MissionReadinessService } from '../services'
  * appears on every page. A coloured dot rather than text/icon - the header strip is already
  * dense on a phone - with the full breakdown in its `title` tooltip. Deliberately never
  * reads as a permission gate: nothing here disables Entry or any other action.
+ *
+ * The dot is a `routerLink` to /settings, not just a tooltip - every signal it tracks
+ * (mission name, roster, op-period, offline tiles, storage persistence) is resolved from
+ * there, so a scribe who hovers to read "what's wrong" has somewhere to click and fix it.
  */
 @Component({
   selector: 'rangertrak-mission-readiness',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './mission-readiness.component.html',
   styleUrls: ['./mission-readiness.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

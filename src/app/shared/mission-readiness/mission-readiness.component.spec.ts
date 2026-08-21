@@ -1,5 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { MissionReadinessComponent } from './mission-readiness.component';
 import { MissionReadinessService } from '../services';
@@ -11,7 +12,7 @@ describe('MissionReadinessComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MissionReadinessComponent],
-      providers: [provideHttpClient()],
+      providers: [provideHttpClient(), provideRouter([])],
     }).compileComponents();
   });
 
@@ -44,6 +45,11 @@ describe('MissionReadinessComponent', () => {
     expect(component.tooltip).toContain('Storage protected');
     expect(component.tooltip.toLowerCase()).not.toContain('cannot');
     expect(component.tooltip.toLowerCase()).not.toContain('disabled');
+  });
+
+  it('links to Settings, where every tracked signal is resolved', () => {
+    const dot: HTMLAnchorElement = fixture.nativeElement.querySelector('.readiness-dot');
+    expect(dot.getAttribute('href')).toBe('/settings');
   });
 
   it('calls refresh() on init to pick up the async signals for this page view', () => {

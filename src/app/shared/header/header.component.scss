@@ -23,9 +23,19 @@
   // Fonts link in index.html), so this was silently falling through to whatever
   // sans-serif the OS substituted. Now uses the real type-scale tokens (Roboto, already
   // loaded) rather than a second dead font reference.
+  // The maintainer reported .status-cluster's own padding as "way too high" - measured
+  // live and it wasn't the padding. `.header` is `display:flex` with the default
+  // `align-items: stretch`, and this heading carried no margin rule of its own, so it
+  // fell back to the browser's default `<h1>` margin (0.67em top+bottom, ~18.76px each
+  // at this type role's size) - unreset UA chrome, not a deliberate value. That inflated
+  // this element's own outer (margin) box to ~73.5px, and stretch then forced
+  // .status-cluster to match it, even though the cluster's own content + padding only
+  // wanted ~36px. Zeroing the margin here fixes it at the source rather than compensating
+  // in the cluster.
   .title {
     @include type.type-title-lg;
     font-weight: 700;
+    margin: 0;
   }
 
   .rule {

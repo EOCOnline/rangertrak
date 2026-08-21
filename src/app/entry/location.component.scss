@@ -21,8 +21,19 @@ $filledColor: var(--rt-surface-2);
 
 // ADR D-39: was `background-color: #f4f4f4` - a raw hex outside the token layer, and
 // visually indistinguishable from $filledColor anyway.
+//
+// The large gap the maintainer reported above the derived Address/+Codes/What3Words rows
+// is the same float-intrusion bug class as E-67 and E-69, a third instance of it: the
+// mini-map (`entry.component.html`, `float: right`) is still present at this scroll
+// position, and `<hr>` carries `overflow: hidden` in the browser's OWN default stylesheet
+// - which makes a block box establish its own formatting context and avoid overlapping a
+// float, dropping the `<hr>` down until clear of the map's bottom edge (measured live:
+// ~128px, matching the map's remaining height at that point, not the `<hr>`'s own 8px
+// margin). `display: flow-root` here, same fix as E-67/E-69, makes THIS container ignore
+// the outside float entirely rather than fixing the `<hr>` in isolation.
 .enter__Where-Results {
   background-color: $filledColor;
+  display: flow-root;
 }
 
 // E-48(1): hides the derived-output block without ever removing its elements from the

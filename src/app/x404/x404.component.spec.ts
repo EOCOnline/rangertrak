@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { X404Component } from './x404.component';
 
@@ -8,7 +9,11 @@ describe('X404Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ X404Component ]
+      imports: [ X404Component ],
+      // HeaderComponent renders MissionReadinessComponent, whose readiness dot is now a
+      // routerLink to /settings - needs a Router in every test that mounts the shared
+      // page chrome, not just specs that touch routing directly.
+      providers: [ provideRouter([]) ]
     })
     .compileComponents();
   });
