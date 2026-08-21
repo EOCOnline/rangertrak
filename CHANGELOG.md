@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.30.0](https://github.com/EOCOnline/rangertrak/compare/v0.29.0...v0.30.0) (2026-08-21)
+
+
+### Features
+
+* **settings:** E-73 - gate Field Report status renaming instead of just warning ([5be7551](https://github.com/EOCOnline/rangertrak/commit/5be75519b8e402b5a17a731424dfc7b26f85add0))
+
+
+### Bug Fixes
+
+* **entry:** compact the mini-map's header/footer text at tablet-down widths ([92b9ba3](https://github.com/EOCOnline/rangertrak/commit/92b9ba35df23c9ec9786d6b46cd25beea4ab8d09))
+* **settings:** E-71 - clamp Operational Period end to start ([b85cdd6](https://github.com/EOCOnline/rangertrak/commit/b85cdd602d216f1a0284e8a149a312637a1d33d2))
+
 ## [0.29.0](https://github.com/EOCOnline/rangertrak/compare/v0.28.0...v0.29.0) (2026-08-21)
 
 
