@@ -189,6 +189,12 @@ $filledColor: var(--rt-surface-2);
     --mat-slide-toggle-unselected-handle-size: 10px;
     --mat-slide-toggle-pressed-handle-size   : 16px;
     --mat-slide-toggle-with-icon-handle-size : 14px;
+    // The checkmark/dash icon inside the handle - separate token from the handle sizes
+    // above, sized for the stock 24px handle by default. Left alone it doesn't shrink
+    // with the handle, so it now overflows the 14px handle and gets clipped by the
+    // overflow:hidden fix below instead of sitting inside it.
+    --mat-slide-toggle-selected-icon-size     : 10px;
+    --mat-slide-toggle-unselected-icon-size   : 8px;
     // Live review, checked state: a pale halo (Material's hover/focus "state layer",
     // `.mdc-switch__ripple`) was overflowing well past the track into the label text.
     // Sized for the stock 40px touch target, untouched by any of the four rules above -
@@ -196,7 +202,31 @@ $filledColor: var(--rt-surface-2);
     // 24px keeps a real hover/focus target without spilling past this row's own height.
     --mat-slide-toggle-state-layer-size      : 24px;
   }
+
+  // 2026-08-22: the state-layer-size token above (and disableRipple on the element
+  // itself) still left a visible halo overflowing the track - traced to Angular's own
+  // MatRipple directive, `<span mat-ripple class="mat-mdc-slide-toggle-ripple">` inside
+  // Material's compiled template, which sizes its splash from the switch's bounding box
+  // in JS, not from any `--mat-slide-toggle-*` token `disableRipple` also failed to
+  // suppress it live (confirmed: no `mat-ripple-disabled` state landed on the element
+  // after setting `[disableRipple]="true"`). Rather than chase which of MDC's ripple,
+  // CDK's focus indicator, or MatRipple's own splash is actually painting it, this clips
+  // anything larger than the button itself - the switch's real touch target already
+  // extends this same amount past the visible track by design, so nothing user-visible
+  // (track, handle, checkmark) sits at that edge to get cut off.
+  ::ng-deep .mdc-switch {
+    overflow: hidden;
+  }
 }
+
+// 2026-08-22: this token alone didn't fix it - the halo persisted after landing on 24px
+// above, still visibly larger than the track. Root cause found by reading Angular
+// Material's own compiled template: `.mdc-switch__ripple` contains a SECOND, separate
+// ripple - `<span class="mat-mdc-slide-toggle-ripple mat-focus-indicator" mat-ripple ...>`
+// - Angular's own `MatRipple` directive, sized in JS from the toggle's bounding box, not
+// from any `--mat-slide-toggle-*` CSS custom property. `disableRipple` on the
+// `<mat-slide-toggle>` element itself (location.component.html) is what actually removes
+// it; the CSS var above still matters for the MDC-native hover/focus layer that remains.
 
 // 2026-08-21: labeled divider marking the start of the derived read-only values, replacing
 // a bare <hr>. A flex row with a line on each side of the label rather than text overlaid
@@ -208,11 +238,16 @@ $filledColor: var(--rt-surface-2);
   color      : var(--rt-ink-3);
   @include type.type-label;
 
+  // Live review, 2026-08-22: "nearly invisible" - was 1px on --rt-line, this app's
+  // subtlest hairline token, picked for a bare separator rather than a labeled one.
+  // 2px on --rt-line-strong (the same token .rt-datetime__divider already uses for a
+  // divider meant to actually be seen) reads as a real rule instead of an anti-aliasing
+  // artifact.
   &::before,
   &::after {
     content   : '';
     flex      : 1;
-    border-top: 1px solid var(--rt-line);
+    border-top: 2px solid var(--rt-line-strong);
   }
 
   span {

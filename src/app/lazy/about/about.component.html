@@ -23,11 +23,11 @@
 
     <p>
       Using RangerTrak has two distinct phases, even when the same person does both:
-      <strong>setup</strong> &mdash; infrequent and considered, done on the Settings and
+      <strong>setup</strong> &mdash; infrequent and considered, done on the Mission and
       Rangers pages before or between operating periods &mdash; and <strong>entry</strong>
-      &mdash; repetitive and time-critical, done on the Home page while reports come in. See
-      the Field Guide for the full setup checklist and what changes once you're in the entry
-      phase.
+      &mdash; repetitive and time-critical, done on the entry screen (the app's landing
+      page) while reports come in. See the Field Guide for the full setup checklist and
+      what changes once you're in the entry phase.
     </p>
 
     <p>Items requiring online access:</p>
@@ -55,8 +55,8 @@
     </p>
 
     <p>An overview of using location codes (instead of lat/long) can be found at:<br>
-      <a href="https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems"
-        target="_blank">https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems</a>
+      <a class="long-url" href="https://github.com/google/open-location-code/blob/main/Documentation/Reference/comparison.adoc"
+        target="_blank">https://github.com/google/open-location-code/blob/main/Documentation/Reference/comparison.adoc</a>
     </p>
 
     <p>
@@ -137,16 +137,10 @@
     </rangertrak-disclosure>
   </div>
   <br />
-  <div>
-    <span class="bold">Grid Menu Keyboard interaction</span><br />
-    The AG Grid tables' column and filter menus (Rangers, Field Reports) support:<br />
-    Down Arrow - Focus the next menu item.<br />
-    Up Arrow - Focus the previous menu item.<br />
-    Left Arrow - Close the current menu if it is a sub-menu.<br />
-    Right Arrow - Opens the current menu item's sub-menu.<br />
-    Enter - Activate the focused menu item.<br />
-    Escape - Close all open menus.<br />
-  </div>
+  <!-- 2026-08-22: "Grid Menu Keyboard interaction" used to be a permanent block here -
+       moved to a collapsible section on Rangers and Field Reports themselves, the two
+       pages that actually have an AG Grid to use it on, rather than living only on Help
+       where a scribe mid-grid-use would have to navigate away to find it. -->
     <div class="imgCredit">Photo credit: Shocked Marmot from Vistapoint.net, by ___</div>
   </div>
 </rangertrak-page>

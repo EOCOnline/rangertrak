@@ -16,7 +16,7 @@ describe('InstallUpdateComponent', () => {
       // Injects UpdateService, which needs SwUpdate present even though it stays
       // disabled here (same reasoning as footer.component.spec.ts, which this
       // component's update-ready state used to live in). provideRouter is for the
-      // compact pill's routerLink="/about" help zone (E-57(1)).
+      // compact pill's routerLink="/help" help zone (E-57(1)).
       providers: [ provideHttpClient(), provideSwUpdateStub(), provideRouter([]) ]
     })
     .compileComponents();
@@ -58,7 +58,7 @@ describe('InstallUpdateComponent', () => {
       expect(el.querySelector('.rt-install-update__main')).not.toBeNull();
       const help = el.querySelector('.rt-install-update__help');
       expect(help).not.toBeNull();
-      expect(help.getAttribute('href')).toBe('/about');
+      expect(help.getAttribute('href')).toBe('/help');
     });
 
     it('renders the update pill, taking priority over an install offer, when an update is ready', () => {

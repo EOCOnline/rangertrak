@@ -47,9 +47,9 @@ describe('MissionReadinessComponent', () => {
     expect(component.tooltip.toLowerCase()).not.toContain('disabled');
   });
 
-  it('links to Settings, where every tracked signal is resolved', () => {
+  it('links to Mission, where every tracked signal is resolved', () => {
     const dot: HTMLAnchorElement = fixture.nativeElement.querySelector('.readiness-dot');
-    expect(dot.getAttribute('href')).toBe('/settings');
+    expect(dot.getAttribute('href')).toBe('/mission');
   });
 
   it('calls refresh() on init to pick up the async signals for this page view', () => {

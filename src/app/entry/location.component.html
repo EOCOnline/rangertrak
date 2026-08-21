@@ -195,7 +195,7 @@
          2026-08-21: moved below the address field (was between UTM and Address), and
          dropped the "(this session only...)" note per the maintainer's ask. -->
     <div class="enter__Where-toggle">
-      <mat-slide-toggle [checked]="showAllSystems()" (change)="showAllSystems.set($event.checked)">
+      <mat-slide-toggle [checked]="showAllSystems()" (change)="showAllSystems.set($event.checked)" [disableRipple]="true">
         Show all coordinate systems
       </mat-slide-toggle>
     </div>

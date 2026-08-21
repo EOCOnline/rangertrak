@@ -194,7 +194,7 @@ function makeFixtures(dir) {
 
 // ── the checks ───────────────────────────────────────────────────────────────
 
-const ROUTES = ['/', '/map', '/reports', '/rangers', '/settings', '/about', '/log']
+const ROUTES = ['/', '/map', '/reports', '/rangers', '/mission', '/help', '/log']
 
 async function checkRoutesRender() {
   console.log('\nEvery route renders, with no console errors')
@@ -421,14 +421,16 @@ async function checkEntryTabOrder() {
   check('the sequence starts at callsign (tabindex 1)', r.first, 1)
   // callsign(1) + Location's 26 DD/DDM/DMS+MGRS+UTM+address fields(2-27, Sprint H grew
   // this from 19 when MGRS/UTM were added - see LocationComponent.TAB_SLOT_COUNT) +
-  // time-picker date(28) and time(29) + status(30) + notes(31) + reset(32) +
-  // submit(33). Asserting CONTIGUITY rather than just a count: a gap means a field was
+  // time-picker date(28) + time's own hour/minute/AM-PM segments(29-31, 2026-08-22 grew
+  // this from a single native time input to three plain segments - see
+  // TimePickerComponent.TIME_TAB_SLOT_COUNT) + status(32) + notes(33) + reset(34) +
+  // submit(35). Asserting CONTIGUITY rather than just a count: a gap means a field was
   // removed without renumbering, and a changed total means one was added without
   // re-planning the sequence - exactly what entry.component.ts's computed tabindex
   // chain (locationTabIndexStart -> dateTabIndex -> ... -> submitTabIndex) exists to
   // get right automatically instead of five separately hardcoded literals.
   check('Entry tab stops are contiguous 1..N with no gaps', r.contiguous, true)
-  check('Entry exposes the expected number of keyboard stops', r.count, 33)
+  check('Entry exposes the expected number of keyboard stops', r.count, 35)
 }
 
 async function checkEntryAutofocusAndReset() {
@@ -863,11 +865,11 @@ async function checkReportsSurviveNavigation() {
 }
 
 async function checkSettingsWithPersistedSettings() {
-  console.log('\nBUG-3 (open): /settings must not throw for a RETURNING user (dates as ISO strings)')
+  console.log('\nBUG-3 (open): /mission must not throw for a RETURNING user (dates as ISO strings)')
   // A fresh browser gets initSettings() with real Date objects and never reproduces this.
   // A returning user's settings have round-tripped through JSON, so opPeriodStart/End come
   // back as STRINGS - which is the case the Settings page actually fails on. Seed that shape.
-  await goto('/settings')
+  await goto('/mission')
   await evaluate(`(() => {
     const s = JSON.parse(localStorage.getItem('appSettings'));
     s.opPeriodStart = new Date('2025-08-24T17:34:40.396Z').toISOString();
@@ -886,9 +888,9 @@ async function checkSettingsWithPersistedSettings() {
   // and the router, not a fresh page load.
   await goto('/')
   await navigateInApp('Rangers')
-  await navigateInApp('Settings', 6000)   // the error repeats about once a second; give it room
+  await navigateInApp('Mission', 6000)   // the error repeats about once a second; give it room
   const errs = consoleErrors.slice(0, 3)
-  check('the Settings page throws nothing for a returning user', errs, [])
+  check('the Mission page throws nothing for a returning user', errs, [])
   if (errs.length) note(`first error: ${String(errs[0]).slice(0, 160)}`)
 }
 
@@ -897,7 +899,7 @@ async function checkStatusColorMigration() {
 
   // Seed a genuine pre-Sprint-E settings object: no schemaVersion, CSS named colours, and a
   // deliberately customised one that migration must NOT touch.
-  await goto('/settings')
+  await goto('/mission')
   await evaluate(`(() => {
     const s = JSON.parse(localStorage.getItem('appSettings'));
     delete s.schemaVersion;
@@ -914,7 +916,7 @@ async function checkStatusColorMigration() {
     localStorage.setItem('appSettings', JSON.stringify(s));
   })()`)
 
-  await goto('/settings')
+  await goto('/mission')
   const migrated = await evaluate(`(() => {
     const s = JSON.parse(localStorage.getItem('appSettings'));
     return {
@@ -980,7 +982,7 @@ async function checkEntryPhoto() {
 
 async function checkSettingsFormSave() {
   console.log('\nSettings form (Sprint D, Signal Forms): edit fields in the UI, Save, reload, values persisted')
-  await goto('/settings')
+  await goto('/mission')
   const before = await evaluate(`(() => {
     const mission = document.querySelector('input[placeholder="Mission #"]');
     const debugMode = document.querySelector('input[placeholder="debugMode"]');
@@ -1015,9 +1017,9 @@ async function checkSettingsFormSave() {
 
 async function checkMissionRoundTrip(downloads) {
   console.log('\nMission export -> wipe all storage -> import: the disaster path')
-  await goto('/settings')
+  await goto('/mission')
   await evaluate(`(() => { const s = JSON.parse(localStorage.getItem('appSettings')); s.mission = 'E2E-MISSION'; localStorage.setItem('appSettings', JSON.stringify(s)); })()`)
-  await goto('/settings')
+  await goto('/mission')
   await evaluate(`[...document.querySelectorAll('button')].find(b => /Export Mission/i.test(b.textContent))?.click()`)
 
   // Poll rather than sleep a fixed 3s: the download is disk+Chrome timing, and a flat wait
@@ -1032,9 +1034,9 @@ async function checkMissionRoundTrip(downloads) {
   if (!check('Export Mission produced a file', files.length > 0, true)) return
   const missionFile = path.join(downloads, files[0])
 
-  await goto('/settings')
+  await goto('/mission')
   await evaluate(`localStorage.clear()`)
-  await goto('/settings')
+  await goto('/mission')
   await setFileInput('#importMissionFile', missionFile)
   await sleep(5000)
 

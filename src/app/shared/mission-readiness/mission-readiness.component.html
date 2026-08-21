@@ -1,5 +1,5 @@
 <span class="readiness">
-  <a class="readiness-dot" routerLink="/settings" [class.readiness-dot--red]="readiness.level() === 'red'"
+  <a class="readiness-dot" routerLink="/mission" [class.readiness-dot--red]="readiness.level() === 'red'"
     [class.readiness-dot--amber]="readiness.level() === 'amber'"
     [class.readiness-dot--green]="readiness.level() === 'green'"
     [attr.aria-label]="tooltip + '. Go to Mission to resolve issues.'" role="img"></a>

@@ -48,6 +48,13 @@ filter: brightness(30%);
   font-size : x-small;
 }
 
+// 2026-08-22: the open-location-code link text is a long unbroken URL (97 chars) that
+// forced the page ~66px wider than a phone viewport (E-65's own check caught it) - same
+// fix already used for long addresses/URLs in log.component.scss.
+.long-url {
+  word-break: break-word;
+}
+
 // from https://web.dev/patterns/animation/
 @keyframes breath {
   from {

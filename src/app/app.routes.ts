@@ -49,8 +49,11 @@ export const APP_ROUTES: Routes = [
     path: 'rangers',
     loadComponent: () => import('./rangers/rangers.component').then(m => m.RangersComponent)
   },
+  // 2026-08-22: was 'settings' - every URL now matches its nav label ("Mission"), not
+  // the older, more generic route name. Kept as a redirect below rather than a hard
+  // break, since this route predates that rename and may be bookmarked.
   {
-    path: 'settings',
+    path: 'mission',
     loadComponent: () => import('./settings/settings.component').then(m => m.SettingsComponent)
   },
   {
@@ -59,10 +62,16 @@ export const APP_ROUTES: Routes = [
   },
 
   // LAZY child routes (via dynamic import)
+  // 2026-08-22: was 'about' - the nav item and page heading were renamed "About" ->
+  // "Help" (E-57(1)) but the URL never followed; redirect below covers old bookmarks.
   {
-    path: 'about',
+    path: 'help',
     loadChildren: () => import('./lazy/lazy.routes').then(m => m.LAZY_ROUTES)
   },
+
+  // Redirects for the two renames above - old bookmarks/links keep working.
+  { path: 'settings', redirectTo: 'mission' },
+  { path: 'about', redirectTo: 'help' },
 
   // Page not found route
   {
