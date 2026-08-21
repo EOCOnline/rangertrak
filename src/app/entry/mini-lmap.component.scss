@@ -1,16 +1,30 @@
 @use "../../styles/typography" as type;
+@use "../../styles/breakpoints" as bp;
 
+// Width was commented out here (`//width: 35vw`) even though `.minimap-placeholder`
+// (entry.component.scss), which this element is explicitly meant to mirror so nothing
+// shifts on swap-in, DOES declare 35vw - a real gap, not a stylistic choice: this
+// container's rendered width came from Leaflet/the browser's own shrink-to-fit float
+// sizing instead, coincidentally close enough that the mismatch went unnoticed. Restored
+// to match its mirror, and given the same tablet-down size reduction - see
+// entry.component.scss's .enter__top-group/mini-lmap and .minimap-placeholder for the
+// full maintainer request ("map should go just under the where section... reduce to ~30%
+// of the original size as the screen size shrinks"). The reordering itself has to live on
+// the `<mini-lmap>` host element in entry.component.scss, not here - `order` on this div
+// (one level inside <mini-lmap>'s own view) is inert; found live, not guessed.
 .lmap-container {
   display               : block;
   float                 : right;
-  //width             : 35vw; // 30vw;
-  //height          : 25vh; //200px !important; //
-  //border              : 5px brown;
+  width                 : 35vw;
   background-color      : var(--rt-surface-2);
   margin-left           : 16px;
   margin-right          : 16px;
   border-radius         : 5px;
   border                : 2px solid black;
+
+  @include bp.tablet-down {
+    width: 10.5vw;
+  }
 }
 
 .lmap-frame {
@@ -20,6 +34,10 @@
 
 #entry-minimap {
   height: 35vh; //100%;
+
+  @include bp.tablet-down {
+    height: 10.5vh;
+  }
 }
 
 .strong {

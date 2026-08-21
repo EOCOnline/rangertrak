@@ -23,8 +23,8 @@ $filledColor: var(--rt-surface-2);
 
 // Stand-in shown while the deferred mini-map (@defer in entry.component.html) loads.
 // Deliberately mirrors .lmap-container/#map in mini-lmap.component.scss - same float,
-// width, height and border - so the form below keeps its position and nothing shifts
-// when the real map swaps in.
+// width, height, border, and (below) the same tablet-down order/size overrides - so the
+// form below keeps its position and nothing shifts when the real map swaps in.
 .minimap-placeholder {
   display          : flex;
   align-items      : center;
@@ -41,12 +41,52 @@ $filledColor: var(--rt-surface-2);
   font-style       : italic;
   text-align       : center;
   padding          : 0 1em;
+
+  @include bp.tablet-down {
+    order : 10;
+    width : 10.5vw;
+    height: 10.5vh;
+  }
 }
 
 .minimap-placeholder--error {
   border-color: #b3261e;
   color       : #b3261e;
   font-style  : normal;
+}
+
+// Maintainer, 2026-08-20: "the map should go just under the where section as the screen
+// width is reduced. The map's actual dimensions should also reduce to ~30% of the
+// original size as the screen size shrinks." At tablet-up this is an inert wrapper - no
+// `display` rule applies, so the mini-map's `float: right` behaves exactly as it always
+// has, spanning down beside Who and Where combined. Only tablet-down switches to a flex
+// column; only the map (`.minimap-placeholder` above, `.lmap-container` in
+// mini-lmap.component.scss - the placeholder and the real component, whichever is
+// mounted) gets a high `order`, so it's the only element that moves - Who and Where
+// (both left at the default `order: 0`) keep their existing relative DOM order and simply
+// end up ahead of it. Moving the map in the DOM instead of doing this would also have
+// shifted where it starts floating at tablet-up and up, which was not asked for.
+.enter__top-group {
+  @include bp.tablet-down {
+    display       : flex;
+    flex-direction: column;
+  }
+}
+
+// `order` has to live on the actual flex CHILD of .enter__top-group, not on
+// .lmap-container (mini-lmap.component.scss) - that div is inside <mini-lmap>'s own view,
+// one level too deep for `order` to do anything at this flex context; found live, the
+// first attempt left the map at the top with `order` silently inert. <mini-lmap> itself
+// (a custom element, inline by default) also has no width of its own, so as a flex item
+// it stretched to the full row width under the default `align-items: stretch` - visually
+// fine since nothing inside it is visible past the floated, explicitly-sized
+// .lmap-container, but align-self here keeps its own box honest rather than relying on
+// that coincidence.
+mini-lmap {
+  @include bp.tablet-down {
+    order     : 10;
+    align-self: flex-start;
+  }
 }
 
 h1,

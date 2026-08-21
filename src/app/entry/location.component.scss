@@ -67,11 +67,22 @@ $filledColor: var(--rt-surface-2);
 // once MGRS/UTM pushed the total content past that width - it could neither shrink to fit
 // a phone nor grow to fit its own content. max-width keeps it from ever exceeding its
 // container instead.
+//
+// Maintainer, 2026-08-20: this box's own tinted background was running the full row width,
+// under the still-floating mini-map, instead of stopping short of it. Same float-intrusion
+// bug class as .enter__Where-Results above, one level up: this whole container is a plain
+// block box (no BFC of its own), so its background paints full-width and only overlaps the
+// float visually rather than stopping beside it. `display: flow-root` makes IT avoid the
+// float too, same as its child; margin-right leaves visible breathing room instead of
+// butting flush against the map's own edge (E-69 did the same for the section-header rule,
+// via a margin on the map's own side).
 .enter__Where-div {
   background-color: $filledColor;
   max-width       : 100%;
   padding         : 4px 8px 6px 5px;
   border-radius   : 5px;
+  display         : flow-root;
+  margin-right    : 12px;
 }
 
 .enter__Where-input_unused {

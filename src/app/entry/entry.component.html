@@ -1,79 +1,88 @@
 <rangertrak-page [title]="title" [description]="pageDescr">
   <form [formGroup]="entryControlsForm" (ngSubmit)="onFormSubmit()" class="enter__form">
-    <!-- Deferred so Leaflet (plus leaflet.offline and the tile requests) stays out of the
-         initial download and the Entry form itself paints immediately. The placeholder
-         reserves the same space the map will occupy, so the fields below don't jump when
-         it swaps in. `on viewport` would be wrong here - the map sits at the top of the
-         form and is visible right away - so this loads as soon as the app is idle. -->
-    @defer (on idle) {
-      <mini-lmap [locationUpdated]="locationParent" (locationChange)="onNewLocationEvent($event)">LMAP HERE</mini-lmap>
-    } @placeholder {
-      <div class="minimap-placeholder">Map still loading&hellip;</div>
-    } @error {
-      <div class="minimap-placeholder minimap-placeholder--error">
-        Map could not be loaded. Coordinates can still be entered by hand below.
+    <!-- Groups the mini-map with Who/Where so a breakpoint can reorder them together
+         without touching desktop layout at all: default (undeclared) `display` here does
+         nothing, so at tablet-up widths this is a no-op wrapper and the float below behaves
+         exactly as it always has. Only tablet-down switches it to a flex column, and only
+         the map gets an explicit `order` - see .enter__top-group and its `order` rule in
+         entry.component.scss for why "map just under Where" doesn't need moving these
+         elements' actual DOM position. -->
+    <div class="enter__top-group">
+      <!-- Deferred so Leaflet (plus leaflet.offline and the tile requests) stays out of the
+           initial download and the Entry form itself paints immediately. The placeholder
+           reserves the same space the map will occupy, so the fields below don't jump when
+           it swaps in. `on viewport` would be wrong here - the map sits at the top of the
+           form and is visible right away - so this loads as soon as the app is idle. -->
+      @defer (on idle) {
+        <mini-lmap [locationUpdated]="locationParent" (locationChange)="onNewLocationEvent($event)">LMAP HERE</mini-lmap>
+      } @placeholder {
+        <div class="minimap-placeholder">Map still loading&hellip;</div>
+      } @error {
+        <div class="minimap-placeholder minimap-placeholder--error">
+          Map could not be loaded. Coordinates can still be entered by hand below.
+        </div>
+      }
+
+      <!-- ======================================= -->
+      <h2 class="elegant">
+        <mat-label>Who</mat-label>
+      </h2>
+      <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->
+      <!-- E-47: was `enter__Callsign filled` - a tinted background whose bounds didn't line up
+           with the field chrome. ADR D-39 decided this wasn't earning its place: the
+           enter__section left-rule below now supplies the grouping cue instead. -->
+      <div class="enter__section">
+        <mat-form-field class="enter__Callsign">
+          <mat-label>CallSign</mat-label>
+          <!-- BUG-1 (2026-08-19): this carried BOTH [formControl]="callsignCtrl" and
+               formControlName="callsign". Only one directive can be the value accessor, so
+               entryControlsForm.callsign stayed '' and every saved report lost its callsign
+               while the autocomplete (which reads callsignCtrl) looked perfectly fine.
+               callsignCtrl is now the single source of truth for this field. -->
+          <input #callsignInput matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one"
+            aria-label="Callsigns" [matAutocomplete]="auto"
+            (change)="this.callsignCtrlChanged()" id="enter__Callsign-input" [attr.tabindex]="callsignTabIndex" data-lpignore="true"
+            spellcheck="false" />
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
+              <img class="enter__Callsign-img" aria-hidden="true" [src]="'./assets/imgs/rangers/'+(ranger.image)" height="40">
+              <span> {{ranger.callsign}}</span> |
+              <small> {{ranger.fullName}} | {{ranger.phone}}</small>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <span id="enter__Callsign-image"> </span>
+        <span id="enter__Callsign-upshot"> </span>
       </div>
-    }
 
-    <!-- ======================================= -->
-    <h2 class="elegant">
-      <mat-label>Who</mat-label>
-    </h2>
-    <!--  https://material.angular.io/components/autocomplete/examples#autocomplete-overview -->
-    <!-- E-47: was `enter__Callsign filled` - a tinted background whose bounds didn't line up
-         with the field chrome. ADR D-39 decided this wasn't earning its place: the
-         enter__section left-rule below now supplies the grouping cue instead. -->
-    <div class="enter__section">
-      <mat-form-field class="enter__Callsign">
-        <mat-label>CallSign</mat-label>
-        <!-- BUG-1 (2026-08-19): this carried BOTH [formControl]="callsignCtrl" and
-             formControlName="callsign". Only one directive can be the value accessor, so
-             entryControlsForm.callsign stayed '' and every saved report lost its callsign
-             while the autocomplete (which reads callsignCtrl) looked perfectly fine.
-             callsignCtrl is now the single source of truth for this field. -->
-        <input #callsignInput matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one"
-          aria-label="Callsigns" [matAutocomplete]="auto"
-          (change)="this.callsignCtrlChanged()" id="enter__Callsign-input" [attr.tabindex]="callsignTabIndex" data-lpignore="true"
-          spellcheck="false" />
-        <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
-            <img class="enter__Callsign-img" aria-hidden="true" [src]="'./assets/imgs/rangers/'+(ranger.image)" height="40">
-            <span> {{ranger.callsign}}</span> |
-            <small> {{ranger.fullName}} | {{ranger.phone}}</small>
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-      <span id="enter__Callsign-image"> </span>
-      <span id="enter__Callsign-upshot"> </span>
-    </div>
+      <!-- ======================================= -->
+      <h2 class="elegant"
+        title="Enter position using  Degrees Decmal (DD)  or  Degrees & Decimal Minutes (DDM)  or  Degrees, Minutes & Seconds (DMS)">
+        <mat-label>Where</mat-label>&nbsp;&nbsp;
+        <span class="small">(Updates 'Current Location' map to the right)</span><img
+          src="../../assets/icons/information-outline.png" height="14px" width="14px" alt="info icon"
+          style="opacity:0.5;" />
+      </h2>
+      <div class="enter__section">
 
-    <!-- ======================================= -->
-    <h2 class="elegant"
-      title="Enter position using  Degrees Decmal (DD)  or  Degrees & Decimal Minutes (DDM)  or  Degrees, Minutes & Seconds (DMS)">
-      <mat-label>Where</mat-label>&nbsp;&nbsp;
-      <span class="small">(Updates 'Current Location' map to the right)</span><img
-        src="../../assets/icons/information-outline.png" height="14px" width="14px" alt="info icon"
-        style="opacity:0.5;" />
-    </h2>
-    <div class="enter__section">
+        <rangertrak-location [(location)]="locationParent" (locationChange)="onNewLocationEvent($event)"
+          [tabIndexStart]="locationTabIndexStart" [formGeneration]="formGeneration">
+          <!--
+            https://www.appsloveworld.com/angular/100/13/angular-two-way-data-binding-and-watching-for-changes-in-parent-component
 
-      <rangertrak-location [(location)]="locationParent" (locationChange)="onNewLocationEvent($event)"
-        [tabIndexStart]="locationTabIndexStart" [formGeneration]="formGeneration">
-        <!--
-          https://www.appsloveworld.com/angular/100/13/angular-two-way-data-binding-and-watching-for-changes-in-parent-component
+            https://stackoverflow.com/questions/56154917/angular-two-way-data-binding-and-watching-for-changes-in-parent-component
 
-          https://stackoverflow.com/questions/56154917/angular-two-way-data-binding-and-watching-for-changes-in-parent-component
+            https://stackoverflow.com/questions/38405748/angular-2-two-way-component-binding-doesnt-call-parent-ngonchange
 
-          https://stackoverflow.com/questions/38405748/angular-2-two-way-component-binding-doesnt-call-parent-ngonchange
+            https://dev.to/tonyhicks20/angular-two-way-binding-between-parent-and-child-components-16kl
 
-          https://dev.to/tonyhicks20/angular-two-way-binding-between-parent-and-child-components-16kl
+            (newLocationEvent)="onNewLocationEvent($event)" -->
+        </rangertrak-location>
 
-          (newLocationEvent)="onNewLocationEvent($event)" -->
-      </rangertrak-location>
-
-      <!-- span class="small" id="enter__where-debug">And meanwhile, back in the PARENT: lat:{{locationParent.lat}};
-        lng:{{locationParent.lat}};
-        addr:{{locationParent.address}}; {{locationParent.derivedFromAddress}}</span -->
+        <!-- span class="small" id="enter__where-debug">And meanwhile, back in the PARENT: lat:{{locationParent.lat}};
+          lng:{{locationParent.lat}};
+          addr:{{locationParent.address}}; {{locationParent.derivedFromAddress}}</span -->
+      </div>
     </div>
 
     <!-- ======================================= -->
