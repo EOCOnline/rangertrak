@@ -193,11 +193,23 @@
 
     <!-- E-49: was a checkbox with a parenthetical sentence; demoted to a minor toggle.
          2026-08-21: moved below the address field (was between UTM and Address), and
-         dropped the "(this session only...)" note per the maintainer's ask. -->
+         dropped the "(this session only...)" note per the maintainer's ask. 2026-08-22:
+         back to a fully standard mat-slide-toggle (see location.component.scss) - the
+         "(this session only...)" concern that note used to cover is now a reassurance
+         panel instead, so removing it isn't losing that information, just moving it
+         behind a hover rather than always-on text. -->
     <div class="enter__Where-toggle">
-      <mat-slide-toggle [checked]="showAllSystems()" (change)="showAllSystems.set($event.checked)" [disableRipple]="true">
+      <mat-slide-toggle [checked]="showAllSystems()" (change)="showAllSystems.set($event.checked)">
         Show all coordinate systems
       </mat-slide-toggle>
+      <span class="enter__Where-toggle-info">
+        <button type="button" class="enter__Where-toggle-info__icon" aria-label="What does this do?">i</button>
+        <div class="enter__Where-toggle-info__panel" role="tooltip">
+          Shows every coordinate format at once - DD, DDM, DMS, MGRS, UTM, and Maidenhead -
+          instead of just the ones enabled in Mission Settings. This is for this session
+          only; it doesn't change what's shown by default next time.
+        </div>
+      </span>
     </div>
   </form>
 
