@@ -1,9 +1,12 @@
 <!-- ======================================= -->
 <!-- FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options? -->
 <h2>Field Report Statuses</h2>
-(Don't edit status names - <b>if</b> they've already <br />
-been used for this event.<br />
-Add new statuses anytime.)
+<!-- E-73: was a static warning paragraph next to an always-editable grid ("don't edit
+     status names if they've already been used") - a rule stated in prose, never enforced.
+     The Status column itself is now conditionally read-only per row (see
+     settings-field-report-statuses.component.ts's isStatusInUse()/editable), with a
+     tooltip and a dimmed, not-allowed cursor on the cells it applies to, so the warning
+     doesn't need saying twice. New statuses can still be added anytime. -->
 
 <ag-grid-angular (gridReady)="onGridReady($event)" [gridOptions]="gridOptions"
   [defaultColDef]="defaultColDef" [tooltipShowDelay]="500" [rowData]="rowData" [columnDefs]="columnDefs">

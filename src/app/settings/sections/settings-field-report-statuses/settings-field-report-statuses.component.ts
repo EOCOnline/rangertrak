@@ -9,7 +9,8 @@ import {
 import { ensureAgGridRegistered } from '../../../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../../../shared/ag-grid-theme'
 import {
-  FieldReportStatusType, LogService, statusColorMeetsAA, statusColorValue, statusInkValue
+  FieldReportService, FieldReportStatusType, LogService, statusColorMeetsAA, statusColorValue,
+  statusInkValue
 } from '../../../shared/services/'
 import { ColorEditor } from '../../color-editor.component'
 
@@ -22,6 +23,14 @@ import { ColorEditor } from '../../color-editor.component'
  * as the monolithic component did. `ngOnChanges` re-syncs the local reference when the
  * parent reassigns it wholesale (import / reset), mirroring what the parent's settings
  * subscription already does.
+ *
+ * E-73: the Status column used to be always-editable next to a static warning paragraph
+ * ("don't edit status names if they've already been used") - a rule stated in prose, never
+ * enforced. `isStatusInUse()` checks `FieldReportService`'s current in-memory reports
+ * directly rather than tracking separate "used" state, since `FieldReportType.status` is
+ * already the exact status name string - no new persistence needed. Read fresh on every
+ * edit attempt (AG Grid calls `editable` per cell, right before it would start editing),
+ * so a report added while this grid is open is picked up without any extra wiring.
  */
 @Component({
   selector: 'rangertrak-settings-field-report-statuses',
@@ -59,12 +68,27 @@ export class SettingsFieldReportStatusesComponent implements OnChanges {
   columnDefs = [
     {
       headerName: "Status", field: "status", flex: 50,
+      editable: (params: { data: FieldReportStatusType }) => !this.isStatusInUse(params.data.status),
       cellStyle: (params: { value: string; }) => {
         // Same fill+ink resolution as the Field Reports grid - see field-reports.component.ts.
         const stat = this.rowData.find(el => el.status == params.value)
         const stored = stat ? stat.color : '#A3A3A3'
-        return { 'background-color': statusColorValue(stored), 'color': statusInkValue(stored) }
-      }
+        const style: Record<string, string> = {
+          'background-color': statusColorValue(stored), 'color': statusInkValue(stored)
+        }
+        // E-73: a disabled-looking cell that never explains itself is its own defect - this
+        // is visible *before* a scribe tries to type and gets silently refused, not just a
+        // cursor change on hover.
+        if (this.isStatusInUse(params.value)) {
+          style['opacity'] = '0.6'
+          style['cursor'] = 'not-allowed'
+        }
+        return style
+      },
+      tooltipValueGetter: (params: any) =>
+        this.isStatusInUse(params.value)
+          ? `"${params.value}" is used on at least one field report this mission and can't be renamed. Add a new status instead.`
+          : undefined,
     },
     {
       headerName: "Color", field: "color",
@@ -89,8 +113,14 @@ export class SettingsFieldReportStatusesComponent implements OnChanges {
     }
   ]
 
-  constructor(private log: LogService) {
+  constructor(private log: LogService, private fieldReportService: FieldReportService) {
     ensureAgGridRegistered()
+  }
+
+  /** E-73: true if any field report in the current mission carries this exact status name. */
+  isStatusInUse(status: string): boolean {
+    return this.fieldReportService.getCurrentFieldReports().fieldReportArray
+      .some(report => report.status === status)
   }
 
   ngOnChanges(changes: SimpleChanges): void {
