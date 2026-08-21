@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.29.0](https://github.com/EOCOnline/rangertrak/compare/v0.28.0...v0.29.0) (2026-08-21)
+
+
+### Features
+
+* **entry:** mini-map reflows under Where and shrinks to 30% at tablet-down widths ([7812087](https://github.com/EOCOnline/rangertrak/commit/78120878abd510bc1466985647ec1fe8dc907f2c))
+
+
+### Bug Fixes
+
+* **entry,header:** close mini-map float-intrusion gap; fix oversized status pill; link readiness dot to Settings ([7c995d0](https://github.com/EOCOnline/rangertrak/commit/7c995d05bca7a48881456ba1bdb7fc2ed8cb8b49))
+
 ## [0.28.0](https://github.com/EOCOnline/rangertrak/compare/v0.27.0...v0.28.0) (2026-08-21)
 
 
