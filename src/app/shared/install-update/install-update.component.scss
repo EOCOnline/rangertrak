@@ -23,10 +23,14 @@
   border-color: var(--rt-notice-line);
 }
 
+// 2026-08-21: was var(--rt-surface) - a neutral pill that all but disappeared into the
+// footer row it sits in. Maintainer wanted it to stand out there; reusing --rt-notice
+// (the same amber family the update-ready state already uses, see above) makes both
+// states equally noticeable rather than only the more urgent one.
 .rt-install-update--install {
-  background : var(--rt-surface);
-  color      : var(--rt-ink);
-  border-color: var(--rt-line-strong);
+  background : var(--rt-notice);
+  color      : var(--rt-notice-ink);
+  border-color: var(--rt-notice-line);
 }
 
 // The primary action: icon + short label, no background/border of its own - the pill
@@ -81,18 +85,33 @@
 
 // E-57(1): replaces the old top-sticky `[fixed]` banner. Used once, on the footer's own
 // instance: "I like the button on the bottom more than a bar. can it go into the footer
-// though?" `position: fixed` (not `sticky`) for the same reason back-to-top.component.scss
-// already uses `fixed` here - a simple floating control, not a banner that needs to push
-// content down. Bottom-LEFT, mirroring back-to-top's bottom-right placement so the two
-// floating controls never overlap; z-index above it (900) for the same reason the old
-// top banner stood above it - if both are relevant at once, this is the one still worth
-// noticing.
+// though?"
+//
+// 2026-08-21: was `position: fixed` with its own `left`/`bottom` offsets - which floated
+// this as a small pill in the viewport's bottom-left corner, overlapping page content,
+// regardless of where the real footer was. That's the opposite of "fit into the footer":
+// `position: sticky; bottom: 0` is what actually delivers this component's own original
+// doc comment ("settles into normal flow once the real footer is reached and pins to the
+// viewport bottom otherwise") - a normal member of .rt-footer__left's row, reachable while
+// scrolling a tall page the same way `fixed` was, but never escaping its row's horizontal
+// position or floating over content once the footer itself is in view.
+//
+// Also shortened here, footer-instance only: var(--rt-tap-min) (44px) reads as oversized
+// next to this row's small brand/copyright text. The navbar/Settings instances (which
+// don't set [stickyBottom]) keep the full tap-target height - this reduction is scoped to
+// the one context asking for it.
 .rt-install-update--sticky-bottom {
-  position  : fixed;
-  left      : calc(0.75rem + env(safe-area-inset-left, 0px));
-  bottom    : calc(0.75rem + env(safe-area-inset-bottom, 0px));
-  z-index   : 1000;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+  position  : sticky;
+  bottom    : 0;
+  z-index   : 10;
+
+  .rt-install-update__main {
+    min-height: 32px;
+  }
+
+  .rt-install-update__help {
+    min-height: 32px;
+  }
 }
 
 // Printing a floating pill onto an ICS-309 log would be noise on the page, same reasoning

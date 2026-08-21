@@ -42,10 +42,16 @@ $filledColor: var(--rt-surface-2);
   text-align       : center;
   padding          : 0 1em;
 
+  // Maintainer, 2026-08-21: at tablet-down the map is no longer floating beside Who/Where
+  // text (that's what the original 30%-of-35vw/35vh math was sized for) - .enter__top-group
+  // switches to a flex column above, so the map is alone in its own full-width row with
+  // nothing to make space for. 10.5vw/vh read as "uselessly narrow" on a screen with plenty
+  // of room to spare. Sized to the row it actually has now instead of a fraction of the old
+  // floating width.
   @include bp.tablet-down {
     order : 10;
-    width : 10.5vw;
-    height: 10.5vh;
+    width : 60vw;
+    height: 30vh;
   }
 }
 
@@ -215,6 +221,9 @@ input[type=number] {
   min-width  : 160px;
   //max-width: 300px;
   width      : 100%;
+  // 2026-08-21: containing block for #enter__frm-reguritation's `position: absolute` below
+  // - see that rule's own comment for why it isn't `float: right` any more.
+  position   : relative;
 }
 
 .enter__Callsign {
@@ -276,11 +285,24 @@ input[type=number] {
 // unwrapped JSON in its <pre> children (see below) pushed its scrollable area to ~828px.
 // `overflow: auto` stops that content from extending every ancestor's scroll width;
 // max-width keeps the panel itself inside a phone.
+// 2026-08-21: was `float: right` - `visibility: hidden` still reserves this element's box
+// (see E-65's own comment above, and Utility.displayShow()/entry.component.ts's debugMode
+// toggle, which flips visibility, not display - display:none was NOT an option here, it
+// would have broken that toggle outright), and a float's box escapes past any ancestor
+// that doesn't explicitly contain it. Nothing here did: this float was reaching past
+// </form> entirely and shrinking the unrelated <rangertrak-footer> component's available
+// width far down the page - confirmed live via getBoundingClientRect(), its right edge
+// lined up exactly with .rt-footer's own truncated right edge. `position: absolute`
+// (containing block: .enter__form, now `position: relative`) removes it from flow
+// entirely instead - no float-containment question to get right, and unlike a `flow-root`
+// fix on .enter__form, it doesn't add this always-present element's own height as a new
+// blank gap between Submit and the footer when the panel is hidden (the common case).
 #enter__frm-reguritation {
   visibility        : hidden;
-  //margin-right    : 35vw;
   display           : block;
-  float             : right;
+  position          : absolute;
+  top               : 0;
+  right             : 0;
   height            : 250px;
   width             : 20vw;
   max-width         : 100%;
@@ -312,6 +334,10 @@ input[type=number] {
 .enter__What--area {
   width               : 100%;
   max-width           : 100%;
+  // 2026-08-21: was two literal <br> tags in the template between the status row and this
+  // field - about two line-heights of dead space on top of .enter__Status's own padding.
+  // A small margin here does the same "give it room to breathe" job without the excess.
+  margin-top          : 0.5rem;
   box-sizing          : border-box;
   border              : 1px dotted rgb(52, 28, 192);
   border-radius       : 5px;

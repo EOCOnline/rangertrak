@@ -1,8 +1,7 @@
 <!-- Simplified datetime picker using native Angular Material -->
 <div class="rt-datetime">
   <mat-form-field class="rt-datetime__field" appearance="outline" subscriptSizing="dynamic">
-    <mat-label>{{datePickerLabel}}</mat-label>
-    <input matInput [matDatepicker]="picker" [formField]="timeForm.time" placeholder="Enter a date and time"
+    <input matInput [matDatepicker]="picker" [formField]="timeForm.time" [attr.aria-label]="datePickerLabel"
       class="timepicker__When-input" data-lpignore="true" [attr.tabindex]="dateTabIndex ?? null"
       (dateChange)="onNewTime()" />
 
@@ -16,9 +15,9 @@
 
   <!-- Time input field (HTML5 time input) -->
   <mat-form-field class="rt-datetime__field" appearance="outline" subscriptSizing="dynamic">
-    <mat-label>Time</mat-label>
     <input matInput type="time" [formField]="timeForm.timeOfDay" step="60" class="timepicker__time-input"
-      data-lpignore="true" [attr.tabindex]="timeTabIndex ?? null" (change)="onNewTime()" />
+      [attr.aria-label]="datePickerLabel + ' time'" data-lpignore="true" [attr.tabindex]="timeTabIndex ?? null"
+      (change)="onNewTime()" />
   </mat-form-field>
 
   <!-- E-50: the native time input's own up/down arrows are easy to miss - these are an

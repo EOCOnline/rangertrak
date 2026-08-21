@@ -28,24 +28,23 @@ with ($primary: #962f10,
 
 .rt-datetime__field {
   // appearance="outline" (set in the template), with the outline itself hidden below -
-  // NOT "fill" with the infix's min-height zeroed, which was tried first and broke: MDC's
-  // filled appearance reserves infix padding-top specifically for the floated label to
-  // sit above the value INSIDE the same box, so shrinking that padding to 0.5em left both
-  // rows fighting for the same line and rendering on top of each other (visible live,
-  // both colour schemes, "Enter Report Date, Time" printing directly over "8/20/2026").
-  // Outline's floating label lands in a notch cut into the (now-hidden) border instead -
-  // it never shares infix space with the value - so the infix can shrink freely with no
-  // overlap risk. There is no supported non-::ng-deep hook for any of this.
+  // NOT "fill", which reserves infix padding specifically for a floating label. There is
+  // no supported non-::ng-deep hook for either override.
   ::ng-deep .mdc-notched-outline__leading,
   ::ng-deep .mdc-notched-outline__notch,
   ::ng-deep .mdc-notched-outline__trailing {
     border-color: transparent !important;
   }
 
+  // 2026-08-21: neither field has a visible <mat-label> any more (aria-label carries the
+  // accessible name instead - see the template) - the extra padding-top MDC's infix used
+  // to reserve for a floated label above the value was dead space once the label was
+  // removed, and was the main contributor to this widget reading as oversized/"horrid"
+  // for what it actually shows.
   ::ng-deep .mat-mdc-form-field-infix {
     min-height    : 0;
-    padding-top   : 0.5em;
-    padding-bottom: 0.5em;
+    padding-top   : 0.35em;
+    padding-bottom: 0.35em;
   }
 }
 
@@ -57,14 +56,16 @@ with ($primary: #962f10,
   flex      : none;
 }
 
-// E-50: was `width: 400px` on the date field, wider than the row had space for. A
-// locale-formatted short date needs nowhere near that.
+// E-50 sized this down from a 400px original. 2026-08-21: tightened again to the actual
+// longest expected value now that no label needs extra room to its side - "12/31/2026"
+// (10 characters) for the date, "12:59 PM" (8, native time input shows the AM/PM segment)
+// for time - rather than the earlier, more generous guesses.
 .timepicker__When-input {
-  width: 110px;
+  width: 88px;
 }
 
 .timepicker__time-input {
-  width: 90px;
+  width: 78px;
 }
 
 .rt-datetime__stepper {

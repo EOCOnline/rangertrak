@@ -74,9 +74,15 @@ describe('InstallUpdateComponent', () => {
       // real scoped stylesheet (not a synthetic DOM injection, which emulated view
       // encapsulation would silently ignore - see tools/e2e-adjacent verification script's
       // own comment on that trap).
+      //
+      // 2026-08-21: was `position: fixed` - which floated this over page content in a
+      // corner regardless of where the real footer was, the opposite of "fit into the
+      // footer" (see footer.component.scss's own history). `sticky` is what actually
+      // delivers this component's documented intent: a normal member of the footer's row
+      // that only pins to the viewport bottom once scrolling would carry it away.
       const style = getComputedStyle(el);
-      expect(style.position).toBe('fixed');
-      expect(Number(style.zIndex)).toBeGreaterThan(900); // above the back-to-top control
+      expect(style.position).toBe('sticky');
+      expect(Number(style.zIndex)).toBeGreaterThan(0); // above ordinary in-flow content
     });
   });
 

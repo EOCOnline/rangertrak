@@ -1,12 +1,17 @@
 <!-- https://nikitahl.com/horizontal-rule-css -->
 <hr>
-<div><span class="brand" [title]="versionTitle">RangerTrak™ ֍ Version {{version}}</span>
-  <!-- E-55: was this component's own updateReady button, styled differently from the
-       navbar's and Settings' install surfaces - see InstallUpdateComponent's doc comment.
-       E-57(1): [stickyBottom] replaced the old separate top-fixed banner (previously in
-       app.component.html) - this instance now floats bottom-left regardless of scroll,
-       so it's both "in the footer" and always reachable. -->
-  <rangertrak-install-update [stickyBottom]="true"></rangertrak-install-update>
+<div class="rt-footer">
+  <div class="rt-footer__left">
+    <span class="brand" [title]="versionTitle">RangerTrak™ ֍ Version {{version}}</span>
+    <!-- E-55: was this component's own updateReady button, styled differently from the
+         navbar's and Settings' install surfaces - see InstallUpdateComponent's doc comment.
+         2026-08-21: [stickyBottom] now means position:sticky (see its own .scss comment for
+         why `fixed` was actually a mismatch against this component's own documented intent)
+         - a normal member of this row that pins to the viewport bottom only once scrolling
+         would otherwise carry it away, rather than a small pill floating in a corner over
+         page content regardless of where the footer itself is. -->
+    <rangertrak-install-update [stickyBottom]="true"></rangertrak-install-update>
+  </div>
   <a href="https://eoc.online" target="_blank" class="copyLeft">©{{today | date: 'y'}} https://eoc.online - Open Source
     Tools for EOCs</a>
 </div>

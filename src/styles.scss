@@ -43,6 +43,24 @@ body {
   color: var(--rt-ink);
 }
 
+// 2026-08-21: `rangertrak-root` and `rangertrak-footer` are unknown tag names to the
+// browser, and the UA default for an unknown element is `display: inline` (the same reason
+// a made-up `<foo>bar</foo>` renders inline) - nobody had ever set either to block. Harmless
+// for most layouts since their own children are still ordinary block boxes, but it broke
+// the footer's flex row specifically: a block-level flex child (.rt-footer) of an inline
+// parent doesn't reliably size to the real page width the way a block-in-block child does -
+// confirmed live via getBoundingClientRect(), `.rt-footer` measured ~1047px inside a
+// 1378px-wide page - which is what made `.copyLeft`'s `margin-left: auto` stop short of the
+// true right edge instead of reaching it. Likely true of every other `rangertrak-*`
+// selector in the app too (none checked appear to set their own :host display) - scoped to
+// just these two here since they're what this specific bug chain implicated; a dedicated
+// pass to set this everywhere is worth doing later rather than as a side effect of a footer
+// fix.
+rangertrak-root,
+rangertrak-footer {
+  display: block;
+}
+
 // Sprint E, step 6 (2026-08-19): a heading landmark for screen-reader navigation, present
 // in the accessibility tree without duplicating a visible page title on screen. The
 // standard clip-based pattern - `display:none`/`visibility:hidden` both remove an element

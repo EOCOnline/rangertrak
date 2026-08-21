@@ -22,13 +22,18 @@
 // rule just never asked for it. Maintainer, same day: "should be shown in the 'Faster One'
 // (Google) font as it was originally" - restored, on top of the same type-label
 // size/line-height role E-54 already got right.
+//
+// 2026-08-21: `float: right` is gone - .rt-footer below is a flex row now, and
+// `margin-left: auto` is what actually pins this to the row's right edge. The float
+// version never reliably reached the true right edge of the footer's own container width
+// (a shrink-to-fit float sizes to its own content, not the row), which read as "not right
+// justified" even though it was floating correctly in a technical sense.
 .copyLeft {
   text-decoration: none;
   @include type.type-label;
   font-family    : 'Faster One', cursive;
   font-style     : italic;
-  float          : right;
-  margin-right   : 2vw;
+  margin-left    : auto;
   color          : var(--rt-ink-2);
 }
 
@@ -38,13 +43,20 @@
   text-decoration: underline;
 }
 
-div {
+// 2026-08-21: replaces the old bare `div` float layout. `rangertrak-install-update` is a
+// normal flex child now (see its own [stickyBottom] comment in the template for why
+// `position: sticky` replaces `fixed`), so this no longer needs to reserve dead
+// padding-bottom for a control that used to float outside normal flow.
+.rt-footer {
+  display    : flex;
+  align-items: center;
+  flex-wrap  : wrap;
+  gap        : 0.5rem;
   margin-left: 1vw;
-  // E-57(1): the install/update pill is `position: fixed`, bottom-left (see
-  // install-update.component.scss's `--sticky-bottom` modifier) - confirmed live that
-  // without this, it visually overlapped the brand text right here once scrolled to the
-  // true bottom of a page. This reserves room for it whether or not it's currently
-  // showing, the same tradeoff back-to-top.component.scss's own `bottom: 1.5rem` offset
-  // already accepts for its corner.
-  padding-bottom: 3.5rem;
+}
+
+.rt-footer__left {
+  display    : flex;
+  align-items: center;
+  gap        : 0.75rem;
 }

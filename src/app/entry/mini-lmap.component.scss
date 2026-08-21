@@ -22,8 +22,11 @@
   border-radius         : 5px;
   border                : 2px solid black;
 
+  // 2026-08-21: matches .minimap-placeholder's own tablet-down update in
+  // entry.component.scss - see its comment for why 10.5vw (30% of the desktop float width)
+  // was wrong once the map stopped floating beside text at this breakpoint.
   @include bp.tablet-down {
-    width: 10.5vw;
+    width: 60vw;
   }
 }
 
@@ -36,7 +39,7 @@
   height: 35vh; //100%;
 
   @include bp.tablet-down {
-    height: 10.5vh;
+    height: 30vh;
   }
 }
 
