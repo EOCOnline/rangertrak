@@ -157,10 +157,53 @@ $filledColor: var(--rt-surface-2);
 }
 
 // E-49: was a checkbox + a parenthetical sentence; now a minor note under a slide toggle.
+// 2026-08-21: also shrunk to fit the surrounding lines' height - see the .mdc-switch
+// overrides below for why a plain min-height wasn't enough on its own.
 .enter__Where-toggle {
   @include type.type-body-sm;
-  margin-top: 0.5rem;
-  color     : var(--rt-ink-2);
+  margin-top : 0.5rem;
+  color      : var(--rt-ink-2);
+  line-height: 1.5rem;
+
+  // M3's default switch track (52x32) is itself taller than this row's neighbours
+  // (~19-20px). Found the right hook by reading the browser's own matched-rule cascade
+  // (CSS.getMatchedStylesForNode over CDP) rather than guessing token names further after
+  // two wrong guesses: the --mdc-switch-* tokens this component's markup would suggest
+  // aren't wired to anything real in this Angular Material version's compiled output, and
+  // even a direct `width/height: ... !important` on .mdc-switch had no effect - which
+  // turned out to be a genuine build-pipeline bug (confirmed via the same matched-rule
+  // query: the compiled declaration literally read `32px!important !important`, an invalid
+  // value, whenever `!important` landed in a multi-selector ::ng-deep rule). The actual
+  // live rule reads `width: var(--mat-slide-toggle-track-width, 52px)` /
+  // `height: var(--mat-slide-toggle-track-height, 32px)` - Angular's own theming layer,
+  // different names than the raw MDC tokens - so setting just these two, inherited
+  // normally with no cascade fight at all, is both the correct fix and the simpler one.
+  ::ng-deep mat-slide-toggle {
+    --mat-slide-toggle-track-width : 32px;
+    --mat-slide-toggle-track-height: 18px;
+  }
+}
+
+// 2026-08-21: labeled divider marking the start of the derived read-only values, replacing
+// a bare <hr>. A flex row with a line on each side of the label rather than text overlaid
+// on a <hr> - simpler than fighting a rule's own box model to center text on top of it.
+.enter__Where-derived-divider {
+  display    : flex;
+  align-items: center;
+  margin     : 0.75rem 0 0.5rem;
+  color      : var(--rt-ink-3);
+  @include type.type-label;
+
+  &::before,
+  &::after {
+    content   : '';
+    flex      : 1;
+    border-top: 1px solid var(--rt-line);
+  }
+
+  span {
+    padding: 0 0.5em;
+  }
 }
 
 // https://www.codingtag.com/remove-arrows-from-input-type-number

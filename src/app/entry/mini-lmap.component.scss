@@ -71,6 +71,11 @@
 // Leaflet measures its container's width ONCE at construction and never re-measures
 // without an explicit invalidateSize() call, so that wrong 122px was permanent for the
 // life of the page, not a transient layout hiccup.
+//
+// 2026-08-21: #Entry__LMinimap-subhead itself is gone (removed as explanatory text no
+// longer wanted) - flow-root is kept regardless, harmless with nothing left to contain
+// and cheap insurance against the same class of bug if this header ever gets a float
+// again.
 .Entry__LMap-head {
   padding   : 0 5px;
   margin    : auto;
@@ -91,21 +96,6 @@
 }
 
 // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor
-
-// ADR D-39: named explicitly in the type-scale spec as a --rt-type-body-sm target.
-#Entry__LMinimap-subhead {
-  @include type.type-body-sm;
-  color  : var(--rt-ink-3);
-  float  : right;
-  margin : 0 5px;
-
-  // Redundant at this width - the map now sits directly under the Where section this text
-  // exists to point back to, and it was a large share of what inflated the shrunk map's
-  // box far past its own 30%-sized tiles (see .Entry__LMap-head above).
-  @include bp.tablet-down {
-    display: none;
-  }
-}
 
 .Entry__LMap-footer {
   padding: 5px;

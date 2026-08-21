@@ -176,15 +176,6 @@
       </div>
     }
 
-    <!-- E-49: was a checkbox with a parenthetical sentence; demoted to a minor toggle
-         below the coordinate fields, per the reporter's ask. -->
-    <div class="enter__Where-toggle">
-      <mat-slide-toggle [checked]="showAllSystems()" (change)="showAllSystems.set($event.checked)">
-        Show all coordinate systems
-      </mat-slide-toggle>
-      <span class="small">(this session only - see Settings to change the default)</span>
-    </div>
-
     <!-- E-48(6): the NAD27/WGS84 datum note used to live here. Moved out of Entry - it's
          already in FIELD-GUIDE.md's coordinate-entry section, and now also in
          Settings -> Location Defaults, right by the coordinate-system checkboxes it's most
@@ -199,6 +190,15 @@
     <input #address type="text" id="enter__Where-Address"
       title="Optionally enter www.Plus.Codes, www.What3Words.com, a Maidenhead grid locator (e.g. CN87ux), or street address for geocoding."
       [formField]="addressForm" data-lpignore="true" (change)="onAddressChg()" [attr.tabindex]="ti(25)" />
+
+    <!-- E-49: was a checkbox with a parenthetical sentence; demoted to a minor toggle.
+         2026-08-21: moved below the address field (was between UTM and Address), and
+         dropped the "(this session only...)" note per the maintainer's ask. -->
+    <div class="enter__Where-toggle">
+      <mat-slide-toggle [checked]="showAllSystems()" (change)="showAllSystems.set($event.checked)">
+        Show all coordinate systems
+      </mat-slide-toggle>
+    </div>
   </form>
 
 
@@ -209,8 +209,9 @@
        structural directive, specifically to avoid a render-ordering race. See
        updateDerivedLocations()'s own comment. -->
   <div class="enter__Where-Results" [class.enter__Where-Results--hidden]="!showDerived()">
-    <!-- https://nikitahl.com/horizontal-rule-css -->
-    <hr>
+    <!-- 2026-08-21: labeled divider (was a bare <hr>) marking where the derived read-only
+         values below start, replacing the old plain rule. -->
+    <div class="enter__Where-derived-divider"><span>Derived:</span></div>
     <!--Derived Locations: -->
     <!-- E-48(2): readonly, not a bare span - gives a visible field boundary and native
          click-to-select/copy affordances the reporter asked for. -->
