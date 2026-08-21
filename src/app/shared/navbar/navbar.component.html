@@ -48,11 +48,13 @@
   <!--================================================-->
   <span class="rightAlign">
 
-    <!-- E-55: was this component's own installBtn, styled differently from Settings' and
-         the footer's separate implementations of the same concept - see
-         InstallUpdateComponent's doc comment. -->
-    <rangertrak-install-update></rangertrak-install-update>
-    &nbsp;
+    <!-- E-57(1) follow-up: install/update used to render here too, plus the footer's
+         [stickyBottom] instance, plus a separate MatSnackBar UpdateService opened
+         directly - three surfaces for the same "update ready" notice. Maintainer: "New
+         version available shows up in three places. 1 is probably enough. (footer)." The
+         footer's floating instance already guarantees visibility regardless of scroll
+         and covers both states (install offer and update-ready), so this copy and the
+         snackbar are both gone rather than trying to keep this one install-offer-only. -->
     <a href=" https://github.com/EOCOnline/rangertrak" target="_blank"
       title="See ya at GitHub for issue reports & source code" class="git">
       <img src="../../assets/icons/GitHub-Mark-32px.png" id="gitLogo" alt="GitHub" /></a>

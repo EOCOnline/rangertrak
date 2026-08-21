@@ -12,18 +12,20 @@
   font-weight: 600;
 }
 
-// 19f defect 5: this rendered as blue, bold, condensed, quasi-strikethrough text that read
-// as a rendering fault rather than a design choice. Cause was "Faster One" - a decorative
-// display face that is never loaded (no webfont link exists, and adding one would be a
-// third-party request this app deliberately avoids), so it fell through to whatever
-// condensed face the OS happened to offer, on top of default link colouring.
-//
-// E-54: now uses the real type-label role (rather than the keyword `font-size: small`)
-// plus italic for a distinct "tagline" feel - still the app's one real font, per the note
-// above, not a second dead reference.
+// 19f defect 5, originally: this rendered as blue, bold, condensed, quasi-strikethrough
+// text that read as a rendering fault rather than a design choice - E-54's fix (below,
+// superseded) blamed an unloaded "Faster One" and moved to the app's real body font
+// instead. That diagnosis was wrong on the one fact that mattered: index.html's Google
+// Fonts link (the active one further down the file, not the commented-out one above it)
+// has requested Faster One this whole time, and `curl`ing it directly returns a real
+// `@font-face` rule - confirmed 2026-08-20, not assumed. The actual gap was simpler: this
+// rule just never asked for it. Maintainer, same day: "should be shown in the 'Faster One'
+// (Google) font as it was originally" - restored, on top of the same type-label
+// size/line-height role E-54 already got right.
 .copyLeft {
   text-decoration: none;
   @include type.type-label;
+  font-family    : 'Faster One', cursive;
   font-style     : italic;
   float          : right;
   margin-right   : 2vw;

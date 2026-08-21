@@ -5,70 +5,91 @@ with ($primary: #962f10,
 @use "@material/button/styles";
 @use "@material/banner";
 
-// Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss.
-$filledColor: var(--rt-surface-2);
-
-// E-50: date and time now sit side by side - was a plain block, so the two
-// mat-form-fields (each effectively block-level once `.timepicker__When-input`'s old
-// 400px width is gone) stacked with the time field wasting a full row's height below
-// the date. `flex-wrap` keeps a graceful fallback at phone width.
-.rounded {
-  display    : flex;
-  align-items: flex-end;
-  gap        : var(--rt-gap);
-  flex-wrap  : wrap;
+// E-72: the date field, time field and minute-stepper used to be three independently laid
+// -out pieces - Material's own "filled" chrome doubled up per field (its own tinted box,
+// its own underline, its own reserved hint row even though these fields never show one),
+// on top of a stray `-10px/-5px` margin fudge trying to cancel that reserved space out by
+// eye. Maintainer: "there should be little to no margins between the widgets... they
+// should all line up vertically with the same height. It should look like one unified
+// widget." This now draws ONE pill - background/border/radius token language borrowed from
+// header.component.scss's .status-cluster, the same "grouped readout" idea - and strips
+// each mat-form-field down to bare text (no per-field background, no per-field underline,
+// no reserved subscript row) so the pill's own border is the only chrome either field
+// shows. Applies wherever <rangertrak-time-picker> is used - Entry's "When" section and
+// Settings' operational-period start/end fields both pick this up automatically.
+.rt-datetime {
+  display      : inline-flex;
+  align-items  : stretch;
+  background   : var(--rt-surface);
+  border       : 1px solid var(--rt-line);
+  border-radius: var(--rt-radius);
+  padding      : 0 0.6em;
 }
 
-.innerElement {
-  //background-color: palevioletred;
-  margin : -10px 0px -5px 10px;
-  padding: 0 1px;
+.rt-datetime__field {
+  // appearance="outline" (set in the template), with the outline itself hidden below -
+  // NOT "fill" with the infix's min-height zeroed, which was tried first and broke: MDC's
+  // filled appearance reserves infix padding-top specifically for the floated label to
+  // sit above the value INSIDE the same box, so shrinking that padding to 0.5em left both
+  // rows fighting for the same line and rendering on top of each other (visible live,
+  // both colour schemes, "Enter Report Date, Time" printing directly over "8/20/2026").
+  // Outline's floating label lands in a notch cut into the (now-hidden) border instead -
+  // it never shares infix space with the value - so the infix can shrink freely with no
+  // overlap risk. There is no supported non-::ng-deep hook for any of this.
+  ::ng-deep .mdc-notched-outline__leading,
+  ::ng-deep .mdc-notched-outline__notch,
+  ::ng-deep .mdc-notched-outline__trailing {
+    border-color: transparent !important;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    min-height    : 0;
+    padding-top   : 0.5em;
+    padding-bottom: 0.5em;
+  }
 }
 
-.filled {
-  background-color: $filledColor;
+.rt-datetime__divider {
+  align-self: stretch;
+  width     : 1px;
+  margin    : 0.4em 0.5em;
+  background: var(--rt-line-strong);
+  flex      : none;
 }
 
-// E-50: was `width: 400px` - a fixed width already wider than the row had space for,
-// which forced the time field onto its own line regardless of the flex row above. A
+// E-50: was `width: 400px` on the date field, wider than the row had space for. A
 // locale-formatted short date needs nowhere near that.
 .timepicker__When-input {
-  width: 140px;
+  width: 110px;
 }
 
-// E-50: the native time input's own increment arrows are easy to miss (small, and not
-// every browser/OS theme renders them the same way) on a keyboard-first screen where
-// that's the one interaction that isn't otherwise self-evident. Two explicit buttons
-// next to the field, using the same tonal vocabulary as ADR D-39, rather than relying on
-// a native control that most people never notice offers keyboard-adjustable steps at all.
-.timepicker__time-stepper {
-  display      : inline-flex;
+.timepicker__time-input {
+  width: 90px;
+}
+
+.rt-datetime__stepper {
+  display       : inline-flex;
   flex-direction: column;
-  margin-left  : 2px;
+  align-self    : center;
+  margin-left   : 0.4em;
+  padding-left  : 0.4em;
+  border-left   : 1px solid var(--rt-line-strong);
 }
 
-.timepicker__time-step {
+.rt-datetime__step {
   min-width    : 1.5rem;
   min-height   : 1.125rem;
   padding      : 0;
   line-height  : 1;
   font-size    : 0.65rem;
-  border       : 1px solid var(--rt-line-strong);
-  background   : var(--rt-surface-2);
+  border       : none;
+  border-radius: 3px;
+  background   : transparent;
   color        : var(--rt-ink);
   cursor       : pointer;
 
-  &:first-child {
-    border-bottom       : none;
-    border-radius       : var(--rt-radius) var(--rt-radius) 0 0;
-  }
-
-  &:last-child {
-    border-radius: 0 0 var(--rt-radius) var(--rt-radius);
+  &:hover,
+  &:focus-visible {
+    background: var(--rt-surface-2);
   }
 }
-
-//.elegant {
-//margin-top   : 25px;
-//margin-bottom: 0px;
-//}

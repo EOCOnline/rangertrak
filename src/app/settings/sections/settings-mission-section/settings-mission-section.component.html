@@ -26,13 +26,16 @@
   </div>
 
   <!-- ======================================= -->
-  <div class="filled timepicker">
+  <!-- E-72: was `class="filled timepicker"` - a tinted, hard-bordered box around each
+       picker that's now redundant with the picker's own unified pill (time-picker.
+       component.scss's .rt-datetime already supplies background/border/radius). -->
+  <div class="timepicker">
     <rangertrak-time-picker [initialDate]="opPeriodStart" [datePickerLabel]="timePickerLabelStart"
       (newTimeEvent)="timeEventStart.emit($event)">
     </rangertrak-time-picker>
   </div>
 
-  <div class="filled timepicker">
+  <div class="timepicker">
     <rangertrak-time-picker [initialDate]="opPeriodEnd" [datePickerLabel]="timePickerLabelEnd"
       (newTimeEvent)="timeEventEnd.emit($event)"></rangertrak-time-picker>
   </div>

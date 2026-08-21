@@ -1,4 +1,4 @@
-import { filter, switchMap } from "rxjs"
+import { filter } from "rxjs"
 
 import { Injectable, signal } from "@angular/core"
 import { MatSnackBar } from "@angular/material/snack-bar"
@@ -76,18 +76,19 @@ export class UpdateService {
       }
     })
 
+    // E-57(1) follow-up: this used to also open a MatSnackBar here ("A new version of
+    // RangerTrak is available", duration: 0) - a third surface for the same notice
+    // alongside the navbar and footer's InstallUpdateComponent instances. Maintainer:
+    // "New version available shows up in three places. 1 is probably enough. (footer)."
+    // updateReady=true already drives the footer's [stickyBottom] instance, which
+    // guarantees visibility regardless of scroll and has its own "Reload now" action
+    // (activateAndReload(), called directly) - the snackbar was fully redundant with it.
     this.updates.versionUpdates.pipe(
       filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
-      switchMap(() => {
-        this.updateReady.set(true)
-        this.recordCheck()
-        // duration: 0 overrides the app-wide 2.5s default - an update notice the
-        // user has to catch within 2.5 seconds is not a notice.
-        return this.snackbar
-          .open('A new version of RangerTrak is available.', 'Reload now', { duration: 0 })
-          .onAction()
-      })
-    ).subscribe(() => this.activateAndReload())
+    ).subscribe(() => {
+      this.updateReady.set(true)
+      this.recordCheck()
+    })
 
     // The service worker checks on registration and periodically after; this
     // makes the first check explicit so `lastChecked` is populated on a fresh load.

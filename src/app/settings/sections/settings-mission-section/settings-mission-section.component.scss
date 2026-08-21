@@ -6,10 +6,12 @@ $filledColor: var(--rt-surface-2);
   background-color: $filledColor;
 }
 
+// E-72: was `width: 240px; border: 1px solid black` - a raw hex-free but still hardcoded
+// box wrapped around <rangertrak-time-picker>, which now draws its own bordered pill (see
+// time-picker.component.scss's .rt-datetime) - a second border here just doubled the
+// chrome and the fixed width no longer matched the pill's own content-driven size.
 .timepicker {
   position: relative;
-  width   : 240px;
-  border  : 1px solid black;
   margin  : 10px 0px;
 }
 

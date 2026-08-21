@@ -8,8 +8,12 @@ import {
 
 /**
  * The "Advanced Options" disclosure: Storage Protection, Mission Backup (export/import),
- * Sample Data, and the Font Explorium. Sprint C split out of the 429-line
- * settings.component template - see settings.component.ts for the rest.
+ * and Sample Data. Sprint C split out of the 429-line settings.component template - see
+ * settings.component.ts for the rest.
+ *
+ * The Font Explorium (a dev-time typography-comparison tool, not something a scribe in the
+ * field has any reason to see) used to live here too - extracted 2026-08-20 to a standalone
+ * font-explorium.html in the parent directory, outside the app entirely.
  *
  * Injects its own services directly (all `providedIn: 'root'`) rather than threading them
  * down as Inputs, since none of this section's actions need to hand anything back to the
@@ -29,25 +33,11 @@ export class SettingsAdvancedOptionsComponent {
 
   @Output() resetDefaults = new EventEmitter<void>()
 
-  fonts = ["'Open Sans'", "Montserrat", "Roboto", "'Playfair Display'", "Lato", "Merriweather", "Helvetica", "Lora", "'PT Serif'", "Spectral", "'Times New Roman'", "'Akaya Telivigala'",
-    "'Open Sans Condensed'", "'Saira Extra Condensed'", "Boogaloo", "Anton", "'Faster One'", "'Arima Madurai'"]
-  // https://en.wikipedia.org/wiki/Pangram
-  pangrams = ["Pack my box with five dozen liquor jugs",
-    "The quick brown fox jumps over the lazy dog",
-    "Glib jocks quiz nymph to vex dwarf.",
-    "Sphinx of black quartz, judge my vow.",
-    "How vexingly quick daft zebras jump!",
-    "The five boxing wizards jump quickly.",
-    "Jackdaws love my big sphinx of quartz."]
-  pangram: string
-
   constructor(
     private backupService: BackupService,
     private sampleDataService: SampleDataService,
     public storagePersistence: StoragePersistenceService,
-    private log: LogService) {
-    this.pangram = this.getPangram()
-  }
+    private log: LogService) { }
 
   onBtnRequestPersistence() {
     this.log.verbose('onBtnRequestPersistence: re-requesting persistent storage.', this.id)
@@ -130,9 +120,5 @@ export class SettingsAdvancedOptionsComponent {
     this.log.warn('Loaded the sample mission (demo data).', this.id)
     alert('Sample mission loaded. Reloading to refresh every screen with the new data...')
     window.location.reload()
-  }
-
-  getPangram() {
-    return this.pangrams[Math.floor(Math.random() * this.pangrams.length)]
   }
 }

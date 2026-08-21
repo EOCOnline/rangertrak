@@ -1,6 +1,6 @@
 <!-- Simplified datetime picker using native Angular Material -->
-<div appearance="filled" class="input-group rounded">
-  <mat-form-field class="innerElement">
+<div class="rt-datetime">
+  <mat-form-field class="rt-datetime__field" appearance="outline" subscriptSizing="dynamic">
     <mat-label>{{datePickerLabel}}</mat-label>
     <input matInput [matDatepicker]="picker" [formField]="timeForm.time" placeholder="Enter a date and time"
       class="timepicker__When-input" data-lpignore="true" [attr.tabindex]="dateTabIndex ?? null"
@@ -12,8 +12,10 @@
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
+  <span class="rt-datetime__divider"></span>
+
   <!-- Time input field (HTML5 time input) -->
-  <mat-form-field class="innerElement">
+  <mat-form-field class="rt-datetime__field" appearance="outline" subscriptSizing="dynamic">
     <mat-label>Time</mat-label>
     <input matInput type="time" [formField]="timeForm.timeOfDay" step="60" class="timepicker__time-input"
       data-lpignore="true" [attr.tabindex]="timeTabIndex ?? null" (change)="onNewTime()" />
@@ -22,10 +24,10 @@
   <!-- E-50: the native time input's own up/down arrows are easy to miss - these are an
        explicit, always-visible affordance for the same one-minute step the arrow keys
        already do while a field is focused. -->
-  <span class="timepicker__time-stepper">
-    <button type="button" class="timepicker__time-step" (click)="adjustTime(1)"
+  <span class="rt-datetime__stepper">
+    <button type="button" class="rt-datetime__step" (click)="adjustTime(1)"
       title="Add one minute" aria-label="Add one minute">&#9650;</button>
-    <button type="button" class="timepicker__time-step" (click)="adjustTime(-1)"
+    <button type="button" class="rt-datetime__step" (click)="adjustTime(-1)"
       title="Subtract one minute" aria-label="Subtract one minute">&#9660;</button>
   </span>
 </div>

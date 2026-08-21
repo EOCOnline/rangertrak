@@ -8,14 +8,13 @@ import { MDCTopAppBar } from '@material/top-app-bar'
 // import { MatButtonModule } from '@angular/material/button'
 import { subscribeOn } from 'rxjs';
 import { LogService, SettingsService, SettingsType } from '../services';
-import { InstallUpdateComponent } from '../install-update/install-update.component';
 import { Utility } from '../utility';
 //https://material.io/components/app-bars-top/web#regular-top-app-bar
 
 @Component({
   selector: 'rangertrak-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatProgressBarModule, InstallUpdateComponent],
+  imports: [CommonModule, RouterModule, MatProgressBarModule],
   templateUrl: './navbar.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./navbar.component.scss']
