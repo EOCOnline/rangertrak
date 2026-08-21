@@ -137,13 +137,19 @@
   position  : sticky;
   bottom    : 0;
   z-index   : 10;
+  // Live review, 2026-08-22: sat flush against the very bottom of the viewport once
+  // stuck - included in the sticky offset (bottom:0 + this margin = 20px of clearance
+  // below the pill), not just spacing in normal flow.
+  margin-bottom: 20px;
 
+  // Live review, 2026-08-22: ~4px trimmed off top and bottom each (32px -> 24px) - this
+  // pill still read as taller than the small brand/copyright text it sits next to.
   .rt-install-update__main {
-    min-height: 32px;
+    min-height: 24px;
   }
 
   .rt-install-update__help {
-    min-height: 32px;
+    min-height: 24px;
   }
 }
 

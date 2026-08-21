@@ -15,6 +15,8 @@ import {
   SettingsService, SettingsType
 } from '../services/'
 
+type TimeSegment = 'hour' | 'minute' | 'meridiem'
+
 
 
 
@@ -66,7 +68,18 @@ export class TimePickerComponent implements OnInit, OnChanges {
   // Left unset (no tabindex attribute rendered) unless a parent needs this leaf slotted
   // into an explicit keyboard-first tab sequence - see Entry's usage vs. Settings'.
   @Input() dateTabIndex?: number
-  @Input() timeTabIndex?: number
+
+  // Same reservation pattern as LocationComponent's tabIndexStart/TAB_SLOT_COUNT/ti() -
+  // this leaf now has three focusable time segments (hour/minute/AM-PM), not one, so a
+  // single tabIndex input can no longer address it. Entry.component.ts's statusTabIndex
+  // is computed from this same TIME_TAB_SLOT_COUNT.
+  @Input() timeTabIndexStart?: number
+  static readonly TIME_TAB_SLOT_COUNT = 3
+
+  /** Segment position within the time group, 0=hour, 1=minute, 2=meridiem. */
+  ti(offset: number): number | null {
+    return this.timeTabIndexStart != null ? this.timeTabIndexStart + offset : null
+  }
 
   private id = "DateTime Picker"
 
@@ -201,13 +214,63 @@ export class TimePickerComponent implements OnInit, OnChanges {
     this.log.verbose(`Combined date/time emitted: ${combined}`, this.id)
   }
 
+  // ── Segmented hour/minute/AM-PM entry ──────────────────────────────────────────────
+  //
+  // Live review, 2026-08-22: the native `type="time"` input's own segments (hour/minute/
+  // AM-PM) can't be told apart from JS - `HTMLInputElement.selectionStart/selectionEnd`
+  // are unsupported for type="time" (confirmed live: both return null in Chromium) and
+  // synthetic keyboard events don't trigger a native input's built-in segment stepping
+  // (only real, trusted key presses do) - so the explicit ▲/▼ buttons below could only
+  // ever step one hardcoded segment (minutes), never whichever one the scribe had
+  // highlighted. Three plain `type="number"` fields solve this directly: which one has
+  // focus is just `activeSegment` below, no browser internals to fight.
+  //
+  // `timeModel().timeOfDay` (24-hour "HH:MM") stays the single source of truth - these
+  // are pure display/edit derivations of it, same relationship applyInitialDate() already
+  // has with the model.
+  private hour24 = computed(() => Number(this.timeModel().timeOfDay.split(':')[0]) || 0)
+  private minute24 = computed(() => Number(this.timeModel().timeOfDay.split(':')[1]) || 0)
+  hourDisplay = computed(() => { const h = this.hour24() % 12; return h === 0 ? 12 : h })
+  minuteDisplay = computed(() => this.minute24().toString().padStart(2, '0'))
+  meridiem = computed<'AM' | 'PM'>(() => this.hour24() < 12 ? 'AM' : 'PM')
+
+  private static readonly SEGMENT_STEP_MINUTES: Record<TimeSegment, number> = { hour: 60, minute: 1, meridiem: 720 }
+
+  // Which segment last had focus - NOT cleared on blur. The shared ▲/▼ buttons below
+  // steal focus to themselves the instant they're clicked (a real DOM focus event fires
+  // before their own (click) handler runs), so reading focus live at click-time would
+  // always see the button itself, never the segment the scribe actually meant. Sticking
+  // with the last-focused segment until a different one is focused matches what a scribe
+  // clicking into a field and then reaching for the arrow button actually expects.
+  private activeSegment: TimeSegment | null = null
+
+  onSegmentFocus(segment: TimeSegment) { this.activeSegment = segment }
+
   /**
-   * E-50: the explicit up/down stepper buttons next to the time field - a visible
-   * equivalent to the native time input's own (easy-to-miss) arrow-key stepping.
-   * Wraps within a single day rather than rolling the date over, matching what the
-   * native control's own up/down arrows do.
+   * E-50's shared ▲/▼ buttons, now segment-aware. Falls back to minute (the original,
+   * only-ever behaviour) if nothing has been focused yet this session.
    */
-  adjustTime(deltaMinutes: number) {
+  adjustTime(delta: number) {
+    this.stepSegment(this.activeSegment ?? 'minute', delta)
+  }
+
+  /** A real key press directly on a focused segment - same rollover math, same result. */
+  onSegmentKeyStep(event: Event, segment: TimeSegment, delta: number) {
+    event.preventDefault() // native number-input stepping doesn't roll into sibling segments
+    this.stepSegment(segment, delta)
+  }
+
+  private stepSegment(segment: TimeSegment, delta: number) {
+    this.adjustTotalMinutes(delta * TimePickerComponent.SEGMENT_STEP_MINUTES[segment])
+  }
+
+  /**
+   * E-50: wraps within a single day rather than rolling the date over, matching what the
+   * native control's own up/down arrows used to do. Shared by all three segments -
+   * stepping by 60 minutes (hour), 1 minute, or 720 minutes (meridiem: always flips,
+   * regardless of direction, since ±720 mod 1440 lands on the same result either way).
+   */
+  private adjustTotalMinutes(deltaMinutes: number) {
     const { timeOfDay } = this.timeModel()
     const [hours, minutes] = timeOfDay.split(':').map(Number)
     const total = (((hours * 60 + minutes + deltaMinutes) % 1440) + 1440) % 1440
@@ -215,6 +278,46 @@ export class TimePickerComponent implements OnInit, OnChanges {
     const newMinutes = (total % 60).toString().padStart(2, '0')
     this.timeModel.update(s => ({ ...s, timeOfDay: `${newHours}:${newMinutes}` }))
     this.onNewTime()
+  }
+
+  private setAbsolute(hour24: number, minute: number) {
+    const hh = hour24.toString().padStart(2, '0')
+    const mm = minute.toString().padStart(2, '0')
+    this.timeModel.update(s => ({ ...s, timeOfDay: `${hh}:${mm}` }))
+    this.onNewTime()
+  }
+
+  /** Commits a typed hour (1-12 display) on blur/Enter - never mid-keystroke, see onSegmentTyping(). */
+  onHourChange(event: Event) {
+    const n = parseInt((event.target as HTMLInputElement).value, 10)
+    if (isNaN(n)) return
+    const displayHour = Math.min(12, Math.max(1, n))
+    const isPM = this.meridiem() === 'PM'
+    this.setAbsolute((displayHour % 12) + (isPM ? 12 : 0), this.minute24())
+  }
+
+  onMinuteChange(event: Event) {
+    const n = parseInt((event.target as HTMLInputElement).value, 10)
+    if (isNaN(n)) return
+    this.setAbsolute(this.hour24(), Math.min(59, Math.max(0, n)))
+  }
+
+  toggleMeridiem() {
+    this.adjustTotalMinutes(720)
+  }
+
+  /**
+   * Auto-advances to the next segment once no further digit could still be typed into
+   * this one - the same UX native date/time inputs already give for free. Peeks at the
+   * raw typed string only; never writes back to the model (that's onHourChange/
+   * onMinuteChange, on blur/Enter) so it can't fight the scribe mid-keystroke.
+   */
+  onSegmentTyping(event: Event, maxSingleDigit: number, nextEl: HTMLElement) {
+    const value = (event.target as HTMLInputElement).value
+    const firstDigit = Number(value[0])
+    if (value.length >= 2 || (value.length === 1 && firstDigit > maxSingleDigit)) {
+      nextEl.focus()
+    }
   }
 
   toggleMinDate(evt: any) {

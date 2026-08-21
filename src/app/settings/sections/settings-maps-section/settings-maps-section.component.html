@@ -68,9 +68,11 @@
     <input [formField]="form.googleGeocodingApiKey" placeholder="leave blank to use Nominatim (OpenStreetMap)"
       type="text" [style.width.px]="320" />
     <div class="text-sm">
-      By default, address lookup uses Nominatim (OpenStreetMap) - no key required, but requires Internet.
-      Supplying your own Google API key here switches address lookup to Google Geocoding instead. This key is
-      stored only in your browser and is your own billing responsibility.
+      Both options need an Internet connection - neither works offline. By default, address lookup uses
+      Nominatim (OpenStreetMap) - free, no key required. Supplying your own Google API key here switches
+      address lookup to Google Geocoding instead, which is generally more accurate and complete for
+      addresses OpenStreetMap's own data covers less well, at the cost of needing your own paid Google
+      account. This key is stored only in your browser and is your own billing responsibility.
     </div>
   </div>
 

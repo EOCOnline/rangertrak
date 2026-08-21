@@ -95,8 +95,12 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   callsignTabIndex = 1
   locationTabIndexStart = 2
   dateTabIndex = this.locationTabIndexStart + LocationComponent.TAB_SLOT_COUNT
-  timeTabIndex = this.dateTabIndex + 1
-  statusTabIndex = this.timeTabIndex + 1
+  // 2026-08-22: was `timeTabIndex = this.dateTabIndex + 1` (a single slot) - the time
+  // picker's hour/minute/AM-PM now each need their own tab stop (see
+  // TimePickerComponent.TIME_TAB_SLOT_COUNT), same reservation pattern as Location's own
+  // TAB_SLOT_COUNT above.
+  timeTabIndexStart = this.dateTabIndex + 1
+  statusTabIndex = this.timeTabIndexStart + TimePickerComponent.TIME_TAB_SLOT_COUNT
   notesTabIndex = this.statusTabIndex + 1
   resetTabIndex = this.notesTabIndex + 1
   submitTabIndex = this.resetTabIndex + 1

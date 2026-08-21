@@ -90,7 +90,7 @@
          Who above. -->
     <div FormControl="timepickerFormControl" class="timepicker timepicker_When-input enter__section">
       <rangertrak-time-picker #picker [datePickerLabel]="timePickerLabel" (newTimeEvent)="onNewTimeEvent($event)"
-        [dateTabIndex]="dateTabIndex" [timeTabIndex]="timeTabIndex">
+        [dateTabIndex]="dateTabIndex" [timeTabIndexStart]="timeTabIndexStart">
         <!-- [initialDate] = "initialTime" works, but we just use default - current time -->
       </rangertrak-time-picker>
     </div>

@@ -90,8 +90,59 @@ with ($primary: #962f10,
   width: 88px;
 }
 
-.timepicker__time-input {
-  width: 78px;
+// 2026-08-22: replaces the native time input's own chrome. Bare text on the same
+// surface the pill already provides - no per-segment border/background, matching how
+// the date field above was stripped down to bare text too.
+.rt-datetime__time {
+  display    : inline-flex;
+  align-items: center;
+  font-size  : inherit;
+  color      : var(--rt-ink);
+}
+
+.rt-datetime__seg {
+  font        : inherit;
+  color       : inherit;
+  background  : transparent;
+  border      : none;
+  border-radius: 3px;
+  padding     : 0.15em 0.1em;
+  text-align  : center;
+  cursor      : text;
+
+  // Hides the native number spinner - same trick as location.component.scss's
+  // coordinate fields. A stray spinner here would be wider than the digits themselves.
+  -moz-appearance: textfield;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+.rt-datetime__seg--hour,
+.rt-datetime__seg--minute {
+  width: 1.6em;
+}
+
+.rt-datetime__seg--meridiem {
+  width  : 2.4em;
+  cursor : pointer;
+  margin-left: 0.15em;
+}
+
+.rt-datetime__seg:hover,
+.rt-datetime__seg:focus-visible {
+  background: var(--rt-surface-2);
+}
+
+.rt-datetime__seg:focus-visible {
+  outline       : 2px solid var(--rt-accent);
+  outline-offset: -1px;
+}
+
+.rt-datetime__colon {
+  opacity: 0.7;
 }
 
 .rt-datetime__stepper {
