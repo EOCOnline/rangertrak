@@ -1,0 +1,40 @@
+<div class="feedback">
+  @if (status() === 'success') {
+    <p class="feedback__success">
+      Thanks - your feedback was submitted as a
+      <a [href]="successUrl()" target="_blank" rel="noopener">public GitHub issue</a>.
+    </p>
+    <button type="button" class="eButton" (click)="reset()">Send more feedback</button>
+  } @else {
+    <p class="feedback__notice">
+      Bug reports, feature requests, anything else - this becomes a
+      <b>public</b> GitHub issue on the project repo, so please don't include mission
+      data, roster details, or anything else you'd rather not be visible to anyone.
+    </p>
+
+    <label class="feedback__label">
+      What's on your mind?
+      <textarea class="feedback__message" rows="5" [(ngModel)]="message" name="feedbackMessage"
+        placeholder="Describe the bug, idea, or question..." [attr.aria-label]="'Feedback message'"
+        [disabled]="status() === 'sending'"></textarea>
+    </label>
+
+    <label class="feedback__label">
+      Contact info (optional, only if you want a reply)
+      <input class="feedback__contact" type="text" [(ngModel)]="contact" name="feedbackContact"
+        placeholder="email, callsign, whatever reaches you" [disabled]="status() === 'sending'" />
+    </label>
+
+    @if (status() === 'error') {
+      <p class="feedback__error">
+        Couldn't submit that automatically. You can
+        <a [href]="fallbackUrl" target="_blank" rel="noopener">file it directly on GitHub</a>
+        instead - your message above is carried over.
+      </p>
+    }
+
+    <button type="button" class="eButton feedback__submit" [disabled]="!canSubmit" (click)="onSubmit()">
+      {{ status() === 'sending' ? 'Sending...' : 'Send Feedback' }}
+    </button>
+  }
+</div>

@@ -1,9 +1,13 @@
 # Deploying RangerTrak
 
 RangerTrak is hosted as a **Cloudflare Worker serving static assets** — not a Cloudflare
-Pages project. There is no server code: [wrangler.jsonc](wrangler.jsonc) has no `main`,
-only an `assets` block. The Worker exists so that server-side routes (the feedback
-endpoint, a What3Words proxy) can be added later without changing hosting.
+Pages project. Almost everything is served straight from the `assets` block in
+[wrangler.jsonc](wrangler.jsonc), untouched by any server code — but there IS a small
+amount of server code now, at [worker/index.js](worker/index.js): a Range-request shim for
+the offline PMTiles basemap, and the `POST /api/feedback` endpoint (ADR D-15) that files
+in-app feedback as a GitHub issue. Both are routed there explicitly via `run_worker_first`
+in `wrangler.jsonc`; every other path bypasses the Worker code entirely and goes straight
+to the asset store. A What3Words proxy is a plausible future addition to the same file.
 
 - For the developer workflow, see [DEVELOPING.md](DEVELOPING.md).
 - For how the app is put together, see [ARCHITECTURE.md](ARCHITECTURE.md).
@@ -41,6 +45,23 @@ In `github.com/EOCOnline/rangertrak` → **Settings → Secrets and variables �
 npx wrangler login
 npx wrangler whoami     # confirm the right account
 ```
+
+### 4. Worker secret for the feedback endpoint (ADR D-15)
+
+`POST /api/feedback` (`worker/index.js`) needs a GitHub Personal Access Token to file
+issues on its own, separate from the `CLOUDFLARE_API_TOKEN` above (that one authenticates
+*deploying* the Worker; this one authenticates the *deployed* Worker calling GitHub's API
+at request time). Create a fine-grained PAT scoped to **only** `EOCOnline/rangertrak`,
+with **Issues: Read and write** and nothing else, then set it as a **Worker secret** (not
+a GitHub repo secret — it never touches GitHub Actions):
+
+```bash
+npx wrangler secret put GITHUB_FEEDBACK_TOKEN
+```
+
+Without this secret the endpoint fails closed (503) rather than erroring loudly — the
+in-app feedback form treats that the same as "unreachable" and falls back to a direct
+GitHub issue link, so a missing secret degrades gracefully instead of breaking the page.
 
 ## How a deploy happens
 

@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common'
 import { RouterLink } from '@angular/router'
 
 import { DisclosureComponent } from '../../shared/disclosure/disclosure.component'
+import { FeedbackComponent } from '../../shared/feedback/feedback.component'
 import { PageComponent } from '../../shared/page/page.component'
 
 import { ClockService, LogService, SettingsService, SettingsType } from '../../shared/services'
@@ -14,7 +15,7 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 @Component({
   selector: 'rangertrak-about',
   standalone: true,
-  imports: [CommonModule, PageComponent, DisclosureComponent, RouterLink],
+  imports: [CommonModule, PageComponent, DisclosureComponent, RouterLink, FeedbackComponent],
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

@@ -39,6 +39,11 @@ jobs:
       - name: Unit tests
         run: npm test -- --watch=false --browsers=ChromeHeadlessCI
 
+      # worker/index.js (the feedback endpoint, the PMTiles Range shim) isn't Angular and
+      # isn't reachable by Karma - plain node:test, run separately.
+      - name: Worker unit tests
+        run: npm run test:worker
+
       - name: Build
         run: npm run build
 

@@ -8,6 +8,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:worker": "node --test worker/index.test.mjs",
     "server": "node tools/serve-dist.js",
     "e2e": "node tools/e2e.js",
     "e2e:prod": "node tools/e2e.js --base=https://rangertrak.org --read-only",

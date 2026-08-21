@@ -1,0 +1,68 @@
+@use "../../../styles/typography" as type;
+
+.feedback {
+  display      : flex;
+  flex-direction: column;
+  gap          : 0.5rem;
+  max-width    : 480px;
+}
+
+.feedback__notice {
+  @include type.type-body-sm;
+  color: var(--rt-ink-2);
+}
+
+.feedback__label {
+  @include type.type-body-sm;
+  display      : flex;
+  flex-direction: column;
+  gap          : 0.2rem;
+  font-weight  : 600;
+  color        : var(--rt-ink);
+}
+
+.feedback__message,
+.feedback__contact {
+  @include type.type-body;
+  font-family   : inherit;
+  border        : 1px solid var(--rt-line-strong);
+  border-radius : var(--rt-radius);
+  background    : var(--rt-surface);
+  color         : var(--rt-ink);
+  padding       : 0.4rem 0.6rem;
+  resize        : vertical;
+}
+
+.feedback__error {
+  @include type.type-body-sm;
+  color: var(--rt-status-urgent, #B3261E);
+}
+
+.feedback__success {
+  @include type.type-body;
+  color: var(--rt-ink);
+}
+
+// Same recipe as .eButton in entry.component.scss / settings.component.scss - each of
+// those is its own component-scoped copy already, not a shared global class, so this one
+// is too rather than reaching for a class this component was never given.
+.eButton {
+  min-width        : 80px;
+  min-height       : var(--rt-tap-min);
+  padding          : 0 1.25rem;
+  font-weight      : 600;
+  border           : 1px solid var(--rt-line-strong);
+  border-radius    : var(--rt-radius);
+  background-color : transparent;
+  color            : var(--rt-ink);
+  cursor           : pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor : not-allowed;
+  }
+}
+
+.feedback__submit {
+  align-self: flex-start;
+}

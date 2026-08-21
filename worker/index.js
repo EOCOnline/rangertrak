@@ -25,9 +25,103 @@ const PMTILES_HEADERS = {
   'Cache-Control': 'public, max-age=31536000, immutable'
 }
 
+/**
+ * ADR D-15: in-app feedback, primary path. Creates a labeled GitHub issue on the public
+ * repo from a POSTed { message, contact? } body - decided 2026-08-20 (maintainer: "public
+ * issues, as-is... standard for an open-source project"), so this deliberately does NOT
+ * try to keep submissions private. The in-app form is responsible for telling the user
+ * that up front, before they submit; this endpoint just does what it's told.
+ *
+ * Requires a `GITHUB_FEEDBACK_TOKEN` Worker secret - a GitHub PAT (fine-grained, scoped to
+ * this repo only, Issues: Read and write) - set via
+ * `wrangler secret put GITHUB_FEEDBACK_TOKEN`, never committed. Missing/invalid token
+ * fails closed (503), which the frontend treats the same as "unreachable" and falls back
+ * to a direct GitHub issue link - see feedback.component.ts.
+ */
+const GITHUB_REPO = 'EOCOnline/rangertrak'
+const FEEDBACK_MESSAGE_MAX = 4000
+const FEEDBACK_CONTACT_MAX = 200
+
+async function handleFeedback(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'method not allowed' }, 405)
+  }
+
+  let body
+  try {
+    body = await request.json()
+  } catch {
+    return jsonResponse({ error: 'invalid JSON body' }, 400)
+  }
+
+  const message = typeof body.message === 'string' ? body.message.trim() : ''
+  const contact = typeof body.contact === 'string' ? body.contact.trim() : ''
+
+  if (!message) {
+    return jsonResponse({ error: 'message is required' }, 400)
+  }
+  if (message.length > FEEDBACK_MESSAGE_MAX) {
+    return jsonResponse({ error: `message exceeds ${FEEDBACK_MESSAGE_MAX} characters` }, 400)
+  }
+  if (contact.length > FEEDBACK_CONTACT_MAX) {
+    return jsonResponse({ error: `contact exceeds ${FEEDBACK_CONTACT_MAX} characters` }, 400)
+  }
+
+  if (!env.GITHUB_FEEDBACK_TOKEN) {
+    return jsonResponse({ error: 'feedback endpoint not configured' }, 503)
+  }
+
+  // Title is the message's first line, truncated - GitHub issue titles are meant to be
+  // short; the full message is always in the body regardless of how it truncates here.
+  const firstLine = message.split('\n')[0].trim()
+  const title = `Feedback: ${firstLine.length > 70 ? firstLine.slice(0, 67) + '...' : firstLine}`
+
+  const issueBody = [
+    message,
+    '',
+    '---',
+    `Submitted via in-app feedback.`,
+    `Contact: ${contact || '(not provided)'}`,
+  ].join('\n')
+
+  const ghResponse = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${env.GITHUB_FEEDBACK_TOKEN}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+      // GitHub's API rejects requests with no User-Agent.
+      'User-Agent': 'rangertrak-feedback-worker',
+    },
+    body: JSON.stringify({ title, body: issueBody, labels: ['feedback'] }),
+  })
+
+  if (!ghResponse.ok) {
+    // Never forward GitHub's own response body to the client - it can include detail
+    // about the token/permissions. Logged (Observability is enabled) for the maintainer,
+    // not shown to the submitter.
+    console.error(`GitHub issue creation failed: ${ghResponse.status} ${await ghResponse.text()}`)
+    return jsonResponse({ error: 'could not submit feedback' }, 502)
+  }
+
+  const issue = await ghResponse.json()
+  return jsonResponse({ url: issue.html_url }, 201)
+}
+
+function jsonResponse(data, status) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json' }
+  })
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url)
+
+    if (url.pathname === '/api/feedback') {
+      return handleFeedback(request, env)
+    }
 
     if (!url.pathname.endsWith('.pmtiles')) {
       return env.ASSETS.fetch(request)

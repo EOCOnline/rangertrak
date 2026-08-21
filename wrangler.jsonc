@@ -48,9 +48,10 @@
     // The Worker reaches the asset store through this binding.
     "binding": "ASSETS",
 
-    // Everything except the basemap is served straight from the asset store,
-    // untouched by the Worker. Only .pmtiles needs the Range shim.
-    "run_worker_first": ["/assets/maps/*"]
+    // Everything except the basemap and the feedback API is served straight from the
+    // asset store, untouched by the Worker. /api/feedback has no matching static file
+    // (it would 404 from the asset store) - it needs to reach worker/index.js instead.
+    "run_worker_first": ["/assets/maps/*", "/api/*"]
   },
 
   "observability": {
