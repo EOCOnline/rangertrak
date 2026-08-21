@@ -9,7 +9,7 @@
 // `import L from 'leaflet'` that FieldReportService no longer has.
 import 'leaflet'
 import 'leaflet.markercluster'
-import { savetiles, tileLayerOffline } from 'leaflet.offline' // https://github.com/allartk/leaflet.offline
+import { getStorageInfo, getTilePoints, savetiles, tileLayerOffline } from 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 //import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
 
@@ -49,6 +49,18 @@ const markerIcon = L.icon({
   shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png'
 })
 L.Marker.prototype.options.icon = iconDefault;
+
+// Offline-area sizing (roadmap: "Offline map area: saved-file sizes, anticipated MB").
+// Real tile bytes aren't known until a tile is actually downloaded, so the "anticipated"
+// number falls back to this - a typical 256px OSM PNG raster tile - until at least one real
+// tile has been saved, at which point the average of what's actually stored is used instead.
+const FALLBACK_TILE_BYTES = 15 * 1024
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
 
 
 @Component({
@@ -190,6 +202,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   // actually removes the maps instead of leaving them dangling.
   private afterViewInitTimer?: ReturnType<typeof setTimeout>
 
+  // Offline-area sizing: kept for teardown (.off()) in ngOnDestroy, since these listeners
+  // are registered directly on the layer/map objects, not through Angular's own bindings.
+  private offlineTileLayer?: ReturnType<typeof tileLayerOffline>
+  private refreshSavedAreaInfo?: () => void
+  private refreshEstimatedAreaInfo?: () => void
+
   ngAfterViewInit() {
     this.afterViewInitTimer = setTimeout(() => {
       this.lMap?.invalidateSize()
@@ -283,12 +301,14 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     //! REVIEW: Causes LOTS of "lmap:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
     tiles.addTo(this.lMap)
 
-    savetiles(tiles, {
+    const saveTilesControl = savetiles(tiles, {
       saveText: '💾 Save this area for offline use',
       rmText: '🗑️ Remove saved tiles',
       maxZoom: 19,
       parallel: 3
     }).addTo(this.lMap)
+    this.offlineTileLayer = tiles
+    this.wireOfflineAreaInfo(tiles, saveTilesControl)
 
     // TODO: Consider allowing addition of SVG overlay (of known trails and other overlays): https://leafletjs.com/reference.html#svgoverlay
     // TODO: ...or add D3 too: https://bl.ocks.org/xEviL/4921fff1d70f5601d159, w/ GeoJson: https://bl.ocks.org/xEviL/0c4f628645c6c21c8b3a https://github.com/topojson/us-atlas
@@ -390,6 +410,74 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   })
   .addTo(map);
   */
+
+  /**
+   * Roadmap "Offline map area" item, parts (1) and (2): shows each saved area's actual
+   * file size next to "Remove saved tiles", and an anticipated MB estimate next to "Save
+   * this area for offline use" before the user commits to a download. Both numbers are
+   * appended as plain text next to the plugin's own buttons rather than through an Angular
+   * template - `ControlSaveTiles` renders its own DOM outside Angular's view, the same way
+   * the rest of this plugin's UI already does, so there is no template-reactivity gap to
+   * close (see Sprint G's own scoping rule for why that matters here).
+   *
+   * `tiles`' URL template is what `getStorageInfo` keys off, and it never changes after
+   * construction, so it's read once and captured rather than re-read per refresh.
+   */
+  private wireOfflineAreaInfo(tiles: ReturnType<typeof tileLayerOffline>, control: L.Control) {
+    const container = control.getContainer()
+    if (!container) {
+      this.log.error('wireOfflineAreaInfo(): saveTilesControl has no container', this.id)
+      return
+    }
+    const urlTemplate = (tiles as any)._url as string
+
+    const savedInfo = this.document.createElement('div')
+    savedInfo.className = 'offline-area-info offline-area-info--saved'
+    container.appendChild(savedInfo)
+
+    const estimateInfo = this.document.createElement('div')
+    estimateInfo.className = 'offline-area-info offline-area-info--estimate'
+    container.insertBefore(estimateInfo, container.firstChild)
+
+    this.refreshSavedAreaInfo = () => {
+      getStorageInfo(urlTemplate).then((stored) => {
+        if (stored.length === 0) {
+          savedInfo.textContent = 'No tiles saved for offline use yet'
+          return
+        }
+        const bytes = stored.reduce((sum, t) => sum + (t.blob?.size ?? 0), 0)
+        savedInfo.textContent = `Saved: ${stored.length} tiles, ~${formatBytes(bytes)}`
+      }).catch((err) => this.log.error(`refreshSavedAreaInfo(): ${err}`, this.id))
+    }
+
+    this.refreshEstimatedAreaInfo = () => {
+      // Mirrors ControlSaveTiles' own _calculateTiles() for the options actually passed
+      // above (no saveWhatYouSee, no custom zoomlevels): a single zoom level, the current
+      // one, over the current visible bounds - not a private API, just not exported, so
+      // replicated here from its public building blocks (getTilePoints, map.project()).
+      const zoom = this.lMap.getZoom()
+      const bounds = this.lMap.getBounds()
+      const area = L.bounds(
+        this.lMap.project(bounds.getNorthWest(), zoom),
+        this.lMap.project(bounds.getSouthEast(), zoom)
+      )
+      const tileCount = getTilePoints(area, tiles.getTileSize()).length
+
+      getStorageInfo(urlTemplate).then((stored) => {
+        const avgBytes = stored.length > 0
+          ? stored.reduce((sum, t) => sum + (t.blob?.size ?? 0), 0) / stored.length
+          : FALLBACK_TILE_BYTES
+        estimateInfo.textContent = `Current view: ~${tileCount} tiles, ~${formatBytes(tileCount * avgBytes)}`
+      }).catch((err) => this.log.error(`refreshEstimatedAreaInfo(): ${err}`, this.id))
+    }
+
+    tiles.on('saveend', this.refreshSavedAreaInfo)
+    tiles.on('tilesremoved', this.refreshSavedAreaInfo)
+    this.lMap.on('moveend zoomend', this.refreshEstimatedAreaInfo)
+
+    this.refreshSavedAreaInfo()
+    this.refreshEstimatedAreaInfo()
+  }
 
   /**
    *   ---------------- Init OverView Map -----------------
@@ -888,6 +976,13 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   override ngOnDestroy(): void {
     super.ngOnDestroy()
     clearTimeout(this.afterViewInitTimer)
+    if (this.refreshSavedAreaInfo) {
+      this.offlineTileLayer?.off('saveend', this.refreshSavedAreaInfo)
+      this.offlineTileLayer?.off('tilesremoved', this.refreshSavedAreaInfo)
+    }
+    if (this.refreshEstimatedAreaInfo) {
+      this.lMap?.off('moveend zoomend', this.refreshEstimatedAreaInfo)
+    }
     this.lMap?.remove()
     this.overviewLMap?.remove()
   }

@@ -70,6 +70,17 @@
   }
 }
 
+// Roadmap "Offline map area" item: saved/estimated size lines injected next to the
+// buttons above by LmapComponent.wireOfflineAreaInfo(), plain text nodes appended to the
+// plugin's own (non-Angular) control container.
+:host ::ng-deep .savetiles.leaflet-bar .offline-area-info {
+  padding   : 0.35em 0.75em;
+  font-size : 0.75rem;
+  color     : var(--rt-ink-2);
+  background: var(--rt-surface);
+  white-space: nowrap;
+}
+
 // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor
 
 #Lmap-status {
