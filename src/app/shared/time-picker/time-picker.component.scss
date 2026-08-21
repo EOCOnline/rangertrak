@@ -23,7 +23,10 @@ with ($primary: #962f10,
   background   : var(--rt-surface);
   border       : 1px solid var(--rt-line);
   border-radius: var(--rt-radius);
-  padding      : 0 0.6em;
+  // Live review, 2026-08-22: "still too much horizontal white space" even after the infix
+  // width fix above - was 0.6em. Trimmed along with the divider/stepper margins and the
+  // MDC field padding below, together good for ~18% off this row's total width.
+  padding      : 0 0.45em;
 }
 
 .rt-datetime__field {
@@ -56,12 +59,25 @@ with ($primary: #962f10,
     padding-top   : 0.35em;
     padding-bottom: 0.35em;
   }
+
+  // Live review, 2026-08-22: the infix fix above shrunk the field to its input's own
+  // width, but `.mdc-text-field` itself still carries Material's structural `padding: 0
+  // 16px` around that - the single biggest remaining contributor to "too much horizontal
+  // white space" (16px on both sides of the date field, both sides of the time field - 48px
+  // total across the row, versus this row's ~88px/78px inputs). Confirmed by reading the
+  // compiled rule directly, same as the infix width and the mat-slide-toggle tokens
+  // elsewhere in this app - not guessed. 4px keeps a real gap from the outline without
+  // reserving space nothing here needs.
+  ::ng-deep .mdc-text-field {
+    padding-left : 4px;
+    padding-right: 4px;
+  }
 }
 
 .rt-datetime__divider {
   align-self: stretch;
   width     : 1px;
-  margin    : 0.4em 0.5em;
+  margin    : 0.4em 0.25em;
   background: var(--rt-line-strong);
   flex      : none;
 }
@@ -82,8 +98,8 @@ with ($primary: #962f10,
   display       : inline-flex;
   flex-direction: column;
   align-self    : center;
-  margin-left   : 0.4em;
-  padding-left  : 0.4em;
+  margin-left   : 0.25em;
+  padding-left  : 0.25em;
   border-left   : 1px solid var(--rt-line-strong);
 }
 

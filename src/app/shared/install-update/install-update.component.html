@@ -1,7 +1,8 @@
 @if (updateReady) {
   <!-- [stickyBottom] gets its own class so it can be pinned to the viewport (see .scss) -
        independent of whatever this instance is nested inside (currently only the footer). -->
-  <div class="rt-install-update rt-install-update--update" [class.rt-install-update--sticky-bottom]="stickyBottom">
+  <div class="rt-install-update rt-install-update--update" [class.rt-install-update--sticky-bottom]="stickyBottom"
+    [class.rt-install-update--detailed]="detailed">
     @if (detailed) {
       <button type="button" class="rt-install-update__main" (click)="onReload()"
         title="A new version of RangerTrak is ready. Reload now to start using it.">
@@ -28,7 +29,8 @@
     }
   </div>
 } @else if (installable) {
-  <div class="rt-install-update rt-install-update--install" [class.rt-install-update--sticky-bottom]="stickyBottom">
+  <div class="rt-install-update rt-install-update--install" [class.rt-install-update--sticky-bottom]="stickyBottom"
+    [class.rt-install-update--detailed]="detailed">
     @if (detailed) {
       <p class="rt-install-update__text">
         Install RangerTrak on this device to work offline, get a ready icon to return to,

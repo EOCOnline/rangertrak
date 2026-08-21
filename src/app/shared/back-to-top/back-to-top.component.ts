@@ -29,6 +29,20 @@ export class BackToTopComponent implements OnInit {
   /** Show once the user is a full viewport-height down - i.e. the top is genuinely gone. */
   private static readonly SHOW_AFTER_PX = 600
 
+  /**
+   * Live review, 2026-08-22: on a page whose total scroll room is only modestly more than
+   * SHOW_AFTER_PX (a Reports/Rangers page with a realistic, not enormous, amount of data),
+   * requiring both `scrolled > 600` and `scrollable > 600` left almost no scroll range where
+   * the button could actually show - confirmed live by walking scrollY in 30px steps: with
+   * scrollable=712, it was visible only for scrollY in (600, 712], a ~110px sliver right at
+   * the very bottom. Scrolling up "just a tad" from there reliably dropped below 600 and
+   * hid it - exactly the reported symptom ("only shows when the footer is visible, vanishes
+   * if scrolled up 30px"). The floor below scales the threshold down for shorter pages
+   * instead of using the same fixed 600px regardless of how much content there is.
+   */
+  private static readonly MIN_SCROLLABLE_PX = 300
+  private static readonly SHOW_AFTER_FRACTION = 0.4
+
   // A signal, not a plain field: this is written from a DOM event listener, which in a
   // zoneless app has no guaranteed path back into change detection otherwise (Sprint G).
   visible = signal(false)
@@ -55,7 +69,17 @@ export class BackToTopComponent implements OnInit {
     // never appears on a short page that only moved a little because of a soft keyboard
     // or an expanded disclosure.
     const scrollable = document.documentElement.scrollHeight - window.innerHeight
-    this.visible.set(scrolled > BackToTopComponent.SHOW_AFTER_PX && scrollable > BackToTopComponent.SHOW_AFTER_PX)
+    if (scrollable < BackToTopComponent.MIN_SCROLLABLE_PX) {
+      this.visible.set(false)
+      return
+    }
+    // Scales down for shorter pages rather than always requiring the full 600px - see the
+    // constants' own comment for the live-reported bug this replaced.
+    const threshold = Math.min(
+      BackToTopComponent.SHOW_AFTER_PX,
+      scrollable * BackToTopComponent.SHOW_AFTER_FRACTION
+    )
+    this.visible.set(scrolled > threshold)
   }
 
   toTop(): void {

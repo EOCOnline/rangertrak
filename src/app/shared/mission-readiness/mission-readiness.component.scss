@@ -53,8 +53,11 @@
   // Confirmed live: 20 lost to Leaflet's own internal panes (tile/overlay/marker, up to
   // ~650) once the mini-map is on-screen below the header - its container doesn't isolate
   // its own stacking context, so those pane z-indexes compete directly against this one
-  // instead of staying scoped to the map. High enough to clear that comfortably.
-  z-index      : 1000;
+  // instead of staying scoped to the map. 1000 (Leaflet's panes' own ceiling) still lost to
+  // the zoom +/- control specifically - `.leaflet-top`/`.leaflet-bottom` (leaflet.css) sit
+  // at exactly z-index:1000 too, a tie this element's later DOM position doesn't win.
+  // Comfortably above that now.
+  z-index      : 1100;
   min-width    : 240px;
   background   : var(--rt-surface);
   color        : var(--rt-ink);

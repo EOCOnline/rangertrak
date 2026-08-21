@@ -48,11 +48,15 @@
 // `position: sticky` replaces `fixed`), so this no longer needs to reserve dead
 // padding-bottom for a control that used to float outside normal flow.
 .rt-footer {
-  display    : flex;
-  align-items: center;
-  flex-wrap  : wrap;
-  gap        : 0.5rem;
-  margin-left: 1vw;
+  display     : flex;
+  align-items : center;
+  flex-wrap   : wrap;
+  gap         : 0.5rem;
+  margin-left : 1vw;
+  // Live review: .copyLeft (margin-left:auto, so it's the rightmost element despite its
+  // name) had no room of its own and sat flush against the viewport edge. Matches the
+  // existing left margin rather than inventing a new value.
+  margin-right: 1vw;
 }
 
 .rt-footer__left {

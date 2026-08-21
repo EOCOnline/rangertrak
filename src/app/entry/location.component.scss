@@ -189,6 +189,12 @@ $filledColor: var(--rt-surface-2);
     --mat-slide-toggle-unselected-handle-size: 10px;
     --mat-slide-toggle-pressed-handle-size   : 16px;
     --mat-slide-toggle-with-icon-handle-size : 14px;
+    // Live review, checked state: a pale halo (Material's hover/focus "state layer",
+    // `.mdc-switch__ripple`) was overflowing well past the track into the label text.
+    // Sized for the stock 40px touch target, untouched by any of the four rules above -
+    // confirmed by reading the compiled rule, not guessed, same as the track/handle ones.
+    // 24px keeps a real hover/focus target without spilling past this row's own height.
+    --mat-slide-toggle-state-layer-size      : 24px;
   }
 }
 

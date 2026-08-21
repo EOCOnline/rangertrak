@@ -79,8 +79,41 @@
 // help zone (Settings already IS the "more info" destination), so this is a plain
 // paragraph ahead of the same .rt-install-update__main button.
 .rt-install-update__text {
-  margin: 0 0 0.5rem;
+  margin: 0;
   @include type.type-body;
+}
+
+// Live review, 2026-08-22: `[detailed]` mode reused the compact pill's `border-radius:
+// 999px` unmodified. On a one-line label that reads as a pill; stretched around a
+// 3-4-line paragraph it becomes a stadium shape whose corner radius is half the box's own
+// height - tens of pixels - which was clipping the paragraph's own text at both edges
+// (confirmed against the maintainer's screenshot: "Install" reading as "stall", "uninstalled"
+// missing its leading "u"). This box's own explicit padding also used to be entirely
+// accidental - borrowed from the rounded corners' dead space - so it vanished along with
+// them. A real rounded-rect card, sized like the app's other cards, fixes both: this is the
+// old, friendlier layout's shape, on the current amber/notice tokens rather than the old
+// grey.
+.rt-install-update--detailed {
+  display      : flex;
+  align-items  : center;
+  gap          : 0.75em;
+  border-radius: var(--rt-radius-lg);
+  padding      : 0.75em 1em;
+}
+
+.rt-install-update--detailed .rt-install-update__text {
+  flex: 1 1 auto;
+}
+
+// Reads as its own button against the card now, rather than blending flush into it - the
+// old layout's button had the same distinct-from-card treatment (a light teal chip on a
+// white card); this is that same idea on --rt-notice-line, the deeper tone already used
+// for this state's border.
+.rt-install-update--detailed .rt-install-update__main {
+  flex         : none;
+  border-radius: var(--rt-radius);
+  background   : var(--rt-notice-line);
+  color        : var(--rt-notice-ink);
 }
 
 // E-57(1): replaces the old top-sticky `[fixed]` banner. Used once, on the footer's own
