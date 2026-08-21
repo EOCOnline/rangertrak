@@ -1,8 +1,8 @@
 //import dayjs from 'dayjs'
 import { CommonModule, DOCUMENT } from '@angular/common'
 import {
-  Component, computed, EventEmitter, Inject, Input, OnInit, Output, signal, ViewChild,
-  ChangeDetectionStrategy
+  Component, computed, EventEmitter, Inject, Input, OnChanges, OnInit, Output, signal,
+  SimpleChanges, ViewChild, ChangeDetectionStrategy
 } from '@angular/core'
 import { form, FormField } from '@angular/forms/signals'
 import { MatDatepickerModule } from '@angular/material/datepicker'
@@ -50,7 +50,7 @@ import {
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./time-picker.component.scss']
 })
-export class TimePickerComponent implements OnInit {
+export class TimePickerComponent implements OnInit, OnChanges {
   private timeModel = signal({ time: new Date(), timeOfDay: '' })
   public timeForm = form(this.timeModel)
 
@@ -127,10 +127,33 @@ export class TimePickerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Settings round-trip through localStorage as JSON, which has no date type, so
-    // opPeriodStart/End come back as ISO *strings* - and [initialDate] is typed Date, so
-    // nothing flags it. Calling getHours() on a string threw "is not a function" and took
-    // the whole Settings page down. Coerce at the boundary rather than trusting the type.
+    this.applyInitialDate()
+    this.log.verbose(`initialDate = ${this.initialDate} in ngInit`, this.id)
+  }
+
+  /**
+   * E-71: reacts to `[initialDate]` changing AFTER this component has already initialized
+   * - e.g. Settings' Operational Period end picker being clamped up to match a later start
+   * time. `[initialDate]` is otherwise only ever read once, in ngOnInit(), so without this
+   * a programmatic clamp would update the parent's model correctly but leave this picker's
+   * own displayed value silently stale until the page reloaded. Only fires for callers that
+   * actually bind `[initialDate]` in their template (Entry's own usage doesn't, and relies
+   * on ngOnInit's default `new Date()` instead) - `firstChange` is skipped since ngOnInit
+   * already applies the initial value once.
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialDate'] && !changes['initialDate'].firstChange) {
+      this.applyInitialDate()
+    }
+  }
+
+  /**
+   * Settings round-trip through localStorage as JSON, which has no date type, so
+   * opPeriodStart/End come back as ISO *strings* - and [initialDate] is typed Date, so
+   * nothing flags it. Calling getHours() on a string threw "is not a function" and took
+   * the whole Settings page down. Coerce at the boundary rather than trusting the type.
+   */
+  private applyInitialDate(): void {
     const initial = this.toDate(this.initialDate)
 
     const hours = initial.getHours().toString().padStart(2, '0');
@@ -138,8 +161,6 @@ export class TimePickerComponent implements OnInit {
     const timeString = `${hours}:${minutes}`;
 
     this.timeModel.set({ time: initial, timeOfDay: timeString })
-
-    this.log.verbose(`initialDate = ${this.initialDate} in ngInit`, this.id)
   }
 
   /**

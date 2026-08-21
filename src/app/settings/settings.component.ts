@@ -156,6 +156,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.log.verbose("ngInit done ", this.id)
   }
 
+  /**
+   * E-71. Maintainer, 2026-08-20: "the ending op period time should be the same or later,
+   * and set to the same if otherwise older." Enforced from both ends: moving the start past
+   * the current end pulls the end up to match (below); setting the end before the current
+   * start snaps it to the start (onNewTimeEventEnd). Relies on TimePickerComponent reacting
+   * to `[initialDate]` changing after its own init (its `ngOnChanges`) - without that, the
+   * clamp would be correct in `settingsModel`/`this.settings` but the end picker's own
+   * displayed value would silently disagree until the page was reloaded.
+   */
   onNewTimeEventStart(newTime: Date) {
     if (!this.settings) {
       this.log.error(`this.settings is null at onNewTimeEventStart`, this.id)
@@ -165,6 +174,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.settings.opPeriodStart = newTime
     this.opPeriodStart.set(newTime)
     this.settingsModel.update(m => ({ ...m, opPeriodStart: newTime }))
+
+    if (this.opPeriodEnd() < newTime) {
+      this.onNewTimeEventEnd(newTime)
+    }
   }
 
   onNewTimeEventEnd(newTime: Date) {
@@ -172,10 +185,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.log.error(`this.settings is null at onNewTimeEventEnd`, this.id)
       return
     }
-    this.log.verbose(`Got new end OpPeriod time: ${newTime}`, this.id)
-    this.settings.opPeriodEnd = newTime
-    this.opPeriodEnd.set(newTime)
-    this.settingsModel.update(m => ({ ...m, opPeriodEnd: newTime }))
+    const clamped = newTime < this.opPeriodStart() ? this.opPeriodStart() : newTime
+    this.log.verbose(`Got new end OpPeriod time: ${newTime}${clamped !== newTime ? ` (clamped to start: ${clamped})` : ''}`, this.id)
+    this.settings.opPeriodEnd = clamped
+    this.opPeriodEnd.set(clamped)
+    this.settingsModel.update(m => ({ ...m, opPeriodEnd: clamped }))
   }
 
   onBtnResetDefaults() {
