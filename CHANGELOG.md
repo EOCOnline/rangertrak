@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.31.0](https://github.com/EOCOnline/rangertrak/compare/v0.30.0...v0.31.0) (2026-08-21)
+
+
+### Features
+
+* **feedback:** in-app feedback endpoint, files public GitHub issues (ADR D-15) ([be2ad5a](https://github.com/EOCOnline/rangertrak/commit/be2ad5a1d6ca8134cee73d6e9ddc680545f16abb))
+
 ## [0.30.0](https://github.com/EOCOnline/rangertrak/compare/v0.29.0...v0.30.0) (2026-08-21)
 
 
