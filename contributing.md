@@ -1,5 +1,12 @@
 
-# RangerTrak Contributor Covenant Code of Conduct
+# Contributing to RangerTrak
+
+Before your first pull request, please read [CLA.md](CLA.md) and sign it as instructed there
+(a bot will prompt you on the PR). This keeps the project able to stay copyleft-licensed
+publicly while preserving the option of a separately licensed commercial tier later — it
+doesn't take away any rights to your own contribution.
+
+## RangerTrak Contributor Covenant Code of Conduct
 
 (Directly from https://www.contributor-covenant.org/ without changees, but likely serves ths august community's needs - all 1 of us...  ;-)
 Other examples:
