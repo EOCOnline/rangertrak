@@ -68,7 +68,6 @@
     "tslib": "^2.8.1",
     "utm": "^1.1.1",
     "xlsx": "^0.18.5",
-    "xlsx-style": "^0.8.13",
     "zone.js": "~0.16.0"
   },
   "devDependencies": {
