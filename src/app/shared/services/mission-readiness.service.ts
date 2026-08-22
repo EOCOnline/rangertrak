@@ -114,7 +114,7 @@ export class MissionReadinessService {
    * enough to do directly with the raw IndexedDB API, sidestepping the bundler issue
    * entirely rather than working around it.
    *
-   * Safety constraint that shapes this whole method: `LmapComponent`/`MiniLMapComponent`
+   * Safety constraint that shapes this whole method: `LmapComponent`/`MiniMapLeafletComponent`
    * elsewhere in the app open this exact database via leaflet.offline's own `openDB`,
    * which creates the `tileStore` object store the FIRST time the database is opened at
    * all (an `onupgradeneeded` with `oldVersion < 1`). If this method opened the database

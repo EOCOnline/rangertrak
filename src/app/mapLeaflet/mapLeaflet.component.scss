@@ -1,6 +1,6 @@
 // @ use '@material/switch/styles';
 
-.lmap-container {
+.mapLeaflet-container {
   position     : block;
   // position: relative;
   top          : 0;
@@ -12,12 +12,12 @@
   margin-bottom: 5px;
 }
 
-.lmap-frame {
+.mapLeaflet-frame {
   border: 2px solid black;
   height: 70vh; //100%;
 }
 
-#lmap-main {
+#mapLeaflet-main {
   height: 70vh;
 }
 
@@ -25,7 +25,7 @@
   font-weight: bold;
 }
 
-#lmap-overview {
+#mapLeaflet-overview {
   //position: absolute;
   position  : relative;
   float     : right;
@@ -43,7 +43,7 @@
 
 // Sprint B (25a item 5). `savetiles` renders its two actions as `.leaflet-bar` anchors,
 // and Leaflet sizes those as 26px icon squares (`width/height/line-height: 26px`). The
-// labels set in lmap.component.ts are whole sentences, so both wrapped out of their
+// labels set in mapLeaflet.component.ts are whole sentences, so both wrapped out of their
 // squares and printed on top of each other and of the zoom control.
 //
 // Keeping the words and sizing the buttons to fit, rather than cutting the labels back to
@@ -51,18 +51,18 @@
 // counts its tiles as a readiness signal), so it is worth two legible buttons.
 :host ::ng-deep .savetiles.leaflet-bar {
   a {
-    display     : flex;
-    align-items : center;
-    width       : auto;
-    height      : auto;
-    min-height  : var(--rt-tap-min);
-    padding     : 0 0.75em;
-    line-height : 1.25;
-    white-space : nowrap;
-    text-align  : left;
-    font-size   : 0.85rem;
-    background  : var(--rt-surface);
-    color       : var(--rt-ink);
+    display    : flex;
+    align-items: center;
+    width      : auto;
+    height     : auto;
+    min-height : var(--rt-tap-min);
+    padding    : 0 0.75em;
+    line-height: 1.25;
+    white-space: nowrap;
+    text-align : left;
+    font-size  : 0.85rem;
+    background : var(--rt-surface);
+    color      : var(--rt-ink);
   }
 
   a:hover {
@@ -74,10 +74,10 @@
 // buttons above by LmapComponent.wireOfflineAreaInfo(), plain text nodes appended to the
 // plugin's own (non-Angular) control container.
 :host ::ng-deep .savetiles.leaflet-bar .offline-area-info {
-  padding   : 0.35em 0.75em;
-  font-size : 0.75rem;
-  color     : var(--rt-ink-2);
-  background: var(--rt-surface);
+  padding    : 0.35em 0.75em;
+  font-size  : 0.75rem;
+  color      : var(--rt-ink-2);
+  background : var(--rt-surface);
   white-space: nowrap;
 }
 

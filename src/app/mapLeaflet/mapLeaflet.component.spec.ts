@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LmapComponent } from './lmap.component';
+import { LmapComponent } from './mapLeaflet.component';
 
 describe('LmapComponent', () => {
   let component: LmapComponent;
@@ -8,9 +8,9 @@ describe('LmapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ LmapComponent ]
+      imports: [LmapComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -30,12 +30,12 @@ describe('LmapComponent', () => {
   // their own .remove() proves the fix's actual mechanism, not just that a method exists.
   it('removes both Leaflet instances on destroy (E-64 teardown fix)', () => {
     const lMap = (component as unknown as { lMap: { remove: () => void } }).lMap
-    const overviewLMap = (component as unknown as { overviewLMap: { remove: () => void } }).overviewLMap
+    const overviewMapLeaflet = (component as unknown as { overviewMapLeaflet: { remove: () => void } }).overviewMapLeaflet
     expect(lMap).toBeTruthy()
-    expect(overviewLMap).toBeTruthy()
+    expect(overviewMapLeaflet).toBeTruthy()
 
     const lMapRemoveSpy = spyOn(lMap, 'remove').and.callThrough()
-    const overviewRemoveSpy = spyOn(overviewLMap, 'remove').and.callThrough()
+    const overviewRemoveSpy = spyOn(overviewMapLeaflet, 'remove').and.callThrough()
 
     fixture.destroy()
 

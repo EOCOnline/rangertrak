@@ -64,12 +64,12 @@ function formatBytes(bytes: number): string {
 
 
 @Component({
-  selector: 'rangertrak-lmap',
+  selector: 'rangertrak-mapLeaflet',
   standalone: true,
   imports: [DisclosureComponent],
-  templateUrl: './lmap.component.html',
+  templateUrl: './mapLeaflet.component.html',
   styleUrls: [
-    './lmap.component.scss'
+    './mapLeaflet.component.scss'
     //,     "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.css", // REVIEW: also added to angular.json: needed there?
     // "../../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css" // (not needed if you use your own iconCreateFunction instead of the default one)
     //'../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)
@@ -92,10 +92,10 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   @ViewChild('overviewContainer', { static: true }) private overviewContainer!: ElementRef<HTMLDivElement>
 
   private lMap!: L.Map
-  private overviewLMap!: L.Map
+  private overviewMapLeaflet!: L.Map
 
   // TODO: Leaflet's version of following?
-  overviewLMapType = { cur: 2, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
+  overviewMapLeafletType = { cur: 2, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
 
   // https://leafletjs.com/reference.html#icon
   mapCursor = L.icon({
@@ -148,18 +148,18 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     super.ngOnInit()
     this.log.excessive("ngOnInit()", this.id)
 
-    this.initMainMap()  //! REVIEW: Causes LOTS of "lmap:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
+    this.initMainMap()  //! REVIEW: Causes LOTS of "mapLeaflet:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
 
     if (this.hasOverviewMap) {
       this.initOverviewMap()
 
       // Highlight main map location via a rectangle on the overview map
       let rectangle = L.rectangle(this.lMap.getBounds(), { color: 'Blue', fillOpacity: 0.07, weight: 1 })
-      rectangle.addTo(this.overviewLMap)
+      rectangle.addTo(this.overviewMapLeaflet)
 
       this.lMap.on("move", () => {
-        //if (this.overviewLMap instanceof L.Map) {
-        this.overviewLMap.setView(this.lMap.getCenter()!,
+        //if (this.overviewMapLeaflet instanceof L.Map) {
+        this.overviewMapLeaflet.setView(this.lMap.getCenter()!,
           this.clamp(
             this.lMap.getZoom() -
             (this.settings.leaflet.overviewDifference),
@@ -193,7 +193,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    *
    * Leaflet measures its container when the map is constructed, and ngOnInit runs
    * before the view is laid out. On a full page load that happened to work; on a
-   * client-side navigation to /lmap the container was still 0x0, so Leaflet loaded
+   * client-side navigation to /mapLeaflet the container was still 0x0, so Leaflet loaded
    * no tiles and the page looked blank until a manual refresh. invalidateSize()
    * re-measures. The extra tick lets the browser finish layout first - calling it
    * synchronously here still measures 0 in some browsers.
@@ -211,7 +211,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   ngAfterViewInit() {
     this.afterViewInitTimer = setTimeout(() => {
       this.lMap?.invalidateSize()
-      this.overviewLMap?.invalidateSize()
+      this.overviewMapLeaflet?.invalidateSize()
     })
   }
 
@@ -298,7 +298,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     })
 
     // TODO!
-    //! REVIEW: Causes LOTS of "lmap:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
+    //! REVIEW: Causes LOTS of "mapLeaflet:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
     tiles.addTo(this.lMap)
 
     const saveTilesControl = savetiles(tiles, {
@@ -339,7 +339,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     // Sprint G: this.zoom was previously only set once, above, at init - never on an
     // actual zoom, so the "Zoom:" display went stale as soon as the user touched the
-    // map. Mirrors mini-lmap.component.ts's zoomend handler.
+    // map. Mirrors mini-mapLeaflet.component.ts's zoomend handler.
     this.lMap.on('zoomend', () => {
       if (this.lMap) {
         this.zoom.set(this.lMap.getZoom() ?? this.settings.leaflet.defZoom)
@@ -492,7 +492,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     // instantiate the overview map without controls
     // https://leafletjs.com/reference.html#map-example
-    this.overviewLMap = L.map(this.overviewContainer.nativeElement, {
+    this.overviewMapLeaflet = L.map(this.overviewContainer.nativeElement, {
       center: [this.settings.defLat, this.settings.defLng],
       zoom: this.settings.leaflet.defZoom,
       zoomControl: false,
@@ -501,7 +501,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       dragging: false,
     })
 
-    this.overviewMap = this.overviewLMap
+    this.overviewMap = this.overviewMapLeaflet
 
     const overviewTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: this.settings.leaflet.overviewMaxZoom,
@@ -509,11 +509,11 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
-    overviewTiles.addTo(this.overviewLMap)
+    overviewTiles.addTo(this.overviewMapLeaflet)
 
-    L.DomUtil.addClass(this.overviewLMap.getContainer(), 'crosshair-cursor-enabled')  //  Enable crosshairs
+    L.DomUtil.addClass(this.overviewMapLeaflet.getContainer(), 'crosshair-cursor-enabled')  //  Enable crosshairs
 
-    // if (this.overviewLMap === null || this.overviewLMap === undefined) {
+    // if (this.overviewMapLeaflet === null || this.overviewMapLeaflet === undefined) {
     //   this.log.error(`Could not create overview map!`, this.id)
     //   return
     // }
@@ -523,9 +523,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // }
 
     // TODO: Switch map type on click on the overview map
-    /* this.overviewLMap.addListener("click", () => {
+    /* this.overviewMapLeaflet.addListener("click", () => {
       let mapId = this.overviewMapType.cur++ % 4
-      this.overviewLMap.setMapTypeId(this.overviewMapType.types.type[mapId])
+      this.overviewMapLeaflet.setMapTypeId(this.overviewMapType.types.type[mapId])
       this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
     })*/
 
@@ -533,12 +533,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     //   content: "Mouse location...",
     //   position: { lat: this.settings.defLat, lng: this.settings.defLng },
     // })
-    //infowindow.open(this.overviewLMap);
+    //infowindow.open(this.overviewMapLeaflet);
 
-    this.captureLMoveAndZoom(this.overviewLMap)
+    this.captureLMoveAndZoom(this.overviewMapLeaflet)
 
-    // this.overviewLMap.on("bounds_changed", () => {
-    //   this.overviewLMap!.setView(this.lMap.getCenter(), this.clamp(
+    // this.overviewMapLeaflet.on("bounds_changed", () => {
+    //   this.overviewMapLeaflet!.setView(this.lMap.getCenter(), this.clamp(
     //     this.lMap!.getZoom()! - (this.settings.leaflet.overviewDifference),
     //     (this.settings.leaflet.overviewMaxZoom),
     //     (this.settings.leaflet.overviewMinZoom)
@@ -721,7 +721,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     this.log.excessive(`addMarker at ${lat}. ${lng}, ${title}`, this.id)
 
     if (!lat || !lng || !this.lMap) {
-      console.error(`bad lat: ${lat} or lng: ${lng} or lmap: ${this.lMap}`)
+      console.error(`bad lat: ${lat} or lng: ${lng} or mapLeaflet: ${this.lMap}`)
     } else {
       let _marker = new L.Marker([lat, lng], {
         icon: iconDefault
@@ -984,6 +984,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       this.lMap?.off('moveend zoomend', this.refreshEstimatedAreaInfo)
     }
     this.lMap?.remove()
-    this.overviewLMap?.remove()
+    this.overviewMapLeaflet?.remove()
   }
 }

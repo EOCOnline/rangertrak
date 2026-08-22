@@ -240,7 +240,7 @@ async function checkMapEngineSwitch() {
   console.log('\nMap page: the switch mounts exactly one engine at a time, never both (E-64)')
   await goto('/map')
   const before = await evaluate(`(() => ({
-    leaflet: !!document.querySelector('.lmap-container'),
+    leaflet: !!document.querySelector('.mapLeaflet-container'),
     maplibre: !!document.querySelector('.map-container'),
   }))()`)
   check('Leaflet is the default engine on load', before.leaflet && !before.maplibre, true)
@@ -253,7 +253,7 @@ async function checkMapEngineSwitch() {
   await sleep(2500) // dynamic import() of the MapLibre chunk + map construction
 
   const afterSwitch = await evaluate(`(() => ({
-    leaflet: !!document.querySelector('.lmap-container'),
+    leaflet: !!document.querySelector('.mapLeaflet-container'),
     maplibre: !!document.querySelector('.map-container'),
   }))()`)
   check('flipping the switch mounts MapLibre and unmounts Leaflet', !afterSwitch.leaflet && afterSwitch.maplibre, true)
@@ -266,7 +266,7 @@ async function checkMapEngineSwitch() {
   await sleep(1500)
 
   const afterFlipBack = await evaluate(`(() => ({
-    leaflet: !!document.querySelector('.lmap-container'),
+    leaflet: !!document.querySelector('.mapLeaflet-container'),
     maplibre: !!document.querySelector('.map-container'),
   }))()`)
   check('flipping back mounts Leaflet and unmounts MapLibre', afterFlipBack.leaflet && !afterFlipBack.maplibre, true)
@@ -370,9 +370,9 @@ async function checkBundleZip(fx) {
  *
  * Root cause was a genuinely surprising one, worth guarding precisely rather than just
  * "the map looks about right": #Entry__LMinimap-subhead floats right inside the "Current
- * Location" heading (.Entry__LMap-head), and without `display: flow-root` containing it,
+ * Location" heading (.Entry__MapLeaflet-head), and without `display: flow-root` containing it,
  * the float escaped past the heading's own bottom edge into the FOLLOWING sibling
- * (.lmap-frame)'s formatting context - shrinking the space Leaflet measured for its
+ * (.mapLeaflet-frame)'s formatting context - shrinking the space Leaflet measured for its
  * container at construction time. Leaflet measures once and never re-measures without an
  * explicit invalidateSize(), so the wrong width was permanent for the life of the page,
  * not a transient layout hiccup - confirmed present at desktop and tablet width too, not
@@ -382,10 +382,10 @@ async function checkMiniMapFillsItsBox() {
   console.log('\nEntry mini-map fills its box; the "Current Location" subhead float stays contained (E-67)')
   await goto('/')
   const r = await evaluate(`(() => {
-    const frame = document.querySelector('.lmap-frame')
+    const frame = document.querySelector('.mapLeaflet-frame')
     const minimap = document.getElementById('entry-minimap')
     const subhead = document.getElementById('Entry__LMinimap-subhead')
-    const head = document.querySelector('.Entry__LMap-head')
+    const head = document.querySelector('.Entry__MapLeaflet-head')
     return {
       frameW: frame ? Math.round(frame.getBoundingClientRect().width) : null,
       minimapW: minimap ? Math.round(minimap.getBoundingClientRect().width) : null,

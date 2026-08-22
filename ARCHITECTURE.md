@@ -12,10 +12,10 @@ RangerTrak ships **two independent map engines**. This is deliberate, not a migr
 half-finished: they have genuinely different offline behaviour, and which one is the right
 default is still an open question for the Entry page.
 
-|                      | Leaflet (`/lmap`)                                            | MapLibre + PMTiles (`/map`)                                        |
+|                      | Leaflet (`/mapLeaflet`)                                      | MapLibre + PMTiles (`/map`)                                        |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ |
 | Full-page component  | `LmapComponent`                                              | `MapComponent`                                                     |
-| Mini-map component   | `MiniLMapComponent`                                          | `MiniMapComponent`                                                 |
+| Mini-map component   | `MiniMapLeafletComponent`                                    | `MiniMapComponent`                                                 |
 | Basemap source       | OpenStreetMap tile servers, over the network                 | `src/assets/maps/vashon.pmtiles`, bundled in the app               |
 | Works offline        | Only for areas already viewed or explicitly saved            | **Yes, for the whole extract** — but see the caching caveat below  |
 | Coverage             | Anywhere in the world                                        | Vashon Island pilot extract only; panning outside shows background |
@@ -25,7 +25,7 @@ default is still an open question for the Entry page.
 
 ### Open decision: which engine powers the Entry page mini-map
 
-The Entry form has **one** mini-map slot. It currently uses `MiniLMapComponent`
+The Entry form has **one** mini-map slot. It currently uses `MiniMapLeafletComponent`
 (Leaflet). `MiniMapComponent` (MapLibre) is built and working but not wired into
 Entry's template — swapping them is a small change.
 
@@ -239,7 +239,7 @@ classDiagram
     namespace EagerRoute {
         class EntryComponent
         class LocationComponent
-        class MiniLMapComponent
+        class MiniMapLeafletComponent
     }
 
     namespace LazyRoutes {
@@ -284,7 +284,7 @@ classDiagram
     APP_ROUTES ..> X404Component : Lazy route
 
     EntryComponent --> LocationComponent
-    EntryComponent ..> MiniLMapComponent : Deferred (on idle)
+    EntryComponent ..> MiniMapLeafletComponent : Deferred (on idle)
     EntryComponent ..> FieldReportService
     EntryComponent ..> RangerService
     EntryComponent ..> SettingsService
@@ -292,7 +292,7 @@ classDiagram
 
     LocationComponent ..> GeocodingProvider
 
-    MiniLMapComponent --|> AbstractMap
+    MiniMapLeafletComponent --|> AbstractMap
     LmapComponent --|> AbstractMap
 
     FieldReportsComponent ..> FieldReportService

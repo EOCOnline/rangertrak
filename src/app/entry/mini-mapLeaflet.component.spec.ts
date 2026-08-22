@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MiniLMapComponent } from './mini-lmap.component';
+import { MiniMapLeafletComponent } from './mini-mapLeaflet.component';
 
-describe('MiniLMapComponent', () => {
-  let component: MiniLMapComponent;
-  let fixture: ComponentFixture<MiniLMapComponent>;
+describe('MiniMapLeafletComponent', () => {
+  let component: MiniMapLeafletComponent;
+  let fixture: ComponentFixture<MiniMapLeafletComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ MiniLMapComponent ]
+      imports: [MiniMapLeafletComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MiniLMapComponent);
+    fixture = TestBed.createComponent(MiniMapLeafletComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,6 +1,6 @@
 // Minimal static file server for previewing the production build locally, with SPA
 // fallback (serves index.html for any path that isn't a real file) so direct navigation
-// or a page refresh on a client-side route (/lmap, /map, /reports, /rangers, /settings,
+// or a page refresh on a client-side route (/mapLeaflet, /map, /reports, /rangers, /settings,
 // /log) doesn't 404 - Angular's router only ever runs client-side, so the server has to
 // hand back index.html for it to take over. Also supports HTTP Range requests, needed
 // for the PMTiles map (the pmtiles library fetches the basemap via byte ranges).

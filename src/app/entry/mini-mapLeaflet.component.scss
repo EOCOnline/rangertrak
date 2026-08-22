@@ -1,5 +1,5 @@
-@use "../../styles/typography" as type;
-@use "../../styles/breakpoints" as bp;
+@use "../../styles/typography"as type;
+@use "../../styles/breakpoints"as bp;
 
 // Width was commented out here (`//width: 35vw`) even though `.minimap-placeholder`
 // (entry.component.scss), which this element is explicitly meant to mirror so nothing
@@ -7,20 +7,20 @@
 // container's rendered width came from Leaflet/the browser's own shrink-to-fit float
 // sizing instead, coincidentally close enough that the mismatch went unnoticed. Restored
 // to match its mirror, and given the same tablet-down size reduction - see
-// entry.component.scss's .enter__top-group/mini-lmap and .minimap-placeholder for the
+// entry.component.scss's .enter__top-group/mini-mapLeaflet and .minimap-placeholder for the
 // full maintainer request ("map should go just under the where section... reduce to ~30%
 // of the original size as the screen size shrinks"). The reordering itself has to live on
-// the `<mini-lmap>` host element in entry.component.scss, not here - `order` on this div
-// (one level inside <mini-lmap>'s own view) is inert; found live, not guessed.
-.lmap-container {
-  display               : block;
-  float                 : right;
-  width                 : 35vw;
-  background-color      : var(--rt-surface-2);
-  margin-left           : 16px;
-  margin-right          : 16px;
-  border-radius         : 5px;
-  border                : 2px solid black;
+// the `<mini-mapLeaflet>` host element in entry.component.scss, not here - `order` on this div
+// (one level inside <mini-mapLeaflet>'s own view) is inert; found live, not guessed.
+.mapLeaflet-container {
+  display         : block;
+  float           : right;
+  width           : 35vw;
+  background-color: var(--rt-surface-2);
+  margin-left     : 16px;
+  margin-right    : 16px;
+  border-radius   : 5px;
+  border          : 2px solid black;
 
   // 2026-08-21: matches .minimap-placeholder's own tablet-down update in
   // entry.component.scss - see its comment for why 10.5vw (30% of the desktop float width)
@@ -30,7 +30,7 @@
   }
 }
 
-.lmap-frame {
+.mapLeaflet-frame {
   //height: 20vh; //100%;
   width: 100%;
 }
@@ -65,7 +65,7 @@
 // E-67: `display: flow-root` establishes a new block formatting context, which contains
 // the floated subhead below (#Entry__LMinimap-subhead) inside this header. Without it, the
 // float escaped past this element's own bottom edge into the FOLLOWING sibling
-// (.lmap-frame)'s layout - confirmed by measurement, not guessed: the subhead's rendered
+// (.mapLeaflet-frame)'s layout - confirmed by measurement, not guessed: the subhead's rendered
 // box extended to y=356 against a 29px-tall header, and the Leaflet map div measured
 // exactly 338px wide the instant this was added, versus 122px (36% of its box) without it.
 // Leaflet measures its container's width ONCE at construction and never re-measures
@@ -76,10 +76,10 @@
 // longer wanted) - flow-root is kept regardless, harmless with nothing left to contain
 // and cheap insurance against the same class of bug if this header ever gets a float
 // again.
-.Entry__LMap-head {
-  padding   : 0 5px;
-  margin    : auto;
-  display   : flow-root;
+.Entry__MapLeaflet-head {
+  padding: 0 5px;
+  margin : auto;
+  display: flow-root;
 
   // Maintainer, 2026-08-20: "goes way small[er] than it needs to" - live measurement
   // found the map TILES were sized correctly (10.5vh, as scoped), but this un-sized `<h2>`
@@ -97,7 +97,7 @@
 
 // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor
 
-.Entry__LMap-footer {
+.Entry__MapLeaflet-footer {
   padding: 5px;
 }
 
@@ -106,19 +106,19 @@
 // hiding it was redundant. Maintainer: the text disappearing once the map reflows under
 // Where reads as broken, not redundant - this is the map's own last-clicked/hovered
 // position, not necessarily what's in the Where fields. Kept visible, but shrunk the same
-// way .Entry__LMap-head is above - that's what the wrapping/overflow this was originally
+// way .Entry__MapLeaflet-head is above - that's what the wrapping/overflow this was originally
 // hiding to fix actually needed.
-.Entry__LMap-footer-coords {
+.Entry__MapLeaflet-footer-coords {
   @include bp.tablet-down {
     @include type.type-label;
   }
 }
 
 // E-46: was #Entry__Minimap-status - missing the "L" in "LMinimap" that the actual
-// element id (see mini-lmap.component.html) carries, so this rule never matched
+// element id (see mini-mapLeaflet.component.html) carries, so this rule never matched
 // anything and the fade never fired. This is the cause of the pre-existing
 // `//! BUG: doesn't work?!` comment that used to sit on the resetMaterialFadeAnimation()
-// call in mini-lmap.component.ts.
+// call in mini-mapLeaflet.component.ts.
 #Entry__LMinimap-status {
   opacity  : 0;
   animation: fadeout 4s ease-out;

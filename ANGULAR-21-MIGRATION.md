@@ -126,7 +126,7 @@ constructor() {
 #### 7.2 Components Priority List
 1. Shared components (Header, Footer, Navbar)
 2. Core components (Entry, FieldReports, Rangers)
-3. Map components (GMap, LMap)
+3. Map components (GMap, MapLeaflet)
 4. Settings components
 5. Utility components
 

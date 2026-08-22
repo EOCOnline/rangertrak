@@ -5,13 +5,13 @@ Debugger attached.
 Γ£ö Browser application bundle generation complete.
 Γ£ö Browser application bundle generation complete.
 
-Warning: D:\Projects\EOC.online\RangerTrak\rangertrak\src\app\entry\mini-lmap.component.ts depends on 'leaflet'. CommonJS or AMD dependencies can cause optimization bailouts.
+Warning: D:\Projects\EOC.online\RangerTrak\rangertrak\src\app\entry\mini-mapLeaflet.component.ts depends on 'leaflet'. CommonJS or AMD dependencies can cause optimization bailouts.
 For more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies
 
-Warning: D:\Projects\EOC.online\RangerTrak\rangertrak\src\app\entry\mini-lmap.component.ts depends on 'leaflet.markercluster'. CommonJS or AMD dependencies can cause optimization bailouts.
+Warning: D:\Projects\EOC.online\RangerTrak\rangertrak\src\app\entry\mini-mapLeaflet.component.ts depends on 'leaflet.markercluster'. CommonJS or AMD dependencies can cause optimization bailouts.
 For more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies
 
-Warning: D:\Projects\EOC.online\RangerTrak\rangertrak\src\app\lmap\lmap.component.ts depends on 'leaflet.offline'. CommonJS or AMD dependencies can cause optimization bailouts.
+Warning: D:\Projects\EOC.online\RangerTrak\rangertrak\src\app\mapLeaflet\mapLeaflet.component.ts depends on 'leaflet.offline'. CommonJS or AMD dependencies can cause optimization bailouts.
 For more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies
 
 

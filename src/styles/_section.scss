@@ -7,20 +7,20 @@
 //  live, not speculatively in the same pass.
 // ─────────────────────────────────────────────────────────────────────────────
 
-@use './typography' as type;
+@use './typography'as type;
 
 @mixin section-header {
   @include type.type-title;
-  color: var(--rt-ink);
-  margin: 1.5rem 0 0.5rem;
+  color         : var(--rt-ink);
+  margin        : 1.5rem 0 0.5rem;
   padding-bottom: 0.25rem;
-  border-bottom: 2px solid var(--rt-accent);
+  border-bottom : 2px solid var(--rt-accent);
   // E-69: a float shortens a block's line boxes but not its border box, so without this
   // the border-bottom ran under a floated sibling (Entry's mini-map) and re-emerged past
   // it. flow-root establishes a BFC, whose border box is required not to overlap a float -
-  // same trick already used for the same class of bug at mini-lmap.component.scss's
-  // .Entry__LMap-head (E-67).
-  display: flow-root;
+  // same trick already used for the same class of bug at mini-mapLeaflet.component.scss's
+  // .Entry__MapLeaflet-head (E-67).
+  display       : flow-root;
 }
 
 // A heading INSIDE a section (Settings' Maps page has three: Leaflet / Geocoding /
@@ -31,14 +31,14 @@
 @mixin subsection-header {
   @include type.type-body;
   font-weight: 600;
-  color: var(--rt-ink-2);
-  margin: 1rem 0 0.35rem;
+  color      : var(--rt-ink-2);
+  margin     : 1rem 0 0.35rem;
 }
 
 // Grouping cue for a section's fields, replacing the tinted-background containers E-47
 // flagged as not earning their place (ADR D-39) - a left rule reads as "these fields
 // belong to the header above" without needing field chrome to line up with a fill.
 @mixin section-group {
-  border-left: 3px solid var(--rt-line);
+  border-left : 3px solid var(--rt-line);
   padding-left: var(--rt-gap);
 }

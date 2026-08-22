@@ -53,17 +53,17 @@ L.Marker.prototype.options.icon = iconDefault;
 
 
 @Component({
-  selector: 'mini-lmap',
+  selector: 'mini-mapLeaflet',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './mini-lmap.component.html',
-  styleUrls: ['./mini-lmap.component.scss',
+  templateUrl: './mini-mapLeaflet.component.html',
+  styleUrls: ['./mini-mapLeaflet.component.scss',
     '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)]
   changeDetection: ChangeDetectionStrategy.Eager,
   // Deliberately NOT providing SettingsService: it is providedIn:'root' and a second
   // instance here would diverge from everyone else's. See BUG-2 in entry.component.ts.
 })
-export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {
+export class MiniMapLeafletComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {
 
   _location = undefinedLocation
   // Use setter get notification of new locations from parent entry form (pg 182 & 188)
@@ -85,7 +85,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
         // Expected: an @Input setter runs before ngOnInit, which is where the map
         // is created. Stash the location and stop - the tail of ngOnInit replays
         // it onto the map. Calling addMarker() here anyway is what produced the
-        // "addMarker(): bad lat ... lmap: undefined" error on every Entry load.
+        // "addMarker(): bad lat ... mapLeaflet: undefined" error on every Entry load.
         this.log.verbose(`Location arrived before the map was built; ngOnInit will place it.`, this.id)
         return
       }
@@ -116,14 +116,14 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   // static: true - the div is unconditional in the template, and the map is built in
   // ngOnInit. Resolved from this component's own view, not by DOM id: Leaflet resolves a
   // string container globally, and this minimap shared id="map" with two full-page maps,
-  // so navigating Entry -> /lmap handed Leaflet *this* element. See D-30.
+  // so navigating Entry -> /mapLeaflet handed Leaflet *this* element. See D-30.
   @ViewChild('mapContainer', { static: true }) private mapContainer!: ElementRef<HTMLDivElement>
 
   private lMap!: L.Map
-  private overviewLMap!: L.Map
+  private overviewMapLeaflet!: L.Map
 
   // TODO: Leaflet's version of following?
-  overviewLMapType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
+  overviewMapLeafletType = { cur: 0, types: { type: ['roadmap', 'terrain', 'satellite', 'hybrid',] } }
 
   myMarkerCluster = new window.L.MarkerClusterGroup()
   //myMarkers: L.Marker[] = []
@@ -222,7 +222,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
   }
 
   override initMainMap() {
-    //!Gets: Leaflet MiniMap Component: InitMap(): map not a leaflet or google map - ignoring as uninitialized?  i.e., this.map is NOT yet an instance of LMap...
+    //!Gets: Leaflet MiniMap Component: InitMap(): map not a leaflet or google map - ignoring as uninitialized?  i.e., this.map is NOT yet an instance of MapLeaflet...
     // ! REVIEW: Does this make a copy (that devolves) or a reference (always in sync)
     this.map = this.lMap
     super.initMainMap()
@@ -298,8 +298,8 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       this.initOverviewMap()
 
       this.lMap.on("move", () => {
-        if (this.overviewLMap instanceof L.Map) {
-          this.overviewLMap.setView(this.lMap.getCenter()!,
+        if (this.overviewMapLeaflet instanceof L.Map) {
+          this.overviewMapLeaflet.setView(this.lMap.getCenter()!,
             this.clamp(
               this.lMap.getZoom() -
               (this.settings.leaflet.overviewDifference),
@@ -340,7 +340,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
 
     // instantiate the overview map without controls
     // https://leafletjs.com/reference.html#map-example
-    this.overviewLMap = L.map('overview', {
+    this.overviewMapLeaflet = L.map('overview', {
       center: [this.settings.defLat, this.settings.defLng],
       zoom: this.settings.leaflet.defZoom,
       zoomControl: false,
@@ -349,7 +349,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       dragging: false,
     })
 
-    this.overviewMap = this.overviewLMap
+    this.overviewMap = this.overviewMapLeaflet
 
     const overviewTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: this.settings.leaflet.overviewMaxZoom,
@@ -357,9 +357,9 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
 
-    overviewTiles.addTo(this.overviewLMap)
+    overviewTiles.addTo(this.overviewMapLeaflet)
 
-    // if (this.overviewLMap === null || this.overviewLMap === undefined) {
+    // if (this.overviewMapLeaflet === null || this.overviewMapLeaflet === undefined) {
     //   this.log.error(`Could not create overview map!`, this.id)
     //   return
     // }
@@ -369,9 +369,9 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     // }
 
     // TODO: Switch map type on click on the overview map
-    /* this.overviewLMap.addListener("click", () => {
+    /* this.overviewMapLeaflet.addListener("click", () => {
       let mapId = this.overviewMapType.cur++ % 4
-      this.overviewLMap.setMapTypeId(this.overviewMapType.types.type[mapId])
+      this.overviewMapLeaflet.setMapTypeId(this.overviewMapType.types.type[mapId])
       this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
     })*/
 
@@ -379,12 +379,12 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     //   content: "Mouse location...",
     //   position: { lat: this.settings.defLat, lng: this.settings.defLng },
     // })
-    //infowindow.open(this.overviewLMap);
+    //infowindow.open(this.overviewMapLeaflet);
 
-    this.captureLMoveAndZoom(this.overviewLMap)
+    this.captureLMoveAndZoom(this.overviewMapLeaflet)
 
-    // this.overviewLMap.on("bounds_changed", () => {
-    //   this.overviewLMap!.setView(this.lMap.getCenter(), this.clamp(
+    // this.overviewMapLeaflet.on("bounds_changed", () => {
+    //   this.overviewMapLeaflet!.setView(this.lMap.getCenter(), this.clamp(
     //     this.lMap!.getZoom()! - (this.settings.leaflet.overviewDifference),
     //     (this.settings.leaflet.overviewMaxZoom),
     //     (this.settings.leaflet.overviewMinZoom)
@@ -596,7 +596,7 @@ export class MiniLMapComponent extends AbstractMap implements OnInit, AfterViewI
     this.log.excessive(`addMarker at ${lat}. ${lng}, ${title}`, this.id)
 
     if (!lat || !lng || !this.lMap) {
-      this.log.error(`addMarker(): bad lat: ${lat} or lng: ${lng} or lmap: ${this.lMap}`, this.id)
+      this.log.error(`addMarker(): bad lat: ${lat} or lng: ${lng} or mapLeaflet: ${this.lMap}`, this.id)
       return
     }
 

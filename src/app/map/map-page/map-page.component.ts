@@ -1,7 +1,7 @@
 import { NgComponentOutlet } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Type, signal } from '@angular/core'
 
-import { LmapComponent } from '../../lmap/lmap.component'
+import { LmapComponent } from '../../mapLeaflet/mapLeaflet.component'
 import { PageComponent } from '../../shared/page/page.component'
 import { MapEngineService } from '../map-engine.service'
 

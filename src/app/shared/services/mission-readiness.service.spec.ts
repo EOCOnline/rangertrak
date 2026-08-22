@@ -88,12 +88,12 @@ describe('MissionReadinessService', () => {
   //
   // Deliberately does NOT test the "database doesn't exist yet" / "doesn't create it"
   // safety properties here, and deliberately never deletes the 'leaflet.offline' database:
-  // Karma runs every spec file in one shared browser tab, and lmap.component.spec.ts /
-  // mini-lmap.component.spec.ts construct real Leaflet maps with real leaflet.offline
+  // Karma runs every spec file in one shared browser tab, and mapLeaflet.component.spec.ts /
+  // mini-mapLeaflet.component.spec.ts construct real Leaflet maps with real leaflet.offline
   // connections that are never explicitly closed (openTilesDataBase() caches its
   // connection for the app's lifetime, by design). `indexedDB.deleteDatabase(...)` blocks
   // until every open connection closes, so calling it here hung the whole suite whenever
-  // an lmap-family spec had already run in the same session - confirmed by removing it and
+  // an mapLeaflet-family spec had already run in the same session - confirmed by removing it and
   // watching the timeout disappear. The safety reasoning itself (never open before
   // confirming existence, never supply a version) is documented on countOfflineTiles()'s
   // own doc comment instead, verified by reading leaflet.offline's real source rather than

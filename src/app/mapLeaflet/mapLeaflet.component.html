@@ -1,6 +1,6 @@
-<div class="lmap-container">
-  <div class="lmap-frame">
-    <div #mapContainer id="lmap-main" (click)="onMouseClick($event)"></div>
+<div class="mapLeaflet-container">
+  <div class="mapLeaflet-frame">
+    <div #mapContainer id="mapLeaflet-main" (click)="onMouseClick($event)"></div>
   </div>
   <div>
     Latitude: <span class="strong">{{mouseLatLng().lat.toFixed(5)}}</span> Longitude:
@@ -10,7 +10,7 @@
     <div id="Lmap-status">Click map to copy coordinates</div>
   </div>
 </div>
-<div #overviewContainer id="lmap-overview"></div>
+<div #overviewContainer id="mapLeaflet-overview"></div>
 <br />
 
 <label for="selectedFieldReports">Field reports to show: All ({{numAllRows()}})</label>

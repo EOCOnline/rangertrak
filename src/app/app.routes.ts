@@ -39,7 +39,7 @@ export const APP_ROUTES: Routes = [
   // E-64: one route for both engines - MapPageComponent is a thin shell that mounts
   // Leaflet by default and dynamically imports MapLibre only if the on-page switch is
   // flipped, so a visitor who never touches the switch never downloads its ~966KB chunk.
-  // `/lmap` is gone outright (no redirect - see the roadmap's E-64 decisions: existing PWA
+  // `/mapLeaflet` is gone outright (no redirect - see the roadmap's E-64 decisions: existing PWA
   // installs pointing at it are a discounted, power-user-only edge case).
   {
     path: 'map',

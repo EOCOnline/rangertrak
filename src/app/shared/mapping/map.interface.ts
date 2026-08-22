@@ -17,6 +17,6 @@ export interface LayerType {
     type: MapType,
     layers: LayerType,
     initMap():void,
-    displayBeautifulmap(num:number) :void
+    displayBeautifumapLeaflet(num:number) :void
     }
 */

@@ -14,7 +14,7 @@ describe('MapPageComponent', () => {
       // HeaderComponent renders MissionReadinessComponent, whose readiness dot is now a
       // routerLink to /settings - needs a Router in every test that mounts the shared
       // page chrome, not just specs that touch routing directly.
-      providers: [ provideRouter([]) ]
+      providers: [provideRouter([])]
     })
       .compileComponents();
   });
@@ -40,7 +40,7 @@ describe('MapPageComponent', () => {
   // E-64: Leaflet is the hardcoded default - no auto-detection, no readiness signals.
   it('mounts Leaflet by default, not MapLibre', async () => {
     expect(component.engine()).toBe('leaflet');
-    expect(fixture.nativeElement.querySelector('.lmap-container')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.mapLeaflet-container')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.map-container')).toBeFalsy();
     await new Promise(resolve => setTimeout(resolve, 300)); // let Leaflet's zoom-in animation settle
   });
@@ -60,7 +60,7 @@ describe('MapPageComponent', () => {
 
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.map-container')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('.lmap-container')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('.mapLeaflet-container')).toBeFalsy();
     await new Promise(resolve => setTimeout(resolve, 300));
   });
 
@@ -78,7 +78,7 @@ describe('MapPageComponent', () => {
     fixture.detectChanges();
 
     expect(component.engine()).toBe('leaflet');
-    expect(fixture.nativeElement.querySelector('.lmap-container')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.mapLeaflet-container')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.map-container')).toBeFalsy();
 
     await new Promise(resolve => setTimeout(resolve, 300));

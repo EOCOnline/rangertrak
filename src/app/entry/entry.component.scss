@@ -1,6 +1,6 @@
-@use "../../styles/breakpoints" as bp;
-@use "../../styles/section" as section;
-@use "../../styles/typography" as type;
+@use "../../styles/breakpoints"as bp;
+@use "../../styles/section"as section;
+@use "../../styles/typography"as type;
 @use "@material/theme"
 with ($primary: #962f10,
   $on-primary: #442C2E);
@@ -22,25 +22,25 @@ $filledColor: var(--rt-surface-2);
 }
 
 // Stand-in shown while the deferred mini-map (@defer in entry.component.html) loads.
-// Deliberately mirrors .lmap-container/#map in mini-lmap.component.scss - same float,
+// Deliberately mirrors .mapLeaflet-container/#map in mini-mapLeaflet.component.scss - same float,
 // width, height, border, and (below) the same tablet-down order/size overrides - so the
 // form below keeps its position and nothing shifts when the real map swaps in.
 .minimap-placeholder {
-  display          : flex;
-  align-items      : center;
-  justify-content  : center;
-  float            : right;
-  width            : 35vw;
-  height           : 35vh;
-  margin-left      : 16px;
-  margin-right     : 16px;
-  background-color : $filledColor;
-  border           : 2px solid black;
-  border-radius    : 5px;
-  color            : var(--rt-ink-3);
-  font-style       : italic;
-  text-align       : center;
-  padding          : 0 1em;
+  display         : flex;
+  align-items     : center;
+  justify-content : center;
+  float           : right;
+  width           : 35vw;
+  height          : 35vh;
+  margin-left     : 16px;
+  margin-right    : 16px;
+  background-color: $filledColor;
+  border          : 2px solid black;
+  border-radius   : 5px;
+  color           : var(--rt-ink-3);
+  font-style      : italic;
+  text-align      : center;
+  padding         : 0 1em;
 
   // Maintainer, 2026-08-21: at tablet-down the map is no longer floating beside Who/Where
   // text (that's what the original 30%-of-35vw/35vh math was sized for) - .enter__top-group
@@ -66,8 +66,8 @@ $filledColor: var(--rt-surface-2);
 // original size as the screen size shrinks." At tablet-up this is an inert wrapper - no
 // `display` rule applies, so the mini-map's `float: right` behaves exactly as it always
 // has, spanning down beside Who and Where combined. Only tablet-down switches to a flex
-// column; only the map (`.minimap-placeholder` above, `.lmap-container` in
-// mini-lmap.component.scss - the placeholder and the real component, whichever is
+// column; only the map (`.minimap-placeholder` above, `.mapLeaflet-container` in
+// mini-mapLeaflet.component.scss - the placeholder and the real component, whichever is
 // mounted) gets a high `order`, so it's the only element that moves - Who and Where
 // (both left at the default `order: 0`) keep their existing relative DOM order and simply
 // end up ahead of it. Moving the map in the DOM instead of doing this would also have
@@ -80,15 +80,15 @@ $filledColor: var(--rt-surface-2);
 }
 
 // `order` has to live on the actual flex CHILD of .enter__top-group, not on
-// .lmap-container (mini-lmap.component.scss) - that div is inside <mini-lmap>'s own view,
+// .mapLeaflet-container (mini-mapLeaflet.component.scss) - that div is inside <mini-mapLeaflet>'s own view,
 // one level too deep for `order` to do anything at this flex context; found live, the
-// first attempt left the map at the top with `order` silently inert. <mini-lmap> itself
+// first attempt left the map at the top with `order` silently inert. <mini-mapLeaflet> itself
 // (a custom element, inline by default) also has no width of its own, so as a flex item
 // it stretched to the full row width under the default `align-items: stretch` - visually
 // fine since nothing inside it is visible past the floated, explicitly-sized
-// .lmap-container, but align-self here keeps its own box honest rather than relying on
+// .mapLeaflet-container, but align-self here keeps its own box honest rather than relying on
 // that coincidence.
-mini-lmap {
+mini-mapLeaflet {
   @include bp.tablet-down {
     order     : 10;
     align-self: flex-start;
@@ -204,26 +204,26 @@ input[type=number] {
 // stray space breaks the value) and was silently dropped - while Submit got real
 // values via .enter__Submit-button below, which is why they never lined up.
 .eButton {
-  min-width        : 80px;
-  min-height       : var(--rt-tap-min);
-  padding          : 0 1.25rem;
-  margin           : 0 10px 10px 0;
-  font-weight      : 600;
-  border           : 1px solid var(--rt-line-strong);
-  border-radius    : var(--rt-radius);
-  background-color : transparent;
-  color            : var(--rt-ink);
-  cursor           : pointer;
+  min-width       : 80px;
+  min-height      : var(--rt-tap-min);
+  padding         : 0 1.25rem;
+  margin          : 0 10px 10px 0;
+  font-weight     : 600;
+  border          : 1px solid var(--rt-line-strong);
+  border-radius   : var(--rt-radius);
+  background-color: transparent;
+  color           : var(--rt-ink);
+  cursor          : pointer;
 }
 
 .enter__form {
   //margin     : 0px 10px 15px;
-  min-width  : 160px;
+  min-width                                               : 160px;
   //max-width: 300px;
-  width      : 100%;
+  width                                                   : 100%;
   // 2026-08-21: containing block for #enter__frm-reguritation's `position: absolute` below
   // - see that rule's own comment for why it isn't `float: right` any more.
-  position   : relative;
+  position                                                : relative;
 }
 
 .enter__Callsign {
@@ -244,9 +244,9 @@ input[type=number] {
 }
 
 #enter__Callsign-image {
-  margin   : 0 10px;
+  margin: 0 10px;
   @include type.type-body-sm;
-  display  : inline-block;
+  display: inline-block;
 }
 
 // Following doesn't work: do it in entry.component.ts!!!
@@ -258,7 +258,7 @@ input[type=number] {
 //@at-root   - matche the document's root element
 #enter__Callsign-upshot {
   @include type.type-body-sm;
-  display  : inline-block;
+  display: inline-block;
 }
 
 .enter__Callsign-info {
@@ -298,19 +298,19 @@ input[type=number] {
 // fix on .enter__form, it doesn't add this always-present element's own height as a new
 // blank gap between Submit and the footer when the panel is hidden (the common case).
 #enter__frm-reguritation {
-  visibility        : hidden;
-  display           : block;
-  position          : absolute;
-  top               : 0;
-  right             : 0;
-  height            : 250px;
-  width             : 20vw;
-  max-width         : 100%;
-  overflow          : auto;
-  border            : 3px solid brown;
-  background-color  : $filledColor;
-  padding           : 10px;
-  font              : 0.8em sans-serif;
+  visibility      : hidden;
+  display         : block;
+  position        : absolute;
+  top             : 0;
+  right           : 0;
+  height          : 250px;
+  width           : 20vw;
+  max-width       : 100%;
+  overflow        : auto;
+  border          : 3px solid brown;
+  background-color: $filledColor;
+  padding         : 10px;
+  font            : 0.8em sans-serif;
 }
 
 // E-65: the regurgitated form JSON is one long unbroken line; without wrapping it forced

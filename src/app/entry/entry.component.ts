@@ -31,7 +31,7 @@ import {
 
 import { MATERIAL_IMPORTS } from '../material-imports'
 import { LocationComponent } from './location.component'
-import { MiniLMapComponent } from './mini-lmap.component'
+import { MiniMapLeafletComponent } from './mini-mapLeaflet.component'
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
 
@@ -47,7 +47,7 @@ import { MiniLMapComponent } from './mini-lmap.component'
     PageComponent,
     TimePickerComponent,
     LocationComponent,
-    MiniLMapComponent,
+    MiniMapLeafletComponent,
   ],
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
