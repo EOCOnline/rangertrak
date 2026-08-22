@@ -84,7 +84,7 @@ export class BackToTopComponent implements OnInit {
 
   toTop(): void {
     // Honour a reduced-motion preference rather than always smooth-scrolling - the same
-    // check about.component.ts already uses for its letter animation.
+    // check help.component.ts already uses for its letter animation.
     const motionOK = window.matchMedia('(prefers-reduced-motion: no-preference)').matches
     window.scrollTo({ top: 0, behavior: motionOK ? 'smooth' : 'auto' })
   }

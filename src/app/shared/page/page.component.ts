@@ -21,7 +21,7 @@ import { HeaderComponent } from '../header/header.component'
  *      ...page content...
  *    </rangertrak-page>
  *
- * `showHeader` exists for About, which is the one page with no mission strip of its own.
+ * `showHeader` exists for Help, which is the one page with no mission strip of its own.
  */
 @Component({
   selector: 'rangertrak-page',

@@ -9,8 +9,6 @@
   <form (ngSubmit)="onFormSubmit()">
     <br />
 
-    <rangertrak-settings-instructions></rangertrak-settings-instructions>
-
     <rangertrak-settings-mission-section [form]="settingsForm" [opPeriodStart]="opPeriodStart()"
       [opPeriodEnd]="opPeriodEnd()" [timePickerLabelStart]="timePickerLabelStart"
       [timePickerLabelEnd]="timePickerLabelEnd" (timeEventStart)="onNewTimeEventStart($event)"
@@ -24,6 +22,8 @@
 
     <rangertrak-settings-field-report-statuses [rowData]="rowData()"></rangertrak-settings-field-report-statuses>
 
+    <rangertrak-settings-instructions></rangertrak-settings-instructions>
+
     <!-- ======================================= -->
     <h2>Debug</h2>
 
@@ -31,8 +31,6 @@
       <input type="checkbox" [formField]="settingsForm.debugMode" placeholder="debugMode" />
       <span class="strong">Debug Mode</span>
     </div>
-
-    <!-- TODO: future: [ ] enable touch user interface<br>-->
 
     <br />
 

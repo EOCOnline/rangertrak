@@ -12,16 +12,16 @@ RangerTrak ships **two independent map engines**. This is deliberate, not a migr
 half-finished: they have genuinely different offline behaviour, and which one is the right
 default is still an open question for the Entry page.
 
-| | Leaflet (`/lmap`) | MapLibre + PMTiles (`/map`) |
-| --- | --- | --- |
-| Full-page component | `LmapComponent` | `MapComponent` |
-| Mini-map component | `MiniLMapComponent` | `MiniMapComponent` |
-| Basemap source | OpenStreetMap tile servers, over the network | `src/assets/maps/vashon.pmtiles`, bundled in the app |
-| Works offline | Only for areas already viewed or explicitly saved | **Yes, for the whole extract** — but see the caching caveat below |
-| Coverage | Anywhere in the world | Vashon Island pilot extract only; panning outside shows background |
-| Bundle cost | ~150 kB | ~950 kB (lazy chunk, loaded with `/map`) |
-| Clustering | `leaflet.markercluster` | Native GeoJSON clustering |
-| Offline tile caching | `leaflet.offline` — "Save this area for offline use" control | Not needed; the whole extract is bundled |
+|                      | Leaflet (`/lmap`)                                            | MapLibre + PMTiles (`/map`)                                        |
+| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ |
+| Full-page component  | `LmapComponent`                                              | `MapComponent`                                                     |
+| Mini-map component   | `MiniLMapComponent`                                          | `MiniMapComponent`                                                 |
+| Basemap source       | OpenStreetMap tile servers, over the network                 | `src/assets/maps/vashon.pmtiles`, bundled in the app               |
+| Works offline        | Only for areas already viewed or explicitly saved            | **Yes, for the whole extract** — but see the caching caveat below  |
+| Coverage             | Anywhere in the world                                        | Vashon Island pilot extract only; panning outside shows background |
+| Bundle cost          | ~150 kB                                                      | ~950 kB (lazy chunk, loaded with `/map`)                           |
+| Clustering           | `leaflet.markercluster`                                      | Native GeoJSON clustering                                          |
+| Offline tile caching | `leaflet.offline` — "Save this area for offline use" control | Not needed; the whole extract is bundled                           |
 
 ### Open decision: which engine powers the Entry page mini-map
 
@@ -249,7 +249,7 @@ classDiagram
         class MapComponent
         class SettingsComponent
         class LogComponent
-        class AboutComponent
+        class HelpComponent
         class X404Component
     }
 
@@ -280,7 +280,7 @@ classDiagram
     APP_ROUTES ..> MapComponent : Lazy route
     APP_ROUTES ..> SettingsComponent : Lazy route
     APP_ROUTES ..> LogComponent : Lazy route
-    APP_ROUTES ..> AboutComponent : Lazy route
+    APP_ROUTES ..> HelpComponent : Lazy route
     APP_ROUTES ..> X404Component : Lazy route
 
     EntryComponent --> LocationComponent

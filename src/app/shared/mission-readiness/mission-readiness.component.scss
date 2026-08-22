@@ -8,22 +8,22 @@
 }
 
 .readiness-dot {
-  display: inline-block;
+  display                    : inline-block;
   // Requested in live review: was 12px, enlarged 20%.
-  width: 14.4px;
-  height: 14.4px;
-  border-radius: 50%;
-  border: 1px solid var(--rt-line-strong);
-  vertical-align: middle;
-  cursor: pointer;
+  width                      : 14.4px;
+  height                     : 14.4px;
+  border-radius              : 50%;
+  border                     : 1px solid var(--rt-line-strong);
+  vertical-align             : middle;
+  cursor                     : pointer;
 }
 
 .readiness-dot--red {
-  background-color: var(--rt-readiness-red);
+  background-color           : var(--rt-readiness-red);
   // Requested in live review: a subtle, slow pulse on red only - the one state that
   // actually wants a second glance. Opacity, not scale/box-shadow, so it can't nudge the
   // tooltip's position or read as layout jitter.
-  animation: readiness-pulse 2.4s ease-in-out infinite;
+  animation                  : readiness-pulse 2.4s ease-in-out infinite;
 }
 
 .readiness-dot--amber {
@@ -35,11 +35,18 @@
 }
 
 @keyframes readiness-pulse {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
-// Same guard as back-to-top and the About page's own animations elsewhere in the app.
+// Same guard as back-to-top and the Help page's own animations elsewhere in the app.
 @media (prefers-reduced-motion: reduce) {
   .readiness-dot--red {
     animation: none;
@@ -47,9 +54,9 @@
 }
 
 .readiness-tooltip {
-  position     : absolute;
-  top          : calc(100% + 8px);
-  left         : 0;
+  position             : absolute;
+  top                  : calc(100% + 8px);
+  left                 : 0;
   // Confirmed live: 20 lost to Leaflet's own internal panes (tile/overlay/marker, up to
   // ~650) once the mini-map is on-screen below the header - its container doesn't isolate
   // its own stacking context, so those pane z-indexes compete directly against this one
@@ -57,23 +64,23 @@
   // the zoom +/- control specifically - `.leaflet-top`/`.leaflet-bottom` (leaflet.css) sit
   // at exactly z-index:1000 too, a tie this element's later DOM position doesn't win.
   // Comfortably above that now.
-  z-index      : 1100;
-  min-width    : 240px;
-  background   : var(--rt-surface);
-  color        : var(--rt-ink);
-  border       : 1px solid var(--rt-line);
-  border-radius: var(--rt-radius);
-  box-shadow   : 0 4px 12px rgba(0, 0, 0, 0.25);
-  padding      : 0.6em 0.8em;
-  font-size    : 0.85rem;
-  line-height  : 1.4;
-  text-align   : left;
-  white-space  : nowrap;
+  z-index              : 1100;
+  min-width            : 240px;
+  background           : var(--rt-surface);
+  color                : var(--rt-ink);
+  border               : 1px solid var(--rt-line);
+  border-radius        : var(--rt-radius);
+  box-shadow           : 0 4px 12px rgba(0, 0, 0, 0.25);
+  padding              : 0.6em 0.8em;
+  font-size            : 0.85rem;
+  line-height          : 1.4;
+  text-align           : left;
+  white-space          : nowrap;
 
-  opacity      : 0;
-  visibility   : hidden;
+  opacity       : 0;
+  visibility    : hidden;
   pointer-events: none;
-  transition   : opacity 0.1s ease;
+  transition    : opacity 0.1s ease;
 }
 
 .readiness:hover .readiness-tooltip,

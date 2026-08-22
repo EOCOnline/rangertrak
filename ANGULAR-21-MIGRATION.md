@@ -137,14 +137,14 @@ constructor() {
 ```typescript
 // Before
 {
-  path: 'about',
+  path: 'help',
   loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule)
 }
 
 // After
 {
-  path: 'about',
-  loadComponent: () => import('./lazy/about/about.component').then(m => m.AboutComponent)
+  path: 'help',
+  loadComponent: () => import('./lazy/help/help.component').then(m => m.HelpComponent)
 }
 ```
 

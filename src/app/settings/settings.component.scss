@@ -8,8 +8,8 @@ with ($primary: #962f10,
 @use "@material/button";
 @use "@material/button/styles";
 @use "@material/banner";
-@use "../../styles/section" as section;
-@use "../../styles/typography" as type;
+@use "../../styles/section"as section;
+@use "../../styles/typography"as type;
 
 .strong {
   font-weight: bold;
@@ -132,7 +132,7 @@ $filledColor: var(--rt-surface-2);
 // on an unmasked photo of pavement and a hi-vis vest, and the geocoding help text was
 // unreadable on the deployed 0.15.0.
 //
-// Removed rather than re-masked: this is a settings form, not a landing page. The About
+// Removed rather than re-masked: this is a settings form, not a landing page. The Help
 // page keeps its photograph, where prose can afford one. The page ground and ink it used
 // to set here now come from PageComponent.
 

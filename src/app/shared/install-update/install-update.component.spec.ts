@@ -12,14 +12,14 @@ describe('InstallUpdateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ InstallUpdateComponent ],
+      imports: [InstallUpdateComponent],
       // Injects UpdateService, which needs SwUpdate present even though it stays
       // disabled here (same reasoning as footer.component.spec.ts, which this
       // component's update-ready state used to live in). provideRouter is for the
       // compact pill's routerLink="/help" help zone (E-57(1)).
-      providers: [ provideHttpClient(), provideSwUpdateStub(), provideRouter([]) ]
+      providers: [provideHttpClient(), provideSwUpdateStub(), provideRouter([])]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -53,8 +53,8 @@ describe('InstallUpdateComponent', () => {
       expect(el).not.toBeNull();
       expect(el.classList.contains('rt-install-update--install')).toBeTrue();
       expect(el.classList.contains('rt-install-update--sticky-bottom')).toBeTrue();
-      // Two click targets sharing one pill: the main action and the help link to About
-      // (E-57(1): "help & details should link to about").
+      // Two click targets sharing one pill: the main action and the help link to Help
+      // (E-57(1): "help & details should link to help").
       expect(el.querySelector('.rt-install-update__main')).not.toBeNull();
       const help = el.querySelector('.rt-install-update__help');
       expect(help).not.toBeNull();
@@ -86,7 +86,7 @@ describe('InstallUpdateComponent', () => {
     });
   });
 
-  describe('help link (E-57(1): "help & details should link to about")', () => {
+  describe('help link (E-57(1): "help & details should link to help")', () => {
     it('the detailed (Settings) variant has no separate help zone - the paragraph already explains it', () => {
       fixture.componentRef.setInput('detailed', true);
       spyOnProperty(component, 'installable').and.returnValue(true);

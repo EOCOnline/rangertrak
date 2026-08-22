@@ -13,18 +13,18 @@ import { ClockService, LogService, SettingsService, SettingsType } from '../../s
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'rangertrak-about',
+  selector: 'rangertrak-help',
   standalone: true,
   imports: [CommonModule, PageComponent, DisclosureComponent, RouterLink, FeedbackComponent],
-  templateUrl: './about.component.html',
-  styleUrls: ['./about.component.scss'],
+  templateUrl: './help.component.html',
+  styleUrls: ['./help.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   // Deliberately NOT providing SettingsService: it is providedIn:'root' and a second
   // instance here would diverge from everyone else's. See BUG-2 in entry.component.ts.
 })
-export class AboutComponent implements OnDestroy, OnInit {
+export class HelpComponent implements OnDestroy, OnInit {
 
-  id = 'About'
+  id = 'Help'
   private settingsSubscription!: Subscription
   private settings!: SettingsType
   public version = ''
@@ -45,7 +45,7 @@ export class AboutComponent implements OnDestroy, OnInit {
     private log: LogService,
     private settingsService: SettingsService
   ) {
-    console.log("AboutComponent  ======== Constructor() ============ ")
+    console.log("HelpComponent  ======== Constructor() ============ ")
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({

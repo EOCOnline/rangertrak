@@ -1,0 +1,148 @@
+<rangertrak-page [showHeader]="false">
+  <div class="help-backdrop">
+    <!-- <H1 split-by="word" word-animation="trampoline"> -->
+    <!-- <h1 split-by="word" word-animation="hover"> -->
+    <!-- <h1 split-by="letter" letter-animation="hover" -->
+    <h1 split-by="letter" letter-animation="breath">
+      RangerTrak™ - tooling for ranging Rangers
+    </h1>
+    <h2>Help</h2>
+    <div>
+      <p class="bold">Version {{version}}</p>
+      <p>
+        RangerTrak™ is an open-source application for tracking & mapping SAR, CERT, ACS, other teams,
+        rangers & individuals roaming around, who are only reliably connected via HAM radio
+        or other non-data supporting means. They can radio in their locations - in a variety
+        of formats, and be centrally tracked.
+      </p>
+      <p>
+        Once loaded, RangerTrak keeps working with no Internet: entering and saving reports,
+        the roster, the report table, coordinate conversion, and mission export/import are
+        all local to your device.
+      </p>
+
+      <p>
+        Using RangerTrak has two distinct phases, even when the same person does both:
+        <strong>setup</strong> &mdash; infrequent and considered, done on the Mission and
+        Rangers pages before or between operating periods &mdash; and <strong>entry</strong>
+        &mdash; repetitive and time-critical, done on the entry screen (the app's landing
+        page) while reports come in. See the Field Guide for the full setup checklist and
+        what changes once you're in the entry phase.
+      </p>
+
+      <p>Items requiring online access:</p>
+      <ul>
+        <li>Geocoding an address (and the reverse: coordinates to a street address)</li>
+        <li>The Map (Leaflet), except for areas saved in advance for offline use</li>
+        <li>
+          The Backup map (MapLibre) needs to be opened once while connected, after which it
+          works with no Internet
+        </li>
+      </ul>
+
+      <p>
+        Coordinates always work offline, and so do Plus Codes &mdash; they are calculated on
+        your device rather than looked up over the network. Addresses need a connection. See
+        the Field Guide for how to prepare a device before a mission.
+      </p>
+
+      <p>
+        Supported coordinate formats: Decimal Degrees, Degrees/Decimal Minutes, Degrees
+        Minutes Seconds, MGRS (the US military/FEMA grid standard), UTM, and Maidenhead grid
+        locators (typed into the address field alongside Plus Codes and street addresses). All
+        formats assume WGS84/modern GPS &mdash; a position read off an older paper topo quad
+        may use the NAD27 datum instead, which can be 100&ndash;200m off in the western US.
+      </p>
+
+      <p>An overview of using location codes (instead of lat/long) can be found at:<br>
+        <a class="long-url"
+          href="https://github.com/google/open-location-code/blob/main/Documentation/Reference/comparison.adoc"
+          target="_blank">https://github.com/google/open-location-code/blob/main/Documentation/Reference/comparison.adoc</a>
+      </p>
+
+      <p>
+        eoc.online provides free tools for Emergency Operations Centers and emergency
+        services. <br>
+        For more information and <strong>to report issues</strong> please visit
+        <a href="https://github.com/EOCOnline/RangerTrak" target="_blank">https://github.com/EOCOnline/RangerTrak</a>.
+      </p>
+
+      <!-- Moved off the main menu ("Too many confusing things are on the main menu!") -
+         reachable from here instead, right beside the reporting-issues paragraph above
+         since a diagnostic log is exactly what a bug report needs. -->
+      <p>
+        Need to see what the app has been doing, or attach a diagnostic log to a bug report?
+        See the <a routerLink="/log">Log</a> page.
+      </p>
+
+      <!-- ADR D-15: primary in-app feedback path - see feedback.component.ts. -->
+      <rangertrak-disclosure summary="Send Feedback">
+        <rangertrak-feedback></rangertrak-feedback>
+      </rangertrak-disclosure>
+
+      <rangertrak-disclosure summary="Technologies">
+        <small>
+          <ul>
+            <li>Progressive Web App (PWA): after the initial load, installable & runs w/o Internet</li>
+            <li>Angular 22 with TypeScript, Angular signals, zoneless change detection, and Material Design</li>
+            <li>Leaflet maps with marker clustering, overview map, and offline tile caching</li>
+            <li>MapLibre GL + PMTiles: a vector map with basemap data bundled into the app, for true offline use</li>
+            <li>Geocoding via OpenStreetMap's Nominatim &mdash; no API key required</li>
+            <li>Plus Codes and lat/long conversion (Decimal Degrees, DMS, DDM, MGRS, UTM, Maidenhead), all computed
+              on-device</li>
+            <li>AG Grid tables with searching, sorting, filtering and export</li>
+            <li>Custom Angular components, such as the colour & time pickers and the location widget</li>
+            <li>Angular Signal Forms (the app's forms moved off Reactive Forms in the 0.15.x redesign)</li>
+            <li>No cookies, no accounts, no server: data is held in your browser's Local Storage</li>
+            <li>Cross platform: runs on any modern browser, using only standard HTML 5 & CSS 3</li>
+            <br>
+            <h3>FUTURE:</h3>
+            <li>What3Words address entry (previously present, currently shelved pending an SDK migration)</li>
+            <li>Downloadable offline map regions beyond the bundled pilot area</li>
+            <li>Tracking teams that have not reported in within an expected interval</li>
+            <li>Data passed to servers (when Internet connectivity allows) for remote display of data & maps</li>
+          </ul>
+        </small>
+      </rangertrak-disclosure>
+      <br>
+      <rangertrak-disclosure emphasis="plain">
+        <span rtSummary>©2019&ndash;{{today | date: 'y'}} <a href="https://eoc.online/" target="_blank">eoc.online</a>,
+          under the GNU Affero General Public License v3</span>
+        <small>
+          <p class="indented">
+            RangerTrak is free software: you can redistribute it and/or modify it under the
+            terms of the GNU Affero General Public License as published by the Free Software
+            Foundation, either version 3 of the License, or (at your option) any later
+            version.
+          </p>
+          <p class="indented">
+            <span class="bold">Using RangerTrak &mdash; including at your EOC, exercise, or
+              incident &mdash; is completely free and always will be.</span> The licence
+            places no obligations at all on people who simply use the application. If you
+            modify RangerTrak and distribute it, or run your modified version as a network
+            service, you must make your modified source available under the same licence.
+          </p>
+          <p class="indented">
+            This program is distributed in the hope that it will be useful, but WITHOUT ANY
+            WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+            PARTICULAR PURPOSE. See the licence for details.
+          </p>
+          <p class="indented">
+            Full text:
+            <a href="https://www.gnu.org/licenses/agpl-3.0" target="_blank">https://www.gnu.org/licenses/agpl-3.0</a>
+          </p>
+          <p class="indented">
+            Releases prior to this change were published under the MIT License and remain
+            available under those terms.
+          </p>
+        </small>
+      </rangertrak-disclosure>
+    </div>
+    <br />
+    <!-- 2026-08-22: "Grid Menu Keyboard interaction" used to be a permanent block here -
+       moved to a collapsible section on Rangers and Field Reports themselves, the two
+       pages that actually have an AG Grid to use it on, rather than living only on Help
+       where a scribe mid-grid-use would have to navigate away to find it. -->
+    <div class="imgCredit">Photo credit: Shocked Marmot from Vistapoint.net, by ___</div>
+  </div>
+</rangertrak-page>

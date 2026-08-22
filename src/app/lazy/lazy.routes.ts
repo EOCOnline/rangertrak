@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router'
 
-import { AboutComponent } from './about/about.component'
+import { HelpComponent } from './help/help.component'
 
 export const LAZY_ROUTES: Routes = [
-  { path: '', component: AboutComponent },
+  { path: '', component: HelpComponent },
 ]
