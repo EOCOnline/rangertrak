@@ -21,7 +21,7 @@ import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 
 import { AbstractMap, Utility } from '../shared'
-import { FieldReportService, LocationType, LogService, SettingsService } from '../shared/services'
+import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, SettingsService } from '../shared/services'
 
 import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
 
@@ -60,6 +60,21 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
+// E-80 phase 1: team route trails. Drawn directly on map tiles (not app chrome), so these
+// don't need to track the app's light/dark scheme - a fixed, saturated hash colour reads
+// fine against OSM tiles either way. UNKNOWN_TEAM_TRAIL_COLOR covers a callsign the current
+// roster doesn't recognise (free-text team on RangerType, see E-40) or has no team set.
+const UNKNOWN_TEAM_TRAIL_COLOR = '#6B7280'
+
+function teamColorFor(team: string): string {
+  if (!team) return UNKNOWN_TEAM_TRAIL_COLOR
+  let hash = 0
+  for (let i = 0; i < team.length; i++) {
+    hash = (hash * 31 + team.charCodeAt(i)) | 0
+  }
+  return `hsl(${Math.abs(hash) % 360}, 65%, 42%)`
 }
 
 
@@ -109,6 +124,10 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   })
 
   myMarkerCluster = new window.L.MarkerClusterGroup()
+  // E-80 phase 1: per-callsign route trails, static (no animation/timer - see the roadmap
+  // scoping). A plain layer group, not clustered - clustering exists to collapse crowded
+  // point markers and would be actively wrong for line geometry.
+  myTrailsLayer = L.layerGroup()
   mapOptions = ""
 
   //markerClusterGroup: L.MarkerClusterGroup // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
@@ -121,6 +140,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     fieldReportService: FieldReportService,
     httpClient: HttpClient,
     log: LogService,
+    private rangerService: RangerService,
     @Inject(DOCUMENT) protected override document: Document
   ) {
     super(settingsService,
@@ -646,6 +666,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // whole job. Both of these logged "UNIMPLEMENTED!" and did nothing, which is
     // why switching to "just the selected reports" could never remove anything.
     this.myMarkerCluster.clearLayers()
+    // Trails share the same redraw-from-scratch lifecycle as markers (E-80) - without
+    // this they'd pile up on every toggle/new-report exactly the way markers used to.
+    this.myTrailsLayer.clearLayers()
   }
 
   override displayMarkers() {
@@ -680,8 +703,55 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     this.lMap.addLayer(this.myMarkerCluster);
 
+    this.drawTrails()
+    this.lMap.addLayer(this.myTrailsLayer)
+
     // to refresh markers that have changed:
     // https://github.com/Leaflet/Leaflet.markercluster#refreshing-the-clusters-icon
+  }
+
+  /**
+   * E-80 phase 1: static per-callsign route trails, coloured by the callsign's current
+   * team. Drawn from the same displayedFieldReportArray markers use, so the all/selected
+   * switch and new-report redraws are honoured automatically (both call displayMarkers(),
+   * which calls this after clearMarkers() has emptied myTrailsLayer).
+   *
+   * Deliberately no animation, timer, or elapsed-time readout - decided out of scope by
+   * the maintainer 2026-08-24. Direction is conveyed without a clock: each trail is drawn
+   * as N-1 separate segments with stepped opacity (oldest faintest, newest strongest)
+   * rather than a gradient-along-path, which Leaflet has no native support for.
+   */
+  private drawTrails() {
+    const byCallsign = new Map<string, FieldReportType[]>()
+    this.displayedFieldReportArray.forEach(r => {
+      if (!r.location.lat || !r.location.lng) return // same guard displayMarkers() uses
+      const group = byCallsign.get(r.callsign)
+      if (group) group.push(r)
+      else byCallsign.set(r.callsign, [r])
+    })
+
+    byCallsign.forEach((reports, callsign) => {
+      if (reports.length < 2) return // nothing to trail for a single check-in
+
+      // Reports aren't guaranteed sorted - the trail is meaningless (and will look
+      // plausible while being wrong) if drawn in array order instead of report date.
+      const ordered = [...reports].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      const ranger = this.rangerService.rangers.find(r => r.callsign === callsign)
+      const color = teamColorFor(ranger?.team ?? '')
+      const segmentCount = ordered.length - 1
+
+      for (let i = 0; i < segmentCount; i++) {
+        const opacity = segmentCount === 1 ? 0.9 : 0.25 + (0.65 * i / (segmentCount - 1))
+        const segment = L.polyline(
+          [
+            [ordered[i].location.lat, ordered[i].location.lng],
+            [ordered[i + 1].location.lat, ordered[i + 1].location.lng]
+          ],
+          { color, opacity, weight: 3 }
+        )
+        this.myTrailsLayer.addLayer(segment)
+      }
+    })
   }
 
   override onSwitchSelectedFieldReports() {

@@ -873,6 +873,70 @@ async function checkReportsSurviveNavigation() {
   check('the Reports grid shows the reports that were just entered', shown, 2)
 }
 
+/**
+ * E-80 phase 1: a callsign with two check-ins at different positions should draw a route
+ * trail on the map. Not asserting colour/team here (that's a join against the roster, not
+ * the geometry) - this guards the thing the Definition of Done actually requires: a trail
+ * renders for a multi-report callsign. Per verify-the-measurement-itself, confirmed this
+ * fails on the pre-E-80 build (no .leaflet-overlay-pane path existed at all) before the
+ * feature landed.
+ */
+async function checkTeamTrailsRender() {
+  console.log('\nE-80: a route trail renders for a callsign with multiple check-ins')
+  await goto('/')
+  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await goto('/')
+
+  // Two distinct positions near the default Vashon EOC location, submitted under the same
+  // callsign - drawn via the DD lat/lng fields, the same technique checkLocationDdDdmDmsSync
+  // uses, rather than hand-building the FieldReportsType wrapper (bounds/maxId/filter are
+  // easy to get subtly wrong by hand; driving the real form exercises the real save path).
+  for (const [lat, lng] of [[47.40, -122.46], [47.45, -122.40]]) {
+    await evaluate(`(async () => {
+      const set = (id, v) => {
+        const el = document.getElementById(id);
+        Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, String(v));
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      };
+      set('enter__Where-latI', Math.trunc(${lat}));
+      set('enter__Where-latF', Math.round((Math.abs(${lat}) % 1) * 10000));
+      set('enter__Where-lngI', Math.trunc(${lng}));
+      set('enter__Where-lngF', Math.round((Math.abs(${lng}) % 1) * 10000));
+      await new Promise(r => setTimeout(r, 900));
+
+      const cs = document.getElementById('enter__Callsign-input');
+      const csSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      csSet.call(cs, 'E2E-TRAIL');
+      cs.dispatchEvent(new Event('input', { bubbles: true }));
+      cs.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise(r => setTimeout(r, 900));
+
+      document.querySelector('.enter__Submit-button')?.click();
+      await new Promise(r => setTimeout(r, 1200));
+    })()`)
+  }
+
+  const stored = await evaluate(`(() => {
+    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
+    return (r.fieldReportArray || []).filter(f => f.callsign === 'E2E-TRAIL').length;
+  })()`)
+  check('both E2E-TRAIL reports reached storage', stored, 2)
+
+  await navigateInApp('Map', 3500)
+  // Scoped to the MAIN map container (#mapLeaflet-main), not the whole document: the
+  // overview mini-map (#mapLeaflet-overview) always draws its own current-view rectangle
+  // as an SVG path in its own .leaflet-overlay-pane, regardless of trails - an unscoped
+  // selector here passed vacuously even with the trail feature reverted (caught by running
+  // this check red-before-fix, per verify-the-measurement-itself).
+  let pathCount = 0
+  for (let i = 0; i < 10 && pathCount === 0; i++) {
+    await sleep(300)
+    pathCount = await evaluate(`document.querySelectorAll('#mapLeaflet-main .leaflet-overlay-pane path').length`)
+  }
+  check('a route trail renders on the map for a multi-report callsign', pathCount > 0, true)
+}
+
 async function checkSettingsWithPersistedSettings() {
   console.log('\nBUG-3 (open): /mission must not throw for a RETURNING user (dates as ISO strings)')
   // A fresh browser gets initSettings() with real Date objects and never reproduces this.
@@ -1157,6 +1221,7 @@ async function main() {
       // Known-open production bugs - see the banner above these three.
       await checkCallsignIsSaved()
       await checkReportsSurviveNavigation()
+      await checkTeamTrailsRender()
       await checkSettingsWithPersistedSettings()
       await checkMissionRoundTrip(downloads)
       await goto('/'); await evaluate(`localStorage.clear()`)
