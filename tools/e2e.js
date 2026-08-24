@@ -733,12 +733,18 @@ async function checkGridThemeUsesTokens() {
   console.log('\nAG Grid Theming API resolves through --rt-* tokens (Sprint F: legacy ag-theme-alpine.css is gone)')
   const read = async () => {
     await goto('/reports')
+    // AG Grid v36's Theming API (cacfeb3, the ag-grid 35->36 bump) paints the header
+    // background on .ag-header-row's ::after pseudo-element, not directly on .ag-header
+    // as v35 did - .ag-header itself now has no background-color at all. Confirmed live
+    // via CDP (2026-08-24) before changing this: --ag-header-background-color resolves
+    // correctly to the --rt-surface-2 token in both schemes, the paint is just on a
+    // different element. See verify-the-measurement-itself memory.
     return evaluate(`(() => {
       const root = getComputedStyle(document.documentElement);
-      const header = document.querySelector('#reportsgrid .ag-header');
+      const row = document.querySelector('#reportsgrid .ag-header-row');
       return {
         tokenSurface2: root.getPropertyValue('--rt-surface-2').trim(),
-        headerBg: header ? getComputedStyle(header).backgroundColor : null,
+        headerBg: row ? getComputedStyle(row, '::after').backgroundColor : null,
       };
     })()`)
   }
@@ -855,12 +861,15 @@ async function checkReportsSurviveNavigation() {
 
   // Click through, do NOT reload: a reload rebuilds every service and hides the bug.
   await navigateInApp('Reports', 3500)
+  // .ag-center-cols-container is gone in AG Grid v36 (cacfeb3) - the row-container
+  // structure was rebuilt (.ag-grid-scrolling-rows and friends replace it). .ag-row itself
+  // is still the real row class, scoped to #reportsgrid so it can't pick up another grid.
+  // Confirmed live via CDP (2026-08-24): this selector finds both submitted rows and AG
+  // Grid's own pagination summary independently reports "1 to 2 of 2".
   const shown = await evaluate(`(() => {
-    const rows = document.querySelectorAll('.ag-center-cols-container .ag-row');
+    const rows = document.querySelectorAll('#reportsgrid .ag-row');
     return rows.length;
   })()`)
-  // Entry declares providers:[FieldReportService,...], so it edits its OWN instance while the
-  // Reports page reads the root one, which still holds its stale in-memory list.
   check('the Reports grid shows the reports that were just entered', shown, 2)
 }
 

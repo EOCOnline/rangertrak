@@ -1,4 +1,5 @@
 @use "../../../styles/typography" as type;
+@use "../../../styles/breakpoints" as bp;
 
 // E-57(1): simplified back to a v0.12-era shape - one small pill, icon + short label, no
 // separate sentence next to a separate CTA. One presentation for both states (update-ready
@@ -206,6 +207,17 @@
 .rt-install-update__anchor:focus-within .rt-install-update__panel {
   opacity   : 1;
   visibility: visible;
+}
+
+// FIX (2026-08-24 defect sweep): `left: 0` against an anchor that sits right of centre
+// pushed this panel's right edge well past the viewport at phone width even though its
+// own max-width was already correctly capped - the bug was anchoring, not sizing.
+// Flipping to the right edge below the phone breakpoint keeps the panel on-screen.
+@include bp.phone {
+  .rt-install-update__panel {
+    left : auto;
+    right: 0;
+  }
 }
 
 @media print {

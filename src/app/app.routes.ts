@@ -71,7 +71,7 @@ export const APP_ROUTES: Routes = [
 
   // Redirects for the two renames above - old bookmarks/links keep working.
   { path: 'settings', redirectTo: 'mission' },
-  { path: 'help', redirectTo: 'help' },
+  { path: 'about', redirectTo: 'help' },
 
   // Page not found route
   {

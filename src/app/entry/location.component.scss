@@ -6,6 +6,7 @@ with ($primary: #962f10,
 @use "@material/banner";
 @use "../../styles/typography" as type;
 @use "../../styles/section" as section;
+@use "../../styles/breakpoints" as bp;
 
 // Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss.
 $filledColor: var(--rt-surface-2);
@@ -260,6 +261,16 @@ $filledColor: var(--rt-surface-2);
 .enter__Where-toggle-info:focus-within .enter__Where-toggle-info__panel {
   opacity   : 1;
   visibility: visible;
+}
+
+// FIX (2026-08-24 defect sweep): same anchoring bug and same fix as
+// install-update.component.scss's __panel - `left: 0` against an anchor right of centre
+// pushed a correctly-sized 280px panel off the right edge at phone width.
+@include bp.phone {
+  .enter__Where-toggle-info__panel {
+    left : auto;
+    right: 0;
+  }
 }
 
 // 2026-08-21: labeled divider marking the start of the derived read-only values, replacing
