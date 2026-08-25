@@ -63,7 +63,21 @@ export type FieldReportsType = {
  * forward here rather than resolved, since this session didn't verify the real form either.
  */
 export type FieldReportType = {
+  // NOTE the two different identifiers below, deliberately named apart:
+  //   `id`       - THIS REPORT's own sequential number (from FieldReportsType.maxId).
+  //   `rangerId` - WHO filed it: a foreign key into RangerType.id (ADR D-42).
+  // An earlier reading of D-42 would have called the second one `id` too, which would have
+  // collided head-on with this pre-existing field.
   id: number,
+  // ADR D-42, Phase 1: the ranger this report is filed against, replacing `callsign` as the
+  // join key. Optional during the migration and backfilled on load from `callsign` by
+  // `ranger-migration.ts`, since field reports have no migration machinery of their own.
+  rangerId?: string,
+  // DELIBERATELY KEPT alongside `rangerId`, not replaced by it: a report can outlive the
+  // ranger it names (deleted or re-keyed roster row), and the callsign is what the scribe
+  // actually heard over the radio - the primary evidence of who reported. A report whose
+  // callsign matches no current ranger keeps it, with an empty `rangerId`, rather than
+  // being dropped or silently attached to the wrong person.
   callsign: string,
   //team: string,
   location: LocationType,
