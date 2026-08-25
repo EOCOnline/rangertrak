@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.55.0](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+
+### Features
+
+* **rangers:** a fresh install no longer auto-seeds the 18 hardcoded Vashon station callsigns - the roster starts blank, indicating a new mission; the stations remain available opt-in via Rangers > Advanced > "Add station callsigns"
+
+### Fixes
+
+* **rangers:** removed `address` (home address) from the ranger data model entirely - confirmed unused by any feature, unlike phone/rew/image; updated every export confirmation dialog and doc that mentioned it, and added context that a callsign already resolves to more via the FCC's public licensee lookup
+* **rangers,field-reports:** moved the Instructions/Tips/Privacy/keyboard-help sections below the grid on both pages, so the grid is the first prominent thing visible
+* **header:** `timeElapsed$`/`timeLeft$`/the clock used `interval(1000)`, which doesn't emit immediately - the header's status cluster rendered empty for a full second, measured live as the dominant remaining CLS contributor; switched to `timer(0, 1000)`
+* **navbar:** added explicit width/height to the GitHub icon (Lighthouse: unsized image, second-largest layout-shift culprit)
+
 ## [0.54.2](https://github.com/EOCOnline/rangertrak/commit/b67ac495a0ecae6bd1527295421ffc0028bf7cbb) (2026-08-26)
 
 ### Fixes
