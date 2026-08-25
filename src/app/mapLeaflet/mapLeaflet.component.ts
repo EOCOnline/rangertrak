@@ -16,9 +16,12 @@ import * as L from 'leaflet'
 //import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { throwError } from 'rxjs'
 
-import { DOCUMENT } from '@angular/common'
+import { DOCUMENT, NgTemplateOutlet } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
+import {
+  AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, TemplateRef, ViewChild,
+  ChangeDetectionStrategy
+} from '@angular/core'
 
 import {
   AbstractMap, Utility, rangerIconFor, rangerColorFor, fieldReportStatusColor, formatReportTime
@@ -67,7 +70,7 @@ function formatBytes(bytes: number): string {
 @Component({
   selector: 'rangertrak-mapLeaflet',
   standalone: true,
-  imports: [SectionComponent],
+  imports: [SectionComponent, NgTemplateOutlet],
   templateUrl: './mapLeaflet.component.html',
   styleUrls: [
     './mapLeaflet.component.scss'
@@ -84,6 +87,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
 
   public override id = 'Leaflet Map Component'
+
+  // Owned and templated by MapPageComponent (the page shell) - this component only decides
+  // WHERE in its own layout to render it (see the template, right before Instructions).
+  // See map-page.component.html's own comment for why: state/handler live in one place,
+  // placement is each engine's call.
+  @Input() engineSwitchTemplate?: TemplateRef<unknown>
 
   // static: true - these divs sit in the template unconditionally, so the query resolves
   // before ngOnInit, which is where the maps are built. Resolved from this component's own

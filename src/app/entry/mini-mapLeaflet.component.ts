@@ -24,7 +24,6 @@ import {
 // alongside Leaflet, even though this Leaflet mini-map never touches MapLibre.
 import { AbstractMap } from '../shared/mapping/map'
 import { rangerIconFor } from '../shared/mapping/ranger-icon'
-import { fieldReportStatusColor } from '../shared/mapping/report-marker-status'
 import { formatReportTime } from '../shared/mapping/report-time'
 import { Utility } from '../shared/utility'
 import {
@@ -551,12 +550,10 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
         //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
         // E-86 (narrowed): a distinct shape+colour per ranger callsign, team ignored for now.
-        // Raised live 2026-08-26: the status halo behind it - same treatment and colour
-        // lookup as the main map's own markers (mapLeaflet.component.ts).
-        const statusColor = fieldReportStatusColor(i.status, this.settings.fieldReportStatuses)
-        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), {
-          title: title, icon: rangerIconFor(i.callsign, statusColor)
-        })
+        // NOT given the status halo the main map's markers got (2026-08-26) - this mini-map
+        // is deliberately minimal by design (a crosshair-cursor position picker for the
+        // CURRENT report, not a mission overview), reverted same day once that was raised.
+        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title, icon: rangerIconFor(i.callsign) })
         marker.bindPopup(title)
         this.myMarkerCluster.addLayer(marker);
       } else {

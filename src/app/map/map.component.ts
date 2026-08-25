@@ -2,10 +2,10 @@ import { GeoJSONSource, Map as MaplibreMap, MapLayerMouseEvent, MapMouseEvent, P
 import type { FeatureCollection, Point } from 'geojson'
 import { Subscription } from 'rxjs'
 
-import { DOCUMENT } from '@angular/common'
+import { DOCUMENT, NgTemplateOutlet } from '@angular/common'
 import {
-  AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild,
-  signal
+  AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, Input, OnDestroy, OnInit,
+  TemplateRef, ViewChild, signal
 } from '@angular/core'
 
 import { buildPmtilesStyle, registerPmtilesProtocol } from '../shared/mapping/map-style'
@@ -26,12 +26,18 @@ const REPORTS_SOURCE_ID = 'field-reports'
 @Component({
   selector: 'rangertrak-map',
   standalone: true,
-  imports: [SectionComponent],
+  imports: [SectionComponent, NgTemplateOutlet],
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  // Owned and templated by MapPageComponent (the page shell), passed through
+  // ngComponentOutletInputs since this component is mounted dynamically - this component
+  // only decides WHERE in its own layout to render it (see the template, right before
+  // Instructions). See map-page.component.html's own comment for why.
+  @Input() engineSwitchTemplate?: TemplateRef<unknown>
 
   // Resolved from this component's own view, never by DOM id. Three map components once
   // all used id="map", and both MapLibre and Leaflet resolve a string container globally -

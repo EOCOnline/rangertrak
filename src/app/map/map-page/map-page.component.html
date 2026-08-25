@@ -4,20 +4,26 @@
       {{ isFullscreen() ? 'Exit full screen' : 'Full screen' }}
     </button>
 
-    @if (engine() === 'leaflet') {
-    <rangertrak-mapLeaflet></rangertrak-mapLeaflet>
-    } @else if (maplibreComponentType(); as MaplibreEngine) {
-    <ng-container *ngComponentOutlet="MaplibreEngine"></ng-container>
-    }
-
     <!-- Maintainer, 2026-08-24: moved below the map - was above it, ahead of the thing it
-         toggles. -->
-    <div class="map-engine-switch">
-      <label for="mapEngineSwitch">
-        <input id="mapEngineSwitch" type="checkbox" [checked]="engine() === 'maplibre'"
-          (change)="onEngineSwitchChanged($event)" />
-        Use MapLibre + PMTiles Map - instead of Leaflet Map
-      </label>
-    </div>
+         toggles. Maintainer, 2026-08-26: moved again - above each engine's own Instructions
+         section specifically, not just "somewhere after the map." Projected into whichever
+         engine is mounted (below) via a template, rather than duplicated per engine or
+         hoisted back above the map - state/handler stay owned here, only placement is the
+         child's call. -->
+    <ng-template #engineSwitchTpl>
+      <div class="map-engine-switch">
+        <label for="mapEngineSwitch">
+          <input id="mapEngineSwitch" type="checkbox" [checked]="engine() === 'maplibre'"
+            (change)="onEngineSwitchChanged($event)" />
+          Use MapLibre + PMTiles Map - instead of Leaflet Map
+        </label>
+      </div>
+    </ng-template>
+
+    @if (engine() === 'leaflet') {
+    <rangertrak-mapLeaflet [engineSwitchTemplate]="engineSwitchTpl"></rangertrak-mapLeaflet>
+    } @else if (maplibreComponentType(); as MaplibreEngine) {
+    <ng-container *ngComponentOutlet="MaplibreEngine; inputs: {engineSwitchTemplate: engineSwitchTpl}"></ng-container>
+    }
   </div>
 </rangertrak-page>

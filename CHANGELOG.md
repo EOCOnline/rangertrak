@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.49.1](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+
+### Bug Fixes
+
+* **map:** the MapLibre engine-switch checkbox now renders above each engine's own Instructions section, not below it, on both engines
+* **entry:** reverted the status halo on the Entry mini-map's markers - that map is a deliberately minimal position-picker, not a mission overview
+
 ## [0.49.0](https://github.com/EOCOnline/rangertrak/commit/2ca40fe3ec7afbf654d6c54c186eb0543f2893d2) (2026-08-26)
 
 ### Features
