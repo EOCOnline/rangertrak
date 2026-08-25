@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.46.0](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-25)
+
+### Features
+
+* **map:** full-screen toggle on the shared map page shell, working for both Leaflet and MapLibre (E-78)
+
 ## [0.45.1](https://github.com/EOCOnline/rangertrak/commit/60a77abe20937c7f55a6c193dbe89fb4a92cb6e8) (2026-08-25)
 
 ### Bug Fixes

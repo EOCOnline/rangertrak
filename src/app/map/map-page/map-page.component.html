@@ -1,17 +1,23 @@
 <rangertrak-page [title]="title" [description]="pageDescr">
-  @if (engine() === 'leaflet') {
-  <rangertrak-mapLeaflet></rangertrak-mapLeaflet>
-  } @else if (maplibreComponentType(); as MaplibreEngine) {
-  <ng-container *ngComponentOutlet="MaplibreEngine"></ng-container>
-  }
+  <div class="map-fullscreen-area" #fullscreenArea>
+    <button type="button" class="fullscreen-toggle" (click)="toggleFullscreen()">
+      {{ isFullscreen() ? 'Exit full screen' : 'Full screen' }}
+    </button>
 
-  <!-- Maintainer, 2026-08-24: moved below the map - was above it, ahead of the thing it
-       toggles. -->
-  <div class="map-engine-switch">
-    <label for="mapEngineSwitch">
-      <input id="mapEngineSwitch" type="checkbox" [checked]="engine() === 'maplibre'"
-        (change)="onEngineSwitchChanged($event)" />
-      Use MapLibre + PMTiles Map - instead of Leaflet Map
-    </label>
+    @if (engine() === 'leaflet') {
+    <rangertrak-mapLeaflet></rangertrak-mapLeaflet>
+    } @else if (maplibreComponentType(); as MaplibreEngine) {
+    <ng-container *ngComponentOutlet="MaplibreEngine"></ng-container>
+    }
+
+    <!-- Maintainer, 2026-08-24: moved below the map - was above it, ahead of the thing it
+         toggles. -->
+    <div class="map-engine-switch">
+      <label for="mapEngineSwitch">
+        <input id="mapEngineSwitch" type="checkbox" [checked]="engine() === 'maplibre'"
+          (change)="onEngineSwitchChanged($event)" />
+        Use MapLibre + PMTiles Map - instead of Leaflet Map
+      </label>
+    </div>
   </div>
 </rangertrak-page>

@@ -1,3 +1,36 @@
 .map-engine-switch {
   margin: 0.5rem 0 1rem;
 }
+
+// E-78: plain text button matching this app's own UI language (same border/radius/token
+// approach mapLeaflet.component.scss uses for the offline "save this area" control), not
+// borrowed browser/plugin chrome.
+.fullscreen-toggle {
+  display      : block;
+  margin       : 0 0 0.5rem auto;
+  padding      : 0.35rem 0.75rem;
+  min-height   : var(--rt-tap-min);
+  border       : 1px solid var(--rt-ink-3);
+  border-radius: var(--rt-radius);
+  background   : transparent;
+  color        : var(--rt-ink);
+  cursor       : pointer;
+}
+
+.fullscreen-toggle:hover,
+.fullscreen-toggle:focus-visible {
+  outline       : 2px solid var(--rt-ink);
+  outline-offset: 2px;
+}
+
+// The Fullscreen API's own pseudo-class - fills the screen and gives the map room instead
+// of sitting inside the app's normal page padding/max-width.
+.map-fullscreen-area:fullscreen {
+  display   : flex;
+  flex-flow : column nowrap;
+  width     : 100vw;
+  height    : 100vh;
+  padding   : 0.5rem;
+  background: var(--rt-surface);
+  overflow  : auto;
+}

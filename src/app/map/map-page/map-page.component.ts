@@ -1,5 +1,7 @@
 import { NgComponentOutlet } from '@angular/common'
-import { ChangeDetectionStrategy, Component, OnInit, Type, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy, Component, ElementRef, HostListener, OnInit, Type, ViewChild, signal
+} from '@angular/core'
 
 import { LmapComponent } from '../../mapLeaflet/mapLeaflet.component'
 import { PageComponent } from '../../shared/page/page.component'
@@ -38,6 +40,20 @@ export class MapPageComponent implements OnInit {
   // keeps the loading logic simple either way).
   maplibreComponentType = signal<Type<unknown> | null>(null)
 
+  // E-78: one control in the shared shell rather than one per engine - it targets this
+  // page's own wrapper div (map + switch + whichever engine is mounted), not either
+  // engine's internals, so it works identically for both without touching LmapComponent or
+  // MapComponent (keeps E-64's "should not be merged without reason" intact). Native
+  // Fullscreen API rather than a plugin (leaflet.fullscreen has no MapLibre equivalent, and
+  // this app already avoids a per-engine control here for the same reason it avoids one for
+  // the engine switch itself). Verified live that neither engine needs a manual resize
+  // nudge: Leaflet's default `trackResize` listens for the window resize event fullscreen
+  // entry/exit fires, and MapLibre's container uses a ResizeObserver - both pick up the new
+  // size on their own.
+  isFullscreen = signal(false)
+
+  @ViewChild('fullscreenArea') private fullscreenArea!: ElementRef<HTMLElement>
+
   constructor(private engineService: MapEngineService) { }
 
   get engine() {
@@ -75,5 +91,20 @@ export class MapPageComponent implements OnInit {
     }
 
     this.engineService.setEngine(useMaplibre ? 'maplibre' : 'leaflet')
+  }
+
+  async toggleFullscreen(): Promise<void> {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen()
+    } else {
+      await this.fullscreenArea.nativeElement.requestFullscreen()
+    }
+  }
+
+  // Keyed off the document's own state, not the click handler, so it also catches the
+  // browser's native exit paths (Esc key, the browser's own "exit full screen" affordance).
+  @HostListener('document:fullscreenchange')
+  onFullscreenChange(): void {
+    this.isFullscreen.set(document.fullscreenElement === this.fullscreenArea?.nativeElement)
   }
 }
