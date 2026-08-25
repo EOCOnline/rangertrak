@@ -84,7 +84,21 @@
 // of this site's own inputs. All of that is this app's own UI now, not a Leaflet widget
 // borrowing the page; stripped down to plain text buttons using the same tokens as the
 // rest of the app.
+//
+// Follow-up, reported from a live 0.45.1 screenshot: Leaflet's base Control.addTo() stamps
+// every control's container with the `leaflet-control` class regardless of what onAdd()
+// returns (this one is `savetiles leaflet-bar`, so it gets all three) - and leaflet.css
+// gives .leaflet-control `float: left; clear: both`, meant for stacking controls inside its
+// own absolutely-positioned corner containers. Re-parenting into #offlineControlsHost above
+// carries that float along with it, so it still floats in normal page flow: the
+// zero-height, non-BFC .offline-controls wrapper lets the field-reports checkbox line and
+// the Instructions section wrap up beside it instead of stacking below - same float-escape
+// bug class as E-67/E-69/E-99, just triggered by a re-parented Leaflet control's own class
+// rather than an app-authored float. Neutralized here rather than with a `flow-root` on the
+// wrapper, since this control was never meant to float at all once out of Leaflet's corner
+// system.
 :host ::ng-deep .savetiles.leaflet-bar {
+  float     : none;
   box-shadow: none;
   border    : none;
   background: transparent;
