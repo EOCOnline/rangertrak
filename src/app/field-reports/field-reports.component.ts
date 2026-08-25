@@ -5,12 +5,8 @@ import { Observable, subscribeOn, Subscription } from 'rxjs'
 import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef, ChangeDetectionStrategy, signal } from '@angular/core';
 
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms'
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSliderModule } from '@angular/material/slider';
 import { AgGridAngular } from 'ag-grid-angular';
-import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
+import { SectionComponent } from '../shared/section/section.component';
 import { GridKeyboardHelpComponent } from '../shared/grid-keyboard-help/grid-keyboard-help.component';
 import { PageComponent } from '../shared/page/page.component';
 
@@ -35,14 +31,9 @@ export class myUnusedPipe implements PipeTransform {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
     AgGridAngular,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSliderModule,
     PageComponent,
-    DisclosureComponent,
+    SectionComponent,
     GridKeyboardHelpComponent
   ],
   templateUrl: './field-reports.component.html',
@@ -97,8 +88,6 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   private http: any
   private numSeperatorWarnings = 0
   private maxSeperatorWarnings = 3
-  public numFakesForm!: UntypedFormGroup
-  public nFakes = 10
 
   // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
   // https://blog.ag-grid.com/how-to-get-the-data-of-selected-rows-in-ag-grid/
@@ -151,7 +140,6 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   private rowData: any[] = []
 
   constructor(
-    private formBuilder: UntypedFormBuilder,
     private fieldReportService: FieldReportService,
     private log: LogService,
     // private teamService: TeamService,
@@ -238,16 +226,6 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
       complete: () => this.log.info('Field Reports Subscription complete', this.id)
     })
-
-    this.numFakesForm = this.formBuilder.group({})
-
-    if (this.settings ? !this.settings.debugMode : true) {
-      this.log.verbose("running in non-debug mode", this.id)
-      //Utility.displayHide(this.document.getElementById("enter__Fake--id")!) // defaults to hidden
-    } else {
-      this.log.verbose("running in debug mode", this.id)
-      Utility.displayShow(this.document.getElementById("enter__Fake--id")!)
-    }
 
     if (this.gridApi) {
       this.gridApi.refreshCells()
@@ -618,18 +596,6 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
         break;
     }
     // this.refreshGrid()
-  }
-
-  generateFakeFieldReports(num = this.nFakes) {
-    // TODO: compare current with
-    // https://github.com/material-components/material-components-web/tree/master/packages/mdc-slider#discrete-slider
-    // https://material-components.github.io/material-components-web-catalog/#/component/slider
-    this.fieldReportService.generateFakeData(num)
-    this.log.verbose(`Generated ${num} FAKE Field Reports`, this.id)
-    //this.fieldReportService.updateFieldReports()
-    //this.fieldReports$ = this.fieldReportService.subscribeToFieldReports()
-    //this.refreshGrid()
-    this.reloadPage() //TODO: why aren't above enough?!!!
   }
 
   ngOnDestroy() {

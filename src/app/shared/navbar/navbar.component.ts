@@ -81,8 +81,4 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     this.log.info("ngOnInit", this.id)
   }
-
-  Search() {
-    this.log.error("Search: unimplemented yet", this.id)
-  }
 }

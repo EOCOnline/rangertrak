@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+// Was `.disclosure__summary--strong` on a clickable <summary>; now a real (but "minor",
+// per the maintainer's own wording) heading - larger/bold but not a full page-title weight.
+.rt-section__heading {
+  margin     : 0 0 0.25em;
+  padding    : 0.15em 0.25em;
+  font-size  : larger;
+  font-weight: bold;
+}
+
+.rt-section__heading--plain {
+  font-size  : inherit;
+  font-weight: normal;
+}
+
+.rt-section__body {
+  padding-left: 0.25em;
+}

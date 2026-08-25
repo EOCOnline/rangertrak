@@ -23,7 +23,7 @@ import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit,
 import { AbstractMap, Utility, rangerIconFor, rangerColorFor, formatReportTime } from '../shared'
 import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, SettingsService } from '../shared/services'
 
-import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
+import { SectionComponent } from '../shared/section/section.component';
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // Markers are copied into project via virtue of angular.json: search it for leaflet!!!
@@ -65,7 +65,7 @@ function formatBytes(bytes: number): string {
 @Component({
   selector: 'rangertrak-mapLeaflet',
   standalone: true,
-  imports: [DisclosureComponent],
+  imports: [SectionComponent],
   templateUrl: './mapLeaflet.component.html',
   styleUrls: [
     './mapLeaflet.component.scss'

@@ -1,0 +1,10 @@
+<section #section class="rt-section">
+  @if (emphasis === 'strong') {
+    <h3 class="rt-section__heading">{{ summary }}<ng-content select="[rtSummary]"></ng-content></h3>
+  } @else {
+    <div class="rt-section__heading rt-section__heading--plain">{{ summary }}<ng-content select="[rtSummary]"></ng-content></div>
+  }
+  <div class="rt-section__body">
+    <ng-content></ng-content>
+  </div>
+</section>

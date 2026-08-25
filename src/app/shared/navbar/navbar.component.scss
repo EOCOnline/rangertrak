@@ -158,29 +158,6 @@
   filter      : invert(1);
 }
 
-.main-nav input {
-  visibility  : hidden;
-  height      : 1.8em;
-  flex        : 1;
-  margin-right: 3px;
-}
-
-// :not(.theme-toggle) - this was blanket-hiding every <button> under .main-nav (meant for
-// the disabled "(Future) Search" button below), which silently applied to the theme toggle
-// too and beat its own rules on specificity (class+element here vs. .theme-toggle's single
-// class) regardless of source order - found live: the button occupied its 44x24 box but
-// rendered fully invisible.
-.main-nav button:not(.theme-toggle) {
-  visibility   : hidden;
-  background   : white;
-  border       : 0;
-  border-radius: .8em;
-  color        : orangered;
-  height       : 1.8em;
-  padding      : 0 1em;
-  margin       : 0 1em;
-}
-
 .main-nav a {
   margin-left    : 5px;
   margin-right   : 5px;

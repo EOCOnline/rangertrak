@@ -26,8 +26,6 @@ export type SettingsType = {
 
   defLat: number,
   defLng: number,
-  defPlusCode: string,
-  w3wLocale: string,
   allowManualPinDrops: boolean,
 
   // Per-mission coordinate system visibility (Sprint H). Each independently gates a

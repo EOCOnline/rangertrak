@@ -14,13 +14,14 @@ import {
  * makes it impossible to show the product to anyone, or to eyeball a UI change,
  * without first hand-entering reports one at a time.
  *
- * This differs from FieldReportService.generateFakeData() on purpose. That one
- * scatters random points within ~0.001 degrees of the default coordinate with joke
- * notes - useful for load-testing the grid, useless for a demo, because every marker
- * lands in one indistinguishable clump. The data here is hand-authored and fixed:
- * recognizable Vashon locations far enough apart to exercise map bounds/zoom and
- * marker clustering, every status represented so the grid's color coding is visible,
- * and plausible dispatch-log notes.
+ * This used to differ from FieldReportService.generateFakeData() on purpose - that one
+ * scattered random points within ~0.001 degrees of the default coordinate with joke
+ * notes, useful for load-testing the grid but useless for a demo since every marker
+ * landed in one indistinguishable clump. It was removed 2026-08-25 as a dead control
+ * (E-94) once its only caller, the Field Reports "fake report generator," was removed
+ * too. The data here is hand-authored and fixed: recognizable Vashon locations far
+ * enough apart to exercise map bounds/zoom and marker clustering, every status
+ * represented so the grid's color coding is visible, and plausible dispatch-log notes.
  *
  * Report timestamps are the one thing computed rather than fixed - they're offsets
  * back from "now", so the Reports grid's Elapsed column always reads like a mission

@@ -304,8 +304,8 @@ async function checkRosterLifecycle(fx) {
   check('...with REW numbers', imported.rew, fx.rangers.length)
 
   await goto('/rangers')
-  await evaluate(`[...document.querySelectorAll('rangertrak-disclosure summary')].find(s => /Advanced/.test(s.textContent))?.click()`)
-  await sleep(400)
+  // Advanced is a plain always-visible section now (2026-08-25: collapsible sections
+  // removed app-wide), so there's no summary to click open before reaching the button.
   await evaluate(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Delete all rangers')?.click()`)
   await sleep(3000)
   check('deleting stores an empty list, keeping the key', await evaluate(`localStorage.getItem('rangers')`), '[]')

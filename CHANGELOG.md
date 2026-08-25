@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.45.0](https://github.com/EOCOnline/rangertrak/commits/main) (2026-08-25)
+
+### Features
+
+* **shared,rangers,field-reports,settings,map,help:** remove every collapsible section app-wide - `DisclosureComponent` is now `SectionComponent`, always visible, no click-to-expand
+* **navbar,field-reports,settings,entry,mapping:** remove dead controls found by the E-84 audit - navbar's unwired search box, Reports' fake-report generator and dead refresh buttons, Settings' dead refresh button, the What3Words derived row (E-88, E-92 through E-95)
+* **settings:** drop the dead `w3wLocale`/`defPlusCode` settings and the unimported `plus-code.ts` file, with a `schemaVersion` 3→4 migration (E-89, E-90, E-91)
+
 ## [0.44.1](https://github.com/EOCOnline/rangertrak/commit/6fd77c1953740a5f99584bb450c81c28ec927b6a) (2026-08-25)
 
 ### Bug Fixes

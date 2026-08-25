@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core'
 
-import { DisclosureComponent } from '../../../shared/disclosure/disclosure.component'
+import { SectionComponent } from '../../../shared/section/section.component'
 import {
   BackupService, LogService, SampleDataService, StoragePersistenceService
 } from '../../../shared/services/'
@@ -23,7 +23,7 @@ import {
 @Component({
   selector: 'rangertrak-settings-advanced-options',
   standalone: true,
-  imports: [CommonModule, DisclosureComponent],
+  imports: [CommonModule, SectionComponent],
   templateUrl: './settings-advanced-options.component.html',
   styleUrls: ['./settings-advanced-options.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

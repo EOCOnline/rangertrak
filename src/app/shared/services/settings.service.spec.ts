@@ -26,7 +26,6 @@ describe('SettingsService', () => {
 
       expect(service.settings.defLat).toBe(47.4472);
       expect(service.settings.defLng).toBe(-122.4627);
-      expect(service.settings.defPlusCode).toBe('84VVCGWP+VW');
       expect(service.settings.fieldReportStatuses.length).toBe(7);
     });
 
@@ -41,17 +40,17 @@ describe('SettingsService', () => {
       const stored = localStorage.getItem(STORAGE_KEY);
       expect(stored).not.toBeNull();
       const parsed = JSON.parse(stored!);
-      expect(parsed.defPlusCode).toBe('84VVCGWP+VW');
+      expect(parsed.defLat).toBe(47.4472);
     });
 
     it('loads existing settings from localStorage when present and well-formed', () => {
       const custom = {
+        schemaVersion: 4,
         settingsName: '', settingsDate: new Date(),
         mission: '99', event: 'Test Event', eventNotes: '',
         opPeriod: '', opPeriodStart: new Date(), opPeriodEnd: new Date(),
         application: 'RangerTrak', version: '9.9.9', debugMode: false,
-        defLat: 1.111, defLng: 2.222, defPlusCode: 'CUSTOM+CODE',
-        w3wLocale: 'Nowhere', allowManualPinDrops: false,
+        defLat: 1.111, defLng: 2.222, allowManualPinDrops: false,
         leaflet: { defZoom: 1, markerScheme: '', overviewDifference: 1, overviewMinZoom: 1, overviewMaxZoom: 1 },
         maplibre: { defZoom: 1, markerScheme: '', overviewDifference: 1, overviewMinZoom: 1, overviewMaxZoom: 1 },
         imageDirectory: './assets/imgs/', defFieldReportStatus: 0,
@@ -65,13 +64,16 @@ describe('SettingsService', () => {
       // `version`, which is always overwritten from package.json after load.
       expect(service.settings.mission).toBe('99');
       expect(service.settings.defLat).toBe(1.111);
-      expect(service.settings.defPlusCode).toBe('CUSTOM+CODE');
+      expect(service.settings.event).toBe('Test Event');
       expect(service.settings.version).not.toBe('9.9.9');
     });
 
-    it('falls back to hardcoded defaults when localStorage JSON lacks the "defPlusCode" marker', () => {
-      // The current load check is a naive substring test for "defPlusCode"
-      // in the raw stored string, not real schema validation.
+    it('falls back to hardcoded defaults when localStorage JSON lacks the "defLat" marker', () => {
+      // The current load check is a naive substring test for "defLat" in the raw stored
+      // string, not real schema validation. It deliberately does NOT check for
+      // "schemaVersion" - a genuine pre-Sprint-E (v0) object has no schemaVersion at all,
+      // and migrateSettings() treats that absence as "version 0" and migrates it forward,
+      // so requiring the key here would reject the exact shape migration exists to handle.
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ mission: '42' }));
 
       const service = TestBed.inject(SettingsService);
@@ -80,13 +82,23 @@ describe('SettingsService', () => {
       expect(service.settings.mission).toBe('');
     });
 
+    it('loads a v0 object with no schemaVersion at all, migrating it forward rather than rejecting it', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ mission: 'v0-mission', defLat: 9.999, defLng: 8.888 }));
+
+      const service = TestBed.inject(SettingsService);
+
+      expect(service.settings.mission).toBe('v0-mission');
+      expect(service.settings.defLat).toBe(9.999);
+      expect(service.settings.schemaVersion).toBeGreaterThanOrEqual(1);
+    });
+
     it('preserves unparseable localStorage content under a "-BAD" key and falls back to defaults', () => {
-      localStorage.setItem(STORAGE_KEY, '{not valid json, has defPlusCode though');
+      localStorage.setItem(STORAGE_KEY, '{not valid json, has defLat though');
 
       const service = TestBed.inject(SettingsService);
 
       expect(service.settings.defLat).toBe(47.4472);
-      expect(localStorage.getItem(STORAGE_KEY + '-BAD')).toContain('defPlusCode');
+      expect(localStorage.getItem(STORAGE_KEY + '-BAD')).toContain('defLat');
     });
   });
 
@@ -116,7 +128,7 @@ describe('SettingsService', () => {
       expect(result.defLat).toBe(47.4472);
       expect(service.settings.mission).toBe('');
       const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-      expect(stored.defPlusCode).toBe('84VVCGWP+VW');
+      expect(stored.defLat).toBe(47.4472);
     });
   });
 });

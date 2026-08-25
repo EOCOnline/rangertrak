@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { DisclosureComponent } from '../disclosure/disclosure.component'
+import { SectionComponent } from '../section/section.component'
 
 /**
  * The AG Grid keyboard-interaction disclosure, shared by Rangers and Field Reports —
@@ -8,7 +8,7 @@ import { DisclosureComponent } from '../disclosure/disclosure.component'
 @Component({
   selector: 'rangertrak-grid-keyboard-help',
   standalone: true,
-  imports: [DisclosureComponent],
+  imports: [SectionComponent],
   templateUrl: './grid-keyboard-help.component.html',
   changeDetection: ChangeDetectionStrategy.Eager
 })

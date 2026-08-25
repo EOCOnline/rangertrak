@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 
-import { DisclosureComponent } from '../../../shared/disclosure/disclosure.component'
+import { SectionComponent } from '../../../shared/section/section.component'
 
 /**
  * Static "Instructions" disclosure at the top of the Settings form. Sprint C split out of
@@ -10,7 +10,7 @@ import { DisclosureComponent } from '../../../shared/disclosure/disclosure.compo
 @Component({
   selector: 'rangertrak-settings-instructions',
   standalone: true,
-  imports: [CommonModule, DisclosureComponent],
+  imports: [CommonModule, SectionComponent],
   templateUrl: './settings-instructions.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
 })

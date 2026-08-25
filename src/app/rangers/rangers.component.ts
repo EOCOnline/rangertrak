@@ -7,7 +7,7 @@ import { CommonModule, DOCUMENT } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { AgGridAngular } from 'ag-grid-angular';
-import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
+import { SectionComponent } from '../shared/section/section.component';
 import { GridKeyboardHelpComponent } from '../shared/grid-keyboard-help/grid-keyboard-help.component';
 import { PageComponent } from '../shared/page/page.component';
 
@@ -29,7 +29,7 @@ import { CustomTooltip } from './customTooltip'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, DisclosureComponent, GridKeyboardHelpComponent],
+  imports: [CommonModule, AgGridAngular, PageComponent, SectionComponent, GridKeyboardHelpComponent],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
@@ -63,7 +63,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   private static readonly PRIVACY_DISMISSED_KEY = 'rangertrak.rangers.privacyNoticeDismissed'
   privacyNoticeDismissed = false
 
-  @ViewChild('privacyDetails') private privacyDetails?: DisclosureComponent
+  @ViewChild('privacyDetails') private privacyDetails?: SectionComponent
 
   numSeperatorWarnings = 0
   maxSeperatorWarnings = 3

@@ -1,5 +1,5 @@
 <rangertrak-page [title]="title" [description]="pageDescr">
-  <rangertrak-disclosure summary="Tips">
+  <rangertrak-section summary="Tips">
     <ul>
       <li>
         Edits made directly in the grid save automatically — there is no Save button on
@@ -13,7 +13,7 @@
         importing.
       </li>
     </ul>
-  </rangertrak-disclosure>
+  </rangertrak-section>
   <br />
 
   <rangertrak-grid-keyboard-help></rangertrak-grid-keyboard-help>
@@ -106,46 +106,9 @@
     }
 
     <br />
-    <rangertrak-disclosure summary="Advanced">
-      <div>
-        [To be removed - should happen automatically] Force field reports refresh:
-        <button (click)="refreshGrid()">Refresh Grid</button>
-      </div>
-      <div>
-        [To be removed - should happen automatically] Force field reports update:
-        <button (click)="reloadPage()">Reload Page</button>
-      </div>
+    <rangertrak-section summary="Advanced">
       <button (click)="onBtnClearFieldReports()">
         Delete ALL Field Reports from local storage</button><br />
-      <!--button (click)="onBtnImportFieldReports_unused()">FUTURE: Import Field Reportgs from CSV file</button><br-->
-
-      <br /><br />
-
-      <!-- https://material.angular.io/components/slider/overview -->
-      <!-- ngModel cannot be used to register form controls with a parent formGroup directive -->
-      <div [formGroup]="numFakesForm" id="enter__Fake--id">
-        <section class="enter__Fake">
-          <mat-form-field class="enter__Fake--numfield" appearance="fill">
-            <mat-label># Fakes</mat-label>
-            <input matInput type="number" [(ngModel)]="nFakes" [ngModelOptions]="{standalone: true}" />
-          </mat-form-field>
-
-          <!-- Since Material v15 <mat-slider> is only a container: the value accessor
-               lives on the inner <input matSliderThumb>, so ngModel has to bind there.
-               Binding it on <mat-slider> threw "Cannot read properties of null (reading
-               'writeValue')" and broke the whole page. `discrete` replaces the old
-               `thumbLabel`. -->
-          <mat-slider id="enter__Fake--slider" discrete step="5" min="0" max="100">
-            <input matSliderThumb aria-label="# Fake Field Reports" [(ngModel)]="nFakes"
-              [ngModelOptions]="{standalone: true}" />
-          </mat-slider>
-
-          <button (click)="generateFakeFieldReports()" type="button" id="enter__Fake--button">
-            Add another {{nFakes}} FAKE Field Reports ()
-          </button>
-          <!--For Now: Click on rangers page, then back to this page to refresh view... -->
-        </section>
-      </div>
-    </rangertrak-disclosure>
+    </rangertrak-section>
   </div>
 </rangertrak-page>

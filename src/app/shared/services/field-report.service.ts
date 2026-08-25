@@ -6,7 +6,7 @@ import {
 } from '@angular/core'
 
 import {
-  FieldReportStatusType, FieldReportsType, FieldReportType, LogService, RangerService, RangerType,
+  FieldReportStatusType, FieldReportsType, FieldReportType, LogService, RangerType,
   SettingsService, SettingsType
 } from './'
 
@@ -42,7 +42,6 @@ export class FieldReportService {
   private settingsSubscription!: Subscription
   private settings!: SettingsType
 
-  private rangersSubscription!: Subscription
   public rangers: RangerType[] = []
 
   private storageLocalName = 'fieldReports'
@@ -52,7 +51,6 @@ export class FieldReportService {
   // https://angular.io/guide/architecture-services#providing-services: singleton or multiple service instances?!
   //! REVIEW: Field & Ranger Services BOTH call constructors twice!!
   constructor(
-    private rangerService: RangerService,
     private settingsService: SettingsService,
     private log: LogService,
     private httpClient: HttpClient,
@@ -349,53 +347,4 @@ export class FieldReportService {
     this.log.excessive(`New bounds: E: ${east};  N: ${north};  W: ${west};  S: ${south};  `, this.id)
   }
 
-  generateFakeData(num: number = 15) {
-    let rangers: RangerType[] = []
-
-    this.rangersSubscription = this.rangerService.getRangersObserver().subscribe({
-      next: (newRangers) => { rangers = newRangers },
-      error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
-      complete: () => this.log.info('Rangers Subscription complete', this.id)
-    })
-
-    if (rangers == null || rangers!.length < 1) {
-      alert("No Rangers! Please add some 1st.")
-      return
-    }
-    if (this.settings === undefined) {
-      this.log.error(`this.settings was undefined in generateFakeData()`, this.id)
-      return
-    }
-
-    const streets = ["Ave", "St.", "Pl.", "Court", "Circle"]
-    const notes = ["Reports beautiful sunrise", "Roudy Kids chasing me",
-      "Approaching Neighborhood CERT", "Confused & dazed by a sun spot",
-      "Wow", "#&)Rats)^%$#@", "na", "Can't hear you",
-      "Alright: Found another GeoCache!", "Need a Snickers bar",
-      "Bounced via tail of a comet!", "Is that...Sasquatch???",
-      "Need confidential meeting: HIPAA", "Getting overrun by racoons"]
-
-    const msSince1970 = new Date().getTime()
-    this.log.info(`Adding an additional ${num} FAKE field reports... with base of ${msSince1970}`, this.id)
-
-    for (let i = 0; i < num; i++) {
-      this.fieldReports.fieldReportArray.push({
-        id: this.fieldReports.maxId++,
-        callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
-        //team: 'T1', //teams[Math.floor(Math.random() * teams.length)].name,
-        location: {
-          lat: this.settings.defLat + Math.floor(Math.random() * 100) / 50000 - .001,
-          lng: this.settings.defLng + (Math.floor(Math.random() * 100) / 50000) - .001,
-          address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
-          derivedFromAddress: (Math.random() > 0.75)
-        },
-        date: new Date(Math.floor(msSince1970 - (Math.random() * 10 * 60 * 60 * 1000))), // 0-10 hrs earlier
-        status: this.settings.fieldReportStatuses[Math.floor(Math.random() * this.settings.fieldReportStatuses.length)].status,
-        notes: notes[Math.floor(Math.random() * notes.length)]
-      })
-      this.fieldReports.numReport++
-    }
-    this.recalcFieldBounds(this.fieldReports)
-    this.updateFieldReportsAndPublish()
-  }
 }

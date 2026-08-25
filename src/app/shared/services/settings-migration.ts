@@ -24,8 +24,10 @@ import { StatusKey } from './status-color'
  * 1 - status colours become semantic keys rather than raw CSS colour strings.
  * 2 - backfill any field SettingsType declares that the stored object lacks (BUG-3).
  * 3 - rename the legacy `google` settings block to `maplibre` (E-70).
+ * 4 - drop `w3wLocale` and `defPlusCode`, both dead controls removed from SettingsType
+ *     during the E-84 audit's cleanup (E-89/E-90).
  */
-export const SETTINGS_SCHEMA_VERSION = 3
+export const SETTINGS_SCHEMA_VERSION = 4
 
 /**
  * The status colours as shipped before v1, paired with the semantic key each becomes.
@@ -78,6 +80,9 @@ export function migrateSettings(raw: SettingsType, defaults?: SettingsType): Set
     }
     if (version < 3) {
       settings = renameGoogleToMaplibre(settings)
+    }
+    if (version < 4) {
+      settings = dropDeadLocationFields(settings)
     }
     settings = { ...settings, schemaVersion: SETTINGS_SCHEMA_VERSION }
   }
@@ -152,6 +157,21 @@ function renameGoogleToMaplibre(settings: SettingsType): SettingsType {
   if (!('google' in raw)) return settings
   const { google, ...rest } = raw
   return { ...rest, maplibre: google } as unknown as SettingsType
+}
+
+/**
+ * v3 -> v4 (E-89/E-90): `w3wLocale` and `defPlusCode` were both settings for controls
+ * verified dead during the E-84 documentation audit - `w3wLocale` was read by nothing at
+ * all, and `defPlusCode`'s only consumer was `shared/mapping/plus-code.ts`, itself imported
+ * by nothing (deleted the same day). Both are removed from `SettingsType`; this drops them
+ * from a returning user's stored object too, rather than leaving them as inert orphaned
+ * keys forever. A stored object with neither key - either written after this migration
+ * already shipped, or pre-dating both fields entirely - is left alone.
+ */
+function dropDeadLocationFields(settings: SettingsType): SettingsType {
+  const raw = settings as unknown as Record<string, unknown>
+  const { w3wLocale, defPlusCode, ...rest } = raw
+  return rest as unknown as SettingsType
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

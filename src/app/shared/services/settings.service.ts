@@ -130,7 +130,17 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     if (needSettings) {
       this.log.info("Get App Settings...", this.id)
       try {
-        if (localStorageSettings != null && localStorageSettings.indexOf("defPlusCode") > 0) {
+        // E-89/E-90 (2026-08-25): was a substring check for "defPlusCode" - that field is
+        // now removed from SettingsType (dead control, never read by anything), so a
+        // freshly-saved settings object would never contain it again, and this check would
+        // never find a real settings blob "well-formed" - falling back to defaults on every
+        // load despite real data sitting right there in localStorage. "schemaVersion" is
+        // NOT a safe replacement: a genuine pre-Sprint-E (v0) object has no schemaVersion at
+        // all - that absence is exactly what migrateSettings() treats as "version 0" and
+        // migrates forward - so requiring it here would reject the one shape the migration
+        // path most needs to handle. "defLat" has been part of every settings shape since
+        // before schema versioning existed and survives every migration step untouched.
+        if (localStorageSettings != null && localStorageSettings.indexOf("defLat") > 0) {
           // Migrate BEFORE publishing: subscribers (and the Settings form) must never see a
           // pre-migration shape. See settings-migration.ts. The other entry point that can
           // introduce foreign settings is Import Mission - backup.service.ts migrates there too.
@@ -243,8 +253,6 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
 
       defLat: 47.4472,
       defLng: -122.4627,  // Vashon EOC!
-      defPlusCode: '84VVCGWP+VW', // or "CGWP+VX Vashon, Washington" = 47.447187,-122.462688
-      w3wLocale: "Vashon, WA",
       allowManualPinDrops: false,
       googleGeocodingApiKey: '',
 

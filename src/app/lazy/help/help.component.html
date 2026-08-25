@@ -50,11 +50,11 @@
       </p>
 
       <!-- ADR D-15: primary in-app feedback path - see feedback.component.ts. -->
-      <rangertrak-disclosure summary="Send Feedback">
+      <rangertrak-section summary="Send Feedback">
         <rangertrak-feedback></rangertrak-feedback>
-      </rangertrak-disclosure>
+      </rangertrak-section>
 
-      <rangertrak-disclosure summary="How it is built">
+      <rangertrak-section summary="How it is built">
         <small>
           <ul>
             <li>A Progressive Web App: installable, and runs with no Internet once loaded</li>
@@ -68,9 +68,9 @@
             <li>No cookies, no accounts, no server: data stays in your browser's local storage</li>
           </ul>
         </small>
-      </rangertrak-disclosure>
+      </rangertrak-section>
 
-      <rangertrak-disclosure emphasis="plain">
+      <rangertrak-section emphasis="plain">
         <span rtSummary>&copy;2019&ndash;{{today | date: 'y'}}
           <a href="https://eoc.online/" target="_blank">eoc.online</a>, under the GNU Affero
           General Public License v3</span>
@@ -102,7 +102,7 @@
             available under those terms.
           </p>
         </small>
-      </rangertrak-disclosure>
+      </rangertrak-section>
     </section>
 
     <!-- E-84: was "Photo credit: Shocked Marmot from Vistapoint.net, by ___" - an unfilled

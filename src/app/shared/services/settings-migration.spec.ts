@@ -19,7 +19,7 @@ describe('migrateSettings', () => {
       mission: 'M1', event: '', eventNotes: '', opPeriod: '',
       opPeriodStart: new Date(0), opPeriodEnd: new Date(0),
       application: 'RangerTrak', version: '0.15.8', debugMode: false,
-      defLat: 47.4472, defLng: -122.4627, defPlusCode: '', w3wLocale: '',
+      defLat: 47.4472, defLng: -122.4627,
       allowManualPinDrops: false, googleGeocodingApiKey: '',
       google: { defZoom: 17, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
       leaflet: { defZoom: 17, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
@@ -106,7 +106,7 @@ describe('migrateSettings', () => {
   // that is absent - it threw on every change-detection pass. This backfill is the fix.
   describe('backfilling fields added after a settings object was saved (BUG-3)', () => {
     function defaults(): SettingsType {
-      return { ...v0Settings(), googleGeocodingApiKey: 'DEFAULT-KEY', w3wLocale: 'Default Locale' }
+      return { ...v0Settings(), googleGeocodingApiKey: 'DEFAULT-KEY', event: 'Default Event' }
     }
 
     it('adds a top-level key the stored object never had, from the supplied defaults', () => {
@@ -121,9 +121,9 @@ describe('migrateSettings', () => {
       const out = migrateSettings(stored, defaults())
       expect(out.googleGeocodingApiKey).toBe('USERS-OWN-KEY')
 
-      const emptyOnPurpose = { ...v0Settings(), w3wLocale: '' }
+      const emptyOnPurpose = { ...v0Settings(), event: '' }
       const out2 = migrateSettings(emptyOnPurpose, defaults())
-      expect(out2.w3wLocale).toBe('') // '' is a real, deliberate value - not "missing"
+      expect(out2.event).toBe('') // '' is a real, deliberate value - not "missing"
     })
 
     it('backfills one level into nested objects like leaflet/google', () => {
@@ -155,10 +155,38 @@ describe('migrateSettings', () => {
     // CURRENT schema version, still missing a field the live SettingsType now declares.
     it('backfills a field even when the stored object is already at the current schema version', () => {
       const alreadyCurrent = { ...v0Settings(), schemaVersion: SETTINGS_SCHEMA_VERSION } as unknown as Record<string, unknown>
-      delete alreadyCurrent['w3wLocale'] // stands in for a field added after this user's last save
+      delete alreadyCurrent['event'] // stands in for a field added after this user's last save
       const out = migrateSettings(alreadyCurrent as unknown as SettingsType, defaults())
-      expect(out.w3wLocale).toBe('Default Locale')
+      expect(out.event).toBe('Default Event')
       expect(out.schemaVersion).toBe(SETTINGS_SCHEMA_VERSION) // not bumped further
+    })
+  })
+
+  describe('drop dead w3wLocale/defPlusCode fields (E-89/E-90, schemaVersion 3 -> 4)', () => {
+    it('removes both dead fields from a returning user\'s stored object', () => {
+      const stored = {
+        ...v0Settings(), schemaVersion: 3, w3wLocale: 'Vashon, WA', defPlusCode: '84VVCGWP+VW',
+      } as unknown as Record<string, unknown>
+
+      const out = migrateSettings(stored as unknown as SettingsType) as unknown as Record<string, unknown>
+
+      expect('w3wLocale' in out).toBe(false)
+      expect('defPlusCode' in out).toBe(false)
+      expect(out['schemaVersion']).toBe(SETTINGS_SCHEMA_VERSION)
+    })
+
+    it('leaves an object with neither key alone rather than erroring', () => {
+      const stored = v0Settings() as unknown as Record<string, unknown>
+      const out = migrateSettings(stored as unknown as SettingsType) as unknown as Record<string, unknown>
+      expect('w3wLocale' in out).toBe(false)
+      expect('defPlusCode' in out).toBe(false)
+    })
+
+    it('is idempotent - an already-migrated object is untouched by a second pass', () => {
+      const alreadyCurrent = { ...v0Settings(), schemaVersion: SETTINGS_SCHEMA_VERSION } as unknown as Record<string, unknown>
+      const once = migrateSettings(alreadyCurrent as unknown as SettingsType)
+      const twice = migrateSettings(once)
+      expect(twice).toEqual(once)
     })
   })
 

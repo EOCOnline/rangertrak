@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common'
 import { RouterLink } from '@angular/router'
 import { MatTabsModule } from '@angular/material/tabs'
 
-import { DisclosureComponent } from '../../shared/disclosure/disclosure.component'
+import { SectionComponent } from '../../shared/section/section.component'
 import { FeedbackComponent } from '../../shared/feedback/feedback.component'
 import { PageComponent } from '../../shared/page/page.component'
 
@@ -38,7 +38,7 @@ import { HelpFaqComponent } from './tabs/help-faq.component'
   selector: 'rangertrak-help',
   standalone: true,
   imports: [
-    CommonModule, PageComponent, DisclosureComponent, RouterLink, FeedbackComponent, MatTabsModule,
+    CommonModule, PageComponent, SectionComponent, RouterLink, FeedbackComponent, MatTabsModule,
     HelpStartComponent, HelpEntryComponent, HelpMapsComponent,
     HelpMissionComponent, HelpDataComponent, HelpFaqComponent,
   ],

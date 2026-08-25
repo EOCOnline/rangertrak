@@ -600,10 +600,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     this.setDerivedText("derivedAddress", location.address)
 
-    // Get & update What3Words
-    let w3w = "Not.Implemented.Yet!"
-    this.setDerivedText("what3Words", w3w)
-
     // Sprint H: no dedicated Maidenhead input field, but the position is still shown
     // here as a derived readout - setDerivedText() already no-ops if the element isn't
     // rendered (showMaidenhead off, and showAllSystems off).
@@ -640,7 +636,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * moment the block is shown again for the next report.
    */
   private clearDerivedText() {
-    for (const id of ['derivedAddress', 'pCodes', 'what3Words', 'maidenhead']) {
+    for (const id of ['derivedAddress', 'pCodes', 'maidenhead']) {
       this.setDerivedText(id, '')
     }
   }
