@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.42.0](https://github.com/EOCOnline/rangertrak/commit/64363d446e33dbf75c1cbbdfd52ec0cc79bf5c2f) (2026-08-24)
+
+### Features
+
+* **mapLeaflet,e2e:** E-80 follow-on - static elapsed-time label on route trails ([64363d4](https://github.com/EOCOnline/rangertrak/commit/64363d446e33dbf75c1cbbdfd52ec0cc79bf5c2f))
+
+## [0.41.0](https://github.com/EOCOnline/rangertrak/commit/be7f75a8db47fc967d6c5003535b5f6d549fb809) (2026-08-24)
+
+### Features
+
+* **mapping,mapLeaflet,e2e:** E-86 - unique per-ranger map markers ([be7f75a](https://github.com/EOCOnline/rangertrak/commit/be7f75a8db47fc967d6c5003535b5f6d549fb809))
+
+## [0.40.0](https://github.com/EOCOnline/rangertrak/commit/b57f47eabd865401e5590402ed8450a444e6368b) (2026-08-24)
+
+### Features
+
+* **mapLeaflet,e2e:** E-85 phase 2 - wire in OpenTopoMap as first alternate base layer ([b57f47e](https://github.com/EOCOnline/rangertrak/commit/b57f47eabd865401e5590402ed8450a444e6368b))
+
+## [0.39.0](https://github.com/EOCOnline/rangertrak/commit/eb4f84e0e43cf6c1bd1cad58cf06f594c536ab1c) (2026-08-24)
+
+### Features
+
+* **mapLeaflet,e2e:** E-85 phase 1 - Leaflet base-layer switcher infrastructure ([eb4f84e](https://github.com/EOCOnline/rangertrak/commit/eb4f84e0e43cf6c1bd1cad58cf06f594c536ab1c))
+
 ## [0.38.0](https://github.com/EOCOnline/rangertrak/commit/2c074ce1f2fe310edd33ba2cd73311c750933e03) (2026-08-24)
 
 ### Features
