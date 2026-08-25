@@ -1044,9 +1044,23 @@ async function checkCallsignIsSaved() {
     const reports = JSON.parse(localStorage.getItem('fieldReports') || '{}');
     const list = reports.fieldReportArray || [];
     const last = list[list.length - 1] || {};
-    return { count: list.length, callsign: last.callsign, typedInto: 'E2E-AA1' };
+    // ADR D-42/D-43: the report should also carry rangerUid, resolved from the typed
+    // callsign, and it must equal that ranger's uid in the roster.
+    const roster = (JSON.parse(localStorage.getItem('rangers') || '{"rangers":[]}').rangers) || [];
+    const match = roster.find(r => r.callsign === 'E2E-AA1') || {};
+    return {
+      count: list.length, callsign: last.callsign, typedInto: 'E2E-AA1',
+      rangerUid: last.rangerUid || '', rosterUid: match.uid || '',
+      schemaVersion: reports.schemaVersion,
+    };
   })()`)
   check('a report was actually stored', saved.count > 0, true)
+  // ADR D-42/D-43 phase 4: the whole chain, end to end - typed callsign resolves to a ranger,
+  // and the report is attributed by the surrogate key rather than by a string match done
+  // again later. A unit test cannot cover this; the resolution happens in the live form.
+  check('the report is attributed by rangerUid, not just a callsign string',
+    saved.rangerUid !== '' && saved.rangerUid === saved.rosterUid, true)
+  check('the field-report store carries a schemaVersion', typeof saved.schemaVersion, 'number')
   // The input has BOTH [formControl]="callsignCtrl" AND formControlName="callsign"; only one
   // can be the value accessor, so entryControlsForm.callsign never receives what was typed
   // and mergedFormValue() saves ''. The ICS-309 log is worthless without who filed the report.

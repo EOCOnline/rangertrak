@@ -435,11 +435,44 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param value
    * @returns
    */
+  /**
+   * ADR D-42/D-43: matches callsign OR name OR credential id, not callsign alone.
+   *
+   * This is a requirement, not a nicety. Filtering on callsign only made a ranger WITHOUT a
+   * callsign impossible to select at all - and that population (CERT/MERT responders who are
+   * not ham-licensed) is the entire reason D-42 exists. They were in the roster, and the one
+   * control for attributing a report to them could not find them.
+   */
+  /**
+   * Resolves what the scribe typed (or picked) to one ranger, or null.
+   *
+   * Matches the same three fields `_filterRangers()` offers, and in the same priority order
+   * the autocomplete presents them, so "the row I clicked" and "the row this resolves to"
+   * cannot disagree. Exact match only - a substring is fine for *narrowing a list a human
+   * then picks from*, but not for silently deciding who a report belongs to.
+   */
+  private matchRanger(value: string): RangerType | null {
+    const needle = value.trim().toLowerCase()
+    if (!needle) {
+      return null
+    }
+    return this.rangers.find(r => r.callsign?.trim().toLowerCase() === needle)
+      ?? this.rangers.find(r => r.fullName?.trim().toLowerCase() === needle)
+      ?? this.rangers.find(r => r.id?.trim().toLowerCase() === needle)
+      ?? null
+  }
+
   private _filterRangers(value: string): RangerType[] {
     this.log.excessive(`_filterRangers  value changed: ${value} `, this.id)
 
     const filterValue = value.toLowerCase()
-    return this.rangers.filter((ranger1) => ranger1.callsign.toLowerCase().includes(filterValue))
+    if (!filterValue) {
+      return this.rangers.slice()
+    }
+    return this.rangers.filter(r =>
+      r.callsign?.toLowerCase().includes(filterValue)
+      || r.fullName?.toLowerCase().includes(filterValue)
+      || r.id?.toLowerCase().includes(filterValue))
   }
 
   /**
@@ -472,9 +505,24 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    * meaningful data boundary. Used for both submission and the debug regurgitation panel.
    */
   mergedFormValue() {
+    // ADR D-42/D-43: attribute the report to a ranger by the surrogate `uid`, resolved from
+    // whatever the scribe actually typed or picked.
+    //
+    // `callsign` is written from the RESOLVED ranger, not from the text in the box: for a
+    // ranger with no callsign the option shows their name (see the template), and storing
+    // that name in a field meaning "what came over the radio" would be a small lie. Their
+    // report correctly carries a blank callsign, with `rangerUid` carrying the identity.
+    //
+    // An unmatched entry keeps the raw text as the callsign and an empty uid - a scribe
+    // logging a callsign that isn't in the roster yet is normal mid-incident, and losing what
+    // they heard would be worse than an unresolved join.
+    const typed = (this.callsignCtrl.value ?? '').trim()
+    const match = this.matchRanger(typed)
+
     return {
       ...this.entryModel(),
-      callsign: this.callsignCtrl.value,
+      rangerUid: match?.uid ?? '',
+      callsign: match ? match.callsign : typed,
       status: this.entryControlsForm.value.status,
       // Only when the section is actually open - collapsing it after entering a range/
       // bearing is how a scribe retracts "never mind, not a real clue," and a submitted

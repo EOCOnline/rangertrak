@@ -63,11 +63,19 @@
           <input #callsignInput matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one"
             aria-label="Callsigns" [matAutocomplete]="auto" (change)="this.callsignCtrlChanged()"
             id="enter__Callsign-input" [attr.tabindex]="callsignTabIndex" data-lpignore="true" spellcheck="false" />
+          <!-- ADR D-42/D-43: falls back to the name when a ranger has no callsign. Bound to
+               `ranger.callsign` alone, a no-callsign ranger's option value was the EMPTY
+               STRING - selecting them put nothing in the box and the report could not be
+               attributed to them at all. That population (CERT/MERT responders who aren't
+               ham-licensed) is the whole reason D-42 exists, so they have to be pickable.
+               mergedFormValue() resolves this text back to the ranger and stores their real
+               callsign - blank if that's the truth - rather than the displayed fallback. -->
           <mat-autocomplete #auto="matAutocomplete">
-            <mat-option *ngFor="let ranger of filteredRangers | async" [value]="ranger.callsign">
+            <mat-option *ngFor="let ranger of filteredRangers | async"
+              [value]="ranger.callsign || ranger.fullName">
               <img class="enter__Callsign-img" aria-hidden="true" [src]="'./assets/imgs/rangers/'+(ranger.image)"
                 width="40" height="40">
-              <span> {{ranger.callsign}}</span> |
+              <span> {{ranger.callsign || '(no callsign)'}}</span> |
               <small> {{ranger.fullName}} | {{ranger.phone}}</small>
             </mat-option>
           </mat-autocomplete>
