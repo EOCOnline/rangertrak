@@ -1,14 +1,15 @@
 import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, computed, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { form, FormField, max, min, required } from '@angular/forms/signals'
+import { RouterLink } from '@angular/router'
 
 import { PageComponent } from '../shared/page/page.component'
 import {
-  FieldReportStatusType, LogService, SETTINGS_SCHEMA_VERSION, SettingsService,
-  SettingsType
+  FieldReportStatusType, LogService, MissionReadinessService, SETTINGS_SCHEMA_VERSION,
+  SettingsService, SettingsType
 } from '../shared/services/'
 import { InstallUpdateComponent } from '../shared/install-update/install-update.component'
 
@@ -45,6 +46,7 @@ const blankSettings: SettingsType = {
     CommonModule,
     FormsModule,
     FormField,
+    RouterLink,
     ...MATERIAL_IMPORTS,
     PageComponent,
     SettingsInstructionsComponent,
@@ -120,9 +122,53 @@ export class SettingsComponent implements OnInit, OnDestroy {
    */
   rowData = signal<FieldReportStatusType[]>([])
 
+  /**
+   * E-79: the header's readiness dot (ADR D-32) only ever showed the aggregate red/amber/
+   * green colour, so a scribe on this page had to hover the header pill and cross-reference
+   * its tooltip text back against the sections below to find what was actually wrong.
+   * `MissionReadinessService`'s six signals already exist individually - no new
+   * decomposition needed, just surfacing them here. Two (mission name, operating period)
+   * are set on this very page; the other four (roster, both offline-map signals, storage
+   * persistence) are set or fixed elsewhere, so those get a link out rather than a false
+   * "see below" pointing at a section that isn't the actual control.
+   */
+  readonly readinessGaps = computed(() => {
+    const r = this.readiness
+    const gaps: { label: string, severity: 'red' | 'amber', link?: string, linkText?: string }[] = []
+    if (!r.missionNamed()) {
+      gaps.push({ label: 'Mission name is not set - see the Mission section below.', severity: 'red' })
+    }
+    if (!r.rosterLoaded()) {
+      gaps.push({
+        label: 'Roster is still the untouched sample data.', severity: 'red',
+        link: '/rangers', linkText: 'Load the real roster on Rangers',
+      })
+    }
+    if (!r.opPeriodCurrent()) {
+      gaps.push({ label: 'Operating period has expired - see the Mission section below.', severity: 'amber' })
+    }
+    if (!r.offlineTilesSaved()) {
+      gaps.push({
+        label: 'No offline map tiles saved on this device yet.', severity: 'amber',
+        link: '/map', linkText: 'Save an area on the Map page',
+      })
+    }
+    if (!r.bundledMapWarmed()) {
+      gaps.push({
+        label: 'Backup (MapLibre) map has not been opened on this device yet.', severity: 'amber',
+        link: '/map', linkText: 'Open the Map page',
+      })
+    }
+    if (!r.storagePersisted()) {
+      gaps.push({ label: 'Storage is not protected from eviction by the browser.', severity: 'amber' })
+    }
+    return gaps
+  })
+
   constructor(
     private log: LogService,
     private settingsService: SettingsService,
+    public readiness: MissionReadinessService,
     @Inject(DOCUMENT) private document: Document) {
     this.log.verbose('======== Constructor() ============', this.id)
 

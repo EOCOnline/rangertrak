@@ -6,6 +6,25 @@
        `detailed` keeps this page's fuller explanation; navbar/footer get the compact form. -->
   <rangertrak-install-update [detailed]="true"></rangertrak-install-update>
 
+  <!-- E-79: which specific gap(s) are behind the header's red/amber readiness dot, not
+       just the aggregate colour - never shown once every signal is green. -->
+  @if (readinessGaps().length > 0) {
+  <div class="readiness-gaps" role="note" aria-label="Mission readiness gaps">
+    <p class="readiness-gaps__heading">Affecting mission readiness on this device:</p>
+    <ul>
+      @for (gap of readinessGaps(); track gap.label) {
+      <li class="readiness-gaps__item" [class.readiness-gaps__item--red]="gap.severity === 'red'"
+        [class.readiness-gaps__item--amber]="gap.severity === 'amber'">
+        {{ gap.label }}
+        @if (gap.link) {
+        <a [routerLink]="gap.link">{{ gap.linkText }}</a>
+        }
+      </li>
+      }
+    </ul>
+  </div>
+  }
+
   <form (ngSubmit)="onFormSubmit()">
     <br />
 

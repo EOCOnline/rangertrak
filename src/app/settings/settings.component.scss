@@ -28,6 +28,45 @@ button {
   //padding: 10px;
 }
 
+// E-79: reuses the header readiness dot's own red/amber tokens (mission-readiness.component.scss)
+// so a scribe already reading "red means X" from the header pill sees the same colour
+// language here, not a second one to learn.
+.readiness-gaps {
+  margin       : 0 0 1rem;
+  padding      : 0.6em 0.9em;
+  background   : var(--rt-surface-2);
+  border-radius: var(--rt-radius);
+}
+
+.readiness-gaps__heading {
+  margin     : 0 0 0.4em;
+  font-weight: 700;
+}
+
+.readiness-gaps ul {
+  margin : 0;
+  padding: 0;
+}
+
+.readiness-gaps__item {
+  list-style  : none;
+  padding     : 0.2em 0 0.2em 0.7em;
+  border-left : 3px solid var(--rt-line-strong);
+  margin      : 0 0 0.35em;
+}
+
+.readiness-gaps__item--red {
+  border-left-color: var(--rt-readiness-red);
+}
+
+.readiness-gaps__item--amber {
+  border-left-color: var(--rt-readiness-amber);
+}
+
+.readiness-gaps__item a {
+  margin-left: 0.5em;
+}
+
 label {
   font-weight   : bold;
   padding-bottom: .5rem;

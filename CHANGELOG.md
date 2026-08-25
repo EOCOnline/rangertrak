@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.47.0](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-25)
+
+### Features
+
+* **mission,settings:** Mission page names which specific readiness gap(s) are behind the header's red/amber dot, not just the aggregate colour (E-79)
+
 ## [0.46.0](https://github.com/EOCOnline/rangertrak/commit/7307b5b1d945d8e881108f26ad37b281a74a684a) (2026-08-25)
 
 ### Features
