@@ -39,16 +39,38 @@
 # wrong, it's just never read. tools/check-deployed.js verifies the real
 # zone-level value instead of a redundant origin declaration.
 #
-# Cross-Origin-Opener-Policy added 2026-08-26 (E-44 audit) - fifth enforcing
-# header, same reasoning as the original four: isolates this page's browsing
-# context group from cross-origin openers/openees, which nothing this app does
-# depends on (no window.open() popups, no OAuth-style flows).
+# Cross-Origin-Opener-Policy and Cross-Origin-Resource-Policy added 2026-08-26
+# (E-44 audit, securityheaders.com pass) - both enforcing immediately, same
+# "cannot break anything this app does" reasoning as the original four. COOP
+# isolates this page's browsing context group from cross-origin openers/
+# openees (no window.open() popups, no OAuth-style flows here). CORP:
+# same-origin governs whether OTHER sites can embed RangerTrak's own JS/CSS/
+# images - it has zero effect on RangerTrak's own outbound fetches to OSM/
+# Nominatim/Fonts, and nothing legitimately needs to embed this app's assets
+# cross-origin.
+#
+# Cross-Origin-Embedder-Policy is deliberately Report-Only, NOT enforcing,
+# same reasoning as the CSP above and for a concretely checked reason: COEP's
+# strict `require-corp` mode would very likely break the map tiles outright -
+# confirmed live 2026-08-26 that OpenStreetMap's tile servers and Nominatim
+# send no `Cross-Origin-Resource-Policy` header, and Leaflet/MapLibre load
+# tiles as plain no-cors `<img>`/tile requests, which `require-corp` blocks
+# without one (their `Access-Control-Allow-Origin: *` doesn't help - that only
+# matters for CORS-mode requests, not no-cors ones). `credentialless` mode
+# was chosen instead of `require-corp` because it doesn't require a CORP
+# header at all - it only strips credentials from cross-origin requests, and
+# none of this app's cross-origin fetches (OSM tiles, Nominatim, Google
+# Fonts, optionally Google Geocoding) ever send credentials to begin with -
+# so enforcing it should be safe once observed, but "should be" is exactly
+# why this is Report-Only first rather than assumed.
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Cross-Origin-Embedder-Policy-Report-Only: credentialless
   Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org; connect-src 'self' https://nominatim.openstreetmap.org https://maps.googleapis.com https://api.what3words.com https://*.tile.openstreetmap.org; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
 
 # Only the files that MUST NOT be cached are listed below. Everything else keeps
