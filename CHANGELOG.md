@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.54.0](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+## [0.54.1](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+
+### Fixes
+
+* **site:** securityheaders.com scan follow-up - added `Cross-Origin-Resource-Policy: same-origin` (enforcing) and `Cross-Origin-Embedder-Policy-Report-Only: credentialless` (deliberately not enforcing - confirmed live that OpenStreetMap's tile servers send no CORP header, so the strict `require-corp` mode would likely break the map tiles)
+
+## [0.54.0](https://github.com/EOCOnline/rangertrak/commit/1415a1d05e2eba7dea9cb70a1a8bf7b1a1cb9c00) (2026-08-26)
 
 ### Features
 
