@@ -2,11 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.45.1](https://github.com/EOCOnline/rangertrak/commits/main) (2026-08-25)
+## [0.45.1](https://github.com/EOCOnline/rangertrak/commit/60a77abe20937c7f55a6c193dbe89fb4a92cb6e8) (2026-08-25)
 
 ### Bug Fixes
 
-* **map:** MapLibre stays mounted after navigating away from /map and back with it already selected, instead of rendering neither engine (E-77)
+* **map:** MapLibre stays mounted after navigating away from /map and back with it already selected, instead of rendering neither engine (E-77) ([60a77ab](https://github.com/EOCOnline/rangertrak/commit/60a77abe20937c7f55a6c193dbe89fb4a92cb6e8))
 
 ## [0.45.0](https://github.com/EOCOnline/rangertrak/commit/ca7fcf941a6218dcbf6b7daecd786686e283bebe) (2026-08-25)
 
