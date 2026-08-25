@@ -579,7 +579,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.log.verbose(`EntryForm callsignChanged looking for ${callsign}`, this.id)
 
-      let ranger = this.rangerService.getRanger(callsign)
+      let ranger = this.rangerService.getRangerByCallsign(callsign)
 
       // E-38. This is the photo's whole purpose: confirming *who* a report is about, while
       // it is being entered. Order: a photograph stored on this device (D-35 - never in the

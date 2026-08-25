@@ -485,36 +485,83 @@ export class RangerService implements OnInit {
     this.log.verbose(`Got excel file`, this.id)
   }
 
-  getRanger(callsign: string) {
-    const index = this.findIndex(callsign);
+  /**
+   * Look up by CALLSIGN - what a scribe hears on the radio and types into Entry.
+   *
+   * ADR D-43: renamed from `getRanger()` deliberately. A ranger has three identifiers (`uid`
+   * joins, `id` is the credential, `callsign` is radio terminology), so an unqualified
+   * "getRanger" no longer says enough - code reaching for the wrong one is the exact class of
+   * bug this migration exists to prevent. Every lookup now names its key.
+   *
+   * Callsigns are neither unique nor required (plenty of CERT/MERT responders are not
+   * ham-licensed), so this returns the FIRST match. Use `getRangerByUid()` anywhere identity
+   * actually matters.
+   */
+  getRangerByCallsign(callsign: string) {
+    const index = this.findIndexByCallsign(callsign);
     if (index >= 0) {
       return this.rangers[index]
     }
-    this.log.error(`GetRanger got unknown callsign: ${callsign}`, this.id)
+    this.log.error(`getRangerByCallsign got unknown callsign: ${callsign}`, this.id)
     return UnknownRanger
   }
 
+  /**
+   * Look up by the internal surrogate key - the ranger/report join key (ADR D-43). The one to
+   * use whenever identity matters: it is the only identifier guaranteed present and unique.
+   */
+  getRangerByUid(uid: string) {
+    const index = this.findIndexByUid(uid);
+    if (index >= 0) {
+      return this.rangers[index]
+    }
+    this.log.error(`getRangerByUid got unknown uid: ${uid}`, this.id)
+    return UnknownRanger
+  }
+
+  /**
+   * ADR D-43: matches on `uid`, not callsign. Keying an update on callsign meant editing a
+   * ranger's callsign could never be saved - the lookup searched for the NEW value and found
+   * nothing - and two rangers sharing a blank callsign would overwrite each other.
+   */
   updateRanger(ranger: RangerType) {
-    const index = this.findIndex(ranger.callsign);
+    const uid = String(ranger.uid ?? '').trim()
+    if (!uid) {
+      this.log.error(`updateRanger got a ranger with no uid (callsign: ${ranger.callsign})`, this.id)
+      return
+    }
+    const index = this.findIndexByUid(uid);
     if (index >= 0) {
       this.rangers[index] = ranger;
       this.updateLocalStorageAndPublish();
     } else {
-      this.log.error(`updateRanger got unknown callsign: ${ranger.callsign}`, this.id)
+      this.log.error(`updateRanger got unknown uid: ${uid}`, this.id)
     }
   }
 
-  deleteRanger(callsign: string) {
-    const index = this.findIndex(callsign);
+  /**
+   * ADR D-43: deletes by the surrogate key, so a blank or duplicated callsign cannot take out
+   * the wrong row.
+   */
+  deleteRangerByUid(uid: string) {
+    const index = this.findIndexByUid(uid);
     if (index >= 0) {
       this.rangers.splice(index, 1);
       this.updateLocalStorageAndPublish();
     } else {
-      this.log.error(`deleteRanger got unknown callsign: ${callsign}`, this.id)
+      this.log.error(`deleteRangerByUid got unknown uid: ${uid}`, this.id)
     }
   }
 
-  private findIndex(callsign: string): number {
+  private findIndexByUid(uid: string): number {
+    for (let i = 0; i < this.rangers.length; i++) {
+      if (this.rangers[i].uid === uid) return i;
+    }
+    return -1
+  }
+
+  /** First match only - callsigns are neither unique nor required. See getRangerByCallsign(). */
+  private findIndexByCallsign(callsign: string): number {
     for (let i = 0; i < this.rangers.length; i++) {
       if (this.rangers[i].callsign === callsign) return i;
     }

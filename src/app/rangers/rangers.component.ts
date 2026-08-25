@@ -257,9 +257,12 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reloadPage()
   }
 
-  onBtnDeleteRanger(callsign: string) {
-    this.log.verbose(`onBtnDeleteRanger: Deleteing ranger with callsign: ${callsign}`, this.id)
-    this.rangerService.deleteRanger(callsign)
+  // ADR D-43: takes the surrogate uid, not a callsign - a blank or duplicated callsign could
+  // otherwise delete the wrong row. No UI caller today; kept as the obvious hook for a
+  // per-row delete on the grid.
+  onBtnDeleteRanger(uid: string) {
+    this.log.verbose(`onBtnDeleteRanger: deleting ranger with uid: ${uid}`, this.id)
+    this.rangerService.deleteRangerByUid(uid)
   }
 
   onBtnDeleteRangers() {

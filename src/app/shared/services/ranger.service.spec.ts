@@ -253,23 +253,53 @@ describe('RangerService', () => {
         image: '', rew: '', team: '', role: '', note: ''
       }));
 
-      service.updateRanger({
-        callsign: 'UPD1', fullName: 'Changed Name', phone: '',
-        image: '', rew: '', team: '', role: '', note: ''
-      });
+      // ADR D-43: updates match on uid, not callsign - AddRanger() returns the ranger with
+      // its minted uid, which is what makes this addressable at all.
+      const existing = service.getRangerByCallsign('UPD1');
+      service.updateRanger({ ...existing, fullName: 'Changed Name' });
 
-      expect(service.getRanger('UPD1').fullName).toBe('Changed Name');
+      expect(service.getRangerByCallsign('UPD1').fullName).toBe('Changed Name');
     });
 
-    it('deletes a ranger by callsign and persists the removal', () => {
+    it('refuses to update a ranger with no uid rather than guessing which row was meant', () => {
       const service = TestBed.inject(RangerService);
       service.AddRanger(JSON.stringify({
+        callsign: 'NOUID', fullName: 'Original', phone: '',
+        image: '', rew: '', team: '', role: '', note: ''
+      }));
+
+      service.updateRanger({
+        callsign: 'NOUID', fullName: 'Should Not Apply', phone: '',
+        image: '', rew: '', team: '', role: '', note: ''
+      } as RangerType);
+
+      expect(service.getRangerByCallsign('NOUID').fullName).toBe('Original');
+    });
+
+    it('lets a callsign be edited - the old lookup could never save this', () => {
+      // Regression guard for what keying updates on callsign actually broke: the lookup
+      // searched for the NEW callsign, found nothing, and silently dropped the edit.
+      const service = TestBed.inject(RangerService);
+      const added = service.AddRanger(JSON.stringify({
+        callsign: 'OLDSIGN', fullName: 'Renamed Person', phone: '',
+        image: '', rew: '', team: '', role: '', note: ''
+      }));
+
+      service.updateRanger({ ...added, callsign: 'NEWSIGN' });
+
+      expect(service.rangers.some(r => r.callsign === 'NEWSIGN')).toBeTrue();
+      expect(service.rangers.some(r => r.callsign === 'OLDSIGN')).toBeFalse();
+    });
+
+    it('deletes a ranger by uid and persists the removal', () => {
+      const service = TestBed.inject(RangerService);
+      const added = service.AddRanger(JSON.stringify({
         callsign: 'DEL1', fullName: 'To Delete', phone: '',
         image: '', rew: '', team: '', role: '', note: ''
       }));
       const before = service.rangers.length;
 
-      service.deleteRanger('DEL1');
+      service.deleteRangerByUid(added.uid!);
 
       expect(service.rangers.length).toBe(before - 1);
       expect(service.rangers.some(r => r.callsign === 'DEL1')).toBeFalse();
@@ -280,7 +310,7 @@ describe('RangerService', () => {
 
     it('returns the UnknownRanger sentinel for a callsign that does not exist', () => {
       const service = TestBed.inject(RangerService);
-      expect(service.getRanger('DOES_NOT_EXIST').callsign).toBe('Unknown');
+      expect(service.getRangerByCallsign('DOES_NOT_EXIST').callsign).toBe('Unknown');
     });
   });
 
