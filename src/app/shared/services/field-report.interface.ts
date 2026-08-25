@@ -78,15 +78,24 @@ export type FieldReportsType = {
  */
 export type FieldReportType = {
   // NOTE the two different identifiers below, deliberately named apart:
-  //   `id`       - THIS REPORT's own sequential number (from FieldReportsType.maxId).
-  //   `rangerId` - WHO filed it: a foreign key into RangerType.id (ADR D-42).
+  //   `id`        - THIS REPORT's own sequential number (from FieldReportsType.maxId).
+  //   `rangerUid` - WHO filed it: a foreign key into RangerType.uid (ADR D-42).
   // An earlier reading of D-42 would have called the second one `id` too, which would have
   // collided head-on with this pre-existing field.
   id: number,
-  // ADR D-42, Phase 1: the ranger this report is filed against, replacing `callsign` as the
-  // join key. Optional during the migration and backfilled on load from `callsign` by
-  // `ranger-migration.ts`, since field reports have no migration machinery of their own.
-  rangerId?: string,
+  /**
+   * The ranger this report is filed against - a foreign key into `RangerType.uid`, replacing
+   * `callsign` as the join key (ADR D-42).
+   *
+   * Points at the SURROGATE key, not the credential `RangerType.id`. Two reasons: the
+   * credential can legitimately be blank (issued at check-in), and it can be corrected later
+   * without silently re-pointing every report that referenced its old value.
+   *
+   * Deliberately not denormalized - the credential and callsign are reachable through the
+   * ranger, so copying them onto the report would only create something that goes stale.
+   * (`callsign` below is the exception, and for a different reason: evidence, not lookup.)
+   */
+  rangerUid?: string,
   // DELIBERATELY KEPT alongside `rangerId`, not replaced by it: a report can outlive the
   // ranger it names (deleted or re-keyed roster row), and the callsign is what the scribe
   // actually heard over the radio - the primary evidence of who reported. A report whose

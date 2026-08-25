@@ -5,16 +5,49 @@
 // reasoning, including why this doesn't meaningfully change the roster's overall exposure
 // (a callsign already resolves to more via the FCC's own public ULS lookup) except for
 // photographs, which aren't part of any public record.
+// ADR D-42 gives a ranger THREE distinct identifiers. They are not interchangeable, and
+// conflating them is the mistake this comment exists to prevent:
+//
+//   uid      - internal surrogate key. App-minted, always present, never shown, never edited.
+//              THIS is what field reports join on.
+//   id       - the real-world credential (REW-0038 / TEW-1003). Issued by the incident at
+//              check-in, NOT by this app. May legitimately be blank.
+//   callsign - radio terminology. What a scribe hears and types. May be blank; plenty of
+//              CERT/MERT responders are not ham-licensed.
+//
+// The surrogate exists precisely because the other two can both be blank. Keying the join on
+// either would reproduce the exact gap D-42 set out to close.
 export interface RangerType {
-  // ADR D-42, Phase 1: the generic, unique identifier that is replacing `callsign` as the
-  // ranger/report join key, because not every ranger has a callsign (CERT/MERT responders
-  // often don't). Format `<PREFIX>-<digits>` - `VI-0038`/`REW-0038` from a real credential,
-  // `TEW-1003` synthesized where there was none. Populated by `ranger-migration.ts`.
-  //
-  // OPTIONAL during the migration, deliberately - the same additive approach E-41's fields
-  // and `evidenceLocation` used, so a returning user's stored roster (which has no `id`) is
-  // simply backfilled on load rather than failing to parse. Tighten to required once every
-  // write path populates it; see the phased plan in `D-42 Callsign to ID Migration.md`.
+  /**
+   * Internal surrogate key - the ranger/report join key (ADR D-42).
+   *
+   * App-minted, unlike `id`: a `uid` has no real-world meaning and answers to no outside
+   * authority, so this app is free to generate one. That asymmetry is the whole point of
+   * having a surrogate at all.
+   *
+   * A UUID rather than a counter, deliberately. The roadmap already flags the multi-scribe
+   * merge problem - "two devices independently incrementing their own counter will collide
+   * the moment their logs merge" - and a mission export moving between devices is exactly
+   * that scenario. A UUID needs no coordination.
+   *
+   * Never displayed and never editable. It must survive export/import unchanged, or every
+   * report's `rangerUid` orphans.
+   *
+   * OPTIONAL during the migration only; `ranger-migration.ts` guarantees one on load. Tighten
+   * to required once every write path populates it.
+   */
+  uid?: string
+  /**
+   * The real-world credential number - `REW-0038` (Registered Emergency Worker, or a state
+   * equivalent) or `TEW-1003` (Temporary Emergency Worker).
+   *
+   * **Issued at check-in by the incident, never minted by this app.** A blank value is a
+   * legitimate, expected state meaning "has not checked in yet" - surfaced as a warning, not
+   * filled in with something invented. See `normalizeRangerIds()`.
+   *
+   * Replaces the WA-specific `rew` column (ADR D-42); displayed and searchable, but NOT the
+   * join key - that is `uid`.
+   */
   id?: string
   callsign: string
   fullName: string

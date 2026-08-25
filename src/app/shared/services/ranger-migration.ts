@@ -30,9 +30,16 @@ import { RangerType } from './ranger.interface'
  *
  * 0 - (implicit) a BARE `RangerType[]` array, which is what localStorage holds today. Not a
  *     real version, just the absence of one.
- * 1 - the versioned `{ schemaVersion, rangers }` wrapper, with each ranger's identifier
- *     canonicalized into `id` (ADR D-42). Note "canonicalized", not "assigned": a ranger who
+ * 1 - the versioned `{ schemaVersion, rangers }` wrapper; every ranger gains an internal
+ *     surrogate key `uid`, and any credential it carries is canonicalized into `id`
+ *     (ADR D-42). Note "canonicalized", not "assigned", for `id` specifically: a ranger who
  *     has not checked in yet legitimately has no number, and this app does not mint them.
+ *     `uid` IS minted - see `newRangerUid()` for why those two differ.
+ *
+ * The surrogate key was folded into version 1 rather than added as a version 2, deliberately:
+ * this migration had not been wired into any service when it was added, so no localStorage
+ * anywhere has ever held a version-1 roster. A version 2 would have been a migration step
+ * from a state that never existed.
  */
 export const RANGER_SCHEMA_VERSION = 1
 
@@ -96,6 +103,43 @@ export function normalizeRangerId(raw: unknown): string {
   return ''
 }
 
+/**
+ * Mints a fresh internal surrogate key.
+ *
+ * **This app mints `uid` but never mints `id`** - the asymmetry is the entire justification
+ * for having a surrogate. A `uid` has no real-world meaning and answers to no outside
+ * authority, so generating one invents nothing. A `TEW-####` credential is issued by the
+ * incident at check-in, so generating one would fabricate a credential that could collide
+ * with a genuinely issued number.
+ *
+ * A UUID rather than a counter: the roadmap already flags that "two devices independently
+ * incrementing their own counter will collide the moment their logs merge", and a mission
+ * export moving between devices is exactly that. A UUID needs no coordination.
+ *
+ * `crypto.randomUUID()` needs a secure context, which `rangertrak.org` (HTTPS) and localhost
+ * both are - but this app is built to run in odd places, so it degrades rather than throwing:
+ * `getRandomValues` first, `Math.random` only as a last resort. The fallbacks are weaker
+ * sources of randomness, not weaker uniqueness for this purpose - a roster is tens of rows,
+ * not billions, and `normalizeRangerIds()` re-mints on collision regardless.
+ */
+export function newRangerUid(): string {
+  const c: Crypto | undefined = typeof crypto !== 'undefined' ? crypto : undefined
+
+  if (typeof c?.randomUUID === 'function') {
+    return c.randomUUID()
+  }
+
+  if (typeof c?.getRandomValues === 'function') {
+    const bytes = c.getRandomValues(new Uint8Array(16))
+    bytes[6] = (bytes[6] & 0x0f) | 0x40   // version 4
+    bytes[8] = (bytes[8] & 0x3f) | 0x80   // variant 10x
+    const hex = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('')
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
+  }
+
+  return 'uid-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10)
+}
+
 /** True when a string is already a canonical ranger ID. */
 export function isRangerId(value: unknown): boolean {
   const normalized = normalizeRangerId(value)
@@ -105,8 +149,14 @@ export function isRangerId(value: unknown): boolean {
 
 /** What `normalizeRangerIds()` found, so a caller can log it or surface it as a warning. */
 export type RangerIdAudit = {
-  /** The roster with every recognizable id canonicalized. Nothing invented. */
+  /**
+   * The roster with every recognizable `id` canonicalized and every ranger guaranteed a
+   * `uid`. No CREDENTIAL is ever invented; the surrogate key always is (see
+   * `newRangerUid()` for why those two are different).
+   */
   rangers: RangerType[],
+  /** Had no `uid`, or one that duplicated another ranger's, so a fresh one was minted. */
+  uidsMinted: number,
   /** Carried a usable id already (in `id`, or seeded from `rew`). */
   identified: number,
   /**
@@ -150,18 +200,38 @@ export type RangerIdAudit = {
 export function normalizeRangerIds(rangers: readonly RangerType[]): RangerIdAudit {
   const seen = new Set<string>()
   const duplicated = new Set<string>()
+  const usedUids = new Set<string>()
 
   let identified = 0
   let missing = 0
+  let uidsMinted = 0
 
   const normalized = rangers.map(ranger => {
+    // ---- the surrogate key: always present, minted by us when it isn't ----------------
+    // A duplicate uid is re-minted rather than reported, which is the exact OPPOSITE of how
+    // a duplicate `id` is handled below - and correctly so. A uid is ours, carries no
+    // real-world meaning, and two rangers sharing one is always corruption (a hand-edited
+    // file, a copy-pasted row), never a fact about the world worth preserving. A duplicate
+    // credential, by contrast, is a real claim about two people that only the operator can
+    // adjudicate.
+    let uid = String(ranger?.uid ?? '').trim()
+    if (!uid || usedUids.has(uid)) {
+      uid = newRangerUid()
+      while (usedUids.has(uid)) {
+        uid = newRangerUid()
+      }
+      uidsMinted++
+    }
+    usedUids.add(uid)
+
+    // ---- the credential: canonicalized if present, NEVER invented --------------------
     // An explicit `id` wins; `rew` seeds one where no `id` exists yet (ADR D-42 folds the
     // WA-specific "REW" column into the generic identifier).
     const id = normalizeRangerId(ranger?.id) || normalizeRangerId(ranger?.rew)
 
     if (!id) {
       missing++
-      return { ...ranger, id: '' }
+      return { ...ranger, uid, id: '' }
     }
 
     identified++
@@ -170,11 +240,12 @@ export function normalizeRangerIds(rangers: readonly RangerType[]): RangerIdAudi
     } else {
       seen.add(id)
     }
-    return { ...ranger, id }
+    return { ...ranger, uid, id }
   })
 
   return {
     rangers: normalized,
+    uidsMinted,
     identified,
     missing,
     duplicates: [...duplicated],

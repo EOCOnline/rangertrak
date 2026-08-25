@@ -1,6 +1,7 @@
 import { RangerType } from './ranger.interface';
 import {
-  isRangerId, migrateRangers, normalizeRangerId, normalizeRangerIds, RANGER_SCHEMA_VERSION
+  isRangerId, migrateRangers, newRangerUid, normalizeRangerId, normalizeRangerIds,
+  RANGER_SCHEMA_VERSION
 } from './ranger-migration';
 
 /**
@@ -68,6 +69,59 @@ describe('ranger-migration (ADR D-42)', () => {
       expect(isRangerId('TEW-1003')).toBeTrue();
       expect(isRangerId('CmdPost')).toBeFalse();
       expect(isRangerId('')).toBeFalse();
+    });
+  });
+
+  describe('newRangerUid / the surrogate key', () => {
+    it('mints something unique every time', () => {
+      const uids = new Set(Array.from({ length: 500 }, () => newRangerUid()));
+
+      expect(uids.size).toBe(500);
+      expect([...uids].every(u => typeof u === 'string' && u.length > 8)).toBeTrue();
+    });
+  });
+
+  describe('normalizeRangerIds - the surrogate key (uid)', () => {
+    it('mints a uid for every ranger, including ones with no credential at all', () => {
+      // The whole point of the surrogate: `id` and `callsign` can BOTH be blank, so neither
+      // can carry the join. `uid` always can.
+      const result = normalizeRangerIds([ranger(''), ranger('CERT1'), ranger('ACS1', { rew: 'VI-01' })]);
+
+      const uids = result.rangers.map(r => r.uid);
+      expect(uids.every(u => !!u)).withContext('every ranger has a uid').toBeTrue();
+      expect(new Set(uids).size).withContext('all distinct').toBe(3);
+      expect(result.uidsMinted).toBe(3);
+    });
+
+    it('preserves an existing uid - it is the join key and must be stable', () => {
+      // If a uid changed on load, every report pointing at it would orphan.
+      const result = normalizeRangerIds([ranger('ACS1', { uid: 'stable-uid-1' } as Partial<RangerType>)]);
+
+      expect(result.rangers[0].uid).toBe('stable-uid-1');
+      expect(result.uidsMinted).toBe(0);
+    });
+
+    it('RE-MINTS a duplicated uid, unlike a duplicated credential', () => {
+      // The asymmetry that justifies having a surrogate at all. A shared uid is always
+      // corruption (hand-edited file, copy-pasted row) and ours to fix silently. A shared
+      // credential is a real claim about two people that only the operator can adjudicate -
+      // see the duplicate-id test below, which deliberately does NOT rewrite anything.
+      const result = normalizeRangerIds([
+        ranger('A', { uid: 'same' } as Partial<RangerType>),
+        ranger('B', { uid: 'same' } as Partial<RangerType>),
+      ]);
+
+      expect(result.rangers[0].uid).toBe('same');
+      expect(result.rangers[1].uid).not.toBe('same');
+      expect(result.uidsMinted).toBe(1);
+    });
+
+    it('is idempotent for uids - a second run mints nothing', () => {
+      const first = normalizeRangerIds([ranger('A'), ranger('B'), ranger('C')]);
+      const second = normalizeRangerIds(first.rangers);
+
+      expect(second.rangers.map(r => r.uid)).toEqual(first.rangers.map(r => r.uid));
+      expect(second.uidsMinted).toBe(0);
     });
   });
 
