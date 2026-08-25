@@ -321,17 +321,32 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     //! REVIEW: Causes LOTS of "mapLeaflet:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
     tiles.addTo(this.lMap)
 
-    // E-85 phase 1: the base-layer switcher (Leaflet's own standard `L.control.layers`
-    // widget) is real infrastructure now, but OpenStreetMap is deliberately still its only
-    // entry - the maintainer decided 2026-08-24 to build the switching mechanism ahead of
-    // wiring in any alternate source (OpenTopoMap/USGS/Esri etc., surveyed in the roadmap's
-    // E-85 row), not both at once. Adding a second source later is exactly this: another
-    // key in `baseLayers`, nothing structural to change. NOT yet handled for a second
-    // layer: `wireOfflineAreaInfo()`/the savetiles control below are still bound to this
-    // one `tiles` instance specifically - offline-saving a second base layer needs its own
-    // wiring (or a rebind on the control's `baselayerchange` event), left for whichever
-    // session actually adds one.
-    const baseLayers: Record<string, L.Layer> = { 'OpenStreetMap': tiles }
+    // E-85 phase 2: OpenTopoMap - free, no API key, same {s}/{z}/{x}/{y} scheme as the OSM
+    // layer above, so it's the same tileLayerOffline treatment (auto-caches viewed tiles
+    // to IndexedDB). Contour lines are baked directly into the raster tiles. maxZoom 17 is
+    // OpenTopoMap's own published tile-generation limit, not an arbitrary choice - asking
+    // past it returns blank tiles. NOT added to the map here (no .addTo()): it only
+    // becomes active if the user picks it from the layers control below, OSM stays the
+    // default on load. NOT yet wired to the "save this area offline" control (see the
+    // comment on baseLayers below) - viewing still auto-caches via tileLayerOffline, only
+    // the explicit bulk-download button doesn't follow it yet.
+    const openTopoTiles = tileLayerOffline('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      maxZoom: 17,
+      minZoom: 3,
+      attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+    })
+
+    // E-85 phase 1/2: the base-layer switcher (Leaflet's own standard `L.control.layers`
+    // widget). USGS/Esri sources surveyed in the roadmap's E-85 row are still not wired in
+    // - adding one later is exactly this: another key here, nothing structural to change.
+    // NOT yet handled for a second layer: `wireOfflineAreaInfo()`/the savetiles control
+    // below are still bound to `tiles` (OSM) specifically - offline-BULK-saving OpenTopoMap
+    // needs its own wiring (or a rebind on the control's `baselayerchange` event), left for
+    // whichever session actually needs it.
+    const baseLayers: Record<string, L.Layer> = {
+      'OpenStreetMap': tiles,
+      'OpenTopoMap (contours)': openTopoTiles,
+    }
     L.control.layers(baseLayers, {}, { position: 'topright' }).addTo(this.lMap)
 
     const saveTilesControl = savetiles(tiles, {
