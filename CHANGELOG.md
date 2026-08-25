@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.47.0](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-25)
+## [0.47.0](https://github.com/EOCOnline/rangertrak/commit/a892a40b3ad37e427d65e35db3c7991e4b5735c9) (2026-08-25)
 
 ### Features
 
