@@ -242,8 +242,13 @@ async function checkMapEngineSwitch() {
   const before = await evaluate(`(() => ({
     leaflet: !!document.querySelector('.mapLeaflet-container'),
     maplibre: !!document.querySelector('.map-container'),
+    // E-85: the base-layer switcher (L.control.layers) on the MAIN map specifically -
+    // scoped past #mapLeaflet-main for the same reason E-80's trail check is: the
+    // overview mini-map is a second, separate Leaflet instance on this same page.
+    layersControl: !!document.querySelector('#mapLeaflet-main .leaflet-control-layers'),
   }))()`)
   check('Leaflet is the default engine on load', before.leaflet && !before.maplibre, true)
+  check('E-85: the base-layer switcher control renders on the main map', before.layersControl, true)
 
   await evaluate(`(() => {
     const cb = document.getElementById('mapEngineSwitch')

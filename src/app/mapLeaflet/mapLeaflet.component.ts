@@ -321,6 +321,19 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     //! REVIEW: Causes LOTS of "mapLeaflet:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
     tiles.addTo(this.lMap)
 
+    // E-85 phase 1: the base-layer switcher (Leaflet's own standard `L.control.layers`
+    // widget) is real infrastructure now, but OpenStreetMap is deliberately still its only
+    // entry - the maintainer decided 2026-08-24 to build the switching mechanism ahead of
+    // wiring in any alternate source (OpenTopoMap/USGS/Esri etc., surveyed in the roadmap's
+    // E-85 row), not both at once. Adding a second source later is exactly this: another
+    // key in `baseLayers`, nothing structural to change. NOT yet handled for a second
+    // layer: `wireOfflineAreaInfo()`/the savetiles control below are still bound to this
+    // one `tiles` instance specifically - offline-saving a second base layer needs its own
+    // wiring (or a rebind on the control's `baselayerchange` event), left for whichever
+    // session actually adds one.
+    const baseLayers: Record<string, L.Layer> = { 'OpenStreetMap': tiles }
+    L.control.layers(baseLayers, {}, { position: 'topright' }).addTo(this.lMap)
+
     const saveTilesControl = savetiles(tiles, {
       saveText: '💾 Save this area for offline use',
       rmText: '🗑️ Remove saved tiles',
