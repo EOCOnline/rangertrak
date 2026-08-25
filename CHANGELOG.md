@@ -2,13 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.54.2](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+## [0.54.2](https://github.com/EOCOnline/rangertrak/commit/b67ac495a0ecae6bd1527295421ffc0028bf7cbb) (2026-08-26)
 
 ### Fixes
 
 * **entry:** Location's derived-results block (Address/+Codes/MGRS/UTM/Maidenhead) was `display:none` until ready, so it popped in at full height once the location resolved - measured live as a 0.35-0.40 CLS score, the dominant layout-instability cause on the page. Switched to `visibility:hidden`, which reserves the same space from first paint while keeping the exact DOM-persistence guarantee the reveal logic depends on
 
-## [0.54.1](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+## [0.54.1](https://github.com/EOCOnline/rangertrak/commit/c88b7ad4e3269052a81d9c6784441baaff7ec93e) (2026-08-26)
 
 ### Fixes
 
