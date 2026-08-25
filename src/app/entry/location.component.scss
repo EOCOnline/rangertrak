@@ -39,10 +39,24 @@ $filledColor: var(--rt-surface-2);
 
 // E-48(1): hides the derived-output block without ever removing its elements from the
 // DOM - see updateDerivedLocations()'s own comment on why a structural @if would race the
-// render. `display:none` (not `visibility:hidden`) so it also doesn't reserve layout space
-// while empty.
+// render.
+//
+// Was `display: none` (deliberately, "so it also doesn't reserve layout space while empty")
+// until a live PageSpeed/DevTools trace, 2026-08-26, measured this exact block as the
+// dominant cause of a 0.35-0.40 CLS score - confirmed by dismissing the unrelated E-83
+// welcome panel first and re-measuring, which ruled it out and left this block's reveal as
+// the culprit (Layout Shifts panel named div.enter__Where-Results, the timepicker section,
+// and both section h2s moving together, twice - once for the block appearing, once as its
+// content settled). `visibility: hidden` reserves the same layout space from first paint
+// instead of popping in at full height later, while keeping the exact same DOM-persistence
+// guarantee the comment above this one depends on (`getElementById()` still finds every
+// element, `visibility` doesn't remove anything from the DOM or layout tree, just paints it
+// invisibly) - so `setDerivedText()`'s ordering-can't-race-a-render reasoning is untouched.
+// Each derived line is a fixed-width `readonly <input>` (E-48(2)), so the box's height
+// doesn't depend on its value's text - filling in the real address later changes what's
+// displayed, not the reserved height, so this shouldn't reintroduce a shift once shown.
 .enter__Where-Results--hidden {
-  display: none;
+  visibility: hidden;
 }
 
 // E-48(2): the derived Address/+Codes/What3Words/Maidenhead readouts are `readonly`
