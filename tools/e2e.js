@@ -282,6 +282,46 @@ async function checkMapEngineSwitch() {
   check('no console errors across the round trip', consoleErrors.slice(0, 2), [])
 }
 
+/**
+ * E-77 (found and fixed 2026-08-25): MapEngineService.engine is a root singleton that
+ * deliberately survives navigating away from /map and back - but MapPageComponent (and its
+ * maplibreComponentType signal) is recreated fresh on every visit to the route. A returning
+ * visit with 'maplibre' already selected landed on neither branch of the page's @if/@else
+ * if: engine() wasn't 'leaflet', and maplibreComponentType() was null again because nothing
+ * had re-triggered the dynamic import for the new instance - the switch showed checked over
+ * an empty page (no canvas at all, not literally a black one, but exactly what a scribe
+ * expecting a map and getting a blank area would describe that way). Confirmed red against
+ * the pre-fix build - canvasCount was 0 and no MapLibre element existed - before trusting
+ * this, per verify-the-measurement-itself.
+ */
+async function checkMapEngineSurvivesNavigation() {
+  console.log('\nMap page: MapLibre stays mounted across a navigate-away-and-back, not just a fresh visit (E-77)')
+  await goto('/map')
+
+  await evaluate(`(() => {
+    const cb = document.getElementById('mapEngineSwitch')
+    cb.checked = true
+    cb.dispatchEvent(new Event('change'))
+  })()`)
+  await sleep(2500)
+
+  // Navigate away and back the way a scribe actually would - client-side routing, not a
+  // reload (a reload would reset MapEngineService too, which would hide this exact bug).
+  await navigateInApp('Reports', 2000)
+  await navigateInApp('Map', 2500)
+
+  const state = await evaluate(`(() => ({
+    switchChecked: document.getElementById('mapEngineSwitch')?.checked,
+    maplibre: !!document.querySelector('.map-container'),
+    leaflet: !!document.querySelector('.mapLeaflet-container'),
+    canvasCount: document.querySelectorAll('canvas').length,
+  }))()`)
+  check('the engine switch still shows MapLibre checked', state.switchChecked, true)
+  check('MapLibre is actually mounted, not just the switch', state.maplibre, true)
+  check('Leaflet is not also/instead mounted', state.leaflet, false)
+  check('both the main and overview canvases rendered', state.canvasCount, 2)
+}
+
 async function checkRosterLifecycle(fx) {
   console.log('\nRoster: import JSON, empty it, confirm it stays empty, re-import')
   await goto('/')
@@ -1353,6 +1393,7 @@ async function main() {
     await checkRoutesRender()
     await checkNavbarLayout()
     await checkMapEngineSwitch()
+    await checkMapEngineSurvivesNavigation()
     // Read-only: pure DOM/layout reads and in-memory form edits, nothing persisted - so these
     // are safe against production too, which is where phone-width regressions actually bite.
     await checkEntryTabOrder()
