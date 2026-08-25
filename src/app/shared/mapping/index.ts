@@ -14,3 +14,4 @@ export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./coordina
 export { AbstractMap } from "./map"
 export { rangerIconFor } from "./ranger-icon"
 export { hashString } from "./hash-color"
+export { fieldReportStatusColor, resolveCssColorForCanvas } from "./report-marker-status"

@@ -42,16 +42,44 @@ export function rangerColorFor(callsign: string): string {
  * always yields the same shape+colour, no lookup or stored assignment required. Shape and
  * colour are derived from independent bit ranges of one hash, so the two don't visibly
  * correlate (two rangers sharing a colour won't reliably also share a shape).
+ *
+ * `statusColor` (raised live, 2026-08-26): an optional halo drawn BEHIND the ranger's own
+ * shape, so a report's configured status (Normal/Need Rest/Urgent/...) reads at a glance on
+ * the map without opening the popup - the same colour the Mission page's status editor and
+ * the Entry/Reports status controls already use (`fieldReportStatusColor()`, this module's
+ * sibling file), not a second palette. A real SVG circle behind the shape rather than a CSS
+ * `filter: drop-shadow(...)` - Leaflet's `divIcon` container is sized exactly to `iconSize`
+ * (no guaranteed overflow room for a blurred filter to bleed into without clipping), where
+ * an SVG element drawn inside a larger viewBox has no such risk. Omitted entirely (falls
+ * back to the plain 20x20 icon) when no status colour resolves, so a report with an unknown/
+ * blank status draws exactly as it always has.
  */
-export function rangerIconFor(callsign: string): L.DivIcon {
+export function rangerIconFor(callsign: string, statusColor?: string): L.DivIcon {
   const hash = hashString(callsign || 'Unknown')
   const color = rangerColorFor(callsign)
   const shape = MARKER_SHAPES[Math.floor(hash / 360) % MARKER_SHAPES.length](color)
+
+  if (!statusColor) {
+    return L.divIcon({
+      className: 'rt-ranger-marker',
+      html: `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="1" stroke-linejoin="round">${shape}</svg>`,
+      iconSize: [20, 20],
+      iconAnchor: [10, 10],
+      popupAnchor: [0, -10],
+    })
+  }
+
+  // Halo sits in its own 28x28 viewBox with the shape's original 0-20 coordinate system
+  // shifted +4/+4 via <g transform>, so MARKER_SHAPES' own path/point coordinates need no
+  // change to support this.
   return L.divIcon({
     className: 'rt-ranger-marker',
-    html: `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="1" stroke-linejoin="round">${shape}</svg>`,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
-    popupAnchor: [0, -10],
+    html: `<svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" fill="${statusColor}" opacity="0.55"/>
+      <g transform="translate(4,4)" stroke="white" stroke-width="1" stroke-linejoin="round">${shape}</g>
+    </svg>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -14],
   })
 }

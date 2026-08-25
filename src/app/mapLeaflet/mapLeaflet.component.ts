@@ -20,7 +20,9 @@ import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 
-import { AbstractMap, Utility, rangerIconFor, rangerColorFor, formatReportTime } from '../shared'
+import {
+  AbstractMap, Utility, rangerIconFor, rangerColorFor, fieldReportStatusColor, formatReportTime
+} from '../shared'
 import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, SettingsService } from '../shared/services'
 
 import { SectionComponent } from '../shared/section/section.component';
@@ -753,7 +755,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
         // E-86 (narrowed): a distinct shape+colour per ranger callsign, team ignored for now.
-        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title, icon: rangerIconFor(i.callsign) })
+        // Raised live 2026-08-26: the status halo behind it, coloured per the Mission page's
+        // own configured status colours - same lookup the Entry/Reports status controls use.
+        const statusColor = fieldReportStatusColor(i.status, this.settings.fieldReportStatuses)
+        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), {
+          title: title, icon: rangerIconFor(i.callsign, statusColor)
+        })
         marker.bindPopup(title)
         this.myMarkerCluster.addLayer(marker);
       } else {

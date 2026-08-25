@@ -21,6 +21,7 @@ export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./mapping/
 export { AbstractMap } from "./mapping/map"
 export { rangerIconFor, rangerColorFor } from "./mapping/ranger-icon"
 export { hashString } from "./mapping/hash-color"
+export { fieldReportStatusColor, resolveCssColorForCanvas } from "./mapping/report-marker-status"
 export { formatReportTime } from "./mapping/report-time"
 
 // !BUG: Can't find @What3Words/API - need to install it?!

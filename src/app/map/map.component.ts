@@ -9,6 +9,7 @@ import {
 } from '@angular/core'
 
 import { buildPmtilesStyle, registerPmtilesProtocol } from '../shared/mapping/map-style'
+import { fieldReportStatusColor, resolveCssColorForCanvas } from '../shared/mapping/report-marker-status'
 import {
   FieldReportsType, FieldReportService, FieldReportType, LogService, SettingsService, SettingsType
 } from '../shared/services'
@@ -232,8 +233,12 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       paint: {
         'circle-color': '#c0392b',
         'circle-radius': 8,
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#ffffff'
+        // Raised live 2026-08-26: a status "shadow" ring, data-driven off each feature's own
+        // `statusColor` property (buildGeoJson() resolves it per point) - same treatment as
+        // the Leaflet markers' halo, same colour lookup. Widened from a plain 2px white
+        // outline to carry that colour visibly.
+        'circle-stroke-width': 4,
+        'circle-stroke-color': ['get', 'statusColor']
       }
     })
 
@@ -245,7 +250,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.map.on('mouseleave', 'unclustered-point', () => { this.map.getCanvas().style.cursor = '' })
   }
 
-  private buildGeoJson(): FeatureCollection<Point, { title: string }> {
+  private buildGeoJson(): FeatureCollection<Point, { title: string, statusColor: string }> {
     const reportsToShow = this.showingSelectedOnly
       ? this.fieldReportService.getSelectedFieldReports().fieldReportArray
       : (this.fieldReports?.fieldReportArray ?? [])
@@ -254,11 +259,25 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       type: 'FeatureCollection',
       features: reportsToShow
         .filter((r: FieldReportType) => r.location?.lat && r.location?.lng)
-        .map((r: FieldReportType) => ({
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [r.location.lng, r.location.lat] },
-          properties: { title: `${r.callsign} at ${formatReportTime(r.date)} with ${r.status}` }
-        }))
+        .map((r: FieldReportType) => {
+          // Raised live 2026-08-26: a status "shadow" ring around each point, same colour
+          // lookup as the Leaflet markers (report-marker-status.ts). MapLibre's paint
+          // expressions run in its own WebGL renderer, not the DOM/CSSOM, so a semantic
+          // `var(--rt-status-*)` token has to be resolved to a concrete colour up front -
+          // resolveCssColorForCanvas() is exactly that, and a raw custom colour passes
+          // through unchanged either way. Falls back to a neutral grey (not the ring's own
+          // default absence) so an unknown/blank status is visibly "unset," not silently
+          // invisible in a paint expression that expects a string every time.
+          const rawColor = fieldReportStatusColor(r.status, this.settings.fieldReportStatuses)
+          return {
+            type: 'Feature' as const,
+            geometry: { type: 'Point' as const, coordinates: [r.location.lng, r.location.lat] },
+            properties: {
+              title: `${r.callsign} at ${formatReportTime(r.date)} with ${r.status}`,
+              statusColor: rawColor ? resolveCssColorForCanvas(rawColor) : '#888888',
+            }
+          }
+        })
     }
   }
 
