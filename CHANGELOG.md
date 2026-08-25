@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.54.0](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+
+### Features
+
+* **map:** checking "Saved offline tiles" on the Leaflet map now zooms out to fit the saved-tiles extent, so it doesn't land on an empty view; unchecking it does not reset the view
+
+### Fixes
+
+* **site:** E-44 audit pass - trimmed a stale 8-family Google Fonts request down to the real three (Roboto, Faster One, Material Icons - the last one was never actually loaded despite live ligature-icon usages rendering as unstyled text), fixed a broken meta description tag, removed the dead keyless What3Words script include, added a real `robots.txt`, deleted the fully-dead `IconsComponent`, added a `Cross-Origin-Opener-Policy` header, and fixed `favicon.ico` shipping the stale pre-2022 icon due to a build-glob path mismatch with the E-62 fix
+
 ## [0.53.0](https://github.com/EOCOnline/rangertrak/commit/a09d7d876c691a9e5c850f5bf0ad8da9d69502ce) (2026-08-26)
 
 ### Features
