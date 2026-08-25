@@ -946,6 +946,70 @@ async function checkTeamTrailsRender() {
   check('a route trail renders on the map for a multi-report callsign', pathCount > 0, true)
 }
 
+/**
+ * E-86 (narrowed 2026-08-24: "ignore the team concept for now, just make ranger markers
+ * unique"): two different callsigns should render two visibly distinct markers (shape and
+ * colour both derived from the callsign - see rangerIconFor() in
+ * shared/mapping/ranger-icon.ts). The two check-in positions are deliberately far apart
+ * (~150 miles) so Leaflet.markercluster's pixel-proximity clustering can't merge them into
+ * one cluster bubble after the map's own fitBounds() zooms to show both - a nearby pair
+ * like E-80's trail check uses would risk masking two real markers behind one cluster icon.
+ */
+async function checkRangerMarkersAreDistinct() {
+  console.log('\nE-86: two different callsigns get visibly distinct map markers')
+  await goto('/')
+  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await goto('/')
+
+  for (const { callsign, lat, lng } of [
+    { callsign: 'E2E-MARKER-A', lat: 47.60, lng: -122.30 },
+    { callsign: 'E2E-MARKER-B', lat: 45.50, lng: -122.70 },
+  ]) {
+    await evaluate(`(async () => {
+      const set = (id, v) => {
+        const el = document.getElementById(id);
+        Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, String(v));
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      };
+      set('enter__Where-latI', Math.trunc(${lat}));
+      set('enter__Where-latF', Math.round((Math.abs(${lat}) % 1) * 10000));
+      set('enter__Where-lngI', Math.trunc(${lng}));
+      set('enter__Where-lngF', Math.round((Math.abs(${lng}) % 1) * 10000));
+      await new Promise(r => setTimeout(r, 900));
+
+      const cs = document.getElementById('enter__Callsign-input');
+      const csSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      csSet.call(cs, ${JSON.stringify(callsign)});
+      cs.dispatchEvent(new Event('input', { bubbles: true }));
+      cs.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise(r => setTimeout(r, 900));
+
+      document.querySelector('.enter__Submit-button')?.click();
+      await new Promise(r => setTimeout(r, 1200));
+    })()`)
+  }
+
+  const stored = await evaluate(`(() => {
+    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
+    return (r.fieldReportArray || []).filter(f => f.callsign === 'E2E-MARKER-A' || f.callsign === 'E2E-MARKER-B').length;
+  })()`)
+  check('both E2E-MARKER reports reached storage', stored, 2)
+
+  await navigateInApp('Map', 3500)
+  let markers = []
+  for (let i = 0; i < 10 && markers.length < 2; i++) {
+    await sleep(300)
+    // Scoped to #mapLeaflet-main for the same reason E-80/E-85's checks are: the overview
+    // mini-map is a second, separate Leaflet instance on this same page.
+    markers = await evaluate(`[...document.querySelectorAll('#mapLeaflet-main .rt-ranger-marker svg')].map(svg => svg.innerHTML)`)
+  }
+  check('two distinct ranger markers render for two different callsigns', markers.length >= 2, true)
+  if (markers.length >= 2) {
+    check('the two markers are not visually identical', markers[0] !== markers[1], true)
+  }
+}
+
 async function checkSettingsWithPersistedSettings() {
   console.log('\nBUG-3 (open): /mission must not throw for a RETURNING user (dates as ISO strings)')
   // A fresh browser gets initSettings() with real Date objects and never reproduces this.
@@ -1231,6 +1295,7 @@ async function main() {
       await checkCallsignIsSaved()
       await checkReportsSurviveNavigation()
       await checkTeamTrailsRender()
+      await checkRangerMarkersAreDistinct()
       await checkSettingsWithPersistedSettings()
       await checkMissionRoundTrip(downloads)
       await goto('/'); await evaluate(`localStorage.clear()`)

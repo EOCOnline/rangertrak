@@ -20,7 +20,7 @@ import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 
-import { AbstractMap, Utility } from '../shared'
+import { AbstractMap, Utility, rangerIconFor } from '../shared'
 import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, SettingsService } from '../shared/services'
 
 import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
@@ -721,7 +721,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         let title = `${i.callsign} at ${i.date} with ${i.status}`
         //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
-        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title })
+        // E-86 (narrowed): a distinct shape+colour per ranger callsign, team ignored for now.
+        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title, icon: rangerIconFor(i.callsign) })
         marker.bindPopup(title)
         this.myMarkerCluster.addLayer(marker);
       } else {

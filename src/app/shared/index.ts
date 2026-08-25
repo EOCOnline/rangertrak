@@ -19,6 +19,7 @@ export { GoogleGeocoder } from "./mapping/google-geocoder"
 // ./mapping/map-style is deliberately NOT re-exported - see the note in mapping/index.ts.
 export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./mapping/coordinate"
 export { AbstractMap } from "./mapping/map"
+export { rangerIconFor } from "./mapping/ranger-icon"
 
 // !BUG: Can't find @What3Words/API - need to install it?!
 // export { What3Words } from './mapping/3words'

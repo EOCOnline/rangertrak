@@ -12,3 +12,4 @@ export { GoogleGeocoder } from "./google-geocoder"
 // /map route chunk. (E-70: the unwired MiniMapComponent, formerly a second consumer, is gone.)
 export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./coordinate"
 export { AbstractMap } from "./map"
+export { rangerIconFor } from "./ranger-icon"

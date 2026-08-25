@@ -23,6 +23,7 @@ import {
 // helpers, so importing through it here pulled MapLibre (~800KB) into the eager bundle
 // alongside Leaflet, even though this Leaflet mini-map never touches MapLibre.
 import { AbstractMap } from '../shared/mapping/map'
+import { rangerIconFor } from '../shared/mapping/ranger-icon'
 import { Utility } from '../shared/utility'
 import {
   FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag,
@@ -547,7 +548,8 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
         let title = `${i.callsign} at ${i.date} with ${i.status}`
         //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
-        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title })
+        // E-86 (narrowed): a distinct shape+colour per ranger callsign, team ignored for now.
+        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title, icon: rangerIconFor(i.callsign) })
         marker.bindPopup(title)
         this.myMarkerCluster.addLayer(marker);
       } else {
