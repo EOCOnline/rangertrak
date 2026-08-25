@@ -2,15 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.44.0](https://github.com/EOCOnline/rangertrak/commits/main) (2026-08-25)
+## [0.44.0](https://github.com/EOCOnline/rangertrak/commit/204720e0efaa2f6d8a3279290b961bf76f79562d) (2026-08-25)
 
 ### Features
 
-* **help,shared,field-reports,rangers:** E-84 - Help page tabs, on-page text fixes, deduplicated grid-keyboard-help component, FIELD-GUIDE.md and README.md rewrite per the documentation audit
+* **help,shared,field-reports,rangers:** E-84 - Help page tabs, on-page text fixes, deduplicated grid-keyboard-help component, FIELD-GUIDE.md and README.md rewrite per the documentation audit ([204720e](https://github.com/EOCOnline/rangertrak/commit/204720e0efaa2f6d8a3279290b961bf76f79562d))
 
 ### Bug Fixes
 
-* **mapping,mapLeaflet,map,entry:** map marker tooltips show short local time + "N min ago", not the raw `Date` object
+* **mapping,mapLeaflet,map,entry:** map marker tooltips show short local time + "N min ago", not the raw `Date` object ([204720e](https://github.com/EOCOnline/rangertrak/commit/204720e0efaa2f6d8a3279290b961bf76f79562d))
 
 ## [0.43.1](https://github.com/EOCOnline/rangertrak/commit/4c8d3dbe1be66bd9de2852626dc20dfd070a0467) (2026-08-24)
 
