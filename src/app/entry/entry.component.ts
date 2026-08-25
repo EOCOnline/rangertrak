@@ -11,6 +11,7 @@ import {
 } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { form, FormField } from '@angular/forms/signals'
+import { RouterLink } from '@angular/router'
 import { SignalFormControl } from '@angular/forms/signals/compat'
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
@@ -25,7 +26,8 @@ import { TimePickerComponent } from '../shared/time-picker/time-picker.component
 import { DDToDDM } from '../shared/mapping/coordinate'
 import {
   FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
-  SettingsService, SettingsType, statusColorValue, undefinedAddressFlag, undefinedLocation
+  SettingsService, SettingsType, statusColorValue, undefinedAddressFlag, undefinedLocation,
+  WelcomePanelService
 } from '../shared/services/'
 //import { LocationComponent } from './location.component'
 
@@ -43,6 +45,7 @@ import { MiniMapLeafletComponent } from './mini-mapLeaflet.component'
     CommonModule,
     ReactiveFormsModule,
     FormField,
+    RouterLink,
     ...MATERIAL_IMPORTS,
     PageComponent,
     TimePickerComponent,
@@ -177,6 +180,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     private _snackBar: MatSnackBar,
     private http: HttpClient,
     private zone: NgZone,
+    public welcomePanel: WelcomePanelService,
     @Inject(DOCUMENT) private document: Document) {
 
     this.log.excessive(`======== constructor() ============`, this.id)

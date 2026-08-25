@@ -2,8 +2,9 @@ import { interval, map, Observable, Subscription } from 'rxjs'
 
 import { CommonModule } from '@angular/common'
 import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, signal } from '@angular/core'
+import { Router } from '@angular/router'
 
-import { ClockService, LogService, SettingsService, SettingsType } from '../services'
+import { ClockService, LogService, SettingsService, SettingsType, WelcomePanelService } from '../services'
 import { Utility } from '../'
 import { MissionReadinessComponent } from '../mission-readiness/mission-readiness.component'
 
@@ -55,6 +56,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private clockService: ClockService,
     private log: LogService,
     private settingsService: SettingsService,
+    private welcomePanel: WelcomePanelService,
+    private router: Router,
   ) {
     //======== Constructor() ============
     this.timeCurrent = this.clockService.getCurrentTime()
@@ -123,6 +126,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
         return (`${diff.string} ${(diff.negative ? ` since period ended` : ` left`)}`)
       }
       ))
+  }
+
+  /**
+   * E-83: "clicking somewhere on the wide pill next to the Field Entry header should bring
+   * it back up" - the status-cluster is shared/app-wide (every route renders HeaderComponent),
+   * so rather than scoping this to Entry-only, clicking it from anywhere navigates to Entry
+   * AND reopens the panel - a simpler, equally discoverable behaviour than disabling the
+   * click on every other route. Ignores clicks that landed on the readiness dot specifically
+   * (its own `routerLink="/mission"` already handles those) so the two don't both fire.
+   */
+  onStatusClusterClick(event: MouseEvent) {
+    if ((event.target as HTMLElement).closest('.readiness-dot')) return
+    this.welcomePanel.show()
+    this.router.navigateByUrl('/')
   }
 
   ngOnDestroy() {

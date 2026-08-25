@@ -7,7 +7,8 @@
      readout rather than several independent pieces of debris. -->
 <div class="header">
   <h1 class="title" title="{{pageDescription}}">{{parentTitle}} </h1>
-  <div class="status-cluster">
+  <div class="status-cluster" (click)="onStatusClusterClick($event)"
+    title="Click to go to Field Entry and reopen the welcome panel">
     <rangertrak-mission-readiness></rangertrak-mission-readiness>
     <span class="status-divider"></span>
     <span class="event" title={{eventDetails()}}>{{eventInfo()}}</span>

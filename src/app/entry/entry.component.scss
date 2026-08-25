@@ -17,6 +17,38 @@ with ($primary: #962f10,
 // sites, so this file still has one place to look.
 $filledColor: var(--rt-surface-2);
 
+// E-83: first-run welcome panel - neutral surface tokens, not --rt-notice's amber
+// warning tone (RangersComponent's privacy-bar sibling pattern), since this is friendly
+// orientation, not a caution.
+.entry-welcome {
+  display      : flex;
+  align-items  : center;
+  flex-wrap    : wrap;
+  gap          : 0.5em;
+  background   : var(--rt-surface-2);
+  border       : 1px solid var(--rt-line);
+  border-left  : 6px solid var(--rt-accent);
+  border-radius: var(--rt-radius);
+  padding      : 0.5em 0.75em;
+  margin       : 0 0 1em 0;
+}
+
+.entry-welcome__text {
+  flex: 1 1 20em;
+}
+
+.entry-welcome__dismiss {
+  background   : none;
+  border       : 1px solid transparent;
+  border-radius: var(--rt-radius);
+  color        : inherit;
+  cursor       : pointer;
+  font         : inherit;
+  font-size    : 1.25em;
+  line-height  : 1;
+  padding      : 0.1em 0.45em;
+}
+
 .filled {
   background-color: $filledColor;
 }

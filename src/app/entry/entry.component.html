@@ -1,4 +1,23 @@
 <rangertrak-page [title]="title" [description]="pageDescr">
+
+  <!-- E-83: first-run welcome panel, above the form per the original reskin design intent
+       ("a panel above the Entry form ... rather than a landing page", since path:'' routes
+       straight here and the fast path must stay fast). Dismissing it sets a per-device flag
+       (WelcomePanelService); clicking the header's status-cluster pill brings it back. -->
+  @if (!welcomePanel.dismissed()) {
+  <aside class="entry-welcome" role="note">
+    <span class="entry-welcome__text">
+      <strong>Welcome to RangerTrak.</strong> First load your rangers (bottom of the
+      <a routerLink="/rangers">Rangers</a> page), then review the
+      <a routerLink="/mission">Mission</a> settings. Reports entered here are saved to this
+      device even with no internet connection.
+    </span>
+    <button type="button" class="entry-welcome__dismiss" (click)="welcomePanel.dismiss()"
+      aria-label="Dismiss this welcome panel. Bring it back any time by clicking the status pill in the header."
+      title="Dismiss. Bring it back any time by clicking the status pill in the header.">×</button>
+  </aside>
+  }
+
   <form [formGroup]="entryControlsForm" (ngSubmit)="onFormSubmit()" class="enter__form">
     <!-- Groups the mini-map with Who/Where so a breakpoint can reorder them together
          without touching desktop layout at all: default (undeclared) `display` here does

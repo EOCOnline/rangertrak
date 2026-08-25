@@ -59,6 +59,9 @@
     border       : 1px solid var(--rt-line);
     border-radius: 999px;
     padding      : 0.3em 0.9em;
+    // E-83: the whole pill is a click target (reopens the Entry welcome panel) - the
+    // readiness dot inside it is its own separate link and keeps its own pointer cursor.
+    cursor       : pointer;
   }
 
   .status-divider {

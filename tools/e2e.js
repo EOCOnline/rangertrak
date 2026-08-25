@@ -579,6 +579,44 @@ async function checkBackToTop() {
 }
 
 /**
+ * E-83: the Entry welcome panel is visible by default, dismissing it persists (a fresh
+ * navigation to Entry doesn't bring it back), and clicking the header's status-cluster
+ * pill from anywhere else in the app navigates to Entry and reopens it. Also guards that
+ * clicking the readiness dot INSIDE the pill still goes to its own destination (/mission)
+ * rather than being hijacked by the pill's own click handler - the two are easy to get
+ * fighting over the same click if the guard in onStatusClusterClick() ever regresses.
+ */
+async function checkWelcomePanelDismissAndReopen() {
+  console.log('\nE-83: Entry welcome panel dismisses, persists dismissed, and reopens via the header pill')
+  await goto('/')
+  await evaluate(`localStorage.removeItem('entryWelcomeDismissed')`)
+  await goto('/')
+
+  check('the welcome panel is visible by default', await evaluate(`!!document.querySelector('.entry-welcome')`), true)
+
+  await evaluate(`document.querySelector('.entry-welcome__dismiss')?.click()`)
+  await sleep(300)
+  check('dismissing it hides the panel', await evaluate(`!!document.querySelector('.entry-welcome')`), false)
+  check('the dismissed flag persisted', await evaluate(`localStorage.getItem('entryWelcomeDismissed')`), 'true')
+
+  await goto('/')
+  check('stays hidden after a fresh navigation to Entry', await evaluate(`!!document.querySelector('.entry-welcome')`), false)
+
+  await navigateInApp('Rangers')
+  await evaluate(`document.querySelector('.status-cluster')?.click()`)
+  await sleep(1500)
+  check('clicking the status-cluster pill navigates to Entry', await evaluate(`location.pathname`), '/')
+  check('...and reopens the welcome panel', await evaluate(`!!document.querySelector('.entry-welcome')`), true)
+  check('...and cleared the dismissed flag', await evaluate(`localStorage.getItem('entryWelcomeDismissed')`), null)
+
+  // The readiness dot inside the pill must still reach its own destination, not be
+  // hijacked by the pill's own click handler.
+  await evaluate(`document.querySelector('.readiness-dot')?.click()`)
+  await sleep(1500)
+  check('clicking the readiness dot inside the pill still goes to Mission, not hijacked', await evaluate(`location.pathname`), '/mission')
+}
+
+/**
  * E-48(1): the derived Address / +Codes / What3Words block belongs to the report being
  * entered right now, not the previous one.
  *
@@ -1278,6 +1316,7 @@ async function main() {
     await checkEntryPhoneWidth()
     await checkAllRoutesPhoneWidth()
     await checkBackToTop()
+    await checkWelcomePanelDismissAndReopen()
     await checkLocationDdDdmDmsSync()
     await checkFieldReportsPhoneLayout()
     await checkGridThemeUsesTokens()
