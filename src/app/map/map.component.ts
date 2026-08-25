@@ -58,6 +58,11 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   // `mousemove` event there), same as the Leaflet readout - not a regression.
   public mouseLatLng = signal({ lat: 0, lng: 0 })
 
+  // Terrain overlay, off by default (same default as Leaflet's own equivalent checkbox
+  // below) - see addHillshadeLayer()'s own comment for the source and why it's a real
+  // MapLibre layer rather than a second style.
+  public hillshadeVisible = signal(false)
+
   constructor(
     private settingsService: SettingsService,
     private fieldReportService: FieldReportService,
@@ -105,6 +110,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     this.map.on('load', () => {
+      this.addHillshadeLayer()
       this.addReportsSource()
       this.refreshMarkers()
       this.fitToBounds()
@@ -154,6 +160,40 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private clamp(num: number, min: number, max: number): number {
     return Math.min(Math.max(num, min), max)
+  }
+
+  /**
+   * Terrain relief overlay - raised in the same backlog row as a request for "a real
+   * layer-visibility toggle... once this or any other overlay exists." Esri's
+   * World_Hillshade REST tile service (free, no API key), same source used for Leaflet's
+   * equivalent checkbox (mapLeaflet.component.ts) - kept as ONE real MapLibre layer added
+   * on top of the vector basemap, not a second style, so toggling it is a plain
+   * `setLayoutProperty` visibility flip rather than swapping the whole map's style (which
+   * would flash/reload the basemap and lose the reports source). Starts hidden
+   * (`visibility: 'none'`) so the default view is unchanged; `raster-opacity` matches
+   * Leaflet's own 50% so the vector roads/water/buildings stay legible underneath.
+   */
+  private addHillshadeLayer(): void {
+    this.map.addSource('hillshade-source', {
+      type: 'raster',
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Hillshade/MapServer/tile/{z}/{y}/{x}'],
+      tileSize: 256,
+      maxzoom: 16,
+      attribution: 'Hillshade: &copy; <a href="https://www.esri.com">Esri</a>',
+    })
+    this.map.addLayer({
+      id: 'hillshade',
+      type: 'raster',
+      source: 'hillshade-source',
+      layout: { visibility: 'none' },
+      paint: { 'raster-opacity': 0.5 },
+    })
+  }
+
+  onToggleHillshade(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked
+    this.hillshadeVisible.set(checked)
+    this.map.setLayoutProperty('hillshade', 'visibility', checked ? 'visible' : 'none')
   }
 
   private addReportsSource(): void {

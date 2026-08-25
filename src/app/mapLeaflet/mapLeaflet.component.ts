@@ -321,18 +321,41 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
     })
 
+    // Terrain/hillshade overlay, raised in the same backlog row as this control: "also
+    // wants a real layer-visibility toggle... once this or any other overlay exists." Esri's
+    // World_Hillshade REST tile service (free, no API key - one of the sources this project
+    // already surveyed for E-85's phase 2, never wired in until now). A plain L.tileLayer,
+    // not tileLayerOffline: it's advisory relief shading laid over a base map, not a
+    // navigation base layer itself, so it's deliberately outside the "save this area
+    // offline"/auto-cache-on-view story the two base layers above get. 50% opacity so the
+    // base layer's own roads/labels/contours stay legible underneath the shading.
+    const hillshadeOverlay = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Hillshade/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 16, minZoom: 3, opacity: 0.5,
+        attribution: 'Hillshade: &copy; <a href="https://www.esri.com">Esri</a>',
+      }
+    )
+
     // E-85 phase 1/2: the base-layer switcher (Leaflet's own standard `L.control.layers`
     // widget). USGS/Esri sources surveyed in the roadmap's E-85 row are still not wired in
-    // - adding one later is exactly this: another key here, nothing structural to change.
-    // NOT yet handled for a second layer: `wireOfflineAreaInfo()`/the savetiles control
-    // below are still bound to `tiles` (OSM) specifically - offline-BULK-saving OpenTopoMap
-    // needs its own wiring (or a rebind on the control's `baselayerchange` event), left for
-    // whichever session actually needs it.
+    // as BASE layers - adding one later is exactly this: another key here, nothing
+    // structural to change. NOT yet handled for a second layer: `wireOfflineAreaInfo()`/the
+    // savetiles control below are still bound to `tiles` (OSM) specifically -
+    // offline-BULK-saving OpenTopoMap needs its own wiring (or a rebind on the control's
+    // `baselayerchange` event), left for whichever session actually needs it.
     const baseLayers: Record<string, L.Layer> = {
       'OpenStreetMap': tiles,
       'OpenTopoMap (contours)': openTopoTiles,
     }
-    L.control.layers(baseLayers, {}, { position: 'topright' }).addTo(this.lMap)
+    // Second param is the OVERLAY group - Leaflet's own control renders these as checkboxes
+    // (independent on/off, layered over whichever base is active) rather than the base
+    // group's radio buttons, which is the "real toggle" this row asked for without any
+    // custom UI needed - the control already exists from E-85.
+    const overlayLayers: Record<string, L.Layer> = {
+      'Hillshade (terrain relief)': hillshadeOverlay,
+    }
+    L.control.layers(baseLayers, overlayLayers, { position: 'topright' }).addTo(this.lMap)
 
     const saveTilesControl = savetiles(tiles, {
       saveText: '💾 Save this area for offline use',

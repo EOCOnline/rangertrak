@@ -20,6 +20,14 @@
 <label for="selectedFieldReportsPmtiles">Just those ({{numSelectedRows()}}) selected in the Field Report
   panel</label>
 
+<div class="map-hillshade-toggle">
+  <label for="pmtilesHillshadeToggle">
+    <input id="pmtilesHillshadeToggle" type="checkbox" [checked]="hillshadeVisible()"
+      (change)="onToggleHillshade($event)" />
+    Show terrain relief (hillshade)
+  </label>
+</div>
+
 <rangertrak-section summary="Instructions">
   <ul>
     <li>This displays All Field Reports for All Rangers, by default.</li>
