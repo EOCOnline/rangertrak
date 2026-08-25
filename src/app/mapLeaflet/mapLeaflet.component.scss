@@ -32,7 +32,7 @@
   background : transparent;
   border     : none;
   box-shadow : none;
-  padding    : 0 2px;
+  padding    : 0 1px;
   font-size  : 0.7rem;
   color      : var(--rt-ink-2);
 
@@ -84,6 +84,14 @@
   a:hover {
     background: var(--rt-surface-2);
   }
+}
+
+// Maintainer, 2026-08-24: the whole control (buttons + these info lines) was re-parented
+// out of Leaflet's floating corner-control system into normal page flow - see
+// #offlineControlsHost in the template / initMainMap(). Bare breathing room now that it's
+// not sitting inside Leaflet's own cornered .leaflet-bar spacing.
+.offline-controls {
+  margin-top: 0.5em;
 }
 
 // Roadmap "Offline map area" item: saved/estimated size lines injected next to the

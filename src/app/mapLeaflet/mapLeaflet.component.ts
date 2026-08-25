@@ -20,7 +20,7 @@ import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 
-import { AbstractMap, Utility, rangerIconFor } from '../shared'
+import { AbstractMap, Utility, rangerIconFor, hashString } from '../shared'
 import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, SettingsService } from '../shared/services'
 
 import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
@@ -68,13 +68,12 @@ function formatBytes(bytes: number): string {
 // roster doesn't recognise (free-text team on RangerType, see E-40) or has no team set.
 const UNKNOWN_TEAM_TRAIL_COLOR = '#6B7280'
 
+// Shares hash-color.ts's mixed hash with E-86's rangerIconFor() - see that file's own
+// comment for why the naive version (fixed 2026-08-24) collided badly on sequential team
+// names like "Team1"/"Team2".
 function teamColorFor(team: string): string {
   if (!team) return UNKNOWN_TEAM_TRAIL_COLOR
-  let hash = 0
-  for (let i = 0; i < team.length; i++) {
-    hash = (hash * 31 + team.charCodeAt(i)) | 0
-  }
-  return `hsl(${Math.abs(hash) % 360}, 65%, 42%)`
+  return `hsl(${hashString(team) % 360}, 65%, 42%)`
 }
 
 
@@ -105,6 +104,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   // components once all used id="map". See D-30.
   @ViewChild('mapContainer', { static: true }) private mapContainer!: ElementRef<HTMLDivElement>
   @ViewChild('overviewContainer', { static: true }) private overviewContainer!: ElementRef<HTMLDivElement>
+  @ViewChild('offlineControlsHost', { static: true }) private offlineControlsHost!: ElementRef<HTMLDivElement>
 
   private lMap!: L.Map
   private overviewMapLeaflet!: L.Map
@@ -357,6 +357,16 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     }).addTo(this.lMap)
     this.offlineTileLayer = tiles
     this.wireOfflineAreaInfo(tiles, saveTilesControl)
+
+    // Maintainer, 2026-08-24: moved out of Leaflet's floating corner-control system (it was
+    // overlaying the map tiles) into normal page flow, just below the map - a plain
+    // re-parent of the control's own DOM node into the template's #offlineControlsHost.
+    // The control's click handlers are already bound directly to `tiles`/`this.lMap`, not
+    // to anything about its position in the DOM, so this is purely visual.
+    const offlineControlsContainer = saveTilesControl.getContainer()
+    if (offlineControlsContainer) {
+      this.offlineControlsHost.nativeElement.appendChild(offlineControlsContainer)
+    }
 
     // TODO: Consider allowing addition of SVG overlay (of known trails and other overlays): https://leafletjs.com/reference.html#svgoverlay
     // TODO: ...or add D3 too: https://bl.ocks.org/xEviL/4921fff1d70f5601d159, w/ GeoJson: https://bl.ocks.org/xEviL/0c4f628645c6c21c8b3a https://github.com/topojson/us-atlas
@@ -796,6 +806,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         direction: 'top',
         offset: [0, -8],
         className: 'rt-trail-elapsed',
+        opacity: 0.75,
       }).setContent(`${elapsedMin} min ago`)
       this.myTrailsLayer.addLayer(label)
     })

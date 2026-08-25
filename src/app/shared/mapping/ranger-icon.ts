@@ -1,5 +1,7 @@
 import * as L from 'leaflet'
 
+import { hashString } from './hash-color'
+
 /**
  * E-86 (narrowed 2026-08-24: "ignore the team concept for now, just make ranger markers
  * unique"): every ranger gets a distinct marker - shape AND colour, both derived purely
@@ -8,14 +10,6 @@ import * as L from 'leaflet'
  * needed at draw time. Team is deliberately not a factor here; see E-80's teamColorFor()
  * in mapLeaflet.component.ts for the separate, team-keyed colour used by route trails.
  */
-
-function hashString(s: string): number {
-  let hash = 0
-  for (let i = 0; i < s.length; i++) {
-    hash = (hash * 31 + s.charCodeAt(i)) | 0
-  }
-  return Math.abs(hash)
-}
 
 // Plain shape outlines, stroked white so they stay legible over any tile colour
 // (satellite, OpenTopoMap's greens/browns, etc.) - filled colour is what varies per ranger.

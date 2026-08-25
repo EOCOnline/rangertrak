@@ -20,6 +20,7 @@ export { GoogleGeocoder } from "./mapping/google-geocoder"
 export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./mapping/coordinate"
 export { AbstractMap } from "./mapping/map"
 export { rangerIconFor } from "./mapping/ranger-icon"
+export { hashString } from "./mapping/hash-color"
 
 // !BUG: Can't find @What3Words/API - need to install it?!
 // export { What3Words } from './mapping/3words'

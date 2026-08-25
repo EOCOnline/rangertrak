@@ -1,4 +1,12 @@
 <rangertrak-page [title]="title" [description]="pageDescr">
+  @if (engine() === 'leaflet') {
+  <rangertrak-mapLeaflet></rangertrak-mapLeaflet>
+  } @else if (maplibreComponentType(); as MaplibreEngine) {
+  <ng-container *ngComponentOutlet="MaplibreEngine"></ng-container>
+  }
+
+  <!-- Maintainer, 2026-08-24: moved below the map - was above it, ahead of the thing it
+       toggles. -->
   <div class="map-engine-switch">
     <label for="mapEngineSwitch">
       <input id="mapEngineSwitch" type="checkbox" [checked]="engine() === 'maplibre'"
@@ -6,10 +14,4 @@
       Use MapLibre + PMTiles Map - instead of Leaflet Map
     </label>
   </div>
-
-  @if (engine() === 'leaflet') {
-  <rangertrak-mapLeaflet></rangertrak-mapLeaflet>
-  } @else if (maplibreComponentType(); as MaplibreEngine) {
-  <ng-container *ngComponentOutlet="MaplibreEngine"></ng-container>
-  }
 </rangertrak-page>

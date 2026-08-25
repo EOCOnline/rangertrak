@@ -9,6 +9,11 @@
 
     <div id="Lmap-status">Click map to copy coordinates</div>
   </div>
+  <!-- Maintainer, 2026-08-24: the offline-save control (Save this area / Remove saved
+       tiles / the current-view and saved-area info lines) was floating over the map tiles
+       as a Leaflet corner control - moved into normal page flow, just below the map.
+       initMainMap() re-parents the control's own DOM node in here after building it. -->
+  <div #offlineControlsHost class="offline-controls"></div>
 </div>
 <div #overviewContainer id="mapLeaflet-overview"></div>
 <br />
