@@ -1,0 +1,5 @@
+# RangerTrak is an application, not a content site - there is nothing here worth a search
+# engine indexing (E-44 audit, 2026-08-26). Before this file existed, /robots.txt fell
+# through to the Angular SPA's index.html fallback and served a 200 with the full app shell.
+User-agent: *
+Disallow: /

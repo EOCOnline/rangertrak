@@ -7,8 +7,8 @@
   <base href="/">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta
-    name="RangerTrak is a free, open-source browser based tool to allow Search &amp; Rescue command to map their rangers with only radio contact">
+  <meta name="description"
+    content="RangerTrak is a free, open-source browser based tool to allow Search &amp; Rescue command to map their rangers with only radio contact">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <!-- E-62 cheap tier: iOS/iPadOS ignores favicon.ico and manifest.webmanifest's icons
        for "Add to Home Screen" - without this it fell back to a screenshot thumbnail
@@ -17,17 +17,31 @@
        under its own rounded-corner mask and does not handle alpha well. -->
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 
-  <!--lik rel="icon" type="image/svg+xml" href="/src/favicon.svg">
-  <lik rel="icon" type="image/ico" href="/src/favicon.ico" -->
   <link rel="preconnect" href="https://fonts.gstatic.com">
 
-  <!--  href="https://fonts.googleapis.com/css?family=Open+Sans:wght@300..900|Montserrat:wght@300..900|Roboto|Playfair+Display|Lato|Merriweather|Helvetica|Lora|PT+Serif|Spectral|Times+New+Roman|Akaya+Telivigala|Material+Icons&display=swap">
-          rel="stylesheet">
-    <! --https://developers.google.com/fonts/docs/getting_started & https://developers.google.com/fonts/docs/css2 -->
-
+  <!-- E-44 audit, 2026-08-26: was requesting 8 font families (Open Sans Condensed, Saira
+       Extra Condensed, Boogaloo, Anton, Arima Madurai, Black Ops One) left over from the
+       Font Explorium tool, which was extracted out of the app entirely on 2026-08-20 (see
+       settings-advanced-options.component.ts's own doc comment) - none of those six are
+       referenced anywhere in the app anymore. The real list is three: Roboto (body font),
+       Faster One (footer tagline, ADR D-39), and Material Icons - the last one was never
+       actually in this link despite three live `.material-icons` ligature-icon usages
+       (rangers.component.html, alerts.component.html) needing it; confirmed against the
+       deployed CSS that they've been rendering as unstyled text in production. Switched to
+       the modern css2 endpoint, which gets font-display:swap for free (the legacy `css?`
+       endpoint used above until now never requested it). Also deferred (Lighthouse's own
+       biggest single finding on this page, "Render-blocking requests", ~1050ms estimated) -
+       a plain synchronous stylesheet `<link>` to a cross-origin host blocks first paint on
+       the DNS+TLS+response round trip; the `media="print"` swap trick is the same one the
+       app's own compiled stylesheet already uses below, just never applied here. The
+       `<noscript>` fallback keeps the fonts loading normally with JS disabled. -->
   <link
-    href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Saira+Extra+Condensed|Roboto|Boogaloo|Anton|Faster+One|Arima+Madurai|Black+Ops+One"
-    rel="stylesheet">
+    href="https://fonts.googleapis.com/css2?family=Roboto&family=Faster+One&family=Material+Icons&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Faster+One&family=Material+Icons&display=swap"
+      rel="stylesheet">
+  </noscript>
 
   <!-- E-42: theme-color was Angular Material's default blue (#1976d2), unrelated to the
        app's actual Command skin accent (#0B5FA8, ADR D-37) - this is what colours the
@@ -50,13 +64,11 @@
         }
       } catch (e) { /* localStorage unavailable (e.g. blocked in this context) - fall back to auto */ }
   </script>
-  <script>
-      // Uncaught ReferenceError: System is not defined
-      // System.import('app').catch(function (err) { console.error(err); });
-  </script>
-  <!-- sc ript src="https://leafletjs-cdn.s3.amazonaws.com/content/le   aflet/main/leaflet-src.js"></scri   pt -->
-
-  <script src="https://assets.what3words.com/sdk/v3/what3words.js?key="></script>
+  <!-- E-44 audit, 2026-08-26: removed a dead SystemJS-era script comment, a mangled
+       commented-out Leaflet CDN tag, and this What3Words SDK include - it loaded
+       unconditionally with a blank ?key= on every page view for a feature that's shelved
+       backlog (E-14, needs a real key + SDK version migration). Re-add once E-14 restores
+       the feature for real. -->
 </head>
 
 <body class="mat-typography mat-app-background">

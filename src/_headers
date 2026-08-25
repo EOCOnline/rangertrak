@@ -15,11 +15,10 @@
 # The Content-Security-Policy is NOT one of those four, and is deliberately
 # Report-Only rather than enforcing. RangerTrak fetches from a real, non-trivial
 # set of external origins at runtime - OpenStreetMap tiles, Nominatim geocoding,
-# optionally Google's Geocoding API if a user configures a key in Settings, the
-# What3Words SDK script tag in index.html (shelved feature, E-14, but still
-# loaded on every page), Google Fonts. An enforcing CSP that's missed one of
-# those would SILENTLY break a real feature - most likely the offline map tiles
-# or address geocoding, both of which a search-and-rescue exercise depends on -
+# optionally Google's Geocoding API if a user configures a key in Settings,
+# Google Fonts. An enforcing CSP that's missed one of those would SILENTLY
+# break a real feature - most likely the offline map tiles or address
+# geocoding, both of which a search-and-rescue exercise depends on -
 # and there is no way to catch that from a local build: this repo's local static
 # server does not read or apply `_headers` at all (that's a Cloudflare-only
 # mechanism), so this policy is genuinely untested until it reaches the live
@@ -39,12 +38,18 @@
 # nothing" trap this project keeps finding (ADR D-39's catalogue) - it's not
 # wrong, it's just never read. tools/check-deployed.js verifies the real
 # zone-level value instead of a redundant origin declaration.
+#
+# Cross-Origin-Opener-Policy added 2026-08-26 (E-44 audit) - fifth enforcing
+# header, same reasoning as the original four: isolates this page's browsing
+# context group from cross-origin openers/openees, which nothing this app does
+# depends on (no window.open() popups, no OAuth-style flows).
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://assets.what3words.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org; connect-src 'self' https://nominatim.openstreetmap.org https://maps.googleapis.com https://api.what3words.com https://*.tile.openstreetmap.org; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org; connect-src 'self' https://nominatim.openstreetmap.org https://maps.googleapis.com https://api.what3words.com https://*.tile.openstreetmap.org; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
 
 # Only the files that MUST NOT be cached are listed below. Everything else keeps
 # Cloudflare's default ETag revalidation, which is already correct for the

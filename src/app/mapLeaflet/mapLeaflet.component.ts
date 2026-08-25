@@ -404,6 +404,25 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     }
     L.control.layers(baseLayers, overlayLayers, { position: 'topright' }).addTo(this.lMap)
 
+    // Maintainer, 2026-08-26: zoom out to show the full saved-tiles extent when the
+    // checkbox is switched ON, so a scribe checking "what's actually saved" (the whole
+    // point of this overlay, per its own scoping note above) doesn't land on an empty
+    // view just because their current pan/zoom doesn't happen to overlap it. Deliberately
+    // one-directional - `overlayremove` (unchecking) does NOT reset the view, matching how
+    // every other overlay/base-layer toggle on this control already behaves (no camera
+    // movement) and not fighting whatever the scribe was already looking at. Guarded
+    // against an empty overlay: `L.GeoJSON.getBounds()` throws on zero features, which is
+    // the normal case for a fresh device with nothing saved yet.
+    this.lMap.on('overlayadd', (e: L.LayersControlEvent) => {
+      if (e.layer !== savedTilesOverlay) {
+        return
+      }
+      if (savedTilesOverlay.getLayers().length === 0) {
+        return
+      }
+      this.lMap.fitBounds(savedTilesOverlay.getBounds())
+    })
+
     const saveTilesControl = savetiles(tiles, {
       saveText: '💾 Save this area for offline use',
       rmText: '🗑️ Remove saved tiles',
