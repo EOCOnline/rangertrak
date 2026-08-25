@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.49.2](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+
+### Bug Fixes
+
+* **help:** reference-table row labels (e.g. "Google Geocoding API key") no longer read as identical body text on phone width
+
 ## [0.49.1](https://github.com/EOCOnline/rangertrak/commit/8d2ab085644484dcb28bb9365ceff13ed81fc7df) (2026-08-26)
 
 ### Bug Fixes

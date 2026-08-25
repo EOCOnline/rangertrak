@@ -139,4 +139,22 @@ li {
     border-block-end: 0;
     padding-block   : 0.15rem;
   }
+
+  // Live report, phone/Firefox: collapsing the table lost the column distinction entirely -
+  // every row's "setting name" cell and its "what it changes" cell are both plain <td>s
+  // (the bold treatment above is scoped to <th>, which only ever existed in the now-hidden
+  // header row), so a setting name like "Google Geocoding API key" read as identical body
+  // text to the sentence describing it. Gives the first cell in each row the same
+  // font-weight/colour .reference th already carries at desktop width, restoring the
+  // label-vs-value hierarchy the two-column layout conveyed through position alone.
+  //
+  // NOT applied to .reference--parallel (help-start's "works offline" / "needs a
+  // connection" table): its two columns are independent parallel lists, not a label
+  // describing a value - bolding only the left one there would misleadingly read as that
+  // column being a heading for the right one.
+  .reference:not(.reference--parallel) td:first-child {
+    font-weight     : 700;
+    color           : var(--rt-ink-2);
+    margin-block-end: 0.1rem;
+  }
 }
