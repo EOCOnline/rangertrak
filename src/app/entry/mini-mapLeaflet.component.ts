@@ -24,6 +24,7 @@ import {
 // alongside Leaflet, even though this Leaflet mini-map never touches MapLibre.
 import { AbstractMap } from '../shared/mapping/map'
 import { rangerIconFor } from '../shared/mapping/ranger-icon'
+import { formatReportTime } from '../shared/mapping/report-time'
 import { Utility } from '../shared/utility'
 import {
   FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag,
@@ -545,7 +546,7 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     this.log.verbose(`displayMarkers: all ${this.displayedFieldReportArray.length} of 'em`, this.id)
     this.displayedFieldReportArray.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
-        let title = `${i.callsign} at ${i.date} with ${i.status}`
+        let title = `${i.callsign} at ${formatReportTime(i.date)} with ${i.status}`
         //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
         // E-86 (narrowed): a distinct shape+colour per ranger callsign, team ignored for now.

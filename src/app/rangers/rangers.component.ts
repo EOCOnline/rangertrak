@@ -8,6 +8,7 @@ import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeD
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { AgGridAngular } from 'ag-grid-angular';
 import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
+import { GridKeyboardHelpComponent } from '../shared/grid-keyboard-help/grid-keyboard-help.component';
 import { PageComponent } from '../shared/page/page.component';
 
 import { Utility } from '../shared'
@@ -28,7 +29,7 @@ import { CustomTooltip } from './customTooltip'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, DisclosureComponent],
+  imports: [CommonModule, AgGridAngular, PageComponent, DisclosureComponent, GridKeyboardHelpComponent],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']

@@ -617,6 +617,50 @@ async function checkWelcomePanelDismissAndReopen() {
 }
 
 /**
+ * E-84: the Help page is six tabs, and is the app's canonical user documentation.
+ *
+ * Scoped deliberately to '.help-tabs' rather than to Material's tab chrome generally: a
+ * selector like '.mat-mdc-tab' would match a tab strip anywhere in the app, so this check
+ * would pass on a page that has tabs for some other reason and keep passing if Help itself
+ * regressed to one long scroll. Confirmed red before the tabs existed.
+ *
+ * Asserts the bodies actually swap, not just that six labels render - a tab strip whose
+ * panels all show the same content is the plausible-looking failure here.
+ */
+async function checkHelpTabs() {
+  console.log('\nE-84: Help renders six tabs and switching them changes the body')
+  await goto('/help')
+
+  const labels = await evaluate(`(() => {
+    const group = document.querySelector('.help-tabs');
+    if (!group) return 'NO .help-tabs';
+    return [...group.querySelectorAll('.mat-mdc-tab .mdc-tab__text-label')]
+      .map(el => el.textContent.trim()).join('|');
+  })()`)
+  check('six tabs, in the planned order', labels,
+    'Start here|Entering reports|Maps|Mission setup|Your data|FAQ')
+
+  const firstBody = await evaluate(`document.querySelector('.help-tabs rangertrak-help-start') ? 'start' : 'missing'`)
+  check('the first tab shows the Start here body', firstBody, 'start')
+
+  // Click the FAQ tab and confirm a different component is now mounted.
+  await evaluate(`(() => {
+    const tab = [...document.querySelectorAll('.help-tabs .mat-mdc-tab')]
+      .find(t => t.textContent.trim() === 'FAQ');
+    tab?.click();
+  })()`)
+  await sleep(600)
+  check('switching to FAQ mounts the FAQ body', await evaluate(`!!document.querySelector('.help-tabs rangertrak-help-faq')`), true)
+  check('...and the Start here body is gone', await evaluate(`!!document.querySelector('.help-tabs rangertrak-help-start')`), false)
+
+  // The Log link moved into the About strip below the tabs (E-57(1) put it on this page;
+  // E-84 moved it out of the prose). It must survive that move - it is the path a bug
+  // reporter is told to follow.
+  check('the About strip still links to the Log page',
+    await evaluate(`!!document.querySelector('.help-about a[href="/log"]')`), true)
+}
+
+/**
  * E-48(1): the derived Address / +Codes / What3Words block belongs to the report being
  * entered right now, not the previous one.
  *
@@ -1320,6 +1364,7 @@ async function main() {
     await checkLocationDdDdmDmsSync()
     await checkFieldReportsPhoneLayout()
     await checkGridThemeUsesTokens()
+    await checkHelpTabs()
 
     if (READ_ONLY) {
       note('read-only: skipping roster, photo, submit and mission checks')

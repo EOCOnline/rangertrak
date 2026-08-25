@@ -13,7 +13,7 @@ import {
   FieldReportsType, FieldReportService, FieldReportType, LogService, SettingsService, SettingsType
 } from '../shared/services'
 import { DisclosureComponent } from '../shared/disclosure/disclosure.component'
-import { Utility } from '../shared'
+import { Utility, formatReportTime } from '../shared'
 
 const REPORTS_SOURCE_ID = 'field-reports'
 
@@ -210,7 +210,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         .map((r: FieldReportType) => ({
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [r.location.lng, r.location.lat] },
-          properties: { title: `${r.callsign} at ${r.date} with ${r.status}` }
+          properties: { title: `${r.callsign} at ${formatReportTime(r.date)} with ${r.status}` }
         }))
     }
   }

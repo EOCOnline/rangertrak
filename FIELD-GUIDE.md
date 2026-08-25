@@ -219,96 +219,17 @@ incoming operator, who imports it on their device.
 
 ---
 
-## Screen by screen
+## What's on each screen
 
-*(Click any image for a larger version. These were captured from an earlier release — the
-layout has changed in places, but the workflow has not.)*
+For what each screen does and how to use it, see the in-app **Help** page — it ships with
+the app, always matches the version you're running, and works with no Internet. This guide
+covers what Help can't: getting a device ready before you no longer have a connection to
+fall back on.
 
-### Settings — start here
+<!-- SCREENSHOT SLOT: Settings page, 0.43.x or later. Replaces the Nov-2022 capture, which
+     showed the removed Google Maps page and the MIT licence. -->
 
-*This is the setup phase's home screen — see [Before the mission](#before-the-mission-getting-to-a-hot-start-the-setup-phase)
-above for the full checklist. Everything below is reference for what's on this one screen.*
-
-> ⚠️ **Before changing settings**, export anything you need to keep. Setup steps can
-> replace existing data.
-
-At the start of every mission and operating period, enter the mission and operating period
-details and the default location that new reports start from. Map behaviour and the field
-report statuses can be adjusted here too.
-
-![Settings Screen](./non-dist-imgs/MissionSettings.png "Settings Screen")
-
-### Rangers — who is participating
-
-Second, record the people and teams taking part. Entries can be individuals or team
-tactical signs — RangerTrak treats them identically. Editable throughout, and exportable to
-a spreadsheet. **Remember to press Save Rangers.**
-
-![Rangers Screen](./non-dist-imgs/Rangers.png "Rangers Screen")
-
-Once those two screens are done, you will spend nearly all of the rest of the incident on
-the Home screen.
-
-### Home — entering field reports
-
-![Home (Entry) Screen](./non-dist-imgs/Entry.png "Home (Entry) Screen")
-
-1. **Who** — type any letters of a tactical call sign; the list filters as you type.
-2. **Where** — enter a location in any supported format. The derived address and map
-   position are shown back to you for confirmation.
-3. **When** — defaults to now. Edit it if the report came in earlier.
-4. **What** — the status (defaults to "normal"), plus free-text notes. Notes can carry
-   incident-specific keywords, which you can search for later on the Reports page.
-5. **Submit.** A confirmation appears briefly and the form resets for the next report.
-   Mistakes can be corrected later on the Reports page.
-6. **Reset** clears the form so you can start over.
-
-### Reports — the full log
-
-Every report in a sortable, filterable, searchable table. Filter or select rows, then map
-or export just that subset for documentation and after-action analysis.
-
-You can correct a report here: click a cell and type. Corrections are saved as soon as you
-leave the cell — there is no Save button to remember. Editing a latitude or longitude moves
-that report on the maps.
-
-![Field Reports Screen](./non-dist-imgs/FieldReports.png "Field Reports Screen")
-
-### Maps
-
-The Map page plots the reports entered so far, or just the subset selected on the Reports
-page — use the switch below the map to go back and forth. It opens zoomed to fit the
-reports you have. Leaflet is shown by default; a separate switch above the map lets you try
-the bundled MapLibre + PMTiles engine instead — see [What needs Internet, and what
-doesn't](#what-needs-internet-and-what-doesnt) for how the two differ offline.
-
-![Leaflet Maps Screen](./non-dist-imgs/LeafletMaps.png "Leaflet Maps Screen")
-
-### Help and Log
-
-**Help** (was named "About" — renamed to keep the main menu to what a scribe actually
-reaches for day to day) explains the application, the technologies behind it, how to
-report issues, and the licence. It's also where to find the **Log** page now: Log no
-longer has its own main-menu item, and is linked from Help instead, right beside the
-report-an-issue instructions.
-
-**Log** records what the app did during the session, colour-coded by severity, including
-any errors or crashes. Tick the level checkboxes to control how much detail is shown —
-this only changes the display, it never discards entries.
-
-![Logs Screen](./non-dist-imgs/Logs.png "Logs Screen")
-
-**Reporting a problem.** Press **Save Log File** to download the log as a spreadsheet file
-and attach it to your bug report — it is far more useful than a description of what went
-wrong. Two things to know:
-
-- **The log is not saved between sessions.** Reloading or closing the app clears it, so
-  export *before* reloading if something has gone wrong.
-- ⚠️ **The log may contain confidential information.** It is a raw diagnostic record and
-  can include field report details, street addresses, and call signs, and the file is not
-  encrypted. Share it only with the people who need it to diagnose the problem, and delete
-  it afterwards. A future release will add a second, redacted export for anonymized
-  analysis and hot-wash replay; until then, treat every log export as sensitive.
+<!-- SCREENSHOT SLOT: Map page's "Save this area for offline use" control, 0.43.x or later. -->
 
 ---
 

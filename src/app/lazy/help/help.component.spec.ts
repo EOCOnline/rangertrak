@@ -1,5 +1,6 @@
 import { provideRouter } from '@angular/router';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { HelpComponent } from './help.component';
 
@@ -9,7 +10,9 @@ describe('HelpComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HelpComponent],
+      // NoopAnimations: MatTabGroup animates its body, and without this the tab panels
+      // never settle in a unit test.
+      imports: [HelpComponent, NoopAnimationsModule],
       // For the routerLink="/log" help link (E-57(1): Log moved off the main menu,
       // reachable from here instead).
       providers: [provideRouter([])]
@@ -27,15 +30,24 @@ describe('HelpComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // E-57(1): "Rename the About page to Help... and put a link to the Log page there,
-  // but not link to Log from the main menu."
-  it('is headed "Help", not "About"', () => {
-    const h2 = fixture.nativeElement.querySelector('h2');
-    expect(h2.textContent.trim()).toBe('Help');
+  // E-84: the page is six tabs, not one long scroll. The previous test here asserted an
+  // <h2>Help</h2> that the tab shell no longer has - the labels are the structure now.
+  it('renders the six documentation tabs, in the planned order', () => {
+    const labels: string[] = Array.from(
+      fixture.nativeElement.querySelectorAll('.help-tabs .mdc-tab__text-label') as NodeListOf<HTMLElement>
+    ).map(el => el.textContent!.trim());
+
+    expect(labels).toEqual([
+      'Start here', 'Entering reports', 'Maps', 'Mission setup', 'Your data', 'FAQ'
+    ]);
   });
 
-  it('links to the Log page', () => {
-    const link: HTMLAnchorElement | null = fixture.nativeElement.querySelector('a[href="/log"]');
+  // E-57(1): "...and put a link to the Log page there, but not link to Log from the main
+  // menu." E-84 moved that link out of the prose and into the About strip below the tabs;
+  // it still has to be reachable, since it is the path a bug reporter is told to follow.
+  it('links to the Log page from the About strip', () => {
+    const link: HTMLAnchorElement | null =
+      fixture.nativeElement.querySelector('.help-about a[href="/log"]');
     expect(link).not.toBeNull();
   });
 });

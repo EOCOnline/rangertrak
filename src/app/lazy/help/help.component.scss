@@ -39,6 +39,46 @@ filter: brightness(30%);
 // https://developer.mozilla.org/en-US/docs/Web/CSS/background-image
 //https://rapidapi.com/guides/css-painting-api
 
+// E-84: tab shell. The tab body carries the page's prose, so it needs breathing room the
+// bare Material panel does not give it; the tab strip itself keeps Material's own behaviour
+// (keyboard nav, focus ring, overflow paging on narrow screens) untouched.
+.help-tabs {
+  margin-block: 1rem 2rem;
+}
+
+// mat-stretch-tabs="false" leaves labels at their natural width, so six of them scroll
+// rather than each being squeezed to a sixth of the viewport - Material pages them on a
+// phone, which is the behaviour we want here.
+.help-tabs .mat-mdc-tab-body-content {
+  padding-block: 1rem;
+  // Material sets overflow:hidden on the body content; prose that ends up wider than the
+  // panel (a long URL, a reference table) must scroll inside it rather than pushing the
+  // page sideways.
+  overflow-x   : auto;
+}
+
+.help-version {
+  margin-block: 0.25rem 0;
+  font-weight : bold;
+}
+
+// Reference material below the tabs - licence, technologies, feedback. Separated by a rule
+// so it reads as an appendix rather than as a seventh section someone should read.
+.help-about {
+  margin-block-start: 1.5rem;
+  padding-block-start: 1rem;
+  border-block-start : 1px solid var(--rt-line);
+  max-width          : 68ch;
+}
+
+.help-about h2 {
+  margin-block: 0 0.5rem;
+}
+
+.indented {
+  margin-inline-start: 1rem;
+}
+
 .bold {
   font-weight: bold
 }

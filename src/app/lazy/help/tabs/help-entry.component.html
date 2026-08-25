@@ -1,0 +1,69 @@
+<h3>Entering a report</h3>
+
+<p>
+  Four sections, top to bottom: <span class="ui">Who</span>, <span class="ui">Where</span>,
+  <span class="ui">When</span>, <span class="ui">What</span>. Type any letters of a call sign
+  and the list filters. The time defaults to now — change it if the report came in earlier.
+  Then <span class="ui">Submit</span>.
+</p>
+
+<p>
+  Tab moves through the form in the order you would read it aloud, so a whole report can be
+  entered without touching the mouse.
+</p>
+
+<h3>Location formats</h3>
+
+<p>Enter the location however the team read it out. Everything converts to everything else.</p>
+
+<table class="reference">
+  <thead>
+    <tr>
+      <th>Format</th>
+      <th>Looks like</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Decimal Degrees (DD)</td><td>47.4476&deg; &minus;122.4626&deg;</td></tr>
+    <tr><td>Degrees + Decimal Minutes (DDM)</td><td>47&deg; 26.8' N</td></tr>
+    <tr><td>Degrees Minutes Seconds (DMS)</td><td>47&deg; 26' 51" N</td></tr>
+    <tr><td>MGRS</td><td>10TFS 12345 67890</td></tr>
+    <tr><td>UTM</td><td>Zone 10 N, easting, northing</td></tr>
+    <tr><td>Plus Code, Maidenhead, or a street address</td><td>the single field below the coordinates</td></tr>
+  </tbody>
+</table>
+
+<p>
+  Whatever you enter, the rest is filled in underneath as <strong>Derived</strong> values.
+  Click any of them to select and copy.
+</p>
+
+<div class="note">
+  <strong>Not seeing a format you expected?</strong> Each one can be switched off for the
+  mission, under <span class="path">Mission &rarr; Location Defaults</span> — a team that only
+  ever speaks MGRS can hide the rest. The
+  <span class="ui">Show all coordinate systems</span> toggle brings them all back for the
+  current session only, without changing the mission's own setting.
+</div>
+
+<div class="warn">
+  All formats assume WGS84, as modern GPS reports. A position read off an older paper topo
+  quad may be NAD27, which can be 100&ndash;200&nbsp;m out in the western US.
+</div>
+
+<h3>Getting it wrong</h3>
+
+<p>
+  Submit anyway. It is better to have the report logged than to hold the radio while you fix
+  it. Corrections happen on the <a routerLink="/reports">Reports</a> page: click a cell, type,
+  and move on — grid edits save themselves. Editing a latitude or longitude moves that report
+  on the map.
+</p>
+
+<h3>The map beside the form</h3>
+
+<p>
+  The small map confirms where the location you typed actually landed. It is a check, not a
+  drawing surface — glance at it, and if the pin is in the water, re-read the coordinates back
+  over the radio.
+</p>

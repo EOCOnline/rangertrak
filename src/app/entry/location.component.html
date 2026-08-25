@@ -183,12 +183,11 @@
 
     <!------------------------------------------------------------>
     Street Address,
-    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>,
-    <a href="https://what3words.com/about/" target="_blank">What.3.Words</a>, or
+    <a href="https://maps.google.com/pluscodes/" target="_blank">+Code</a>, or
     Maidenhead grid locator:
 
     <input #address type="text" id="enter__Where-Address"
-      title="Optionally enter www.Plus.Codes, www.What3Words.com, a Maidenhead grid locator (e.g. CN87ux), or street address for geocoding."
+      title="Optionally enter www.Plus.Codes, a Maidenhead grid locator (e.g. CN87ux), or street address for geocoding."
       [formField]="addressForm" data-lpignore="true" (change)="onAddressChg()" [attr.tabindex]="ti(25)" />
 
     <!-- E-49: was a checkbox with a parenthetical sentence; demoted to a minor toggle.

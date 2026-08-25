@@ -1,0 +1,79 @@
+<h3>At the start of a mission</h3>
+
+<p>
+  On <a routerLink="/mission">Mission</a>, set the mission name and the operational period,
+  and a default latitude and longitude near your operating area — new reports start from
+  there, which saves typing on every single one.
+</p>
+
+<div class="warn">
+  <strong>Mission settings are not saved until you press <span class="ui">Save</span>.</strong>
+  Unlike the Reports and Rangers grids, which save edits themselves, this page waits for you.
+</div>
+
+<p>
+  Most of the rest of the page has a sensible default and can be left alone. The settings
+  below are the ones worth knowing about, because their effect shows up somewhere else.
+</p>
+
+<h3>Settings with consequences elsewhere</h3>
+
+<table class="reference">
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>What it changes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Coordinate systems shown on Entry</td>
+      <td>Hides formats your team never uses from the entry screen. If a format has gone
+        missing, this is why.</td>
+    </tr>
+    <tr>
+      <td>Field Report Statuses</td>
+      <td>The status buttons on the entry screen, and the marker colours. A status already
+        used by a report cannot be renamed.</td>
+    </tr>
+    <tr>
+      <td>Google Geocoding API key</td>
+      <td>Optional. Address lookup uses OpenStreetMap by default, free and with no key. Your
+        own Google key switches address lookup to Google, at your own cost. Neither works
+        offline.</td>
+    </tr>
+    <tr>
+      <td>Debug Mode</td>
+      <td>Adds diagnostic detail to the entry screen and the grids. For reporting a problem,
+        not for normal use.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Advanced Options</h3>
+
+<p>Collapsed at the bottom of the page. Four things live there:</p>
+
+<ul>
+  <li>
+    <span class="ui">Request Persistent Storage</span> — ask the browser not to discard your
+    mission when it is short of space. Accept if offered.
+  </li>
+  <li>
+    <span class="ui">Export Mission</span> / <span class="ui">Import Mission</span> — the whole
+    mission as one file, for backup or handover to another device.
+  </li>
+  <li>
+    <span class="ui">Load Sample Mission</span> — a ready-made demonstration mission, for
+    training or showing someone the app.
+  </li>
+  <li>
+    <span class="ui">Reset Settings</span> — back to defaults, at the start of a new incident.
+  </li>
+</ul>
+
+<div class="warn">
+  <span class="ui">Load Sample Mission</span>, <span class="ui">Import Mission</span> and
+  <span class="ui">Reset Settings</span> all replace what is on this device. Export first if
+  you need to keep it.
+</div>

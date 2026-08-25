@@ -46,23 +46,14 @@
   }
 
   <rangertrak-disclosure summary="Instructions">
-    This list of participants was taken from the FCC Database February 3, 2022. <br />
-    It has been significantly reformatted and your edits may alter it further.<br />
-    To maintain these changes between browser sessions, a button in the Advanced sectino
-    below allows writing the following table to the Browser Local Storage where it will
-    remain (thru multiple browser sessions) until explicitly deleted.<br />
     <ul>
-      <li>
-        The photos are not associated with the correct person currently - so are disabled
-        for now.
-      </li>
       <li>
         Some fields may be editable (single or double-click), and ONCE SAVED can be exported
         to a CSV file.
       </li>
       <li>
-        <span style="color:red;">Edits HAVE to be MANUALLY saved by selecting the "Save Data" button in the
-          Advanced section below.</span>
+        <span style="color:red;">Edits made directly in the grid are not saved automatically
+          - press "Save edits" in the Advanced section below.</span>
       </li>
       <li>Click on a column heading to sort by that field.</li>
       <li>Click & Drag on a column heading to move columns</li>
@@ -71,10 +62,6 @@
       <li>
         Export Rangers will save data as a CSV file for Excel. For
         <a href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank">details</a>
-      </li>
-      <li>
-        FUTURE: Import Excel button currently brings in the data - but due to imporoper
-        quoting it doesn't show up, so isn't working - yet.
       </li>
     </ul>
   </rangertrak-disclosure>
@@ -105,17 +92,7 @@
   </rangertrak-disclosure>
   <br />
 
-  <rangertrak-disclosure summary="Grid Menu Keyboard interaction">
-    <p>The AG Grid table's column and filter menus (Rangers, Field Reports) support:</p>
-    <ul>
-      <li><strong>Down Arrow</strong> - Focus the next menu item.</li>
-      <li><strong>Up Arrow</strong> - Focus the previous menu item.</li>
-      <li><strong>Left Arrow</strong> - Close the current menu if it is a sub-menu.</li>
-      <li><strong>Right Arrow</strong> - Opens the current menu item's sub-menu.</li>
-      <li><strong>Enter</strong> - Activate the focused menu item.</li>
-      <li><strong>Escape</strong> - Close all open menus.</li>
-    </ul>
-  </rangertrak-disclosure>
+  <rangertrak-grid-keyboard-help></rangertrak-grid-keyboard-help>
   <br />
 
   <!-- https://www.ag-grid.com/javascript-data-grid/component-tooltip/

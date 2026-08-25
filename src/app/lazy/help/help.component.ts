@@ -1,28 +1,54 @@
-
 import { Subscription } from 'rxjs'
 
-import { Component, Inject, isDevMode, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { RouterLink } from '@angular/router'
+import { MatTabsModule } from '@angular/material/tabs'
 
 import { DisclosureComponent } from '../../shared/disclosure/disclosure.component'
 import { FeedbackComponent } from '../../shared/feedback/feedback.component'
 import { PageComponent } from '../../shared/page/page.component'
 
-import { ClockService, LogService, SettingsService, SettingsType } from '../../shared/services'
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
+import { LogService, SettingsService, SettingsType } from '../../shared/services'
 
+import { HelpStartComponent } from './tabs/help-start.component'
+import { HelpEntryComponent } from './tabs/help-entry.component'
+import { HelpMapsComponent } from './tabs/help-maps.component'
+import { HelpMissionComponent } from './tabs/help-mission.component'
+import { HelpDataComponent } from './tabs/help-data.component'
+import { HelpFaqComponent } from './tabs/help-faq.component'
+
+/**
+ * The in-app user documentation, and (E-84 decision, 2026-08-24) the canonical one: it ships
+ * with the app, always matches the running version, and works with no connection - which is
+ * the situation this product exists for. FIELD-GUIDE.md is now the pre-mission companion,
+ * not a second copy of this.
+ *
+ * This page was one long scroll until E-84. That is how six shipped features (route trails,
+ * per-ranger markers, base-layer switching, offline tile saving, the theme toggle, the
+ * readiness dot) ended up documented nowhere at all - there was no obvious place to add
+ * anything and no way to see what was already covered. Content now lives in six sibling
+ * components under ./tabs, one per tab.
+ *
+ * Content rule for anything added here, from the maintainer: keep it minimal, the UI should
+ * be self-explanatory. These tabs deliberately cover only what a screen cannot say for
+ * itself. Where the UI is NOT self-explanatory, the fix belongs in the UI.
+ */
 @Component({
   selector: 'rangertrak-help',
   standalone: true,
-  imports: [CommonModule, PageComponent, DisclosureComponent, RouterLink, FeedbackComponent],
+  imports: [
+    CommonModule, PageComponent, DisclosureComponent, RouterLink, FeedbackComponent, MatTabsModule,
+    HelpStartComponent, HelpEntryComponent, HelpMapsComponent,
+    HelpMissionComponent, HelpDataComponent, HelpFaqComponent,
+  ],
   templateUrl: './help.component.html',
   styleUrls: ['./help.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   // Deliberately NOT providing SettingsService: it is providedIn:'root' and a second
   // instance here would diverge from everyone else's. See BUG-2 in entry.component.ts.
 })
-export class HelpComponent implements OnDestroy, OnInit {
+export class HelpComponent implements OnDestroy {
 
   id = 'Help'
   private settingsSubscription!: Subscription
@@ -30,24 +56,10 @@ export class HelpComponent implements OnDestroy, OnInit {
   public version = ''
   today = new Date()
 
-  // Makes spans (elements) for each letter/word
-  animatedSpan = (text: string, index: number) => {
-    const node = document.createElement('span')
-    node.textContent = text
-
-    // Set custom property "--index" with the array position
-    node.style.setProperty('--index', index.toString())
-
-    return node
-  }
-
   constructor(
     private log: LogService,
     private settingsService: SettingsService
   ) {
-    console.log("HelpComponent  ======== Constructor() ============ ")
-
-    // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
       next: (newSettings) => {
         this.settings = newSettings
@@ -59,52 +71,6 @@ export class HelpComponent implements OnDestroy, OnInit {
 
     this.version = this.settings ? this.settings.version : '0'
   }
-
-  ngOnInit() {
-    // console.error("lets get animated!")
-    // this.animatedLetters()
-    // console.error("we got animated!")
-  }
-
-  // from https://web.dev/patterns/animation/
-  animatedLetters() {
-    // Don't display if user gets 'motion-sickness'
-    const { matches: motionOK } = window.matchMedia(
-      '(prefers-reduced-motion: no-preference)'
-    )
-
-    //if (motionOK) {
-    const splitTargets = document.querySelectorAll('[split-by]')
-
-    splitTargets.forEach(node => {
-
-      let nodes = this.byLetter(node.textContent!)
-      console.warn(`splitting: ${node.textContent!} got ${JSON.stringify(nodes)}`)
-      for (let i = 0; i++; i < nodes.length - 1) {
-        console.info(`nodes(${i}) w/ len=${nodes.length}= ${nodes[i].innerHTML}`)
-      }
-      //let nodes = this.byLetter(node.innerHTML)
-      //console.warn(`splitting: ${node.innerHTML}`)
-
-      //debugger
-
-      //console.log(`modes = ${ JSON.stringify(nodes) }`)
-
-      if (nodes)
-        node.childNodes[0].replaceWith(...nodes)
-    }
-    )
-    //}
-  }
-
-  // split a srtring into words
-  byWord = (text: string) =>
-    text.split(' ').map(this.animatedSpan)
-
-  // split a string into letters
-  byLetter = (text: string) =>
-    [...text].map(this.animatedSpan)
-
 
   ngOnDestroy() {
     this.settingsSubscription?.unsubscribe()

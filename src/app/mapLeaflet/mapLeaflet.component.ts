@@ -20,7 +20,7 @@ import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 
-import { AbstractMap, Utility, rangerIconFor, hashString } from '../shared'
+import { AbstractMap, Utility, rangerIconFor, hashString, formatReportTime } from '../shared'
 import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, SettingsService } from '../shared/services'
 
 import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
@@ -728,7 +728,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     this.log.verbose(`displayMarkers: ${this.displayedFieldReportArray.length} of 'em`, this.id)
     this.displayedFieldReportArray.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
-        let title = `${i.callsign} at ${i.date} with ${i.status}`
+        let title = `${i.callsign} at ${formatReportTime(i.date)} with ${i.status}`
         //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
         // E-86 (narrowed): a distinct shape+colour per ranger callsign, team ignored for now.

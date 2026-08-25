@@ -1,0 +1,142 @@
+// Shared by all six Help tab components (E-84). One stylesheet rather than six copies of
+// the same prose rules - the per-page duplication PageComponent/DisclosureComponent exist
+// to avoid, applied here too.
+//
+// Everything below is expressed in --rt-* tokens, never raw colours, so the tabs follow the
+// skin and both schemes without a prefers-color-scheme block of their own. See
+// styles/_tokens.scss for why light-dark() pairs are structurally mandatory here.
+
+:host {
+  display  : block;
+  color    : var(--rt-ink);
+  font-size: var(--rt-type-body-size);
+  // Prose is easier to read short. Tabs already narrow the content; this stops a wide
+  // desktop window from stretching a paragraph to 200 characters.
+  max-width: 68ch;
+}
+
+h3 {
+  margin-block: 1.5rem 0.5rem;
+  font-size   : var(--rt-type-title-size);
+  line-height : var(--rt-type-title-line);
+
+  // The first heading in a tab body sits directly under the tab strip, where a top margin
+  // reads as the panel being misaligned rather than as spacing.
+  &:first-child {
+    margin-block-start: 0.25rem;
+  }
+}
+
+h4 {
+  margin-block: 1.1rem 0.35rem;
+  font-size   : var(--rt-type-body-size);
+  font-weight : 700;
+}
+
+p {
+  margin-block: 0.5rem;
+  line-height : var(--rt-type-body-line);
+}
+
+ul,
+ol {
+  margin-block     : 0.5rem;
+  padding-inline-start: 1.4rem;
+  line-height      : var(--rt-type-body-line);
+}
+
+li {
+  margin-block: 0.3rem;
+}
+
+// A control name as it appears on screen. Distinct from <strong> so a reader can tell
+// "press the thing labelled X" from ordinary emphasis - the whole point of the E-84 audit
+// was that button names in docs had drifted from button names in the app.
+.ui {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+// Where a control lives, e.g. Mission -> Advanced Options.
+.path {
+  color      : var(--rt-ink-2);
+  white-space: nowrap;
+}
+
+// Callouts. .note is neutral; .warn is for data loss, privacy, and anything irreversible -
+// deliberately the same visual language as the Rangers page's privacy bar, which is the
+// best-calibrated warning already in the app.
+.note,
+.warn {
+  margin-block : 0.9rem;
+  padding      : 0.6rem 0.8rem;
+  border-inline-start: 4px solid var(--rt-line-strong);
+  border-radius: var(--rt-radius);
+  background   : var(--rt-surface-2);
+}
+
+.warn {
+  border-inline-start-color: var(--rt-notice-line);
+  background              : var(--rt-notice);
+  color                   : var(--rt-notice-ink);
+}
+
+// Q&A pairs on the FAQ tab.
+.faq-q {
+  margin-block: 1.25rem 0.25rem;
+  font-weight : 700;
+  line-height : var(--rt-type-body-line);
+}
+
+.faq-a {
+  margin-block: 0 0.75rem;
+}
+
+// Two-column reference lists (format -> example, control -> what it does). Falls back to a
+// plain stacked list on narrow screens rather than scrolling sideways: the page body must
+// never scroll horizontally on a phone.
+.reference {
+  width          : 100%;
+  border-collapse: collapse;
+  margin-block   : 0.75rem;
+  font-size      : var(--rt-type-body-sm-size);
+  line-height    : var(--rt-type-body-sm-line);
+}
+
+.reference th,
+.reference td {
+  padding      : 0.4rem 0.6rem;
+  text-align   : start;
+  vertical-align: top;
+  border-block-end: 1px solid var(--rt-line);
+}
+
+.reference th {
+  font-weight: 700;
+  color      : var(--rt-ink-2);
+}
+
+@media (max-width: 40rem) {
+
+  .reference,
+  .reference tbody,
+  .reference tr,
+  .reference td,
+  .reference th {
+    display: block;
+  }
+
+  .reference thead {
+    display: none;
+  }
+
+  .reference tr {
+    margin-block-end: 0.6rem;
+    border-block-end: 1px solid var(--rt-line);
+  }
+
+  .reference td {
+    border-block-end: 0;
+    padding-block   : 0.15rem;
+  }
+}

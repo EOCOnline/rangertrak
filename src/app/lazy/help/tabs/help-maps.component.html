@@ -1,0 +1,68 @@
+<h3>Saving map coverage before you lose the network</h3>
+
+<p>
+  This is the one thing on the map page worth doing in advance. Zoom to your operating area
+  and press <span class="ui">Save this area for offline use</span>, below the map. Those tiles
+  are then held on this device and the map keeps drawing with no connection.
+</p>
+
+<div class="warn">
+  Map areas you have never viewed or saved are blank when the network goes. Save the area
+  while you still have a signal — not when you need it.
+</div>
+
+<h3>Two map engines</h3>
+
+<table class="reference">
+  <thead>
+    <tr>
+      <th>Engine</th>
+      <th>Use it when</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Leaflet <em>(shown by default)</em></td>
+      <td>Best detail, anywhere in the world. Needs Internet for areas you have not saved.</td>
+    </tr>
+    <tr>
+      <td>MapLibre + PMTiles <em>(the switch below the map)</em></td>
+      <td>Map data ships inside the app, so it works with no connection at all — but detailed
+        coverage is currently limited to the pilot region.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  On the Leaflet map, the control in the top-right corner switches the base map between
+  street and topographic.
+</p>
+
+<h3>Reading the map</h3>
+
+<ul>
+  <li>
+    <strong>Each ranger has their own marker</strong> — a distinct shape and colour, derived
+    from the call sign, so the same person looks the same on every map and in every session.
+  </li>
+  <li>
+    <strong>Lines join one ranger's reports in order</strong>, oldest faintest, so you can see
+    which way a team has been moving. The label at the newest end shows how long ago that
+    report came in — it is a snapshot from when the map was drawn, not a running clock.
+  </li>
+  <li>
+    <strong>Nearby reports group into a cluster.</strong> Click it to zoom in and separate them.
+  </li>
+</ul>
+
+<h3>Showing only some reports</h3>
+
+<p>
+  By default the map shows every report. Select rows on the
+  <a routerLink="/reports">Reports</a> page, then use the switch under the map to show just
+  those — useful for one team, one time window, or one status.
+</p>
+
+<p>
+  Clicking the map copies those coordinates to the clipboard.
+</p>

@@ -10,8 +10,10 @@ when, and in what condition — for live situational awareness and after-action
 documentation.
 
 It is a [Progressive Web App](https://en.wikipedia.org/wiki/Progressive_web_app) that runs
-entirely in the browser. **No server, no account, no API key, and no Internet required**
-once it has been loaded — which is the point, because the command post often has none.
+entirely in the browser. **No server, no account, and no Internet required** once it has
+been loaded — which is the point, because the command post often has none. No API key is
+required either, for RangerTrak's core function; address lookup uses a keyless default
+(OpenStreetMap's Nominatim), with an optional Google Geocoding key if you supply your own.
 
 Because reading latitude and longitude over a radio is slow and error-prone, locations can
 also be reported as street addresses or Plus Codes.
@@ -24,7 +26,8 @@ also be reported as street addresses or Plus Codes.
 
 | Document | For | Contents |
 | --- | --- | --- |
-| **[FIELD-GUIDE.md](FIELD-GUIDE.md)** | Operators, ECs, scribes | What each screen does, and how to prepare a device so it works when the network doesn't |
+| **[FIELD-GUIDE.md](FIELD-GUIDE.md)** | Operators, ECs, scribes | How to prepare a device before a mission, so it still works when the network doesn't |
+| **In-app Help** | Operators, ECs, scribes | The full reference for every screen — built into the app, always matches the version you're running, and works with no Internet |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Developers | How the app is built: map engines, geocoding, bundle and loading strategy |
 | **[DEVELOPING.md](DEVELOPING.md)** | Developers | Running, testing, releasing, updating dependencies, deploying |
 | **[contributing.md](contributing.md)** | Everyone | Code of conduct |
@@ -45,9 +48,12 @@ the difference between a working tool and a blank screen.
   Degrees, Degrees/Decimal Minutes, Degrees-Minutes-Seconds, MGRS, UTM, and Maidenhead grid
   locators — plus Plus Codes and street addresses. All lat/long and grid conversion is
   computed on-device, so it keeps working with no connection.
-- **Two map engines.** A Leaflet map over standard online road maps, and an offline map
-  (MapLibre + PMTiles) whose basemap data ships inside the app. Both cluster markers and
-  have overview maps.
+- **Two map engines, switchable on one page.** A Leaflet map over standard online road
+  maps — with a switchable base layer (OpenStreetMap or OpenTopoMap) and the ability to
+  save an area's tiles for offline use — and an offline map (MapLibre + PMTiles) whose
+  basemap data ships inside the app. Both cluster markers and have overview maps.
+- **Per-ranger markers and route trails.** Each callsign gets a distinct marker shape and
+  colour, with a trail showing where they've been.
 - **Roster with call-sign lookup.** Fast entry by tactical call sign, for individuals or
   teams.
 - **Editable statuses** with custom names and colours, plus searchable free-text notes.

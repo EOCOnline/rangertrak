@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
 import { AgGridAngular } from 'ag-grid-angular';
 import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
+import { GridKeyboardHelpComponent } from '../shared/grid-keyboard-help/grid-keyboard-help.component';
 import { PageComponent } from '../shared/page/page.component';
 
 import { Utility } from '../shared'
@@ -41,7 +42,8 @@ export class myUnusedPipe implements PipeTransform {
     MatInputModule,
     MatSliderModule,
     PageComponent,
-    DisclosureComponent
+    DisclosureComponent,
+    GridKeyboardHelpComponent
   ],
   templateUrl: './field-reports.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
