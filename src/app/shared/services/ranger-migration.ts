@@ -1,58 +1,59 @@
-import { FieldReportType } from './field-report.interface'
 import { RangerType } from './ranger.interface'
 
 /**
- * ADR D-42: assigning every ranger a generic, unique `id`, and resolving each field report's
- * `rangerId` from the `callsign` it was filed against.
+ * Versioned, forward-only migration for the persisted ranger roster, plus the ID assignment
+ * ADR D-42 introduced.
  *
- * PHASE 1 SCAFFOLDING - written ahead of the wiring, deliberately. Nothing calls this yet.
- * See `D-42 Callsign to ID Migration.md` (rangertrak-InternalDocs) for the phased plan this
- * belongs to and what wires it up. It is pure, dependency-free and fully unit-tested on its
- * own so the risky half of D-42 (silently orphaning stored data) is settled before any
- * service starts depending on it.
+ * Mirrors `settings-migration.ts` deliberately - same shape, same conventions, same purity
+ * rules - rather than inventing a second way to do this. Settings has had real migration
+ * machinery since Sprint E; rangers and field reports had **none at all** (both were bare
+ * `JSON.parse()` calls), which is the gap this closes.
  *
- * ## Why a backfill at all, and why unconditional
+ * Maintainer, 2026-08-26: *"there are no existing reports. no need for back fill at this
+ * point. all should have some schema version of some sort for the future when we do need
+ * this."* So this deliberately does NOT carry defensive backfill logic for legacy data that
+ * does not exist - it establishes the **seam** a future migration hooks into, while the
+ * install base is still small enough that introducing a versioned storage shape is free.
+ * Doing it now is the whole point; it gets materially harder once real rosters are in the
+ * field. (An earlier draft of this file carried a `backfillReportRangerIds()` that resolved
+ * each stored report's ranger from its callsign - removed on that direction, since the data
+ * it rescued does not exist. If a future build DOES need it, it belongs as a numbered
+ * migration step in `field-report-migration.ts`, not as permanent defensive code.)
  *
- * Neither rangers nor field reports have ANY migration path today - `field-report.service.ts`
- * and `ranger.service.ts` both just `JSON.parse()` whatever localStorage holds (unlike
- * `SettingsType`, which has real `migrateSettings()` machinery). So a returning user's stored
- * rangers have no `id` and their stored reports have no `rangerId`. Renaming the join key
- * without a backfill orphans every report they have ever filed.
- *
- * These functions are therefore written to be called UNCONDITIONALLY on every load, not
- * behind a schema-version gate. That is this project's own hard-won pattern: see
- * [[settings-schema-version-discipline]] and the `0.16.8` post-mortem, where a version gate
- * around an additive backfill was itself the bug, twice, for two different fields. Both
- * functions are pure and idempotent - running them on already-migrated data returns
- * equivalent data and reports zero changes.
- *
- * ## Why existing credential numbers are preserved verbatim
- *
- * D-42's stated format is `REW-0038` / `TEW-1003`. But real stored `rew` values in this
- * codebase are already ID-shaped with a REGIONAL prefix - `VI-0038`, `VI-01` ("VI" for
- * Vashon Island) - which presumably matches the issuing agency's own records. Rewriting
- * `VI-0038` to `REW-0038` during a silent automatic migration would destroy that
- * correspondence with no way back.
- *
- * So the rule here is: **an already-ID-shaped credential is kept as-is** (only trimmed and
- * prefix-upper-cased); a BARE NUMBER gets the `REW-` prefix; anything else unusable as an
- * identifier (`CmdPost`, ``) falls through to a synthesized `TEW-####`. If the maintainer
- * decides they DO want every credential force-normalized to `REW-`, that is a one-line change
- * in `normalizeRangerId()` below - but it should be a deliberate, stated decision, not a
- * side effect, so it is not the default here.
+ * Everything here is PURE - no injection, no logging, no storage access - so it is
+ * unit-testable without a browser and safe to call from both entry points (RangerService's
+ * load path and BackupService's importMission).
  */
+
+/**
+ * Bump when a migration step is added below, and add the matching `if (version < N)` block.
+ *
+ * 0 - (implicit) a BARE `RangerType[]` array, which is what localStorage holds today. Not a
+ *     real version, just the absence of one.
+ * 1 - the versioned `{ schemaVersion, rangers }` wrapper, with each ranger's identifier
+ *     canonicalized into `id` (ADR D-42). Note "canonicalized", not "assigned": a ranger who
+ *     has not checked in yet legitimately has no number, and this app does not mint them.
+ */
+export const RANGER_SCHEMA_VERSION = 1
+
+/**
+ * The persisted shape of the roster.
+ *
+ * Note this is the STORAGE format, deliberately distinct from the liberal IMPORT format
+ * `RangerService.parseRosterJson()` accepts (a bare array, a `{rangers: []}` wrapper, or a
+ * whole mission export). Import stays forgiving because it takes whatever file a team
+ * actually has in hand; storage is strict and versioned because we own it.
+ */
+export type StoredRangers = {
+  schemaVersion: number,
+  rangers: RangerType[],
+}
 
 /** A well-formed ranger ID: a letter-led prefix, a hyphen, then digits. */
 const ID_SHAPE = /^([A-Za-z][A-Za-z0-9]*)-(\d+)$/
 
-/** Prefix for a synthesized ID, where no usable credential number existed. */
-const TEMP_PREFIX = 'TEW'
-
 /** Prefix applied to a credential recorded as a bare number, with no prefix of its own. */
 const CREDENTIAL_PREFIX = 'REW'
-
-/** Where synthesized TEW numbering starts. Above any plausible real small-roster number. */
-const TEMP_START = 1000
 
 /** Zero-padding applied ONLY when promoting a bare number to `REW-####`. */
 const BARE_NUMBER_PAD = 4
@@ -60,15 +61,22 @@ const BARE_NUMBER_PAD = 4
 /**
  * Canonicalizes a candidate identifier, or returns '' when it cannot serve as one.
  *
- * - `'VI-0038'` -> `'VI-0038'`   (already ID-shaped: kept verbatim, see the note above)
+ * - `'VI-0038'` -> `'VI-0038'`   (already ID-shaped: kept verbatim, see below)
  * - `'vi-0038'` -> `'VI-0038'`   (prefix upper-cased so case can't split one identity in two)
  * - `'VI-00 '`  -> `'VI-00'`     (trimmed)
  * - `'38'`      -> `'REW-0038'`  (bare number: gets the credential prefix, zero-padded)
- * - `'CmdPost'` -> `''`          (not an identifier - caller synthesizes a TEW instead)
+ * - `'CmdPost'` -> `''`          (not an identifier - reported as missing, never invented)
  * - `''`/null   -> `''`
  *
- * Digits inside an already-shaped value are NOT re-padded: `VI-1` stays `VI-1` rather than
- * becoming `VI-0001`, because the stored string is what matches an agency's own record.
+ * **Why an existing credential is preserved verbatim.** D-42 states the format as
+ * `REW-0038`/`TEW-1003`, but real stored `rew` values in this codebase are already ID-shaped
+ * with a REGIONAL prefix - `VI-0038`, `VI-01` ("VI" for Vashon Island) - which presumably
+ * matches the issuing agency's own records. Rewriting those to `REW-0038` would destroy that
+ * correspondence with no way back. Digits inside an already-shaped value are likewise NOT
+ * re-padded: `VI-1` stays `VI-1`, because the stored string is what matches a real record.
+ *
+ * If the maintainer decides they DO want every credential force-normalized to `REW-`, that is
+ * a one-line change here - but it should be a deliberate, stated decision, not a side effect.
  */
 export function normalizeRangerId(raw: unknown): string {
   const value = String(raw ?? '').trim()
@@ -95,171 +103,128 @@ export function isRangerId(value: unknown): boolean {
     ID_SHAPE, (_m, p: string, d: string) => `${p.toUpperCase()}-${d}`)
 }
 
-/** What `assignRangerIds()` did, so a caller can log or surface it. */
-export type RangerIdAssignment = {
+/** What `normalizeRangerIds()` found, so a caller can log it or surface it as a warning. */
+export type RangerIdAudit = {
+  /** The roster with every recognizable id canonicalized. Nothing invented. */
   rangers: RangerType[],
-  /** Already had a usable, unique id - left completely untouched. */
-  unchanged: number,
-  /** Took an id derived from an existing credential (`id` or `rew`). */
-  fromCredential: number,
-  /** Got a synthesized `TEW-####` because no usable credential existed. */
-  synthesized: number,
+  /** Carried a usable id already (in `id`, or seeded from `rew`). */
+  identified: number,
   /**
-   * Had a usable credential that ANOTHER ranger had already claimed, so this one was given a
-   * synthesized `TEW-####` instead (and is counted in `synthesized` too). Non-zero here means
-   * the roster held a genuine duplicate credential worth showing someone - see
-   * `rosterWarnings()`.
+   * Have NO usable identifier. These are not an error - a ranger on a pre-loaded roster who
+   * has not checked in yet genuinely does not have a number, because the incident issues it.
+   * Surface it so someone can fill it in at check-in; do NOT invent one.
    */
-  collisions: number,
+  missing: number,
+  /**
+   * Ids held by more than one ranger, in first-seen order. Genuinely ambiguous - every report
+   * filed against one of these cannot be attributed to a single person - so this is worth a
+   * loud warning, but it is the operator's data to fix, not ours to silently rewrite.
+   */
+  duplicates: string[],
 }
 
 /**
- * Gives every ranger a unique `id`, in place of nothing (fresh migration) or alongside ids
- * that are already correct (a re-run).
+ * Canonicalizes whatever identifiers a roster already carries, and reports what is missing or
+ * duplicated. **It never invents an identifier.**
  *
- * **Uniqueness is guaranteed by construction**, deliberately - unlike the import-time
- * duplicate-callsign handling, which only warns. The difference is that this runs
- * automatically with no operator watching: leaving two rangers sharing a join key here would
- * silently make every report filed against either one ambiguous, with nobody prompted to fix
- * it. A duplicate credential therefore loses the tie (first ranger in array order keeps it)
- * and the later one gets a synthesized `TEW-####`, which `collisions` reports so the app can
- * tell someone rather than hiding it.
+ * Maintainer, 2026-08-26: *"tew numbers are assigned at checkin, not by the app."* That is a
+ * real-world organizational process - a Temporary Emergency Worker number is issued when
+ * someone signs in at the incident - so an app-minted `TEW-1000` would be a fabricated
+ * credential that could collide with a genuinely issued one. An earlier draft of this
+ * function did exactly that; it was wrong and is gone.
  *
- * Source of an id, in priority order: an existing valid `id`, then `rew`, then synthesis.
+ * A blank id is therefore a legitimate, expected state ("hasn't checked in yet"), reported
+ * via `missing` rather than papered over - consistent with how this app already treats a
+ * blank callsign (the map's `UNASSIGNED_MARKER`, the Rangers grid's own "⚠ (none set)"):
+ * flag the gap, don't hide it behind invented data.
  *
- * Pure: returns new ranger objects, does not mutate the input array or its members.
+ * Exported separately from `migrateRangers()` because it is used in two places: as the
+ * v0 -> v1 migration step, and as normalization on **import**, where a roster file may carry
+ * a `rew` credential but no `id` at all.
+ *
+ * Source of an id, in priority order: an existing valid `id`, then `rew`. Nothing else.
+ *
+ * Pure and idempotent: returns new ranger objects, never mutates its input, and a second run
+ * over its own output changes nothing.
  */
-export function assignRangerIds(rangers: readonly RangerType[]): RangerIdAssignment {
-  const taken = new Set<string>()
+export function normalizeRangerIds(rangers: readonly RangerType[]): RangerIdAudit {
+  const seen = new Set<string>()
+  const duplicated = new Set<string>()
 
-  // Pass 1 - claim every id that is ALREADY valid, first-come-wins. Doing this before any
-  // assignment is what makes a re-run a no-op: an already-migrated roster fills `taken` with
-  // exactly its own ids, and pass 2 then finds every ranger already holding a unique one.
-  for (const ranger of rangers) {
-    const existing = normalizeRangerId((ranger as Partial<RangerType> & { id?: unknown }).id)
-    if (existing && !taken.has(existing)) {
-      taken.add(existing)
-    }
-  }
+  let identified = 0
+  let missing = 0
 
-  let unchanged = 0
-  let fromCredential = 0
-  let synthesized = 0
-  let collisions = 0
+  const normalized = rangers.map(ranger => {
+    // An explicit `id` wins; `rew` seeds one where no `id` exists yet (ADR D-42 folds the
+    // WA-specific "REW" column into the generic identifier).
+    const id = normalizeRangerId(ranger?.id) || normalizeRangerId(ranger?.rew)
 
-  // Monotonic cursor rather than rescanning from TEMP_START for each ranger - keeps a large
-  // roster linear instead of quadratic.
-  let tempCursor = TEMP_START
-  const nextTempId = (): string => {
-    while (taken.has(`${TEMP_PREFIX}-${tempCursor}`)) {
-      tempCursor++
-    }
-    const id = `${TEMP_PREFIX}-${tempCursor}`
-    tempCursor++
-    return id
-  }
-
-  const claimed = new Set<string>()
-  const migrated = rangers.map(ranger => {
-    const loose = ranger as Partial<RangerType> & { id?: unknown, rew?: unknown }
-    const existing = normalizeRangerId(loose.id)
-
-    // Already holds a valid id that nothing else has claimed this pass - leave it alone.
-    if (existing && !claimed.has(existing)) {
-      claimed.add(existing)
-      unchanged++
-      return { ...ranger, id: existing } as RangerType
+    if (!id) {
+      missing++
+      return { ...ranger, id: '' }
     }
 
-    const credential = normalizeRangerId(loose.rew)
-    if (credential && !taken.has(credential) && !claimed.has(credential)) {
-      claimed.add(credential)
-      taken.add(credential)
-      fromCredential++
-      return { ...ranger, id: credential } as RangerType
+    identified++
+    if (seen.has(id)) {
+      duplicated.add(id)
+    } else {
+      seen.add(id)
     }
-
-    // Either there was no usable credential, or someone else already holds it.
-    if (credential) {
-      collisions++
-    }
-    const fresh = nextTempId()
-    claimed.add(fresh)
-    taken.add(fresh)
-    synthesized++
-    return { ...ranger, id: fresh } as RangerType
+    return { ...ranger, id }
   })
 
-  return { rangers: migrated, unchanged, fromCredential, synthesized, collisions }
-}
-
-/** What `backfillReportRangerIds()` did. */
-export type ReportBackfillResult = {
-  reports: FieldReportType[],
-  /** Already carried a `rangerId` - untouched. */
-  unchanged: number,
-  /** Resolved a `rangerId` from the report's `callsign`. */
-  resolved: number,
-  /**
-   * Could not be matched to any ranger in the current roster - the callsign is blank, or
-   * belongs to someone since deleted or renamed. These keep their original `callsign` and are
-   * left with an empty `rangerId`; the data is NOT discarded.
-   */
-  unmatched: number,
+  return {
+    rangers: normalized,
+    identified,
+    missing,
+    duplicates: [...duplicated],
+  }
 }
 
 /**
- * Resolves each report's `rangerId` from the `callsign` it was filed against.
+ * Brings a persisted roster up to RANGER_SCHEMA_VERSION.
  *
- * **`callsign` is deliberately kept on the report**, not replaced. Two reasons, both real:
- * a report can outlive the ranger it names (deleted or re-keyed roster row), and the callsign
- * is what a scribe actually heard over the radio - it is the primary evidence of who reported,
- * and a resolved-at-migration-time id is a derived convenience on top of it. A report that
- * cannot be matched keeps its callsign and an empty `rangerId` rather than being dropped or
- * silently attached to the wrong person.
+ * Accepts what localStorage might actually hold: the versioned wrapper, a bare `RangerType[]`
+ * (the pre-versioning shape, treated as version 0), or something unusable.
  *
- * Matching is case-insensitive on trimmed callsigns, mirroring `rosterWarnings()`' own
- * duplicate detection and `RangerPhotoService`'s filename matching.
+ * Pure: returns a new object and never mutates its argument. A version NEWER than this build
+ * understands is passed through untouched rather than mangled - same reasoning as
+ * `migrateSettings()`: that is someone running an older build against newer data, and
+ * silently "downgrading" it would lose information.
  *
- * Pure: returns new report objects, does not mutate its inputs.
+ * Anything unparseable yields an empty, current-version roster. An empty roster is a
+ * meaningful state in its own right since 0.55.0 ("Rangers should start blank. That should
+ * indicate a new mission!"), so that is a correct answer rather than a papered-over failure.
  */
-export function backfillReportRangerIds(
-  reports: readonly FieldReportType[],
-  rangers: readonly RangerType[],
-): ReportBackfillResult {
-  const byCallsign = new Map<string, string>()
-  for (const ranger of rangers) {
-    const key = String(ranger.callsign ?? '').trim().toUpperCase()
-    const id = normalizeRangerId((ranger as Partial<RangerType> & { id?: unknown }).id)
-    // First-come-wins on a duplicated callsign, matching assignRangerIds' own tie-breaking so
-    // the two can't disagree about which ranger a duplicated key refers to.
-    if (key && id && !byCallsign.has(key)) {
-      byCallsign.set(key, id)
+export function migrateRangers(raw: unknown): StoredRangers {
+  // Version 0: a bare array, which is exactly what localStorage holds today.
+  if (Array.isArray(raw)) {
+    return {
+      schemaVersion: RANGER_SCHEMA_VERSION,
+      rangers: normalizeRangerIds(raw as RangerType[]).rangers,
     }
   }
 
-  let unchanged = 0
-  let resolved = 0
-  let unmatched = 0
+  if (!raw || typeof raw !== 'object') {
+    return { schemaVersion: RANGER_SCHEMA_VERSION, rangers: [] }
+  }
 
-  const migrated = reports.map(report => {
-    const loose = report as FieldReportType & { rangerId?: unknown }
-    const existing = normalizeRangerId(loose.rangerId)
-    if (existing) {
-      unchanged++
-      return { ...report, rangerId: existing } as FieldReportType
+  const incoming = raw as Partial<StoredRangers> & { schemaVersion?: unknown }
+  const rangers = Array.isArray(incoming.rangers) ? incoming.rangers : []
+  const version = typeof incoming.schemaVersion === 'number' ? incoming.schemaVersion : 0
+
+  // Newer than we understand - hand it back as-is rather than "migrating" it backwards.
+  if (version > RANGER_SCHEMA_VERSION) {
+    return { schemaVersion: version, rangers }
+  }
+
+  if (version < RANGER_SCHEMA_VERSION) {
+    // v0 -> v1: every ranger gains a unique id (ADR D-42).
+    return {
+      schemaVersion: RANGER_SCHEMA_VERSION,
+      rangers: normalizeRangerIds(rangers).rangers,
     }
+  }
 
-    const key = String(report.callsign ?? '').trim().toUpperCase()
-    const match = key ? byCallsign.get(key) : undefined
-    if (match) {
-      resolved++
-      return { ...report, rangerId: match } as FieldReportType
-    }
-
-    unmatched++
-    return { ...report, rangerId: '' } as FieldReportType
-  })
-
-  return { reports: migrated, unchanged, resolved, unmatched }
+  return { schemaVersion: RANGER_SCHEMA_VERSION, rangers }
 }

@@ -1,18 +1,19 @@
-import { FieldReportType } from './field-report.interface';
 import { RangerType } from './ranger.interface';
 import {
-  assignRangerIds, backfillReportRangerIds, isRangerId, normalizeRangerId
+  isRangerId, migrateRangers, normalizeRangerId, normalizeRangerIds, RANGER_SCHEMA_VERSION
 } from './ranger-migration';
 
 /**
- * ADR D-42 Phase 1. These pin the two properties the whole migration rests on:
+ * ADR D-42 Phase 1. These pin the properties the migration seam rests on:
  *
- *  1. **Idempotency** - running on already-migrated data changes nothing. Both functions are
- *     designed to be called unconditionally on every load rather than behind a schema-version
- *     gate ([[settings-schema-version-discipline]]), which is only safe if a re-run is inert.
- *  2. **No silent data loss** - a duplicate credential still yields two distinguishable
- *     rangers, and a report whose callsign matches nobody keeps its callsign instead of being
- *     dropped or mis-attached.
+ *  1. **Nothing is invented.** TEW numbers are issued at check-in by the incident, not by
+ *     this app - a minted `TEW-1000` would be a fabricated credential that could collide with
+ *     a genuinely issued one. A ranger with no number is a legitimate "hasn't checked in yet"
+ *     state, reported rather than filled.
+ *  2. **Idempotency** - a re-run changes nothing, which is what makes it safe to call on
+ *     every load rather than behind a version gate ([[settings-schema-version-discipline]]).
+ *  3. **Real stored values survive.** `VI-0038` is not rewritten to `REW-0038`; the regional
+ *     prefix presumably matches the issuing agency's own records.
  */
 describe('ranger-migration (ADR D-42)', () => {
 
@@ -24,20 +25,13 @@ describe('ranger-migration (ADR D-42)', () => {
     } as RangerType;
   }
 
-  /** A report with just enough shape for these tests. */
-  function report(callsign: string, extra: Record<string, unknown> = {}): FieldReportType {
-    return {
-      id: 1, callsign, location: { lat: 0, lng: 0, address: '', derivedFromAddress: false },
-      date: new Date(), status: 'Normal', notes: '', ...extra
-    } as unknown as FieldReportType;
-  }
-
   describe('normalizeRangerId', () => {
     it('keeps an already-ID-shaped credential verbatim, preserving its regional prefix', () => {
       // The real stored shape in this codebase - "VI" for Vashon Island. Rewriting it to
       // REW-0038 would break correspondence with the issuing agency's own records.
       expect(normalizeRangerId('VI-0038')).toBe('VI-0038');
       expect(normalizeRangerId('VI-01')).toBe('VI-01');
+      expect(normalizeRangerId('TEW-1003')).toBe('TEW-1003');
     });
 
     it('does NOT re-pad digits inside an already-shaped value', () => {
@@ -71,175 +65,141 @@ describe('ranger-migration (ADR D-42)', () => {
 
     it('isRangerId agrees with normalizeRangerId on canonical values', () => {
       expect(isRangerId('VI-0038')).toBeTrue();
-      expect(isRangerId('TEW-1000')).toBeTrue();
+      expect(isRangerId('TEW-1003')).toBeTrue();
       expect(isRangerId('CmdPost')).toBeFalse();
       expect(isRangerId('')).toBeFalse();
     });
   });
 
-  describe('assignRangerIds', () => {
+  describe('normalizeRangerIds', () => {
     it('seeds an id from an existing rew credential', () => {
-      const result = assignRangerIds([ranger('ACS1', { rew: 'VI-01' })]);
+      const result = normalizeRangerIds([ranger('ACS1', { rew: 'VI-01' })]);
 
       expect(result.rangers[0].id).toBe('VI-01');
-      expect(result.fromCredential).toBe(1);
-      expect(result.synthesized).toBe(0);
+      expect(result.identified).toBe(1);
+      expect(result.missing).toBe(0);
     });
 
-    it('synthesizes a TEW id when there is no usable credential', () => {
-      const result = assignRangerIds([
-        ranger('CERT1'),                              // rew: ''
-        ranger('!CmdPost', { rew: 'CmdPost' }),       // rew present but not an identifier
+    it('prefers an explicit id over the rew it would otherwise be seeded from', () => {
+      const result = normalizeRangerIds([ranger('ACS1', { id: 'TEW-1003', rew: 'VI-01' } as Partial<RangerType>)]);
+
+      expect(result.rangers[0].id).toBe('TEW-1003');
+    });
+
+    it('NEVER invents a number - a ranger who has not checked in has none', () => {
+      // The single most important property here. TEW numbers are issued at check-in by the
+      // incident; a minted one could collide with a real issued number.
+      const result = normalizeRangerIds([
+        ranger('CERT1'),                          // rew: ''
+        ranger('!CmdPost', { rew: 'CmdPost' }),   // rew present but not an identifier
+        ranger(''),                               // nothing at all
       ]);
 
-      expect(result.rangers[0].id).toBe('TEW-1000');
-      expect(result.rangers[1].id).toBe('TEW-1001');
-      expect(result.synthesized).toBe(2);
-      expect(result.collisions).toBe(0);
+      expect(result.rangers.map(r => r.id)).toEqual(['', '', '']);
+      expect(result.missing).toBe(3);
+      expect(result.identified).toBe(0);
     });
 
-    it('gives every ranger an id, including ones with neither callsign nor credential', () => {
-      // The exact population D-42 exists for: CERT/MERT responders who are not ham-licensed.
-      const result = assignRangerIds([ranger(''), ranger(''), ranger('')]);
-
-      const ids = result.rangers.map(r => r.id);
-      expect(ids.every(id => !!id)).withContext('no ranger left without an id').toBeTrue();
-      expect(new Set(ids).size).withContext('ids are unique').toBe(3);
-    });
-
-    it('breaks a duplicate credential rather than leaving an ambiguous join key', () => {
-      // Unlike import-time duplicate-callsign handling (which only warns), this runs
-      // automatically with nobody watching - two rangers sharing a join key would silently
-      // make every report against either one ambiguous.
-      const result = assignRangerIds([
+    it('reports duplicates rather than silently rewriting one of them', () => {
+      // Ambiguous and worth a loud warning, but it is the operator's data to fix - we cannot
+      // invent a replacement number, and picking a winner silently would hide a real problem.
+      const result = normalizeRangerIds([
         ranger('ACS1', { rew: 'VI-01' }),
         ranger('ACS2', { rew: 'VI-01' }),
+        ranger('ACS3', { rew: 'VI-02' }),
       ]);
 
-      expect(result.rangers[0].id).withContext('first in array order keeps it').toBe('VI-01');
-      expect(result.rangers[1].id).toBe('TEW-1000');
-      expect(result.rangers[0].id).not.toBe(result.rangers[1].id);
-      expect(result.collisions).withContext('reported, not hidden').toBe(1);
+      expect(result.duplicates).toEqual(['VI-01']);
+      expect(result.rangers[0].id).toBe('VI-01');
+      expect(result.rangers[1].id).withContext('left as-is, not rewritten').toBe('VI-01');
+      expect(result.identified).toBe(3);
     });
 
-    it('is idempotent - a second run changes nothing and reports no work', () => {
+    it('treats differently-cased duplicates as the same identity', () => {
+      const result = normalizeRangerIds([
+        ranger('ACS1', { rew: 'VI-01' }),
+        ranger('ACS2', { rew: 'vi-01' }),
+      ]);
+
+      expect(result.duplicates).toEqual(['VI-01']);
+    });
+
+    it('does not count a missing id as a duplicate of another missing one', () => {
+      const result = normalizeRangerIds([ranger('A'), ranger('B'), ranger('C')]);
+
+      expect(result.duplicates).toEqual([]);
+      expect(result.missing).toBe(3);
+    });
+
+    it('is idempotent - a second run produces identical output', () => {
       // This is what makes it safe to call unconditionally on every load.
-      const first = assignRangerIds([
+      const input = [
         ranger('ACS1', { rew: 'VI-01' }),
         ranger('CERT1'),
-        ranger('CERT2', { rew: 'VI-01' }),   // collides, gets a TEW
-      ]);
-      const second = assignRangerIds(first.rangers);
+        ranger('CERT2', { rew: 'vi-02' }),
+      ];
+      const first = normalizeRangerIds(input);
+      const second = normalizeRangerIds(first.rangers);
 
-      expect(second.rangers.map(r => r.id)).toEqual(first.rangers.map(r => r.id));
-      expect(second.unchanged).toBe(3);
-      expect(second.fromCredential).toBe(0);
-      expect(second.synthesized).toBe(0);
-      expect(second.collisions).toBe(0);
-    });
-
-    it('does not renumber a synthesized id on a later run when a new ranger joins', () => {
-      // A scribe adding someone mid-mission must not shuffle everyone else's identity.
-      const first = assignRangerIds([ranger('CERT1'), ranger('CERT2')]);
-      const withNewcomer = [...first.rangers, ranger('CERT3')];
-      const second = assignRangerIds(withNewcomer);
-
-      expect(second.rangers[0].id).toBe(first.rangers[0].id);
-      expect(second.rangers[1].id).toBe(first.rangers[1].id);
-      expect(second.rangers[2].id).withContext('newcomer gets a fresh, unused id').toBe('TEW-1002');
+      expect(second.rangers).toEqual(first.rangers);
+      expect(second.identified).toBe(first.identified);
+      expect(second.missing).toBe(first.missing);
+      expect(second.duplicates).toEqual(first.duplicates);
     });
 
     it('does not mutate the rangers passed in', () => {
       const input = [ranger('ACS1', { rew: 'VI-01' })];
       const snapshot = JSON.stringify(input);
 
-      assignRangerIds(input);
+      normalizeRangerIds(input);
 
       expect(JSON.stringify(input)).toBe(snapshot);
     });
 
-    it('handles an empty roster (the new blank-start default) without throwing', () => {
-      const result = assignRangerIds([]);
+    it('handles an empty roster (the blank-start default) without throwing', () => {
+      const result = normalizeRangerIds([]);
+
       expect(result.rangers).toEqual([]);
-      expect(result.synthesized).toBe(0);
+      expect(result.missing).toBe(0);
+      expect(result.duplicates).toEqual([]);
     });
   });
 
-  describe('backfillReportRangerIds', () => {
-    const roster = assignRangerIds([
-      ranger('ACS1', { rew: 'VI-01' }),
-      ranger('CERT1'),
-    ]).rangers;
+  describe('migrateRangers', () => {
+    it('wraps a bare array - the pre-versioning shape localStorage holds today', () => {
+      const result = migrateRangers([ranger('ACS1', { rew: 'VI-01' })]);
 
-    it('resolves a report to the ranger whose callsign it was filed against', () => {
-      const result = backfillReportRangerIds([report('ACS1')], roster);
-
-      expect(result.reports[0].rangerId).toBe('VI-01');
-      expect(result.resolved).toBe(1);
-      expect(result.unmatched).toBe(0);
+      expect(result.schemaVersion).toBe(RANGER_SCHEMA_VERSION);
+      expect(result.rangers.length).toBe(1);
+      expect(result.rangers[0].id).toBe('VI-01');
     });
 
-    it('matches case-insensitively, mirroring the roster warning and photo matching', () => {
-      const result = backfillReportRangerIds([report('acs1'), report('  ACS1  ')], roster);
+    it('passes an already-current roster through unchanged', () => {
+      const once = migrateRangers([ranger('ACS1', { rew: 'VI-01' })]);
+      const twice = migrateRangers(once);
 
-      expect(result.reports.map(r => r.rangerId)).toEqual(['VI-01', 'VI-01']);
-      expect(result.resolved).toBe(2);
+      expect(twice).toEqual(once);
     });
 
-    it('keeps the callsign on a report that matches nobody, instead of dropping it', () => {
-      // A report can outlive the ranger it names. Losing the callsign would destroy the only
-      // evidence of who actually reported.
-      const result = backfillReportRangerIds([report('GHOST9')], roster);
+    it('leaves data from a NEWER build alone rather than downgrading it', () => {
+      // Someone running an older build against newer data. Silently "migrating" it backwards
+      // would lose whatever that newer version added - same reasoning as migrateSettings().
+      const future = { schemaVersion: RANGER_SCHEMA_VERSION + 5, rangers: [ranger('ACS1')] };
 
-      expect(result.reports[0].callsign).toBe('GHOST9');
-      expect(result.reports[0].rangerId).toBe('');
-      expect(result.unmatched).toBe(1);
+      const result = migrateRangers(future);
+
+      expect(result.schemaVersion).toBe(RANGER_SCHEMA_VERSION + 5);
+      expect(result.rangers.length).toBe(1);
     });
 
-    it('never mis-attaches a blank-callsign report to some arbitrary ranger', () => {
-      const result = backfillReportRangerIds([report(''), report('   ')], roster);
-
-      expect(result.reports.map(r => r.rangerId)).toEqual(['', '']);
-      expect(result.unmatched).toBe(2);
-    });
-
-    it('keeps the callsign alongside the resolved id, not in place of it', () => {
-      const result = backfillReportRangerIds([report('ACS1')], roster);
-
-      expect(result.reports[0].callsign).withContext('primary radio evidence').toBe('ACS1');
-      expect(result.reports[0].rangerId).toBe('VI-01');
-    });
-
-    it('is idempotent - a second run changes nothing', () => {
-      const first = backfillReportRangerIds(
-        [report('ACS1'), report('CERT1'), report('GHOST9')], roster);
-      const second = backfillReportRangerIds(first.reports, roster);
-
-      expect(second.reports.map(r => (r as any).rangerId))
-        .toEqual(first.reports.map(r => (r as any).rangerId));
-      expect(second.unchanged).withContext('the two that resolved').toBe(2);
-      expect(second.resolved).toBe(0);
-    });
-
-    it('re-resolves a previously unmatched report once its ranger exists', () => {
-      // Import the roster AFTER the reports - a real ordering during mission setup.
-      const orphaned = backfillReportRangerIds([report('MERT1')], roster);
-      expect(orphaned.unmatched).toBe(1);
-
-      const widened = assignRangerIds([...roster, ranger('MERT1', { rew: 'VI-21' })]).rangers;
-      const rescued = backfillReportRangerIds(orphaned.reports, widened);
-
-      expect(rescued.reports[0].rangerId).toBe('VI-21');
-      expect(rescued.resolved).toBe(1);
-    });
-
-    it('does not mutate the reports passed in', () => {
-      const input = [report('ACS1')];
-      const snapshot = JSON.stringify(input);
-
-      backfillReportRangerIds(input, roster);
-
-      expect(JSON.stringify(input)).toBe(snapshot);
+    it('yields an empty current-version roster for anything unusable', () => {
+      // A blank roster is a meaningful state since 0.55.0 ("Rangers should start blank"),
+      // so this is a correct answer rather than a papered-over failure.
+      for (const junk of [null, undefined, 'nonsense', 42, {}]) {
+        const result = migrateRangers(junk);
+        expect(result.schemaVersion).toBe(RANGER_SCHEMA_VERSION);
+        expect(result.rangers).toEqual([]);
+      }
     });
   });
 });

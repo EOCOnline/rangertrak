@@ -35,6 +35,20 @@ export type BoundsType = {
  * A packet of all (or selected/filtered) field data for the op period except Rangers or Settings
  */
 export type FieldReportsType = {
+  // Persisted-shape version, owned by field-report-migration.ts
+  // (FIELD_REPORT_SCHEMA_VERSION). Distinct from `version` below, which is the APP version
+  // string stamped for information and never compared.
+  //
+  // Optional during the migration and stamped by `migrateFieldReports()` on load - the same
+  // additive approach RangerType.id uses, so nothing that constructs this type today has to
+  // change in the same pass that introduces the seam.
+  //
+  // WARNING before removing `version` below: the load path in field-report.service.ts tests
+  // validity with `indexOf("version") <= 0`, a naive SUBSTRING search over the raw JSON.
+  // Dropping that literal string resets every returning user's reports to defaults - the same
+  // trap as [[settings-marker-field-trap]]. `schemaVersion` happens to contain the substring,
+  // which is luck rather than design.
+  schemaVersion?: number,
   version: string,
   date: Date,
   event: string,

@@ -328,8 +328,16 @@ async function checkRosterLifecycle(fx) {
   await evaluate(`localStorage.clear()`)
   await goto('/rangers')
 
+  // 2026-08-26: this asserted the OPPOSITE until 0.55.0 - a fresh browser used to auto-seed
+  // the 18 hardcoded Vashon station callsigns. That was removed deliberately ("Rangers should
+  // start blank. That should indicate a new mission!"), and this check was missed in that
+  // change's own verification, so it went red on the next full run. Inverted rather than
+  // deleted: a blank first run is now a real, deliberate guarantee worth pinning - it is what
+  // MissionReadinessService's roster signal keys off (isRealRosterLoaded is now a plain
+  // length check), so a regression here would silently light the readiness dot green on a
+  // brand-new install with no roster.
   const seeded = await evaluate(`JSON.parse(localStorage.getItem('rangers')||'[]').length`)
-  check('a fresh browser seeds the built-in station callsigns', seeded > 0, true)
+  check('a fresh browser starts with a BLANK roster, not the built-in stations', seeded, 0)
 
   await setFileInput('#importRosterFile', fx.rosterPath)
   await sleep(4000)
