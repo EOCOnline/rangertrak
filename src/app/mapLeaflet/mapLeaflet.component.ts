@@ -9,7 +9,9 @@
 // `import L from 'leaflet'` that FieldReportService no longer has.
 import 'leaflet'
 import 'leaflet.markercluster'
-import { getStorageInfo, getTilePoints, savetiles, tileLayerOffline } from 'leaflet.offline' // https://github.com/allartk/leaflet.offline
+import {
+  getStorageInfo, getStoredTilesAsJson, getTilePoints, savetiles, tileLayerOffline
+} from 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 //import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
 
@@ -223,6 +225,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   private offlineTileLayer?: ReturnType<typeof tileLayerOffline>
   private refreshSavedAreaInfo?: () => void
   private refreshEstimatedAreaInfo?: () => void
+  private refreshSavedTilesOverlay?: () => void
 
   ngAfterViewInit() {
     this.afterViewInitTimer = setTimeout(() => {
@@ -372,12 +375,32 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       'OpenStreetMap': tiles,
       'OpenTopoMap (contours)': openTopoTiles,
     }
+    // Region download manager, phase A (scoped 2026-08-25, built 2026-08-26 on request):
+    // "a browsable/verifiable record of which specific areas are on disk," not just the
+    // running saved-size total wireOfflineAreaInfo() below already shows. leaflet.offline's
+    // own TileInfo record already stores real per-tile x/y/z (TileManager.ts) - and the
+    // library ships its own getStoredTilesAsJson(), converting that straight into a
+    // Leaflet-ready GeoJSON FeatureCollection<Polygon> (its own doc comment's exact example
+    // usage). No new storage, no new schema - just reading what's already there. Bound to
+    // `tiles` (OSM) specifically, same scope wireOfflineAreaInfo() has - OpenTopoMap's own
+    // saved tiles aren't shown here yet, same open item that row's own comment already
+    // names for the bulk-save control.
+    // Plain literal colour, not a --rt-* token: Leaflet's SVG renderer sets these as real
+    // presentation attributes at construction time, before this element is ever in the
+    // document to inherit a token from - same reasoning that ruled out a token for
+    // MapLibre's own paint config just above (a different renderer, same underlying
+    // problem). Matches the blue MapLibre's own report-cluster circles already use.
+    const savedTilesOverlay = L.geoJSON(undefined, {
+      style: { color: '#2266aa', weight: 1, fillOpacity: 0.15 },
+    })
+
     // Second param is the OVERLAY group - Leaflet's own control renders these as checkboxes
     // (independent on/off, layered over whichever base is active) rather than the base
     // group's radio buttons, which is the "real toggle" this row asked for without any
     // custom UI needed - the control already exists from E-85.
     const overlayLayers: Record<string, L.Layer> = {
       'Hillshade (terrain relief)': hillshadeOverlay,
+      'Saved offline tiles': savedTilesOverlay,
     }
     L.control.layers(baseLayers, overlayLayers, { position: 'topright' }).addTo(this.lMap)
 
@@ -388,7 +411,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       parallel: 3
     }).addTo(this.lMap)
     this.offlineTileLayer = tiles
-    this.wireOfflineAreaInfo(tiles, saveTilesControl)
+    this.wireOfflineAreaInfo(tiles, saveTilesControl, savedTilesOverlay)
 
     // Maintainer, 2026-08-24: moved out of Leaflet's floating corner-control system (it was
     // overlaying the map tiles) into normal page flow, just below the map - a plain
@@ -513,7 +536,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    * `tiles`' URL template is what `getStorageInfo` keys off, and it never changes after
    * construction, so it's read once and captured rather than re-read per refresh.
    */
-  private wireOfflineAreaInfo(tiles: ReturnType<typeof tileLayerOffline>, control: L.Control) {
+  private wireOfflineAreaInfo(
+    tiles: ReturnType<typeof tileLayerOffline>, control: L.Control, savedTilesOverlay: L.GeoJSON
+  ) {
     const container = control.getContainer()
     if (!container) {
       this.log.error('wireOfflineAreaInfo(): saveTilesControl has no container', this.id)
@@ -540,6 +565,20 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       }).catch((err) => this.log.error(`refreshSavedAreaInfo(): ${err}`, this.id))
     }
 
+    // Region download manager, phase A: redraws the "Saved offline tiles" overlay (defined
+    // where it's added to the layers control, above) from the current storage contents.
+    // Cheap enough to run on every save/remove regardless of whether the overlay is
+    // currently checked on - same call-on-every-change approach refreshSavedAreaInfo just
+    // above already takes for its own text, not gated behind visibility.
+    this.refreshSavedTilesOverlay = () => {
+      getStorageInfo(urlTemplate).then((stored) => {
+        savedTilesOverlay.clearLayers()
+        if (stored.length > 0) {
+          savedTilesOverlay.addData(getStoredTilesAsJson(tiles.getTileSize(), stored))
+        }
+      }).catch((err) => this.log.error(`refreshSavedTilesOverlay(): ${err}`, this.id))
+    }
+
     this.refreshEstimatedAreaInfo = () => {
       // Mirrors ControlSaveTiles' own _calculateTiles() for the options actually passed
       // above (no saveWhatYouSee, no custom zoomlevels): a single zoom level, the current
@@ -563,10 +602,13 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     tiles.on('saveend', this.refreshSavedAreaInfo)
     tiles.on('tilesremoved', this.refreshSavedAreaInfo)
+    tiles.on('saveend', this.refreshSavedTilesOverlay)
+    tiles.on('tilesremoved', this.refreshSavedTilesOverlay)
     this.lMap.on('moveend zoomend', this.refreshEstimatedAreaInfo)
 
     this.refreshSavedAreaInfo()
     this.refreshEstimatedAreaInfo()
+    this.refreshSavedTilesOverlay()
   }
 
   /**
@@ -1147,6 +1189,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     if (this.refreshSavedAreaInfo) {
       this.offlineTileLayer?.off('saveend', this.refreshSavedAreaInfo)
       this.offlineTileLayer?.off('tilesremoved', this.refreshSavedAreaInfo)
+      this.offlineTileLayer?.off('saveend', this.refreshSavedTilesOverlay)
+      this.offlineTileLayer?.off('tilesremoved', this.refreshSavedTilesOverlay)
     }
     if (this.refreshEstimatedAreaInfo) {
       this.lMap?.off('moveend zoomend', this.refreshEstimatedAreaInfo)

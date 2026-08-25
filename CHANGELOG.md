@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.50.0](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+
+### Features
+
+* **mapLeaflet:** "Saved offline tiles" overlay - a browsable, verifiable view of which map areas are actually cached, not just a running total
+
 ## [0.49.2](https://github.com/EOCOnline/rangertrak/commit/06523ef2518b08bb5c6613a6a697f4df6eb0c01c) (2026-08-26)
 
 ### Bug Fixes
