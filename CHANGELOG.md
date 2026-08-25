@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.51.1](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+
+### Features
+
+* **rangers:** roster import now warns when entries have no callsign, alongside the existing duplicate/nameless warnings
+
 ## [0.51.0](https://github.com/EOCOnline/rangertrak/commit/dd97974d4c8d7962355ee7c158e6cc954a210942) (2026-08-26)
 
 ### Features

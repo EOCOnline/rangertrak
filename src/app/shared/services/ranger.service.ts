@@ -393,7 +393,22 @@ export class RangerService implements OnInit {
   rosterWarnings(rangers: RangerType[]): string[] {
     const warnings: string[] = []
 
-    const signs = rangers.map(r => r.callsign.toUpperCase())
+    // Raised live 2026-08-26, alongside the same flag added to the map marker (a blank
+    // callsign there falls back to a fixed "unassigned" icon, ranger-icon.ts) and the
+    // Rangers grid (rangers.component.ts). Checked BEFORE the duplicate check below and
+    // excluded from it: multiple blank callsigns would otherwise also trip that check
+    // (they're all the same empty string), reading as a confusing "1 duplicate callsign: "
+    // with nothing printed after the colon, instead of the real, clearer story.
+    const blank = rangers.filter(r => !r.callsign.trim()).length
+    if (blank) {
+      warnings.push(
+        `${blank} of ${rangers.length} entries have no callsign - not every volunteer is `
+        + `ham-licensed, so this can be expected, but field reports from them will all look `
+        + `identical (the same "unassigned" marker) on the map and can't be told apart. `
+        + `Give each one any short unique identifier, ham callsign or not.`)
+    }
+
+    const signs = rangers.filter(r => r.callsign.trim()).map(r => r.callsign.toUpperCase())
     const duplicates = [...new Set(signs.filter((c, i) => signs.indexOf(c) !== i))]
     if (duplicates.length) {
       warnings.push(
