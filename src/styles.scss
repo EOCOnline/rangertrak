@@ -50,6 +50,14 @@ body {
 // They've been rendering as literal unstyled text ("emoji_people", "done", "build") in
 // production this whole time. Google's own recommended baseline rules, now that
 // index.html actually requests the "Material Icons" family alongside Roboto/Faster One.
+//
+// Fixed width/height + overflow:hidden added same day, live PageSpeed re-check caught a
+// real regression: desktop CLS went 0 -> 0.134 once the font actually started loading.
+// `display=swap` (needed so the OTHER two fonts don't block first paint) means these
+// ligatures render as their literal fallback text first ("emoji_people") and swap to the
+// actual glyph once the font loads - and a whole word is far wider than a 24px icon, so the
+// swap reflows whatever sits next to it. A fixed box means the swap can't change layout no
+// matter which content is showing at a given moment.
 .material-icons {
   font-family: 'Material Icons';
   font-weight: normal;
@@ -59,6 +67,9 @@ body {
   letter-spacing: normal;
   text-transform: none;
   display: inline-block;
+  width: 24px;
+  height: 24px;
+  overflow: hidden;
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;

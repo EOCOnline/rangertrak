@@ -35,12 +35,12 @@ describe('BackupService', () => {
 
       settings.updateSettings({ ...settings.settings, mission: 'Export Test Mission' });
       rangers.AddRanger(JSON.stringify({
-        callsign: 'EXP1', fullName: 'Export Ranger', phone: '', address: '',
+        callsign: 'EXP1', fullName: 'Export Ranger', phone: '',
         image: '', rew: '', team: '', role: '', note: ''
       }));
       fieldReports.addfieldReport(JSON.stringify({
         callsign: 'EXP1',
-        location: { lat: 47.4, lng: -122.4, address: '', derivedFromAddress: false },
+        location: { lat: 47.4, lng: -122.4, derivedFromAddress: false },
         date: new Date(), status: 'Normal', notes: 'export test report'
       }));
 
@@ -66,13 +66,13 @@ describe('BackupService', () => {
       settings.updateSettings({ ...settings.settings, mission: 'Roundtrip Mission', event: 'Test Event' });
       rangers.deleteAllRangers();
       rangers.AddRanger(JSON.stringify({
-        callsign: 'RT1', fullName: 'Roundtrip Ranger', phone: '', address: '',
+        callsign: 'RT1', fullName: 'Roundtrip Ranger', phone: '',
         image: '', rew: '', team: '', role: '', note: ''
       }));
       fieldReports.deleteAllFieldReports();
       fieldReports.addfieldReport(JSON.stringify({
         callsign: 'RT1',
-        location: { lat: 47.41, lng: -122.41, address: '', derivedFromAddress: false },
+        location: { lat: 47.41, lng: -122.41, derivedFromAddress: false },
         date: new Date(), status: 'Urgent', notes: 'roundtrip report'
       }));
 
@@ -122,7 +122,7 @@ describe('BackupService', () => {
 
       fieldReports.addfieldReport(JSON.stringify({
         callsign: 'B1',
-        location: { lat: 48.0, lng: -121.0, address: '', derivedFromAddress: false },
+        location: { lat: 48.0, lng: -121.0, derivedFromAddress: false },
         date: new Date(), status: 'Normal', notes: ''
       }));
       const exported = backup.buildExportPayload();

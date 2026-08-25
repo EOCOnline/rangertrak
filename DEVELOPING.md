@@ -139,8 +139,8 @@ reviewing them, with a descriptive filename.
 
 This is not fussiness about repo tidiness. A screenshot of this app in real use contains
 whatever was on screen: field reports, which can hold personal information about missing
-persons; the roster, which pairs legal names with home addresses; and whatever browser
-chrome was captured with it — bookmarks, other tabs, account avatars. A capture taken while
+persons; the roster, which pairs legal names with phone numbers and photos; and whatever
+browser chrome was captured with it — bookmarks, other tabs, account avatars. A capture taken while
 configuring hosting can contain an API token in plaintext. All of those have turned up in
 practice.
 

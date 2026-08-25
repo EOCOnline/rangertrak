@@ -1,5 +1,5 @@
 import { Injectable, Optional, SkipSelf } from '@angular/core';
-import { Observable, interval, throwError } from 'rxjs';
+import { Observable, throwError, timer } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
@@ -27,7 +27,12 @@ export class ClockService {
     // TODO: Try Date.now to not create as many Date objects!
     // instead of using new Date().getTime():number use Date.now():number so you don't make new objects unnecessarily
     //this.clock = interval(1000).pipe(map(() => new Date())
-    this.clock$ = interval(1000)
+    //
+    // E-44 audit follow-up, 2026-08-26: was interval(1000), same delayed-first-emission bug
+    // as header.component.ts's timeElapsed$/timeLeft$ (see that file's comment) - the
+    // header's .clock span rendered empty for a full second before this ever emitted.
+    // timer(0, 1000) emits immediately on subscription instead.
+    this.clock$ = timer(0, 1000)
       .pipe(map(() => new Date()))
   }
   getCurrentTime() {

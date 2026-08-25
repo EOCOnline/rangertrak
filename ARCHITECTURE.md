@@ -116,9 +116,9 @@ keyless.
 ## Planned: encryption at rest
 
 Today everything — roster, field reports, settings, and every export — is stored and
-written in the clear. The roster is the sensitive part (legal names, home addresses,
-personal phone numbers, and call signs that resolve to public licence records), and field
-reports can contain PII about missing persons. The UI warns about this in several places;
+written in the clear. The roster is the sensitive part (legal names, personal phone numbers,
+photos, and call signs that resolve to public licence records), and field reports can
+contain PII about missing persons. The UI warns about this in several places;
 the intent to fix it properly exists as scattered commented-out `crypto-js` code in
 `utility.ts`, `settings.service.ts` and `ranger.service.ts`. This section consolidates
 that into one plan.

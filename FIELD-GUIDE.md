@@ -310,10 +310,15 @@ That cuts both ways:
 - **Nobody else can recover it either.** Clearing browser data, using a different browser,
   or using a different device means starting empty. **Export regularly.**
 
-The roster is the sensitive part: names, home addresses, personal phone numbers, photos,
-and call signs that tie back to publicly searchable licence records. It is stored
-unencrypted, and exports are plain files. **The same applies to log exports** — the log is
-a raw diagnostic record and can quote report details and addresses verbatim.
+The roster is the sensitive part: names, personal phone numbers, photos, and call signs that
+tie back to publicly searchable licence records. It is stored unencrypted, and exports are
+plain files. **The same applies to log exports** — the log is a raw diagnostic record and
+can quote report details and addresses verbatim.
+
+Given a callsign, the FCC's own public licensee lookup already shows more than this roster
+does — legal name and mailing address for any licensed amateur radio operator. This app does
+not meaningfully add to that public exposure, with one exception: photographs, which are not
+part of any public record.
 
 > **Planned:** optional passphrase encryption, first for exported files and later for the
 > data held on the device. Until then, the practical protection is device security — lock

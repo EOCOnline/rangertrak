@@ -75,19 +75,18 @@ export class RangerService implements OnInit {
     this.LoadRangersFromLocalStorage()
     this.log.verbose(`Got ${this.rangers.length} from Local Storage`, this.id)
 
-    // Seed only when there was no readable roster at all. An empty roster that was saved
-    // deliberately must survive a reload; testing `rangers.length == 0` instead - as this
-    // did - made deleteAllRangers() unable to take effect, because the seed ran again on
-    // the very next page load. Corrupt storage still falls through to the seed.
-    if (!this.storedRosterWasReadable && this.rangers.length == 0) {
-      this.loadHardcodedRangers()
-      this.log.verbose(`First run on this browser: seeded ${this.rangers.length} station callsigns. A real roster arrives via Import roster or Import Mission.`, this.id)
+    // Maintainer, 2026-08-26: a fresh install used to auto-seed the 18 hardcoded Vashon
+    // station callsigns here, unconditionally, for every new user everywhere - "Rangers
+    // should start blank. That should indicate a new mission!" A blank roster is now itself
+    // the first-run signal (see isRealRosterLoaded() below, simplified now that there's no
+    // untouched-default state to distinguish from "real"). The 18 stations are still
+    // available, purely opt-in, via the Rangers page's own "Add station callsigns" button
+    // (Advanced section - loadHardcodedRangers(), unchanged) for teams that actually want
+    // that specific starter set.
+    if (this.rangers.length === 0) {
+      this.log.verbose(`First run on this browser (or roster was emptied): starting blank. Load a real roster via Import roster/Import Mission, or Rangers > Advanced > Add station callsigns for the Vashon starter set.`, this.id)
     }
 
-    // Ensures state is published regardless of which branch above populated
-    // this.rangers (loadHardcodedRangers() already publishes internally;
-    // this call is what publishes the localStorage-loaded case, and is a
-    // harmless redundant re-publish in the hardcoded case).
     this.updateLocalStorageAndPublish()
   }
 
@@ -102,31 +101,20 @@ export class RangerService implements OnInit {
     return this.rangersReplay$.asObservable()
   }
 
-  // D-32: the callsigns loadHardcodedRangers() seeds on first run - kept as a standalone
-  // list (rather than deriving it from that method) so the readiness signal below has
-  // nothing to do with the seed method's own execution or side effects. Keep in sync with
-  // loadHardcodedRangers() if that list ever changes; it hasn't since this was written.
-  private static readonly HARDCODED_CALLSIGNS: ReadonlySet<string> = new Set([
-    '!CmdPost', 'ACS1', 'ACS2', 'ACS3', 'ACS4',
-    'CERT1', 'CERT2', 'CERT3', 'CERT4', 'CERT5', 'CERT6',
-    'MERT1', 'MERT2', 'MERT3', 'MERT4', 'MERT5', 'MERT6',
-    'Mobile',
-  ])
-
   /**
-   * D-32 readiness signal: true once a real roster has been imported or edited, as opposed
-   * to a fresh install still running on the 18 hardcoded station callsigns nobody chose.
-   * Every fresh install seeds those 18 on first run (see the constructor above), so a plain
-   * `rangers.length > 0` check can never distinguish "prepared" from "untouched default" -
-   * this compares the actual callsign set instead. Any addition, removal, or a callsign
-   * outside the hardcoded set counts as real; only an EXACT match to the untouched seed
-   * (same 18, nothing added or removed) counts as not-yet-loaded.
+   * D-32 readiness signal: true once the roster actually has someone in it.
+   *
+   * Simplified 2026-08-26: this used to compare against the exact 18 hardcoded station
+   * callsigns, because a fresh install auto-seeded those on first run and a plain
+   * `length > 0` check couldn't tell "prepared" from "untouched default". Now that a blank
+   * roster IS the first-run state - nothing seeds it anymore, "Rangers should start blank,
+   * that should indicate a new mission" - there's no untouched-default state left to
+   * distinguish from real. Any ranger present, including via the opt-in "Add station
+   * callsigns" button, counts as ready; zero rangers means the roster genuinely hasn't been
+   * set up yet.
    */
   public static isRealRosterLoaded(rangers: RangerType[]): boolean {
-    if (rangers.length !== RangerService.HARDCODED_CALLSIGNS.size) {
-      return true
-    }
-    return !rangers.every(r => RangerService.HARDCODED_CALLSIGNS.has(r.callsign))
+    return rangers.length > 0
   }
 
   /**
@@ -157,25 +145,18 @@ export class RangerService implements OnInit {
   }
 
   //--------------------------------------------------------------------------
-  /**
-   * True only when localStorage held a roster we could actually read - so an empty roster
-   * that was saved deliberately is distinguishable from "nothing stored" AND from
-   * "stored, but corrupt". Corrupt is NOT a deliberate empty: it must fall back to the
-   * seed rather than silently presenting an empty roster as if the user had asked for it.
-   */
-  private storedRosterWasReadable = false
-
+  // 2026-08-26: dropped the `storedRosterWasReadable` bookkeeping flag this method used to
+  // maintain - its only consumer was the constructor's auto-seed guard (removed the same
+  // day, see the constructor's own comment), which needed to tell "nothing stored yet" apart
+  // from "stored, but corrupt" apart from "deliberately emptied". Now that a blank roster is
+  // never auto-replaced with anything, all three of those cases correctly land on the same
+  // `this.rangers = []` outcome below - there's no longer a decision that depends on which
+  // one it was.
   LoadRangersFromLocalStorage() { // WARN: Replaces any existing Rangers
     let localStorageRangers = localStorage.getItem(this.localStorageRangerName)
-    this.storedRosterWasReadable = false
     try {
       const parsed = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : []
-      if (localStorageRangers != null && Array.isArray(parsed)) {
-        this.rangers = parsed
-        this.storedRosterWasReadable = true
-      } else {
-        this.rangers = []
-      }
+      this.rangers = (localStorageRangers != null && Array.isArray(parsed)) ? parsed : []
       this.log.excessive(`Loaded ${this.rangers.length} rangers from local storage`, this.id)
     } catch (error: any) {
       this.rangers = []
@@ -370,7 +351,6 @@ export class RangerService implements OnInit {
         // between a roster importing and importing with every Full Name blank.
         fullName: String(entry.fullName ?? entry.licensee ?? entry.name ?? ''),
         phone: String(entry.phone ?? ''),
-        address: String(entry.address ?? ''),
         image: String(entry.image ?? entry.icon ?? ''),
         rew: String(entry.rew ?? ''),
         team: String(entry.team ?? ''),
@@ -446,7 +426,7 @@ export class RangerService implements OnInit {
     } else {
       newRanger = {
         callsign: "!A_New_Tactical", fullName: "AAA_New_Name",        // licenseKey: number
-        image: "male.png", rew: "VI-00 ", phone: "206-463-0000", address: "St, Vashon, WA 98070", team: "", role: "", note: `Manually added at ${formatDate(Date.now(), 'short', "en-US")}.` //https://angular.io/guide/i18n-common-locale-id
+        image: "male.png", rew: "VI-00 ", phone: "206-463-0000", team: "", role: "", note: `Manually added at ${formatDate(Date.now(), 'short', "en-US")}.` //https://angular.io/guide/i18n-common-locale-id
       }
     }
     this.rangers.push(newRanger)
@@ -547,28 +527,28 @@ export class RangerService implements OnInit {
     this.rangers.push(
 
       // NOTE: The image names are case-sensitive!!
-      { callsign: "!CmdPost", fullName: "ACS-CERT Cmd Post", phone: "206-463-", address: "Vashon, WA 98070", image: "CmdPost.jpg", rew: "CmdPost", team: "T0", role: "Licensed", note: "-" },
+      { callsign: "!CmdPost", fullName: "ACS-CERT Cmd Post", phone: "206-463-", image: "CmdPost.jpg", rew: "CmdPost", team: "T0", role: "Licensed", note: "-" },
 
-      { callsign: "ACS1", fullName: "ACS-CERT Team 1", phone: "206-463-", address: "Vashon, WA 98070", image: "ham_blue.png", rew: "", team: "T1", role: "Licensed", note: "-" },
-      { callsign: "ACS2", fullName: "ACS-CERT Team 2", phone: "206-463-", address: "Vashon, WA 98070", image: "ham_red.png", rew: "", team: "T1", role: "Licensed", note: "-" },
-      { callsign: "ACS3", fullName: "ACS-CERT Team 3", phone: "206-463-", address: "Vashon, WA 98070", image: "ham_yellow.png", rew: "", team: "T1", role: "Licensed", note: "-" },
-      { callsign: "ACS4", fullName: "ACS-CERT Team 4", phone: "206-463-", address: "Vashon, WA 98070", image: "team_brown.png", rew: "", team: "T1", role: "Licensed", note: "-" },
+      { callsign: "ACS1", fullName: "ACS-CERT Team 1", phone: "206-463-", image: "ham_blue.png", rew: "", team: "T1", role: "Licensed", note: "-" },
+      { callsign: "ACS2", fullName: "ACS-CERT Team 2", phone: "206-463-", image: "ham_red.png", rew: "", team: "T1", role: "Licensed", note: "-" },
+      { callsign: "ACS3", fullName: "ACS-CERT Team 3", phone: "206-463-", image: "ham_yellow.png", rew: "", team: "T1", role: "Licensed", note: "-" },
+      { callsign: "ACS4", fullName: "ACS-CERT Team 4", phone: "206-463-", image: "team_brown.png", rew: "", team: "T1", role: "Licensed", note: "-" },
 
-      { callsign: "CERT1", fullName: "CERT 1", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_red.png", rew: "", team: "CERT1", role: "Licensed", note: "-" },
-      { callsign: "CERT2", fullName: "CERT 2", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_green.png", rew: "", team: "CERT2", role: "Licensed", note: "-" },
-      { callsign: "CERT3", fullName: "CERT 3", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_yellow.png", rew: "", team: "CERT3", role: "Licensed", note: "-" },
-      { callsign: "CERT4", fullName: "CERT 4", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_blue.png", rew: "", team: "CERT4", role: "Licensed", note: "-" },
-      { callsign: "CERT5", fullName: "CERT 5", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_brown.png", rew: "", team: "CERT5", role: "Licensed", note: "-" },
-      { callsign: "CERT6", fullName: "CERT 6", phone: "206-463-", address: "Vashon, WA 98070", image: "CERT_purple.png", rew: "", team: "CERT6", role: "Licensed", note: "-" },
+      { callsign: "CERT1", fullName: "CERT 1", phone: "206-463-", image: "CERT_red.png", rew: "", team: "CERT1", role: "Licensed", note: "-" },
+      { callsign: "CERT2", fullName: "CERT 2", phone: "206-463-", image: "CERT_green.png", rew: "", team: "CERT2", role: "Licensed", note: "-" },
+      { callsign: "CERT3", fullName: "CERT 3", phone: "206-463-", image: "CERT_yellow.png", rew: "", team: "CERT3", role: "Licensed", note: "-" },
+      { callsign: "CERT4", fullName: "CERT 4", phone: "206-463-", image: "CERT_blue.png", rew: "", team: "CERT4", role: "Licensed", note: "-" },
+      { callsign: "CERT5", fullName: "CERT 5", phone: "206-463-", image: "CERT_brown.png", rew: "", team: "CERT5", role: "Licensed", note: "-" },
+      { callsign: "CERT6", fullName: "CERT 6", phone: "206-463-", image: "CERT_purple.png", rew: "", team: "CERT6", role: "Licensed", note: "-" },
 
-      { callsign: "MERT1", fullName: "MERT 1", phone: "206-463-", address: "Vashon, WA 98070", image: "MERT_red.png", rew: "", team: "MERT1", role: "Licensed", note: "-" },
-      { callsign: "MERT2", fullName: "MERT 2", phone: "206-463-", address: "Vashon, WA 98070", image: "MERT_green.png", rew: "", team: "MERT2", role: "Licensed", note: "-" },
-      { callsign: "MERT3", fullName: "MERT 3", phone: "206-463-", address: "Vashon, WA 98070", image: "MERT_yellow.png", rew: "", team: "MERT3", role: "Licensed", note: "-" },
-      { callsign: "MERT4", fullName: "MERT 4", phone: "206-463-", address: "Vashon, WA 98070", image: "MERT_blue.png", rew: "", team: "MERT4", role: "Licensed", note: "-" },
-      { callsign: "MERT5", fullName: "MERT 5", phone: "206-463-", address: "Vashon, WA 98070", image: "Yacht_purple.png", rew: "", team: "MERT5", role: "Licensed", note: "-" },
-      { callsign: "MERT6", fullName: "MERT 6", phone: "206-463-", address: "Vashon, WA 98070", image: "sail.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
+      { callsign: "MERT1", fullName: "MERT 1", phone: "206-463-", image: "MERT_red.png", rew: "", team: "MERT1", role: "Licensed", note: "-" },
+      { callsign: "MERT2", fullName: "MERT 2", phone: "206-463-", image: "MERT_green.png", rew: "", team: "MERT2", role: "Licensed", note: "-" },
+      { callsign: "MERT3", fullName: "MERT 3", phone: "206-463-", image: "MERT_yellow.png", rew: "", team: "MERT3", role: "Licensed", note: "-" },
+      { callsign: "MERT4", fullName: "MERT 4", phone: "206-463-", image: "MERT_blue.png", rew: "", team: "MERT4", role: "Licensed", note: "-" },
+      { callsign: "MERT5", fullName: "MERT 5", phone: "206-463-", image: "Yacht_purple.png", rew: "", team: "MERT5", role: "Licensed", note: "-" },
+      { callsign: "MERT6", fullName: "MERT 6", phone: "206-463-", image: "sail.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
 
-      { callsign: "Mobile", fullName: "John's Mobile", phone: "206-463-", address: "Vashon, WA 98070", image: "westy.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
+      { callsign: "Mobile", fullName: "John's Mobile", phone: "206-463-", image: "westy.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
     )
 
 
@@ -585,18 +565,6 @@ export class RangerService implements OnInit {
     this.updateLocalStorageAndPublish();
     //this.log.verbose(`returned from: updating LocalStorage: ${this.localStorageRangerName}`, this.id)
   }
-
-  /*
-  generateFakeRangers(num: number = 20){
-    let rangers = this.rangers
-    let streets = ["Ave", "St.", "Pl.", "Court", "Circle"]
-    for (let i = 0; i < num; i++) {
-      array.push({
-        callsign: rangers[Math.floor(Math.random() * rangers.length)].callsign,
-           address: (Math.floor(Math.random() * 10000)) + " SW " + streets[(Math.floor(Math.random() * streets.length))],
-      })
-    }
-  }*/
 
   // FUTURE:  getActiveRangers() {
   // filter for Ranger.status == 'checked in' ?

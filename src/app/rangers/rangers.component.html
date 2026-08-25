@@ -45,56 +45,6 @@
   </aside>
   }
 
-  <rangertrak-section summary="Instructions">
-    <ul>
-      <li>
-        Some fields may be editable (single or double-click), and ONCE SAVED can be exported
-        to a CSV file.
-      </li>
-      <li>
-        <span style="color:red;">Edits made directly in the grid are not saved automatically
-          - press "Save edits" in the Advanced section below.</span>
-      </li>
-      <li>Click on a column heading to sort by that field.</li>
-      <li>Click & Drag on a column heading to move columns</li>
-      <li>Hovering over a cell (e.g., any callsign) may show additional information.</li>
-      <li>Icons at the top right of each column allows filtering on the value</li>
-      <li>
-        Export Rangers will save data as a CSV file for Excel. For
-        <a href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank">details</a>
-      </li>
-    </ul>
-  </rangertrak-section>
-
-  <!-- The full text the bar above summarises. Collapsed by default so it costs nothing
-       on a normal visit; the bar's "What this means" opens it and scrolls here. -->
-  <rangertrak-section #privacyDetails summary="Privacy & data handling">
-    <p>
-      This roster holds personal data: legal names, home addresses, personal phone
-      numbers and photos, alongside call signs that tie each row to a named,
-      publicly-searchable FCC licence. Treat it as confidential participant
-      information, not as operational data.
-    </p>
-    <ul>
-      <li>
-        It is stored <em>unencrypted</em> in this browser's local storage. Anyone with
-        access to this device and browser profile can read it.
-      </li>
-      <li>
-        Exports (CSV, Excel, and Mission Backup) are <em>unencrypted plain-text files</em>.
-        Once exported, this app can no longer protect them.
-      </li>
-      <li>
-        Share only with people who need it for this mission, and delete exports when the
-        mission is over. Follow your agency's policy on handling participant data.
-      </li>
-    </ul>
-  </rangertrak-section>
-  <br />
-
-  <rangertrak-grid-keyboard-help></rangertrak-grid-keyboard-help>
-  <br />
-
   <!-- https://www.ag-grid.com/javascript-data-grid/component-tooltip/
 <div class="tooltip2" placement="top" showDelay="3000">WORKING Tooltip!
   <span class="tooltiphtml">KE7KDQ <img src="./assets/imgs/rew/VI-0038.jpg" height="60px" width="60px" /><br> John
@@ -240,4 +190,62 @@
       the roster, use Import/Export roster above.
     </div>
   </div>
+
+  <!-- Maintainer, 2026-08-26: moved below the grid (was above it) so the grid itself is
+       the first prominent thing on the page - this is reference material, findable further
+       down, not something that needs to be read before the data is even visible. -->
+  <rangertrak-section summary="Instructions">
+    <ul>
+      <li>
+        Some fields may be editable (single or double-click), and ONCE SAVED can be exported
+        to a CSV file.
+      </li>
+      <li>
+        <span style="color:red;">Edits made directly in the grid are not saved automatically
+          - press "Save edits" in the Advanced section above.</span>
+      </li>
+      <li>Click on a column heading to sort by that field.</li>
+      <li>Click & Drag on a column heading to move columns</li>
+      <li>Hovering over a cell (e.g., any callsign) may show additional information.</li>
+      <li>Icons at the top right of each column allows filtering on the value</li>
+      <li>
+        Export Rangers will save data as a CSV file for Excel. For
+        <a href="https://ag-grid.com/javascript-data-grid/csv-export" target="_blank">details</a>
+      </li>
+    </ul>
+  </rangertrak-section>
+
+  <!-- The full text the bar near the top summarises. Collapsed by default so it costs
+       nothing on a normal visit; the bar's "What this means" opens it and scrolls here. -->
+  <rangertrak-section #privacyDetails summary="Privacy & data handling">
+    <p>
+      This roster holds personal data: legal names, personal phone numbers and photos,
+      alongside call signs that tie each row to a named, publicly-searchable FCC licence.
+      Treat it as confidential participant information, not as operational data.
+    </p>
+    <p>
+      Worth knowing: given a callsign, the FCC's own public licensee database already shows
+      more than this roster does - legal name and mailing address for any licensed amateur
+      radio operator. This roster does not meaningfully expose more than that public lookup
+      already would, with one exception: <strong>photographs</strong>, which are not part of
+      any public record.
+    </p>
+    <ul>
+      <li>
+        It is stored <em>unencrypted</em> in this browser's local storage. Anyone with
+        access to this device and browser profile can read it.
+      </li>
+      <li>
+        Exports (CSV, Excel, and Mission Backup) are <em>unencrypted plain-text files</em>.
+        Once exported, this app can no longer protect them.
+      </li>
+      <li>
+        Share only with people who need it for this mission, and delete exports when the
+        mission is over. Follow your agency's policy on handling participant data.
+      </li>
+    </ul>
+  </rangertrak-section>
+  <br />
+
+  <rangertrak-grid-keyboard-help></rangertrak-grid-keyboard-help>
 </rangertrak-page>

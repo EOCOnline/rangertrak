@@ -27,6 +27,9 @@ describe('RangerService', () => {
   describe('emptying the roster (0.15.3)', () => {
     it('stays empty across a reload, instead of reseeding the built-in stations', () => {
       const service = TestBed.inject(RangerService);
+      // A fresh instance starts blank now (2026-08-26: no more auto-seed) - populate first
+      // so there's actually something to delete before proving the delete sticks.
+      service.loadHardcodedRangers();
       expect(service.rangers.length).toBeGreaterThan(0);
 
       service.deleteAllRangers();
@@ -107,6 +110,9 @@ describe('RangerService', () => {
 
     it('round-trips what the exporter writes', () => {
       const service = TestBed.inject(RangerService);
+      // A fresh instance starts blank now (2026-08-26) - parseRosterJson() rejects an empty
+      // roster (see "rejects invalid JSON..." above), so this needs real content to round-trip.
+      service.loadHardcodedRangers();
       const exported = JSON.stringify({ rangers: service.rangers }, null, 2);
       const parsed = service.parseRosterJson(exported);
       expect(parsed.map(r => r.callsign)).toEqual(service.rangers.map(r => r.callsign));
@@ -114,24 +120,24 @@ describe('RangerService', () => {
   });
 
   describe('construction / localStorage round-trip', () => {
-    it('loads the hardcoded default roster when localStorage is empty', () => {
+    it('starts blank when localStorage is empty (2026-08-26: no more auto-seed)', () => {
       const service = TestBed.inject(RangerService);
 
-      expect(service.rangers.length).toBeGreaterThan(0);
-      expect(service.rangers.some(r => r.callsign === '!CmdPost')).toBeTrue();
+      expect(service.rangers.length).toBe(0);
     });
 
-    it('sorts the default roster by callsign', () => {
+    it('sorts a loaded roster by callsign', () => {
       const service = TestBed.inject(RangerService);
+      service.loadHardcodedRangers();
 
       const callsigns = service.rangers.map(r => r.callsign);
       const sorted = [...callsigns].sort();
       expect(callsigns).toEqual(sorted);
     });
 
-    it('loads an existing roster from localStorage instead of the hardcoded defaults', () => {
+    it('loads an existing roster from localStorage instead of starting blank', () => {
       const seeded: RangerType[] = [
-        { callsign: 'ZZZ1', fullName: 'Seeded Ranger', phone: '', address: '', image: '', rew: '', team: '', role: '', note: '' }
+        { callsign: 'ZZZ1', fullName: 'Seeded Ranger', phone: '', image: '', rew: '', team: '', role: '', note: '' }
       ];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
 
@@ -144,13 +150,9 @@ describe('RangerService', () => {
     it('falls back to an empty array (not a throw) when localStorage contains invalid JSON', () => {
       localStorage.setItem(STORAGE_KEY, '{not valid json');
 
-      // Constructor catches the parse error internally; current behavior is
-      // to fall back to loading the hardcoded roster (rangers.length was 0
-      // after the failed parse).
       const service = TestBed.inject(RangerService);
 
-      expect(service.rangers.length).toBeGreaterThan(0);
-      expect(service.rangers.some(r => r.callsign === '!CmdPost')).toBeTrue();
+      expect(service.rangers.length).toBe(0);
     });
   });
 
@@ -160,7 +162,7 @@ describe('RangerService', () => {
       const before = service.rangers.length;
 
       const added = service.AddRanger(JSON.stringify({
-        callsign: 'TEST1', fullName: 'Test Ranger', phone: '', address: '',
+        callsign: 'TEST1', fullName: 'Test Ranger', phone: '',
         image: '', rew: '', team: '', role: '', note: ''
       }));
 
@@ -177,7 +179,7 @@ describe('RangerService', () => {
       service.getRangersObserver().subscribe(r => latest = r);
 
       service.AddRanger(JSON.stringify({
-        callsign: 'TEST2', fullName: 'Test Ranger 2', phone: '', address: '',
+        callsign: 'TEST2', fullName: 'Test Ranger 2', phone: '',
         image: '', rew: '', team: '', role: '', note: ''
       }));
 
@@ -189,12 +191,12 @@ describe('RangerService', () => {
     it('updates an existing ranger by callsign', () => {
       const service = TestBed.inject(RangerService);
       service.AddRanger(JSON.stringify({
-        callsign: 'UPD1', fullName: 'Original Name', phone: '', address: '',
+        callsign: 'UPD1', fullName: 'Original Name', phone: '',
         image: '', rew: '', team: '', role: '', note: ''
       }));
 
       service.updateRanger({
-        callsign: 'UPD1', fullName: 'Changed Name', phone: '', address: '',
+        callsign: 'UPD1', fullName: 'Changed Name', phone: '',
         image: '', rew: '', team: '', role: '', note: ''
       });
 
@@ -204,7 +206,7 @@ describe('RangerService', () => {
     it('deletes a ranger by callsign and persists the removal', () => {
       const service = TestBed.inject(RangerService);
       service.AddRanger(JSON.stringify({
-        callsign: 'DEL1', fullName: 'To Delete', phone: '', address: '',
+        callsign: 'DEL1', fullName: 'To Delete', phone: '',
         image: '', rew: '', team: '', role: '', note: ''
       }));
       const before = service.rangers.length;
@@ -231,6 +233,9 @@ describe('RangerService', () => {
     // Storing an empty list is what makes the deletion stick - see the reload test above.
     it('clears the in-memory roster and stores an empty list, keeping the key', () => {
       const service = TestBed.inject(RangerService);
+      // A fresh instance starts blank now (2026-08-26: no more auto-seed) - populate first
+      // so there's actually something for this test to delete.
+      service.loadHardcodedRangers();
       expect(service.rangers.length).toBeGreaterThan(0);
 
       service.deleteAllRangers();
@@ -240,37 +245,31 @@ describe('RangerService', () => {
     });
   });
 
-  // D-32 readiness signal: a fresh install seeds 18 hardcoded stations, so `length > 0`
-  // alone can never distinguish "prepared" from "untouched default".
+  // D-32 readiness signal, simplified 2026-08-26: a fresh install now starts blank (nothing
+  // auto-seeds it - "Rangers should start blank, that should indicate a new mission"), so
+  // there's no untouched-default state left to distinguish from real. Plain length check.
   describe('isRealRosterLoaded (D-32)', () => {
-    it('is false for the untouched hardcoded seed, straight off a fresh instance', () => {
+    it('is false straight off a fresh instance (blank roster, new mission)', () => {
       const service = TestBed.inject(RangerService);
+      expect(service.rangers.length).toBe(0);
       expect(RangerService.isRealRosterLoaded(service.rangers)).toBe(false);
     });
 
-    it('is false regardless of array order (order is not identity)', () => {
-      const service = TestBed.inject(RangerService);
-      const reversed = [...service.rangers].reverse();
-      expect(RangerService.isRealRosterLoaded(reversed)).toBe(false);
+    it('is false for an explicitly empty array', () => {
+      expect(RangerService.isRealRosterLoaded([])).toBe(false);
     });
 
-    it('is true once the roster is emptied', () => {
-      expect(RangerService.isRealRosterLoaded([])).toBe(true);
-    });
-
-    it('is true when a real callsign is added alongside the hardcoded set', () => {
-      const service = TestBed.inject(RangerService);
-      const withExtra: RangerType[] = [
-        ...service.rangers,
-        { callsign: 'REAL1', fullName: 'A Real Person', phone: '', address: '', image: '', rew: '', team: '', role: '', note: '' },
+    it('is true once any ranger is present, however they got there', () => {
+      const withOne: RangerType[] = [
+        { callsign: 'REAL1', fullName: 'A Real Person', phone: '', image: '', rew: '', team: '', role: '', note: '' },
       ];
-      expect(RangerService.isRealRosterLoaded(withExtra)).toBe(true);
+      expect(RangerService.isRealRosterLoaded(withOne)).toBe(true);
     });
 
-    it('is true when the hardcoded set is edited (same count, different callsign)', () => {
+    it('is true for the opt-in hardcoded station set too - presence is what matters now', () => {
       const service = TestBed.inject(RangerService);
-      const edited = service.rangers.map((r, i) => i === 0 ? { ...r, callsign: 'RENAMED' } : r);
-      expect(RangerService.isRealRosterLoaded(edited)).toBe(true);
+      service.loadHardcodedRangers();
+      expect(RangerService.isRealRosterLoaded(service.rangers)).toBe(true);
     });
   });
 });

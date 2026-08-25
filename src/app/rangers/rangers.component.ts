@@ -150,7 +150,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     { headerName: "Call Sign", field: "callsign", cellRenderer: this.callsignCellRenderer, flex: 10 },
     { headerName: "Full Name", field: "fullName", tooltipField: "FCC Licensee Name", flex: 10 },
     { headerName: "Phone", field: "phone", singleClickEdit: true, flex: 40 },
-    { headerName: "Address", field: "address", singleClickEdit: true, flex: 40 },
     { headerName: "REW", field: "rew", singleClickEdit: true, flex: 10 },
     { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, tooltipField: "image", tooltipComponentParams: { color: '#ececec' }, flex: 5 },
     { headerName: "Role", field: "role", flex: 40 },
@@ -554,12 +553,12 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     //this.log.verbose(`Got filename of "${params.fileName}"`, this.id)
     //this.gridApi.exportDataAsCsv(params);
 
-    // Confirm before the roster leaves the app: the exported file carries names, home
-    // addresses, personal phone numbers and call signs in the clear, and nothing this
-    // app does can protect it afterwards.
+    // Confirm before the roster leaves the app: the exported file carries names, personal
+    // phone numbers and call signs in the clear, and nothing this app does can protect it
+    // afterwards.
     if (!Utility.getConfirmation(
       `Export the roster to a file?\n\n`
-      + `The exported file contains PERSONAL INFORMATION - legal names, home addresses, `
+      + `The exported file contains PERSONAL INFORMATION - legal names, `
       + `personal phone numbers and call signs - and is NOT encrypted.\n\n`
       + `Store it somewhere appropriate, share it only with people who need it for this `
       + `mission, and delete it when the mission is over.`)) {

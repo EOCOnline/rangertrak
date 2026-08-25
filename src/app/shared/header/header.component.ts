@@ -1,4 +1,4 @@
-import { interval, map, Observable, Subscription } from 'rxjs'
+import { map, Observable, Subscription, timer } from 'rxjs'
 
 import { CommonModule } from '@angular/common'
 import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, signal } from '@angular/core'
@@ -111,8 +111,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // this.log.verbose(`OpPeriodStart = ${JSON.stringify(this.settings.opPeriodStart)}`, this.id)
 
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#calculating_elapsed_time
+    //
+    // E-44 audit follow-up, 2026-08-26: was interval(1000), which does NOT emit
+    // immediately - its first value only arrives a full second after construction, so
+    // .opPeriod rendered empty for that first second and then suddenly gained real duration
+    // text once these fired. Live DevTools trace caught this as the last remaining CLS
+    // contributor (0.1981) after the derived-location fix above: main/form.enter__form
+    // shifting down as one unit, consistent with the header's status-cluster row growing
+    // once this text populated late (potentially wrapping onto a second line) and pushing
+    // everything below it. timer(0, 1000) emits its first value on the same tick as
+    // subscription instead, so the real duration is there from first paint.
     let msStartTime = new Date(this.settings.opPeriodStart).getTime()
-    this.timeElapsed$ = interval(1000)
+    this.timeElapsed$ = timer(0, 1000)
       .pipe(map(() => {
         let diff = Utility.timeDiff(msStartTime, new Date().getTime())
         return (`${diff.string} ${(diff.negative ? ` before period starts` : ` elapsed`)}`)
@@ -120,7 +130,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       ))
 
     let msEndTime = new Date(this.settings.opPeriodEnd).getTime()
-    this.timeLeft$ = interval(1000)
+    this.timeLeft$ = timer(0, 1000)
       .pipe(map(() => {
         let diff = Utility.timeDiff(new Date().getTime(), msEndTime)
         return (`${diff.string} ${(diff.negative ? ` since period ended` : ` left`)}`)

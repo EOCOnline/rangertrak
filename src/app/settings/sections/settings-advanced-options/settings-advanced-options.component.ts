@@ -53,7 +53,7 @@ export class SettingsAdvancedOptionsComponent {
     // the Rangers page warns about - in an unencrypted file this app can no longer
     // protect once written.
     if (!confirm(`Export this mission to a file?\n\n`
-      + `The file includes the full ranger roster - legal names, home addresses, personal `
+      + `The file includes the full ranger roster - legal names, personal `
       + `phone numbers and call signs - and is NOT encrypted.\n\n`
       + `Store it somewhere appropriate, share it only with people who need it for this `
       + `mission, and delete it when the mission is over.`)) {
