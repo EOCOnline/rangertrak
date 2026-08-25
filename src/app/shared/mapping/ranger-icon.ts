@@ -7,8 +7,13 @@ import { hashString } from './hash-color'
  * unique"): every ranger gets a distinct marker - shape AND colour, both derived purely
  * from their callsign - so the same ranger looks identical everywhere (main map, Entry
  * mini-map) and across sessions/devices, with no stored state and no roster lookup
- * needed at draw time. Team is deliberately not a factor here; see E-80's teamColorFor()
- * in mapLeaflet.component.ts for the separate, team-keyed colour used by route trails.
+ * needed at draw time.
+ *
+ * E-97 (2026-08-25): route trails used to colour by `teamColorFor(team)` while markers
+ * coloured by callsign here - since team is usually blank (E-80 explicitly deferred it),
+ * nearly every trail fell through to one grey "unknown" colour, reading as "trails are
+ * all one colour." `rangerColorFor()` is exported so both the marker fill and the trail
+ * stroke come from the same callsign-keyed function and can't drift apart again.
  */
 
 // Plain shape outlines, stroked white so they stay legible over any tile colour
@@ -22,6 +27,17 @@ const MARKER_SHAPES: ((fill: string) => string)[] = [
 ]
 
 /**
+ * A deterministic colour for a given ranger callsign - same callsign always yields the
+ * same colour, no lookup or stored assignment required. Shared by the marker fill
+ * (`rangerIconFor`, below) and the route-trail stroke (`mapLeaflet.component.ts`'s
+ * `drawTrails()`), so a ranger's trail and marker can never show different colours.
+ */
+export function rangerColorFor(callsign: string): string {
+  const hash = hashString(callsign || 'Unknown')
+  return `hsl(${hash % 360}, 65%, 42%)`
+}
+
+/**
  * A deterministic, distinct Leaflet icon for a given ranger callsign - same callsign
  * always yields the same shape+colour, no lookup or stored assignment required. Shape and
  * colour are derived from independent bit ranges of one hash, so the two don't visibly
@@ -29,7 +45,7 @@ const MARKER_SHAPES: ((fill: string) => string)[] = [
  */
 export function rangerIconFor(callsign: string): L.DivIcon {
   const hash = hashString(callsign || 'Unknown')
-  const color = `hsl(${hash % 360}, 65%, 42%)`
+  const color = rangerColorFor(callsign)
   const shape = MARKER_SHAPES[Math.floor(hash / 360) % MARKER_SHAPES.length](color)
   return L.divIcon({
     className: 'rt-ranger-marker',

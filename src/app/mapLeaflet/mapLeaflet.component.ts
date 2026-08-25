@@ -20,7 +20,7 @@ import { DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core'
 
-import { AbstractMap, Utility, rangerIconFor, hashString, formatReportTime } from '../shared'
+import { AbstractMap, Utility, rangerIconFor, rangerColorFor, formatReportTime } from '../shared'
 import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, SettingsService } from '../shared/services'
 
 import { DisclosureComponent } from '../shared/disclosure/disclosure.component';
@@ -61,21 +61,6 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
-
-// E-80 phase 1: team route trails. Drawn directly on map tiles (not app chrome), so these
-// don't need to track the app's light/dark scheme - a fixed, saturated hash colour reads
-// fine against OSM tiles either way. UNKNOWN_TEAM_TRAIL_COLOR covers a callsign the current
-// roster doesn't recognise (free-text team on RangerType, see E-40) or has no team set.
-const UNKNOWN_TEAM_TRAIL_COLOR = '#6B7280'
-
-// Shares hash-color.ts's mixed hash with E-86's rangerIconFor() - see that file's own
-// comment for why the naive version (fixed 2026-08-24) collided badly on sequential team
-// names like "Team1"/"Team2".
-function teamColorFor(team: string): string {
-  if (!team) return UNKNOWN_TEAM_TRAIL_COLOR
-  return `hsl(${hashString(team) % 360}, 65%, 42%)`
-}
-
 
 @Component({
   selector: 'rangertrak-mapLeaflet',
@@ -780,8 +765,11 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       // Reports aren't guaranteed sorted - the trail is meaningless (and will look
       // plausible while being wrong) if drawn in array order instead of report date.
       const ordered = [...reports].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      const ranger = this.rangerService.rangers.find(r => r.callsign === callsign)
-      const color = teamColorFor(ranger?.team ?? '')
+      // E-97: was teamColorFor(ranger.team) - team is usually blank (E-80 deferred it),
+      // so nearly every trail fell through to one grey "unknown" colour. rangerColorFor()
+      // is the same callsign-keyed function the marker fill uses, so a ranger's trail and
+      // marker can never show different colours.
+      const color = rangerColorFor(callsign)
       const segmentCount = ordered.length - 1
 
       for (let i = 0; i < segmentCount; i++) {

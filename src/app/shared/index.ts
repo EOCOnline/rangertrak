@@ -19,7 +19,7 @@ export { GoogleGeocoder } from "./mapping/google-geocoder"
 // ./mapping/map-style is deliberately NOT re-exported - see the note in mapping/index.ts.
 export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./mapping/coordinate"
 export { AbstractMap } from "./mapping/map"
-export { rangerIconFor } from "./mapping/ranger-icon"
+export { rangerIconFor, rangerColorFor } from "./mapping/ranger-icon"
 export { hashString } from "./mapping/hash-color"
 export { formatReportTime } from "./mapping/report-time"
 

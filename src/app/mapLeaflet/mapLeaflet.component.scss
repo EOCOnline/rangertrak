@@ -1,5 +1,17 @@
 // @ use '@material/switch/styles';
 
+// E-99 (2026-08-25): `rangertrak-mapleaflet` is an unknown tag to the browser, so with no
+// :host display rule it defaulted to the UA's `display: inline` - the same class of bug
+// already found and fixed for rangertrak-root/rangertrak-footer in styles.scss, just never
+// swept here. An inline host doesn't establish a block formatting context, so #mapLeaflet-
+// overview's `float: right` (below) wasn't contained: the host's rendered height didn't
+// account for it, letting whatever follows in page DOM (the app-level footer) move up and
+// overlap the still-floating overview map at some viewport heights. `flow-root` both makes
+// the host block-level and contains the float, same fix E-67/E-69 used in _section.scss.
+:host {
+  display: flow-root;
+}
+
 .mapLeaflet-container {
   position     : block;
   // position: relative;
@@ -65,20 +77,34 @@
 // Keeping the words and sizing the buttons to fit, rather than cutting the labels back to
 // bare emoji: this control is how a scribe prepares a device for an offline mission (21b
 // counts its tiles as a readiness signal), so it is worth two legible buttons.
+// E-98 (2026-08-25): even after the re-parenting above, this control still carried
+// Leaflet's own .leaflet-bar/.leaflet-control chrome - a box-shadow and border-radius on
+// the bar itself, a hard 2px border on touch devices, and a border-bottom divider plus
+// rounded corners on each <a> - so it still read as a floating white card rather than one
+// of this site's own inputs. All of that is this app's own UI now, not a Leaflet widget
+// borrowing the page; stripped down to plain text buttons using the same tokens as the
+// rest of the app.
 :host ::ng-deep .savetiles.leaflet-bar {
+  box-shadow: none;
+  border    : none;
+  background: transparent;
+
   a {
-    display    : flex;
-    align-items: center;
-    width      : auto;
-    height     : auto;
-    min-height : var(--rt-tap-min);
-    padding    : 0 0.75em;
-    line-height: 1.25;
-    white-space: nowrap;
-    text-align : left;
-    font-size  : 0.85rem;
-    background : var(--rt-surface);
-    color      : var(--rt-ink);
+    display      : flex;
+    align-items  : center;
+    width        : auto;
+    height       : auto;
+    min-height   : var(--rt-tap-min);
+    padding      : 0 0.75em;
+    line-height  : 1.25;
+    white-space  : nowrap;
+    text-align   : left;
+    font-size    : 0.85rem;
+    background   : var(--rt-surface);
+    color        : var(--rt-ink);
+    border       : 1px solid var(--rt-ink-3);
+    border-radius: var(--rt-radius);
+    margin-bottom: 0.25em;
   }
 
   a:hover {
