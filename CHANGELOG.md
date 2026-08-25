@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.51.0](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+
+### Features
+
+* **map,rangers:** a report or ranger with no callsign now flags distinctly on the map (a fixed dashed-red "?" marker) and on the Rangers grid, instead of silently blending in
+
 ## [0.50.0](https://github.com/EOCOnline/rangertrak/commit/777fadea0cd2bd572e732e2cb5be41e4120c1112) (2026-08-26)
 
 ### Features

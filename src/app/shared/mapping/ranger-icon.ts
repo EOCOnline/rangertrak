@@ -31,17 +31,38 @@ const MARKER_SHAPES: ((fill: string) => string)[] = [
  * same colour, no lookup or stored assignment required. Shared by the marker fill
  * (`rangerIconFor`, below) and the route-trail stroke (`mapLeaflet.component.ts`'s
  * `drawTrails()`), so a ranger's trail and marker can never show different colours.
+ *
+ * Callers with a genuinely blank callsign should use `rangerIconFor`'s own dedicated
+ * "unassigned" marker (below) instead of this function - kept `|| 'Unknown'` here only
+ * because `drawTrails()` still calls this directly for a trail's stroke colour, and a trail
+ * has no equivalent "unassigned" treatment (yet) to fall back to.
  */
 export function rangerColorFor(callsign: string): string {
   const hash = hashString(callsign || 'Unknown')
   return `hsl(${hash % 360}, 65%, 42%)`
 }
 
+// Fixed appearance, deliberately NOT drawn from the hash-based shape/colour system below -
+// a report with no callsign at all isn't "a ranger who happens to hash to this look," it's a
+// data gap, and needs to read as visually different from every possible real marker, not
+// just different from whichever real marker it happened to collide with. Dashed red ring
+// (never used by any hashed shape's own stroke) + a literal "?" - no ambiguity about what it
+// means at a glance, on a map a scribe is reading quickly under time pressure.
+const UNASSIGNED_MARKER = `<circle cx="10" cy="10" r="8" fill="#ffffff" stroke="#c0392b" stroke-width="2" stroke-dasharray="3,2"/><text x="10" y="14.5" text-anchor="middle" font-size="12" font-weight="700" fill="#c0392b" font-family="sans-serif">?</text>`
+
 /**
  * A deterministic, distinct Leaflet icon for a given ranger callsign - same callsign
  * always yields the same shape+colour, no lookup or stored assignment required. Shape and
  * colour are derived from independent bit ranges of one hash, so the two don't visibly
  * correlate (two rangers sharing a colour won't reliably also share a shape).
+ *
+ * Raised live 2026-08-26, after a report noted not every ranger has a real ham callsign:
+ * a genuinely blank `callsign` used to fall through to `hashString('Unknown')`, so EVERY
+ * report with no callsign got the identical shape+colour - indistinguishable from each
+ * other, and looking exactly as "normal" as a real ranger's marker. Now routed to a fixed
+ * `UNASSIGNED_MARKER` instead - it can't tell two different blank-callsign reports apart
+ * either (there is no data to distinguish them on), but at least it no longer hides that
+ * gap behind a marker that looks like a real, consistent identity.
  *
  * `statusColor` (raised live, 2026-08-26): an optional halo drawn BEHIND the ranger's own
  * shape, so a report's configured status (Normal/Need Rest/Urgent/...) reads at a glance on
@@ -55,9 +76,9 @@ export function rangerColorFor(callsign: string): string {
  * blank status draws exactly as it always has.
  */
 export function rangerIconFor(callsign: string, statusColor?: string): L.DivIcon {
-  const hash = hashString(callsign || 'Unknown')
-  const color = rangerColorFor(callsign)
-  const shape = MARKER_SHAPES[Math.floor(hash / 360) % MARKER_SHAPES.length](color)
+  const shape = callsign?.trim()
+    ? MARKER_SHAPES[Math.floor(hashString(callsign) / 360) % MARKER_SHAPES.length](rangerColorFor(callsign))
+    : UNASSIGNED_MARKER
 
   if (!statusColor) {
     return L.divIcon({

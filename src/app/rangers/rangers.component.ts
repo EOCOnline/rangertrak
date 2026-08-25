@@ -133,6 +133,15 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   callsignCellRenderer = (params: { data: RangerType }) => {
+    // Raised live 2026-08-26, alongside the map's own "unassigned" marker: a blank
+    // callsign isn't just cosmetic here - it's the join key field reports use to attribute
+    // to this ranger at all, and every blank-callsign ranger renders as the IDENTICAL
+    // marker on the map (see rangerIconFor()'s own UNASSIGNED_MARKER). Flagging it here,
+    // where a scribe is actually editing the roster, is the fixable moment - same #c0392b
+    // as that marker so the two read as the same signal, not two different warnings.
+    if (!params.data.callsign?.trim()) {
+      return `<span aria-hidden title="No callsign set - reports from this ranger can't be told apart on the map, and can't be matched back to them by callsign at all" style="color:#c0392b;font-weight:700"> ⚠ (none set)</span>`
+    }
     let title = `${params.data.fullName} | ${params.data.phone}`
     return `<span aria-hidden title="${title}"> ${params.data.callsign}</span>`
   }
