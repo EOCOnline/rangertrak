@@ -2,11 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.44.1](https://github.com/EOCOnline/rangertrak/commits/main) (2026-08-25)
+## [0.44.1](https://github.com/EOCOnline/rangertrak/commit/6fd77c1953740a5f99584bb450c81c28ec927b6a) (2026-08-25)
 
 ### Bug Fixes
 
-* **mapLeaflet,mapping:** route trails now match their ranger's marker colour (E-97), offline "Save this area" control restyled off Leaflet's own white-card chrome (E-98), overview mini-map no longer overlaps the footer (E-99)
+* **mapLeaflet,mapping:** route trails now match their ranger's marker colour (E-97), offline "Save this area" control restyled off Leaflet's own white-card chrome (E-98), overview mini-map no longer overlaps the footer (E-99) ([6fd77c1](https://github.com/EOCOnline/rangertrak/commit/6fd77c1953740a5f99584bb450c81c28ec927b6a))
 
 ## [0.44.0](https://github.com/EOCOnline/rangertrak/commit/204720e0efaa2f6d8a3279290b961bf76f79562d) (2026-08-25)
 
