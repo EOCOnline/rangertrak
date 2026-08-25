@@ -329,8 +329,21 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // navigation base layer itself, so it's deliberately outside the "save this area
     // offline"/auto-cache-on-view story the two base layers above get. 50% opacity so the
     // base layer's own roads/labels/contours stay legible underneath the shading.
+    //
+    // Fixed 2026-08-26 (live report): the layer had NO effect at all - toggling the
+    // checkbox correctly added/removed it (confirmed reading L.Control.Layers, standard
+    // Leaflet behaviour), but every tile request 404'd, so there was nothing to see either
+    // way. What looked like "hillshade never turns off" was OpenTopoMap's own baked-in
+    // relief shading (it's a full contour basemap, not a plain one) being mistaken for this
+    // overlay; "never turns on" over OSM was this broken layer genuinely rendering nothing.
+    // Root cause: this service lives under an `Elevation/` folder on Esri's server
+    // (`.../rest/services/Elevation/World_Hillshade/MapServer/...`), confirmed by querying
+    // `?f=json` on both the guessed URL (404 "Service not found") and the corrected one
+    // (200, real metadata) - a plain `World_Hillshade` at the root, as originally guessed
+    // from the service's own display name, does not exist. A tile fetch at the corrected
+    // URL returns a real JPEG, confirmed with curl before touching this file.
     const hillshadeOverlay = L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Hillshade/MapServer/tile/{z}/{y}/{x}',
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 16, minZoom: 3, opacity: 0.5,
         attribution: 'Hillshade: &copy; <a href="https://www.esri.com">Esri</a>',

@@ -172,11 +172,18 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
    * would flash/reload the basemap and lose the reports source). Starts hidden
    * (`visibility: 'none'`) so the default view is unchanged; `raster-opacity` matches
    * Leaflet's own 50% so the vector roads/water/buildings stay legible underneath.
+   *
+   * Fixed 2026-08-26 (live report, found via the Leaflet side - same URL bug here, not yet
+   * separately reported for this engine): the URL was missing Esri's `Elevation/` folder
+   * segment - `.../rest/services/World_Hillshade/MapServer/...` 404s ("Service not found",
+   * confirmed with `?f=json`); the real service lives at
+   * `.../rest/services/Elevation/World_Hillshade/MapServer/...`. See mapLeaflet.component.ts's
+   * matching layer for the full diagnosis.
    */
   private addHillshadeLayer(): void {
     this.map.addSource('hillshade-source', {
       type: 'raster',
-      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Hillshade/MapServer/tile/{z}/{y}/{x}'],
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}'],
       tileSize: 256,
       maxzoom: 16,
       attribution: 'Hillshade: &copy; <a href="https://www.esri.com">Esri</a>',
