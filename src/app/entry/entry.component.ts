@@ -13,6 +13,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { form, FormField } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
 import { SignalFormControl } from '@angular/forms/signals/compat'
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete'
 import { ThemePalette } from '@angular/material/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
@@ -73,6 +74,11 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // post-submit focus restore (see ngAfterViewInit()/resetEntryForm() below), rather than
   // mixing cdkFocusInitial with a separate manual path.
   @ViewChild('callsignInput') private callsignInputRef?: ElementRef<HTMLInputElement>
+
+  // E-66: the #auto template ref (`matAutocomplete="auto"`) names the mat-autocomplete PANEL,
+  // not the trigger directive attached to the input by `[matAutocomplete]="auto"` - the
+  // trigger is what has closePanel(), so it needs its own ViewChild via the directive type.
+  @ViewChild(MatAutocompleteTrigger) private autocompleteTriggerRef?: MatAutocompleteTrigger
 
   //  @ViewChild('LocationComponent') myLocationPickerInstance: any//LocationComponent;
   /** Likely NOT needed...
@@ -349,7 +355,34 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    * Called once all HTML elements have been created
    */
   ngAfterViewInit() {
+    this.focusCallsignSuppressingAutoOpen()
+  }
+
+  /**
+   * E-66: `MatAutocompleteTrigger._handleFocus()` opens the panel on ANY `focusin`, including
+   * a synthetic one this component issues itself (this call, and its twin after submit+reset
+   * in resetEntryForm() below) - it has no notion of "this focus wasn't the user asking to
+   * see the roster." An empty query matches every ranger, so the panel that opens is the
+   * whole roster, covering the mini-map beneath it.
+   *
+   * A binding-based suppression (toggle `[matAutocompleteDisabled]` true-then-false around the
+   * `.focus()` call) does NOT work here: both signal writes happen synchronously in the same
+   * tick, before Angular's zoneless scheduler ever runs a change-detection pass to actually
+   * propagate `true` into the directive's input - by the time any CD pass reads the signal,
+   * it already reads `false`, so the directive's own `autocompleteDisabled` field was never
+   * actually `true` at the moment `.focus()` fired. Tried and confirmed ineffective before
+   * landing on this instead.
+   *
+   * `HTMLElement.focus()` dispatches its `focus`/`focusin` events SYNCHRONOUSLY before
+   * returning, so `_handleFocus()` (and therefore `openPanel()`) has already run by the time
+   * `.focus()` returns control here - closing it immediately after, same synchronous tick, no
+   * paint has happened in between (the browser cannot paint mid-script), so the panel never
+   * becomes visible. A real subsequent user focus (tab-in, click) calls `_handleFocus()` on
+   * its own, with nothing here between it and the browser's paint - untouched, opens normally.
+   */
+  private focusCallsignSuppressingAutoOpen(): void {
     this.callsignInputRef?.nativeElement.focus()
+    this.autocompleteTriggerRef?.closePanel()
   }
 
   /**
@@ -444,7 +477,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // After the reset values above have settled, not before - restores focus to callsign
     // for the next entry, same as the initial-load focus in ngAfterViewInit().
-    this.callsignInputRef?.nativeElement.focus()
+    this.focusCallsignSuppressingAutoOpen()
   }
 
   /**
