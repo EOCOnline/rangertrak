@@ -6,6 +6,8 @@ import {
   SettingsType
 } from './'
 import { migrateSettings } from './settings-migration'
+import { normalizeRangerIds } from './ranger-migration'
+import { migrateFieldReports } from './field-report-migration'
 
 /**
  * A full mission backup: everything needed to restore the app to its
@@ -103,8 +105,13 @@ export class BackupService {
     // bypasses settings.service.ts's load path entirely - so without this the import would
     // reinstate a pre-migration shape over freshly-migrated settings. See settings-migration.ts.
     this.settingsService.updateSettings(migrateSettings(payload.settings, this.settingsService.initSettings()))
-    this.rangerService.replaceAllRangers(payload.rangers)
-    this.fieldReportService.replaceAllFieldReports(payload.fieldReports)
+    // Same reasoning as the settings migration above, for the same reason it is easy to
+    // miss: an imported roster can predate D-42/D-43 entirely, so it may carry no uid and no
+    // canonical id. Without this, importing a mission would put un-keyed rangers straight
+    // into the store, bypassing RangerService's own load-path migration.
+    this.rangerService.replaceAllRangers(normalizeRangerIds(payload.rangers).rangers)
+    this.fieldReportService.replaceAllFieldReports(
+      migrateFieldReports(payload.fieldReports) ?? payload.fieldReports)
 
     this.log.warn(`Imported mission from export dated ${payload.exportedAt} (schema v${payload.schemaVersion}, app v${payload.appVersion})`, this.id)
   }

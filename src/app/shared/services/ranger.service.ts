@@ -18,6 +18,9 @@ import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 
 //import { debounceTime, map, startWith } from 'rxjs/operators'
 import { LogService, RangerType, UnknownRanger } from './'
+// ADR D-42/D-43: identity + versioned storage for the roster. Kept as a direct import (not
+// via the barrel) to avoid a cycle - the barrel re-exports this service.
+import { migrateRangers, normalizeRangerIds, RANGER_SCHEMA_VERSION } from './ranger-migration'
 
 /* xlsx.js (C) 2013-present SheetJS -- https://sheetjs.com */
 // https://github.com/SheetJS/SheetJS.github.io
@@ -132,7 +135,11 @@ export class RangerService implements OnInit {
     //! TODO: encrypt user data (in LocalStorage or elsewhere)
     // https://github.com/brix/crypto-js - requires Node.js
 
-    localStorage.setItem(this.localStorageRangerName, JSON.stringify(this.rangers))
+    // ADR D-42/D-43 Phase 2: stored as a VERSIONED WRAPPER now, not a bare array, so a
+    // future schema change has a seam to hook into. migrateRangers() still reads the old bare
+    // form, so this transition is one-way and silent.
+    localStorage.setItem(this.localStorageRangerName,
+      JSON.stringify({ schemaVersion: RANGER_SCHEMA_VERSION, rangers: this.rangers }))
 
     // Signal gets a fresh array copy: this.rangers is mutated in place
     // (push/splice/sort), so passing the same reference to .set() would be
@@ -155,9 +162,17 @@ export class RangerService implements OnInit {
   LoadRangersFromLocalStorage() { // WARN: Replaces any existing Rangers
     let localStorageRangers = localStorage.getItem(this.localStorageRangerName)
     try {
-      const parsed = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : []
-      this.rangers = (localStorageRangers != null && Array.isArray(parsed)) ? parsed : []
-      this.log.excessive(`Loaded ${this.rangers.length} rangers from local storage`, this.id)
+      // ADR D-42/D-43, Phase 2: everything stored goes through migrateRangers(), which
+      // accepts BOTH the versioned `{schemaVersion, rangers}` wrapper and the bare array this
+      // app wrote before 2026-08-26, guarantees every ranger an internal `uid` (the join
+      // key), and canonicalizes any credential into `id`. Called unconditionally rather than
+      // behind a version check at this call site - the gate lives inside the function, where
+      // it can be reasoned about. See [[settings-schema-version-discipline]] for why the
+      // other arrangement was itself the bug, twice.
+      const parsed = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : null
+      const store = migrateRangers(parsed)
+      this.rangers = store.rangers
+      this.log.excessive(`Loaded ${this.rangers.length} rangers from local storage (schema v${store.schemaVersion})`, this.id)
     } catch (error: any) {
       this.rangers = []
       this.log.verbose(`Unable to parse Rangers from Local Storage. Error: ${error.message}`, this.id)
@@ -359,7 +374,11 @@ export class RangerService implements OnInit {
       } as RangerType
     })
 
-    return rangers
+    // ADR D-42/D-43: normalize on the way in, so every import path (bare array, {rangers},
+    // mission export, zip bundle) yields rangers with a uid and a canonical id. Credentials
+    // are never invented here - a roster entry with none stays blank and is reported by
+    // rosterWarnings() below.
+    return normalizeRangerIds(rangers).rangers
   }
 
   /**
@@ -429,7 +448,16 @@ export class RangerService implements OnInit {
         image: "male.png", rew: "VI-00 ", phone: "206-463-0000", team: "", role: "", note: `Manually added at ${formatDate(Date.now(), 'short', "en-US")}.` //https://angular.io/guide/i18n-common-locale-id
       }
     }
+    // ADR D-43: mint the surrogate key at creation rather than relying on the next load's
+    // migration - a report could be filed against this ranger before then.
+    //
+    // Normalized against the WHOLE roster, not in isolation: uid uniqueness is only
+    // meaningful relative to the rangers that already exist. `rangers` is mutated in place
+    // throughout this class, so the result is spliced back rather than reassigned.
     this.rangers.push(newRanger)
+    const normalized = normalizeRangerIds(this.rangers).rangers
+    this.rangers.splice(0, this.rangers.length, ...normalized)
+    newRanger = this.rangers[this.rangers.length - 1]
 
     this.updateLocalStorageAndPublish();
     return newRanger;

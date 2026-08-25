@@ -9,6 +9,9 @@ import {
   FieldReportStatusType, FieldReportsType, FieldReportType, LogService, RangerType,
   SettingsService, SettingsType
 } from './'
+// ADR D-42: versioned storage seam for field reports. Direct import, not via the barrel,
+// to avoid a cycle - the barrel re-exports this service.
+import { migrateFieldReports } from './field-report-migration'
 
 //import {  } from './ranger.interface'
 
@@ -124,7 +127,16 @@ export class FieldReportService {
       localStorage.setItem(this.storageLocalName + '-BAD', localStorageFieldReports)
       return this.initEmptyFieldReports()
     } else {
-      return JSON.parse(localStorageFieldReports)
+      // ADR D-42 Phase 2: everything stored goes through migrateFieldReports(), which
+      // stamps schemaVersion and is where any future transform will live. Returns null when
+      // the payload is not a usable store, in which case we fall back to our own initializer
+      // rather than have the migration duplicate what 'empty' means.
+      //
+      // NOTE the corruption check above is a naive indexOf('version') substring search over
+      // raw JSON - same class of bug as [[settings-marker-field-trap]]. 'schemaVersion'
+      // happens to contain that substring, which is luck rather than design; do not remove
+      // the 'version' field without replacing that check with a structural test.
+      return migrateFieldReports(JSON.parse(localStorageFieldReports)) ?? this.initEmptyFieldReports()
     }
   }
 

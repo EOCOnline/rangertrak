@@ -110,7 +110,9 @@ describe('BackupService', () => {
       expect(freshFieldReports.getCurrentFieldReports().fieldReportArray[0].status).toBe('Urgent');
 
       // Also persisted to localStorage, not just in-memory.
-      const storedRangers = JSON.parse(localStorage.getItem('rangers')!);
+      // ADR D-42/D-43 Phase 2: the roster is stored as a versioned
+      // { schemaVersion, rangers } wrapper now, not a bare array.
+      const storedRangers = JSON.parse(localStorage.getItem('rangers')!).rangers;
       expect(storedRangers.some((r: any) => r.callsign === 'RT1')).toBeTrue();
       const storedSettings = JSON.parse(localStorage.getItem('appSettings')!);
       expect(storedSettings.mission).toBe('Roundtrip Mission');

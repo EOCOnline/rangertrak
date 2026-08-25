@@ -336,13 +336,13 @@ async function checkRosterLifecycle(fx) {
   // MissionReadinessService's roster signal keys off (isRealRosterLoaded is now a plain
   // length check), so a regression here would silently light the readiness dot green on a
   // brand-new install with no roster.
-  const seeded = await evaluate(`JSON.parse(localStorage.getItem('rangers')||'[]').length`)
+  const seeded = await evaluate(`(JSON.parse(localStorage.getItem('rangers')||'{"rangers":[]}').rangers||[]).length`)
   check('a fresh browser starts with a BLANK roster, not the built-in stations', seeded, 0)
 
   await setFileInput('#importRosterFile', fx.rosterPath)
   await sleep(4000)
   const imported = await evaluate(`(() => {
-    const r = JSON.parse(localStorage.getItem('rangers')||'[]');
+    const r = (JSON.parse(localStorage.getItem('rangers')||'{"rangers":[]}').rangers||[]);
     return { count: r.length, named: r.filter(x => (x.fullName||'').trim()).length,
              teams: r.filter(x => x.team).length, rew: r.filter(x => x.rew).length };
   })()`)
@@ -356,14 +356,19 @@ async function checkRosterLifecycle(fx) {
   // removed app-wide), so there's no summary to click open before reaching the button.
   await evaluate(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Delete all rangers')?.click()`)
   await sleep(3000)
-  check('deleting stores an empty list, keeping the key', await evaluate(`localStorage.getItem('rangers')`), '[]')
+  // ADR D-42/D-43: asserts the CONTENT is an empty list, not that the raw value is the
+  // literal string '[]' - the roster is stored as a versioned { schemaVersion, rangers }
+  // wrapper now. The point of the check is unchanged: the key must still exist holding an
+  // empty roster, which is what makes a deliberate delete survive a reload.
+  check('deleting stores an empty list, keeping the key',
+    await evaluate(`JSON.stringify(JSON.parse(localStorage.getItem('rangers')||'{}').rangers ?? null)`), '[]')
 
   await goto('/rangers')
-  check('an emptied roster STAYS empty across a reload', await evaluate(`JSON.parse(localStorage.getItem('rangers')||'[]').length`), 0)
+  check('an emptied roster STAYS empty across a reload', await evaluate(`(JSON.parse(localStorage.getItem('rangers')||'{"rangers":[]}').rangers||[]).length`), 0)
 
   await setFileInput('#importRosterFile', fx.rosterPath)
   await sleep(4000)
-  check('roster re-imports after being emptied', await evaluate(`JSON.parse(localStorage.getItem('rangers')||'[]').length`), fx.rangers.length)
+  check('roster re-imports after being emptied', await evaluate(`(JSON.parse(localStorage.getItem('rangers')||'{"rangers":[]}').rangers||[]).length`), fx.rangers.length)
 }
 
 async function checkFieldNameAliases(fx) {
@@ -372,7 +377,7 @@ async function checkFieldNameAliases(fx) {
   await setFileInput('#importRosterFile', fx.aliasPath)
   await sleep(4000)
   const r = await evaluate(`(() => {
-    const a = JSON.parse(localStorage.getItem('rangers')||'[]');
+    const a = (JSON.parse(localStorage.getItem('rangers')||'{"rangers":[]}').rangers||[]);
     return { count: a.length, name: a[0] && a[0].fullName, role: a[0] && a[0].role };
   })()`)
   check('licensee maps to fullName', r.name, 'Aliased Name')
@@ -390,7 +395,7 @@ async function checkBundleZip(fx) {
   // photo - the classic signature of a timeout that is usually enough but not tied to the
   // real completion condition. Same fix already applied twice elsewhere in this file.
   const readState = `(async () => {
-    const rangers = JSON.parse(localStorage.getItem('rangers')||'[]');
+    const rangers = (JSON.parse(localStorage.getItem('rangers')||'{"rangers":[]}').rangers||[]);
     const photos = await new Promise(res => {
       const req = indexedDB.open('rangertrak-photos');
       req.onsuccess = () => { const db = req.result;
@@ -1397,7 +1402,7 @@ async function checkMissionRoundTrip(downloads) {
   await sleep(5000)
 
   const restored = await evaluate(`(() => {
-    const r = JSON.parse(localStorage.getItem('rangers')||'[]');
+    const r = (JSON.parse(localStorage.getItem('rangers')||'{"rangers":[]}').rangers||[]);
     const s = JSON.parse(localStorage.getItem('appSettings')||'{}');
     return { rangers: r.length, mission: s.mission };
   })()`)

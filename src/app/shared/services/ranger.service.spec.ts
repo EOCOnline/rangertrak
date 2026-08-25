@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { RangerType } from './ranger.interface';
 import { RangerService } from './ranger.service';
+import { RANGER_SCHEMA_VERSION } from './ranger-migration';
 
 /**
  * Characterization tests: pin RangerService's current localStorage-backed
@@ -12,6 +13,18 @@ import { RangerService } from './ranger.service';
  */
 describe('RangerService', () => {
   const STORAGE_KEY = 'rangers';
+
+  // ADR D-42/D-43 Phase 2: the roster is stored as a versioned { schemaVersion, rangers }
+  // wrapper now, not a bare array. These helpers keep the assertions about CONTENT rather
+  // than about the envelope, so a future schema bump does not churn every test here.
+  function storedRangers(): RangerType[] {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw).rangers : [];
+  }
+  function storedSchemaVersion(): number | undefined {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw).schemaVersion : undefined;
+  }
 
   beforeEach(() => {
     localStorage.clear();
@@ -37,7 +50,7 @@ describe('RangerService', () => {
 
       // The key must still exist, holding an empty list - that is what tells a rebuilt
       // service "emptied on purpose" rather than "never used this app".
-      expect(localStorage.getItem(STORAGE_KEY)).toBe('[]');
+      expect(storedRangers()).toEqual([]);
 
       // Simulate the page reload that onBtnDeleteRangers() performs.
       TestBed.resetTestingModule();
@@ -119,6 +132,51 @@ describe('RangerService', () => {
     });
   });
 
+  // ADR D-42/D-43 Phase 2. The upgrade path is the whole risk of this migration: a fresh
+  // install and the dev machine both look perfect no matter what this does. These load data
+  // in the PRE-migration shape and assert it survives.
+  describe('upgrade path from the pre-D-42 storage shape', () => {
+    it('reads a bare array (the old shape) and migrates it in place', () => {
+      const legacy = [
+        { callsign: 'ACS1', fullName: 'A', phone: '', image: '', rew: 'VI-01', team: '', role: '', note: '' },
+        { callsign: 'CERT1', fullName: 'B', phone: '', image: '', rew: '', team: '', role: '', note: '' },
+      ];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(legacy));
+
+      const service = TestBed.inject(RangerService);
+
+      expect(service.rangers.length).withContext('roster survived, not reset').toBe(2);
+      expect(service.rangers.every(r => !!r.uid)).withContext('every ranger gained a uid').toBeTrue();
+      expect(service.rangers.find(r => r.callsign === 'ACS1')!.id).toBe('VI-01');
+      expect(service.rangers.find(r => r.callsign === 'CERT1')!.id)
+        .withContext('no credential, and none invented').toBe('');
+    });
+
+    it('rewrites storage into the versioned wrapper', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([
+        { callsign: 'ACS1', fullName: '', phone: '', image: '', rew: '', team: '', role: '', note: '' }
+      ]));
+
+      TestBed.inject(RangerService);
+
+      expect(storedSchemaVersion()).toBe(RANGER_SCHEMA_VERSION);
+      expect(storedRangers().length).toBe(1);
+    });
+
+    it('keeps uids stable across a reload - reports would orphan otherwise', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([
+        { callsign: 'ACS1', fullName: '', phone: '', image: '', rew: '', team: '', role: '', note: '' }
+      ]));
+      const first = TestBed.inject(RangerService).rangers[0].uid;
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ providers: [provideHttpClient()] });
+      const afterReload = TestBed.inject(RangerService).rangers[0].uid;
+
+      expect(afterReload).withContext('the join key must not change on reload').toBe(first);
+    });
+  });
+
   describe('construction / localStorage round-trip', () => {
     it('starts blank when localStorage is empty (2026-08-26: no more auto-seed)', () => {
       const service = TestBed.inject(RangerService);
@@ -169,7 +227,7 @@ describe('RangerService', () => {
       expect(added.callsign).toBe('TEST1');
       expect(service.rangers.length).toBe(before + 1);
 
-      const persisted: RangerType[] = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+      const persisted: RangerType[] = storedRangers();
       expect(persisted.some(r => r.callsign === 'TEST1')).toBeTrue();
     });
 
@@ -216,7 +274,7 @@ describe('RangerService', () => {
       expect(service.rangers.length).toBe(before - 1);
       expect(service.rangers.some(r => r.callsign === 'DEL1')).toBeFalse();
 
-      const persisted: RangerType[] = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+      const persisted: RangerType[] = storedRangers();
       expect(persisted.some(r => r.callsign === 'DEL1')).toBeFalse();
     });
 
@@ -241,7 +299,7 @@ describe('RangerService', () => {
       service.deleteAllRangers();
 
       expect(service.rangers.length).toBe(0);
-      expect(localStorage.getItem(STORAGE_KEY)).toBe('[]');
+      expect(storedRangers()).toEqual([]);
     });
   });
 
