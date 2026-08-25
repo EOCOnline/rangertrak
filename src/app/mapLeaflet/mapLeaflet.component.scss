@@ -25,6 +25,22 @@
   font-weight: bold;
 }
 
+// E-80 elapsed-time follow-on: a small, non-obtrusive "N min ago" label at each trail's
+// newest point - overrides Leaflet's default tooltip chrome (white bubble, border, arrow)
+// down to plain small text, per the original ask's own "small non-obtrusive font" framing.
+.rt-trail-elapsed {
+  background : transparent;
+  border     : none;
+  box-shadow : none;
+  padding    : 0 2px;
+  font-size  : 0.7rem;
+  color      : var(--rt-ink-2);
+
+  &::before {
+    display: none; // the little pointer arrow Leaflet draws under a tooltip bubble
+  }
+}
+
 #mapLeaflet-overview {
   //position: absolute;
   position  : relative;

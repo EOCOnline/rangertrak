@@ -944,6 +944,11 @@ async function checkTeamTrailsRender() {
     pathCount = await evaluate(`document.querySelectorAll('#mapLeaflet-main .leaflet-overlay-pane path').length`)
   }
   check('a route trail renders on the map for a multi-report callsign', pathCount > 0, true)
+
+  // Elapsed-time follow-on (2026-08-24): a static "N min ago" label at the trail's newest
+  // point - not a live clock, see the feature's own doc comment in drawTrails().
+  const elapsedText = await evaluate(`document.querySelector('#mapLeaflet-main .rt-trail-elapsed')?.textContent || ''`)
+  check('the trail shows a static elapsed-time label at its newest point', /\d+ min ago/.test(elapsedText), true)
 }
 
 /**

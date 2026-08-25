@@ -745,10 +745,15 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    * switch and new-report redraws are honoured automatically (both call displayMarkers(),
    * which calls this after clearMarkers() has emptied myTrailsLayer).
    *
-   * Deliberately no animation, timer, or elapsed-time readout - decided out of scope by
-   * the maintainer 2026-08-24. Direction is conveyed without a clock: each trail is drawn
-   * as N-1 separate segments with stepped opacity (oldest faintest, newest strongest)
-   * rather than a gradient-along-path, which Leaflet has no native support for.
+   * Deliberately still no animation or timer - only the elapsed-time READOUT itself was
+   * added back (2026-08-24 follow-on), as a value computed once when this method runs, not
+   * a live-updating clock: it goes stale until the next redraw (page load, navigating to
+   * /map, or either of this method's own existing redraw triggers - a new report arriving,
+   * toggling all/selected), same as everything else this method draws. That distinction is
+   * what makes it different from the setInterval-driven readout the original 2026-08-24
+   * scoping excluded. Direction is conveyed without a clock: each trail is drawn as N-1
+   * separate segments with stepped opacity (oldest faintest, newest strongest) rather than
+   * a gradient-along-path, which Leaflet has no native support for.
    */
   private drawTrails() {
     const byCallsign = new Map<string, FieldReportType[]>()
@@ -780,6 +785,19 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         )
         this.myTrailsLayer.addLayer(segment)
       }
+
+      // Elapsed-time follow-on (2026-08-24): a static "minutes since" label at the
+      // newest point, computed once here - see the method doc comment above for why this
+      // isn't the live clock the original scoping excluded.
+      const newest = ordered[ordered.length - 1]
+      const elapsedMin = Math.max(0, Math.round((Date.now() - new Date(newest.date).getTime()) / 60000))
+      const label = L.tooltip([newest.location.lat, newest.location.lng], {
+        permanent: true,
+        direction: 'top',
+        offset: [0, -8],
+        className: 'rt-trail-elapsed',
+      }).setContent(`${elapsedMin} min ago`)
+      this.myTrailsLayer.addLayer(label)
     })
   }
 
