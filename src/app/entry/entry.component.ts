@@ -34,6 +34,7 @@ import {
 
 import { MATERIAL_IMPORTS } from '../material-imports'
 import { LocationComponent } from './location.component'
+import { EvidenceLocationComponent } from './evidence-location.component'
 import { MiniMapLeafletComponent } from './mini-mapLeaflet.component'
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
@@ -52,6 +53,7 @@ import { MiniMapLeafletComponent } from './mini-mapLeaflet.component'
     TimePickerComponent,
     LocationComponent,
     MiniMapLeafletComponent,
+    EvidenceLocationComponent,
   ],
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
@@ -121,7 +123,13 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   replyRequested213TabIndex = this.generates213TabIndex + 1
   message213TabIndex = this.replyRequested213TabIndex + 1
   recipients213TabIndex = this.message213TabIndex + 1
-  resetTabIndex = this.recipients213TabIndex + 1
+  // Architecture decision, 2026-08-26: evidence/clue location, hidden by default behind a
+  // checkbox - same [hidden]-not-@if reasoning as the 213 fields above, so its 3 reserved
+  // slots (EvidenceLocationComponent's own distance/unit/bearing, see its ti() offsets)
+  // don't break tab-order contiguity while collapsed, the common case.
+  showEvidenceLocationTabIndex = this.recipients213TabIndex + 1
+  evidenceLocationTabIndexStart = this.showEvidenceLocationTabIndex + 1
+  resetTabIndex = this.evidenceLocationTabIndexStart + 3
   submitTabIndex = this.resetTabIndex + 1
 
   // E-41 phase 1: source options for the template's @for - the values themselves are
@@ -185,6 +193,19 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // Get location events from <location> component
   //public locationChange: Subscription
   public locationParent = undefinedLocation
+
+  // Architecture decision, 2026-08-26: evidence/clue location - hidden by default (a plain
+  // signal, not part of any form model, same "session UI state, not report data" treatment
+  // LocationComponent's own showAllSystems already uses), a checkbox reveals
+  // EvidenceLocationComponent. evidenceLocation itself mirrors locationParent's own pattern
+  // (a plain field the child emits into, merged into the submission in mergedFormValue()
+  // below) rather than living inside entryModel - same reason locationParent doesn't either.
+  showEvidenceLocation = signal(false)
+  evidenceLocation: LocationType | null = null
+
+  onEvidenceLocationChange(newLocation: LocationType | null): void {
+    this.evidenceLocation = newLocation
+  }
 
   // E-48(1): bumped on every reset (see resetAll() below) so LocationComponent can tell
   // "a fresh report started" apart from "the position changed" - see its own comment.
@@ -454,7 +475,11 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     return {
       ...this.entryModel(),
       callsign: this.callsignCtrl.value,
-      status: this.entryControlsForm.value.status
+      status: this.entryControlsForm.value.status,
+      // Only when the section is actually open - collapsing it after entering a range/
+      // bearing is how a scribe retracts "never mind, not a real clue," and a submitted
+      // report shouldn't carry a marker its own scribe just told the form to forget.
+      evidenceLocation: this.showEvidenceLocation() ? this.evidenceLocation : null,
     }
   }
 
@@ -527,6 +552,12 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.entryControlsForm.reset({
       status: this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status
     })
+    // EvidenceLocationComponent resets its own distance/unit/bearing fields when
+    // formGeneration bumps below (same pattern LocationComponent's derived-block already
+    // uses) - collapsing the section and forgetting the computed marker are this
+    // component's own job, since both live here, not inside the child.
+    this.showEvidenceLocation.set(false)
+    this.evidenceLocation = null
     this.formGeneration++
   }
 

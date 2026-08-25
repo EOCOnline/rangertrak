@@ -299,6 +299,39 @@ export function isMaidenhead(text: string): boolean {
   return MAIDENHEAD_PATTERN.test(text)
 }
 
+// Mean Earth radius, metres - the standard constant for this spherical-Earth formula. Not
+// precise enough for surveying, more than precise enough for a SAR range-and-bearing call
+// ("200m north of here") over the distances this is ever used at.
+const EARTH_RADIUS_M = 6371000
+
+/**
+ * Architecture decision, 2026-08-26: evidence/clue location is entered as a range and
+ * bearing FROM the reporter's own position, not a second full coordinate - this is how it
+ * is actually communicated over radio in practice ("I'm at grid B4, found a boot about 200m
+ * north of here"), not by reading a second GPS fix at the clue's own location. This is the
+ * standard "destination point given distance and bearing" spherical-trig formula (the same
+ * one behind every "vincenty/haversine destination" reference implementation), computing the
+ * resulting absolute lat/lng so the rest of the app (storage, the map marker) never needs to
+ * know range-and-bearing was how it was entered.
+ */
+export function destinationPoint(originLat: number, originLng: number, distanceMeters: number, bearingDegrees: number): { lat: number, lng: number } {
+  const δ = distanceMeters / EARTH_RADIUS_M // angular distance
+  const θ = bearingDegrees * Math.PI / 180
+  const φ1 = originLat * Math.PI / 180
+  const λ1 = originLng * Math.PI / 180
+
+  const φ2 = Math.asin(Math.sin(φ1) * Math.cos(δ) + Math.cos(φ1) * Math.sin(δ) * Math.cos(θ))
+  const λ2 = λ1 + Math.atan2(
+    Math.sin(θ) * Math.sin(δ) * Math.cos(φ1),
+    Math.cos(δ) - Math.sin(φ1) * Math.sin(φ2)
+  )
+
+  return {
+    lat: φ2 * 180 / Math.PI,
+    lng: ((λ2 * 180 / Math.PI) + 540) % 360 - 180, // normalise to -180..180
+  }
+}
+
 
 /*
 Use Google.geocode instead

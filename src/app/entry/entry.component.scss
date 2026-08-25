@@ -265,6 +265,18 @@ input[type=number] {
   }
 }
 
+.enter__evidence {
+  margin-top: 0.6rem;
+
+  // [hidden] is a boolean attribute Angular removes entirely when false (never renders
+  // hidden="false") - :not([hidden]) is the correct way to target "visible right now".
+  > div:not([hidden]) {
+    margin: 0.5rem 0 0 1.5rem;
+    padding: 0.6rem 0.8rem;
+    border-inline-start: 3px solid var(--rt-line-strong);
+  }
+}
+
 // E-61: Reset and Submit share this box model (min-height, padding, border-radius,
 // font-weight, margin) so they read as a sized pair. Before this, Reset fell back to
 // default browser button sizing - this rule's own `margin: 30 px` is invalid CSS (a

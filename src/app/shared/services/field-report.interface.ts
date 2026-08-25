@@ -75,6 +75,15 @@ export type FieldReportType = {
   replyRequested213?: boolean,
   message213?: string,
   recipients213?: string,
+  // Architecture decision, 2026-08-26: resolves the "second coordinate" question the Five
+  // Open Questions discussion doc left open (topic 1/6) - where a clue/evidence item
+  // actually IS, distinct from the reporting ranger's own position (`location` above).
+  // Entered as range-and-bearing from the reporter (evidence-location.component.ts),
+  // stored as the resulting absolute LocationType so the rest of the app (the map marker,
+  // any future export) never needs to know how it was entered. Optional, same reasoning
+  // as the E-41 fields above: no schema-version bump, a returning user's older reports
+  // simply lack it.
+  evidenceLocation?: LocationType | null,
 }
 
 /**

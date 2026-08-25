@@ -101,6 +101,47 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     return this._location
   }
 
+  // Architecture decision, 2026-08-26: the optional evidence/clue marker
+  // (evidence-location.component.ts computes it, entry.component.ts passes it through).
+  // Tracked and added to `this.lMap` DIRECTLY, never through `myMarkerCluster` -
+  // addMarker() (below) calls `clearMarkers()` on every reporter-position update, which
+  // would otherwise wipe this marker every time the crosshair moves, not just when the
+  // scribe actually clears the evidence section.
+  private evidenceMarker?: L.Marker
+
+  @Input() set evidenceLocationUpdated(newLocation: LocationType | null) {
+    if (!this.lMap) {
+      // Same "arrived before the map was built" case locationUpdated's own setter guards -
+      // ngOnInit's initial placement pass (below) re-reads the current @Input value once
+      // the map exists, so nothing is lost by returning here.
+      return
+    }
+    if (!newLocation) {
+      this.evidenceMarker?.remove()
+      this.evidenceMarker = undefined
+      return
+    }
+    if (this.evidenceMarker) {
+      this.evidenceMarker.setLatLng([newLocation.lat, newLocation.lng])
+    } else {
+      // A small purple flag, deliberately unlike anything else this map ever draws (not a
+      // hashed ranger colour/shape, not the reporter's own default Leaflet pin, not
+      // rangerIconFor's red-dashed "unassigned" marker) - it means one specific thing,
+      // "the evidence/clue is here," and should never be confused with a ranger position.
+      const icon = L.divIcon({
+        className: 'rt-evidence-marker',
+        html: `<svg width="22" height="26" viewBox="0 0 22 26" xmlns="http://www.w3.org/2000/svg">
+          <line x1="3" y1="25" x2="3" y2="2" stroke="#7c3aed" stroke-width="2"/>
+          <polygon points="3,2 20,7 3,13" fill="#7c3aed" stroke="white" stroke-width="1"/>
+        </svg>`,
+        iconSize: [22, 26],
+        iconAnchor: [3, 25],
+      })
+      this.evidenceMarker = L.marker([newLocation.lat, newLocation.lng], { icon, title: 'Evidence/clue location' })
+      this.evidenceMarker.addTo(this.lMap)
+    }
+  }
+
   // E-46: the missing half of the mediator pattern location.component.ts already has
   // (@Input location / @Output locationChange). Before this, clicking the mini-map only
   // ever wrote to the clipboard - there was no channel to report the click back up to

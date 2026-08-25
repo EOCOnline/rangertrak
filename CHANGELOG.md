@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.53.0](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+
+### Features
+
+* **entry:** evidence/clue location - range and bearing from the reporter's own position, hidden by default behind a checkbox, drawn as its own marker on the Entry mini-map
+
 ## [0.52.0](https://github.com/EOCOnline/rangertrak/commit/50f547d8687499dd8a75ab7c63ad9bfa8bfc210e) (2026-08-26)
 
 ### Features

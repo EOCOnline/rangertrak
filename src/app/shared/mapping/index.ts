@@ -10,7 +10,7 @@ export { GoogleGeocoder } from "./google-geocoder"
 // drag MapLibre along with it into the eager bundle. Its consumer, MapComponent, imports it
 // directly from './mapping/map-style' instead, which keeps MapLibre inside the lazily-loaded
 // /map route chunk. (E-70: the unwired MiniMapComponent, formerly a second consumer, is gone.)
-export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType } from "./coordinate"
+export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType, destinationPoint } from "./coordinate"
 export { AbstractMap } from "./map"
 export { rangerIconFor } from "./ranger-icon"
 export { hashString } from "./hash-color"

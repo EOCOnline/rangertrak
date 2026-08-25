@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.evidence-location {
+  display    : flex;
+  flex-wrap  : wrap;
+  align-items: flex-end;
+  gap        : 0.6rem;
+}
+
+.evidence-location__field {
+  display       : flex;
+  flex-direction: column;
+  gap           : 0.15rem;
+  font-size     : 0.85rem;
+
+  input {
+    width: 6rem;
+  }
+}
+
+.evidence-location__preview {
+  flex-basis: 100%;
+  font-size : 0.85rem;
+  color     : var(--rt-ink-2);
+}
+
+.evidence-location__preview--empty {
+  font-style: italic;
+}

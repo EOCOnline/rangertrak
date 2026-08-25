@@ -1,0 +1,26 @@
+<div class="evidence-location">
+  <label class="evidence-location__field">
+    Distance
+    <input type="number" [formField]="form.distance" placeholder="e.g. 200" [attr.tabindex]="ti(0)" />
+  </label>
+
+  <select [formField]="form.unit" [attr.tabindex]="ti(1)" aria-label="Distance unit">
+    <option value="m">meters</option>
+    <option value="ft">feet</option>
+  </select>
+
+  <label class="evidence-location__field">
+    Bearing (0-359&deg;, from your position)
+    <input type="number" [formField]="form.bearing" placeholder="e.g. 45" [attr.tabindex]="ti(2)" />
+  </label>
+
+  @if (computedLocation(); as loc) {
+  <div class="evidence-location__preview">
+    Marked at {{ loc.lat.toFixed(5) }}, {{ loc.lng.toFixed(5) }}
+  </div>
+  } @else {
+  <div class="evidence-location__preview evidence-location__preview--empty">
+    Enter a distance and bearing to place a marker
+  </div>
+  }
+</div>

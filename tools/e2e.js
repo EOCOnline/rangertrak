@@ -474,17 +474,20 @@ async function checkEntryTabOrder() {
   // this from a single native time input to three plain segments - see
   // TimePickerComponent.TIME_TAB_SLOT_COUNT) + status(32) + source(33, E-41 phase 1,
   // 2026-08-26 - gathered on every report) + notes(34) + generates213 checkbox(35) +
-  // its three conditional fields, reply-requested/message/recipients(36-38, ALWAYS
-  // reserved even though only reachable once generates213 is checked - see the
-  // [hidden]-not-@if comment on entry.component.html's own .enter__213-details for why
-  // this pass grows the count instead of leaving those three fields unreserved) +
-  // reset(39) + submit(40). Asserting CONTIGUITY rather than just a count: a gap means
-  // a field was removed without renumbering, and a changed total means one was added
-  // without re-planning the sequence - exactly what entry.component.ts's computed
-  // tabindex chain (locationTabIndexStart -> dateTabIndex -> ... -> submitTabIndex)
-  // exists to get right automatically instead of hardcoded literals.
+  // its three conditional fields, reply-requested/message/recipients(36-38) +
+  // showEvidenceLocation checkbox(39, 2026-08-26 architecture decision) + its own three
+  // conditional fields, EvidenceLocationComponent's distance/unit/bearing(40-42) +
+  // reset(43) + submit(44). Every conditional block ALWAYS reserves its tab stops even
+  // though only reachable once its own checkbox is ticked - see the [hidden]-not-@if
+  // comment on entry.component.html's .enter__213-details/.enter__evidence for why this
+  // grows the count instead of leaving those fields unreserved. Asserting CONTIGUITY
+  // rather than just a count: a gap means a field was removed without renumbering, and a
+  // changed total means one was added without re-planning the sequence - exactly what
+  // entry.component.ts's computed tabindex chain (locationTabIndexStart -> dateTabIndex
+  // -> ... -> submitTabIndex) exists to get right automatically instead of hardcoded
+  // literals.
   check('Entry tab stops are contiguous 1..N with no gaps', r.contiguous, true)
-  check('Entry exposes the expected number of keyboard stops', r.count, 40)
+  check('Entry exposes the expected number of keyboard stops', r.count, 44)
 }
 
 async function checkEntryAutofocusAndReset() {
@@ -512,6 +515,73 @@ async function checkEntryAutofocusAndReset() {
   check('Submit is enabled for a minimal valid entry', submitted.wasDisabled, false)
   check('callsign is re-focused after submit+reset', submitted.focusedAfter, 'enter__Callsign-input')
   check('callsign is cleared for the next report', submitted.callsignCleared, true)
+}
+
+/**
+ * Architecture decision, 2026-08-26: evidence/clue location, entered as range-and-bearing
+ * from the reporter's own position (evidence-location.component.ts), computed into an
+ * absolute lat/lng, and drawn as its own marker on the Entry mini-map. Real risk surface
+ * this guards: the computed location is a `computed()` reading a signal `input()` plus a
+ * plain model signal, emitted via an `effect()` - if either wiring broke, the preview/marker
+ * would silently never appear, or worse, silently go stale when the reporter's own position
+ * changes after a range/bearing was already entered.
+ */
+async function checkEvidenceLocation() {
+  console.log('\nEvidence/clue location: range-and-bearing computes a marker and survives to storage (2026-08-26)')
+  await goto('/')
+  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await goto('/')
+  await sleep(1500) // let the mini-map + default position settle
+
+  const before = await evaluate(`(() => {
+    const section = document.querySelector('.enter__evidence > div:last-child');
+    return { hiddenByDefault: section?.hasAttribute('hidden'), markerExists: !!document.querySelector('.rt-evidence-marker') };
+  })()`)
+  check('evidence section is hidden by default', before.hiddenByDefault, true)
+  check('no evidence marker before the section is used', before.markerExists, false)
+
+  await evaluate(`(async () => {
+    document.querySelector('.enter__evidence > label > input[type=checkbox]').click();
+    await new Promise(r => setTimeout(r, 300));
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    const set = (el, v) => { setter.call(el, v); el.dispatchEvent(new Event('input', {bubbles:true})); el.dispatchEvent(new Event('change', {bubbles:true})); };
+    const [distInput, bearingInput] = [...document.querySelectorAll('rangertrak-evidence-location input[type=number]')];
+    set(distInput, '200');
+    set(bearingInput, '0'); // due north: latitude increases, longitude unchanged
+    await new Promise(r => setTimeout(r, 500));
+  })()`)
+
+  const afterEntry = await evaluate(`(() => {
+    const preview = document.querySelector('.evidence-location__preview')?.textContent || '';
+    return { hasMarker: !!document.querySelector('.rt-evidence-marker'), previewShowsCoords: /-?\\d+\\.\\d+, -?\\d+\\.\\d+/.test(preview) };
+  })()`)
+  check('a marker appears once distance+bearing are entered', afterEntry.hasMarker, true)
+  check('the live preview shows computed coordinates', afterEntry.previewShowsCoords, true)
+
+  await evaluate(`(async () => {
+    const cs = document.getElementById('enter__Callsign-input');
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    setter.call(cs, 'E2E-EVID');
+    cs.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise(r => setTimeout(r, 900));
+    document.querySelector('.enter__Submit-button')?.click();
+    await new Promise(r => setTimeout(r, 1200));
+  })()`)
+
+  const stored = await evaluate(`(() => {
+    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
+    const report = (r.fieldReportArray || []).find(f => f.callsign === 'E2E-EVID');
+    return report?.evidenceLocation ?? null;
+  })()`)
+  check('the submitted report stored a real evidenceLocation', !!stored && typeof stored.lat === 'number', true)
+  check('the stored latitude moved north (bearing 0 = due north)', stored ? stored.lat > 47.4472 : false, true)
+
+  const afterReset = await evaluate(`(() => {
+    const section = document.querySelector('.enter__evidence > div:last-child');
+    return { hiddenAfterReset: section?.hasAttribute('hidden'), markerGone: !document.querySelector('.rt-evidence-marker') };
+  })()`)
+  check('the section collapses again after submit+reset', afterReset.hiddenAfterReset, true)
+  check('the evidence marker is removed after submit+reset', afterReset.markerGone, true)
 }
 
 async function checkEntryPhoneWidth() {
@@ -1421,6 +1491,7 @@ async function main() {
       await checkBundleZip(fx)
       await checkEntryPhoto()
       await checkEntryAutofocusAndReset() // submits a real report, so read-write only
+      await checkEvidenceLocation()
       await checkDerivedValuesDoNotCarryOver() // also submits, same reason
       await checkSettingsFormSave()
       await checkStatusColorMigration()

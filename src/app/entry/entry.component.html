@@ -33,7 +33,8 @@
            it swaps in. `on viewport` would be wrong here - the map sits at the top of the
            form and is visible right away - so this loads as soon as the app is idle. -->
       @defer (on idle) {
-      <mini-mapLeaflet [locationUpdated]="locationParent" (locationChange)="onNewLocationEvent($event)">LMAP
+      <mini-mapLeaflet [locationUpdated]="locationParent" (locationChange)="onNewLocationEvent($event)"
+        [evidenceLocationUpdated]="showEvidenceLocation() ? evidenceLocation : null">LMAP
         HERE</mini-mapLeaflet>
       } @placeholder {
       <div class="minimap-placeholder">Map still loading&hellip;</div>
@@ -208,6 +209,26 @@
             <input type="text" [formField]="entryForm.recipients213" placeholder="Who this is for"
               [attr.tabindex]="recipients213TabIndex" />
           </label>
+        </div>
+      </div>
+
+      <!-- Architecture decision, 2026-08-26: evidence/clue location - where the thing being
+           reported about actually is, distinct from the reporter's own position above.
+           Hidden by default, a checkbox reveals it - same [hidden]-not-@if reasoning as the
+           213 section, so its reserved tab stops stay contiguous while collapsed. -->
+      <div class="enter__evidence">
+        <label>
+          <input type="checkbox" [checked]="showEvidenceLocation()"
+            (change)="showEvidenceLocation.set($any($event.target).checked)"
+            [attr.tabindex]="showEvidenceLocationTabIndex" />
+          This report includes evidence/a clue at a different location
+        </label>
+
+        <div [hidden]="!showEvidenceLocation()">
+          <rangertrak-evidence-location [origin]="locationParent" [formGeneration]="formGeneration"
+            [tabIndexStart]="evidenceLocationTabIndexStart"
+            (locationChange)="onEvidenceLocationChange($event)">
+          </rangertrak-evidence-location>
         </div>
       </div>
     </div>
