@@ -230,6 +230,41 @@ input[type=number] {
 
 }
 
+// E-41 phase 1 (2026-08-26): Source reuses .enter__Status's own row layout and .rButton's
+// segmented-chip look (below) rather than inventing a second control style for what is,
+// visually, the same kind of "pick one of a few labelled options" field.
+.enter__Source {
+  display    : flex;
+  flex-wrap  : wrap;
+  align-items: center;
+  gap        : 0.5rem;
+  padding    : 8px 0;
+}
+
+.enter__213 {
+  margin-top: 0.6rem;
+}
+
+.enter__213-details {
+  display      : flex;
+  flex-direction: column;
+  gap          : 0.5rem;
+  margin       : 0.5rem 0 0 1.5rem;
+  padding      : 0.6rem 0.8rem;
+  border-inline-start: 3px solid var(--rt-line-strong);
+}
+
+.enter__213-field {
+  display: flex;
+  flex-direction: column;
+  gap    : 0.2rem;
+
+  textarea,
+  input {
+    width: 100%;
+  }
+}
+
 // E-61: Reset and Submit share this box model (min-height, padding, border-radius,
 // font-weight, margin) so they read as a sized pair. Before this, Reset fell back to
 // default browser button sizing - this rule's own `margin: 30 px` is invalid CSS (a

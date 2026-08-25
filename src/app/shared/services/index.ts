@@ -14,7 +14,10 @@ export { MissionReadinessService, ReadinessLevel } from "./mission-readiness.ser
 export { ThemeService, ThemeMode } from "./theme.service"
 export { WelcomePanelService } from "./welcome-panel.service"
 
-export { FieldReportType, FieldReportsType, FieldReportStatusType, FieldReportSource, BoundsType } from "./field-report.interface"
+export {
+  FieldReportType, FieldReportsType, FieldReportStatusType, FieldReportSource,
+  FIELD_REPORT_SOURCES, BoundsType
+} from "./field-report.interface"
 export { LocationType, undefinedAddressFlag, undefinedLocation } from "./location.interface"
 export { LogLevel, LogLevelNames, LogType, LogHeadings } from "./log.interface"
 export { RangerType, UnknownRanger } from "./ranger.interface"

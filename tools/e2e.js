@@ -472,14 +472,19 @@ async function checkEntryTabOrder() {
   // this from 19 when MGRS/UTM were added - see LocationComponent.TAB_SLOT_COUNT) +
   // time-picker date(28) + time's own hour/minute/AM-PM segments(29-31, 2026-08-22 grew
   // this from a single native time input to three plain segments - see
-  // TimePickerComponent.TIME_TAB_SLOT_COUNT) + status(32) + notes(33) + reset(34) +
-  // submit(35). Asserting CONTIGUITY rather than just a count: a gap means a field was
-  // removed without renumbering, and a changed total means one was added without
-  // re-planning the sequence - exactly what entry.component.ts's computed tabindex
-  // chain (locationTabIndexStart -> dateTabIndex -> ... -> submitTabIndex) exists to
-  // get right automatically instead of five separately hardcoded literals.
+  // TimePickerComponent.TIME_TAB_SLOT_COUNT) + status(32) + source(33, E-41 phase 1,
+  // 2026-08-26 - gathered on every report) + notes(34) + generates213 checkbox(35) +
+  // its three conditional fields, reply-requested/message/recipients(36-38, ALWAYS
+  // reserved even though only reachable once generates213 is checked - see the
+  // [hidden]-not-@if comment on entry.component.html's own .enter__213-details for why
+  // this pass grows the count instead of leaving those three fields unreserved) +
+  // reset(39) + submit(40). Asserting CONTIGUITY rather than just a count: a gap means
+  // a field was removed without renumbering, and a changed total means one was added
+  // without re-planning the sequence - exactly what entry.component.ts's computed
+  // tabindex chain (locationTabIndexStart -> dateTabIndex -> ... -> submitTabIndex)
+  // exists to get right automatically instead of hardcoded literals.
   check('Entry tab stops are contiguous 1..N with no gaps', r.contiguous, true)
-  check('Entry exposes the expected number of keyboard stops', r.count, 35)
+  check('Entry exposes the expected number of keyboard stops', r.count, 40)
 }
 
 async function checkEntryAutofocusAndReset() {

@@ -1,6 +1,19 @@
 import { LocationType } from './location.interface'
 
-export enum FieldReportSource { Voice, Packet, APRS, Email }
+// E-41 phase 1 (2026-08-26): was a dead, commented-out field (`// source: FieldReportSource`
+// below) until the maintainer confirmed it directly - "Yes, we should include a field
+// acknowledging source type." Every entry gathers this now, not just ones flagged for a 213.
+//
+// A string-literal union, not a numeric TS `enum` (this file's original commented-out sketch
+// used one) - same idiom as this project's own StatusKey (status-color.ts), and a deliberate
+// choice, not just a style preference: Signal Forms' native `[formField]` binding for a
+// radio input compares the model value against `element.value` with `===`
+// (`node_modules/@angular/forms/fesm2022/signals.mjs`'s `setNativeControlValue`), and every
+// DOM attribute value is a string - a numeric model value could never strictly-equal a radio
+// element's own string `value`, so the control would silently never show as checked. Confirmed
+// by reading that file before choosing this, not guessed.
+export const FIELD_REPORT_SOURCES = ['Voice', 'Packet', 'APRS', 'Email'] as const
+export type FieldReportSource = typeof FIELD_REPORT_SOURCES[number]
 
 /**
  * A plain, serializable bounding box.
@@ -34,6 +47,20 @@ export type FieldReportsType = {
 
 /**
  * Data to store for each field report
+ *
+ * E-41 phase 1 (2026-08-26): five fields added for ICS-309/213 support - data collection
+ * only, per the maintainer's own explicit scoping ("does not want export/reporting logic
+ * built yet, only the fields and the model to hold them"). `source` is gathered on every
+ * report, always. The four `*213` fields are opt-in per entry (`generates213` gates the
+ * other three) - "the 213 stays opt-in per entry... the scribe should be able to click a
+ * 'Yes, generate an ICS-213' [button/flag] from this message." All optional rather than a
+ * schema-version bump: existing stored reports simply lack them (`undefined`), which is a
+ * safe, already-correct answer for a plain `JSON.parse()` (field-report.service.ts has no
+ * migration path today, unlike SettingsType) - nothing reads these fields yet, so there is
+ * nothing for their absence to break. `message213`/`replyRequested213`/`recipients213` are
+ * a best-effort answer to "whatever the 213's initial version requires" - the roadmap's own
+ * notes say this was "not confirmed against the actual ICS-213 form fields yet," carried
+ * forward here rather than resolved, since this session didn't verify the real form either.
  */
 export type FieldReportType = {
   id: number,
@@ -42,8 +69,12 @@ export type FieldReportType = {
   location: LocationType,
   date: Date,
   status: string,
-  notes: string
-  // source: FieldReportSource
+  notes: string,
+  source?: FieldReportSource,
+  generates213?: boolean,
+  replyRequested213?: boolean,
+  message213?: string,
+  recipients213?: string,
 }
 
 /**

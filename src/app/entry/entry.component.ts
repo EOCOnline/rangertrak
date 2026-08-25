@@ -26,9 +26,9 @@ import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
 import { DDToDDM } from '../shared/mapping/coordinate'
 import {
-  FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
-  SettingsService, SettingsType, statusColorValue, undefinedAddressFlag, undefinedLocation,
-  WelcomePanelService
+  FIELD_REPORT_SOURCES, FieldReportService, FieldReportStatusType, LocationType, LogService,
+  RangerService, RangerType, SettingsService, SettingsType, statusColorValue,
+  undefinedAddressFlag, undefinedLocation, WelcomePanelService
 } from '../shared/services/'
 //import { LocationComponent } from './location.component'
 
@@ -110,9 +110,24 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // TAB_SLOT_COUNT above.
   timeTabIndexStart = this.dateTabIndex + 1
   statusTabIndex = this.timeTabIndexStart + TimePickerComponent.TIME_TAB_SLOT_COUNT
-  notesTabIndex = this.statusTabIndex + 1
-  resetTabIndex = this.notesTabIndex + 1
+  // E-41 phase 1 (2026-08-26): Source is gathered on every report, always - reserved right
+  // after Status, same "classification field" grouping. The three ICS-213 fields only ever
+  // render once generates213Ctrl is checked, but reserve real tab stops regardless (a
+  // hidden/unrendered control is simply skipped in tab order by the browser - same reasoning
+  // Location/TimePicker's own TAB_SLOT_COUNT already relies on for a variable field count).
+  sourceTabIndex = this.statusTabIndex + 1
+  notesTabIndex = this.sourceTabIndex + 1
+  generates213TabIndex = this.notesTabIndex + 1
+  replyRequested213TabIndex = this.generates213TabIndex + 1
+  message213TabIndex = this.replyRequested213TabIndex + 1
+  recipients213TabIndex = this.message213TabIndex + 1
+  resetTabIndex = this.recipients213TabIndex + 1
   submitTabIndex = this.resetTabIndex + 1
+
+  // E-41 phase 1: source options for the template's @for - the values themselves are
+  // already the labels wanted (FIELD_REPORT_SOURCES), a plain readonly re-export so the
+  // template doesn't need to import the const directly.
+  readonly sourceOptions = FIELD_REPORT_SOURCES
 
   private id = 'Entry Form'
   title = 'Field Report Entry'
@@ -142,7 +157,16 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // Real initial value (location: this.locationParent) is set by initEntryForm(), called
   // from ngOnInit() - NOT here, since this field initializer runs before locationParent's
   // own declaration below is assigned.
-  private entryModel = signal({ id: -1, location: undefinedLocation, date: new Date(), notes: '' })
+  // E-41 phase 1: source/generates213/replyRequested213/message213/recipients213 added
+  // 2026-08-26 - none of these touch a Material control that lacks [formField] support, so
+  // they belong in this native signal form alongside id/location/date/notes, not the
+  // classic FormGroup below (that one exists solely for the two fields that genuinely can't
+  // use this).
+  private entryModel = signal({
+    id: -1, location: undefinedLocation, date: new Date(), notes: '',
+    source: 'Voice',
+    generates213: false, replyRequested213: false, message213: '', recipients213: '',
+  })
   public entryForm = form(this.entryModel)
 
   // Constructed once, here, as a field initializer - like entryForm above. SignalFormControl's
@@ -411,7 +435,9 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       id: -1,
       location: this.locationParent,
       date: new Date(),
-      notes: ''
+      notes: '',
+      source: 'Voice',
+      generates213: false, replyRequested213: false, message213: '', recipients213: '',
     })
     this.callsignCtrl.setValue('')
     this.entryControlsForm.setValue({
@@ -493,7 +519,9 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       id: -2,
       location: this.locationParent,
       date: new Date(),
-      notes: ''
+      notes: '',
+      source: 'Voice',
+      generates213: false, replyRequested213: false, message213: '', recipients213: '',
     })
     this.callsignCtrl.reset('')
     this.entryControlsForm.reset({
