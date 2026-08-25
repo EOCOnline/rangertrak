@@ -2,6 +2,69 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.38.0](https://github.com/EOCOnline/rangertrak/commit/2c074ce1f2fe310edd33ba2cd73311c750933e03) (2026-08-24)
+
+### Features
+
+* **mapLeaflet,e2e:** E-80 phase 1 - static per-callsign team route trails ([2c074ce](https://github.com/EOCOnline/rangertrak/commit/2c074ce1f2fe310edd33ba2cd73311c750933e03))
+
+## [0.37.0](https://github.com/EOCOnline/rangertrak/commit/ef5817fc7a9e82837472116964767dc9035a2bac) (2026-08-21)
+
+### Bug Fixes
+
+* **entry:** standard coordinate toggle, sized MGRS/UTM fields ([ef5817f](https://github.com/EOCOnline/rangertrak/commit/ef5817fc7a9e82837472116964767dc9035a2bac))
+* **entry,install-update,routes,e2e:** phone-width panel overflow, dead /about redirect, stale AG Grid v36 e2e selectors ([d51fd7d](https://github.com/EOCOnline/rangertrak/commit/d51fd7df1fac330502c3d45cd59a0fbd53ec7e83))
+
+_Also landed under this version, not separately bumped: `mapL` → `mapLeaflet` rename ([958ec38](https://github.com/EOCOnline/rangertrak/commit/958ec3896073d1eb613ee8bf0315c6405f904409)), About → Help component rename ([47983c4](https://github.com/EOCOnline/rangertrak/commit/47983c4902746718314c064041800787758deac1))._
+
+## [0.36.0](https://github.com/EOCOnline/rangertrak/commit/94d868a76cc8b0f5959270e7d5e18957afae186b) (2026-08-21)
+
+### Features
+
+* **install-update:** hover panel explains what install/update involves ([94d868a](https://github.com/EOCOnline/rangertrak/commit/94d868a76cc8b0f5959270e7d5e18957afae186b))
+
+## [0.35.0](https://github.com/EOCOnline/rangertrak/commit/a1f988ce63677a710a12daf43231e630dbdedcde) (2026-08-21)
+
+### Features
+
+* **routes,nav,grid,toggle:** URLs match nav labels, AG-Grid help moved ([a1f988c](https://github.com/EOCOnline/rangertrak/commit/a1f988ce63677a710a12daf43231e630dbdedcde))
+
+## [0.34.0](https://github.com/EOCOnline/rangertrak/commit/af17493eac293e349c29453ff6384d7064654bb4) (2026-08-21)
+
+### Features
+
+* **time-picker,footer,settings:** segmented hour/min/AM-PM entry ([af17493](https://github.com/EOCOnline/rangertrak/commit/af17493eac293e349c29453ff6384d7064654bb4))
+
+## [0.33.0](https://github.com/EOCOnline/rangertrak/commit/8b06661c845578684f43a1495663f9482eec411c) (2026-08-21)
+
+### Bug Fixes
+
+* **navbar,entry,settings,footer:** live-review fixes round 2 ([8b06661](https://github.com/EOCOnline/rangertrak/commit/8b06661c845578684f43a1495663f9482eec411c))
+
+## [0.32.0](https://github.com/EOCOnline/rangertrak/commit/319a09c13ac94f2865c1546760081d93cf2afd5f) (2026-08-21)
+
+A larger batch than most releases here - a toolchain bump (ag-grid v35→v36, Angular
+22.1.3) and its fallout, plus a session of live-review fixes across Entry/Settings/footer.
+
+### Features
+
+* **nav,entry,settings:** theme switcher, header/Where/When live-review fixes ([319a09c](https://github.com/EOCOnline/rangertrak/commit/319a09c13ac94f2865c1546760081d93cf2afd5f))
+* **lmap:** show offline saved-area size and a live estimate ([b9a111c](https://github.com/EOCOnline/rangertrak/commit/b9a111c7759687125dab2738c6f2441aa44fb04b))
+* **cla:** draft E-23 CLA and gating workflow (ADR D-01) ([d7295de](https://github.com/EOCOnline/rangertrak/commit/d7295de9b9a7a7bfc052f01490c5b05ba71d6fb0))
+
+### Bug Fixes
+
+* **entry:** Where-section cleanup from live review ([f5a0e45](https://github.com/EOCOnline/rangertrak/commit/f5a0e45a7994c9d2ae8e24830d56dc26424ef1ce))
+* **deps:** install xlsx from SheetJS's own CDN, clearing its 2 CVEs ([c126d3f](https://github.com/EOCOnline/rangertrak/commit/c126d3f15e8a803ea9184e52bad0b967a2d4cd2b))
+* **entry,footer:** Entry-screen spacing/sizing pass from live screenshots ([32c64b1](https://github.com/EOCOnline/rangertrak/commit/32c64b1cd6cfc7d8c309f885b857e34f76baba1d))
+* **deps:** remove unused xlsx-style ([0ad65f3](https://github.com/EOCOnline/rangertrak/commit/0ad65f3f2de3b241454c07ad4dd7e2b70b84371c))
+* **deps:** remove unused jshint ([cbe33f3](https://github.com/EOCOnline/rangertrak/commit/cbe33f3a6eb040ba9d644c0bca1db066e28becf8))
+* **deps:** remove unused mock-browser, clearing both critical CVEs ([e1624fb](https://github.com/EOCOnline/rangertrak/commit/e1624fbf9e7a3bc6812444d9634bfce55865466a))
+* **test:** pin jasmine-core back to 5.13, undoing the v7 bump ([eee5936](https://github.com/EOCOnline/rangertrak/commit/eee59361ef83ab0a5a65e7fc7e83a9e012d11605))
+
+_Also landed under this version: `chore(deps)` toolchain bump - ag-grid v36, Angular
+22.1.3, wrangler 4.125 ([cacfeb3](https://github.com/EOCOnline/rangertrak/commit/cacfeb36a9efdd1d4b81a857781cd7f64de40d3a)), the commit several of this version's own fixes exist to clean up after._
+
 ## [0.31.0](https://github.com/EOCOnline/rangertrak/compare/v0.30.0...v0.31.0) (2026-08-21)
 
 
