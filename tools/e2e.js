@@ -483,16 +483,25 @@ async function checkEntryTabOrder() {
   check('every Entry tabindex is unique', r.dupes, [])
   check('Entry tabindexes ascend in DOM order', r.ascending, true)
   check('the sequence starts at callsign (tabindex 1)', r.first, 1)
+  // This comment previously described an ordering (evidence-location AFTER the whole 213
+  // section) that no longer matches entry.component.ts's actual chain - evidence-location
+  // was moved into the Where section on 2026-08-26 (see showEvidenceLocationTabIndex's own
+  // comment there) without this comment being updated to match. Rewritten 2026-08-26 (E-103)
+  // to follow the real declaration order in entry.component.ts:
   // callsign(1) + Location's 26 DD/DDM/DMS+MGRS+UTM+address fields(2-27, Sprint H grew
   // this from 19 when MGRS/UTM were added - see LocationComponent.TAB_SLOT_COUNT) +
-  // time-picker date(28) + time's own hour/minute/AM-PM segments(29-31, 2026-08-22 grew
-  // this from a single native time input to three plain segments - see
-  // TimePickerComponent.TIME_TAB_SLOT_COUNT) + status(32) + source(33, E-41 phase 1,
-  // 2026-08-26 - gathered on every report) + notes(34) + generates213 checkbox(35) +
-  // its three conditional fields, reply-requested/message/recipients(36-38) +
-  // showEvidenceLocation checkbox(39, 2026-08-26 architecture decision) + its own three
-  // conditional fields, EvidenceLocationComponent's distance/unit/bearing(40-42) +
-  // reset(43) + submit(44). Every conditional block ALWAYS reserves its tab stops even
+  // showEvidenceLocation checkbox(28, 2026-08-26 architecture decision, moved here as part
+  // of the Where section) + its own three conditional fields, EvidenceLocationComponent's
+  // distance/unit/bearing(29-31) + date(32) + time's own hour/minute/AM-PM segments(33-35,
+  // 2026-08-22 grew this from a single native time input to three plain segments - see
+  // TimePickerComponent.TIME_TAB_SLOT_COUNT) + status(36) + source(37, E-41 phase 1,
+  // 2026-08-26 - gathered on every report) + notes(38) + generates213 checkbox(39) +
+  // its two conditional fields, reply-requested/message(40-41) + E-103 (2026-08-26): the
+  // per-mission recipients213 checkbox group's own single reserved slot(42, the group
+  // wrapper, not one stop per checkbox - see recipients213CheckboxesTabIndex's own comment
+  // in entry.component.ts for why a runtime-variable-length list can't get a per-item slot
+  // the way the fixed 213 fields do) + the recipients213 "Additional" free-text field(43) +
+  // reset(44) + submit(45). Every conditional block ALWAYS reserves its tab stops even
   // though only reachable once its own checkbox is ticked - see the [hidden]-not-@if
   // comment on entry.component.html's .enter__213-details/.enter__evidence for why this
   // grows the count instead of leaving those fields unreserved. Asserting CONTIGUITY
@@ -501,8 +510,19 @@ async function checkEntryTabOrder() {
   // entry.component.ts's computed tabindex chain (locationTabIndexStart -> dateTabIndex
   // -> ... -> submitTabIndex) exists to get right automatically instead of hardcoded
   // literals.
+  //
+  // Fixed alongside E-103/E-11 (2026-08-26, found while verifying them): location.component
+  // .html's DD/DDM/DMS/MGRS/UTM blocks used to be wrapped in @if (isVisible(...)), which
+  // REMOVES their tabindex-bearing elements from the DOM entirely when a system is toggled
+  // off - unlike every conditional section added since (213 fields, evidence-location, the
+  // recipients213 checklist), which deliberately use [hidden] instead specifically so
+  // hidden-but-reserved tab stops don't break this contiguity check. This was always
+  // latently true but stayed invisible as long as all six systems defaulted to visible; the
+  // "MGRS/UTM off by default" fix (0.57.0, same day) was the first time any of them ever
+  // defaulted off for a fresh install, and this check is what caught it. Now [hidden]
+  // throughout, matching every other conditional section.
   check('Entry tab stops are contiguous 1..N with no gaps', r.contiguous, true)
-  check('Entry exposes the expected number of keyboard stops', r.count, 44)
+  check('Entry exposes the expected number of keyboard stops', r.count, 45)
 }
 
 async function checkEntryAutofocusAndReset() {

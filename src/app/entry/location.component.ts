@@ -77,9 +77,16 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   // one - see ti() below and Entry's usage.
   //
   // Sprint H: each field still gets a fixed offset slot regardless of whether its
-  // system is currently visible - hiding a system just leaves a gap, which is harmless
-  // (tab order stays monotonic, per the roadmap's own reasoning) and far simpler than
-  // recomputing offsets from the live-visible set on every settings change.
+  // system is currently visible - far simpler than recomputing offsets from the
+  // live-visible set on every settings change. Originally ("hiding a system just leaves
+  // a gap, which is harmless, tab order stays monotonic") the template hid a system with
+  // @if, which removes its elements from the DOM - harmless as long as SOME system always
+  // defaulted visible, which stopped being true the day MGRS/UTM defaulted to off (0.57.0)
+  // and broke this app's own "contiguous explicit tabindex" e2e invariant. E-11 pass
+  // (2026-08-26): location.component.html now hides each system with [hidden] instead,
+  // the same convention every conditional section added since (213 fields, evidence-
+  // location) already uses - the slot stays reserved AND present, so contiguity holds
+  // regardless of which systems are on.
   // TAB_SLOT_COUNT is the total reservation the parent (Entry) needs to leave before
   // its own next tabbable field - see entry.component.ts.
   @Input() tabIndexStart?: number

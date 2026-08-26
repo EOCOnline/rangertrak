@@ -6,7 +6,16 @@
     <div class="input-group">
       &nbsp;&nbsp;&nbsp;Latitude:
 
-      @if (isVisible('DD')) {
+      <!-- E-11 pass (2026-08-26): was @if (isVisible('DD')), which removes these inputs'
+           tabindex-bearing elements from the DOM entirely when a system is toggled off -
+           harmless for a mouse user (tab order among the REMAINING systems stayed
+           monotonic, per LocationComponent.TAB_SLOT_COUNT's own comment) but it broke this
+           app's "contiguous explicit tabindex" invariant the moment any system defaulted to
+           hidden (first exposed by MGRS/UTM defaulting off, 0.57.0). [hidden] matches the
+           convention every conditional section added since (213 fields, evidence-location,
+           the recipients213 checklist) already uses for exactly this reason: keep the
+           tab-stop reserved and present, just unreachable and invisible while hidden. -->
+      <span [hidden]="!isVisible('DD')">
         <span>
           <input #latI [formField]="ddForm.latI" type="number" (change)="onDdChg()"
             id="enter__Where-latI" aria-label="Latitude degrees, decimal degrees format" [attr.tabindex]="ti(0)"
@@ -18,10 +27,10 @@
           <strong>° </strong>
         </span>
         <span title="Decimal Degrees"><strong>DD</strong></span>
-      }
+      </span>
 
       @if (orBefore('DDM')) { &nbsp; or &nbsp; }
-      @if (isVisible('DDM')) {
+      <span [hidden]="!isVisible('DDM')">
         <span>
           <input #latDdmD [formField]="ddmForm.latDdmD" id="enter__Where-latDdmD" aria-label="Latitude degrees, degrees and decimal minutes format" type="number"
             (change)="onDdmChg()" [attr.tabindex]="ti(2)"
@@ -36,10 +45,10 @@
             [class.border-danger]="ddmForm.latDdmQ().touched() && ddmForm.latDdmQ().invalid()" />
           <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
         </span>
-      }
+      </span>
 
       @if (orBefore('DMS')) { &nbsp; or &nbsp; }
-      @if (isVisible('DMS')) {
+      <span [hidden]="!isVisible('DMS')">
         <span>
           <input #latD [formField]="dmsForm.latD" id="enter__Where-latD" aria-label="Latitude degrees, degrees minutes seconds format" type="number"
             (change)="onDmsChg()" [attr.tabindex]="ti(5)"
@@ -56,7 +65,7 @@
             [class.border-danger]="dmsForm.latQ().touched() && dmsForm.latQ().invalid()" />
           <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
         </span>
-      }
+      </span>
       @if (latInvalid()) {
       <div class="text-sm text-danger">Latitude must be -90 to 90&deg;, minutes/seconds in range, direction N or S.</div>
       }
@@ -67,7 +76,7 @@
     <div class="input-group">
       Longitude:
 
-      @if (isVisible('DD')) {
+      <span [hidden]="!isVisible('DD')">
         <span>
           <input #lngI [formField]="ddForm.lngI" type="number" id="enter__Where-lngI" aria-label="Longitude degrees, decimal degrees format"
             (change)="onDdChg()" [attr.tabindex]="ti(9)"
@@ -77,10 +86,10 @@
             [class.border-danger]="ddForm.lngF().touched() && ddForm.lngF().invalid()" />
           <strong>° </strong><span title="Decimal Degrees"><strong>DD</strong></span>
         </span>
-      }
+      </span>
 
       @if (orBefore('DDM')) { &nbsp; or &nbsp; }
-      @if (isVisible('DDM')) {
+      <span [hidden]="!isVisible('DDM')">
         <span>
           <input #lngDdmD [formField]="ddmForm.lngDdmD" id="enter__Where-lngDdmD" aria-label="Longitude degrees, degrees and decimal minutes format" type="number"
             (change)="onDdmChg()" [attr.tabindex]="ti(11)"
@@ -95,10 +104,10 @@
             [class.border-danger]="ddmForm.lngDdmQ().touched() && ddmForm.lngDdmQ().invalid()" />
           <span title="Degree Decimal Minutes"><strong>DDM</strong></span>
         </span>
-      }
+      </span>
 
       @if (orBefore('DMS')) { &nbsp; or &nbsp; }
-      @if (isVisible('DMS')) {
+      <span [hidden]="!isVisible('DMS')">
         <span>
           <input [formField]="dmsForm.lngD" id="enter__Where-lngD" aria-label="Longitude degrees, degrees minutes seconds format" type="number"
             (change)="onDmsChg()" [attr.tabindex]="ti(14)"
@@ -114,7 +123,7 @@
             [class.border-danger]="dmsForm.lngQ().touched() && dmsForm.lngQ().invalid()" />
           <span title="Degrees Minute Seconds"><strong>DMS</strong></span>
         </span>
-      }
+      </span>
       @if (lngInvalid()) {
       <div class="text-sm text-danger">Longitude must be -180 to 180&deg;, minutes/seconds in range, direction E or W.</div>
       }
@@ -122,8 +131,7 @@
 
 
     <!------------------------------------------------------------>
-    @if (isVisible('MGRS')) {
-      <div class="input-group">
+    <div class="input-group" [hidden]="!isVisible('MGRS')">
         MGRS:
         <span>
           <input #mgrsGridRef [formField]="mgrsForm.gridRef" type="text" (change)="onMgrsChg()"
@@ -143,13 +151,11 @@
         @if (mgrsInvalid()) {
         <div class="text-sm text-danger">MGRS needs a valid grid zone/band/square (e.g. 10TFS) and easting/northing 0-99999.</div>
         }
-      </div>
-    }
+    </div>
 
 
     <!------------------------------------------------------------>
-    @if (isVisible('UTM')) {
-      <div class="input-group">
+    <div class="input-group" [hidden]="!isVisible('UTM')">
         UTM:
         <span>
           <input #utmZone [formField]="utmForm.zone" type="number" (change)="onUtmChg()"
@@ -173,8 +179,7 @@
         @if (utmInvalid()) {
         <div class="text-sm text-danger">UTM needs zone 1-60, hemisphere N or S, and easting/northing in range.</div>
         }
-      </div>
-    }
+    </div>
 
     <!-- E-48(6): the NAD27/WGS84 datum note used to live here. Moved out of Entry - it's
          already in FIELD-GUIDE.md's coordinate-entry section, and now also in

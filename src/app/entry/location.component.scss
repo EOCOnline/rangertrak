@@ -129,6 +129,16 @@ $filledColor: var(--rt-surface-2);
   gap       : 0.15rem 0.6rem;
 }
 
+// E-11 pass (2026-08-26): MGRS/UTM's own wrapping .input-group now uses [hidden] (not @if)
+// to keep their tabindex-bearing fields reserved-but-hidden - see location.component.html's
+// own comment. Without this override the unconditional `display: flex` above would win over
+// the browser's default `[hidden] { display: none }` (equal specificity, declared later) and
+// the "hidden" system would keep rendering anyway - the exact bug entry.component.scss's
+// .enter__213-details already hit once for the same reason.
+.input-group[hidden] {
+  display: none;
+}
+
 #enter__Where-latI,
 #enter__Where-lngI,
 #enter__Where-latD,
