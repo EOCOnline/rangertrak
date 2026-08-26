@@ -136,12 +136,19 @@
 // the one context asking for it.
 .rt-install-update--sticky-bottom {
   position  : sticky;
-  bottom    : 0;
-  z-index   : 10;
   // Live review, 2026-08-22: sat flush against the very bottom of the viewport once
-  // stuck - included in the sticky offset (bottom:0 + this margin = 20px of clearance
-  // below the pill), not just spacing in normal flow.
-  margin-bottom: 20px;
+  // stuck, so 20px of clearance was wanted below the pill.
+  //
+  // 2026-08-25: that clearance used to be `bottom: 0` plus `margin-bottom: 20px`, which
+  // bought the offset at the cost of the pill sitting visibly HIGH in the footer row -
+  // reported as "should be vertically centred like the other footer content". The cause
+  // is that .rt-footer__left is `display: flex; align-items: center`, and flex centring
+  // aligns each item's MARGIN box, not its border box: a lone 20px bottom margin therefore
+  // pushed the visible pill 10px above the row's centreline. Putting the same 20px on the
+  // sticky offset instead delivers identical stuck-state clearance with zero margin, so
+  // the pill centres correctly against the brand/copyright text in normal flow.
+  bottom    : 20px;
+  z-index   : 10;
 
   // Live review, 2026-08-22: ~4px trimmed off top and bottom each (32px -> 24px) - this
   // pill still read as taller than the small brand/copyright text it sits next to.
