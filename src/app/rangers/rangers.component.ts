@@ -94,9 +94,16 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     // getRowHeight: (params) => 25
     //},
 
+    // E-104 (2026-08-25): same content-based sizing as the Field Reports grid - see
+    // field-reports.component.ts for the full reasoning. On this grid the symptom was
+    // `ID` and `Notes` holding "(none set)" and "-" in ~290px columns while `Call Sign`
+    // and `Full Name` were squeezed.
+    autoSizeStrategy: { type: 'fitCellContents' },
+
     defaultColDef: {
-      flex: 1,
-      minWidth: 100,
+      // flex removed - it made every column flexible, which disables autoSizeStrategy.
+      // Exactly one column (Notes) opts back in, to absorb the leftover width.
+      minWidth: 60,
       editable: true,
       //singleClickEdit: true,
       resizable: true,
@@ -153,13 +160,16 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   columnDefs: ColDef[] = [
-    { headerName: "Call Sign", field: "callsign", cellRenderer: this.callsignCellRenderer, flex: 10 },
-    { headerName: "Full Name", field: "fullName", tooltipField: "FCC Licensee Name", flex: 10 },
-    { headerName: "Phone", field: "phone", singleClickEdit: true, flex: 40 },
-    { headerName: "ID", field: "id", cellRenderer: this.idCellRenderer, singleClickEdit: true, flex: 10 },
-    { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, tooltipField: "image", tooltipComponentParams: { color: '#ececec' }, flex: 5 },
-    { headerName: "Role", field: "role", flex: 40 },
-    { headerName: "Notes", field: "note", flex: 60 },
+    { headerName: "Call Sign", field: "callsign", cellRenderer: this.callsignCellRenderer, minWidth: 110, maxWidth: 200 },
+    { headerName: "Full Name", field: "fullName", tooltipField: "FCC Licensee Name", minWidth: 150, maxWidth: 300 },
+    { headerName: "Phone", field: "phone", singleClickEdit: true, maxWidth: 170 },
+    { headerName: "ID", field: "id", cellRenderer: this.idCellRenderer, singleClickEdit: true, maxWidth: 170 },
+    // Fixed: the cell renders a 40x40 <img>, so measuring its content is pointless -
+    // it is always exactly one thumbnail wide.
+    { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, tooltipField: "image", tooltipComponentParams: { color: '#ececec' }, width: 80, maxWidth: 80, resizable: false },
+    { headerName: "Role", field: "role", maxWidth: 200 },
+    // The only flex column - takes whatever the content-sized columns leave over.
+    { headerName: "Notes", field: "note", flex: 1, minWidth: 150 },
   ]
 
   constructor(
@@ -235,8 +245,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
 
-    // https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
-    params.api.sizeColumnsToFit()
+    // E-104: sizeColumnsToFit() removed - it distributes grid width evenly and ignores
+    // per-column flex, which is what squeezed Call Sign while ID sat half empty.
+    // autoSizeStrategy in gridOptions handles sizing from content instead.
     // TODO: use this line, or next routine?!
     if (this.gridApi) {
       this.gridApi.refreshCells()
@@ -246,7 +257,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onFirstDataRendered(params: any) {
-    params.api.sizeColumnsToFit();
+    // E-104: autoSizeStrategy already sized these from content by the time this fires.
     if (this.gridApi) {
       this.gridApi.refreshCells()
     } else {
@@ -547,7 +558,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   refreshGrid() {
     if (this.gridApi) {
       this.gridApi.refreshCells()
-      this.gridApi.sizeColumnsToFit();
+      // E-104: was sizeColumnsToFit(), which undid the content sizing after every edit.
+      this.gridApi.autoSizeAllColumns()
     } else {
       this.log.verbose("no this.gridApi yet in refreshGrid()", this.id)
     }

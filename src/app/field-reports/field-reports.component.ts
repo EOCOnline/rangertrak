@@ -123,9 +123,20 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     // CALLBACKS
     // getRowHeight: (params) => 25
 
+    // E-104 (2026-08-25): columns size to their CONTENT now, not to an even share of the
+    // grid. `fitCellContents` measures each column's rendered cells and headers and sizes
+    // to the widest - so `Lat` shrinks to the ~9 characters it holds and `Address` gets the
+    // room it needs, instead of the reverse. Columns carrying `flex` are excluded from this
+    // measurement by AG Grid, which is why exactly one column (Notes) keeps a flex value:
+    // it absorbs whatever width is left over so the grid still fills its container with no
+    // dead gutter on the right.
+    autoSizeStrategy: { type: 'fitCellContents' },
+
     defaultColDef: {
-      flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
-      minWidth: 80,
+      // `flex: 1` here is what previously made EVERY column flexible, which in turn made
+      // `autoSizeStrategy` a no-op and left the per-column flex weights below fighting
+      // sizeColumnsToFit(). Gone deliberately - flex is now opt-in, on Notes alone.
+      minWidth: 60,
       editable: true,
       //singleClickEdit: true,
       resizable: true,
@@ -180,30 +191,34 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
     //!Future: Hover over notes to show entire (multi-line) note
     this.columnDefs = [
-      { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', width: 3, flex: 1, editable: false }, // TODO:
-      { headerName: "CallSign", field: "callsign", tooltipField: "team", width: 4, flex: 2 },
+      { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', maxWidth: 90, editable: false }, // TODO:
+      { headerName: "CallSign", field: "callsign", tooltipField: "team", maxWidth: 160 },
       // { headerName: "Team", field: "team" },
       // Dot path, not "address": the address lives on the nested location object, exactly
       // as lat/lng do below. Bound to the wrong field, this column rendered blank for
       // every report - the addresses were in the data all along.
-      { headerName: "Address", field: "location.address", singleClickEdit: true, width: 3, flex: 30 }, //, maxWidth: 200
+      // The column most often holding a long value, and the one that used to lose the
+      // argument with Lat/Lng. A floor of 180px keeps it legible even when every visible
+      // row happens to be a short address; the ceiling stops one 90-character address from
+      // pushing Status and Notes off screen.
+      { headerName: "Address", field: "location.address", singleClickEdit: true, minWidth: 180, maxWidth: 420 },
       {
         // valueSetter, not just field: "lat" - the real value lives at location.lat,
         // so without this an edit wrote a phantom top-level `lat` that nothing reads
         // and the displayed coordinate snapped back on the next refresh.
-        headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell',
+        headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell', maxWidth: 130,
         valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lat * 10000) / 10000.0 },
         valueSetter: (params: { data: FieldReportType, newValue: any }) => this.setCoordinate(params.data, 'lat', params.newValue)
       },
       {
-        headerName: "Lng", field: "lng", singleClickEdit: true, cellClass: 'number-cell', flex: 1,
+        headerName: "Lng", field: "lng", singleClickEdit: true, cellClass: 'number-cell', maxWidth: 130,
         valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lng * 10000) / 10000.0 },
         valueSetter: (params: { data: FieldReportType, newValue: any }) => this.setCoordinate(params.data, 'lng', params.newValue)
       },
-      { headerName: "Reported", headerTooltip: 'Report date', valueGetter: this.myDateGetter, flex: 2, editable: false },
-      { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, flex: 2, editable: false },
+      { headerName: "Reported", headerTooltip: 'Report date', valueGetter: this.myDateGetter, maxWidth: 170, editable: false },
+      { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, maxWidth: 130, editable: false },
       {
-        headerName: "Status", field: "status", flex: 5, cellRenderer: this.statusCellRenderer,
+        headerName: "Status", field: "status", minWidth: 130, maxWidth: 220, cellRenderer: this.statusCellRenderer,
         cellStyle: (params: { value: string; }) => {
           // Sprint E: the fill now resolves through the token layer (semantic key ->
           // --rt-status-*, custom colour passes through), and an explicit ink colour is set
@@ -215,12 +230,15 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
         }
         //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
       },
-      { headerName: "Notes", field: "notes", cellRenderer: this.notesCellRenderer, flex: 50 }, //, maxWidth: 300
+      // The ONLY flex column, on purpose - see autoSizeStrategy above. Notes is both the
+      // most variable-length field and the one a scribe most wants extra room for, so it
+      // takes whatever width the content-sized columns leave behind.
+      { headerName: "Notes", field: "notes", cellRenderer: this.notesCellRenderer, flex: 1, minWidth: 200 },
       // E-11 (2026-08-26): evidenceLocation was captured on Entry and visible nowhere
       // afterward - not the main map, not here. This is the other of the two places the
       // gap named; see mapLeaflet.component.ts's displayMarkers() for the main-map marker.
       {
-        headerName: "Evidence", field: "evidenceLocation", flex: 3, editable: false,
+        headerName: "Evidence", field: "evidenceLocation", maxWidth: 110, editable: false,
         cellRenderer: this.evidenceCellRenderer,
         tooltipValueGetter: (params: { data: FieldReportType }) => {
           const loc = params.data.evidenceLocation
@@ -310,8 +328,10 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     this.gridColumnApi = params.columnApi
     // this.log.verbose(`onGridReady() gridColumnApi: ${this.gridColumnApi}`, this.id)
 
-    // https://ag-grid.com/angular-data-grid/column-sizing/#example-default-resizing
-    params.api.sizeColumnsToFit()
+    // E-104: `sizeColumnsToFit()` used to run here, and it is what actually produced the
+    // reported defect - it distributes the grid's width across columns and IGNORES the
+    // per-column `flex` weights, so `Address` (flex 30) rendered narrower than `Lat`
+    // (flex 1). `autoSizeStrategy` in gridOptions does the sizing now, once, from content.
 
     // TODO: use this line, or onFirstDataRendered()?
     if (this.gridApi) {
@@ -356,7 +376,11 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     // https://blog.ag-grid.com/refresh-grid-after-data-change/
     if (this.gridApi) {
       this.gridApi.refreshCells()
-      this.gridApi.sizeColumnsToFit()
+      // E-104: was sizeColumnsToFit(), which undid the content-based sizing on every
+      // refresh (i.e. after every cell edit and every new report). autoSizeColumns() keeps
+      // the same intent - columns matching their content - as data changes. Notes is
+      // excluded because it is the flex column; AG Grid ignores flex columns here anyway.
+      this.gridApi.autoSizeAllColumns()
     } else {
       this.log.warn(`refreshGrid(): gridApi not established yet!`, this.id)
     }
