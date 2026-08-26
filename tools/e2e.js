@@ -344,12 +344,14 @@ async function checkRosterLifecycle(fx) {
   const imported = await evaluate(`(() => {
     const r = (JSON.parse(localStorage.getItem('rangers')||'{"rangers":[]}').rangers||[]);
     return { count: r.length, named: r.filter(x => (x.fullName||'').trim()).length,
-             teams: r.filter(x => x.team).length, rew: r.filter(x => x.rew).length };
+             teams: r.filter(x => x.team).length, id: r.filter(x => x.id).length };
   })()`)
   check('roster JSON imports every entry', imported.count, fx.rangers.length)
   check('...with names', imported.named, fx.rangers.length)
   check('...with teams', imported.teams, fx.rangers.length)
-  check('...with REW numbers', imported.rew, fx.rangers.length)
+  // D-42 phase 8: rew is retired as a stored field - parseRosterJson() folds the fixture's
+  // rew values into id on the way in, so this now checks id, not rew.
+  check('...with ids seeded from rew', imported.id, fx.rangers.length)
 
   await goto('/rangers')
   // Advanced is a plain always-visible section now (2026-08-25: collapsible sections
