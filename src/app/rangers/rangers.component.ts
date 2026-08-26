@@ -114,7 +114,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // On hovering, display a larger image!
   //
   // Photo resolution order (E-38):
-  //   1. a photograph stored on THIS device, keyed by callsign - never in the repo (D-35)
+  //   1. a photograph stored on THIS device, keyed by id or callsign (D-42 phase 6) -
+  //      never in the repo (D-35)
   //   2. whatever `image` the roster names, under the configured image directory
   //   3. the generic androgynous silhouette
   // Step 3 matters: before it, a ranger with no photo rendered a broken-image icon.
@@ -126,7 +127,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** Shared by the renderers above - see the resolution order there. */
   photoSrc(ranger: RangerType): string {
-    const local = this.photos.photoUrl(ranger.callsign)
+    const local = this.photos.photoUrl(ranger)
     if (local) return local
     if (ranger.image) return `${this.settings.imageDirectory}rangers/${ranger.image}`
     return `${this.settings.imageDirectory}rangers/androgynous.svg`
@@ -373,8 +374,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const files = photoEntries.map(k =>
       new File([new Uint8Array(entries[k])], base(k), { type: this.mimeFor(base(k)) }))
-    const { stored, unmatched } = await this.photos.importFiles(
-      files, incoming.map(r => r.callsign))
+    const { stored, unmatched } = await this.photos.importFiles(files, incoming)
 
     this.log.warn(`Imported ${incoming.length} rangers and ${stored.length} photos from ${file.name}.`, this.id)
 
@@ -397,7 +397,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Stores photographs on this device, matched to rangers by filename = callsign.
+   * Stores photographs on this device, matched to rangers by filename = id or callsign
+   * (D-42 phase 6: id checked first, callsign as a fallback for older bundles).
    * They never enter the repo or a server (D-35); they are operator data.
    */
   async onPhotoFilesSelected(event: Event) {
@@ -408,16 +409,15 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
 
-    const { stored, unmatched } = await this.photos.importFiles(
-      files, this.rangerService.rangers.map(r => r.callsign))
+    const { stored, unmatched } = await this.photos.importFiles(files, this.rangerService.rangers)
 
     const lines = [`Stored ${stored.length} photo${stored.length === 1 ? '' : 's'} on this device.`]
     if (unmatched.length) {
       lines.push('',
-        `${unmatched.length} did not match a callsign in the roster and were skipped:`,
+        `${unmatched.length} did not match a ranger's id or callsign in the roster and were skipped:`,
         unmatched.slice(0, 8).join(', ') + (unmatched.length > 8 ? ', ...' : ''),
         '',
-        'Photos are matched by filename: NAME the file after the callsign, e.g. "K7VMI.jpg".')
+        'Photos are matched by filename: NAME the file after the ranger\'s id or callsign, e.g. "K7VMI.jpg".')
     }
     alert(lines.join('\n'))
     this.reloadPage()

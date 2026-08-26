@@ -22,6 +22,11 @@ import { LogService } from './log.service'
  * 2. **Object URLs are built once, up front, into a synchronous map.** The three render
  *    sites are string-building cell renderers that cannot await anything, so the alternative
  *    would be rewriting all of them.
+ *
+ * D-42 phase 6: `build-roster-zip.js` (`rangertrak-InternalDocs/roster-build/`, outside this
+ * repo) names photo files after a ranger's `callsign`, and bundles built by it may already be
+ * in a team's hands. Matching tries a ranger's `id` stem first, then falls back to `callsign`,
+ * for both import matching and lookup - never id-only, or every existing bundle orphans.
  */
 
 const DB_NAME = 'rangertrak-photos'
@@ -29,6 +34,12 @@ const DB_VERSION = 1
 const STORE = 'photos'
 /** Longest edge kept, in pixels. Renders at 40-60px; this leaves room for retina and zoom. */
 const MAX_EDGE = 320
+
+/** The two filename-matchable identifiers a ranger may have. Either may be blank. */
+export interface RangerPhotoIdentity {
+  id?: string
+  callsign?: string
+}
 
 @Injectable({ providedIn: 'root' })
 export class RangerPhotoService {
@@ -50,35 +61,41 @@ export class RangerPhotoService {
   /** Resolves once stored photos have been read into memory. */
   whenReady(): Promise<void> { return this.ready }
 
-  /** Object URL for a callsign's photo, or '' when there is none. Synchronous by design. */
-  photoUrl(callsign: string): string {
-    return this.urls.get(String(callsign || '').toUpperCase()) ?? ''
+  /** Object URL for a ranger's photo, or '' when there is none. Synchronous by design. */
+  photoUrl(ranger: RangerPhotoIdentity): string {
+    const byId = this.stem(ranger.id)
+    if (byId && this.urls.has(byId)) return this.urls.get(byId)!
+    const byCallsign = this.stem(ranger.callsign)
+    if (byCallsign && this.urls.has(byCallsign)) return this.urls.get(byCallsign)!
+    return ''
   }
 
   count(): number { return this.urls.size }
 
   /**
-   * Stores photos picked from a folder. Matching is by FILENAME STEM = callsign, which is
-   * what build-roster-zip.js produces, and it also means the filename stops carrying the
-   * person's name - one less place the identity sits.
+   * Stores photos picked from a folder. Matching is by FILENAME STEM, checked against every
+   * ranger's `id` first and `callsign` second (D-42 phase 6) - `build-roster-zip.js` still
+   * names files after `callsign`, and older bundles built by it must keep matching.
    *
    * Returns what happened, for a confirmation the operator can actually check.
    */
-  async importFiles(files: File[], knownCallsigns: string[]): Promise<{ stored: string[], unmatched: string[] }> {
+  async importFiles(files: File[], rangers: RangerPhotoIdentity[]): Promise<{ stored: string[], unmatched: string[] }> {
     await this.ready
-    const known = new Map(knownCallsigns.map(c => [c.toUpperCase(), c]))
+    const byId = new Map(rangers.filter(r => r.id).map(r => [this.stem(r.id), r.id!]))
+    const byCallsign = new Map(rangers.filter(r => r.callsign).map(r => [this.stem(r.callsign), r.callsign!]))
     const stored: string[] = []
     const unmatched: string[] = []
 
     for (const file of files) {
-      const stem = file.name.replace(/\.[^.]+$/, '').trim().toUpperCase()
-      if (!known.has(stem)) { unmatched.push(file.name); continue }
+      const fileStem = this.stem(file.name.replace(/\.[^.]+$/, ''))
+      const matched = byId.get(fileStem) ?? byCallsign.get(fileStem)
+      if (!matched) { unmatched.push(file.name); continue }
       try {
         const blob = await this.downscale(file)
-        await this.put(stem, blob)
-        this.revoke(stem)
-        this.urls.set(stem, URL.createObjectURL(blob))
-        stored.push(known.get(stem)!)
+        await this.put(fileStem, blob)
+        this.revoke(fileStem)
+        this.urls.set(fileStem, URL.createObjectURL(blob))
+        stored.push(matched)
       } catch (e: any) {
         this.log.error(`Could not store ${file.name}: ${e?.message ?? e}`, this.id)
         unmatched.push(file.name)
@@ -88,6 +105,8 @@ export class RangerPhotoService {
     this.log.info(`Stored ${stored.length} photos on this device; ${unmatched.length} unmatched.`, this.id)
     return { stored, unmatched }
   }
+
+  private stem(s?: string): string { return String(s || '').trim().toUpperCase() }
 
   /** Forgets every stored photo. The roster is untouched. */
   async clear(): Promise<void> {

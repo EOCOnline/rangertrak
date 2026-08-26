@@ -633,7 +633,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       // it is being entered. Order: a photograph stored on this device (D-35 - never in the
       // repo), then whatever the roster names, then the generic silhouette. The silhouette
       // matters because the previous fallback was a broken-image icon.
-      const localPhoto = this.photos.photoUrl(ranger.callsign)
+      const localPhoto = this.photos.photoUrl(ranger)
       const src = localPhoto
         || (ranger.image
           ? `${this.settings.imageDirectory}rangers/${ranger.image}`
