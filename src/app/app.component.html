@@ -17,3 +17,10 @@
      and genuinely scrolled (see the component). Placed here rather than per-page so the
      Reports/Rangers logs, which are the tall ones, get it without each opting in. -->
 <rangertrak-back-to-top></rangertrak-back-to-top>
+
+<!-- The one Guide drawer, opened by the Guide button in every page header. Rendered here
+     rather than per page so there is exactly one instance, and so it can overlay the whole
+     viewport (including the navbar) rather than being clipped to a page's own content box.
+     Self-hiding: it renders nothing unless opened, and the button that opens it hides
+     itself on routes with no guide content. See shared/guide/guide-content.ts. -->
+<rangertrak-guide-drawer></rangertrak-guide-drawer>

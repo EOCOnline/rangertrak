@@ -89,3 +89,20 @@
     @include type.type-body;
     font-weight: 700;
   }
+
+  // Material-M3 pass, 2026-08-25: the status cluster and the new Guide button share the
+  // header's right-hand side, so they need a wrapper of their own - `.header` itself is a
+  // `space-between` row holding the title and this group.
+  .header__right {
+    display    : flex;
+    align-items: center;
+    gap        : 0.6em;
+    flex-wrap  : wrap;
+    // On a phone the title takes the first line and this group wraps below it; without
+    // this it would sit hard against the left edge under the title.
+    margin-left: auto;
+  }
+
+  .header__guide {
+    flex: none;
+  }

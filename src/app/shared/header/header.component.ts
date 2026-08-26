@@ -1,12 +1,15 @@
 import { map, Observable, Subscription, timer } from 'rxjs'
 
 import { CommonModule } from '@angular/common'
-import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, signal } from '@angular/core'
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
+import { MatButtonModule } from '@angular/material/button'
+import { MatIconModule } from '@angular/material/icon'
 
 import { ClockService, LogService, SettingsService, SettingsType, WelcomePanelService } from '../services'
 import { Utility } from '../'
 import { MissionReadinessComponent } from '../mission-readiness/mission-readiness.component'
+import { GuideService } from '../guide/guide.service'
 
 /**
  * HaaderComponent
@@ -21,7 +24,7 @@ import { MissionReadinessComponent } from '../mission-readiness/mission-readines
 @Component({
   selector: 'pageHeader',
   standalone: true,
-  imports: [CommonModule, MissionReadinessComponent],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MissionReadinessComponent],
   templateUrl: './header.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./header.component.scss']
@@ -29,6 +32,14 @@ import { MissionReadinessComponent } from '../mission-readiness/mission-readines
 export class HeaderComponent implements OnInit, OnDestroy {
   @Input() parentTitle: string
   @Input() pageDescription: string
+
+  /**
+   * The one Guide affordance. Lives here rather than on each page because this header is
+   * already rendered by every routed page (via PageComponent), which is exactly the
+   * property the redesign's "same place on every screen" rule needs. Hides itself on
+   * routes with no guide content - see GuideService.available.
+   */
+  readonly guide = inject(GuideService)
 
   private id = 'Header component'
 

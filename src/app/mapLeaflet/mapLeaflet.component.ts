@@ -31,7 +31,6 @@ import {
 } from '../shared'
 import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, SettingsService } from '../shared/services'
 
-import { SectionComponent } from '../shared/section/section.component';
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
 // Markers are copied into project via virtue of angular.json: search it for leaflet!!!
@@ -73,7 +72,7 @@ function formatBytes(bytes: number): string {
 @Component({
   selector: 'rangertrak-mapLeaflet',
   standalone: true,
-  imports: [SectionComponent, NgTemplateOutlet],
+  imports: [NgTemplateOutlet],
   templateUrl: './mapLeaflet.component.html',
   styleUrls: [
     './mapLeaflet.component.scss'

@@ -7,7 +7,8 @@
      readout rather than several independent pieces of debris. -->
 <div class="header">
   <h1 class="title" title="{{pageDescription}}">{{parentTitle}} </h1>
-  <div class="status-cluster" (click)="onStatusClusterClick($event)"
+  <div class="header__right">
+    <div class="status-cluster" (click)="onStatusClusterClick($event)"
     title="Click to go to Field Entry and reopen the welcome panel">
     <rangertrak-mission-readiness></rangertrak-mission-readiness>
     <span class="status-divider"></span>
@@ -17,5 +18,20 @@
       {{timeLeft$ | async}}</span>
     <span class="status-divider"></span>
     <span class="clock">{{timeCurrent | async | date: 'MMM d, hh:mm:ss'}}</span>
+    </div>
+
+    <!-- Material-M3 pass, 2026-08-25: the single entry point to this screen's reference
+         material, in the same place on every page. What it opens used to be
+         <rangertrak-section> blocks ("Instructions", "Tips", "Privacy & data handling",
+         "Grid Menu Keyboard interaction") sitting permanently below each page's grid or
+         form. Rendered only where there is something to read. -->
+    @if (guide.available()) {
+    <button matButton="outlined" type="button" class="header__guide" (click)="guide.toggle()"
+      [attr.aria-expanded]="guide.isOpen()"
+      title="Instructions, tips and keyboard help for this screen">
+      <mat-icon>help_outline</mat-icon>
+      Guide
+    </button>
+    }
   </div>
 </div>

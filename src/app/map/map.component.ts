@@ -13,7 +13,6 @@ import { fieldReportStatusColor, resolveCssColorForCanvas } from '../shared/mapp
 import {
   FieldReportsType, FieldReportService, FieldReportType, LogService, SettingsService, SettingsType
 } from '../shared/services'
-import { SectionComponent } from '../shared/section/section.component'
 import { Utility, formatReportTime } from '../shared'
 
 const REPORTS_SOURCE_ID = 'field-reports'
@@ -26,7 +25,7 @@ const REPORTS_SOURCE_ID = 'field-reports'
 @Component({
   selector: 'rangertrak-map',
   standalone: true,
-  imports: [SectionComponent, NgTemplateOutlet],
+  imports: [NgTemplateOutlet],
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager

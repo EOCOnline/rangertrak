@@ -1,0 +1,143 @@
+// The Guide drawer. See guide-drawer.component.ts for why this is a fixed <aside> plus a
+// CDK focus trap rather than mat-sidenav or mat-dialog.
+
+// z-index note: this has to clear the map. mini-mapLeaflet and the Leaflet controls sit in
+// the 400-1000 band (Leaflet's own defaults), and [[material-leaflet-css-traps]] records
+// that anything overlaying near the mini-map needs four digits. Material's own overlay
+// container is 1000, and this must sit above that too, since a mat-select opened on the
+// page behind should never paint over the drawer.
+$guide-z: 1200;
+
+.guide__scrim {
+  position  : fixed;
+  inset     : 0;
+  z-index   : $guide-z;
+  background: rgb(0 0 0 / 32%);
+}
+
+.guide {
+  position      : fixed;
+  top           : 0;
+  right         : 0;
+  bottom        : 0;
+  z-index       : $guide-z + 1;
+  // Wide enough for a full sentence of body text without becoming a second page. Capped at
+  // the viewport on a phone, where it necessarily covers the screen it is describing.
+  width         : min(28rem, 100vw);
+  display       : flex;
+  flex-direction: column;
+  background    : var(--rt-surface);
+  color         : var(--rt-ink);
+  border-left   : 1px solid var(--rt-line);
+  box-shadow    : -4px 0 24px rgb(0 0 0 / 18%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .guide {
+    animation: guide-in 160ms ease-out;
+  }
+
+  @keyframes guide-in {
+    from {
+      transform: translateX(100%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+}
+
+.guide__header {
+  display       : flex;
+  align-items   : flex-start;
+  gap           : 0.5rem;
+  padding       : 1rem 0.5rem 1rem 1.25rem;
+  border-bottom : 1px solid var(--rt-line);
+  flex          : none;
+}
+
+.guide__titles {
+  flex: 1;
+}
+
+.guide__title {
+  font-size  : var(--rt-type-title-size);
+  line-height: var(--rt-type-title-line);
+  font-weight: 600;
+  margin     : 0;
+}
+
+// Names the screen this content belongs to. Without it the drawer is just "Guide", and a
+// reader who opened it from a page they then navigated away from has no way to tell.
+.guide__screen {
+  font-size  : var(--rt-type-body-sm-size);
+  line-height: var(--rt-type-body-sm-line);
+  color      : var(--rt-ink-2);
+  margin     : 0.1rem 0 0;
+}
+
+.guide__tabs {
+  flex     : 1;
+  // Without an explicit min-height of 0 a flex child refuses to shrink below its content,
+  // so the tab body would push the footer off the bottom instead of scrolling.
+  min-height: 0;
+}
+
+.guide__panel {
+  padding   : 1.25rem;
+  overflow-y: auto;
+  // Matches the tab group's own body height so the scroll happens here, inside the panel,
+  // rather than moving the whole drawer.
+  max-height: 100%;
+}
+
+.guide__block + .guide__block {
+  margin-top: 1.5rem;
+}
+
+.guide__heading {
+  font-size  : var(--rt-type-body-size);
+  line-height: var(--rt-type-body-line);
+  font-weight: 600;
+  margin     : 0 0 0.4rem;
+}
+
+.guide__text {
+  font-size  : var(--rt-type-body-sm-size);
+  line-height: 1.45rem;
+  color      : var(--rt-ink-2);
+  margin     : 0;
+}
+
+.guide__list {
+  margin     : 0;
+  padding-left: 1.15rem;
+  font-size  : var(--rt-type-body-sm-size);
+  line-height: 1.45rem;
+  color      : var(--rt-ink-2);
+}
+
+.guide__list li + li {
+  margin-top: 0.35rem;
+}
+
+.guide__footer {
+  flex       : none;
+  padding    : 0.9rem 1.25rem;
+  border-top : 1px solid var(--rt-line);
+}
+
+.guide__help-link {
+  font-size: var(--rt-type-body-sm-size);
+  color    : var(--rt-accent);
+}
+
+// The drawer covers the screen it describes at phone width, so it must not also be
+// printed - same reasoning as back-to-top and the install pill.
+@media print {
+  .guide,
+  .guide__scrim {
+    display: none;
+  }
+}

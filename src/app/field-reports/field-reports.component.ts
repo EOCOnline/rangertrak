@@ -7,7 +7,6 @@ import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransfor
 
 import { AgGridAngular } from 'ag-grid-angular';
 import { SectionComponent } from '../shared/section/section.component';
-import { GridKeyboardHelpComponent } from '../shared/grid-keyboard-help/grid-keyboard-help.component';
 import { PageComponent } from '../shared/page/page.component';
 
 import { Utility } from '../shared'
@@ -33,8 +32,7 @@ export class myUnusedPipe implements PipeTransform {
     CommonModule,
     AgGridAngular,
     PageComponent,
-    SectionComponent,
-    GridKeyboardHelpComponent
+    SectionComponent
   ],
   templateUrl: './field-reports.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

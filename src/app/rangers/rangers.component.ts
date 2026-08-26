@@ -8,7 +8,7 @@ import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeD
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { AgGridAngular } from 'ag-grid-angular';
 import { SectionComponent } from '../shared/section/section.component';
-import { GridKeyboardHelpComponent } from '../shared/grid-keyboard-help/grid-keyboard-help.component';
+import { GuideService } from '../shared/guide/guide.service';
 import { PageComponent } from '../shared/page/page.component';
 
 import { Utility } from '../shared'
@@ -29,7 +29,7 @@ import { CustomTooltip } from './customTooltip'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, SectionComponent, GridKeyboardHelpComponent],
+  imports: [CommonModule, AgGridAngular, PageComponent, SectionComponent],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
@@ -63,7 +63,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   private static readonly PRIVACY_DISMISSED_KEY = 'rangertrak.rangers.privacyNoticeDismissed'
   privacyNoticeDismissed = false
 
-  @ViewChild('privacyDetails') private privacyDetails?: SectionComponent
 
   numSeperatorWarnings = 0
   maxSeperatorWarnings = 3
@@ -179,6 +178,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     private settingsService: SettingsService,
     private photos: RangerPhotoService,
     private _snackBar: MatSnackBar,
+    // The confidentiality bar's "What this means" opens the Guide drawer's Privacy tab -
+    // see openPrivacyDetails().
+    private guide: GuideService,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.log.info(`======== Constructor() ============`, this.id)
@@ -658,12 +660,15 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * The confidentiality bar's "What this means". Used to scroll to a
+   * `<rangertrak-section summary="Privacy & data handling">` further down this page; that
+   * content moved into the Guide drawer in the Material-M3 pass (2026-08-25), so this now
+   * opens the drawer straight to its Privacy tab rather than scrolling to a block that no
+   * longer exists.
+   */
   openPrivacyDetails() {
-    if (!this.privacyDetails) {
-      this.log.warn('openPrivacyDetails(): no #privacyDetails disclosure', this.id)
-      return
-    }
-    this.privacyDetails.reveal()
+    this.guide.open('Privacy')
   }
 
   //--------------------------------------------------------------------------

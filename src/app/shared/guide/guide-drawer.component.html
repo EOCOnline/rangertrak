@@ -1,0 +1,48 @@
+@if (guide.isOpen()) {
+
+<!-- Scrim. Click-to-close, and aria-hidden because the close button inside the panel is
+     the accessible way out - a screen reader has no use for a backdrop it cannot describe. -->
+<div class="guide__scrim" (click)="guide.close()" aria-hidden="true"></div>
+
+<aside class="guide" role="dialog" aria-modal="false" [attr.aria-label]="'Guide: ' + guide.entry()!.screen"
+  cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+
+  <header class="guide__header">
+    <div class="guide__titles">
+      <h2 class="guide__title">Guide</h2>
+      <p class="guide__screen">{{ guide.entry()!.screen }}</p>
+    </div>
+    <button matIconButton type="button" (click)="guide.close()" aria-label="Close the guide">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <mat-tab-group class="guide__tabs" [selectedIndex]="guide.selectedTabIndex()">
+    @for (tab of guide.entry()!.tabs; track tab.label) {
+    <mat-tab [label]="tab.label">
+      <div class="guide__panel">
+        @for (block of tab.blocks; track block.heading) {
+        <section class="guide__block">
+          <h3 class="guide__heading">{{ block.heading }}</h3>
+          @if (block.text) {
+          <p class="guide__text">{{ block.text }}</p>
+          }
+          @if (block.bullets) {
+          <ul class="guide__list">
+            @for (bullet of block.bullets; track bullet) {
+            <li>{{ bullet }}</li>
+            }
+          </ul>
+          }
+        </section>
+        }
+      </div>
+    </mat-tab>
+    }
+  </mat-tab-group>
+
+  <footer class="guide__footer">
+    <a routerLink="/help" (click)="guide.close()" class="guide__help-link">Open the full Help section</a>
+  </footer>
+</aside>
+}
