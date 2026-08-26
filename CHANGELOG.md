@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.61.1](https://github.com/EOCOnline/rangertrak/compare/v0.61.0...v0.61.1) (2026-08-26)
+
+
+### Features
+
+* **guide:** About RangerTrak paragraph atop the Entry page's guide ([bf3b260](https://github.com/EOCOnline/rangertrak/commit/bf3b2600dcff2f06c3a001f11561976ad5b91856))
+
 ## [0.61.0](https://github.com/EOCOnline/rangertrak/compare/v0.60.0...v0.61.0) (2026-08-26)
 
 
