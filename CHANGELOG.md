@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.58.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-26)
+
+Start of the Material-M3 redesign. Mockups for the whole app: https://claude.ai/code/artifact/a6e52cb1-0759-4eb0-9930-4d1af4dd07e7
+
+### Features
+
+* **styles:** Material M3 foundation. `MAT_FORM_FIELD_DEFAULT_OPTIONS` sets `appearance: 'outline'` and `subscriptSizing: 'dynamic'` app-wide, so every field - including ones converted from bare `<input>` markup - picks up the house style with no per-field attribute. New `styles/_patterns.scss` defines the page-structure blocks (`.rt-action-bar`, `.rt-danger-zone`, `.rt-alert`, `.rt-field-grid`) once instead of per page
+* **mission:** the Mission page rebuilt on Material. Every control was a bare `<input>` with an inline pixel width and a `<span class="strong">Label: </span>` beside it; they are `<mat-form-field>`s, `<mat-checkbox>`es and `matButton`s now, laid out as six outlined cards in a two-column grid that collapses to one on a phone. Destructive actions (Reset settings, Import mission, Load sample mission) are fenced in a Danger zone instead of sharing an "Advanced Options" block with the non-destructive export and storage-protection controls
+* **guide:** one Guide drawer, opened from a button in every page header, replaces the on-page instruction blocks - Field Reports' Tips, Rangers' Instructions and Privacy, both map engines' Instructions, and the grid keyboard help. Content lives as data in a single `guide-content.ts`, which is what finally makes the twice-requested "is all this verbiage still true?" audit a one-file review. Settles E-57(2), open since 2026-08-22
+
+### Fixes
+
+* **grids:** columns size to their content instead of an even share. Both grids called `sizeColumnsToFit()`, which distributes grid width and ignores per-column `flex` - so on Field Reports `Address` (flex 30) genuinely rendered narrower than `Lat` (flex 1), and Lat/Lng each took ~290px to show 9 characters while addresses truncated. Replaced with `autoSizeStrategy: { type: 'fitCellContents' }` plus honest per-column min/max bounds; exactly one column per grid (Notes) keeps `flex` so it absorbs leftover width
+* **footer:** the Install pill sat 10px above the footer's centreline. `.rt-footer__left` centres with flex, which aligns each item's *margin* box - so the pill's lone `margin-bottom: 20px` (added for viewport clearance when stuck) pushed it up. The clearance moved onto the sticky offset instead
+* **e2e:** `checkSettingsFormSave()` had been throwing a TypeError partway through and aborting the rest of the run - repairing it took the suite from 110 checks to **149**, so ~39 assertions had silently not been executing. It also looked up the Save button as `.settings__Save-button` (capital S) against a template that renders `settings__save-button`, so that assertion could never have passed. Both controls now use `data-testid`, and a new guard asserts the checkbox actually toggled rather than letting "the saved value matches what we set" pass vacuously
+
 ## [0.57.0](https://github.com/EOCOnline/rangertrak/commit/1835529c3031cfc9e946ca763c3c7f452ec4300c) (2026-08-26)
 
 ### Features
