@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.56.0](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+
+### Features
+
+* **rangers,entry,field-reports,mapping:** ADR D-42/D-43 - rangers no longer join to field reports by callsign. An internal surrogate `uid` (app-minted, never shown) is the real join key; a new `id` field (`REW-0038`/`TEW-1003`, or a preserved regional credential like `VI-0038`) replaces the WA-specific `rew` column as the displayed, searchable credential. Not every CERT/MERT responder is ham-licensed, so a ranger with no callsign is now a fully supported case throughout - selectable on Entry, attributed correctly on Reports, given a real distinct map marker/trail instead of collapsing into the shared "unassigned" icon, and matched by id-or-callsign for locally-stored photos. Both the roster and field-report stores gained real migration machinery (previously bare `JSON.parse()`) with a versioned wrapper, canonicalizing existing credentials on load without ever inventing one - a TEW/REW number is issued by the incident at check-in, not by this app. The Rangers grid's `REW` column is now `ID`, and roster import accepts a callsign-less entry as long as it carries a resolvable id/rew
+
+### Fixes
+
+* **rangers:** removed a real amateur radio callsign baked into `westy.png` (used by both the hardcoded station starter set and the sample demo mission) and a real name/callsign sitting in a dead commented-out tooltip example - neither belongs in a public repo
+
 ## [0.55.0](https://github.com/EOCOnline/rangertrak/commit/7d52ed4c77402f91115da73c7c81f669c483072e) (2026-08-26)
 
 ### Features
