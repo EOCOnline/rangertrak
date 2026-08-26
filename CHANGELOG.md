@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.61.0](https://github.com/EOCOnline/rangertrak/compare/v0.60.0...v0.61.0) (2026-08-26)
+
+
+### Features
+
+* **mission,entry:** default coordinate format is a real radio choice; drop Maidenhead toggle ([16cdf98](https://github.com/EOCOnline/rangertrak/commit/16cdf989b5de1f4ce34f4a15f2f2874fade1f4f9))
+
 ## [0.60.0](https://github.com/EOCOnline/rangertrak/compare/v0.59.2...v0.60.0) (2026-08-26)
 
 
