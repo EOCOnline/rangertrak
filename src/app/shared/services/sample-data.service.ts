@@ -102,7 +102,7 @@ export class SampleDataService {
       { callsign: 'MERT1', fullName: 'Marine Unit One', phone: '206-555-0131', image: 'MERT_blue.png', rew: 'VI-21', team: 'MERT', role: 'Marine', note: 'Quartermaster Harbor' },
       { callsign: 'MERT2', fullName: 'Marine Unit Two', phone: '206-555-0132', image: 'sail.png', rew: 'VI-22', team: 'MERT', role: 'Marine', note: 'West shore' },
 
-      { callsign: 'Recon1', fullName: 'Mobile Recon One', phone: '206-555-0141', image: 'westy.png', rew: 'VI-31', team: 'Recon', role: 'Mobile', note: 'Roving damage assessment' },
+      { callsign: 'Recon1', fullName: 'Mobile Recon One', phone: '206-555-0141', image: 'Ranger.png', rew: 'VI-31', team: 'Recon', role: 'Mobile', note: 'Roving damage assessment' },
       { callsign: 'Shelter1', fullName: 'Shelter Manager', phone: '206-555-0151', image: 'helmet_orange.png', rew: 'VI-41', team: 'Logistics', role: 'Support', note: 'High school shelter' },
       { callsign: 'Medic1', fullName: 'Field Medic One', phone: '206-555-0161', image: 'helmet_red.png', rew: 'VI-51', team: 'Medical', role: 'Medical', note: 'Roving aid' },
       { callsign: 'Ferry1', fullName: 'Ferry Dock Observer', phone: '206-555-0171', image: 'team_blue.png', rew: 'VI-61', team: 'Recon', role: 'Observer', note: 'North terminal' },

@@ -623,7 +623,7 @@ export class RangerService implements OnInit {
       { callsign: "MERT5", fullName: "MERT 5", phone: "206-463-", image: "Yacht_purple.png", rew: "", team: "MERT5", role: "Licensed", note: "-" },
       { callsign: "MERT6", fullName: "MERT 6", phone: "206-463-", image: "sail.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
 
-      { callsign: "Mobile", fullName: "John's Mobile", phone: "206-463-", image: "westy.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
+      { callsign: "Mobile", fullName: "Mobile Unit", phone: "206-463-", image: "Ranger.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
     )
 
 
