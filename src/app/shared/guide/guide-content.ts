@@ -101,6 +101,10 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
         label: 'This page',
         blocks: [
           {
+            heading: 'About RangerTrak',
+            text: 'RangerTrak is a free, open-source app for logging field reports during a Search & Rescue, CERT, or other volunteer emergency-response incident - the kind of radio check-ins ("I\'m at grid B4, all clear") a scribe would otherwise write on a paper log. It runs entirely in this browser, on this device, with no server, account, or internet connection required. Built by eoc.online; see github.com/EOCOnline/RangerTrak to learn more, report a problem, or contribute.'
+          },
+          {
             heading: 'The four questions',
             text: 'Who is reporting, where they are, when it happened, and what they said. Tab moves through them in radio-call order, so a whole report can be typed without touching the mouse.'
           },
