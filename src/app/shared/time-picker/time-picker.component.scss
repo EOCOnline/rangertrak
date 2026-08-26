@@ -1,9 +1,10 @@
-@use "@material/theme"
-with ($primary: #962f10,
-  $on-primary: #442C2E);
-@use "@material/button";
-@use "@material/button/styles";
-@use "@material/banner";
+// Material-M3 pass, found and fixed 2026-08-26: this file carried the same dead pre-Sprint-A
+// `@use "@material/theme" with ($primary: #962f10, ...)` + `@material/button`/`/styles` +
+// `@material/banner` block entry.component.scss did (see that file's own comment for the
+// live bug this caused there). This component's own template has no matButton, so nothing
+// here was visibly broken - removed anyway so the same trap can't resurface if one is added
+// later, matching mission.component.scss's precedent of Material's theme being the only
+// theme source now.
 
 // E-72: the date field, time field and minute-stepper used to be three independently laid
 // -out pieces - Material's own "filled" chrome doubled up per field (its own tinted box,

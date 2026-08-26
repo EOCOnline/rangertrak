@@ -68,25 +68,6 @@ $filledColor: var(--rt-surface-2);
   display: none;
 }
 
-// E-48(2): the derived Address/+Codes/Maidenhead readouts are `readonly` inputs, not
-// spans, so they read as - and are - selectable/copyable data.
-.enter__Where-derived-row {
-  display      : block;
-  margin-bottom: 2px;
-  @include type.type-body-sm;
-
-  input {
-    border       : 1px solid var(--rt-line-strong);
-    border-radius: var(--rt-radius);
-    background   : var(--rt-surface);
-    color        : var(--rt-ink-2);
-    font-style   : italic;
-    padding      : 1px 4px;
-    width        : min(100%, 320px);
-    cursor       : text;
-  }
-}
-
 .enter__Where-derived-divider {
   display    : flex;
   align-items: center;
@@ -106,20 +87,17 @@ $filledColor: var(--rt-surface-2);
   }
 }
 
-// E-104: the new read-only "same position, other formats" panel - see its own comment in
-// E-104, restyled 2026-08-26 on maintainer feedback ("display of additional derived
-// coordinate systems should follow the existing derived address styling. small text &
-// minimal"). These rows now sit INSIDE .enter__Where-Results alongside Address/+Codes/
-// Maidenhead and deliberately borrow .enter__Where-derived-row's exact visual language -
-// type-body-sm, --rt-ink-2, italic values, the same tight 2px row rhythm - rather than the
-// bordered panel with its own heading that a first draft gave them. They are the same KIND
-// of thing as the existing derived readouts (a computed restatement of the position you
-// already entered), so they should not look like a separate, louder feature.
+// E-104: the "same position, other formats" panel, restyled 2026-08-26 on maintainer
+// feedback ("display of additional derived coordinate systems should follow the existing
+// derived address styling. small text & minimal") - type-body-sm, --rt-ink-2, italic
+// values, a tight 2px row rhythm, rather than the bordered panel with its own heading a
+// first draft gave them. They are the same KIND of thing as the Address/+Codes/Maidenhead
+// readouts below them (a computed restatement of the position you already entered), so
+// they should not look like a separate, louder feature - and as of the same day, Address/
+// +Codes/Maidenhead were converted to this exact markup too (real signals now, not
+// setDerivedText()'s old imperative DOM writes - see location.component.ts), so all of
+// .enter__Where-Results is genuinely one visual language now, not two that happen to match.
 //
-// Kept as plain spans, not readonly <input>s like the Address/+Codes rows: those are
-// written imperatively by setDerivedText() and needed a real element to target (see its own
-// comment), while these are genuine Angular bindings. The italic/ink-2 styling below is
-// what makes them READ the same despite the different element.
 // A <button> (see the template - click-to-copy needs a real control), stripped back to
 // read as plain text: no border, no background, no button metrics. Only the pointer cursor
 // and the hover/focus tint say it is actionable.
@@ -171,12 +149,25 @@ $filledColor: var(--rt-surface-2);
 // ONE of these is ever visible at once now (isVisible()), so the old "wrap as a whole unit
 // instead of breaking mid-group" flex-wrap concern (multiple systems joined by "or" on one
 // line) no longer applies; kept simple.
+// Material-M3 pass, 2026-08-26: now a real <fieldset>, not a plain flex <div> - the
+// maintainer asked for the same embedded-label-in-the-border look Mission's mat-form-field
+// fields already have, and a compound multi-segment value (three/four adjacent <input>s,
+// not one) isn't something MatFormFieldControl supports without a real custom-control build.
+// fieldset/legend gives the identical visual (border, legend notched into its top-left
+// corner) for free, natively, with zero JS - the browser does the notch math mat-form-field
+// does for its own single-input case. min-width: 0 overrides the UA default fieldset
+// min-width (min-content of its contents), which would otherwise force this wider than
+// intended in a narrow flex row of these.
 .rt-coord-axis {
   display       : flex;
   align-items   : center;
   flex-wrap     : wrap;
   gap           : 0.4rem 0.6rem;
   margin-bottom : 0.5rem;
+  min-width     : 0;
+  border        : 1px solid var(--rt-line-strong);
+  border-radius : var(--rt-radius);
+  padding       : 0.5rem 0.6rem 0.6rem;
 }
 
 // [hidden] would already win against a bare `display: flex` above under normal CSS cascade
@@ -190,8 +181,7 @@ $filledColor: var(--rt-surface-2);
 }
 
 .enter__field-label {
-  flex          : none;
-  min-width     : 4.5rem;
+  padding       : 0 0.4em;
   font-size     : var(--rt-type-label-size);
   line-height   : var(--rt-type-label-line);
   font-weight   : 500;
@@ -199,17 +189,15 @@ $filledColor: var(--rt-surface-2);
   color         : var(--rt-ink-2);
 }
 
-// The bordered pill wrapping one axis's (or MGRS/UTM's whole-position) segments - same
-// "one visible boundary around several bare inner segments" idea as time-picker's
+// Was its own bordered pill (background/border/padding) before the fieldset conversion
+// above gave the whole axis one outer box - a second nested border here would have doubled
+// up on it. Now just the segments' own flex layout; the fieldset is the one visible
+// boundary, same "one boundary around several bare inner segments" idea as time-picker's
 // .rt-datetime, so a scribe reads coordinate entry and time entry as the same kind of
 // control.
 .rt-coord-group {
   display      : inline-flex;
   align-items  : stretch;
-  background   : var(--rt-surface);
-  border       : 1px solid var(--rt-line-strong);
-  border-radius: var(--rt-radius);
-  padding      : 0 0.3em;
 }
 
 .rt-coord-seg {

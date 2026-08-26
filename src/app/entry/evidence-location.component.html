@@ -1,18 +1,36 @@
 <div class="evidence-location">
-  <label class="evidence-location__field">
-    Distance
-    <input type="number" [formField]="form.distance" placeholder="e.g. 200" [attr.tabindex]="ti(0)" />
-  </label>
+  <!-- Material-M3 pass, 2026-08-26: matches Entry's embedded-label mat-form-field treatment
+       elsewhere (Mission's own ID/Name/Notes fields, and now the coordinate rows above this
+       component). Distance/Bearing use matInput directly with [formField] - a plain
+       directive on a native <input>, not a ControlValueAccessor component, so it's already
+       the safe combination this app uses throughout (see Notes/Address above). Unit is a
+       real Material CVA control (mat-select), so it gets the same manual [value]/(change)
+       signal-binding workaround as Source/mission-location-section's own coordinate
+       checkboxes, not [formField] directly. -->
+  <mat-form-field class="evidence-location__field">
+    <mat-label>Distance</mat-label>
+    <input matInput type="number" [formField]="form.distance" placeholder="e.g. 200" [attr.tabindex]="ti(0)" />
+  </mat-form-field>
 
-  <select [formField]="form.unit" [attr.tabindex]="ti(1)" aria-label="Distance unit">
-    <option value="m">meters</option>
-    <option value="ft">feet</option>
-  </select>
+  <mat-form-field class="evidence-location__unit">
+    <mat-label>Unit</mat-label>
+    <!-- [tabIndex] (property), not [attr.tabindex]: MatSelect has its own @Input() tabIndex
+         with a host binding ('[attr.tabindex]': 'disabled ? -1 : tabIndex') that runs on
+         every change-detection cycle and would overwrite a manually-set [attr.tabindex] here
+         - confirmed by reading select.mjs. Same class of conflict as mat-chip-listbox/
+         mat-button-toggle-group elsewhere in this app; found live when this exact binding
+         silently dropped the tab stop (checkEntryTabOrder caught it: 44 stops, not 45). -->
+    <mat-select [value]="form.unit().value()" (selectionChange)="form.unit().value.set($event.value)"
+      [tabIndex]="ti(1)" aria-label="Distance unit">
+      <mat-option value="m">meters</mat-option>
+      <mat-option value="ft">feet</mat-option>
+    </mat-select>
+  </mat-form-field>
 
-  <label class="evidence-location__field">
-    Bearing (0-359&deg;, from your position)
-    <input type="number" [formField]="form.bearing" placeholder="e.g. 45" [attr.tabindex]="ti(2)" />
-  </label>
+  <mat-form-field class="evidence-location__field">
+    <mat-label>Bearing (0-359&deg;, from your position)</mat-label>
+    <input matInput type="number" [formField]="form.bearing" placeholder="e.g. 45" [attr.tabindex]="ti(2)" />
+  </mat-form-field>
 
   @if (computedLocation(); as loc) {
   <div class="evidence-location__preview">

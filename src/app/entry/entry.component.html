@@ -184,46 +184,50 @@
            property on every change-detection cycle - binding [attr.tabindex] directly in
            this template would fight that same host binding. Confirmed by reading
            @angular/material's compiled source (chips.mjs), not assumed. -->
-      <div class="enter__field-label">Status</div>
-      <mat-chip-listbox class="enter__Status" formControlName="status" aria-label="Status"
-        [tabIndex]="statusTabIndex">
-        <mat-chip-option *ngFor="let stat of settings.fieldReportStatuses" [value]="stat.status"
-          [class.enter__status-selected]="entryControlsForm.value.status === stat.status"
-          [style.--rt-status-current]="statusColor(stat.color)">
-          <span class="rt-status-chip__dot" [style.background]="statusColor(stat.color)" aria-hidden="true"></span>
-          <!-- Sprint E: this was an inline color style interpolated straight from stored
-               settings, which is how LightYellow-on-white (1.07:1) reached the app's primary
-               control. Now resolved via statusColor(), so semantic keys become --rt-status-*
-               tokens carrying their own light/dark pair. checkStatusColorsBothSchemes() /
-               checkStatusColorMigration() in tools/e2e.js read this exact span's computed
-               colour - kept unchanged (class, binding, and content) across this swap. -->
-          <span class="Enter__status-value" [style.color]="statusColor(stat.color)">
-            {{stat.status}}</span>
-        </mat-chip-option>
-      </mat-chip-listbox>
+      <fieldset class="enter__field-fieldset">
+        <legend class="enter__field-label">Status</legend>
+        <mat-chip-listbox class="enter__Status" formControlName="status" aria-label="Status"
+          [tabIndex]="statusTabIndex">
+          <mat-chip-option *ngFor="let stat of settings.fieldReportStatuses" [value]="stat.status"
+            [class.enter__status-selected]="entryControlsForm.value.status === stat.status"
+            [style.--rt-status-current]="statusColor(stat.color)">
+            <span class="rt-status-chip__dot" [style.background]="statusColor(stat.color)" aria-hidden="true"></span>
+            <!-- Sprint E: this was an inline color style interpolated straight from stored
+                 settings, which is how LightYellow-on-white (1.07:1) reached the app's primary
+                 control. Now resolved via statusColor(), so semantic keys become --rt-status-*
+                 tokens carrying their own light/dark pair. checkStatusColorsBothSchemes() /
+                 checkStatusColorMigration() in tools/e2e.js read this exact span's computed
+                 colour - kept unchanged (class, binding, and content) across this swap. -->
+            <span class="Enter__status-value" [style.color]="statusColor(stat.color)">
+              {{stat.status}}</span>
+          </mat-chip-option>
+        </mat-chip-listbox>
+      </fieldset>
 
       <!-- E-41 phase 1: gathered on every report, always - "every radio call is a 309 entry
-           regardless." Material-M3 pass, 2026-08-26: mat-button-toggle-group now, but bound
-           manually through the FieldState's own WritableSignal
-           (entryForm.source().value() / .value.set()) rather than [formField] -
-           entryForm.source is a genuine Signal Forms field, and mat-button-toggle-group is a
-           Material CVA component, exactly the angular/components#32072 combination the
-           previous native-radio workaround existed to avoid (that reasoning carries over
-           unchanged; only the rendered control changed). This is the identical manual-signal
-           pattern used throughout settings/ for every Signal Forms field driving a Material
-           CVA control - see e.g. mission-location-section's coordinate-system checkboxes.
-           [attr.tabindex], not [tabIndex]: mat-button-toggle-group reads its host's literal
-           tabindex ATTRIBUTE once at construction via HostAttributeToken (the same mechanism
-           mat-radio-group/mat-chip-listbox above rely on for their own reserved slot),
-           confirmed by reading button-toggle.mjs. -->
-      <div class="enter__field-label">Source</div>
-      <mat-button-toggle-group class="enter__Source" aria-label="Source"
-        [attr.tabindex]="sourceTabIndex" [value]="entryForm.source().value()"
-        (change)="entryForm.source().value.set($event.value)">
-        @for (opt of sourceOptions; track opt) {
-        <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
-        }
-      </mat-button-toggle-group>
+           regardless." Material-M3 pass, 2026-08-26: mat-button-toggle-group, then switched
+           to mat-chip-listbox the same day once the maintainer flagged Status and Source
+           reading as two different control families for what's functionally the same
+           single-choice shape - Status's look was preferred. Bound manually through the
+           FieldState's own WritableSignal (entryForm.source().value() / .value.set()) rather
+           than [formField] - entryForm.source is a genuine Signal Forms field, and
+           mat-chip-listbox is a Material CVA component, exactly the angular/components#32072
+           combination the previous native-radio workaround existed to avoid. [value]/(change)
+           are mat-chip-listbox's own plain Input/Output pair, independent of its
+           ControlValueAccessor - same manual-signal pattern used throughout settings/ for
+           every Signal Forms field driving a Material CVA control. [tabIndex] (property
+           binding), not [attr.tabindex]: matches Status's own listbox above, for the same
+           HostAttributeToken reason documented there. -->
+      <fieldset class="enter__field-fieldset">
+        <legend class="enter__field-label">Source</legend>
+        <mat-chip-listbox class="enter__Source" aria-label="Source" [tabIndex]="sourceTabIndex"
+          [value]="entryForm.source().value()" (change)="entryForm.source().value.set($event.value)">
+          @for (opt of sourceOptions; track opt) {
+          <mat-chip-option [value]="opt" class="enter__source-option"
+            [class.enter__source-selected]="entryForm.source().value() === opt">{{ opt }}</mat-chip-option>
+          }
+        </mat-chip-listbox>
+      </fieldset>
 
       <!-- Material-M3 pass, 2026-08-26: matInput decorates a REAL native <textarea>
            (mat-form-field wraps it, it does not replace it), so [formField] here is the
@@ -269,8 +273,8 @@
             (change)="entryForm.replyRequested213().value.set($event.checked)">
             Reply requested
           </mat-checkbox>
-          <div class="enter__213-field">
-            <div class="enter__field-label">To (recipients)</div>
+          <fieldset class="enter__213-field enter__field-fieldset">
+            <legend class="enter__field-label">To (recipients)</legend>
             <!-- E-103: per-mission definable checklist (settings.recipientOptions213).
                  Material-M3 pass: mat-chip-listbox[multiple], with each mat-chip-option's
                  selection bound manually via [selected]/(selectionChange) rather than the
@@ -294,7 +298,7 @@
               <input matInput type="text" [formField]="entryForm.recipients213"
                 placeholder="Comma-separated" [attr.tabindex]="recipients213TabIndex" />
             </mat-form-field>
-          </div>
+          </fieldset>
           <!-- Material-M3 pass: matInput on a real native <textarea> again - no CVA
                path, [formField] is safe here exactly as it is on Notes above. The tooltip
                icon moves into matSuffix rather than sitting ahead of the label as a second

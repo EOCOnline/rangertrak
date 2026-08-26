@@ -5,6 +5,7 @@ import {
 } from '@angular/core'
 import { form, FormField, max, min } from '@angular/forms/signals'
 
+import { MATERIAL_IMPORTS } from '../material-imports'
 import { destinationPoint } from '../shared/mapping/coordinate'
 import { LocationType, undefinedAddressFlag } from '../shared/services'
 
@@ -25,7 +26,7 @@ import { LocationType, undefinedAddressFlag } from '../shared/services'
 @Component({
   selector: 'rangertrak-evidence-location',
   standalone: true,
-  imports: [CommonModule, FormField],
+  imports: [CommonModule, FormField, ...MATERIAL_IMPORTS],
   templateUrl: './evidence-location.component.html',
   styleUrls: ['./evidence-location.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

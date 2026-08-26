@@ -48,8 +48,8 @@
          are gone entirely - dead now that only one system is ever visible at a time, so
          there is never a second visible one to join with "or". -->
 
-    <div class="input-group rt-coord-axis" [hidden]="!isVisible('DD')">
-      <span class="enter__field-label">Latitude</span>
+    <fieldset class="input-group rt-coord-axis" [hidden]="!isVisible('DD')">
+      <legend class="enter__field-label">Latitude</legend>
       <span class="rt-coord-group">
         <input #latI [formField]="ddForm.latI" type="number" (change)="onDdChg()" class="rt-coord-seg rt-coord-seg--deg"
           id="enter__Where-latI" aria-label="Latitude degrees, decimal degrees format" [attr.tabindex]="ti(0)"
@@ -61,10 +61,10 @@
       @if (latInvalid()) {
       <div class="text-sm text-danger">Latitude must be -90 to 90&deg;, minutes/seconds in range, direction N or S.</div>
       }
-    </div>
+    </fieldset>
 
-    <div class="input-group rt-coord-axis" [hidden]="!isVisible('DD')">
-      <span class="enter__field-label">Longitude</span>
+    <fieldset class="input-group rt-coord-axis" [hidden]="!isVisible('DD')">
+      <legend class="enter__field-label">Longitude</legend>
       <span class="rt-coord-group">
         <input #lngI [formField]="ddForm.lngI" type="number" id="enter__Where-lngI" aria-label="Longitude degrees, decimal degrees format" class="rt-coord-seg rt-coord-seg--deg"
           (change)="onDdChg()" [attr.tabindex]="ti(2)"
@@ -76,10 +76,10 @@
       @if (lngInvalid()) {
       <div class="text-sm text-danger">Longitude must be -180 to 180&deg;, minutes/seconds in range, direction E or W.</div>
       }
-    </div>
+    </fieldset>
 
-    <div class="input-group rt-coord-axis" [hidden]="!isVisible('DDM')">
-      <span class="enter__field-label">Latitude</span>
+    <fieldset class="input-group rt-coord-axis" [hidden]="!isVisible('DDM')">
+      <legend class="enter__field-label">Latitude</legend>
       <span class="rt-coord-group">
         <input #latDdmD [formField]="ddmForm.latDdmD" id="enter__Where-latDdmD" aria-label="Latitude degrees, degrees and decimal minutes format" type="number" class="rt-coord-seg rt-coord-seg--deg"
           (change)="onDdmChg()" [attr.tabindex]="ti(4)"
@@ -94,10 +94,10 @@
       @if (latInvalid()) {
       <div class="text-sm text-danger">Latitude must be -90 to 90&deg;, minutes/seconds in range, direction N or S.</div>
       }
-    </div>
+    </fieldset>
 
-    <div class="input-group rt-coord-axis" [hidden]="!isVisible('DDM')">
-      <span class="enter__field-label">Longitude</span>
+    <fieldset class="input-group rt-coord-axis" [hidden]="!isVisible('DDM')">
+      <legend class="enter__field-label">Longitude</legend>
       <span class="rt-coord-group">
         <input #lngDdmD [formField]="ddmForm.lngDdmD" id="enter__Where-lngDdmD" aria-label="Longitude degrees, degrees and decimal minutes format" type="number" class="rt-coord-seg rt-coord-seg--deg"
           (change)="onDdmChg()" [attr.tabindex]="ti(7)"
@@ -112,10 +112,10 @@
       @if (lngInvalid()) {
       <div class="text-sm text-danger">Longitude must be -180 to 180&deg;, minutes/seconds in range, direction E or W.</div>
       }
-    </div>
+    </fieldset>
 
-    <div class="input-group rt-coord-axis" [hidden]="!isVisible('DMS')">
-      <span class="enter__field-label">Latitude</span>
+    <fieldset class="input-group rt-coord-axis" [hidden]="!isVisible('DMS')">
+      <legend class="enter__field-label">Latitude</legend>
       <span class="rt-coord-group">
         <input #latD [formField]="dmsForm.latD" id="enter__Where-latD" aria-label="Latitude degrees, degrees minutes seconds format" type="number" class="rt-coord-seg rt-coord-seg--deg"
           (change)="onDmsChg()" [attr.tabindex]="ti(10)"
@@ -133,10 +133,10 @@
       @if (latInvalid()) {
       <div class="text-sm text-danger">Latitude must be -90 to 90&deg;, minutes/seconds in range, direction N or S.</div>
       }
-    </div>
+    </fieldset>
 
-    <div class="input-group rt-coord-axis" [hidden]="!isVisible('DMS')">
-      <span class="enter__field-label">Longitude</span>
+    <fieldset class="input-group rt-coord-axis" [hidden]="!isVisible('DMS')">
+      <legend class="enter__field-label">Longitude</legend>
       <span class="rt-coord-group">
         <input [formField]="dmsForm.lngD" id="enter__Where-lngD" aria-label="Longitude degrees, degrees minutes seconds format" type="number" class="rt-coord-seg rt-coord-seg--deg"
           (change)="onDmsChg()" [attr.tabindex]="ti(14)"
@@ -154,10 +154,10 @@
       @if (lngInvalid()) {
       <div class="text-sm text-danger">Longitude must be -180 to 180&deg;, minutes/seconds in range, direction E or W.</div>
       }
-    </div>
+    </fieldset>
 
-    <div class="input-group rt-coord-axis" [hidden]="!isVisible('MGRS')">
-      <span class="enter__field-label">MGRS</span>
+    <fieldset class="input-group rt-coord-axis" [hidden]="!isVisible('MGRS')">
+      <legend class="enter__field-label">MGRS</legend>
       <span class="rt-coord-group">
         <input #mgrsGridRef [formField]="mgrsForm.gridRef" type="text" (change)="onMgrsChg()" class="rt-coord-seg rt-coord-seg--mgrs-grid"
           id="enter__Where-mgrsGridRef" aria-label="MGRS grid zone, band, and 100km square" title="e.g. 10TFS"
@@ -175,10 +175,10 @@
       @if (mgrsInvalid()) {
       <div class="text-sm text-danger">MGRS needs a valid grid zone/band/square (e.g. 10TFS) and easting/northing 0-99999.</div>
       }
-    </div>
+    </fieldset>
 
-    <div class="input-group rt-coord-axis" [hidden]="!isVisible('UTM')">
-      <span class="enter__field-label">UTM</span>
+    <fieldset class="input-group rt-coord-axis" [hidden]="!isVisible('UTM')">
+      <legend class="enter__field-label">UTM</legend>
       <span class="rt-coord-group">
         <input #utmZone [formField]="utmForm.zone" type="number" (change)="onUtmChg()" class="rt-coord-seg rt-coord-seg--utm-zone"
           id="enter__Where-utmZone" aria-label="UTM zone number" title="Zone" placeholder="Zone"
@@ -200,7 +200,7 @@
       @if (utmInvalid()) {
       <div class="text-sm text-danger">UTM needs zone 1-60, hemisphere N or S, and easting/northing in range.</div>
       }
-    </div>
+    </fieldset>
 
     <!-- E-48(6): the NAD27/WGS84 datum note used to live here. Already moved out of Entry
          (FIELD-GUIDE.md, and Settings -> Location Defaults) - unchanged by this pass. -->
@@ -255,16 +255,40 @@
       }</button>
     }
 
-    <!-- E-48(1): these elements stay permanently in the DOM (never @if'd away) so the
-         imperative setDerivedText() writes in location.component.ts always have somewhere
-         to land - only visibility is gated on showDerived(), via a plain CSS class rather
-         than a structural directive, specifically to avoid a render-ordering race. See
-         updateDerivedLocations()'s own comment. -->
+    <!-- E-48(1): these elements stay permanently in the DOM (never @if'd away) so
+         updateDerivedLocations()'s .set() calls always have somewhere to land - only
+         visibility is gated on showDerived(), via a plain CSS class rather than a
+         structural directive, specifically to avoid a render-ordering race. See that
+         method's own comment. E-104 (2026-08-26): now the same click-to-copy button-row
+         markup as the coordinate-system rows above, not a styled readonly <input> - see
+         copyCoordinate()'s own comment for why the type it accepts was widened to allow
+         these three non-coordinate labels through. -->
     <div class="enter__Where-Results" [class.enter__Where-Results--hidden]="!showDerived()">
-      <span class="enter__Where-derived-row">Address: <input readonly id="derivedAddress" title="Normalized Address, click to select" tabindex="-1" /></span>
-      <span class="enter__Where-derived-row">+Codes: <input readonly id="pCodes" title="Global & short (Google) Plus Codes, click to select" tabindex="-1" /></span>
+      <button type="button" class="rt-other-formats__row" tabindex="-1"
+        (click)="copyCoordinate('Address', derivedAddress())"
+        [attr.aria-label]="'Copy Address: ' + derivedAddress()"
+        title="Click to copy"><span class="rt-other-formats__system">Address:</span>
+        <span class="rt-other-formats__value" id="derivedAddress">{{ derivedAddress() }}</span>
+        @if (copiedSystem() === 'Address') {
+        <span class="rt-other-formats__copied">copied</span>
+        }</button>
+      <button type="button" class="rt-other-formats__row" tabindex="-1"
+        (click)="copyCoordinate('+Codes', derivedPCodes())"
+        [attr.aria-label]="'Copy +Codes: ' + derivedPCodes()"
+        title="Click to copy"><span class="rt-other-formats__system">+Codes:</span>
+        <span class="rt-other-formats__value" id="pCodes">{{ derivedPCodes() }}</span>
+        @if (copiedSystem() === '+Codes') {
+        <span class="rt-other-formats__copied">copied</span>
+        }</button>
       @if (settings.showMaidenhead) {
-        <span class="enter__Where-derived-row">Maidenhead: <input readonly id="maidenhead" title="Maidenhead Grid Locator, click to select" tabindex="-1" /></span>
+      <button type="button" class="rt-other-formats__row" tabindex="-1"
+        (click)="copyCoordinate('Maidenhead', derivedMaidenhead())"
+        [attr.aria-label]="'Copy Maidenhead: ' + derivedMaidenhead()"
+        title="Click to copy"><span class="rt-other-formats__system">Maidenhead:</span>
+        <span class="rt-other-formats__value">{{ derivedMaidenhead() }}</span>
+        @if (copiedSystem() === 'Maidenhead') {
+        <span class="rt-other-formats__copied">copied</span>
+        }</button>
       }
     </div>
   </div>

@@ -852,10 +852,10 @@ async function checkDerivedValuesDoNotCarryOver() {
   let populated = false
   for (let i = 0; i < 20 && !populated; i++) {
     await sleep(500)
-    populated = await evaluate(`!!document.getElementById('derivedAddress')?.value`)
+    populated = await evaluate(`!!document.getElementById('derivedAddress')?.textContent?.trim()`)
   }
   check('derived values populate once a position resolves', populated, true)
-  const firstAddress = await evaluate(`document.getElementById('derivedAddress')?.value`)
+  const firstAddress = await evaluate(`document.getElementById('derivedAddress')?.textContent?.trim()`)
 
   // Submit a report. resetAll() bumps formGeneration, which must clear and re-derive.
   await evaluate(`(() => {
@@ -878,8 +878,8 @@ async function checkDerivedValuesDoNotCarryOver() {
   const after = await evaluate(`(() => {
     const block = document.querySelector('.enter__Where-Results')
     return {
-      address: document.getElementById('derivedAddress')?.value,
-      pCodes: document.getElementById('pCodes')?.value,
+      address: document.getElementById('derivedAddress')?.textContent?.trim(),
+      pCodes: document.getElementById('pCodes')?.textContent?.trim(),
       hidden: block ? block.classList.contains('enter__Where-Results--hidden') : null,
     }
   })()`)
@@ -1730,18 +1730,30 @@ async function main() {
       }
       await checkEntryPhoto()
       await checkEntryAutofocusAndReset() // submits a real report, so read-write only
-      await checkEvidenceLocation()
+      if (FULL) {
+        await checkEvidenceLocation()
+      } else {
+        note('fast run: skipping checkEvidenceLocation (pass --full to include)')
+      }
       await checkDerivedValuesDoNotCarryOver() // also submits, same reason
       await checkMissionFormSave()
       await checkStatusColorMigration()
       await checkStatusColorsBothSchemes()
 
       // Known-open production bugs - see the banner above these three.
-      await checkCallsignIsSaved()
+      if (FULL) {
+        await checkCallsignIsSaved()
+      } else {
+        note('fast run: skipping checkCallsignIsSaved (pass --full to include)')
+      }
       await checkReportsSurviveNavigation()
-      await checkTeamTrailsRender()
-      await checkRangerMarkersAreDistinct()
-      await checkNoCallsignRangersGetDistinctIdentity()
+      if (FULL) {
+        await checkTeamTrailsRender()
+        await checkRangerMarkersAreDistinct()
+        await checkNoCallsignRangersGetDistinctIdentity()
+      } else {
+        note('fast run: skipping checkTeamTrailsRender, checkRangerMarkersAreDistinct, checkNoCallsignRangersGetDistinctIdentity (pass --full to include)')
+      }
       await checkMissionWithPersistedSettings()
       if (FULL) {
         await checkMissionRoundTrip(downloads)

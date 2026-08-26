@@ -1,6 +1,6 @@
 import { Subscription } from 'rxjs'
 
-import { CommonModule, DOCUMENT } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import {
   AfterViewInit, Component, EventEmitter, Inject, Input, linkedSignal, OnChanges, OnDestroy,
   OnInit, Output, signal, SimpleChanges, ChangeDetectionStrategy
@@ -381,7 +381,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     private log: LogService,
     @Inject(GEOCODING_PROVIDER) private geocodingProvider: GeocodingProvider,
     // private _toppy: Toppy,
-    @Inject(DOCUMENT) private document: Document) {
+  ) {
     this.log.info("======== Constructor() ============", this.id)
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
@@ -617,7 +617,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * clipboard access can be refused (insecure context, or a permissions policy) and a
    * silent unhandled rejection would leave the scribe believing a copy happened.
    */
-  copyCoordinate(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM', value: string): void {
+  // Widened from the coordinate-system literal union to a plain string 2026-08-26: the
+  // Address/+Codes/Maidenhead rows reuse this exact copy mechanism now (they aren't real
+  // coordinate systems - no activeSystem/formatSystem semantics - so they don't belong in
+  // that union), and copiedSystem itself was already typed string | null.
+  copyCoordinate(system: string, value: string): void {
     navigator.clipboard.writeText(value)
       .then(() => {
         this.copiedSystem.set(system)
@@ -769,44 +773,39 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
           pCode = OpenLocationCode.shorten(fullCode, this.settings.defLat, this.settings.defLng)
         }
         this.log.verbose(`New PlusCodes: ${pCode} ; Global: ${fullCode}`, this.id)
-        this.setDerivedText("pCodes", `+Code: ${pCode}  Global: ${fullCode}`)
+        this.derivedPCodes.set(`+Code: ${pCode}  Global: ${fullCode}`)
       } else {
         this.log.verbose(`Invalid +PlusCode: ${pCode}`, this.id)
-        this.setDerivedText("pCodes", "Unable to get +Code")
+        this.derivedPCodes.set("Unable to get +Code")
       }
     }
 
-    this.setDerivedText("derivedAddress", location.address)
+    this.derivedAddress.set(location.address)
 
     // Sprint H: no dedicated Maidenhead input field, but the position is still shown
-    // here as a derived readout - setDerivedText() already no-ops if the element isn't
-    // rendered (settings.showMaidenhead off).
-    this.setDerivedText("maidenhead", DDToMaidenhead(location.lat, location.lng))
+    // here as a derived readout.
+    this.derivedMaidenhead.set(DDToMaidenhead(location.lat, location.lng))
 
     // E-48(1): now that every line above has real text, the block can actually be shown.
-    // Deliberately after the setDerivedText() calls, not before - the elements themselves
-    // stay permanently in the DOM (see the --hidden class on .enter__Where-Results in the
+    // Deliberately after the .set() calls above, not before - the elements themselves stay
+    // permanently in the DOM (see the --hidden class on .enter__Where-Results in the
     // template) rather than an @if, specifically so this ordering can't race a render.
     this.showDerived.set(true)
   }
 
   /**
-   * Writes one of the read-only "derived location" lines at the bottom of the template.
-   *
-   * Guarded because this runs from ASYNC callbacks (the geocoder's, via DDToAddress()) that
-   * can land after this component's DOM is gone - navigate away from Entry with a geocode in
-   * flight and the old unguarded `getElementById(...)!.innerText` threw
-   * "Cannot set properties of null". It surfaced as an intermittent unit-test failure once
-   * the suite grew long enough for a stray callback to outlive its fixture, but the
-   * production path is the same one.
-   *
-   * These stay direct DOM writes rather than becoming bindings: they are display-only strings
-   * with no model behind them, and converting them properly belongs with the wider
-   * signals cleanup (roadmap Sprint G), not here.
-   *
-   * E-48(2): the targets are `readonly` inputs, not spans, as of Sprint I - `.value`, not
-   * `.innerText`, is what actually shows.
+   * E-104 (2026-08-26): Address/+Codes/Maidenhead, same click-to-copy button-row treatment
+   * as the coordinate-system rows above them. Real signals now, not `setDerivedText()`'s
+   * direct DOM writes - the previous approach existed because these are async-geocode
+   * results with no model behind them, and a signal write from a callback that outlives its
+   * component is harmless (unlike the old `getElementById(...)!.value = text`, which threw
+   * "Cannot set properties of null" if the view was gone - see git history), so converting
+   * these removes a defensive-guard requirement rather than just changing style.
    */
+  derivedAddress = signal('')
+  derivedPCodes = signal('')
+  derivedMaidenhead = signal('')
+
   /**
    * E-48(1): blanks every derived readout. Separate from hiding the block, because the
    * elements stay in the DOM either way (see the template's --hidden class) - leaving the
@@ -814,18 +813,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * moment the block is shown again for the next report.
    */
   private clearDerivedText() {
-    for (const id of ['derivedAddress', 'pCodes', 'maidenhead']) {
-      this.setDerivedText(id, '')
-    }
-  }
-
-  private setDerivedText(elementId: string, text: string) {
-    const el = this.document.getElementById(elementId) as HTMLInputElement | null
-    if (el) {
-      el.value = text
-    } else {
-      this.log.verbose(`No #${elementId} element to update - view likely destroyed`, this.id)
-    }
+    this.derivedAddress.set('')
+    this.derivedPCodes.set('')
+    this.derivedMaidenhead.set('')
   }
 
 

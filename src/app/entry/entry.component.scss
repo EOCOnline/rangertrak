@@ -1,16 +1,21 @@
 @use "../../styles/breakpoints"as bp;
 @use "../../styles/section"as section;
 @use "../../styles/typography"as type;
-@use "@material/theme"
-with ($primary: #962f10,
-  $on-primary: #442C2E);
-@use "@material/button";
-@use "@material/button/styles";
-@use "@material/banner";
-//@use "@material/banner/styles";
+// Material-M3 pass, found and fixed 2026-08-26 (real bug, not just cleanup): this file still
+// had the pre-Sprint-A `@use "@material/theme" with ($primary: #962f10, $on-primary:
+// #442C2E)` block plus `@use "@material/button"`/`"@material/button/styles"` - mission
+// .component.scss's own comment records removing the identical block there during the M3
+// pass, but this file was missed. `@material/button/styles` auto-emits real MDC button CSS
+// on `@use` alone (no `@include` needed), scoped to this component's view encapsulation -
+// so `.enter__Submit-button` (matButton="filled", which renders `.mdc-button--unelevated`)
+// was picking up ITS colours (the hardcoded #962f10/#442C2E seed above) instead of Material's
+// own theme (styles.scss's mat.theme(), correctly blue/white here). Confirmed live: computed
+// background/color were exactly rgb(150,47,16)/rgb(68,44,46) - literally #962f10/#442C2E -
+// while --mat-sys-primary/--rt-accent both correctly resolved to blue. Removing this block
+// (Material's theme is the only theme source now, same as mission.component.scss) is the
+// actual fix for the submit-button contrast complaint; the disabled-state token override
+// added earlier the same day was real but was fixing a different, smaller problem.
 // https://material.io/components/buttons/web#api
-
-//@use "contrasting-color";
 
 // Sprint A: was #F0F0F0. Now a token, so the skin controls it - see styles/_tokens.scss.
 // Kept as a Sass variable rather than inlining var(--rt-surface-2) at each of the five use
@@ -196,13 +201,26 @@ input[type=number] {
 // Material-M3 pass, 2026-08-26: .rButton and .bottomDrop are gone - Status/Source no
 // longer render as a hand-rolled row of "Label:" text plus custom-styled label/radio pairs
 // (.rButton, defined only here and in mission.component.scss/rangers.component.html
-// before this pass; all now retired). Both fields get the same small sentence-case
-// field-label treatment Mission's real conversion settled on (.mission__coords-legend/
-// .grouplbl - the mockup's own all-caps styling was never actually carried into the real
-// Angular templates, confirmed by grepping mission/ for text-transform before matching
-// it here) via the shared .enter__field-label class below.
+// before this pass; all now retired).
+//
+// Widened same day: Status/Source/Recipients (chip-listbox groups, which can't be a real
+// mat-form-field/MatFormFieldControl any more than location.component.scss's compound
+// coordinate rows can) now sit in a <fieldset>, with .enter__field-label as the <legend> -
+// the same embedded-label-in-the-border look Mission's mat-form-field fields already have,
+// and the same fieldset/legend technique those coordinate rows use, for the same reason
+// (see that file's comment). .enter__field-fieldset carries the box/spacing that used to
+// live on .enter__field-label directly, since a legend's own margin doesn't behave like a
+// block sibling's - the fieldset is what needs the top margin now.
+.enter__field-fieldset {
+  min-width    : 0;
+  margin       : 0.9rem 0 0.4rem;
+  padding      : 0.6rem 0.6rem 0.5rem;
+  border       : 1px solid var(--rt-line-strong);
+  border-radius: var(--rt-radius);
+}
+
 .enter__field-label {
-  margin        : 0.9rem 0 0.4rem;
+  padding       : 0 0.4em;
   font-size     : var(--rt-type-label-size);
   line-height   : var(--rt-type-label-line);
   font-weight   : 500;
@@ -257,6 +275,21 @@ mat-chip-option.enter__status-selected {
   .Enter__status-value {
     font-weight: 600;
   }
+}
+
+// Source has no per-option colour to carry (unlike Status's stored status.color), so this
+// is the same selected-chip treatment above minus the --rt-status-current override - it
+// falls straight through to --rt-accent, which is what that property's own fallback is for.
+mat-chip-option.enter__source-selected {
+  ::ng-deep.mat-mdc-chip-selected .mdc-evolution-chip__action--primary::before {
+    border-color: var(--rt-accent);
+  }
+
+  ::ng-deep.mat-mdc-chip-selected {
+    background-color: color-mix(in srgb, var(--rt-accent) 20%, var(--rt-surface));
+  }
+
+  font-weight: 600;
 }
 
 // Raised live, 2026-08-26: "a stronger separator for the 213-only section" - the thin
