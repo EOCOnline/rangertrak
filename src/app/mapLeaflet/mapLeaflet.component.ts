@@ -828,8 +828,10 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         // Raised live 2026-08-26: the status halo behind it, coloured per the Mission page's
         // own configured status colours - same lookup the Entry/Reports status controls use.
         const statusColor = fieldReportStatusColor(i.status, this.settings.fieldReportStatuses)
+        // D-42 phase 5: rangerUid (unique per ranger, set even with a blank callsign) takes
+        // priority over callsign - see ranger-icon.ts's header comment for why.
         let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), {
-          title: title, icon: rangerIconFor(i.callsign, statusColor)
+          title: title, icon: rangerIconFor(i.rangerUid || i.callsign, statusColor)
         })
         marker.bindPopup(title)
         this.myMarkerCluster.addLayer(marker);
@@ -864,15 +866,22 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    * a gradient-along-path, which Leaflet has no native support for.
    */
   private drawTrails() {
-    const byCallsign = new Map<string, FieldReportType[]>()
+    // D-42 phase 5: was grouped by `r.callsign` alone. Two DIFFERENT rangers with no
+    // callsign both grouped under the same '' key, so their check-ins could be sorted
+    // together into one bogus trail segment connecting two unrelated people. `rangerUid`
+    // (the surrogate key, unique per ranger, set even with a blank callsign) takes priority;
+    // `callsign` remains the fallback for reports with no `rangerUid` - same key each marker
+    // uses (see displayMarkers(), above), so a ranger's trail and marker group identically.
+    const byRanger = new Map<string, FieldReportType[]>()
     this.displayedFieldReportArray.forEach(r => {
       if (!r.location.lat || !r.location.lng) return // same guard displayMarkers() uses
-      const group = byCallsign.get(r.callsign)
+      const key = r.rangerUid || r.callsign
+      const group = byRanger.get(key)
       if (group) group.push(r)
-      else byCallsign.set(r.callsign, [r])
+      else byRanger.set(key, [r])
     })
 
-    byCallsign.forEach((reports, callsign) => {
+    byRanger.forEach((reports, key) => {
       if (reports.length < 2) return // nothing to trail for a single check-in
 
       // Reports aren't guaranteed sorted - the trail is meaningless (and will look
@@ -880,9 +889,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       const ordered = [...reports].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       // E-97: was teamColorFor(ranger.team) - team is usually blank (E-80 deferred it),
       // so nearly every trail fell through to one grey "unknown" colour. rangerColorFor()
-      // is the same callsign-keyed function the marker fill uses, so a ranger's trail and
+      // is the same identity-keyed function the marker fill uses, so a ranger's trail and
       // marker can never show different colours.
-      const color = rangerColorFor(callsign)
+      const color = rangerColorFor(key)
       const segmentCount = ordered.length - 1
 
       for (let i = 0; i < segmentCount; i++) {

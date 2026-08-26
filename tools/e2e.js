@@ -1239,6 +1239,151 @@ async function checkRangerMarkersAreDistinct() {
   }
 }
 
+/**
+ * ADR D-42 phase 5: two DIFFERENT rangers with NO callsign - the population D-42 exists to
+ * serve - must not collapse into one indistinguishable identity. Before this phase,
+ * `rangerIconFor()`/`rangerColorFor()` hashed `callsign`, so every callsignless ranger's
+ * reports hashed the same empty string: identical markers, and `drawTrails()` grouped them
+ * under one shared '' key so two unrelated people's positions could be joined by a single
+ * bogus trail. Seeds two rangers directly into the versioned `rangers` store (bypassing the
+ * roster-import path, which still throws on a blank callsign until Phase 7) with distinct
+ * `id`s and no `callsign`, attributes two check-ins each by typing their `fullName` into the
+ * same callsign box Phase 4 widened, and checks both halves of the fix: markers differ (the
+ * `id` hash) and trails don't cross rangers (the `rangerUid` grouping key). Per
+ * verify-the-measurement-itself, confirmed this fails on the pre-phase-5 build - 3 path
+ * segments (one bogus trail spanning both rangers) and two identical UNASSIGNED_MARKER svgs.
+ */
+async function checkNoCallsignRangersGetDistinctIdentity() {
+  console.log('\nD-42 phase 5: two callsignless rangers get distinct markers and separate trails')
+  const uidA = 'e2e-uid-nocs-1', uidB = 'e2e-uid-nocs-2'
+  const nameA = 'Fixture NoCallsign One', nameB = 'Fixture NoCallsign Two'
+
+  await goto('/')
+  await evaluate(`(() => {
+    const cur = JSON.parse(localStorage.getItem('rangers') || '{"schemaVersion":1,"rangers":[]}');
+    cur.rangers = (cur.rangers || []).concat([
+      { uid: ${JSON.stringify(uidA)}, id: 'REW-9101', callsign: '', fullName: ${JSON.stringify(nameA)}, phone: '', image: '', rew: '', team: '', role: '', note: '' },
+      { uid: ${JSON.stringify(uidB)}, id: 'REW-9102', callsign: '', fullName: ${JSON.stringify(nameB)}, phone: '', image: '', rew: '', team: '', role: '', note: '' },
+    ]);
+    cur.schemaVersion = cur.schemaVersion ?? 1;
+    localStorage.setItem('rangers', JSON.stringify(cur));
+  })()`)
+  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await goto('/')
+
+  // Two check-ins each, close together within a ranger (so a real trail has something to
+  // draw) but the two rangers far apart (so markercluster can't merge their marker icons -
+  // same margin checkRangerMarkersAreDistinct uses).
+  const checkIns = [
+    { name: nameA, lat: 47.60, lng: -122.30 },
+    { name: nameA, lat: 47.62, lng: -122.28 },
+    { name: nameB, lat: 45.50, lng: -122.70 },
+    { name: nameB, lat: 45.52, lng: -122.68 },
+  ]
+  for (const { name, lat, lng } of checkIns) {
+    await evaluate(`(async () => {
+      const set = (id, v) => {
+        const el = document.getElementById(id);
+        Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, String(v));
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      };
+      set('enter__Where-latI', Math.trunc(${lat}));
+      set('enter__Where-latF', Math.round((Math.abs(${lat}) % 1) * 10000));
+      set('enter__Where-lngI', Math.trunc(${lng}));
+      set('enter__Where-lngF', Math.round((Math.abs(${lng}) % 1) * 10000));
+      await new Promise(r => setTimeout(r, 900));
+
+      // No callsign to type - the ranger is identified by fullName, the exact case Phase 4's
+      // widened _filterRangers()/matchRanger() exist to handle.
+      const cs = document.getElementById('enter__Callsign-input');
+      const csSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      csSet.call(cs, ${JSON.stringify(name)});
+      cs.dispatchEvent(new Event('input', { bubbles: true }));
+      cs.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise(r => setTimeout(r, 900));
+
+      document.querySelector('.enter__Submit-button')?.click();
+      await new Promise(r => setTimeout(r, 1200));
+    })()`)
+  }
+
+  const stored = await evaluate(`(() => {
+    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
+    const list = r.fieldReportArray || [];
+    return {
+      countA: list.filter(f => f.rangerUid === ${JSON.stringify(uidA)}).length,
+      countB: list.filter(f => f.rangerUid === ${JSON.stringify(uidB)}).length,
+      blankCallsigns: list.filter(f => (f.rangerUid === ${JSON.stringify(uidA)} || f.rangerUid === ${JSON.stringify(uidB)}) && f.callsign === '').length,
+    };
+  })()`)
+  check('both check-ins for the first callsignless ranger resolved by rangerUid', stored.countA, 2)
+  check('both check-ins for the second callsignless ranger resolved by rangerUid', stored.countB, 2)
+  check('all four reports correctly kept a blank callsign (identified by name, not radio)', stored.blankCallsigns, 4)
+
+  await navigateInApp('Map', 3500)
+
+  let pathCount = 0
+  for (let i = 0; i < 10 && pathCount === 0; i++) {
+    await sleep(300)
+    pathCount = await evaluate(`document.querySelectorAll('#mapLeaflet-main .leaflet-overlay-pane path').length`)
+  }
+  // One segment per ranger (2 check-ins = 1 segment each) = 2 paths. The pre-fix grouping
+  // (by blank callsign) would lump all four into one group of 4, sorted by date, drawing 3
+  // segments - one of them a bogus line connecting the two different rangers' positions.
+  check('exactly one trail segment per callsignless ranger, not one crossing both', pathCount, 2)
+
+  // Marker distinctness needs its OWN, single-check-in-per-ranger scenario, deliberately NOT
+  // reusing the trail check-ins above: those pair two close-together points per ranger so a
+  // trail has something to draw, and at the zoom fitBounds() picks to show a ~250-mile span,
+  // markercluster merges each ranger's own close pair into one cluster bubble - hiding the
+  // individual '.rt-ranger-marker' svgs regardless of whether the identity fix works. One
+  // report per ranger, at the same separation checkRangerMarkersAreDistinct() uses, removes
+  // that confound.
+  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await goto('/')
+  for (const { name, lat, lng } of [
+    { name: nameA, lat: 47.60, lng: -122.30 },
+    { name: nameB, lat: 45.50, lng: -122.70 },
+  ]) {
+    await evaluate(`(async () => {
+      const set = (id, v) => {
+        const el = document.getElementById(id);
+        Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, String(v));
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      };
+      set('enter__Where-latI', Math.trunc(${lat}));
+      set('enter__Where-latF', Math.round((Math.abs(${lat}) % 1) * 10000));
+      set('enter__Where-lngI', Math.trunc(${lng}));
+      set('enter__Where-lngF', Math.round((Math.abs(${lng}) % 1) * 10000));
+      await new Promise(r => setTimeout(r, 900));
+
+      const cs = document.getElementById('enter__Callsign-input');
+      const csSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      csSet.call(cs, ${JSON.stringify(name)});
+      cs.dispatchEvent(new Event('input', { bubbles: true }));
+      cs.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise(r => setTimeout(r, 900));
+
+      document.querySelector('.enter__Submit-button')?.click();
+      await new Promise(r => setTimeout(r, 1200));
+    })()`)
+  }
+
+  await navigateInApp('Map', 3500)
+  let markers = []
+  for (let i = 0; i < 10 && markers.length < 2; i++) {
+    await sleep(300)
+    markers = await evaluate(`[...document.querySelectorAll('#mapLeaflet-main .rt-ranger-marker svg')].map(svg => svg.innerHTML)`)
+  }
+  check('markers render for both callsignless rangers', markers.length >= 2, true)
+  if (markers.length >= 2) {
+    check('the two callsignless rangers get visually distinct markers (hashed on id, not the shared blank callsign)',
+      markers[0] !== markers[1], true)
+  }
+}
+
 async function checkSettingsWithPersistedSettings() {
   console.log('\nBUG-3 (open): /mission must not throw for a RETURNING user (dates as ISO strings)')
   // A fresh browser gets initSettings() with real Date objects and never reproduces this.
@@ -1529,6 +1674,7 @@ async function main() {
       await checkReportsSurviveNavigation()
       await checkTeamTrailsRender()
       await checkRangerMarkersAreDistinct()
+      await checkNoCallsignRangersGetDistinctIdentity()
       await checkSettingsWithPersistedSettings()
       await checkMissionRoundTrip(downloads)
       await goto('/'); await evaluate(`localStorage.clear()`)

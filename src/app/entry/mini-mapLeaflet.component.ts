@@ -594,7 +594,9 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
         // NOT given the status halo the main map's markers got (2026-08-26) - this mini-map
         // is deliberately minimal by design (a crosshair-cursor position picker for the
         // CURRENT report, not a mission overview), reverted same day once that was raised.
-        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title, icon: rangerIconFor(i.callsign) })
+        // D-42 phase 5: rangerUid (unique per ranger, set even with a blank callsign) takes
+        // priority over callsign - see ranger-icon.ts's header comment for why.
+        let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), { title: title, icon: rangerIconFor(i.rangerUid || i.callsign) })
         marker.bindPopup(title)
         this.myMarkerCluster.addLayer(marker);
       } else {

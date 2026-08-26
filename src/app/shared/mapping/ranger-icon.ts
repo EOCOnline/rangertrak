@@ -13,7 +13,16 @@ import { hashString } from './hash-color'
  * coloured by callsign here - since team is usually blank (E-80 explicitly deferred it),
  * nearly every trail fell through to one grey "unknown" colour, reading as "trails are
  * all one colour." `rangerColorFor()` is exported so both the marker fill and the trail
- * stroke come from the same callsign-keyed function and can't drift apart again.
+ * stroke come from the same identity-keyed function and can't drift apart again.
+ *
+ * ADR D-42 phase 5 (2026-08-25): callers used to pass `callsign` directly. Two DIFFERENT
+ * rangers with no callsign - the population D-42 exists to serve - hashed to the identical
+ * empty string, so their markers (and, via `drawTrails()`'s matching grouping key, their
+ * trails) were indistinguishable. Callers now pass `rangerUid || callsign`: `rangerUid` is
+ * the surrogate key (ADR D-42) and is unique whenever it's set, so it's preferred; `callsign`
+ * remains the fallback for reports with no `rangerUid` (pre-migration data, or a callsign
+ * that matched no current roster row). Only when BOTH are blank does a report fall through
+ * to `UNASSIGNED_MARKER` - genuinely no data to distinguish it by.
  */
 
 // Plain shape outlines, stroked white so they stay legible over any tile colour
@@ -27,18 +36,19 @@ const MARKER_SHAPES: ((fill: string) => string)[] = [
 ]
 
 /**
- * A deterministic colour for a given ranger callsign - same callsign always yields the
+ * A deterministic colour for a given ranger identity key - same key always yields the
  * same colour, no lookup or stored assignment required. Shared by the marker fill
  * (`rangerIconFor`, below) and the route-trail stroke (`mapLeaflet.component.ts`'s
  * `drawTrails()`), so a ranger's trail and marker can never show different colours.
  *
- * Callers with a genuinely blank callsign should use `rangerIconFor`'s own dedicated
- * "unassigned" marker (below) instead of this function - kept `|| 'Unknown'` here only
- * because `drawTrails()` still calls this directly for a trail's stroke colour, and a trail
- * has no equivalent "unassigned" treatment (yet) to fall back to.
+ * `key` is `rangerUid || callsign` at every call site (D-42 phase 5) - see this file's
+ * header comment for why. Callers with a genuinely blank key should use `rangerIconFor`'s
+ * own dedicated "unassigned" marker (below) instead of this function - kept `|| 'Unknown'`
+ * here only because `drawTrails()` still calls this directly for a trail's stroke colour,
+ * and a trail has no equivalent "unassigned" treatment (yet) to fall back to.
  */
-export function rangerColorFor(callsign: string): string {
-  const hash = hashString(callsign || 'Unknown')
+export function rangerColorFor(key: string): string {
+  const hash = hashString(key || 'Unknown')
   return `hsl(${hash % 360}, 65%, 42%)`
 }
 
@@ -51,18 +61,21 @@ export function rangerColorFor(callsign: string): string {
 const UNASSIGNED_MARKER = `<circle cx="10" cy="10" r="8" fill="#ffffff" stroke="#c0392b" stroke-width="2" stroke-dasharray="3,2"/><text x="10" y="14.5" text-anchor="middle" font-size="12" font-weight="700" fill="#c0392b" font-family="sans-serif">?</text>`
 
 /**
- * A deterministic, distinct Leaflet icon for a given ranger callsign - same callsign
+ * A deterministic, distinct Leaflet icon for a given ranger identity key - same key
  * always yields the same shape+colour, no lookup or stored assignment required. Shape and
  * colour are derived from independent bit ranges of one hash, so the two don't visibly
  * correlate (two rangers sharing a colour won't reliably also share a shape).
  *
- * Raised live 2026-08-26, after a report noted not every ranger has a real ham callsign:
- * a genuinely blank `callsign` used to fall through to `hashString('Unknown')`, so EVERY
- * report with no callsign got the identical shape+colour - indistinguishable from each
- * other, and looking exactly as "normal" as a real ranger's marker. Now routed to a fixed
- * `UNASSIGNED_MARKER` instead - it can't tell two different blank-callsign reports apart
- * either (there is no data to distinguish them on), but at least it no longer hides that
- * gap behind a marker that looks like a real, consistent identity.
+ * `key` is `rangerUid || callsign` at every call site (D-42 phase 5 - see this file's
+ * header comment). Originally hashed `callsign` directly: a genuinely blank callsign used
+ * to fall through to `hashString('Unknown')`, so EVERY report with no callsign got the
+ * identical shape+colour - not just "as ambiguous as before," but actively worse, since two
+ * DIFFERENT callsignless rangers' reports then looked like one consistent identity moving
+ * around (and, via `drawTrails()`'s matching key, could be joined into one bogus trail
+ * between them). Keying on `rangerUid` when it's set fixes that: it's the surrogate key,
+ * unique per ranger regardless of callsign. Only a key that's blank even after that fallback
+ * (no `rangerUid` AND no `callsign`) routes to the fixed `UNASSIGNED_MARKER` - genuinely no
+ * data left to distinguish it by.
  *
  * `statusColor` (raised live, 2026-08-26): an optional halo drawn BEHIND the ranger's own
  * shape, so a report's configured status (Normal/Need Rest/Urgent/...) reads at a glance on
@@ -75,9 +88,9 @@ const UNASSIGNED_MARKER = `<circle cx="10" cy="10" r="8" fill="#ffffff" stroke="
  * back to the plain 20x20 icon) when no status colour resolves, so a report with an unknown/
  * blank status draws exactly as it always has.
  */
-export function rangerIconFor(callsign: string, statusColor?: string): L.DivIcon {
-  const shape = callsign?.trim()
-    ? MARKER_SHAPES[Math.floor(hashString(callsign) / 360) % MARKER_SHAPES.length](rangerColorFor(callsign))
+export function rangerIconFor(key: string, statusColor?: string): L.DivIcon {
+  const shape = key?.trim()
+    ? MARKER_SHAPES[Math.floor(hashString(key) / 360) % MARKER_SHAPES.length](rangerColorFor(key))
     : UNASSIGNED_MARKER
 
   if (!statusColor) {
