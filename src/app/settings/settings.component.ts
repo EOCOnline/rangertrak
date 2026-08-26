@@ -3,7 +3,11 @@ import { Subscription } from 'rxjs'
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, computed, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { form, FormField, max, min, required } from '@angular/forms/signals'
+// FormField (the template directive) is gone from this component's own template: every
+// control it used to drive is now a Material component bound through the FieldState's
+// WritableSignal instead - see settings.component.html's Debug checkbox for why
+// (angular/components#32072). The child sections still import it for their own text inputs.
+import { form, max, min, required } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
 
 import { PageComponent } from '../shared/page/page.component'
@@ -47,7 +51,6 @@ const blankSettings: SettingsType = {
   imports: [
     CommonModule,
     FormsModule,
-    FormField,
     RouterLink,
     ...MATERIAL_IMPORTS,
     PageComponent,

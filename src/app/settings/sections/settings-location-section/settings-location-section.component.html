@@ -1,74 +1,70 @@
-<div>
-  <!-- ======================================= -->
-  <h2>Location Defaults</h2>
-  <!--legend>Default </legend-->
-  <rangertrak-section summary="Location Guidance">
-    <ul>
-      <li>Enter Lat & Long, which will be used as initial/default values in the entry form.</li>
-      <li>
-        Maps do NOT use any of these. Maps are auto-centered on the bounding coordinates
-        centroid of all points entered and the map is then zoomed to show all points.
-      </li>
-    </ul>
-  </rangertrak-section>
+<mat-card appearance="outlined" class="rt-settings-card">
+  <mat-card-header>
+    <mat-card-title>Location defaults</mat-card-title>
+    <mat-card-subtitle>Seeds the Entry form&rsquo;s starting position. Maps do not use these &mdash; they
+      auto-centre on the centroid of the reports actually entered, then zoom to fit.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="rt-field-grid">
+      <mat-form-field>
+        <mat-label>Default latitude</mat-label>
+        <input matInput type="number" step=".01" [formField]="form.defLat"
+          placeholder="{{settings.defLat.toFixed(4)}}" data-lpignore="true" />
+        <!-- Was a `.text-sm.text-danger` div rendered by an @if beside the input. mat-error
+             shows itself on the same condition Material already tracks, and takes the
+             field's own error colour rather than a hand-picked one. -->
+        @if (form.defLat().touched() && form.defLat().invalid()) {
+        <mat-error>Must be between -89.99&deg; and 89.99&deg;</mat-error>
+        }
+      </mat-form-field>
 
-  <div class="input-group">
-    <span class="strong">Latitude: &nbsp;</span>
-    <input
-      [class.border-danger]="form.defLat().touched() && form.defLat().invalid()"
-      type="number" [formField]="form.defLat" step=".01"
-      placeholder="{{settings.defLat.toFixed(4)}}" [style.width.px]="75"
-      data-lpignore="true" />
-    @if (form.defLat().touched() && form.defLat().invalid()) {
-    <div class="text-sm text-danger">
-      latitude is required, and must be between -89.99&deg; and 89.99&deg;
+      <mat-form-field>
+        <mat-label>Default longitude</mat-label>
+        <input matInput type="number" step=".01" [formField]="form.defLng"
+          placeholder="{{settings.defLng.toFixed(4)}}" data-lpignore="true" />
+        @if (form.defLng().touched() && form.defLng().invalid()) {
+        <mat-error>Must be between -179.99&deg; and 179.99&deg;</mat-error>
+        }
+      </mat-form-field>
     </div>
-    }
-  </div>
 
-  <div class="input-group">
-    <span class="strong">Longitude: </span>
-    <input
-      [class.border-danger]="form.defLng().touched() && form.defLng().invalid()"
-      type="number" [formField]="form.defLng" step=".01"
-      placeholder="{{settings!.defLng.toFixed(4)}}" [style.width.px]="75" data-lpignore="true" />
-    @if (form.defLng().touched() && form.defLng().invalid()) {
-    <div class="text-sm text-danger">
-      longitude is required, and must be between -179.99&deg; and 179.99&deg;
-    </div>
-    }
-  </div>
+    <!-- Sprint H: which coordinate systems Entry's Location widget offers. All default on;
+         a mission that only cares about one or two formats can hide the rest here. Entry
+         also has its own session-only "Show all systems" override.
 
-  <!-- Sprint H: which coordinate systems Entry's Location widget shows. All default
-       on; a mission that only cares about one or two formats can hide the rest here.
-       Entry also has its own session-only "Show all systems" override. -->
-  <div class="input-group">
-    <span class="strong">Coordinate systems shown on Entry: </span>
-    <label class="option">
-      <input type="checkbox" [formField]="form.showDD" /> Decimal Degrees
-    </label>
-    <label class="option">
-      <input type="checkbox" [formField]="form.showDDM" /> Degrees Decimal Minutes
-    </label>
-    <label class="option">
-      <input type="checkbox" [formField]="form.showDMS" /> Degrees Minutes Seconds
-    </label>
-    <label class="option">
-      <input type="checkbox" [formField]="form.showMGRS" /> MGRS
-    </label>
-    <label class="option">
-      <input type="checkbox" [formField]="form.showUTM" /> UTM
-    </label>
-    <label class="option">
-      <input type="checkbox" [formField]="form.showMaidenhead" /> Maidenhead grid locator
-    </label>
-  </div>
+         Material-M3 pass: these are `mat-checkbox` now, but deliberately NOT via
+         `[formField]` - Signal Forms' formField directive cannot act as the value accessor
+         for a Material checkbox (angular/components#32072, the same limitation
+         entry.component.html documents for mat-radio-button). Reading `.value()` and
+         writing `.value.set()` on the FieldState directly is the supported way round it
+         and keeps these bound to the same form tree as every other field here. -->
+    <fieldset class="settings__coords">
+      <legend class="settings__coords-legend">Coordinate systems shown on Entry</legend>
+      <!-- Written out rather than looped: indexing `FieldTree<SettingsType>` by a key held
+           in a loop variable resolves to a union of call signatures TypeScript will not
+           narrow, and the six are a fixed set that changes about once a year. -->
+      <div class="settings__coords-grid">
+        <mat-checkbox [checked]="form.showDD().value()"
+          (change)="form.showDD().value.set($event.checked)">Decimal degrees</mat-checkbox>
+        <mat-checkbox [checked]="form.showDDM().value()"
+          (change)="form.showDDM().value.set($event.checked)">Degrees decimal minutes</mat-checkbox>
+        <mat-checkbox [checked]="form.showDMS().value()"
+          (change)="form.showDMS().value.set($event.checked)">Degrees minutes seconds</mat-checkbox>
+        <mat-checkbox [checked]="form.showMGRS().value()"
+          (change)="form.showMGRS().value.set($event.checked)">MGRS</mat-checkbox>
+        <mat-checkbox [checked]="form.showUTM().value()"
+          (change)="form.showUTM().value.set($event.checked)">UTM</mat-checkbox>
+        <mat-checkbox [checked]="form.showMaidenhead().value()"
+          (change)="form.showMaidenhead().value.set($event.checked)">Maidenhead grid locator</mat-checkbox>
+      </div>
+    </fieldset>
 
-  <!-- E-48(6): moved here (and to FIELD-GUIDE.md) from the Entry screen, which isn't the
-       place for a datum-correctness caveat on every report. -->
-  <div class="text-sm">
-    All coordinate formats above assume WGS84/modern GPS. A position read off an older
-    paper topo quad may use the NAD27 datum instead, which can be 100-200m off in the
-    western US.
-  </div>
-</div>
+    <!-- E-48(6): moved here (and to FIELD-GUIDE.md) from the Entry screen, which isn't the
+         place for a datum-correctness caveat on every single report. -->
+    <p class="settings__datum-note">
+      All coordinate formats above assume WGS84 / modern GPS. A position read off an older
+      paper topo quad may use the NAD27 datum instead, which can be 100&ndash;200 m off in
+      the western US.
+    </p>
+  </mat-card-content>
+</mat-card>

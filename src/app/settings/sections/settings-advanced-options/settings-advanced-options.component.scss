@@ -1,25 +1,96 @@
-@use "../../../../styles/section" as section;
-.strong {
-  font-weight: bold;
+// Material-M3 pass, 2026-08-25. `.eButton` (this file's third independent copy of that
+// rule) is gone - every control here is a `matButton` now. `.rt-danger-zone` and its
+// children come from styles/_patterns.scss.
+
+:host {
+  display: contents;
 }
 
-// E-52 / ADR D-39: was this same six-times-duplicated h1,h2,h3 block with !important on
-// every declaration. h2 is a section head here, h3 is a subhead inside one - they now get
-// visibly different treatments from the shared spec instead of one identical rule.
-h2 {
-  @include section.section-header;
+.settings__subhead {
+  font-size  : var(--rt-type-body-size);
+  line-height: var(--rt-type-body-line);
+  font-weight: 600;
+  color      : var(--rt-ink-2);
+  margin     : 1.5rem 0 0.75rem;
 }
 
-h3 {
-  @include section.subsection-header;
+.settings__subhead:first-of-type {
+  margin-top: 0.5rem;
 }
 
-.eButton {
-  width      : 80px;
-  font-weight: bold;
-  margin     : 30 px;
+.settings__note {
+  margin     : 0 0 0.75rem;
+  font-size  : var(--rt-type-body-sm-size);
+  line-height: var(--rt-type-body-sm-line);
+  color      : var(--rt-ink-2);
+  max-width  : 70ch;
 }
 
-button {
-  max-width: 300px;
+// Was `style="color:red"` inline on two <span>s. The readiness red is already vetted for
+// contrast in both schemes; raw `red` is not, and was unreadable on the dark surface.
+.settings__note--warn {
+  color: var(--rt-readiness-red);
+}
+
+.settings__status {
+  display    : flex;
+  align-items: flex-start;
+  gap        : 0.5rem;
+  margin     : 0 0 0.75rem;
+  font-size  : var(--rt-type-body-sm-size);
+  line-height: var(--rt-type-body-sm-line);
+  color      : var(--rt-ink-2);
+  max-width  : 70ch;
+}
+
+// Was a literal ✅ / ⚠️ / ℹ️ emoji at the start of each string. Those render at whatever
+// size and colour the platform emoji font decides, which is neither this app's type scale
+// nor its status palette - and they carried meaning no screen reader announced usefully.
+// mat-icon + aria-hidden puts the meaning in the sentence and the glyph in the token layer.
+.settings__status mat-icon {
+  flex     : none;
+  font-size: 20px;
+  width    : 20px;
+  height   : 20px;
+}
+
+.settings__status--ok mat-icon {
+  color: var(--rt-readiness-green);
+}
+
+.settings__status--warn mat-icon {
+  color: var(--rt-readiness-amber);
+}
+
+// Overrides the accent a `matButton="outlined"` would otherwise take. These sit inside the
+// danger fence and should read as part of it, not as ordinary secondary actions.
+.settings__danger-button {
+  --mat-button-outlined-label-text-color: var(--rt-readiness-red);
+  --mat-button-outlined-outline-color   : var(--rt-readiness-red);
+  color                                 : var(--rt-readiness-red);
+}
+
+// The <label> that fronts the file input is a real button visually, so it needs the same
+// pointer affordance a <button> gets for free.
+label.settings__danger-button {
+  cursor: pointer;
+}
+
+// Visually hidden, but NOT `display: none` - a display:none file input cannot be activated
+// by its own <label> in every browser, and the label is the only way this picker opens.
+.settings__file-input {
+  position: absolute;
+  width   : 1px;
+  height  : 1px;
+  padding : 0;
+  margin  : -1px;
+  overflow: hidden;
+  clip    : rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border  : 0;
+}
+
+.settings__sample-note {
+  margin-top: 1rem;
+  margin-bottom: 0;
 }

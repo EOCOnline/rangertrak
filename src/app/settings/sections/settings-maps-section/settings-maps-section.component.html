@@ -1,135 +1,106 @@
-<div>
-  <!-- ======================================= -->
-  <h2>Maps</h2>
-  <div class="input-group">
-    <div class="strong">Markers: </div>
-    <input type="checkbox" [formField]="form.allowManualPinDrops" placeholder="allowManualPinDrops" />
-    Clicking on Leaflet or MapLibre maps should make new markers - but won't be saved.<br />
-    (Default on Leaflet maps: clicking saves Lat/Long to clipboard.)
-  </div>
+<mat-card appearance="outlined" class="rt-settings-card">
+  <mat-card-header>
+    <mat-card-title>Maps</mat-card-title>
+    <mat-card-subtitle>Zoom defaults for both engines, plus the optional geocoding key.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
 
-  <!-- ======================================= -->
-  <h3>Leaflet Map Settings</h3>
-  <div>
-    <div class="input-group">
-      <span class="strong">Default Zoom: </span>
+    <!-- Material-M3 pass: `mat-checkbox` bound through the FieldState's own WritableSignal
+         rather than `[formField]` - Signal Forms' formField directive cannot act as the
+         value accessor for a Material checkbox (angular/components#32072). Same approach as
+         the coordinate-system checklist in settings-location-section. -->
+    <mat-checkbox [checked]="form.allowManualPinDrops().value()"
+      (change)="form.allowManualPinDrops().value.set($event.checked)">
+      Clicking a map drops a new marker
+    </mat-checkbox>
+    <p class="settings__note">
+      These markers are not saved. By default, clicking a Leaflet map copies the lat/long to
+      the clipboard instead.
+    </p>
 
-      <input
-        [class.border-danger]="form.leaflet.defZoom().touched() && form.leaflet.defZoom().invalid()"
-        [formField]="form.leaflet.defZoom" placeholder="15" type="number" [style.width.px]="50" />
-      @if (form.leaflet.defZoom().touched() && form.leaflet.defZoom().invalid()) {
-      <div class="text-sm text-danger">must be between 1 and 22</div>
-      }
+    <!-- D-31: "Leaflet"/"Backup Map", not "online"/"offline" - Leaflet is also usable
+         offline once tiles are saved for the area, so neither engine is "the offline one". -->
+    <h3 class="settings__subhead">Leaflet &mdash; primary</h3>
+    <div class="rt-field-grid rt-field-grid--compact">
+      <mat-form-field>
+        <mat-label>Default zoom</mat-label>
+        <input matInput type="number" [formField]="form.leaflet.defZoom" placeholder="15" />
+        @if (form.leaflet.defZoom().touched() && form.leaflet.defZoom().invalid()) {
+        <mat-error>1 to 22</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Overview offset</mat-label>
+        <input matInput type="number" [formField]="form.leaflet.overviewDifference" placeholder="5" />
+        @if (form.leaflet.overviewDifference().touched() && form.leaflet.overviewDifference().invalid()) {
+        <mat-error>1 to 10</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Overview min</mat-label>
+        <input matInput type="number" [formField]="form.leaflet.overviewMinZoom" placeholder="5" />
+        @if (form.leaflet.overviewMinZoom().touched() && form.leaflet.overviewMinZoom().invalid()) {
+        <mat-error>1 to 10</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Overview max</mat-label>
+        <input matInput type="number" [formField]="form.leaflet.overviewMaxZoom" placeholder="21" />
+        @if (form.leaflet.overviewMaxZoom().touched() && form.leaflet.overviewMaxZoom().invalid()) {
+        <mat-error>3 to 22</mat-error>
+        }
+      </mat-form-field>
     </div>
 
-    <!-- markerScheme - unused for now -->
+    <h3 class="settings__subhead">Backup map &mdash; MapLibre + PMTiles</h3>
+    <div class="rt-field-grid rt-field-grid--compact">
+      <mat-form-field>
+        <mat-label>Default zoom</mat-label>
+        <input matInput type="number" [formField]="form.maplibre.defZoom" placeholder="15" />
+        @if (form.maplibre.defZoom().touched() && form.maplibre.defZoom().invalid()) {
+        <mat-error>3 to 22</mat-error>
+        }
+      </mat-form-field>
 
-    <div class="input-group">
-      <span class="strong">Overview Map Zoom Difference: </span>
-      <input
-        [class.border-danger]="form.leaflet.overviewDifference().touched() && form.leaflet.overviewDifference().invalid()"
-        type="number" [style.width.px]="50" [formField]="form.leaflet.overviewDifference" placeholder="5" />
-      @if (form.leaflet.overviewDifference().touched() && form.leaflet.overviewDifference().invalid()) {
-      <div class="text-sm text-danger">
-        must be between 1 and 10
-      </div>
-      }
+      <mat-form-field>
+        <mat-label>Overview offset</mat-label>
+        <input matInput type="number" [formField]="form.maplibre.overviewDifference" placeholder="5" />
+        @if (form.maplibre.overviewDifference().touched() && form.maplibre.overviewDifference().invalid()) {
+        <mat-error>1 to 10</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Overview min</mat-label>
+        <input matInput type="number" [formField]="form.maplibre.overviewMinZoom" placeholder="5" />
+        @if (form.maplibre.overviewMinZoom().touched() && form.maplibre.overviewMinZoom().invalid()) {
+        <mat-error>1 to 10</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Overview max</mat-label>
+        <input matInput type="number" [formField]="form.maplibre.overviewMaxZoom" placeholder="21" />
+        @if (form.maplibre.overviewMaxZoom().touched() && form.maplibre.overviewMaxZoom().invalid()) {
+        <mat-error>3 to 22</mat-error>
+        }
+      </mat-form-field>
     </div>
 
-    <div class="input-group">
-      <span class="strong">Overview Map Min Zoom: </span>
-      <input
-        [class.border-danger]="form.leaflet.overviewMinZoom().touched() && form.leaflet.overviewMinZoom().invalid()"
-        type="number" [formField]="form.leaflet.overviewMinZoom" placeholder="5" />
-      @if (form.leaflet.overviewMinZoom().touched() && form.leaflet.overviewMinZoom().invalid()) {
-      <div class="text-sm text-danger">
-        must be between 1 and 10
-      </div>
-      }
-    </div>
-
-    <div class="input-group">
-      <span class="strong">Overview Map Max Zoom: </span>
-      <input
-        [class.border-danger]="form.leaflet.overviewMaxZoom().touched() && form.leaflet.overviewMaxZoom().invalid()"
-        type="number" [style.width.px]="50" [formField]="form.leaflet.overviewMaxZoom" placeholder="21" />
-      @if (form.leaflet.overviewMaxZoom().touched() && form.leaflet.overviewMaxZoom().invalid()) {
-      <div class="text-sm text-danger">
-        must be between 3 and 22
-      </div>
-      }
-    </div>
-  </div>
-
-  <!-- ======================================= -->
-  <h3>Geocoding</h3>
-  <div class="input-group">
-    <span class="strong">Google Geocoding API Key (optional): </span>
-    <input [formField]="form.googleGeocodingApiKey" placeholder="leave blank to use Nominatim (OpenStreetMap)"
-      type="text" [style.width.px]="320" />
-    <div class="text-sm">
-      Both options need an Internet connection - neither works offline. By default, address lookup uses
-      Nominatim (OpenStreetMap) - free, no key required. Supplying your own Google API key here switches
-      address lookup to Google Geocoding instead, which is generally more accurate and complete for
-      addresses OpenStreetMap's own data covers less well, at the cost of needing your own paid Google
-      account. This key is stored only in your browser and is your own billing responsibility.
-    </div>
-  </div>
-
-  <!-- ======================================= -->
-  <!-- D-31: named "Backup Map" to match the nav/Entry labels - not "Offline", since Leaflet
-       is also usable offline once tiles are saved for the area (see Leaflet Map Settings
-       above). Neither engine is "the offline one". -->
-  <h3>Backup Map (MapLibre + PMTiles) Settings</h3>
-  <div>
-    <div class="input-group">
-      <span class="strong">Default Zoom: </span>
-      <input
-        [class.border-danger]="form.maplibre.defZoom().touched() && form.maplibre.defZoom().invalid()"
-        type="number" [style.width.px]="50" [formField]="form.maplibre.defZoom" placeholder="15" />
-      @if (form.maplibre.defZoom().touched() && form.maplibre.defZoom().invalid()) {
-      <div class="text-sm text-danger">
-        must be between 3 and 22
-      </div>
-      }
-    </div>
-
-    <!-- markerScheme - unused for now -->
-
-    <div class="input-group">
-      <span class="strong">Overview Map Zoom Difference: </span>
-      <input
-        [class.border-danger]="form.maplibre.overviewDifference().touched() && form.maplibre.overviewDifference().invalid()"
-        type="number" [style.width.px]="50" [formField]="form.maplibre.overviewDifference" placeholder="5" />
-      @if (form.maplibre.overviewDifference().touched() && form.maplibre.overviewDifference().invalid()) {
-      <div class="text-sm text-danger">
-        must be between 1 and 10
-      </div>
-      }
-    </div>
-
-    <div class="input-group">
-      <span class="strong">Overview Map Min Zoom: </span>
-      <input
-        [class.border-danger]="form.maplibre.overviewMinZoom().touched() && form.maplibre.overviewMinZoom().invalid()"
-        type="number" [style.width.px]="50" [formField]="form.maplibre.overviewMinZoom" placeholder="5" />
-      @if (form.maplibre.overviewMinZoom().touched() && form.maplibre.overviewMinZoom().invalid()) {
-      <div class="text-sm text-danger">
-        must be between 1 and 10
-      </div>
-      }
-    </div>
-
-    <div class="input-group">
-      <span class="strong">Overview Map Max Zoom: </span>
-      <input
-        [class.border-danger]="form.maplibre.overviewMaxZoom().touched() && form.maplibre.overviewMaxZoom().invalid()"
-        type="number" [style.width.px]="50" [formField]="form.maplibre.overviewMaxZoom" placeholder="21" />
-      @if (form.maplibre.overviewMaxZoom().touched() && form.maplibre.overviewMaxZoom().invalid()) {
-      <div class="text-sm text-danger">
-        must be between 3 and 22
-      </div>
-      }
-    </div>
-  </div>
-</div>
+    <h3 class="settings__subhead">Geocoding</h3>
+    <mat-form-field class="settings__api-key">
+      <mat-label>Google geocoding API key &mdash; optional</mat-label>
+      <input matInput type="text" [formField]="form.googleGeocodingApiKey"
+        placeholder="Leave blank to use Nominatim (OpenStreetMap)" data-lpignore="true" />
+      <mat-hint>Stored only in this browser, and billed to your own Google account.</mat-hint>
+    </mat-form-field>
+    <p class="settings__note">
+      Neither option works offline. Address lookup defaults to Nominatim (OpenStreetMap) &mdash;
+      free, no key. Supplying a Google key switches lookup to Google Geocoding, which is
+      generally more accurate for addresses OpenStreetMap covers less well.
+    </p>
+  </mat-card-content>
+</mat-card>

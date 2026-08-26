@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Out
 import { FormsModule } from '@angular/forms'
 
 import { DEFAULT_RECIPIENT_OPTIONS_213 } from '../../../shared/services/'
+import { MATERIAL_IMPORTS } from '../../../material-imports'
 
 /**
  * E-103: the per-mission definable checklist of routine ICS-213 recipients (Incident
@@ -18,7 +19,7 @@ import { DEFAULT_RECIPIENT_OPTIONS_213 } from '../../../shared/services/'
 @Component({
   selector: 'rangertrak-settings-recipients213',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ...MATERIAL_IMPORTS],
   templateUrl: './settings-recipients213.component.html',
   styleUrls: ['./settings-recipients213.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

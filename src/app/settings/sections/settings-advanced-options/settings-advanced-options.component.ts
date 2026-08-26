@@ -1,14 +1,19 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core'
 
-import { SectionComponent } from '../../../shared/section/section.component'
+import { MATERIAL_IMPORTS } from '../../../material-imports'
 import {
   BackupService, LogService, SampleDataService, StoragePersistenceService
 } from '../../../shared/services/'
 
 /**
- * The "Advanced Options" disclosure: Storage Protection, Mission Backup (export/import),
- * and Sample Data. Sprint C split out of the 429-line settings.component template - see
+ * Data safety (Storage Protection, mission export) and the page's Danger Zone (reset
+ * settings, import mission, load sample data - all of which replace data already on the
+ * device).
+ *
+ * Material-M3 pass 2026-08-25 split those two apart: they were one undifferentiated
+ * "Advanced Options" block, so an unrecoverable "replaces everything on this device" import
+ * looked exactly like the reversible export beside it. Sprint C split out of the 429-line settings.component template - see
  * settings.component.ts for the rest.
  *
  * The Font Explorium (a dev-time typography-comparison tool, not something a scribe in the
@@ -23,7 +28,7 @@ import {
 @Component({
   selector: 'rangertrak-settings-advanced-options',
   standalone: true,
-  imports: [CommonModule, SectionComponent],
+  imports: [CommonModule, ...MATERIAL_IMPORTS],
   templateUrl: './settings-advanced-options.component.html',
   styleUrls: ['./settings-advanced-options.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

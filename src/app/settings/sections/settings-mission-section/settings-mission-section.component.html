@@ -1,42 +1,68 @@
-<div>
-  <!-- ======================================= -->
-  <h2>Mission</h2>
-  <div class="input-group">
-    <span class="strong">ID or #: </span>
-    <input [formField]="form.mission" placeholder="Mission #" [style.width.px]="100" type="text"
-      data-lpignore="true" />
-  </div>
+<!-- Material-M3 pass, 2026-08-25: every field here was a bare `<input>` with an inline
+     `[style.width.px]="100"` and a `<span class="strong">Label: </span>` beside it - browser
+     default chrome at ~11px, which is what "not something inherited over time from basic
+     html examples" was about. They are `<mat-form-field>`s now; the outlined appearance and
+     dynamic subscript come from MAT_FORM_FIELD_DEFAULT_OPTIONS in app.config.ts, so no
+     `appearance=` attribute is needed (or wanted) on any of them. -->
 
-  <div class="input-group">
-    <span class="strong">Name: </span>
-    <input [formField]="form.event" placeholder="Event Name" [style.width.px]="100" type="text" data-lpignore="true" />
-  </div>
+<mat-card appearance="outlined" class="rt-settings-card">
+  <mat-card-header>
+    <mat-card-title>Mission</mat-card-title>
+    <mat-card-subtitle>Names this incident on every report, export and printed ICS form.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="rt-field-grid">
+      <mat-form-field>
+        <mat-label>ID or number</mat-label>
+        <input matInput [formField]="form.mission" placeholder="Mission #" type="text" data-lpignore="true" />
+      </mat-form-field>
 
-  <div class="input-group">
-    <span class="strong">Notes: </span><br />
-    <textarea appearance="fill" [formField]="form.eventNotes" class="input-group settings__OpPeriod--notes" cols="60"
-      rows="4" placeholder="Event description, if needed"></textarea>
-  </div>
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput [formField]="form.event" placeholder="Event name" type="text" data-lpignore="true" />
+        <!-- D-32 signal 1: an unnamed mission is one of the six readiness checks, so say so
+             here rather than only in the header dot's tooltip. -->
+        <mat-hint>Required for mission readiness</mat-hint>
+      </mat-form-field>
+    </div>
 
-  <!-- ======================================= -->
-  <div class="input-group">
-    <h2>Operational Period</h2>
-    Name: <input [formField]="form.opPeriod" placeholder="Operational Period" [style.width.px]="120" type="text"
-      data-lpignore="true" />
-  </div>
+    <mat-form-field class="rt-field-grid__wide settings__notes">
+      <mat-label>Notes</mat-label>
+      <textarea matInput [formField]="form.eventNotes" rows="3"
+        placeholder="Event description, if needed"></textarea>
+    </mat-form-field>
+  </mat-card-content>
+</mat-card>
 
-  <!-- ======================================= -->
-  <!-- E-72: was `class="filled timepicker"` - a tinted, hard-bordered box around each
-       picker that's now redundant with the picker's own unified pill (time-picker.
-       component.scss's .rt-datetime already supplies background/border/radius). -->
-  <div class="timepicker">
-    <rangertrak-time-picker [initialDate]="opPeriodStart" [datePickerLabel]="timePickerLabelStart"
-      (newTimeEvent)="timeEventStart.emit($event)">
-    </rangertrak-time-picker>
-  </div>
+<mat-card appearance="outlined" class="rt-settings-card">
+  <mat-card-header>
+    <mat-card-title>Operational period</mat-card-title>
+    <mat-card-subtitle>Drives the elapsed and remaining timers in the page header, and the period an
+      ICS-309 log covers.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-form-field class="settings__period-name">
+      <mat-label>Period name</mat-label>
+      <input matInput [formField]="form.opPeriod" placeholder="Operational Period" type="text"
+        data-lpignore="true" />
+    </mat-form-field>
 
-  <div class="timepicker">
-    <rangertrak-time-picker [initialDate]="opPeriodEnd" [datePickerLabel]="timePickerLabelEnd"
-      (newTimeEvent)="timeEventEnd.emit($event)"></rangertrak-time-picker>
-  </div>
-</div>
+    <!-- E-72: the `class="filled timepicker"` boxes are gone - the picker draws its own
+         unified pill (time-picker.component.scss's .rt-datetime). These two only need
+         labelling and a row to sit in. -->
+    <div class="settings__periods">
+      <div class="settings__period">
+        <span class="settings__period-label">Starts</span>
+        <rangertrak-time-picker [initialDate]="opPeriodStart" [datePickerLabel]="timePickerLabelStart"
+          (newTimeEvent)="timeEventStart.emit($event)">
+        </rangertrak-time-picker>
+      </div>
+
+      <div class="settings__period">
+        <span class="settings__period-label">Ends</span>
+        <rangertrak-time-picker [initialDate]="opPeriodEnd" [datePickerLabel]="timePickerLabelEnd"
+          (newTimeEvent)="timeEventEnd.emit($event)"></rangertrak-time-picker>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,249 +1,117 @@
-// Sprint C (theme-token-layer memory): this @use block is a documented dead-config trap -
-// the MDC packages whose every @include here is commented out, except
-// "@material/button/styles" which DOES emit real CSS. Left alone deliberately - do not
-// remove or relocate without first confirming nothing depends on that one live include.
-@use "@material/theme"
-with ($primary: #962f10,
-  $on-primary: #442C2E);
-@use "@material/button";
-@use "@material/button/styles";
-@use "@material/banner";
-@use "../../styles/section"as section;
-@use "../../styles/typography"as type;
+// Material-M3 pass, 2026-08-25.
+//
+// This file lost most of its length, and that is the point. Removed as dead or superseded:
+//
+//   - the `@use "@material/theme" with ($primary: #962f10 ...)` block and its four MDC
+//     package @uses. That seed colour predates Sprint A's token layer by two skins, and
+//     every @include from those packages was already commented out except
+//     "@material/button/styles" - which was emitting real CSS for buttons this page no
+//     longer hand-rolls. Material's own theme (styles.scss's `mat.theme()`) is the only
+//     theme source now.
+//   - `.eButton` (this file's copy of the rule that also lived in entry, feedback and
+//     advanced-options), `.settings__save-button`, `.settings__cancel-button`,
+//     `button { max-width: 300px }` - all superseded by `matButton`.
+//   - `.settings__action-bar` and its two children - promoted to the global
+//     `.rt-action-bar` in styles/_patterns.scss, which this page's version was the
+//     prototype for.
+//   - `.bordered`, whose declaration was `border: 2 px solid ...` - invalid CSS (stray
+//     space), silently dropped by every browser since it was written. E-52 found the same
+//     rule on Entry and removed it there; this was the surviving copy.
+//   - `.elegant`, `.big`, `.small`, `.strongish`, `.wideField`, `.fill-warning`,
+//     `.text-warning`, `.border-warning`, `.timepicker_When-input`, `#addresses`,
+//     `#teamgrid1`, `.mood`, `.default`, `.selected`, and the bare `label` rule - none
+//     matched anything in the rewritten template; several matched nothing before it either.
+//   - the h2/h3 section-header includes: headings on this page are `<mat-card-title>` and
+//     the sections' own `.settings__subhead` now.
 
-.strong {
-  font-weight: bold;
+@use "../../styles/typography" as type;
+
+// ── The page's two-column layout ─────────────────────────────────────────────
+// Before this, the page was a single ~600px column of controls in a full-width window -
+// roughly 70% of the horizontal space empty while the form itself ran several screens
+// deep. `auto-fit` + `minmax` means no explicit breakpoint: it resolves to two columns on
+// a laptop and one on a phone or a narrow window, which is exactly the D-33 device range.
+//
+// 30rem is the floor because the widest single control on any card (the geocoding API key
+// field) needs about that much before it starts scrolling its own value.
+.settings__grid {
+  display              : grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr));
+  gap                  : 0 var(--rt-gap);
+  // Cards size to their own content instead of stretching to match the tallest card
+  // beside them - without this, the short "ICS-213 recipients" card would be padded out
+  // to the height of the "Maps" card next to it.
+  align-items          : start;
 }
 
-button {
-  max-width: 300px;
+// ── Readiness alert (E-79) ───────────────────────────────────────────────────
+// Was `.readiness-gaps`, a `--rt-surface-2` box that looked like every other block on the
+// page. It uses the global `.rt-alert` now - the same notice treatment the Rangers
+// confidentiality bar uses - so "something needs your attention" reads the same way
+// app-wide. The red/amber item accents are kept: they carry the same meaning as the header
+// dot a scribe is already reading.
+.settings__readiness-icon {
+  flex : none;
+  color: var(--rt-notice-ink);
 }
 
-.eButton {
-  //display: inline-block;
-  width             : 80px;
-  font-weight       : bold;
-  //background-color: red;
-  margin            : 30 px;
-  //padding: 10px;
+.settings__readiness-heading {
+  @include type.type-title;
+  margin: 0 0 0.15em;
 }
 
-// This page is one long form across six sections (Mission, Location, Maps, Field Report
-// Statuses, Recipients, Instructions) plus Debug - the previous single Save button was a
-// plain 80px-wide, uncoloured .eButton stranded at the bottom, easy to lose on a busy page
-// and invisible without scrolling all the way down. `position: sticky; bottom: 0` keeps it
-// (and a new Cancel, previously absent entirely) pinned to the viewport bottom while
-// scrolling: its containing block is this whole <form>, which still has Advanced Options
-// after it, so it stays stuck for the full scroll of the sections above and only settles in
-// place - detaching cleanly, not overlapping - once Advanced Options's own destructive
-// controls come into view.
-.settings__action-bar {
-  position        : sticky;
-  bottom          : 0;
-  z-index         : 10;
-  display         : flex;
-  align-items     : center;
-  justify-content : space-between;
-  flex-wrap       : wrap;
-  gap             : 0.75em;
-  margin          : 1.5em -1em 0;
-  padding         : 0.85em 1em;
-  background      : var(--rt-surface);
-  border-top      : 2px solid var(--rt-accent);
-  border-radius   : var(--rt-radius);
-  box-shadow      : 0 -4px 12px rgba(0, 0, 0, 0.25);
+.settings__readiness-sub {
+  @include type.type-body-sm;
+  margin : 0 0 0.6em;
+  opacity: 0.85;
 }
 
-.settings__action-bar-label {
-  font-weight: bold;
-}
-
-.settings__action-bar-buttons {
-  display: flex;
-  gap    : 0.75em;
-}
-
-.settings__save-button,
-.settings__cancel-button {
-  min-width  : 140px;
-  padding    : 0.75em 1.5em;
-  font-size  : 1.15em;
-  font-weight: bold;
-  border-radius: var(--rt-radius);
-  cursor     : pointer;
-}
-
-.settings__save-button {
-  border    : none;
-  background: var(--rt-accent);
-  color     : var(--rt-accent-ink);
-}
-
-.settings__save-button:disabled {
-  opacity: 0.5;
-  cursor : not-allowed;
-}
-
-.settings__cancel-button {
-  background: transparent;
-  border    : 2px solid var(--rt-line-strong);
-  color     : var(--rt-ink);
-}
-
-// E-79: reuses the header readiness dot's own red/amber tokens (mission-readiness.component.scss)
-// so a scribe already reading "red means X" from the header pill sees the same colour
-// language here, not a second one to learn.
-.readiness-gaps {
-  margin       : 0 0 1rem;
-  padding      : 0.6em 0.9em;
-  background   : var(--rt-surface-2);
-  border-radius: var(--rt-radius);
-}
-
-.readiness-gaps__heading {
-  margin     : 0 0 0.4em;
-  font-weight: 700;
-}
-
-.readiness-gaps ul {
+.settings__readiness-list {
   margin : 0;
   padding: 0;
 }
 
-.readiness-gaps__item {
-  list-style  : none;
-  padding     : 0.2em 0 0.2em 0.7em;
-  border-left : 3px solid var(--rt-line-strong);
-  margin      : 0 0 0.35em;
+.settings__readiness-item {
+  list-style : none;
+  padding    : 0.2em 0 0.2em 0.7em;
+  border-left: 3px solid var(--rt-line-strong);
+  margin     : 0 0 0.35em;
 }
 
-.readiness-gaps__item--red {
+.settings__readiness-item--red {
   border-left-color: var(--rt-readiness-red);
 }
 
-.readiness-gaps__item--amber {
+.settings__readiness-item--amber {
   border-left-color: var(--rt-readiness-amber);
 }
 
-.readiness-gaps__item a {
+.settings__readiness-item a {
   margin-left: 0.5em;
+  color      : inherit;
 }
 
-label {
-  font-weight   : bold;
-  padding-bottom: .5rem;
-  padding-top   : 1rem;
-  display       : inline-block;
+// ── Action bar trimming ──────────────────────────────────────────────────────
+.settings__save-icon {
+  flex     : none;
+  font-size: 18px;
+  width    : 18px;
+  height   : 18px;
 }
 
-// E-52 / ADR D-39: was the sixth copy of the same h1,h2,h3 !important block. Settings
-// only has an <h2> of its own ("Debug"); h3 is covered here too for the section
-// components' sake being consistent.
-h2 {
-  @include section.section-header;
+// ── Debug ────────────────────────────────────────────────────────────────────
+// Was its own `<h2>Debug</h2>` section with a bare checkbox under it - a full section
+// heading for one developer-facing switch, sitting at the same level as Mission and Maps.
+// Demoted to a single labelled row between the form and its action bar.
+.settings__debug {
+  display    : flex;
+  align-items: baseline;
+  flex-wrap  : wrap;
+  gap        : 0.5rem;
+  margin     : 0.5rem 0 0;
 }
 
-h3 {
-  @include section.subsection-header;
-}
-
-// Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss. Still needed here
-// for .installMe below, even though .filled itself moved to the Mission section (Sprint C).
-$filledColor: var(--rt-surface-2);
-
-.big {
-  font-size  : large;
-  font-weight: bold;
-}
-
-// ADR D-39: was `font-size: 12px`, now the named body-sm role.
-.small {
+.settings__debug-note {
   @include type.type-body-sm;
+  color: var(--rt-ink-3);
 }
-
-.elegant {
-  @include section.section-header;
-}
-
-.strongish {
-  font-weight: 500;
-}
-
-.bordered {
-  border: 2 px solid rgb(62, 189, 189);
-}
-
-#addresses {
-  width: 200px;
-}
-
-.wideField {
-  width: 10em;
-}
-
-.fill-warning {
-  background-color: rgb(212, 179, 106);
-}
-
-.text-warning {
-  color: rgb(175, 75, 35);
-  ;
-}
-
-.border-warning {
-  border-color: orange;
-  border-style: groove;
-}
-
-.timepicker_When-input {
-  width: 400px;
-}
-
-#teamgrid1 {
-  // Was rgb(215, 241, 143), a yellow-green from no palette.
-  background-color: var(--rt-surface-2);
-  /*display       : inline-block;*/
-  height          : 40em;
-  width           : 40em;
-}
-
-.mood {
-  border-radius: 15px;
-  border       : 1px solid grey;
-  background   : #e6e6e6;
-  padding      : 15px;
-  text-align   : center;
-  display      : inline-block;
-  outline      : none;
-}
-
-.default {
-  border : 1px solid transparent;
-  padding: 4px;
-}
-
-.selected {
-  border : 1px solid lightgreen;
-  padding: 4px;
-}
-
-// Sprint B (25a item 1) removed a full-bleed background photograph from this page, masked
-// by linear-gradient(.25turn, rgba(252,252,252,1), 30%, rgba(221,213,213,0.25)) - which
-// faded only the first 30% of the width, so roughly 70% of the longest form in the app sat
-// on an unmasked photo of pavement and a hi-vis vest, and the geocoding help text was
-// unreadable on the deployed 0.15.0.
-//
-// Removed rather than re-masked: this is a settings form, not a landing page. The Help
-// page keeps its photograph, where prose can afford one. The page ground and ink it used
-// to set here now come from PageComponent.
-
-// https://dev.to/nazanin_ashrafi/how-to-darken-an-image-with-css-4f5h
-/*
-filter: brightness(30%);
-  opacity: 0.5;
-  ul {
-    background-color: black;
-    }
-*/
-// https://developer.mozilla.org/en-US/docs/Web/CSS/background-image
-//https://rapidapi.com/guides/css-painting-api

@@ -115,6 +115,23 @@
   flex: 1;
 }
 
+// ── Cards in a page grid ─────────────────────────────────────────────────────
+// Global, not scoped to the page that lays the grid out, because the cards are rendered
+// by CHILD components (settings' six section components each emit their own
+// `<mat-card>`s). Angular's emulated encapsulation means a rule in the parent's stylesheet
+// cannot reach them, so a per-page definition would silently do nothing - the same class
+// of "looks configured, does nothing" trap ADR D-39 already catalogued.
+//
+// `mat-card appearance="outlined"` supplies the border, radius and surface itself; this
+// only owns how a card sits in a column of other cards.
+.rt-settings-card {
+  display      : block;
+  margin-bottom: var(--rt-gap);
+  // Cards are grid items whose parents set `align-items: start`, so they size to their own
+  // content rather than stretching to the tallest card in the row.
+  align-self   : start;
+}
+
 // ── Field layout ─────────────────────────────────────────────────────────────
 // A row of `<mat-form-field>`s that wraps instead of overflowing. Every page that
 // lays out more than two fields side by side uses this rather than its own grid -

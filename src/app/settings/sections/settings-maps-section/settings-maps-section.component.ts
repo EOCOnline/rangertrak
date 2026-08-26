@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 
 import { SettingsType } from '../../../shared/services/'
+import { MATERIAL_IMPORTS } from '../../../material-imports'
 
 /**
  * Maps checkbox, Leaflet settings, Geocoding, and Backup Map (MapLibre + PMTiles) settings.
@@ -15,7 +16,7 @@ import { SettingsType } from '../../../shared/services/'
 @Component({
   selector: 'rangertrak-settings-maps-section',
   standalone: true,
-  imports: [CommonModule, FormField],
+  imports: [CommonModule, FormField, ...MATERIAL_IMPORTS],
   templateUrl: './settings-maps-section.component.html',
   styleUrls: ['./settings-maps-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

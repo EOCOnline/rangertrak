@@ -1,78 +1,101 @@
 <rangertrak-page [title]="title" [description]="pageDescr">
 
-  <!-- E-55: was this page's own install panel - raw hex colours, a fixed 250px width,
-       opacity:0.8 - styled differently from the navbar's and footer's own separate
-       implementations of the same concept. See InstallUpdateComponent's doc comment.
-       `detailed` keeps this page's fuller explanation; navbar/footer get the compact form. -->
+  <!-- ══ 3. ALERTS - live only, never permanent furniture ══ -->
+
+  <!-- E-55: one install surface, shared with the navbar and footer. See
+       InstallUpdateComponent's doc comment; `detailed` keeps this page's fuller wording. -->
   <rangertrak-install-update [detailed]="true"></rangertrak-install-update>
 
-  <!-- E-79: which specific gap(s) are behind the header's red/amber readiness dot, not
-       just the aggregate colour - never shown once every signal is green. -->
+  <!-- E-79: which specific gap(s) are behind the header's red/amber readiness dot, rather
+       than just the aggregate colour. Never rendered once every signal is green. -->
   @if (readinessGaps().length > 0) {
-  <div class="readiness-gaps" role="note" aria-label="Mission readiness gaps">
-    <p class="readiness-gaps__heading">Affecting mission readiness on this device:</p>
-    <ul>
-      @for (gap of readinessGaps(); track gap.label) {
-      <li class="readiness-gaps__item" [class.readiness-gaps__item--red]="gap.severity === 'red'"
-        [class.readiness-gaps__item--amber]="gap.severity === 'amber'">
-        {{ gap.label }}
-        @if (gap.link) {
-        <a [routerLink]="gap.link">{{ gap.linkText }}</a>
+  <div class="rt-alert settings__readiness" role="note" aria-label="Mission readiness gaps">
+    <mat-icon class="settings__readiness-icon" aria-hidden="true">warning</mat-icon>
+    <div class="rt-alert__body">
+      <p class="settings__readiness-heading">
+        {{ readinessGaps().length }} of 6 readiness checks
+        {{ readinessGaps().length === 1 ? 'is' : 'are' }} failing on this device
+      </p>
+      <p class="settings__readiness-sub">This is what the dot in the page header is counting.</p>
+      <ul class="settings__readiness-list">
+        @for (gap of readinessGaps(); track gap.label) {
+        <li class="settings__readiness-item"
+          [class.settings__readiness-item--red]="gap.severity === 'red'"
+          [class.settings__readiness-item--amber]="gap.severity === 'amber'">
+          {{ gap.label }}
+          @if (gap.link) {
+          <a [routerLink]="gap.link">{{ gap.linkText }}</a>
+          }
+        </li>
         }
-      </li>
-      }
-    </ul>
+      </ul>
+    </div>
   </div>
   }
 
   <form (ngSubmit)="onFormSubmit()">
-    <br />
 
-    <rangertrak-settings-mission-section [form]="settingsForm" [opPeriodStart]="opPeriodStart()"
-      [opPeriodEnd]="opPeriodEnd()" [timePickerLabelStart]="timePickerLabelStart"
-      [timePickerLabelEnd]="timePickerLabelEnd" (timeEventStart)="onNewTimeEventStart($event)"
-      (timeEventEnd)="onNewTimeEventEnd($event)">
-    </rangertrak-settings-mission-section>
+    <!-- ══ 4. THE PRIMARY OBJECT - the settings themselves ══
+         Two columns where the window allows, one where it doesn't. Before this the page was
+         a single ~600px-wide column of controls in a full-width window, so roughly 70% of
+         the horizontal space sat empty while the page ran several screens deep. Each section
+         renders its own <mat-card>s and sets `:host { display: contents }`, so the cards
+         themselves - not the section wrappers - are this grid's items. -->
+    <div class="settings__grid">
+      <rangertrak-settings-mission-section [form]="settingsForm" [opPeriodStart]="opPeriodStart()"
+        [opPeriodEnd]="opPeriodEnd()" [timePickerLabelStart]="timePickerLabelStart"
+        [timePickerLabelEnd]="timePickerLabelEnd" (timeEventStart)="onNewTimeEventStart($event)"
+        (timeEventEnd)="onNewTimeEventEnd($event)">
+      </rangertrak-settings-mission-section>
 
-    <rangertrak-settings-location-section [form]="settingsForm" [settings]="settings">
-    </rangertrak-settings-location-section>
+      <rangertrak-settings-location-section [form]="settingsForm" [settings]="settings">
+      </rangertrak-settings-location-section>
 
-    <rangertrak-settings-maps-section [form]="settingsForm"></rangertrak-settings-maps-section>
+      <rangertrak-settings-maps-section [form]="settingsForm"></rangertrak-settings-maps-section>
 
-    <rangertrak-settings-field-report-statuses [rowData]="rowData()"></rangertrak-settings-field-report-statuses>
+      <rangertrak-settings-field-report-statuses [rowData]="rowData()">
+      </rangertrak-settings-field-report-statuses>
 
-    <rangertrak-settings-recipients213 [options]="recipientOptions213()"
-      (optionsChange)="onRecipientOptions213Change($event)"></rangertrak-settings-recipients213>
+      <rangertrak-settings-recipients213 [options]="recipientOptions213()"
+        (optionsChange)="onRecipientOptions213Change($event)"></rangertrak-settings-recipients213>
 
-    <rangertrak-settings-instructions></rangertrak-settings-instructions>
-
-    <!-- ======================================= -->
-    <h2>Debug</h2>
-
-    <div class="input-group">
-      <input type="checkbox" [formField]="settingsForm.debugMode" placeholder="debugMode" />
-      <span class="strong">Debug Mode</span>
+      <rangertrak-settings-instructions></rangertrak-settings-instructions>
     </div>
 
-    <br />
+    <!-- Debug is a saved setting, not a live mode, so it is a checkbox rather than a
+         slide-toggle (see the redesign's selection-control rule: a toggle is for something
+         that takes effect the moment you flip it; this one waits for Save like every other
+         field on the page). Bound through the FieldState's own WritableSignal because
+         Signal Forms' [formField] cannot drive a Material checkbox - angular/components#32072,
+         same as the coordinate-system and map-marker checkboxes. -->
+    <div class="settings__debug">
+      <mat-checkbox [checked]="settingsForm.debugMode().value()"
+        (change)="settingsForm.debugMode().value.set($event.checked)">Debug mode</mat-checkbox>
+      <span class="settings__debug-note">
+        Adds a diagnostic panel to the Entry screen and verbose entries to the Log page.
+      </span>
+    </div>
 
-    <!-- Sticky action bar: `position: sticky` clamps to its containing block (this <form>,
-         which still has Advanced Options below), so it stays pinned to the viewport bottom
-         while scrolling this page's many sections, then settles in place once Advanced
-         Options is reached - see settings.component.scss for the physics. -->
-    <div class="settings__action-bar">
-      <span class="settings__action-bar-label">Save all settings above?</span>
-      <div class="settings__action-bar-buttons">
-        <button type="button" class="settings__cancel-button" (click)="onCancel()">Cancel</button>
-        <button [disabled]="settingsForm().invalid()" class="settings__save-button" type="submit">Save</button>
+    <!-- ══ 5. ACTION BAR ══ `.rt-action-bar` is global now (styles/_patterns.scss) - this
+         page's own `.settings__action-bar` was the prototype for it. Sticky against the
+         <form>, which still has the danger zone below it, so it settles rather than
+         hovering once the destructive controls come into view. -->
+    <div class="rt-action-bar">
+      <span class="rt-action-bar__status">
+        <mat-icon class="settings__save-icon" aria-hidden="true">cloud_off</mat-icon>
+        Settings live in this browser only, and are never uploaded
+      </span>
+      <div class="rt-action-bar__buttons">
+        <button matButton type="button" (click)="onCancel()">Cancel</button>
+        <button matButton="filled" type="submit" [disabled]="settingsForm().invalid()">
+          Save settings
+        </button>
       </div>
     </div>
 
-    <br />
-    <br />
-
-    <!-- ======================================= -->
+    <!-- ══ 6. DANGER ZONE ══ (plus the non-destructive Data safety card it was tangled with) -->
     <rangertrak-settings-advanced-options (resetDefaults)="onBtnResetDefaults()">
     </rangertrak-settings-advanced-options>
   </form>
+
 </rangertrak-page>
