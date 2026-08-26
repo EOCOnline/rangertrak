@@ -146,7 +146,8 @@
             "assets": [
               "src/assets/icons/favicon.ico",
               "src/manifest.webmanifest",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              "src/assets/forms/ics-213.pdf"
             ],
             "styles": [
               "src/styles.scss"

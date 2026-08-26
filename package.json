@@ -64,6 +64,7 @@
     "leaflet.offline": "^3.2.0",
     "maplibre-gl": "^6.4.1",
     "mgrs": "^2.2.0",
+    "pdf-lib": "^1.17.1",
     "pmtiles": "^4.5.0",
     "tslib": "^2.8.1",
     "utm": "^1.1.1",
