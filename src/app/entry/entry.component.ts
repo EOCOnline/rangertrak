@@ -211,8 +211,9 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Architecture decision, 2026-08-26: evidence/clue location - hidden by default (a plain
   // signal, not part of any form model, same "session UI state, not report data" treatment
-  // LocationComponent's own showAllSystems already uses), a checkbox reveals
-  // EvidenceLocationComponent. evidenceLocation itself mirrors locationParent's own pattern
+  // LocationComponent's own activeSystem uses - E-104, 2026-08-26 - for which coordinate
+  // format currently has the editable fields), a checkbox reveals EvidenceLocationComponent.
+  // evidenceLocation itself mirrors locationParent's own pattern
   // (a plain field the child emits into, merged into the submission in mergedFormValue()
   // below) rather than living inside entryModel - same reason locationParent doesn't either.
   showEvidenceLocation = signal(false)

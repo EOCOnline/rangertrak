@@ -261,10 +261,13 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       showDD: true,
       showDDM: true,
       showDMS: true,
-      // Raised live, 2026-08-26: all six defaulted true, so Entry's "Show all systems"
-      // session toggle (location.component.ts's showAllSystems) had nothing left to reveal -
-      // it looked like a no-op the first time anyone tried it. MGRS/UTM off by default means
-      // the toggle now visibly does something out of the gate; DD/DDM/DMS/Maidenhead unchanged.
+      // Raised live, 2026-08-26. These gate which coordinate systems Entry's format
+      // switcher offers (E-104, 2026-08-26 - location.component.ts's activeSystem/
+      // availableSystems()) - MGRS/UTM off by default keeps a fresh install's switcher to
+      // the three formats most SAR volunteers already read (DD/DDM/DMS), with MGRS/UTM one
+      // Mission Settings checkbox away for missions that use them. (Originally written
+      // against the older "show every system at once" design, since replaced - the
+      // defaults themselves are unchanged, only what they now control.)
       showMGRS: false,
       showUTM: false,
       showMaidenhead: true,

@@ -99,29 +99,47 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   }
 
   /**
-   * Entry-side, per-session override: shows every coordinate system regardless of the
-   * settings.showXxx flags below. Not persisted - a scribe flips it on when they need
-   * to see a format the mission hid, not a mission-wide setting change.
+   * Material-M3 pass, 2026-08-26 (E-104): which ONE coordinate system currently has the
+   * live, editable input fields. Before this, `isVisible()` (below) could be true for
+   * SEVERAL systems at once - every one enabled in Mission Settings, plus every one if the
+   * old `showAllSystems` toggle was on - so a scribe could face up to 22 simultaneous input
+   * boxes (DD's 4 + DDM's 6 + DMS's 8 + MGRS's 3 + UTM's 4 - address).
+   *
+   * This is a PRESENTATION change only, deliberately: `ddModel`/`ddmModel`/`dmsModel`/
+   * `mgrsModel`/`utmModel` above are already pure `linkedSignal`s recomputed from the one
+   * `canonical` signal, so every representation was ALREADY continuously kept in sync
+   * regardless of which one a scribe happened to be looking at - that is what makes
+   * `otherSystemsDisplay()` below possible with no new derivation logic, just formatting
+   * already-live values. Nothing about `onDdChg()`/`onDdmChg()`/etc., the five `xxxForm`
+   * Signal Forms trees, their validators, or the `[hidden]`/`ti()` tabindex-reservation
+   * mechanism changes - see `isVisible()` below for why this keeps `TAB_SLOT_COUNT` fixed
+   * at 26 and entry.component.ts's downstream chain completely untouched, which is what
+   * keeps this a contained, e2e-verifiable change rather than one that ripples through
+   * every tabindex offset after Where.
+   *
+   * Defaults to 'DD' before settings arrive (matches the previous default emphasis - DD was
+   * always settings.showDD's own default `true`); corrected once real settings land, in the
+   * subscription below, if DD turns out to be disabled for this mission.
    */
-  showAllSystems = signal(false)
+  activeSystem = signal<'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'>('DD')
+
+  /** Canonical display order, reused by the switcher (below) and by `firstAvailableSystem()`. */
+  private static readonly SYSTEM_ORDER: ('DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM')[] =
+    ['DD', 'DDM', 'DMS', 'MGRS', 'UTM']
 
   /**
-   * True if `system` is visible AND at least one earlier-in-order system is also
-   * visible - used to render the "or" separator DD/DDM/DMS already join each Lat/Lng
-   * group with, without ever leaving a dangling one when something is hidden. Only
-   * DD/DDM/DMS participate in this inline join - MGRS and UTM encode a whole position
-   * rather than one axis, so they render as their own standalone rows below, with no
-   * "or" to manage.
+   * Which systems the switcher offers as choices - Mission Settings' "coordinate systems
+   * shown on Entry" checkboxes now gate THIS (which formats a scribe can pick), not
+   * simultaneous visibility the way they used to. Before settings arrive, offer all five
+   * rather than none, matching `isVisible()`'s own "show everything" fallback below.
    */
-  orBefore(system: 'DDM' | 'DMS'): boolean {
-    if (!this.isVisible(system)) return false
-    const order: ('DD' | 'DDM' | 'DMS')[] = ['DD', 'DDM', 'DMS']
-    return order.slice(0, order.indexOf(system)).some(s => this.isVisible(s))
+  availableSystems(): ('DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM')[] {
+    if (!this.settings) return LocationComponent.SYSTEM_ORDER
+    return LocationComponent.SYSTEM_ORDER.filter(s => this.systemEnabledInSettings(s))
   }
 
-  isVisible(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): boolean {
-    if (this.showAllSystems()) return true
-    if (!this.settings) return true // before settings arrive, show everything
+  private systemEnabledInSettings(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): boolean {
+    if (!this.settings) return true
     switch (system) {
       case 'DD': return this.settings.showDD
       case 'DDM': return this.settings.showDDM
@@ -129,6 +147,26 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       case 'MGRS': return this.settings.showMGRS
       case 'UTM': return this.settings.showUTM
     }
+  }
+
+  /** The switcher's own handler - a plain component signal, not a Signal Forms field, so
+   * no [formField]/CVA question applies here at all (unlike Source's own switcher on the
+   * parent Entry form). */
+  setActiveSystem(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): void {
+    this.activeSystem.set(system)
+  }
+
+  /**
+   * A system's editable fields are visible IFF it is the active one. Reserved-but-hidden
+   * for the other four either way (see the template's `[hidden]="!isVisible(...)"`, one
+   * `<span>` per system, unchanged from before this pass) - which is exactly what keeps
+   * `TAB_SLOT_COUNT` a fixed 26 regardless of which system happens to be active: all five
+   * systems' fields stay present in the DOM with their `ti()`-assigned tabindex attributes
+   * at all times, only the CSS `hidden` state (driven by this method) changes which one a
+   * scribe can actually reach by tabbing or see on screen.
+   */
+  isVisible(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): boolean {
+    return this.activeSystem() === system
   }
 
   private id = "Location Component"
@@ -327,6 +365,17 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       next: (newSettings) => {
         this.settings = newSettings
         this.log.excessive('Received new Settings via subscription.', this.id)
+
+        // `activeSystem` defaults to 'DD' before real settings arrive (a synchronous
+        // default is needed for the first render). If this mission actually has DD
+        // disabled, correct to the first system Settings does enable rather than leaving
+        // the switcher showing a selected option Settings says shouldn't exist. Also
+        // covers a mission's settings changing mid-session (e.g. Settings page open in
+        // another tab) to disable whichever system is currently active.
+        if (!this.systemEnabledInSettings(this.activeSystem())) {
+          const fallback = this.availableSystems()[0]
+          if (fallback) this.activeSystem.set(fallback)
+        }
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
@@ -484,6 +533,65 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.newLocationToFormAndEmit(enteredLocation)
   }
 
+  /** Friendly label for the switcher and the "other formats" strip - kept separate from the
+   * short 'DD'/'DDM'/... codes used as the type/keys, since a scribe reads the label. */
+  systemLabel(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): string {
+    switch (system) {
+      case 'DD': return 'Decimal degrees'
+      case 'DDM': return 'Degrees decimal minutes'
+      case 'DMS': return 'Degrees minutes seconds'
+      case 'MGRS': return 'MGRS'
+      case 'UTM': return 'UTM'
+    }
+  }
+
+  /**
+   * E-104: one formatted line per system OTHER than the currently-active one, for the
+   * read-only "same position, other formats" strip - the replacement for the old
+   * ~20-simultaneous-input grid. Reads straight from the already-live `xxxModel()`
+   * `linkedSignal`s above; no new geocoding, no new derivation, no async - these are the
+   * exact same values the hidden input fields for those systems already hold, just
+   * formatted for display rather than editing. Genuinely reactive (a real Angular binding
+   * in the template, `{{ ... }}`), unlike the legacy Address/+Codes/Maidenhead readouts
+   * below - those are `setDerivedText()`'s direct DOM writes, kept exactly as they were
+   * (see that method's own comment for why converting THEM is explicitly out of scope
+   * here, a separate roadmap item). There is no such legacy debt for these three - they are
+   * new with this pass, so they get real bindings from the start.
+   */
+  otherSystemsDisplay(): { system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'; label: string; value: string }[] {
+    const active = this.activeSystem()
+    return LocationComponent.SYSTEM_ORDER
+      .filter(s => s !== active)
+      .map(system => ({ system, label: this.systemLabel(system), value: this.formatSystem(system) }))
+  }
+
+  private formatSystem(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): string {
+    switch (system) {
+      case 'DD': {
+        const { latI, latF, lngI, lngF } = this.ddModel()
+        // Matches onDdChg()'s own reconstruction exactly (`${latI}.${latF}`) - the display
+        // and the value a real edit here would produce are kept identical on purpose.
+        return `${latI}.${latF}°, ${lngI}.${lngF}°`
+      }
+      case 'DDM': {
+        const { latDdmD, latDdmM, latDdmQ, lngDdmD, lngDdmM, lngDdmQ } = this.ddmModel()
+        return `${latDdmD}° ${latDdmM.toFixed(2)}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM.toFixed(2)}' ${lngDdmQ}`
+      }
+      case 'DMS': {
+        const { latD, latM, latS, latQ, lngD, lngM, lngS, lngQ } = this.dmsModel()
+        return `${latD}° ${latM}' ${Math.round(latS)}" ${latQ}, ${lngD}° ${lngM}' ${Math.round(lngS)}" ${lngQ}`
+      }
+      case 'MGRS': {
+        const { gridRef, easting, northing } = this.mgrsModel()
+        return `${gridRef} ${String(easting).padStart(5, '0')} ${String(northing).padStart(5, '0')}`
+      }
+      case 'UTM': {
+        const { zone, hemisphere, easting, northing } = this.utmModel()
+        return `${zone}${hemisphere} ${easting} ${northing}`
+      }
+    }
+  }
+
   /**
    * Any user change to a coordinate representation (above), an address lookup (below), or the
    * parent handing us a new @Input() location (via ngOnChanges) funnels through here: update
@@ -609,7 +717,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     // Sprint H: no dedicated Maidenhead input field, but the position is still shown
     // here as a derived readout - setDerivedText() already no-ops if the element isn't
-    // rendered (showMaidenhead off, and showAllSystems off).
+    // rendered (settings.showMaidenhead off).
     this.setDerivedText("maidenhead", DDToMaidenhead(location.lat, location.lng))
 
     // E-48(1): now that every line above has real text, the block can actually be shown.

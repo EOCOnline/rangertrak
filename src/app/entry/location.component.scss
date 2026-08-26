@@ -1,317 +1,77 @@
-@use "@material/theme"
-with ($primary: #962f10,
-  $on-primary: #442C2E);
-@use "@material/button";
-@use "@material/button/styles";
-@use "@material/banner";
 @use "../../styles/typography" as type;
-@use "../../styles/section" as section;
-@use "../../styles/breakpoints" as bp;
 
 // Sprint A: was #F0F0F0, now skin-controlled. See styles/_tokens.scss.
 $filledColor: var(--rt-surface-2);
 
-
-.elegant {
-  @include section.section-header;
-}
+// E-104 (Material-M3 pass, 2026-08-26): `.elegant` was never actually applied by this
+// template (confirmed by grepping location.component.html both before and after this
+// pass) - copy-pasted boilerplate from Entry's own stylesheet header that had nothing to
+// style here. Removed rather than carried forward.
+//
+// Every rule below this point that existed purely to give a bare, unstyled native <input>
+// a visible border/background/width - the whole
+// "#enter__Where-latI { width: 34px }" family, one rule per field id, and the blanket
+// ".enter__Where-input input[type=number]" border rule - is gone. Two replacements:
+//   - The Address field is a real <mat-form-field> now (location.component.html), which
+//     draws its own chrome; no per-field CSS needed at all.
+//   - Every coordinate SUB-field (DD's degrees/fraction, DDM's degrees/minutes/direction,
+//     etc.) reuses the SAME compact "segment" pattern time-picker.component.scss already
+//     established for hour/minute/AM-PM - .rt-coord-seg below is that pattern's sibling,
+//     not a new one. A full mat-form-field per sub-field was considered and rejected: these
+//     read as ONE compound value ("47° 26.83' N"), and wrapping each of up to eight
+//     sub-fields in its own labelled 56px-tall field would fight that reading rather than
+//     support it - the same reasoning that kept time-picker off mat-form-field for its own
+//     segments.
 
 .filled {
   background-color: $filledColor;
 }
 
-// ADR D-39: was `background-color: #f4f4f4` - a raw hex outside the token layer, and
-// visually indistinguishable from $filledColor anyway.
-//
-// The large gap the maintainer reported above the derived Address/+Codes/What3Words rows
-// is the same float-intrusion bug class as E-67 and E-69, a third instance of it: the
-// mini-map (`entry.component.html`, `float: right`) is still present at this scroll
-// position, and `<hr>` carries `overflow: hidden` in the browser's OWN default stylesheet
-// - which makes a block box establish its own formatting context and avoid overlapping a
-// float, dropping the `<hr>` down until clear of the map's bottom edge (measured live:
-// ~128px, matching the map's remaining height at that point, not the `<hr>`'s own 8px
-// margin). `display: flow-root` here, same fix as E-67/E-69, makes THIS container ignore
-// the outside float entirely rather than fixing the `<hr>` in isolation.
+// E-48(1) / E-104: the derived-output block. Was `background-color: $filledColor` on its
+// own; now sits inside the same visual frame `.rt-other-formats` (below) uses, so the two
+// panels read as one continuous "here's what else this position looks like" area rather
+// than two differently-styled boxes stacked on top of each other.
 .enter__Where-Results {
-  background-color: $filledColor;
-  display: flow-root;
+  display      : flow-root;
+  padding      : 0.6rem 0.8rem 0.7rem;
+  border       : 1px solid var(--rt-line);
+  border-bottom: none;
+  border-radius: var(--rt-radius-lg) var(--rt-radius-lg) 0 0;
+  background   : var(--rt-surface-2);
 }
 
-// E-48(1): hides the derived-output block without ever removing its elements from the
-// DOM - see updateDerivedLocations()'s own comment on why a structural @if would race the
-// render.
-//
-// Was `display: none` (deliberately, "so it also doesn't reserve layout space while empty")
-// until a live PageSpeed/DevTools trace, 2026-08-26, measured this exact block as the
-// dominant cause of a 0.35-0.40 CLS score - confirmed by dismissing the unrelated E-83
-// welcome panel first and re-measuring, which ruled it out and left this block's reveal as
-// the culprit (Layout Shifts panel named div.enter__Where-Results, the timepicker section,
-// and both section h2s moving together, twice - once for the block appearing, once as its
-// content settled). `visibility: hidden` reserves the same layout space from first paint
-// instead of popping in at full height later, while keeping the exact same DOM-persistence
-// guarantee the comment above this one depends on (`getElementById()` still finds every
-// element, `visibility` doesn't remove anything from the DOM or layout tree, just paints it
-// invisibly) - so `setDerivedText()`'s ordering-can't-race-a-render reasoning is untouched.
-// Each derived line is a fixed-width `readonly <input>` (E-48(2)), so the box's height
-// doesn't depend on its value's text - filling in the real address later changes what's
-// displayed, not the reserved height, so this shouldn't reintroduce a shift once shown.
+// See E-48(1)'s own comment in location.component.ts for why this is `visibility: hidden`
+// (reserves layout space, avoids a measured CLS regression) rather than `display: none`.
 .enter__Where-Results--hidden {
   visibility: hidden;
 }
 
-// E-48(2): the derived Address/+Codes/What3Words/Maidenhead readouts are `readonly`
-// inputs, not spans (see location.component.html and setDerivedText()), specifically so
-// they read as - and are - selectable/copyable data rather than plain label text.
+// E-48(2): the derived Address/+Codes/Maidenhead readouts are `readonly` inputs, not
+// spans, so they read as - and are - selectable/copyable data.
 .enter__Where-derived-row {
-  display: block;
+  display      : block;
   margin-bottom: 2px;
+  @include type.type-body-sm;
 
   input {
-    border        : 1px solid var(--rt-line-strong);
-    border-radius : var(--rt-radius);
-    background    : var(--rt-surface);
-    color         : var(--rt-ink-2);
-    font-style    : italic;
-    padding       : 1px 4px;
-    width         : min(100%, 320px);
-    cursor        : text;
+    border       : 1px solid var(--rt-line-strong);
+    border-radius: var(--rt-radius);
+    background   : var(--rt-surface);
+    color        : var(--rt-ink-2);
+    font-style   : italic;
+    padding      : 1px 4px;
+    width        : min(100%, 320px);
+    cursor       : text;
   }
 }
 
-// E-48(5): was a fixed 600px, which is exactly why the block overflowed and wrapped badly
-// once MGRS/UTM pushed the total content past that width - it could neither shrink to fit
-// a phone nor grow to fit its own content. max-width keeps it from ever exceeding its
-// container instead.
-//
-// Maintainer, 2026-08-20: this box's own tinted background was running the full row width,
-// under the still-floating mini-map, instead of stopping short of it. Same float-intrusion
-// bug class as .enter__Where-Results above, one level up: this whole container is a plain
-// block box (no BFC of its own), so its background paints full-width and only overlaps the
-// float visually rather than stopping beside it. `display: flow-root` makes IT avoid the
-// float too, same as its child; margin-right leaves visible breathing room instead of
-// butting flush against the map's own edge (E-69 did the same for the section-header rule,
-// via a margin on the map's own side).
-.enter__Where-div {
-  background-color: $filledColor;
-  max-width       : 100%;
-  padding         : 4px 8px 6px 5px;
-  border-radius   : 5px;
-  display         : flow-root;
-  margin-right    : 12px;
-}
-
-.enter__Where-input_unused {
-  background-color  : $filledColor;
-  //width           : 700px;
-}
-
-// E-48(3)/(4): every coordinate input used to render with no border or background of its
-// own - bare numbers sitting directly on the panel, which is very likely why DDM/DMS read
-// as inert text rather than an obvious place to type (the reporter's (4), "where does an
-// operator enter DM and other formats?"). A visible field boundary on every input in this
-// form answers both complaints with one rule.
-.enter__Where-input input[type=number],
-.enter__Where-input input[type=text] {
-  border       : 1px solid var(--rt-line-strong);
-  border-radius: var(--rt-radius);
-  background   : var(--rt-surface);
-  color        : var(--rt-ink);
-  padding      : 1px 3px;
-}
-
-// E-48(5): each format's fields (the <span> wrapping DD, or DDM, or DMS, etc.) now wrap as
-// a whole unit instead of breaking mid-group - the wrap that used to land "DMS" alone below
-// "Latitude" with nothing to say why.
-.input-group {
-  display   : flex;
-  align-items: baseline;
-  flex-wrap : wrap;
-  gap       : 0.15rem 0.6rem;
-}
-
-// E-11 pass (2026-08-26): MGRS/UTM's own wrapping .input-group now uses [hidden] (not @if)
-// to keep their tabindex-bearing fields reserved-but-hidden - see location.component.html's
-// own comment. Without this override the unconditional `display: flex` above would win over
-// the browser's default `[hidden] { display: none }` (equal specificity, declared later) and
-// the "hidden" system would keep rendering anyway - the exact bug entry.component.scss's
-// .enter__213-details already hit once for the same reason.
-.input-group[hidden] {
-  display: none;
-}
-
-#enter__Where-latI,
-#enter__Where-lngI,
-#enter__Where-latD,
-#enter__Where-lngD,
-#enter__Where-latDdmD,
-#enter__Where-lngDdmD {
-  width     : 34px;
-  text-align: right;
-}
-
-#enter__Where-latF,
-#enter__Where-lngF {
-  width: 40px;
-}
-
-#enter__Where-latQ,
-#enter__Where-lngQ,
-#enter__Where-latDdmQ,
-#enter__Where-lngDdmQ {
-  width       : 18px;
-  margin-right: 3px;
-}
-
-#enter__Where-latM,
-#enter__Where-lngM {
-  width: 24px;
-}
-
-#enter__Where-latS,
-#enter__Where-lngS {
-  width: 44px;
-}
-
-#enter__Where-latDdmM,
-#enter__Where-lngDdmM {
-  width: 50px;
-}
-
-// 2026-08-22: MGRS and UTM never got the same content-sized treatment as DD/DDM/DMS above
-// - confirmed live there was no rule at all for any of these seven fields, so they fell
-// back to the browser's unstyled default input width (~170-200px). Maintainer asked
-// directly whether they need that width: no. Sized to the wider of (a) their actual
-// content - "10TFS" for the grid ref, 5-digit MGRS eastings/northings, zone 1-60, a
-// single N/S letter - and (b) their own placeholder text where one exists ("Easting"/
-// "Northing"/"Zone" are all wider than the digits they precede while the field is empty;
-// #enter__Where-utmHemisphere has no placeholder, so it only needs to fit "N"/"S").
-#enter__Where-mgrsGridRef {
-  width: 56px;
-}
-
-#enter__Where-mgrsEasting,
-#enter__Where-mgrsNorthing,
-#enter__Where-utmEasting,
-#enter__Where-utmNorthing {
-  width: 68px;
-}
-
-#enter__Where-utmZone {
-  width: 40px;
-}
-
-#enter__Where-utmHemisphere {
-  width     : 24px;
-  text-align: center;
-}
-
-#enter__Where-Address {
-  width: 295px;
-}
-
-// E-49: was a checkbox + a parenthetical sentence; now a minor note under a slide toggle.
-//
-// 2026-08-22: three separate passes (track/handle size, then the state-layer halo, then a
-// second halo traced to Angular's own MatRipple directive - sized in JS from the switch's
-// bounding box, immune to every `--mat-slide-toggle-*` token and to `disableRipple`) still
-// left this reading as visually broken. Maintainer's call: stop fighting Material's
-// internals down to a custom size - this is now a completely standard `<mat-slide-toggle>`
-// with zero token overrides, at whatever height that actually needs. See the reassurance
-// panel below for what used to be a size-driven "why did more fields appear" concern.
-.enter__Where-toggle {
-  @include type.type-body-sm;
-  margin-top : 0.5rem;
-  color      : var(--rt-ink-2);
-  display    : flex;
-  align-items: center;
-  gap        : 0.3em;
-}
-
-// Reassurance panel for the toggle above - same hover-panel idea as the mission-readiness
-// tooltip and the install/update pill (both elsewhere in the app), used here so "why did
-// more fields just appear" and "does this change my mission's settings" both have an
-// answer one hover away, without permanent on-page text.
-.enter__Where-toggle-info {
-  position: relative;
-  display : inline-flex;
-}
-
-.enter__Where-toggle-info__icon {
-  width         : 1.1em;
-  height        : 1.1em;
-  padding       : 0;
-  border        : 1px solid var(--rt-ink-3);
-  border-radius : 50%;
-  background    : transparent;
-  color         : var(--rt-ink-3);
-  font-size     : 0.75em;
-  font-style    : italic;
-  font-weight   : 700;
-  line-height   : 1;
-  cursor        : pointer;
-}
-
-.enter__Where-toggle-info__icon:hover,
-.enter__Where-toggle-info__icon:focus-visible {
-  color      : var(--rt-ink);
-  border-color: var(--rt-ink);
-}
-
-.enter__Where-toggle-info__panel {
-  position     : absolute;
-  bottom       : calc(100% + 8px);
-  left         : 0;
-  z-index      : 20;
-  width        : max-content;
-  max-width    : min(280px, calc(100vw - 2rem));
-  box-sizing   : border-box;
-  background   : var(--rt-surface);
-  color        : var(--rt-ink);
-  border       : 1px solid var(--rt-line);
-  border-radius: var(--rt-radius);
-  box-shadow   : 0 4px 12px rgba(0, 0, 0, 0.25);
-  padding      : 0.6em 0.8em;
-  font-size    : 0.85rem;
-  line-height  : 1.4;
-  text-align   : left;
-
-  opacity       : 0;
-  visibility    : hidden;
-  pointer-events: none;
-  transition    : opacity 0.1s ease;
-}
-
-.enter__Where-toggle-info:hover .enter__Where-toggle-info__panel,
-.enter__Where-toggle-info:focus-within .enter__Where-toggle-info__panel {
-  opacity   : 1;
-  visibility: visible;
-}
-
-// FIX (2026-08-24 defect sweep): same anchoring bug and same fix as
-// install-update.component.scss's __panel - `left: 0` against an anchor right of centre
-// pushed a correctly-sized 280px panel off the right edge at phone width.
-@include bp.phone {
-  .enter__Where-toggle-info__panel {
-    left : auto;
-    right: 0;
-  }
-}
-
-// 2026-08-21: labeled divider marking the start of the derived read-only values, replacing
-// a bare <hr>. A flex row with a line on each side of the label rather than text overlaid
-// on a <hr> - simpler than fighting a rule's own box model to center text on top of it.
 .enter__Where-derived-divider {
   display    : flex;
   align-items: center;
-  margin     : 0.75rem 0 0.5rem;
+  margin     : 0 0 0.5rem;
   color      : var(--rt-ink-3);
   @include type.type-label;
 
-  // Live review, 2026-08-22: "nearly invisible" - was 1px on --rt-line, this app's
-  // subtlest hairline token, picked for a bare separator rather than a labeled one.
-  // 2px on --rt-line-strong (the same token .rt-datetime__divider already uses for a
-  // divider meant to actually be seen) reads as a real rule instead of an anti-aliasing
-  // artifact.
   &::before,
   &::after {
     content   : '';
@@ -324,8 +84,196 @@ $filledColor: var(--rt-surface-2);
   }
 }
 
+// E-104: the new read-only "same position, other formats" panel - see its own comment in
+// location.component.html for why it is a separate block from .enter__Where-Results rather
+// than folded into it (different visibility gating: this one is synchronous and always
+// ready once any position exists, that one waits on an async geocode). Visually joined to
+// it anyway via matching borders/radius, since side by side they read as one continuous
+// "derived data" area to a scribe, whatever gates each one internally.
+.rt-other-formats {
+  padding      : 0.6rem 0.8rem 0.7rem;
+  border       : 1px solid var(--rt-line);
+  border-radius: 0 0 var(--rt-radius-lg) var(--rt-radius-lg);
+  background   : var(--rt-surface);
+}
+
+.rt-other-formats__label {
+  margin: 0 0 0.5rem;
+  color : var(--rt-ink-3);
+  @include type.type-label;
+}
+
+// Live-measured, 2026-08-26: a first draft used a 2-up auto-fit grid here, which left only
+// ~136px for the value column once the fixed-width label sat beside it - nowhere near
+// enough for a DDM/DMS string ("47° 26.83' N, 122° 27.76' W", ~28 characters) and every
+// value past DD's own short one truncated with an ellipsis, silently hiding the longitude
+// half of every row that wrapped. A single column gives each row the full panel width;
+// four rows costs little vertical space and nothing is ever cut off.
+.rt-other-formats__grid {
+  display       : flex;
+  flex-direction: column;
+  gap           : 0.3rem;
+}
+
+.rt-other-formats__row {
+  display   : flex;
+  flex-wrap : wrap;
+  gap       : 0.3rem 0.6rem;
+}
+
+.rt-other-formats__system {
+  flex     : none;
+  width    : 8.5rem;
+  color    : var(--rt-ink-2);
+  @include type.type-body-sm;
+}
+
+.rt-other-formats__value {
+  flex       : 1 1 auto;
+  min-width  : 0;
+  @include type.type-body-sm;
+  font-variant-numeric: tabular-nums;
+  color      : var(--rt-ink);
+}
+
+// E-48(5)/(3)/(4): each system's own row - unlike the old always-simultaneous layout, only
+// ONE of these is ever visible at once now (isVisible()), so the old "wrap as a whole unit
+// instead of breaking mid-group" flex-wrap concern (multiple systems joined by "or" on one
+// line) no longer applies; kept simple.
+.rt-coord-axis {
+  display       : flex;
+  align-items   : center;
+  flex-wrap     : wrap;
+  gap           : 0.4rem 0.6rem;
+  margin-bottom : 0.5rem;
+}
+
+// [hidden] would already win against a bare `display: flex` above under normal CSS cascade
+// rules (same selector specificity, [hidden] declared via the UA stylesheet - but this
+// rule's OWN specificity, ".rt-coord-axis", is higher than the UA default's plain "[hidden]"
+// - so without this override the axis would keep rendering anyway. Same bug class
+// entry.component.scss's .enter__213-details and location.component.scss's old
+// .input-group[hidden] rule both already exist to prevent.
+.rt-coord-axis[hidden] {
+  display: none;
+}
+
+.enter__field-label {
+  flex          : none;
+  min-width     : 4.5rem;
+  font-size     : var(--rt-type-label-size);
+  line-height   : var(--rt-type-label-line);
+  font-weight   : 500;
+  letter-spacing: 0.4px;
+  color         : var(--rt-ink-2);
+}
+
+// The bordered pill wrapping one axis's (or MGRS/UTM's whole-position) segments - same
+// "one visible boundary around several bare inner segments" idea as time-picker's
+// .rt-datetime, so a scribe reads coordinate entry and time entry as the same kind of
+// control.
+.rt-coord-group {
+  display      : inline-flex;
+  align-items  : stretch;
+  background   : var(--rt-surface);
+  border       : 1px solid var(--rt-line-strong);
+  border-radius: var(--rt-radius);
+  padding      : 0 0.3em;
+}
+
+.rt-coord-seg {
+  font        : inherit;
+  color       : var(--rt-ink);
+  background  : transparent;
+  border      : none;
+  border-radius: 3px;
+  padding     : 0.3em 0.15em;
+  text-align  : center;
+  cursor      : text;
+
+  // Hides the native number spinner - a stray spinner would be wider than the digits.
+  -moz-appearance: textfield;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+.rt-coord-seg:hover,
+.rt-coord-seg:focus-visible {
+  background: var(--rt-surface-2);
+}
+
+.rt-coord-seg:focus-visible {
+  outline       : 2px solid var(--rt-accent);
+  outline-offset: -1px;
+}
+
+.rt-coord-seg.border-danger {
+  outline: 2px solid var(--rt-readiness-red);
+}
+
+.rt-coord-dot {
+  align-self: center;
+  color     : var(--rt-ink-2);
+}
+
+.rt-coord-unit {
+  align-self  : center;
+  color       : var(--rt-ink-3);
+  padding-right: 0.2em;
+  font-size   : 0.9em;
+}
+
+// Content-sized per segment kind, same reasoning as the removed per-id rules this replaces
+// - wide enough for the longest real value (a degree can be up to 3 digits for longitude),
+// narrow enough not to look like it wants more.
+.rt-coord-seg--deg { width: 2.6em; }
+.rt-coord-seg--frac { width: 3.6em; }
+.rt-coord-seg--min { width: 2.6em; }
+.rt-coord-seg--sec { width: 2.6em; }
+.rt-coord-seg--dir { width: 1.6em; }
+.rt-coord-seg--mgrs-grid { width: 4.2em; }
+.rt-coord-seg--mgrs-en { width: 4.6em; }
+.rt-coord-seg--utm-zone { width: 2.6em; }
+
+// Live-measured, 2026-08-26: mat-button-toggle-group does not wrap its own options by
+// default, and this row was 527px wide at phone width with the original verbose labels
+// ("Degrees decimal minutes" etc.) - the actual cause of a real e2e phone-width regression
+// this pass introduced and then fixed (see location.component.html's own comment on the
+// switcher for the label-length half of that fix). flex-wrap here is the layout half - a
+// defensive floor on top of the shorter labels, not a replacement for them, so a future
+// addition to the format list (or a skin with a wider type scale) degrades to two rows
+// instead of forcing the page wide again.
+.enter__Where-switcher {
+  margin-bottom: 0.6rem;
+  flex-wrap    : wrap;
+}
+
+// E-48(5): was a fixed 600px, which overflowed once MGRS/UTM's own fields pushed content
+// past it - unlikely to bite the same way now that only one system's fields render at
+// once, but max-width costs nothing and still protects a phone-width Address field/switcher
+// row from a container that grows past its own bounds.
+//
+// Maintainer, 2026-08-20: this box's own tinted background used to run under the still-
+// floating mini-map instead of stopping beside it (same float-intrusion class as E-67/69) -
+// display:flow-root makes this container avoid the float instead of painting under it.
+.enter__Where-div {
+  background-color: $filledColor;
+  max-width       : 100%;
+  padding         : 4px 8px 6px 5px;
+  border-radius   : 5px;
+  display         : flow-root;
+  margin-right    : 12px;
+}
+
+.enter__Where-Address {
+  width    : 100%;
+  max-width: 420px;
+}
+
 // https://www.codingtag.com/remove-arrows-from-input-type-number
-// to hide spinners
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -333,20 +281,11 @@ input::-webkit-inner-spin-button {
   margin            : 0;
 }
 
-/* Specilly used for Firefox */
+/* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
 }
 
-// ADR D-39: was `font-size: 12px` - now the named body-sm role.
 .small {
   @include type.type-body-sm;
-}
-
-hr {
-  width               : 80%;
-  //height            : 0.3 px;
-  //border-width    : 0;
-  //color           : gray;
-  //background-color: gray;
 }
