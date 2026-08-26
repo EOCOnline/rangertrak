@@ -117,28 +117,53 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * keeps this a contained, e2e-verifiable change rather than one that ripples through
    * every tabindex offset after Where.
    *
-   * Defaults to 'DD' before settings arrive (matches the previous default emphasis - DD was
-   * always settings.showDD's own default `true`); corrected once real settings land, in the
-   * subscription below, if DD turns out to be disabled for this mission.
+   * Defaults to 'DD' before settings arrive; corrected once real settings land, in the
+   * subscription below, to this mission's own preferred starting format if it has one (see
+   * `preferredSystems()`).
    */
   activeSystem = signal<'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'>('DD')
 
-  /** Canonical display order, reused by the switcher (below) and by `firstAvailableSystem()`. */
+  /** Guards the settings subscription's one-time initial-default correction below, so a
+   * later settings change never re-applies it mid-session. */
+  private activeSystemDefaultSet = false
+
+  /** Canonical display order, reused by the switcher and by `preferredSystems()` below. */
   private static readonly SYSTEM_ORDER: ('DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM')[] =
     ['DD', 'DDM', 'DMS', 'MGRS', 'UTM']
 
   /**
-   * Which systems the switcher offers as choices - Mission Settings' "coordinate systems
-   * shown on Entry" checkboxes now gate THIS (which formats a scribe can pick), not
-   * simultaneous visibility the way they used to. Before settings arrive, offer all five
-   * rather than none, matching `isVisible()`'s own "show everything" fallback below.
+   * Every system the switcher offers - unconditionally all five, regardless of Mission
+   * Settings.
+   *
+   * NOT gated by settings.showXX. An earlier version of this method filtered down to only
+   * the mission's enabled systems - wrong, caught live by the maintainer: "without the
+   * 'show all coordinate systems' checkbox how am I supposed to enter an unexpected radio
+   * call using other coordinates? I now only see one entry format." The OLD showAllSystems
+   * toggle was not merely "see several systems at once" - it was ALSO the only way to reach
+   * a format Settings hadn't enabled (MGRS/UTM default off), and retiring it without
+   * replacing that half of its job silently made an unexpected MGRS/UTM call impossible to
+   * enter without a trip to Mission Settings first, mid-incident. A scribe must always be
+   * able to reach any format Entry supports, in one tap, regardless of what this mission
+   * usually expects - see `preferredSystems()` below for where settings.showXX actually
+   * matters now (which format Entry opens on, not which formats exist).
    */
   availableSystems(): ('DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM')[] {
-    if (!this.settings) return LocationComponent.SYSTEM_ORDER
-    return LocationComponent.SYSTEM_ORDER.filter(s => this.systemEnabledInSettings(s))
+    return LocationComponent.SYSTEM_ORDER
   }
 
-  private systemEnabledInSettings(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): boolean {
+  /**
+   * The mission's own preferred format(s), per Mission Settings' "coordinate systems shown
+   * on Entry" checkboxes - used ONLY to pick which format `activeSystem` opens on (see the
+   * settings subscription below), never to restrict `availableSystems()`. A mission that
+   * mostly works in MGRS can have Entry open there by default while every other format
+   * stays one tap away regardless.
+   */
+  private preferredSystems(): ('DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM')[] {
+    if (!this.settings) return LocationComponent.SYSTEM_ORDER
+    return LocationComponent.SYSTEM_ORDER.filter(s => this.systemPreferredInSettings(s))
+  }
+
+  private systemPreferredInSettings(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): boolean {
     if (!this.settings) return true
     switch (system) {
       case 'DD': return this.settings.showDD
@@ -367,14 +392,20 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         this.log.excessive('Received new Settings via subscription.', this.id)
 
         // `activeSystem` defaults to 'DD' before real settings arrive (a synchronous
-        // default is needed for the first render). If this mission actually has DD
-        // disabled, correct to the first system Settings does enable rather than leaving
-        // the switcher showing a selected option Settings says shouldn't exist. Also
-        // covers a mission's settings changing mid-session (e.g. Settings page open in
-        // another tab) to disable whichever system is currently active.
-        if (!this.systemEnabledInSettings(this.activeSystem())) {
-          const fallback = this.availableSystems()[0]
-          if (fallback) this.activeSystem.set(fallback)
+        // default is needed for the first render). Once real settings land, open on this
+        // mission's own preferred format instead, if it has one that isn't DD - but only
+        // on the FIRST arrival. Unlike an earlier version of this correction, this is a
+        // one-time initial default, not an ongoing enforcement: availableSystems() now
+        // always offers every format (see its own comment for why - a scribe must always
+        // be able to reach any format, not just this mission's preferred ones), so there is
+        // no "invalid" active system to correct anymore. Re-running this on every settings
+        // change would yank a scribe back to the mission's preferred format mid-report
+        // just because Settings changed in another tab, which is actively disruptive now
+        // that it is no longer fixing a real invalidity.
+        if (!this.activeSystemDefaultSet) {
+          this.activeSystemDefaultSet = true
+          const preferred = this.preferredSystems()[0]
+          if (preferred) this.activeSystem.set(preferred)
         }
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -563,6 +594,38 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     return LocationComponent.SYSTEM_ORDER
       .filter(s => s !== active)
       .map(system => ({ system, label: this.systemLabel(system), value: this.formatSystem(system) }))
+  }
+
+  /**
+   * Which row was most recently copied, so the template can show a brief "copied"
+   * acknowledgement against it. Cleared on the next copy; null when nothing has been
+   * copied yet this session.
+   */
+  copiedSystem = signal<string | null>(null)
+
+  /**
+   * Click-to-copy on any derived coordinate row. Maintainer, 2026-08-26: "if users click
+   * any coordinate display, copy that to clipboard, if you agree" - agreed, and it is the
+   * genuinely useful direction here: reading MGRS back to a helicopter, or pasting a
+   * position into a separate CAD/ICS system, is exactly what these read-only rows are FOR,
+   * and retyping a 15-character grid reference by hand mid-incident is both slow and an
+   * easy place to transpose a digit.
+   *
+   * Same `navigator.clipboard.writeText()` idiom the two Leaflet maps already use for their
+   * own click-to-copy (mini-mapLeaflet.component.ts's onMouseClick, mapLeaflet's
+   * storeLatLngInClipboard) rather than a new mechanism - including its catch, since
+   * clipboard access can be refused (insecure context, or a permissions policy) and a
+   * silent unhandled rejection would leave the scribe believing a copy happened.
+   */
+  copyCoordinate(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM', value: string): void {
+    navigator.clipboard.writeText(value)
+      .then(() => {
+        this.copiedSystem.set(system)
+        this.log.excessive(`${system} "${value}" copied to clipboard`, this.id)
+      })
+      .catch(err => {
+        this.log.error(`${system} NOT copied to clipboard, error: ${err}`, this.id)
+      })
   }
 
   private formatSystem(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): string {

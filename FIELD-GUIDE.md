@@ -177,11 +177,13 @@ pasting needed (it's also copied to your clipboard, in case you want it elsewher
 The full Map and Backup Map pages don't set the location this way; clicking them copies
 the coordinates under your cursor so you can paste them into Home yourself.
 
-RangerTrak accepts a position in whichever format it was called in over the radio:
+RangerTrak accepts a position in whichever format it was called in over the radio. A
+small switcher above the coordinate fields picks which one is active - type into that one,
+and every other format updates automatically underneath it, read-only, so you can always
+see the same position however else it's expressed:
 
 - **Decimal Degrees, Degrees/Decimal Minutes, or Degrees-Minutes-Seconds** — the usual
-  latitude/longitude formats, entered side by side so you can use whichever one the
-  field team reads out.
+  latitude/longitude formats.
 - **MGRS** (the grid system US SAR, wildland fire, and the National Guard use, printed
   on every USGS topo quad) and **UTM** — each entered as its own set of boxes (grid
   zone, easting, northing, and so on), matching how they're actually read aloud in
@@ -195,11 +197,12 @@ RangerTrak accepts a position in whichever format it was called in over the radi
 > 100–200m in the western US — worth knowing if a position looks slightly wrong
 > compared to what you see on the map.
 
-Not every mission wants all six formats cluttering the screen. **Settings → Location
-Defaults** lets you turn any of them off; Home also has its own "Show all coordinate
-systems" toggle for the current session only, if you need to see a format the
-mission has hidden. Don't see a coordinate system your team actually uses (e.g. PLSS
-Township/Range/Section, or another country's national grid)? Open an issue on
+Every format is always available from Home's own switcher, so an unexpected radio
+call in a format your mission doesn't usually use is never a problem. **Settings → Location
+Defaults** only picks which format Home opens on by default for this mission - a convenience
+for a team that mostly works in one format, not a restriction on what you can enter. Don't
+see a coordinate system your team actually uses (e.g. PLSS Township/Range/Section, or
+another country's national grid)? Open an issue on
 [GitHub](https://github.com/EOCOnline/RangerTrak/issues) — genuine field use is exactly
 what decides what gets added next.
 

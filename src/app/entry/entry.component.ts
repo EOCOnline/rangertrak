@@ -731,14 +731,29 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.info(`Report id # ${newReport.id} has been added with: ${formDataJSON} `, this.id)
 
     if (this.submitInfo) {
-      // Display fading confirmation to right of Submit button
-      this.submitInfo.innerText = `Entry id # ${newReport.id} Saved. Data: ${formDataJSON}`
+      // The KEPT confirmation: a fading line beside the Submit button, right where the
+      // scribe's attention already is. Maintainer, 2026-08-26: "save the lower fading
+      // report". Shows the id alone by default - the full JSON dump it used to always
+      // append is raw diagnostic data, so it now rides along only in debug mode, matching
+      // the #enter__frm-reguritation panel's own gating in ngOnInit above.
+      this.submitInfo.innerText = this.settings?.debugMode
+        ? `Entry id # ${newReport.id} Saved. Data: ${formDataJSON}`
+        : `Entry id # ${newReport.id} saved`
       Utility.resetMaterialFadeAnimation(this.submitInfo)
     }
     else {
       this.log.error("Submit Info field not found. Could not display report confirmation confirmation", this.id)
     }
-    this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formDataJSON} `, `Entry id # ${newReport.id} `, 3000)
+
+    // Debug-mode only, as of 2026-08-26. This is the snackbar that lands at the TOP of the
+    // page (AlertsComponent.OpenSnackBar passes verticalPosition: 'top'), and it dumped the
+    // entire serialized report over the page header on every single submit - the maintainer
+    // asked for it to be debug-only: "the fading display at TOP of the page, once submit is
+    // clicked, should only happen if debug mode is on." The lower fading line above is the
+    // one a scribe actually needs, and it stays unconditional.
+    if (this.settings?.debugMode) {
+      this.alert.OpenSnackBar(`Entry id # ${newReport.id} Saved: ${formDataJSON} `, `Entry id # ${newReport.id} `, 3000)
+    }
 
     this.resetEntryForm()  // std reset just blanks values, doesn't initialize the various form fields...
   }

@@ -27,17 +27,22 @@ $filledColor: var(--rt-surface-2);
   background-color: $filledColor;
 }
 
-// E-48(1) / E-104: the derived-output block. Was `background-color: $filledColor` on its
-// own; now sits inside the same visual frame `.rt-other-formats` (below) uses, so the two
-// panels read as one continuous "here's what else this position looks like" area rather
-// than two differently-styled boxes stacked on top of each other.
+// The single derived-data panel wrapping BOTH the coordinate rows and the async
+// Address/+Codes/Maidenhead rows (see the template for why they stay separate inside it).
+// Carries the tinted panel treatment .enter__Where-Results used to own on its own.
+.enter__Where-derived {
+  display         : flow-root;
+  background-color: $filledColor;
+  padding         : 0.4rem 0.6rem 0.5rem;
+  border-radius   : var(--rt-radius);
+  margin-top      : 0.5rem;
+}
+
+// E-48(1): now an inner block rather than the panel itself - it keeps ONLY the
+// visibility gating (below), since the panel's own chrome moved to
+// .enter__Where-derived above.
 .enter__Where-Results {
-  display      : flow-root;
-  padding      : 0.6rem 0.8rem 0.7rem;
-  border       : 1px solid var(--rt-line);
-  border-bottom: none;
-  border-radius: var(--rt-radius-lg) var(--rt-radius-lg) 0 0;
-  background   : var(--rt-surface-2);
+  display: block;
 }
 
 // See E-48(1)'s own comment in location.component.ts for why this is `visibility: hidden`
@@ -85,55 +90,64 @@ $filledColor: var(--rt-surface-2);
 }
 
 // E-104: the new read-only "same position, other formats" panel - see its own comment in
-// location.component.html for why it is a separate block from .enter__Where-Results rather
-// than folded into it (different visibility gating: this one is synchronous and always
-// ready once any position exists, that one waits on an async geocode). Visually joined to
-// it anyway via matching borders/radius, since side by side they read as one continuous
-// "derived data" area to a scribe, whatever gates each one internally.
-.rt-other-formats {
-  padding      : 0.6rem 0.8rem 0.7rem;
-  border       : 1px solid var(--rt-line);
-  border-radius: 0 0 var(--rt-radius-lg) var(--rt-radius-lg);
-  background   : var(--rt-surface);
-}
-
-.rt-other-formats__label {
-  margin: 0 0 0.5rem;
-  color : var(--rt-ink-3);
-  @include type.type-label;
-}
-
-// Live-measured, 2026-08-26: a first draft used a 2-up auto-fit grid here, which left only
-// ~136px for the value column once the fixed-width label sat beside it - nowhere near
-// enough for a DDM/DMS string ("47° 26.83' N, 122° 27.76' W", ~28 characters) and every
-// value past DD's own short one truncated with an ellipsis, silently hiding the longitude
-// half of every row that wrapped. A single column gives each row the full panel width;
-// four rows costs little vertical space and nothing is ever cut off.
-.rt-other-formats__grid {
-  display       : flex;
-  flex-direction: column;
-  gap           : 0.3rem;
-}
-
+// E-104, restyled 2026-08-26 on maintainer feedback ("display of additional derived
+// coordinate systems should follow the existing derived address styling. small text &
+// minimal"). These rows now sit INSIDE .enter__Where-Results alongside Address/+Codes/
+// Maidenhead and deliberately borrow .enter__Where-derived-row's exact visual language -
+// type-body-sm, --rt-ink-2, italic values, the same tight 2px row rhythm - rather than the
+// bordered panel with its own heading that a first draft gave them. They are the same KIND
+// of thing as the existing derived readouts (a computed restatement of the position you
+// already entered), so they should not look like a separate, louder feature.
+//
+// Kept as plain spans, not readonly <input>s like the Address/+Codes rows: those are
+// written imperatively by setDerivedText() and needed a real element to target (see its own
+// comment), while these are genuine Angular bindings. The italic/ink-2 styling below is
+// what makes them READ the same despite the different element.
+// A <button> (see the template - click-to-copy needs a real control), stripped back to
+// read as plain text: no border, no background, no button metrics. Only the pointer cursor
+// and the hover/focus tint say it is actionable.
 .rt-other-formats__row {
-  display   : flex;
-  flex-wrap : wrap;
-  gap       : 0.3rem 0.6rem;
+  display      : block;
+  width        : 100%;
+  margin       : 0 0 2px;
+  padding      : 1px 4px;
+  border       : none;
+  border-radius: var(--rt-radius);
+  background   : transparent;
+  text-align   : left;
+  font         : inherit;
+  cursor       : pointer;
+  @include type.type-body-sm;
+}
+
+.rt-other-formats__row:hover,
+.rt-other-formats__row:focus-visible {
+  background: var(--rt-surface);
 }
 
 .rt-other-formats__system {
-  flex     : none;
-  width    : 8.5rem;
-  color    : var(--rt-ink-2);
-  @include type.type-body-sm;
+  color: var(--rt-ink-2);
+  // The label and value are separate inline spans with a newline between them in the
+  // template, which HTML collapses to nothing here because the <button> is a flex/block
+  // context boundary - so without an explicit gap they render flush ("MGRS:10TET 40506").
+  // Matches the natural space after the colon in the Address/+Codes rows beside them.
+  margin-inline-end: 0.35em;
 }
 
 .rt-other-formats__value {
-  flex       : 1 1 auto;
-  min-width  : 0;
-  @include type.type-body-sm;
+  color               : var(--rt-ink-2);
+  font-style          : italic;
   font-variant-numeric: tabular-nums;
-  color      : var(--rt-ink);
+}
+
+// Brief acknowledgement that the click actually did something - without it, clicking a
+// row that looks like plain text gives no feedback at all and a scribe cannot tell whether
+// the copy happened. Deliberately quiet: this is a confirmation, not an alert.
+.rt-other-formats__copied {
+  margin-inline-start: 0.5em;
+  color              : var(--rt-readiness-green);
+  font-style         : normal;
+  font-size          : var(--rt-type-label-size);
 }
 
 // E-48(5)/(3)/(4): each system's own row - unlike the old always-simultaneous layout, only

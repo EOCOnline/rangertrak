@@ -28,9 +28,21 @@
       </mat-form-field>
     </div>
 
-    <!-- Sprint H: which coordinate systems Entry's Location widget offers. All default on;
-         a mission that only cares about one or two formats can hide the rest here. Entry
-         also has its own session-only "Show all systems" override.
+    <!-- Sprint H, meaning corrected E-104 (2026-08-26): these do NOT control which formats
+         are reachable on Entry - every format is always one tap away there, via the
+         switcher above Where. Checking one or more here only picks which format Entry
+         OPENS on for this mission (the first checked one, in the order shown below) - a
+         genuine per-mission convenience (a border team that mostly works in MGRS can have
+         Entry start there), not an access restriction.
+
+         Real regression this correction exists to prevent a repeat of: an earlier version
+         of this pass DID let these restrict access, and the maintainer caught it live -
+         "without the 'show all coordinate systems' checkbox how am I supposed to enter an
+         unexpected radio call using other coordinates? I now only see one entry format."
+         MGRS/UTM default off (below), and under the old blocking reading that made an
+         unexpected MGRS/UTM call impossible to enter without a trip to this page first,
+         mid-incident. See location.component.ts's `availableSystems()` for the fix and the
+         full reasoning - keep that method unconditional if this section is touched again.
 
          Material-M3 pass: these are `mat-checkbox` now, but deliberately NOT via
          `[formField]` - Signal Forms' formField directive cannot act as the value accessor
@@ -39,7 +51,9 @@
          writing `.value.set()` on the FieldState directly is the supported way round it
          and keeps these bound to the same form tree as every other field here. -->
     <fieldset class="settings__coords">
-      <legend class="settings__coords-legend">Coordinate systems shown on Entry</legend>
+      <legend class="settings__coords-legend">Default coordinate format for Entry</legend>
+      <p class="settings__coords-note">Every format is always available on Entry - this only
+        picks which one it opens on for this mission.</p>
       <!-- Written out rather than looped: indexing `FieldTree<SettingsType>` by a key held
            in a loop variable resolves to a union of call signatures TypeScript will not
            narrow, and the six are a fixed set that changes about once a year. -->

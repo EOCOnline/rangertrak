@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.59.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-26)
+
+### Fixes
+
+* **entry:** every coordinate format is reachable again from the Where switcher, regardless of Mission Settings. E-104 replaced the old "Show all coordinate systems" toggle with a one-format-at-a-time switcher, but that toggle had also been the only way to reach a format Settings hadn't enabled - and MGRS/UTM default off, so an unexpected MGRS/UTM radio call became impossible to enter without a trip to Mission Settings first, mid-incident. The switcher now always offers all five; Settings' checkboxes only pick which format Entry OPENS on
+* **entry:** the fading confirmation that landed at the TOP of the page on every submit (a snackbar dumping the whole serialized report over the page header) is debug-mode only now. The fading line beside the Submit button stays, and shows just the report id unless debug mode is on
+
+### Features
+
+* **entry:** the derived coordinate rows follow the existing derived-address styling - small italic text on the same tinted panel, under one "Derived" divider, instead of a second bordered panel with its own heading
+* **entry:** click any derived coordinate to copy it to the clipboard, with a brief "copied" acknowledgement. Same idiom the two Leaflet maps already use for click-to-copy; reading MGRS back over the radio or pasting a position into a separate CAD/ICS system no longer means retyping a 15-character grid reference by hand
+
 ## [0.58.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-26)
 
 Start of the Material-M3 redesign. Mockups for the whole app: https://claude.ai/code/artifact/a6e52cb1-0759-4eb0-9930-4d1af4dd07e7

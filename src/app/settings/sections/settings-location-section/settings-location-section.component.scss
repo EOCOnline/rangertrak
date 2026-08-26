@@ -10,7 +10,7 @@
   display: contents;
 }
 
-// A real <fieldset>, so the group has an accessible name ("Coordinate systems shown on
+// A real <fieldset>, so the group has an accessible name ("Default coordinate format for
 // Entry") tying the six checkboxes together - the previous markup was a `<span
 // class="strong">` followed by six unrelated labels, which reads as six independent
 // settings to a screen reader. Browser default fieldset chrome is removed; the legend
@@ -23,12 +23,24 @@
 
 .settings__coords-legend {
   padding       : 0;
-  margin-bottom : 0.5rem;
+  margin-bottom : 0.25rem;
   font-size     : var(--rt-type-label-size);
   line-height   : var(--rt-type-label-line);
   font-weight   : 500;
   letter-spacing: 0.4px;
   color         : var(--rt-ink-2);
+}
+
+// E-104 (2026-08-26): "every format is always available" reassurance, right under the
+// legend - added after the maintainer caught a real access regression an earlier version of
+// this checklist introduced (see the template's own comment on .settings__coords for the
+// full story). Small and secondary on purpose: it exists to prevent the same
+// misunderstanding, not to compete with the legend for attention.
+.settings__coords-note {
+  margin     : 0 0 0.6rem;
+  font-size  : var(--rt-type-body-sm-size);
+  line-height: var(--rt-type-body-sm-line);
+  color      : var(--rt-ink-3);
 }
 
 // Two columns where there's room, one where there isn't. The six labels vary a lot in

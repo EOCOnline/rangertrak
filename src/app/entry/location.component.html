@@ -216,39 +216,55 @@
 
 
   <!------------------------------------------------------------>
-  <!-- E-48(1): the elements below stay permanently in the DOM (never @if'd away) so the
-       imperative setDerivedText() writes in location.component.ts always have somewhere to
-       land - only visibility is gated on showDerived(), via a plain CSS class rather than a
-       structural directive, specifically to avoid a render-ordering race. See
-       updateDerivedLocations()'s own comment. Unchanged by E-104 - only what sits ALONGSIDE
-       this block (the "other formats" rows just below) is new. -->
-  <div class="enter__Where-Results" [class.enter__Where-Results--hidden]="!showDerived()">
-    <div class="enter__Where-derived-divider"><span>Derived</span></div>
-    <span class="enter__Where-derived-row">Address: <input readonly id="derivedAddress" title="Normalized Address, click to select" tabindex="-1" /></span>
-    <span class="enter__Where-derived-row">+Codes: <input readonly id="pCodes" title="Global & short (Google) Plus Codes, click to select" tabindex="-1" /></span>
-    @if (settings.showMaidenhead) {
-      <span class="enter__Where-derived-row">Maidenhead: <input readonly id="maidenhead" title="Maidenhead Grid Locator, click to select" tabindex="-1" /></span>
-    }
-  </div>
+  <!-- ONE derived-data panel holding both kinds of restatement of the position entered
+       above, so a scribe sees a single quiet block rather than two competing ones.
+       Maintainer, 2026-08-26: "display of additional derived coordinate systems should
+       follow the existing derived address styling. small text & minimal" - hence the shared
+       wrapper and the matched row styling (see location.component.scss).
 
-  <!-- E-104: the actual replacement for the old ~20-field simultaneous grid - the position
-       expressed in every format OTHER than the one currently editable above, read-only,
-       always current (see otherSystemsDisplay()'s own comment: these are genuinely live
-       Angular bindings reading the same linkedSignals the hidden input fields above already
-       hold, not a new derivation). Deliberately its own block, not folded into
-       .enter__Where-Results above: that block's visibility is gated on a real async
-       geocode/PlusCode/Maidenhead computation actually having landed (showDerived()), while
-       these are synchronous and available the instant ANY position exists - gating them on
-       the same signal would hide correct, ready data behind an unrelated network-dependent
-       wait. -->
-  <div class="rt-other-formats">
-    <div class="rt-other-formats__label">Same position, other formats</div>
-    <div class="rt-other-formats__grid">
-      @for (row of otherSystemsDisplay(); track row.system) {
-      <div class="rt-other-formats__row">
-        <span class="rt-other-formats__system">{{ row.label }}</span>
-        <span class="rt-other-formats__value">{{ row.value }}</span>
-      </div>
+       They stay two separate INNER blocks, deliberately, because their visibility is gated
+       on genuinely different things and merging them would regress one of them:
+         - the coordinate rows are computed synchronously from the same linkedSignals the
+           input fields above already hold, so they are correct and available the instant
+           any position exists;
+         - Address/+Codes/Maidenhead wait on a real async geocode, and carry E-48(1)'s
+           "must not show the PREVIOUS report's values" requirement via showDerived().
+       Gating the coordinate rows on showDerived() too would hide ready, correct data behind
+       an unrelated network wait. -->
+  <div class="enter__Where-derived">
+    <div class="enter__Where-derived-divider"><span>Derived</span></div>
+
+    <!-- E-104: replaces the old ~20-field simultaneous grid - the position in every format
+         OTHER than the one currently editable above. See otherSystemsDisplay()'s own
+         comment: live Angular bindings over already-computed linkedSignals, not a new
+         derivation and not async. -->
+    @for (row of otherSystemsDisplay(); track row.system) {
+    <!-- A real <button>, not a span with a click handler: this is an action, so it has to
+         be keyboard-reachable and announced as one. tabindex="-1" keeps it OUT of the
+         keyboard-first tab chain (same treatment the readonly derived inputs below already
+         use) - a scribe tabbing through Entry to file a report must not have to tab past
+         four copy buttons to reach When; it stays reachable by click, and by keyboard once
+         focused. Styled as plain text (see the .scss) so it reads as data, not a control. -->
+    <button type="button" class="rt-other-formats__row" tabindex="-1"
+      (click)="copyCoordinate(row.system, row.value)"
+      [attr.aria-label]="'Copy ' + row.label + ' coordinates: ' + row.value"
+      title="Click to copy"><span class="rt-other-formats__system">{{ row.label }}:</span>
+      <span class="rt-other-formats__value">{{ row.value }}</span>
+      @if (copiedSystem() === row.system) {
+      <span class="rt-other-formats__copied">copied</span>
+      }</button>
+    }
+
+    <!-- E-48(1): these elements stay permanently in the DOM (never @if'd away) so the
+         imperative setDerivedText() writes in location.component.ts always have somewhere
+         to land - only visibility is gated on showDerived(), via a plain CSS class rather
+         than a structural directive, specifically to avoid a render-ordering race. See
+         updateDerivedLocations()'s own comment. -->
+    <div class="enter__Where-Results" [class.enter__Where-Results--hidden]="!showDerived()">
+      <span class="enter__Where-derived-row">Address: <input readonly id="derivedAddress" title="Normalized Address, click to select" tabindex="-1" /></span>
+      <span class="enter__Where-derived-row">+Codes: <input readonly id="pCodes" title="Global & short (Google) Plus Codes, click to select" tabindex="-1" /></span>
+      @if (settings.showMaidenhead) {
+        <span class="enter__Where-derived-row">Maidenhead: <input readonly id="maidenhead" title="Maidenhead Grid Locator, click to select" tabindex="-1" /></span>
       }
     </div>
   </div>
