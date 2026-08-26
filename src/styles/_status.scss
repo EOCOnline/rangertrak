@@ -10,7 +10,7 @@
 // they were effectively invisible (19f item 1). Every value below clears WCAG AA (4.5:1)
 // against its paired ink.
 //
-// !! These are also STORED USER DATA. settings.service.ts writes them into every saved
+// !! These are also STORED USER DATA. mission.service.ts writes them into every saved
 // settings object, so changing the defaults here does NOT change an existing user's saved
 // settings - that needs a migration, which is Sprint E work. Until then these tokens style
 // only the chips/labels that read from CSS rather than from settings.

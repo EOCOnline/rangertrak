@@ -18,7 +18,7 @@ import {
 } from './shared/mapping/geocoding-provider.interface'
 import { GoogleGeocoder } from './shared/mapping/google-geocoder'
 import { NominatimGeocoder } from './shared/mapping/nominatim-geocoder'
-import { GlobalErrorHandler, SettingsService } from './shared/services'
+import { GlobalErrorHandler, MissionService } from './shared/services'
 
 // Standalone replacement for AppModule's NgModule imports/providers.
 // AgGridModule is NOT here: every component that actually uses it already
@@ -69,11 +69,11 @@ export const appConfig: ApplicationConfig = {
       // supplied their own key in Settings (see Decision 1, PRIVATE-Roadmap.md). Read once
       // at app boot - changing the key in Settings takes effect on next reload.
       provide: GEOCODING_PROVIDER,
-      useFactory: (settingsService: SettingsService): GeocodingProvider => {
-        const apiKey = settingsService.settings.googleGeocodingApiKey
+      useFactory: (missionService: MissionService): GeocodingProvider => {
+        const apiKey = missionService.settings.googleGeocodingApiKey
         return apiKey ? new GoogleGeocoder(apiKey) : new NominatimGeocoder()
       },
-      deps: [SettingsService]
+      deps: [MissionService]
     }
   ]
 }

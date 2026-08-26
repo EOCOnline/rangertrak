@@ -43,7 +43,7 @@
   color: var(--rt-ink);
 }
 
-// Same recipe as .eButton in entry.component.scss / settings.component.scss - each of
+// Same recipe as .eButton in entry.component.scss / mission.component.scss - each of
 // those is its own component-scoped copy already, not a shared global class, so this one
 // is too rather than reaching for a class this component was never given.
 .eButton {

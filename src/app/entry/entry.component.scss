@@ -135,7 +135,7 @@ h3 {
 }
 
 // ADR D-39 / Sprint I Phase 2: was a bespoke margin-only rule, restated with different
-// values in settings.component.scss (that file's h1,h2,h3 needs !important to win against
+// values in mission.component.scss (that file's h1,h2,h3 needs !important to win against
 // its own six duplicated copies - see D-39). Entry is the first page to move onto the
 // shared spec; propagate to Settings' headers in a later pass once this is confirmed live.
 .elegant {
@@ -195,11 +195,11 @@ input[type=number] {
 // below now reads as its own chip instead.
 // Material-M3 pass, 2026-08-26: .rButton and .bottomDrop are gone - Status/Source no
 // longer render as a hand-rolled row of "Label:" text plus custom-styled label/radio pairs
-// (.rButton, defined only here and in settings.component.scss/rangers.component.html
+// (.rButton, defined only here and in mission.component.scss/rangers.component.html
 // before this pass; all now retired). Both fields get the same small sentence-case
-// field-label treatment Mission's real conversion settled on (.settings__coords-legend/
+// field-label treatment Mission's real conversion settled on (.mission__coords-legend/
 // .grouplbl - the mockup's own all-caps styling was never actually carried into the real
-// Angular templates, confirmed by grepping settings/ for text-transform before matching
+// Angular templates, confirmed by grepping mission/ for text-transform before matching
 // it here) via the shared .enter__field-label class below.
 .enter__field-label {
   margin        : 0.9rem 0 0.4rem;
@@ -338,8 +338,8 @@ mat-chip-option.enter__status-selected {
 // Material-M3 pass, 2026-08-26: .eButton is gone from this file - Reset and Submit are
 // matButton now (E-61's "read as a sized pair" goal is Material's own job: both take the
 // same button component, just different appearance variants). This was one of four
-// independent copies of this rule across the app (also in settings.component.scss,
-// shared/feedback/feedback.component.scss, settings-advanced-options.component.scss) -
+// independent copies of this rule across the app (also in mission.component.scss,
+// shared/feedback/feedback.component.scss, mission-advanced-options.component.scss) -
 // all four are gone as of this pass and Mission/Settings' respective conversions.
 .enter__form {
   //margin     : 0px 10px 15px;

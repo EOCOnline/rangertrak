@@ -54,7 +54,7 @@ export const APP_ROUTES: Routes = [
   // break, since this route predates that rename and may be bookmarked.
   {
     path: 'mission',
-    loadComponent: () => import('./settings/settings.component').then(m => m.SettingsComponent)
+    loadComponent: () => import('./mission/mission.component').then(m => m.MissionComponent)
   },
   {
     path: 'log',

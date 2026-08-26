@@ -7,7 +7,7 @@ import { MDCTopAppBar } from '@material/top-app-bar'
 // import { MatButton } from '@angular/material/button'
 // import { MatButtonModule } from '@angular/material/button'
 import { subscribeOn } from 'rxjs';
-import { LogService, SettingsService, SettingsType, ThemeService } from '../services';
+import { LogService, MissionService, MissionType, ThemeService } from '../services';
 import { Utility } from '../utility';
 //https://material.io/components/app-bars-top/web#regular-top-app-bar
 
@@ -21,7 +21,7 @@ import { Utility } from '../utility';
 })
 export class NavbarComponent implements OnInit {
 
-  private settings!: SettingsType
+  private settings!: MissionType
   private id = 'Navbar Component'
 
   // Mutated inside a raw this.router.events.subscribe() callback, not an Angular
@@ -34,7 +34,7 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     private log: LogService,
-    //private settingsService: SettingsService,
+    //private missionService: MissionService,
     private router: Router,
     protected theme: ThemeService
   ) {

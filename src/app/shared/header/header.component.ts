@@ -6,7 +6,7 @@ import { Router } from '@angular/router'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 
-import { ClockService, LogService, SettingsService, SettingsType, WelcomePanelService } from '../services'
+import { ClockService, LogService, MissionService, MissionType, WelcomePanelService } from '../services'
 import { Utility } from '../'
 import { MissionReadinessComponent } from '../mission-readiness/mission-readiness.component'
 import { GuideService } from '../guide/guide.service'
@@ -43,8 +43,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private id = 'Header component'
 
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
+  private missionSubscription!: Subscription
+  private settings!: MissionType
 
   // Mutated from onNewSettings(), itself called from a raw RxJS subscribe() callback,
   // not an Angular template binding - this app is zoneless, so a plain field written
@@ -66,7 +66,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private clockService: ClockService,
     private log: LogService,
-    private settingsService: SettingsService,
+    private missionService: MissionService,
     private welcomePanel: WelcomePanelService,
     private router: Router,
   ) {
@@ -79,9 +79,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.onNewSettings(newSettings)
+    this.missionSubscription = this.missionService.getMissionObserver().subscribe({
+      next: (newMission) => {
+        this.onNewSettings(newMission)
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -94,10 +94,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  onNewSettings(newSettings: SettingsType) {
+  onNewSettings(newMission: MissionType) {
     this.log.verbose(`New settings received`, this.id)
 
-    this.settings = newSettings
+    this.settings = newMission
     // debugger
     // E-57(1): was always `#${mission}: ${event}`, so a settings object with neither set
     // yet (a fresh install, or before Settings has been filled in) rendered as the bare
@@ -166,6 +166,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // Note the parentheses: this read the property without calling it, so the header -
     // which every page instantiates - never actually released its settings subscription.
-    this.settingsSubscription?.unsubscribe()
+    this.missionSubscription?.unsubscribe()
   }
 }

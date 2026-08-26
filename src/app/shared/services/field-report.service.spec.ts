@@ -10,7 +10,7 @@ import { FieldReportsType, FieldReportType } from './field-report.interface';
  * step 3), covering the DoD: localStorage round-trip, bounds calc, and
  * report add/select/delete.
  *
- * RangerService and SettingsService are used for real (not mocked): all three
+ * RangerService and MissionService are used for real (not mocked): all three
  * domain services are simple localStorage wrappers with no network calls in
  * their construction path, so exercising them together is closer to real
  * behavior than stubbing their public surface.

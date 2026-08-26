@@ -1,0 +1,22 @@
+<mat-card appearance="outlined" class="rt-mission-card">
+  <mat-card-header>
+    <mat-card-title>ICS-213 recipients</mat-card-title>
+    <mat-card-subtitle>Entry&rsquo;s &ldquo;To&rdquo; field shows each of these as a checkbox, plus a
+      free-text box for anyone not listed here.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-form-field class="mission__recipients213">
+      <mat-label>Recipients</mat-label>
+      <textarea matInput rows="6" [(ngModel)]="text" (blur)="onBlur()" name="recipientOptions213"
+        placeholder="Incident Commander"></textarea>
+      <mat-hint>One per line. Parsed when you click away, so a half-typed line never
+        registers.</mat-hint>
+    </mat-form-field>
+  </mat-card-content>
+  <mat-card-actions>
+    <button matButton type="button" (click)="onBtnRestoreStarterList()"
+      title="Replace this list with the suggested starter list">
+      Restore suggested starter list
+    </button>
+  </mat-card-actions>
+</mat-card>

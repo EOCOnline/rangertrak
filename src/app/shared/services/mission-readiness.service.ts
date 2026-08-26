@@ -1,7 +1,7 @@
 import { Injectable, computed, signal } from '@angular/core'
 
 import { DEFAULT_PMTILES_URL } from '../mapping/pmtiles-config'
-import { LogService, RangerService, SettingsService, StoragePersistenceService } from './'
+import { LogService, RangerService, MissionService, StoragePersistenceService } from './'
 
 export type ReadinessLevel = 'red' | 'amber' | 'green'
 
@@ -55,12 +55,12 @@ export class MissionReadinessService {
   })
 
   constructor(
-    private settingsService: SettingsService,
+    private missionService: MissionService,
     private rangerService: RangerService,
     private storagePersistenceService: StoragePersistenceService,
     private log: LogService,
   ) {
-    this.settingsService.getSettingsObserver().subscribe({
+    this.missionService.getMissionObserver().subscribe({
       next: settings => {
         this.missionNamed.set(settings.mission.trim() !== '')
         this.opPeriodCurrent.set(new Date(settings.opPeriodEnd).getTime() > Date.now())

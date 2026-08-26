@@ -7,7 +7,7 @@ import {
 
 import {
   FieldReportStatusType, FieldReportsType, FieldReportType, LogService, RangerType,
-  SettingsService, SettingsType
+  MissionService, MissionType
 } from './'
 // ADR D-42: versioned storage seam for field reports. Direct import, not via the barrel,
 // to avoid a cycle - the barrel re-exports this service.
@@ -29,7 +29,7 @@ export class FieldReportService {
   // fieldReportsSignal is the single source of truth for state.
   // fieldReportsReplay$ is a thin, synchronously-fed notification layer for
   // existing Observable consumers - see the equivalent, more-detailed
-  // comment in settings.service.ts for why (toObservable()'s effect-based
+  // comment in mission.service.ts for why (toObservable()'s effect-based
   // bridge is asynchronous; several consumers need synchronous emission).
   // Like RangerService's `rangers`, `fieldReports` is mutated in place
   // (push/extend/etc.) rather than reassigned; updateFieldReportsAndPublish()
@@ -42,8 +42,8 @@ export class FieldReportService {
   // Otherwise move to maps which THEN grab the new values.
   private selectedFieldReports!: FieldReportsType
 
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
+  private missionSubscription!: Subscription
+  private settings!: MissionType
 
   public rangers: RangerType[] = []
 
@@ -54,7 +54,7 @@ export class FieldReportService {
   // https://angular.io/guide/architecture-services#providing-services: singleton or multiple service instances?!
   //! REVIEW: Field & Ranger Services BOTH call constructors twice!!
   constructor(
-    private settingsService: SettingsService,
+    private missionService: MissionService,
     private log: LogService,
     private httpClient: HttpClient,
     @Optional() @SkipSelf() existingService: FieldReportService,
@@ -75,14 +75,14 @@ export class FieldReportService {
     this.log.verbose("======== Constructor() ============", this.id)
     //! REVIEW: this.log.verbose(`Constructor call stack (NOT an error: why called twice?): ${new Error().stack}`, this.id)
 
-    // Subscribe to Settings BEFORE loading reports: SettingsService replays its current
+    // Subscribe to Settings BEFORE loading reports: MissionService replays its current
     // value synchronously, so this populates this.settings first. Loading first meant a
     // fresh install built its empty FieldReports with version '0' (initEmptyFieldReports
     // falls back when settings are missing), which then failed the version check below
     // and logged a bogus "does NOT match" error on every virgin start.
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
+    this.missionSubscription = this.missionService.getMissionObserver().subscribe({
+      next: (newMission) => {
+        this.settings = newMission
         this.log.excessive('Received new Settings via subscription.', this.id)
 
         // this.fieldReports is undefined until the load below completes on the very

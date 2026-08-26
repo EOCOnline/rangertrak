@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { BackupService, MissionExport } from './backup.service';
 import { FieldReportService } from './field-report.service';
 import { RangerService } from './ranger.service';
-import { SettingsService } from './settings.service';
+import { MissionService } from './mission.service';
 
 /**
  * Covers PRIVATE-Roadmap.md Section 8/R3 and the Section 12 step 7 DoD literally:
@@ -28,12 +28,12 @@ describe('BackupService', () => {
 
   describe('buildExportPayload', () => {
     it('bundles current settings, rangers, and field reports with a schema version', () => {
-      const settings = TestBed.inject(SettingsService);
+      const settings = TestBed.inject(MissionService);
       const rangers = TestBed.inject(RangerService);
       const fieldReports = TestBed.inject(FieldReportService);
       const backup = TestBed.inject(BackupService);
 
-      settings.updateSettings({ ...settings.settings, mission: 'Export Test Mission' });
+      settings.updateMission({ ...settings.settings, mission: 'Export Test Mission' });
       rangers.AddRanger(JSON.stringify({
         callsign: 'EXP1', fullName: 'Export Ranger', phone: '',
         image: '', rew: '', team: '', role: '', note: ''
@@ -58,12 +58,12 @@ describe('BackupService', () => {
   describe('export -> clear storage -> import round trip', () => {
     it('reproduces the mission exactly after storage is cleared and reloaded', () => {
       // 1. Build up real mission state.
-      const settings = TestBed.inject(SettingsService);
+      const settings = TestBed.inject(MissionService);
       const rangers = TestBed.inject(RangerService);
       const fieldReports = TestBed.inject(FieldReportService);
       const backup = TestBed.inject(BackupService);
 
-      settings.updateSettings({ ...settings.settings, mission: 'Roundtrip Mission', event: 'Test Event' });
+      settings.updateMission({ ...settings.settings, mission: 'Roundtrip Mission', event: 'Test Event' });
       rangers.deleteAllRangers();
       rangers.AddRanger(JSON.stringify({
         callsign: 'RT1', fullName: 'Roundtrip Ranger', phone: '',
@@ -87,7 +87,7 @@ describe('BackupService', () => {
       TestBed.resetTestingModule();
       configure();
 
-      const freshSettings = TestBed.inject(SettingsService);
+      const freshSettings = TestBed.inject(MissionService);
       const freshRangers = TestBed.inject(RangerService);
       const freshFieldReports = TestBed.inject(FieldReportService);
       const freshBackup = TestBed.inject(BackupService);
@@ -176,7 +176,7 @@ describe('BackupService', () => {
 
   describe('importMission validation', () => {
     it('throws on a structurally invalid payload rather than partially applying it', () => {
-      const settings = TestBed.inject(SettingsService);
+      const settings = TestBed.inject(MissionService);
       const backup = TestBed.inject(BackupService);
       const missionBefore = settings.settings.mission;
 

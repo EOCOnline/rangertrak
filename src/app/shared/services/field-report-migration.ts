@@ -3,7 +3,7 @@ import { FieldReportsType } from './field-report.interface'
 /**
  * Versioned, forward-only migration for the persisted field-report store.
  *
- * Mirrors `settings-migration.ts` and `ranger-migration.ts` - same shape, same conventions,
+ * Mirrors `mission-migration.ts` and `ranger-migration.ts` - same shape, same conventions,
  * same purity rules. Field reports had **no migration machinery at all** before this: the
  * load path was a bare `JSON.parse()`, so an object written by an older build was simply used
  * as-is and hoped for.
@@ -43,14 +43,14 @@ export const FIELD_REPORT_SCHEMA_VERSION = 1
  * Brings a persisted field-report store up to FIELD_REPORT_SCHEMA_VERSION.
  *
  * Returns `null` when the input is not a usable store, rather than inventing one: building a
- * fresh empty store needs `SettingsService` (for the app version and event name) and that
+ * fresh empty store needs `MissionService` (for the app version and event name) and that
  * default-construction logic already lives in `FieldReportService.initEmptyFieldReports()`.
  * Duplicating it here would be a second source of truth for what "empty" means. A `null`
  * return means "call your own initializer".
  *
  * Pure: returns a new object and never mutates its argument. A version NEWER than this build
  * understands is passed through untouched rather than mangled - same reasoning as
- * `migrateSettings()`.
+ * `migrateMission()`.
  */
 export function migrateFieldReports(raw: unknown): FieldReportsType | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {

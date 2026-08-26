@@ -1,7 +1,7 @@
 import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
 import { Component, Inject, ChangeDetectionStrategy } from '@angular/core'
 
-import { LogService, SettingsService, UpdateService } from '../services'
+import { LogService, MissionService, UpdateService } from '../services'
 import { InstallUpdateComponent } from '../install-update/install-update.component'
 
 /**
@@ -23,13 +23,13 @@ export class FooterComponent {
 
   /**
    * Read through to the service rather than snapshotting into a field in
-   * ngOnInit, which is what this used to do. SettingsService.settings reads a
+   * ngOnInit, which is what this used to do. MissionService.settings reads a
    * signal, so the template picks up later emissions - Import Mission, Load
    * Sample Mission and Reset Settings all republish settings, and the old
    * snapshot left the footer showing the previous mission's version forever.
    */
   get version(): string {
-    return this.settingsService.settings?.version ?? ''
+    return this.missionService.settings?.version ?? ''
   }
 
   /** When the browser last confirmed this build was current. */
@@ -52,7 +52,7 @@ export class FooterComponent {
 
   constructor(
     private log: LogService,
-    private settingsService: SettingsService,
+    private missionService: MissionService,
     private updateService: UpdateService,
     @Inject(DOCUMENT) private document: Document) {
 

@@ -7,9 +7,9 @@ import { CommonModule, DOCUMENT } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { AgGridAngular } from 'ag-grid-angular';
-import { SectionComponent } from '../shared/section/section.component';
 import { GuideService } from '../shared/guide/guide.service';
 import { PageComponent } from '../shared/page/page.component';
+import { MATERIAL_IMPORTS } from '../material-imports';
 
 import { Utility } from '../shared'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
@@ -17,7 +17,7 @@ import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import {
   FieldReportService, FieldReportType, LogService, RangerService, RangerType,
-  SettingsService, SettingsType
+  MissionService, MissionType
 } from '../shared/services'
 // Direct path, not the barrel: importing a service used as a DI token through
 // shared/services/index.ts leaves it unresolvable to the compiler ("no suitable injection
@@ -29,7 +29,7 @@ import { CustomTooltip } from './customTooltip'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, SectionComponent],
+  imports: [CommonModule, AgGridAngular, PageComponent, ...MATERIAL_IMPORTS],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
@@ -46,8 +46,23 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // guaranteed path back into change detection. Signals close that gap (Sprint G).
   public rangers = signal<RangerType[]>([])
 
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
+  // Material-M3 pass, 2026-08-26: the CSV export controls' state, replacing two
+  // getElementById reads - see getSeperatorValue()/onBtnExportToExcel() below for what each
+  // would have done post-conversion (one throws, one silently exports the wrong rows).
+  /** CSV column separator: 'none' (comma), 'tab', or a literal character. */
+  public columnSeparator = signal('none')
+  /** Export all rows, rather than only the filtered/sorted ones. */
+  public allRows = signal(false)
+
+  /** Options for the CSV separator picker: [stored value, label shown to the user]. */
+  readonly separatorOptions: { value: string; label: string }[] = [
+    { value: 'none', label: 'comma (,)' },
+    { value: 'tab', label: 'tab' },
+    { value: '|', label: 'bar (|)' },
+  ]
+
+  private missionSubscription!: Subscription
+  private settings!: MissionType
 
   alert: any
 
@@ -175,7 +190,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     //private teamService: TeamService,
     private log: LogService,
     private rangerService: RangerService,
-    private settingsService: SettingsService,
+    private missionService: MissionService,
     private photos: RangerPhotoService,
     private _snackBar: MatSnackBar,
     // The confidentiality bar's "What this means" opens the Guide drawer's Privacy tab -
@@ -197,13 +212,13 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.privacyNoticeDismissed =
       localStorage.getItem(RangersComponent.PRIVACY_DISMISSED_KEY) === 'true'
 
-    this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
+    this.alert = new AlertsComponent(this._snackBar, this.log, this.missionService, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
     //this.teamService = teamService
     //this.rangerService = rangerService
 
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
+    this.missionSubscription = this.missionService.getMissionObserver().subscribe({
+      next: (newMission) => {
+        this.settings = newMission
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -590,22 +605,24 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // ! Is this JUST for enterprise edition?! - test...
     // https://www.ag-grid.com/javascript-data-grid/excel-export-rows/#export-all-unprocessed-rows
+    // Material-M3 pass, 2026-08-26: reads the signal below, not
+    // `getElementById('allRows').checked` - `<mat-checkbox>` puts its real input several
+    // levels inside its own template, so that id now lands on the host, where `.checked` is
+    // `undefined` and therefore falsy. The old read would have silently exported
+    // 'filteredAndSorted' every time regardless of the box. Same fix as field-reports'.
     this.gridApi.exportDataAsExcel({
-      exportedRows: (document.getElementById('allRows') as HTMLInputElement)
-        .checked
-        ? 'all'
-        : 'filteredAndSorted',
+      exportedRows: this.allRows() ? 'all' : 'filteredAndSorted',
     })
   }
 
+  /**
+   * Material-M3 pass, 2026-08-26: reads the signal below rather than a native `<select>`.
+   * `<mat-select>` renders no native `<select>` element, so the previous
+   * `getElementById(...) as HTMLSelectElement` + `.selectedIndex`/`.options` read would
+   * have thrown once the control was converted. Same change as field-reports'.
+   */
   getSeperatorValue(inputSelector: string) {
-    //let selector = this.document.querySelector(inputSelector) as HTMLSelectElement
-    let selector = this.document.getElementById(inputSelector) as HTMLSelectElement
-    var sel = selector.selectedIndex;
-    var opt = selector.options[sel];
-    var selVal = (<HTMLOptionElement>opt).value;
-    //var selText = (<HTMLOptionElement>opt).text
-    // this.log.verbose(`Got column seperator text:"${selText}", val:"${selVal}"`, this.id)
+    const selVal = this.columnSeparator()
 
     switch (selVal) {
       case 'none':
@@ -690,6 +707,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.rangersSubscription?.unsubscribe()
-    this.settingsSubscription?.unsubscribe()
+    this.missionSubscription?.unsubscribe()
   }
 }

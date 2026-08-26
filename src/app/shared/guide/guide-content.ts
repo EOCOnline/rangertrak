@@ -168,10 +168,23 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           {
             heading: 'Loading a roster',
             bullets: [
-              'Import replaces the roster only — field reports and settings are untouched.',
-              'JSON round-trips: it can be imported back in. CSV is for Excel and cannot.',
+              'Import roster replaces the whole roster from a JSON file (or a zip holding roster.json and a photos/ folder) and leaves field reports and settings alone. Each entry needs at least a callsign.',
+              'Export roster writes that file back out. Do it before importing if you want to keep the roster you already have.',
+              'JSON round-trips: it can be imported back in. Export CSV is for Excel and cannot.',
               'Photos are kept on this device only, never uploaded and never in the repo. Name each file after the call sign.'
             ]
+          },
+          {
+            heading: 'Starting from the built-in station list',
+            text: 'Add station callsigns appends the 18 built-in Vashon station signs (command post, ACS, CERT and MERT teams) to whatever is already there. They are stations, not people — and it ADDS rather than replaces, so pressing it twice gives you duplicates. That is why it sits in the Danger zone.'
+          },
+          {
+            heading: 'Emptying the roster',
+            text: 'Delete all rangers empties it and it stays empty, including after a reload. (Before v0.15.3 the built-in station list came straight back, which made loading your own roster a fight.)'
+          },
+          {
+            heading: 'Moving a whole mission',
+            text: 'To move the roster, settings and field reports together, use Export/Import Mission on the Mission Setup page. Import/Export roster here moves only the roster.'
           },
           {
             heading: 'Tactical call signs',

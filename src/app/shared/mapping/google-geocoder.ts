@@ -2,7 +2,7 @@
 import { GeocodeResult, GeocodingProvider } from './geocoding-provider.interface'
 
 // Optional geocoder, only ever constructed when the user has supplied their own Google
-// API key in Settings (see settings.component.ts) - the key lives in that user's
+// API key in Settings (see mission.component.ts) - the key lives in that user's
 // localStorage, never in secrets.json, never bundled. The Google Maps JS script is only
 // loaded lazily, on first actual geocode call, not at construction - so simply having a
 // key configured doesn't cost a network request until it's used.

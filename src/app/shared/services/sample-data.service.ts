@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 
 import {
   FieldReportService, FieldReportsType, FieldReportType, LogService, RangerService, RangerType,
-  SettingsService
+  MissionService
 } from './'
 
 /**
@@ -37,7 +37,7 @@ export class SampleDataService {
   public static readonly SAMPLE_EVENT_NAME = 'Sample Data (demonstration only)'
 
   constructor(
-    private settingsService: SettingsService,
+    private missionService: MissionService,
     private rangerService: RangerService,
     private fieldReportService: FieldReportService,
     private log: LogService,
@@ -68,8 +68,8 @@ export class SampleDataService {
     // Settings first, then rangers, then reports - the same ordering (and for the same
     // reason) as BackupService.importMission(): replaceAllFieldReports() recalculates
     // bounds and needs current settings already in place.
-    this.settingsService.updateSettings({
-      ...this.settingsService.settings,
+    this.missionService.updateMission({
+      ...this.missionService.settings,
       mission: SampleDataService.SAMPLE_MISSION_NAME,
       event: SampleDataService.SAMPLE_EVENT_NAME,
     })
@@ -182,7 +182,7 @@ export class SampleDataService {
     })
 
     return {
-      version: this.settingsService.settings.version,
+      version: this.missionService.settings.version,
       date: new Date(),
       event: SampleDataService.SAMPLE_EVENT_NAME,
       numReport: fieldReportArray.length,
@@ -199,7 +199,7 @@ export class SampleDataService {
    * anyone who had renamed them.
    */
   private statusNames(): string[] {
-    const configured = this.settingsService.settings?.fieldReportStatuses
+    const configured = this.missionService.settings?.fieldReportStatuses
     if (!configured?.length) {
       this.log.error(`No field report statuses configured; sample reports will have an empty status.`, this.id)
       return ['']

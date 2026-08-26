@@ -51,31 +51,46 @@
   border-top : 1px solid var(--rt-line);
 }
 
-.big {
-  font-size  : larger;
-  font-weight: bold;
+// Material-M3 pass, 2026-08-26. Removed as dead once the export/paging controls became one
+// `.rt-action-bar` (see the template): `.big` and `.strong` (no longer applied by anything
+// here - confirmed by grep), and `.rows`/`.pager`/`#rowPerPage-select`, which existed only
+// to lay out and size the two native `<select>` rows the action bar replaced.
+
+// The two pickers are `<mat-form-field>`s in a row that also carries a checkbox and a
+// button, so they need a sane width - left to themselves they would each take the form
+// field's full default. Sized to their own longest option rather than a shared value:
+// "Rows per page" holds "Auto"/"100", "CSV separator" holds "comma (,)".
+.reports__control {
+  // Kills the reserved subscript row: these two have no hint or error to show, and in a
+  // single-line action bar that empty row visibly misaligns them against the checkbox and
+  // button beside them. (app.config.ts already sets subscriptSizing: 'dynamic' app-wide;
+  // this is belt-and-braces for the flex-baseline case specifically.)
+  align-self: center;
 }
 
-.strong {
-  font-weight: bold;
+// 10.5rem, not 9: at 9rem the floating "Rows per page" label was clipped to "Rows per pag"
+// - a mat-form-field's label needs room for the LABEL, not just the widest value ("Auto"),
+// and the notched outline gives it no wrapping. Caught by looking at the rendered page.
+.reports__control--rows {
+  width: 10.5rem;
 }
 
-.rows {
-  display        : flex;
-  justify-content: space-between;
+.reports__control--sep {
+  width: 11rem;
 }
 
-.pager {
-  font-weight              : bold;
-  //text-align             : right;
-  //display              : flex;
-  //display            : flex;
-  //flex-flow      : row wrap;
-  //justify-content  : space-between;
+// The selection count's own trailing note - secondary to the number itself, and only
+// rendered when something is actually selected.
+.reports__selected-note {
+  color: var(--rt-ink-3);
 }
 
-#rowPerPage-select {
-  width: 60px;
+// Same treatment Mission's own danger-zone buttons get: the warn palette, so a destructive
+// action never reads as an ordinary outlined button.
+.reports__danger-button {
+  --mat-button-outlined-label-text-color: var(--rt-readiness-red);
+  --mat-button-outlined-outline-color   : var(--rt-readiness-red);
+  color                                 : var(--rt-readiness-red);
 }
 
 .cell-fail {

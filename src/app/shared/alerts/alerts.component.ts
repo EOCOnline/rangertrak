@@ -8,7 +8,7 @@ import { NavigationEnd } from '@angular/router'
 //import { MatFormFieldModule } from '@angular/material/form-field';
 import { MDCBanner } from '@material/banner'
 
-import { SettingsService, SettingsType } from '../services'
+import { MissionService, MissionType } from '../services'
 import { LogService } from '../services/log.service'
 
 // NOTE: Could have long running service worker push a notification if desired: https://angular.io/guide/service-worker-notifications
@@ -27,13 +27,13 @@ export class AlertsComponent implements OnInit, OnDestroy {
   isAlertHidden: boolean
   private alertBanner: HTMLElement | null = null
   emoji = 'emoji_people'
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
+  private missionSubscription!: Subscription
+  private settings!: MissionType
 
   constructor(
     private _snackBar: MatSnackBar,
     private log: LogService,
-    private settingsService: SettingsService,
+    private missionService: MissionService,
     @Inject(DOCUMENT) private document: Document) {
     // ======== Constructor() ============
     this.isAlertHidden = true;
@@ -42,9 +42,9 @@ export class AlertsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log('AlertComponent.ngInit')
 
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
+    this.missionSubscription = this.missionService.getMissionObserver().subscribe({
+      next: (newMission) => {
+        this.settings = newMission
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -126,7 +126,7 @@ export class AlertsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.settingsSubscription?.unsubscribe()
+    this.missionSubscription?.unsubscribe()
   }
 }
 

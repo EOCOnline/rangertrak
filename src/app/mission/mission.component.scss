@@ -1,0 +1,117 @@
+// Material-M3 pass, 2026-08-25.
+//
+// This file lost most of its length, and that is the point. Removed as dead or superseded:
+//
+//   - the `@use "@material/theme" with ($primary: #962f10 ...)` block and its four MDC
+//     package @uses. That seed colour predates Sprint A's token layer by two skins, and
+//     every @include from those packages was already commented out except
+//     "@material/button/styles" - which was emitting real CSS for buttons this page no
+//     longer hand-rolls. Material's own theme (styles.scss's `mat.theme()`) is the only
+//     theme source now.
+//   - `.eButton` (this file's copy of the rule that also lived in entry, feedback and
+//     advanced-options), `.mission__save-button`, `.mission__cancel-button`,
+//     `button { max-width: 300px }` - all superseded by `matButton`.
+//   - `.mission__action-bar` and its two children - promoted to the global
+//     `.rt-action-bar` in styles/_patterns.scss, which this page's version was the
+//     prototype for.
+//   - `.bordered`, whose declaration was `border: 2 px solid ...` - invalid CSS (stray
+//     space), silently dropped by every browser since it was written. E-52 found the same
+//     rule on Entry and removed it there; this was the surviving copy.
+//   - `.elegant`, `.big`, `.small`, `.strongish`, `.wideField`, `.fill-warning`,
+//     `.text-warning`, `.border-warning`, `.timepicker_When-input`, `#addresses`,
+//     `#teamgrid1`, `.mood`, `.default`, `.selected`, and the bare `label` rule - none
+//     matched anything in the rewritten template; several matched nothing before it either.
+//   - the h2/h3 section-header includes: headings on this page are `<mat-card-title>` and
+//     the sections' own `.mission__subhead` now.
+
+@use "../../styles/typography" as type;
+
+// ── The page's two-column layout ─────────────────────────────────────────────
+// Before this, the page was a single ~600px column of controls in a full-width window -
+// roughly 70% of the horizontal space empty while the form itself ran several screens
+// deep. `auto-fit` + `minmax` means no explicit breakpoint: it resolves to two columns on
+// a laptop and one on a phone or a narrow window, which is exactly the D-33 device range.
+//
+// 30rem is the floor because the widest single control on any card (the geocoding API key
+// field) needs about that much before it starts scrolling its own value.
+.mission__grid {
+  display              : grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr));
+  gap                  : 0 var(--rt-gap);
+  // Cards size to their own content instead of stretching to match the tallest card
+  // beside them - without this, the short "ICS-213 recipients" card would be padded out
+  // to the height of the "Maps" card next to it.
+  align-items          : start;
+}
+
+// ── Readiness alert (E-79) ───────────────────────────────────────────────────
+// Was `.readiness-gaps`, a `--rt-surface-2` box that looked like every other block on the
+// page. It uses the global `.rt-alert` now - the same notice treatment the Rangers
+// confidentiality bar uses - so "something needs your attention" reads the same way
+// app-wide. The red/amber item accents are kept: they carry the same meaning as the header
+// dot a scribe is already reading.
+.mission__readiness-icon {
+  flex : none;
+  color: var(--rt-notice-ink);
+}
+
+.mission__readiness-heading {
+  @include type.type-title;
+  margin: 0 0 0.15em;
+}
+
+.mission__readiness-sub {
+  @include type.type-body-sm;
+  margin : 0 0 0.6em;
+  opacity: 0.85;
+}
+
+.mission__readiness-list {
+  margin : 0;
+  padding: 0;
+}
+
+.mission__readiness-item {
+  list-style : none;
+  padding    : 0.2em 0 0.2em 0.7em;
+  border-left: 3px solid var(--rt-line-strong);
+  margin     : 0 0 0.35em;
+}
+
+.mission__readiness-item--red {
+  border-left-color: var(--rt-readiness-red);
+}
+
+.mission__readiness-item--amber {
+  border-left-color: var(--rt-readiness-amber);
+}
+
+.mission__readiness-item a {
+  margin-left: 0.5em;
+  color      : inherit;
+}
+
+// ── Action bar trimming ──────────────────────────────────────────────────────
+.mission__save-icon {
+  flex     : none;
+  font-size: 18px;
+  width    : 18px;
+  height   : 18px;
+}
+
+// ── Debug ────────────────────────────────────────────────────────────────────
+// Was its own `<h2>Debug</h2>` section with a bare checkbox under it - a full section
+// heading for one developer-facing switch, sitting at the same level as Mission and Maps.
+// Demoted to a single labelled row between the form and its action bar.
+.mission__debug {
+  display    : flex;
+  align-items: baseline;
+  flex-wrap  : wrap;
+  gap        : 0.5rem;
+  margin     : 0.5rem 0 0;
+}
+
+.mission__debug-note {
+  @include type.type-body-sm;
+  color: var(--rt-ink-3);
+}

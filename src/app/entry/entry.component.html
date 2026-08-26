@@ -211,7 +211,7 @@
            previous native-radio workaround existed to avoid (that reasoning carries over
            unchanged; only the rendered control changed). This is the identical manual-signal
            pattern used throughout settings/ for every Signal Forms field driving a Material
-           CVA control - see e.g. settings-location-section's coordinate-system checkboxes.
+           CVA control - see e.g. mission-location-section's coordinate-system checkboxes.
            [attr.tabindex], not [tabIndex]: mat-button-toggle-group reads its host's literal
            tabindex ATTRIBUTE once at construction via HostAttributeToken (the same mechanism
            mat-radio-group/mat-chip-listbox above rely on for their own reserved slot),
@@ -269,18 +269,6 @@
             (change)="entryForm.replyRequested213().value.set($event.checked)">
             Reply requested
           </mat-checkbox>
-          <!-- Material-M3 pass: matInput on a real native <textarea> again - no CVA
-               path, [formField] is safe here exactly as it is on Notes above. The tooltip
-               icon moves into matSuffix rather than sitting ahead of the label as a second
-               piece of inline text, since <mat-label> is now the field's real label. -->
-          <mat-form-field class="enter__213-field enter__213-message">
-            <mat-label>213 message</mat-label>
-            <textarea matInput [formField]="entryForm.message213" rows="3" placeholder="What the 213 should say"
-              [attr.tabindex]="message213TabIndex"></textarea>
-            <span matSuffix class="field-help" tabindex="0" role="img"
-              aria-label="213 Message: the text of a separate, addressed ICS-213 message to whoever's listed under To, below - often reworded from your Notes above, not just a copy of them. This is what prints on the actual 213 form."
-              title="The text of a separate, addressed ICS-213 message to whoever's listed under To, below - often reworded from your Notes above, not just a copy of them. This is what prints on the actual 213 form.">ⓘ</span>
-          </mat-form-field>
           <div class="enter__213-field">
             <div class="enter__field-label">To (recipients)</div>
             <!-- E-103: per-mission definable checklist (settings.recipientOptions213).
@@ -302,11 +290,27 @@
               }
             </mat-chip-listbox>
             <mat-form-field class="enter__213-additional">
-              <mat-label>Additional</mat-label>
+              <mat-label>Additional recipients</mat-label>
               <input matInput type="text" [formField]="entryForm.recipients213"
                 placeholder="Comma-separated" [attr.tabindex]="recipients213TabIndex" />
             </mat-form-field>
           </div>
+          <!-- Material-M3 pass: matInput on a real native <textarea> again - no CVA
+               path, [formField] is safe here exactly as it is on Notes above. The tooltip
+               icon moves into matSuffix rather than sitting ahead of the label as a second
+               piece of inline text, since <mat-label> is now the field's real label.
+               Labelled just "Message", not "213 message" (maintainer, 2026-08-26): it sits
+               inside a box already headed "Also generate an ICS-213", so the prefix was
+               restating its own container. The tooltip still spells out how it differs from
+               the Notes field above, which is the distinction that actually confuses. -->
+          <mat-form-field class="enter__213-field enter__213-message">
+            <mat-label>Message</mat-label>
+            <textarea matInput [formField]="entryForm.message213" rows="3" placeholder="What the 213 should say"
+              [attr.tabindex]="message213TabIndex"></textarea>
+            <span matSuffix class="field-help" tabindex="0" role="img"
+              aria-label="Message: the text of a separate, addressed ICS-213 message to whoever's listed under To, above - often reworded from your Notes above, not just a copy of them. This is what prints on the actual 213 form."
+              title="The text of a separate, addressed ICS-213 message to whoever's listed under To, above - often reworded from your Notes above, not just a copy of them. This is what prints on the actual 213 form.">ⓘ</span>
+          </mat-form-field>
         </div>
       </div>
     </div>

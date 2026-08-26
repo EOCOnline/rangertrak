@@ -41,7 +41,7 @@ export class LogService {
   private logSignal = signal<LogType[]>([], { equal: () => false })
 
   /** Thin adapter for the Observable consumers that predate the signal, matching the
-   *  pattern used by the other services (see settings.service.ts for why ReplaySubject
+   *  pattern used by the other services (see mission.service.ts for why ReplaySubject
    *  rather than toObservable). */
   private logReplay$ = new ReplaySubject<LogType[]>(1)
 

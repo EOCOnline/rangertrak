@@ -39,7 +39,7 @@ export class RangerService implements OnInit {
   // rangersSignal is the single source of truth for state. rangersReplay$ is
   // a thin, synchronously-fed notification layer for existing Observable
   // consumers - see the equivalent, more-detailed comment in
-  // settings.service.ts for why (toObservable()'s effect-based bridge is
+  // mission.service.ts for why (toObservable()'s effect-based bridge is
   // asynchronous; several consumers need synchronous emission).
   private rangersSignal = signal<RangerType[]>([])
   private rangersReplay$ = new ReplaySubject<RangerType[]>(1)

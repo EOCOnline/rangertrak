@@ -243,7 +243,7 @@ describe('ranger-migration (ADR D-42)', () => {
 
     it('leaves data from a NEWER build alone rather than downgrading it', () => {
       // Someone running an older build against newer data. Silently "migrating" it backwards
-      // would lose whatever that newer version added - same reasoning as migrateSettings().
+      // would lose whatever that newer version added - same reasoning as migrateMission().
       const future = { schemaVersion: RANGER_SCHEMA_VERSION + 5, rangers: [ranger('ACS1')] };
 
       const result = migrateRangers(future);

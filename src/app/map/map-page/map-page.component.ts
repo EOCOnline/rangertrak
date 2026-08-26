@@ -11,7 +11,7 @@ import { MapEngineService } from '../map-engine.service'
  * E-64: a thin shell owning route `/map`. It owns ONLY the page wrapper, the engine
  * switch, and mounting exactly one engine at a time - everything else (each engine's own
  * coordinate/zoom readout, overview map, Instructions, All/Selected checkbox) stays inside
- * LmapComponent/MapComponent, per the maintainer's explicit "should not be merged without
+ * LmapComponent/MapLibreComponent, per the maintainer's explicit "should not be merged without
  * reason." No shared base class, no changes to either engine's internals.
  *
  * Leaflet is imported eagerly here (it's the hardcoded default - no auto-detection, that
@@ -43,7 +43,7 @@ export class MapPageComponent implements OnInit {
   // E-78: one control in the shared shell rather than one per engine - it targets this
   // page's own wrapper div (map + switch + whichever engine is mounted), not either
   // engine's internals, so it works identically for both without touching LmapComponent or
-  // MapComponent (keeps E-64's "should not be merged without reason" intact). Native
+  // MapLibreComponent (keeps E-64's "should not be merged without reason" intact). Native
   // Fullscreen API rather than a plugin (leaflet.fullscreen has no MapLibre equivalent, and
   // this app already avoids a per-engine control here for the same reason it avoids one for
   // the engine switch itself). Verified live that neither engine needs a manual resize
@@ -79,8 +79,8 @@ export class MapPageComponent implements OnInit {
     if (this.maplibreComponentType()) {
       return
     }
-    const { MapComponent } = await import('../map.component')
-    this.maplibreComponentType.set(MapComponent)
+    const { MapLibreComponent } = await import('../mapLibre.component')
+    this.maplibreComponentType.set(MapLibreComponent)
   }
 
   async onEngineSwitchChanged(event: Event): Promise<void> {

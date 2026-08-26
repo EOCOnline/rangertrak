@@ -17,42 +17,57 @@
           [showToolPanel]="showToolPanel"
         -->
       </ag-grid-angular>
-      <div class="rows">
-        <span class="selected"><span class="strong">Selected Rows: {{selectedRows()}} </span> &nbsp; (Maps have a switch to
-          only show these rows)</span>
-        <span class="pager">
-          <label for="pet-select"># Rows per Page: &nbsp;</label>
-          <select name="rowPerPage" id="rowPerPage-select" (change)="onRowsPerPage()">
-            <!-- option value="">--Please choose an option--</option -->
-            <option value="Auto">Auto</option>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="infinite">All</option>
-          </select>
-        </span>
-      </div>
-      <br />
-      <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
-      <button (click)="onBtNormal()">Normal Layout</button-->
-      <!--div><button (click)="/">Add a new Field Report</button></div-->
+      <!-- ══ 5. ACTION BAR ══ Material-M3 pass, 2026-08-26. Was three separate rows below
+           the grid - a selection/paging line, then a bare <br>, then an export line mixing a
+           native button, a native <select> and a checkbox-in-a-label. One `.rt-action-bar`
+           now (the shared pattern from styles/_patterns.scss, same as Mission's), holding
+           only controls that act on the grid above it.
 
-      <div>
-        <button (click)="onBtnExport()">Export Field Reports</button> with column separator of
-        <select (change)="onSeperatorChange()" id="columnSeparator">
-          <option value="none">comma (,)</option>
-          <option value="tab">tab</option>
-          <option value="|">bar (|)</option>
-        </select>
-        &nbsp;
-        <label class="option" for="allRows"
-          title="By default only filtered & sorted rows are exported.">
-          <input id="allRows" type="checkbox" />All Rows</label>
+           The two <select>s are `<mat-select>` and the checkbox is `<mat-checkbox>`, which
+           is why field-reports.component.ts no longer reads any of them back out of the DOM
+           - see the comments on getParamValue()/onBtnExport() there for what each of those
+           three reads would have done post-conversion (one throws, one silently exports the
+           wrong rows). -->
+      <div class="rt-action-bar">
+        <span class="rt-action-bar__status">
+          {{ selectedRows() }} selected
+          @if (selectedRows() > 0) {
+            <span class="reports__selected-note">&mdash; both maps can show only these</span>
+          }
+        </span>
+
+        <div class="rt-action-bar__buttons">
+          <mat-form-field class="reports__control reports__control--rows">
+            <mat-label>Rows per page</mat-label>
+            <mat-select [value]="rowsPerPage()"
+              (selectionChange)="rowsPerPage.set($event.value); onRowsPerPage($event.value)">
+              @for (opt of rowsPerPageOptions; track opt) {
+                <mat-option [value]="opt">{{ opt }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="reports__control reports__control--sep">
+            <mat-label>CSV separator</mat-label>
+            <mat-select [value]="columnSeparator()"
+              (selectionChange)="columnSeparator.set($event.value); onSeperatorChange()">
+              @for (opt of separatorOptions; track opt.value) {
+                <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-checkbox [checked]="allRows()" (change)="allRows.set($event.checked)"
+            title="By default only the filtered and sorted rows are exported.">
+            All rows
+          </mat-checkbox>
+
+          <button matButton="filled" type="button" (click)="onBtnExport()">
+            <mat-icon>download</mat-icon>
+            Export
+          </button>
+        </div>
       </div>
-      <!--button (click)="this.gridApi.deselectAll()">Clear Selection</button-->
-      <!--div>TODO: <button (click)="setQuickFilter()">Filter Field Reports</button></div-->
     }
 
     @if (isPhone()) {
@@ -91,11 +106,27 @@
       </div>
     }
 
-    <br />
-    <rangertrak-section summary="Advanced">
-      <button (click)="onBtnClearFieldReports()">
-        Delete ALL Field Reports from local storage</button><br />
-    </rangertrak-section>
+    <!-- ══ 6. DANGER ZONE ══ Material-M3 pass, 2026-08-26: was a <rangertrak-section
+         summary="Advanced"> styled identically to the "Tips" block that used to sit right
+         above it - so an unrecoverable wipe of every field report looked exactly like
+         reading material. Fenced now, same `.rt-danger-zone` treatment Mission's own
+         destructive controls got. -->
+    <div class="rt-danger-zone">
+      <h2 class="rt-danger-zone__heading">
+        <mat-icon aria-hidden="true">warning</mat-icon>
+        Danger zone
+      </h2>
+      <p class="rt-danger-zone__note">
+        Clearing reports is how you start a fresh operational period. It cannot be undone &mdash;
+        export first from Mission Setup if you need to keep this mission.
+      </p>
+      <div class="rt-danger-zone__actions">
+        <button matButton="outlined" type="button" class="reports__danger-button"
+          (click)="onBtnClearFieldReports()">
+          Delete all field reports
+        </button>
+      </div>
+    </div>
   </div>
 
 

@@ -52,7 +52,7 @@ describe('field-report-migration', () => {
   });
 
   it('returns null for anything that is not a usable store', () => {
-    // null means "call your own initializer" - building an empty store needs SettingsService,
+    // null means "call your own initializer" - building an empty store needs MissionService,
     // and that logic already lives in FieldReportService.initEmptyFieldReports().
     for (const junk of [null, undefined, 'nonsense', 42, [], {}]) {
       expect(migrateFieldReports(junk)).toBeNull();

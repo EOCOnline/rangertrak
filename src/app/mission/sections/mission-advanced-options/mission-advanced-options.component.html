@@ -1,0 +1,101 @@
+<!-- Material-M3 pass, 2026-08-25. Was a <rangertrak-section summary="Advanced Options">
+     styled identically to the "Instructions" block above it - which meant "Reset Mission",
+     "Import Mission" (replaces everything on the device) and "Load Sample Mission" (also
+     replaces everything) looked exactly like reading material.
+     They are fenced now: `.rt-danger-zone` from styles/_patterns.scss, and every button that
+     destroys data is a `matButton` in the warn palette rather than an unstyled native one.
+     Storage Protection and the export half of Mission Backup are NOT destructive, so they
+     stay outside the fence in their own card. -->
+
+<mat-card appearance="outlined" class="rt-mission-card">
+  <mat-card-header>
+    <mat-card-title>Data safety</mat-card-title>
+    <mat-card-subtitle>Everything RangerTrak knows lives in this browser, on this device.
+      These are the two things that protect it.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <h3 class="mission__subhead">Storage protection</h3>
+    @if (storagePersistence.persisted() === true) {
+    <p class="mission__status mission__status--ok">
+      <mat-icon aria-hidden="true">check_circle</mat-icon>
+      Persistent storage is granted. This browser should not clear RangerTrak&rsquo;s data
+      without your explicit action.
+    </p>
+    } @else if (storagePersistence.persisted() === false) {
+    <p class="mission__status mission__status--warn">
+      <mat-icon aria-hidden="true">warning</mat-icon>
+      Persistent storage is <strong>not</strong> granted. Under storage pressure the browser
+      could clear this mission&rsquo;s data without warning.
+    </p>
+    <button matButton="outlined" type="button" (click)="onBtnRequestPersistence()">
+      Request persistent storage
+    </button>
+    } @else {
+    <p class="mission__status">
+      <mat-icon aria-hidden="true">info</mat-icon>
+      This browser doesn&rsquo;t support requesting persistent storage. Export your mission
+      regularly as a precaution.
+    </p>
+    }
+
+    <h3 class="mission__subhead">Mission backup</h3>
+    <p class="mission__note">
+      Backs up this device&rsquo;s entire mission &mdash; settings, rangers and field reports
+      &mdash; to a single file, so it survives clearing browser storage or a move to another
+      device.
+    </p>
+    <p class="mission__note mission__note--warn">
+      The exported file includes the ranger roster &mdash; legal names, personal phone numbers
+      and call signs &mdash; and is <strong>not</strong> encrypted. Store it accordingly and
+      delete it when the mission is over.
+    </p>
+    <button matButton="outlined" type="button" (click)="onBtnExportMission()"
+      title="Download the current mission as a JSON file">
+      <mat-icon>download</mat-icon>
+      Export mission
+    </button>
+  </mat-card-content>
+</mat-card>
+
+<!-- ══ 6. DANGER ZONE ══ Everything below replaces data that is already on the device. -->
+<div class="rt-danger-zone rt-mission-card">
+  <h2 class="rt-danger-zone__heading">
+    <mat-icon aria-hidden="true">warning</mat-icon>
+    Danger zone
+  </h2>
+  <p class="rt-danger-zone__note">
+    Each of these replaces or discards data already on this device, and cannot be undone.
+    Export your mission first if you need to keep it.
+  </p>
+
+  <div class="rt-danger-zone__actions">
+    <button matButton="outlined" type="button" class="mission__danger-button"
+      (click)="resetDefaults.emit()"
+      title="Return every setting above to its default value">
+      Reset mission to defaults
+    </button>
+
+    <!-- The file input stays visually hidden and is driven by its own <label>: a native
+         file picker cannot be opened programmatically without a real user gesture on an
+         <input type="file">, so the label IS the button here rather than a matButton that
+         forwards a click. `matButton` on the label gives it the same box as its siblings. -->
+    <label matButton="outlined" for="importMissionFile" class="mission__danger-button"
+      title="Restore a mission from a previously exported JSON file - replaces everything currently on this device">
+      Import mission &mdash; replaces everything
+    </label>
+    <input #importMissionFile id="importMissionFile" type="file" accept="application/json,.json"
+      (change)="onImportFileSelected($event)" class="mission__file-input" />
+
+    <button matButton="outlined" type="button" class="mission__danger-button"
+      (click)="onBtnLoadSampleData()"
+      title="Replace rangers and field reports with a demonstration mission">
+      Load sample mission &mdash; replaces rangers and reports
+    </button>
+  </div>
+
+  <p class="mission__note mission__sample-note">
+    The sample mission is a roster of 12 units and about 30 field reports spread across
+    Vashon Island over the last several hours &mdash; useful for demonstrating RangerTrak, or
+    for seeing how a screen looks with realistic data on a brand-new install.
+  </p>
+</div>

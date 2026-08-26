@@ -53,47 +53,38 @@ label {
   font-weight: bold;
 }
 
-// Roster import/export. The <label> is the file input's trigger, so it has to look and
-// size like the button beside it.
-.roster-transfer {
-  display    : flex;
-  align-items: center;
-  flex-wrap  : wrap;
-  gap        : 0.5em;
-  margin     : 0.5em 0;
+// Material-M3 pass, 2026-08-26. Removed as dead once the five control rows became two
+// `.rt-action-bar`s plus a `.rt-danger-zone` (see the template): `.roster-transfer` and its
+// four children, and `.roster-actions`. `.roster-transfer__import` in particular was a
+// hand-rolled button look for the two file-picker <label>s - `matButton` on the label gives
+// them the real thing now, so there is nothing left to imitate.
+
+// The file-picker <label>s carry `matButton`, which styles them correctly but does not
+// give them a button's pointer affordance (it is a <label>, not a <button>).
+.rangers__file-label {
+  cursor: pointer;
 }
 
-.roster-transfer__label {
-  font-weight: bold;
+// Sized for its own floating label ("CSV separator"), not just its widest value - a
+// mat-form-field's notched outline gives the label no room to wrap, so an under-sized field
+// clips it. Same lesson as Reports' own rows-per-page picker.
+.rangers__control {
+  align-self: center;
+  width     : 11rem;
 }
 
-.roster-transfer__import {
-  display      : inline-block;
-  cursor       : pointer;
-  padding      : 0.25em 0.75em;
-  min-height   : var(--rt-tap-min);
-  line-height  : var(--rt-tap-min);
-  border       : 1px solid var(--rt-line-strong);
-  border-radius: var(--rt-radius);
-  background   : var(--rt-surface-2);
-  color        : var(--rt-ink);
+// Same warn treatment Mission's and Reports' danger-zone buttons get, so a destructive
+// action never reads as an ordinary outlined button.
+.rangers__danger-button {
+  --mat-button-outlined-label-text-color: var(--rt-readiness-red);
+  --mat-button-outlined-outline-color   : var(--rt-readiness-red);
+  color                                 : var(--rt-readiness-red);
 }
 
-.roster-transfer__import:hover,
-.roster-transfer__import:focus-within {
-  border-color: var(--rt-accent);
-}
-
-.roster-transfer__note {
-  color    : var(--rt-ink-2);
-  font-size: smaller;
-}
-
-.roster-actions {
-  display  : flex;
-  flex-wrap: wrap;
-  gap      : 0.5em;
-  margin   : 0.5em 0;
+// The two action bars stack directly on top of each other; without this they read as one
+// undifferentiated block of controls.
+.rangers__export {
+  margin-top: 0.5rem;
 }
 
 // Confidentiality bar above the roster grid. This was a multi-paragraph block that pushed

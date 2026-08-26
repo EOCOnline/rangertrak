@@ -21,7 +21,7 @@
 // Controls for the thing on screen, attached to it. Sticks to the viewport bottom
 // while the page scrolls, then settles once the page's end is reached - `position:
 // sticky` clamps to the containing block, so whatever wraps this decides where it
-// stops. settings.component.scss proved the pattern (its own .settings__action-bar,
+// stops. mission.component.scss proved the pattern (its own .mission__action-bar,
 // now retired in favour of this); Entry and Reports adopt it here.
 .rt-action-bar {
   position       : sticky;
@@ -37,7 +37,7 @@
   background     : var(--rt-surface);
   border-top     : 1px solid var(--rt-line-strong);
   // Lifts the bar off the content sliding under it. Deliberately softer than the
-  // 0.25-alpha shadow settings.component.scss used - that read as a heavy slab in
+  // 0.25-alpha shadow mission.component.scss used - that read as a heavy slab in
   // light mode, where the surface below it is nearly white.
   box-shadow     : 0 -2px 12px rgb(0 0 0 / 8%);
 }
@@ -51,8 +51,17 @@
 }
 
 .rt-action-bar__buttons {
-  display: flex;
-  gap    : 0.6em;
+  display  : flex;
+  align-items: center;
+  // flex-wrap is load-bearing, not defensive tidiness: this row held exactly two buttons
+  // (Cancel/Save) when the pattern was written for Mission, which fit anything. Rangers
+  // puts SIX controls in it, which cannot fit a 390px phone - and an unwrapped flex row
+  // does not overflow quietly, it drags the whole page wider, which is precisely what
+  // checkAllRoutesPhoneWidth() exists to catch. It did: "/rangers does not widen the page
+  // past the device". Fixed here, in the shared pattern, rather than per page, since any
+  // future action bar can grow past two items the same way.
+  flex-wrap: wrap;
+  gap      : 0.6em;
 }
 
 // ── 6. Danger zone ───────────────────────────────────────────────────────────
@@ -124,7 +133,7 @@
 //
 // `mat-card appearance="outlined"` supplies the border, radius and surface itself; this
 // only owns how a card sits in a column of other cards.
-.rt-settings-card {
+.rt-mission-card {
   display      : block;
   margin-bottom: var(--rt-gap);
   // Cards are grid items whose parents set `align-items: start`, so they size to their own

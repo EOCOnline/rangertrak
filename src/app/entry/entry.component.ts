@@ -27,7 +27,7 @@ import { TimePickerComponent } from '../shared/time-picker/time-picker.component
 import { DDToDDM } from '../shared/mapping/coordinate'
 import {
   FIELD_REPORT_SOURCES, FieldReportService, FieldReportStatusType, LocationType, LogService,
-  RangerService, RangerType, SettingsService, SettingsType, statusColorValue,
+  RangerService, RangerType, MissionService, MissionType, statusColorValue,
   undefinedAddressFlag, undefinedLocation, WelcomePanelService
 } from '../shared/services/'
 //import { LocationComponent } from './location.component'
@@ -59,7 +59,7 @@ import { MiniMapLeafletComponent } from './mini-mapLeaflet.component'
   styleUrls: ['./entry.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   // BUG-2 (2026-08-19): this used to be
-  //   providers: [RangerService, FieldReportService, SettingsService]
+  //   providers: [RangerService, FieldReportService, MissionService]
   // All three are @Injectable({providedIn:'root'}). Re-declaring them here gave Entry its
   // OWN instances, so submitted reports went into a private FieldReportService while the
   // Reports page read the root one - which still held its startup-empty list. The page
@@ -134,7 +134,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   notesTabIndex = this.sourceTabIndex + 1
   generates213TabIndex = this.notesTabIndex + 1
   replyRequested213TabIndex = this.generates213TabIndex + 1
-  message213TabIndex = this.replyRequested213TabIndex + 1
   // E-103: the per-mission definable recipients213 checkbox list is a runtime-variable-length
   // group, not a fixed set of fields - it gets ONE reserved tab stop for the whole group, the
   // same convention Status's mat-radio-group uses above for its own per-mission configurable
@@ -142,9 +141,17 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // tabindex, so they're naturally focusable (browser default) without disturbing this app's
   // "contiguous explicit tabindex 1..N" invariant (tools/e2e.js's checkEntryTabOrder) the way
   // a per-option slot count tied to settings data - unknowable at compile time - would.
-  recipients213CheckboxesTabIndex = this.message213TabIndex + 1
+  recipients213CheckboxesTabIndex = this.replyRequested213TabIndex + 1
   recipients213TabIndex = this.recipients213CheckboxesTabIndex + 1
-  resetTabIndex = this.recipients213TabIndex + 1
+  // 2026-08-26: "To" (the recipients checklist + Additional recipients) moved ABOVE the
+  // message body in entry.component.html, on the maintainer's ask - you address a 213
+  // before you write it, and the message's own tooltip refers to whoever is listed under
+  // To. The tab chain had to move WITH the markup, not just the markup: this app's
+  // checkEntryTabOrder() asserts tabindexes ascend in DOM order, so leaving message213 at
+  // its old slot would have left the sequence reading 40, 42, 43, 41 - the exact failure
+  // the coordinate-system reorder already hit once. Total is unchanged at 45.
+  message213TabIndex = this.recipients213TabIndex + 1
+  resetTabIndex = this.message213TabIndex + 1
   submitTabIndex = this.resetTabIndex + 1
 
   // E-41 phase 1: source options for the template's @for - the values themselves are
@@ -161,8 +168,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   public rangers: RangerType[] = []
   filteredRangers!: Observable<RangerType[]>
 
-  private settingsSubscription!: Subscription
-  public settings!: SettingsType
+  private missionSubscription!: Subscription
+  public settings!: MissionType
 
   // Get time events from <timepicker> component
   //private timeSubscription!: Subscription  //! EVER USED?!
@@ -262,7 +269,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     private photos: RangerPhotoService,
     private fieldReportService: FieldReportService,
     private log: LogService,
-    private settingsService: SettingsService,
+    private missionService: MissionService,
     private _snackBar: MatSnackBar,
     private http: HttpClient,
     private zone: NgZone,
@@ -272,9 +279,9 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.excessive(`======== constructor() ============`, this.id)
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
+    this.missionSubscription = this.missionService.getMissionObserver().subscribe({
+      next: (newMission) => {
+        this.settings = newMission
         // REVIEW: If new Default Location, do we switch to that, or any currenlty in 'use'?
         if (JSON.stringify(this.locationParent) === JSON.stringify(undefinedLocation)) {
           // Local location has yet to be set
@@ -306,7 +313,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     // TODO: Use Alert Service to avoid passing along doc & snackbar properties!
-    this.alert = new AlertsComponent(this._snackBar, this.log, this.settingsService, this.document)
+    this.alert = new AlertsComponent(this._snackBar, this.log, this.missionService, this.document)
 
     //! https://material.angular.io/components/autocomplete/examples#autocomplete-overview has this in constructor!
     // also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
@@ -381,7 +388,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
 
-    // https://angular.io/api/router/Resolve - following fails as SettingsComponent has yet to run...
+    // https://angular.io/api/router/Resolve - following fails as MissionComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
     this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)
     // verifies Settings has been loaded
@@ -761,7 +768,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     //this.locationChange?.unsubscribe()
     this.rangersSubscription?.unsubscribe()
-    this.settingsSubscription?.unsubscribe()
+    this.missionSubscription?.unsubscribe()
     //this.timeSubscription?.unsubscribe()
   }
 }

@@ -45,10 +45,27 @@ $filledColor: var(--rt-surface-2);
   display: block;
 }
 
-// See E-48(1)'s own comment in location.component.ts for why this is `visibility: hidden`
-// (reserves layout space, avoids a measured CLS regression) rather than `display: none`.
+// `display: none`, NOT `visibility: hidden`, as of 2026-08-26.
+//
+// E-48(1) originally chose `visibility: hidden` here deliberately - it reserves the block's
+// layout space from first paint, which fixed a measured 0.35-0.40 CLS score caused by the
+// whole derived block popping in at full height once its async geocode landed. That
+// reasoning was sound while this block WAS the whole panel: reserving its space kept the
+// page from jumping.
+//
+// It stopped being sound when E-104 moved the coordinate rows and the "Derived" divider
+// OUT of this block and into the panel around it. The panel and divider now always render,
+// so the page no longer jumps when this fills in - but the reserved-yet-invisible space
+// became 64px of blank white gap sitting under the coordinate rows, permanently, on any
+// device where the geocode never completes (offline, which is RangerTrak's normal case).
+// Reported live: "We lost the top few rows of what was the deferred address coordinates on
+// the latest version, and now theres a big white space there."
+//
+// The CLS trade this reintroduces is far smaller than the one E-48(1) was fixing: three
+// single-line rows appearing inside an already-present, already-sized panel, rather than an
+// entire block with its own background and padding appearing from nothing.
 .enter__Where-Results--hidden {
-  visibility: hidden;
+  display: none;
 }
 
 // E-48(2): the derived Address/+Codes/Maidenhead readouts are `readonly` inputs, not

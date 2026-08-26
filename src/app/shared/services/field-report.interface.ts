@@ -70,7 +70,7 @@ export type FieldReportsType = {
  * 'Yes, generate an ICS-213' [button/flag] from this message." All optional rather than a
  * schema-version bump: existing stored reports simply lack them (`undefined`), which is a
  * safe, already-correct answer for a plain `JSON.parse()` (field-report.service.ts has no
- * migration path today, unlike SettingsType) - nothing reads these fields yet, so there is
+ * migration path today, unlike MissionType) - nothing reads these fields yet, so there is
  * nothing for their absence to break. `message213`/`replyRequested213`/`recipients213` are
  * a best-effort answer to "whatever the 213's initial version requires" - now confirmed
  * against the real official ICS-213 AcroForm (E-31/E-41 phase 3, 2026-08-26 - see

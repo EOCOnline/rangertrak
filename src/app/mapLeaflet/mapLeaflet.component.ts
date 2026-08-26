@@ -29,7 +29,7 @@ import {
   AbstractMap, Utility, rangerIconFor, rangerColorFor, evidenceIconFor, fieldReportStatusColor,
   formatReportTime
 } from '../shared'
-import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, SettingsService } from '../shared/services'
+import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, MissionService } from '../shared/services'
 
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
@@ -81,7 +81,7 @@ function formatBytes(bytes: number): string {
     //'../../../node_modules/leaflet/dist/leaflet.css' // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)
   ],
   changeDetection: ChangeDetectionStrategy.Eager,
-  // Deliberately NOT providing SettingsService: it is providedIn:'root' and a second
+  // Deliberately NOT providing MissionService: it is providedIn:'root' and a second
   // instance here would diverge from everyone else's. See BUG-2 in entry.component.ts.
 })
 export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {  //OnInit,
@@ -134,14 +134,14 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   //!TODO: Add fullscreen button: https://tomik23.github.io/leaflet-examples/#27.fullscreen
 
   constructor(
-    settingsService: SettingsService,
+    missionService: MissionService,
     fieldReportService: FieldReportService,
     httpClient: HttpClient,
     log: LogService,
     private rangerService: RangerService,
     @Inject(DOCUMENT) protected override document: Document
   ) {
-    super(settingsService,
+    super(missionService,
       fieldReportService,
       httpClient,
       log,

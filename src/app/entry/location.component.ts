@@ -27,7 +27,7 @@ import { GEOCODING_PROVIDER, GeocodingProvider } from '../shared/mapping/geocodi
 import { OpenLocationCode } from '../shared/mapping/open-location-code'
 
 import {
-  LocationType, LogService, SettingsService, SettingsType, undefinedAddressFlag, undefinedLocation
+  LocationType, LogService, MissionService, MissionType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services'
 
 import { MATERIAL_IMPORTS } from '../material-imports'
@@ -365,10 +365,10 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   mdiAccount: string = mdiAccount
   mdiInformationOutline: string = mdiInformationOutline
 
-  private settingsSubscription!: Subscription
+  private missionSubscription!: Subscription
   // Public (not private): the template reads settings.showXxx to decide which
   // coordinate systems to render (Sprint H).
-  public settings!: SettingsType
+  public settings!: MissionType
 
   // Tracks our own most recent emission so ngOnChanges (the opportunistic re-centering fix,
   // see below) can tell "parent gave us a genuinely new location" apart from "parent just
@@ -377,7 +377,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   private lastEmitted: { lat: number; lng: number } | null = null
 
   constructor(
-    private settingsService: SettingsService,
+    private missionService: MissionService,
     private log: LogService,
     @Inject(GEOCODING_PROVIDER) private geocodingProvider: GeocodingProvider,
     // private _toppy: Toppy,
@@ -386,9 +386,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     // Settings only needed for Check PCode & What3Words...
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
+    this.missionSubscription = this.missionService.getMissionObserver().subscribe({
+      next: (newMission) => {
+        this.settings = newMission
         this.log.excessive('Received new Settings via subscription.', this.id)
 
         // `activeSystem` defaults to 'DD' before real settings arrive (a synchronous
@@ -986,6 +986,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   }
 
   ngOnDestroy() {
-    this.settingsSubscription?.unsubscribe()
+    this.missionSubscription?.unsubscribe()
   }
 }

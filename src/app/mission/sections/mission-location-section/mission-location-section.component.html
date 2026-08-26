@@ -1,0 +1,84 @@
+<mat-card appearance="outlined" class="rt-mission-card">
+  <mat-card-header>
+    <mat-card-title>Location defaults</mat-card-title>
+    <mat-card-subtitle>Seeds the Entry form&rsquo;s starting position. Maps do not use these &mdash; they
+      auto-centre on the centroid of the reports actually entered, then zoom to fit.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="rt-field-grid">
+      <mat-form-field>
+        <mat-label>Default latitude</mat-label>
+        <input matInput type="number" step=".01" [formField]="form.defLat"
+          placeholder="{{settings.defLat.toFixed(4)}}" data-lpignore="true" />
+        <!-- Was a `.text-sm.text-danger` div rendered by an @if beside the input. mat-error
+             shows itself on the same condition Material already tracks, and takes the
+             field's own error colour rather than a hand-picked one. -->
+        @if (form.defLat().touched() && form.defLat().invalid()) {
+        <mat-error>Must be between -89.99&deg; and 89.99&deg;</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Default longitude</mat-label>
+        <input matInput type="number" step=".01" [formField]="form.defLng"
+          placeholder="{{settings.defLng.toFixed(4)}}" data-lpignore="true" />
+        @if (form.defLng().touched() && form.defLng().invalid()) {
+        <mat-error>Must be between -179.99&deg; and 179.99&deg;</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Sprint H, meaning corrected E-104 (2026-08-26): these do NOT control which formats
+         are reachable on Entry - every format is always one tap away there, via the
+         switcher above Where. Checking one or more here only picks which format Entry
+         OPENS on for this mission (the first checked one, in the order shown below) - a
+         genuine per-mission convenience (a border team that mostly works in MGRS can have
+         Entry start there), not an access restriction.
+
+         Real regression this correction exists to prevent a repeat of: an earlier version
+         of this pass DID let these restrict access, and the maintainer caught it live -
+         "without the 'show all coordinate systems' checkbox how am I supposed to enter an
+         unexpected radio call using other coordinates? I now only see one entry format."
+         MGRS/UTM default off (below), and under the old blocking reading that made an
+         unexpected MGRS/UTM call impossible to enter without a trip to this page first,
+         mid-incident. See location.component.ts's `availableSystems()` for the fix and the
+         full reasoning - keep that method unconditional if this section is touched again.
+
+         Material-M3 pass: these are `mat-checkbox` now, but deliberately NOT via
+         `[formField]` - Signal Forms' formField directive cannot act as the value accessor
+         for a Material checkbox (angular/components#32072, the same limitation
+         entry.component.html documents for mat-radio-button). Reading `.value()` and
+         writing `.value.set()` on the FieldState directly is the supported way round it
+         and keeps these bound to the same form tree as every other field here. -->
+    <fieldset class="mission__coords">
+      <legend class="mission__coords-legend">Default coordinate format for Entry</legend>
+      <p class="mission__coords-note">Every format is always available on Entry - this only
+        picks which one it opens on for this mission.</p>
+      <!-- Written out rather than looped: indexing `FieldTree<MissionType>` by a key held
+           in a loop variable resolves to a union of call signatures TypeScript will not
+           narrow, and the six are a fixed set that changes about once a year. -->
+      <div class="mission__coords-grid">
+        <mat-checkbox [checked]="form.showDD().value()"
+          (change)="form.showDD().value.set($event.checked)">Decimal degrees</mat-checkbox>
+        <mat-checkbox [checked]="form.showDDM().value()"
+          (change)="form.showDDM().value.set($event.checked)">Degrees decimal minutes</mat-checkbox>
+        <mat-checkbox [checked]="form.showDMS().value()"
+          (change)="form.showDMS().value.set($event.checked)">Degrees minutes seconds</mat-checkbox>
+        <mat-checkbox [checked]="form.showMGRS().value()"
+          (change)="form.showMGRS().value.set($event.checked)">MGRS</mat-checkbox>
+        <mat-checkbox [checked]="form.showUTM().value()"
+          (change)="form.showUTM().value.set($event.checked)">UTM</mat-checkbox>
+        <mat-checkbox [checked]="form.showMaidenhead().value()"
+          (change)="form.showMaidenhead().value.set($event.checked)">Maidenhead grid locator</mat-checkbox>
+      </div>
+    </fieldset>
+
+    <!-- E-48(6): moved here (and to FIELD-GUIDE.md) from the Entry screen, which isn't the
+         place for a datum-correctness caveat on every single report. -->
+    <p class="mission__datum-note">
+      All coordinate formats above assume WGS84 / modern GPS. A position read off an older
+      paper topo quad may use the NAD27 datum instead, which can be 100&ndash;200 m off in
+      the western US.
+    </p>
+  </mat-card-content>
+</mat-card>

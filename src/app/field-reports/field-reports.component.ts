@@ -6,15 +6,15 @@ import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef, ChangeDetectionStrategy, signal } from '@angular/core';
 
 import { AgGridAngular } from 'ag-grid-angular';
-import { SectionComponent } from '../shared/section/section.component';
 import { PageComponent } from '../shared/page/page.component';
+import { MATERIAL_IMPORTS } from '../material-imports';
 
 import { Utility } from '../shared'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 import {
   FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
-  RangerService, SettingsService, SettingsType, statusColorValue, statusInkValue
+  RangerService, MissionService, MissionType, statusColorValue, statusInkValue
 } from '../shared/services'
 
 @Pipe({ name: 'myUnusedPipe' })
@@ -32,7 +32,7 @@ export class myUnusedPipe implements PipeTransform {
     CommonModule,
     AgGridAngular,
     PageComponent,
-    SectionComponent
+    ...MATERIAL_IMPORTS
   ],
   templateUrl: './field-reports.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -51,10 +51,10 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
    * used to do. The statuses (and their colours) are per-mission settings, so Import
    * Mission, Load Sample Mission and Reset Settings all change them - and the snapshot
    * left this grid colouring rows by the *previous* mission's status list. Read at
-   * cell-render time, so a getter is enough; SettingsService.settings reads a signal.
+   * cell-render time, so a getter is enough; MissionService.settings reads a signal.
    */
   private get fieldReportStatuses(): FieldReportStatusType[] {
-    return this.settingsService.settings?.fieldReportStatuses ?? []
+    return this.missionService.settings?.fieldReportStatuses ?? []
   }
   // Mutated inside gotNewFieldReports(), reached from the fieldReportsSubscription's
   // subscribe() callback, not an Angular template binding - this app is zoneless, so a
@@ -63,12 +63,32 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   public fieldReportArray = signal<FieldReportType[]>([])
   private fieldReports: FieldReportsType | undefined
 
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
+  private missionSubscription!: Subscription
+  private settings!: MissionType
 
   // Mutated inside onRowSelection(), itself invoked from gridOptions.onSelectionChanged
   // - an ag-grid-native callback, not a template event binding. Same reasoning as above.
   public selectedRows = signal(0)
+
+  // Material-M3 pass, 2026-08-26: the export controls' state, replacing three
+  // getElementById reads (see getParamValue/onBtnExport below for why each had to go -
+  // one would have thrown, one would have silently exported the wrong rows).
+  /** CSV column separator: 'none' (comma), 'tab', or a literal character. */
+  public columnSeparator = signal('none')
+  /** Export all rows, rather than only the filtered/sorted ones. */
+  public allRows = signal(false)
+  /** Rows per page, as shown in the picker: 'Auto' | '5' | ... | 'All'. */
+  public rowsPerPage = signal('Auto')
+
+  /** Options for the rows-per-page picker - kept here so the template just iterates. */
+  readonly rowsPerPageOptions = ['Auto', '5', '10', '25', '50', '100', 'All']
+
+  /** Options for the CSV separator picker: [stored value, label shown to the user]. */
+  readonly separatorOptions: { value: string; label: string }[] = [
+    { value: 'none', label: 'comma (,)' },
+    { value: 'tab', label: 'tab' },
+    { value: '|', label: 'bar (|)' },
+  ]
   public columnDefs!: any
 
   /**
@@ -153,7 +173,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     private log: LogService,
     // private teamService: TeamService,
     // private rangerService: RangerService,
-    private settingsService: SettingsService,
+    private missionService: MissionService,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.log.info(` Construction`, this.id)
@@ -173,9 +193,9 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     this.log.verbose("ngInit", this.id)
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
+    this.missionSubscription = this.missionService.getMissionObserver().subscribe({
+      next: (newMission) => {
+        this.settings = newMission
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -460,14 +480,14 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   // }
 
 
-  // following from https://ag-grid.com/javascript-data-grid/csv-export/
+  /**
+   * Material-M3 pass, 2026-08-26: reads the signal below rather than a native `<select>`.
+   * `<mat-select>` renders no native `<select>`, so the previous
+   * `getElementById('columnSeparator') as HTMLSelectElement` + `.selectedIndex`/`.options`
+   * read would have thrown outright once the control was converted.
+   */
   getParamValue(inputSelector: string) {
-    let selector = this.document.getElementById('columnSeparator') as HTMLSelectElement
-    var sel = selector.selectedIndex;
-    var opt = selector.options[sel];
-    var selVal = (<HTMLOptionElement>opt).value;
-    var selText = (<HTMLOptionElement>opt).text
-    // this.log.excessive(`Got column seperator text: "${selText}", val: "${selVal}"`, this.id)
+    const selVal = this.columnSeparator()
 
     switch (selVal) {
       case 'none':
@@ -503,11 +523,15 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
     // ! Is this JUST for enterprise edition?! - test...
     // https://www.ag-grid.com/javascript-data-grid/excel-export-rows/#export-all-unprocessed-rows
+    // Material-M3 pass, 2026-08-26: reads the signal below, not
+    // `getElementById('allRows').checked`. `<mat-checkbox>` puts its real native input
+    // several levels inside its own template, so that id now lands on the host element -
+    // `.checked` there is `undefined`, which is falsy, so the old read would have SILENTLY
+    // exported 'filteredAndSorted' every time regardless of the box. A wrong export with no
+    // error is worse than a crash, which is why this moved to a signal rather than being
+    // re-pointed at the nested input.
     this.gridApi.exportDataAsExcel({
-      exportedRows: (document.getElementById('allRows') as HTMLInputElement)
-        .checked
-        ? 'all'
-        : 'filteredAndSorted',
+      exportedRows: this.allRows() ? 'all' : 'filteredAndSorted',
     })
   }
 
@@ -577,17 +601,15 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
    *
    * @returns
    */
-  onRowsPerPage() {
-    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionElement
-    //this.log.excessive(`onRowsPerPage`, this.id)
-
-    const element = this.document.getElementById('rowPerPage-select') as HTMLSelectElement// OptionElement
-    if (!element) {
-      this.log.error("onRowsPerPage could not find rowPerPage-select!", this.id)
-      return
-    }
-
-    const option = element.options[element.selectedIndex].outerText
+  /**
+   * Material-M3 pass, 2026-08-26: takes the chosen value as an argument rather than reading
+   * it back out of a native `<select>` via getElementById. The control is a `<mat-select>`
+   * now, which renders no native `<select>` at all - the old
+   * `getElementById(...) as HTMLSelectElement` read would have found the host element and
+   * then thrown on `.options[...]`. Driving it from the emitted value is both correct here
+   * and one less direct-DOM read of the kind Sprint G converted away from.
+   */
+  onRowsPerPage(option: string) {
     // this.gridApi.pagination = true // should have been done initially...
     switch (option) {
       case "Auto":
@@ -640,7 +662,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.fieldReportsSubscription?.unsubscribe()
-    this.settingsSubscription?.unsubscribe()
+    this.missionSubscription?.unsubscribe()
     this.phoneMediaQuery.removeEventListener('change', this.onPhoneMediaChange)
   }
 }

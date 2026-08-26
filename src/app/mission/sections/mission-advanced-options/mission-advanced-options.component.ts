@@ -1,0 +1,129 @@
+import { CommonModule } from '@angular/common'
+import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core'
+
+import { MATERIAL_IMPORTS } from '../../../material-imports'
+import {
+  BackupService, LogService, SampleDataService, StoragePersistenceService
+} from '../../../shared/services/'
+
+/**
+ * Data safety (Storage Protection, mission export) and the page's Danger Zone (reset
+ * settings, import mission, load sample data - all of which replace data already on the
+ * device).
+ *
+ * Material-M3 pass 2026-08-25 split those two apart: they were one undifferentiated
+ * "Advanced Options" block, so an unrecoverable "replaces everything on this device" import
+ * looked exactly like the reversible export beside it. Sprint C split out of the 429-line mission.component template - see
+ * mission.component.ts for the rest.
+ *
+ * The Font Explorium (a dev-time typography-comparison tool, not something a scribe in the
+ * field has any reason to see) used to live here too - extracted 2026-08-20 to a standalone
+ * font-explorium.html in the parent directory, outside the app entirely.
+ *
+ * Injects its own services directly (all `providedIn: 'root'`) rather than threading them
+ * down as Inputs, since none of this section's actions need to hand anything back to the
+ * parent except "reset defaults", which does affect sibling sections' displayed `settings`
+ * and stays owned there.
+ */
+@Component({
+  selector: 'rangertrak-mission-advanced-options',
+  standalone: true,
+  imports: [CommonModule, ...MATERIAL_IMPORTS],
+  templateUrl: './mission-advanced-options.component.html',
+  styleUrls: ['./mission-advanced-options.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+export class MissionAdvancedOptionsComponent {
+  private id = 'Mission Advanced Options Component'
+
+  @Output() resetDefaults = new EventEmitter<void>()
+
+  constructor(
+    private backupService: BackupService,
+    private sampleDataService: SampleDataService,
+    public storagePersistence: StoragePersistenceService,
+    private log: LogService) { }
+
+  onBtnRequestPersistence() {
+    this.log.verbose('onBtnRequestPersistence: re-requesting persistent storage.', this.id)
+    this.storagePersistence.requestPersistence()
+  }
+
+  /**
+   * Downloads the current mission (settings + rangers + field reports) as a
+   * single JSON file. See PRIVATE-Roadmap.md Section 8/R3.
+   */
+  onBtnExportMission() {
+    // The export bundles the full ranger roster, so it carries the same personal data as
+    // the Rangers page warns about - in an unencrypted file this app can no longer
+    // protect once written.
+    if (!confirm(`Export this mission to a file?\n\n`
+      + `The file includes the full ranger roster - legal names, personal `
+      + `phone numbers and call signs - and is NOT encrypted.\n\n`
+      + `Store it somewhere appropriate, share it only with people who need it for this `
+      + `mission, and delete it when the mission is over.`)) {
+      this.log.verbose('onBtnExportMission: user cancelled export.', this.id)
+      return
+    }
+
+    this.log.verbose('onBtnExportMission: Exporting mission.', this.id)
+    this.backupService.exportMission()
+  }
+
+  /**
+   * Handles a file picked via the "Import Mission" <input type="file">.
+   * Destructive - replaces current settings/rangers/field reports entirely -
+   * so this confirms with the user before applying.
+   */
+  onImportFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    input.value = '' // allow re-selecting the same file later
+
+    if (!file) {
+      return
+    }
+
+    this.backupService.readFileAsMissionExport(file)
+      .then(payload => {
+        const summary = `Mission "${payload.settings.mission || '(unnamed)'}" exported `
+          + `${payload.exportedAt}, with ${payload.rangers.length} rangers and `
+          + `${payload.fieldReports.fieldReportArray.length} field reports.`
+
+        if (!confirm(`Import this mission?\n\n${summary}\n\n`
+          + `This REPLACES all current settings, rangers, and field reports on this device. `
+          + `This cannot be undone - export the current mission first if you want to keep it.`)) {
+          this.log.verbose('onImportFileSelected: user cancelled import.', this.id)
+          return
+        }
+
+        this.backupService.importMission(payload)
+        this.log.warn(`Imported mission from ${file.name}.`, this.id)
+        alert('Mission imported. Reloading to refresh every screen with the new data...')
+        window.location.reload()
+      })
+      .catch(error => {
+        this.log.error(`onImportFileSelected: failed to import ${file.name}: ${error.message}`, this.id)
+        alert(`Could not import "${file.name}": ${error.message}`)
+      })
+  }
+
+  /**
+   * Loads the built-in demonstration mission. Destructive - replaces rangers and
+   * field reports - so it confirms first, matching onImportFileSelected().
+   */
+  onBtnLoadSampleData() {
+    if (!confirm(`Load the sample mission?\n\n`
+      + `This REPLACES all rangers and field reports currently on this device with `
+      + `demonstration data, and renames the mission to make that obvious.\n\n`
+      + `This cannot be undone - export the current mission first if you want to keep it.`)) {
+      this.log.verbose('onBtnLoadSampleData: user cancelled.', this.id)
+      return
+    }
+
+    this.sampleDataService.loadSampleMission()
+    this.log.warn('Loaded the sample mission (demo data).', this.id)
+    alert('Sample mission loaded. Reloading to refresh every screen with the new data...')
+    window.location.reload()
+  }
+}

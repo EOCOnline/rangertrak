@@ -1,0 +1,106 @@
+<rangertrak-page [title]="title" [description]="pageDescr">
+
+  <!-- ══ 3. ALERTS - live only, never permanent furniture ══ -->
+
+  <!-- E-55: one install surface, shared with the navbar and footer. See
+       InstallUpdateComponent's doc comment; `detailed` keeps this page's fuller wording. -->
+  <rangertrak-install-update [detailed]="true"></rangertrak-install-update>
+
+  <!-- E-79: which specific gap(s) are behind the header's red/amber readiness dot, rather
+       than just the aggregate colour. Never rendered once every signal is green. -->
+  @if (readinessGaps().length > 0) {
+  <div class="rt-alert mission__readiness" role="note" aria-label="Mission readiness gaps">
+    <mat-icon class="mission__readiness-icon" aria-hidden="true">warning</mat-icon>
+    <div class="rt-alert__body">
+      <p class="mission__readiness-heading">
+        {{ readinessGaps().length }} of 6 readiness checks
+        {{ readinessGaps().length === 1 ? 'is' : 'are' }} failing on this device
+      </p>
+      <p class="mission__readiness-sub">This is what the dot in the page header is counting.</p>
+      <ul class="mission__readiness-list">
+        @for (gap of readinessGaps(); track gap.label) {
+        <li class="mission__readiness-item"
+          [class.mission__readiness-item--red]="gap.severity === 'red'"
+          [class.mission__readiness-item--amber]="gap.severity === 'amber'">
+          {{ gap.label }}
+          @if (gap.link) {
+          <a [routerLink]="gap.link">{{ gap.linkText }}</a>
+          }
+        </li>
+        }
+      </ul>
+    </div>
+  </div>
+  }
+
+  <form (ngSubmit)="onFormSubmit()">
+
+    <!-- ══ 4. THE PRIMARY OBJECT - the settings themselves ══
+         Two columns where the window allows, one where it doesn't. Before this the page was
+         a single ~600px-wide column of controls in a full-width window, so roughly 70% of
+         the horizontal space sat empty while the page ran several screens deep. Each section
+         renders its own <mat-card>s and sets `:host { display: contents }`, so the cards
+         themselves - not the section wrappers - are this grid's items. -->
+    <div class="mission__grid">
+      <rangertrak-mission-details-section [form]="settingsForm" [opPeriodStart]="opPeriodStart()"
+        [opPeriodEnd]="opPeriodEnd()" [timePickerLabelStart]="timePickerLabelStart"
+        [timePickerLabelEnd]="timePickerLabelEnd" (timeEventStart)="onNewTimeEventStart($event)"
+        (timeEventEnd)="onNewTimeEventEnd($event)">
+      </rangertrak-mission-details-section>
+
+      <rangertrak-mission-location-section [form]="settingsForm" [settings]="settings">
+      </rangertrak-mission-location-section>
+
+      <rangertrak-mission-maps-section [form]="settingsForm"></rangertrak-mission-maps-section>
+
+      <rangertrak-mission-field-report-statuses [rowData]="rowData()">
+      </rangertrak-mission-field-report-statuses>
+
+      <rangertrak-mission-recipients213 [options]="recipientOptions213()"
+        (optionsChange)="onRecipientOptions213Change($event)"></rangertrak-mission-recipients213>
+
+      <rangertrak-mission-instructions></rangertrak-mission-instructions>
+    </div>
+
+    <!-- Debug is a saved setting, not a live mode, so it is a checkbox rather than a
+         slide-toggle (see the redesign's selection-control rule: a toggle is for something
+         that takes effect the moment you flip it; this one waits for Save like every other
+         field on the page). Bound through the FieldState's own WritableSignal because
+         Signal Forms' [formField] cannot drive a Material checkbox - angular/components#32072,
+         same as the coordinate-system and map-marker checkboxes. -->
+    <div class="mission__debug">
+      <!-- data-testid, not a class: tools/e2e.js needs a stable hook for this control, and
+           a styling class is the wrong thing to hang that on (it can be renamed by a purely
+           visual change - which is exactly how the old `.mission__Save-button` selector in
+           that suite came to be looking for a class that no longer existed). -->
+      <mat-checkbox data-testid="debug-mode" [checked]="settingsForm.debugMode().value()"
+        (change)="settingsForm.debugMode().value.set($event.checked)">Debug mode</mat-checkbox>
+      <span class="mission__debug-note">
+        Adds a diagnostic panel to the Entry screen and verbose entries to the Log page.
+      </span>
+    </div>
+
+    <!-- ══ 5. ACTION BAR ══ `.rt-action-bar` is global now (styles/_patterns.scss) - this
+         page's own `.mission__action-bar` was the prototype for it. Sticky against the
+         <form>, which still has the danger zone below it, so it settles rather than
+         hovering once the destructive controls come into view. -->
+    <div class="rt-action-bar">
+      <span class="rt-action-bar__status">
+        <mat-icon class="mission__save-icon" aria-hidden="true">cloud_off</mat-icon>
+        Mission data lives in this browser only, and is never uploaded
+      </span>
+      <div class="rt-action-bar__buttons">
+        <button matButton type="button" (click)="onCancel()">Cancel</button>
+        <button matButton="filled" type="submit" data-testid="mission-save"
+          [disabled]="settingsForm().invalid()">
+          Save settings
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ 6. DANGER ZONE ══ (plus the non-destructive Data safety card it was tangled with) -->
+    <rangertrak-mission-advanced-options (resetDefaults)="onBtnResetDefaults()">
+    </rangertrak-mission-advanced-options>
+  </form>
+
+</rangertrak-page>

@@ -2,13 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { HeaderComponent } from './header.component';
-import { SettingsType } from '../services';
+import { MissionType } from '../services';
 
-function settingsWith(mission: string, event: string): SettingsType {
+function settingsWith(mission: string, event: string): MissionType {
   return {
     mission, event, eventNotes: '', opPeriod: '',
     opPeriodStart: new Date(), opPeriodEnd: new Date(),
-  } as unknown as SettingsType;
+  } as unknown as MissionType;
 }
 
 describe('HeaderComponent', () => {

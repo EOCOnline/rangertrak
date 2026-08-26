@@ -14,7 +14,7 @@ import {
 
 import {
   FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LocationType,
-  LogService, SettingsService, SettingsType
+  LogService, MissionService, MissionType
 } from '../services'
 
 // Imported from its own file, not the '..' barrel. This module is *re-exported by* that
@@ -58,8 +58,8 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   public title = 'Abstract Map'
   public pageDescr = 'Abstract Map'
 
-  protected settingsSubscription!: Subscription
-  protected settings!: SettingsType
+  protected missionSubscription!: Subscription
+  protected settings!: MissionType
 
   protected map!: Map
   public location!: LocationType
@@ -95,7 +95,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
 
   //protected iconBase = "./../../../assets/icons/"
 
-  constructor(protected settingsService: SettingsService,
+  constructor(protected missionService: MissionService,
     protected fieldReportService: FieldReportService,
     protected httpClient: HttpClient,
     protected log: LogService,
@@ -103,10 +103,10 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
 
     this.log.excessive(`(Abstract) ======== Constructor() ============`, this.id)
 
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
+    this.missionSubscription = this.missionService.getMissionObserver().subscribe({
+      next: (newMission) => {
         // REVIEW: Any new settings just ripple thru, or does anything need pushing?!
-        this.settings = newSettings
+        this.settings = newMission
         this.log.excessive('(Abstract) Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('(Abstract) Settings Subscription got:' + e, this.id),
@@ -384,6 +384,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   ngOnDestroy() {
     // this.locationSubscription?.unsubscribe()
     this.fieldReportsSubscription?.unsubscribe()
-    this.settingsSubscription?.unsubscribe()
+    this.missionSubscription?.unsubscribe()
   }
 }

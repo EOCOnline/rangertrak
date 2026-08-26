@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { MissionReadinessService } from './mission-readiness.service';
 
 /**
- * The six underlying signals are exercised by their own services (SettingsService,
+ * The six underlying signals are exercised by their own services (MissionService,
  * RangerService, StoragePersistenceService) and RangerService.isRealRosterLoaded's own
  * spec. These tests target the level() formula itself - the judgment call documented in
  * the service's own doc comment - by driving the (deliberately public, settable) signals

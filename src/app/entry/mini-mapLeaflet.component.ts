@@ -27,7 +27,7 @@ import { evidenceIconFor, rangerIconFor } from '../shared/mapping/ranger-icon'
 import { formatReportTime } from '../shared/mapping/report-time'
 import { Utility } from '../shared/utility'
 import {
-  FieldReportService, LocationType, LogService, SettingsService, undefinedAddressFlag,
+  FieldReportService, LocationType, LogService, MissionService, undefinedAddressFlag,
   undefinedLocation
 } from '../shared/services'
 
@@ -62,7 +62,7 @@ L.Marker.prototype.options.icon = iconDefault;
   styleUrls: ['./mini-mapLeaflet.component.scss',
     '../../../node_modules/leaflet/dist/leaflet.css'], // only seems to work when embedded in angular.json & Here! (chgs there REQUIRE restart!)]
   changeDetection: ChangeDetectionStrategy.Eager,
-  // Deliberately NOT providing SettingsService: it is providedIn:'root' and a second
+  // Deliberately NOT providing MissionService: it is providedIn:'root' and a second
   // instance here would diverge from everyone else's. See BUG-2 in entry.component.ts.
 })
 export class MiniMapLeafletComponent extends AbstractMap implements OnInit, AfterViewInit, OnDestroy {
@@ -71,7 +71,7 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
   // Use setter get notification of new locations from parent entry form (pg 182 & 188)
   @Input() set locationUpdated(newLocation: LocationType) {
     // Normal data flow from the parent Entry form, not a fault - see the equivalent
-    // comment in settings.service.ts about keeping the Log page's errors meaningful.
+    // comment in mission.service.ts about keeping the Log page's errors meaningful.
     this.log.excessive((`LMini-Map location Setter called! ${JSON.stringify(newLocation)}`), this.id)
 
     if (newLocation && (newLocation.lat != undefined)) {
@@ -167,13 +167,13 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
   // markerClusterData = []
 
   constructor(
-    settingsService: SettingsService,
+    missionService: MissionService,
     fieldReportService: FieldReportService,
     httpClient: HttpClient,
     log: LogService,
     @Inject(DOCUMENT) protected override document: Document
   ) {
-    super(settingsService,
+    super(missionService,
       fieldReportService,
       httpClient,
       log,

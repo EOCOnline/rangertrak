@@ -23,7 +23,7 @@ import { FieldReportType } from '../services/field-report.interface'
  *
  * Pure - no injection, no Date formatting library, no DOM - same split as
  * `ranger-migration.ts` and `ics213-pdf.ts`. A caller supplies already-resolved mission
- * strings rather than this module reading `SettingsType` itself, so it stays testable with
+ * strings rather than this module reading `MissionType` itself, so it stays testable with
  * plain objects and has no Angular dependency.
  */
 
@@ -44,7 +44,7 @@ export interface Ics309Log {
   rows: Ics309LogRow[]
 }
 
-/** What a caller pulls from `SettingsType` - kept narrow so this module has no Angular tie. */
+/** What a caller pulls from `MissionType` - kept narrow so this module has no Angular tie. */
 export interface Ics309MissionInfo {
   mission: string
   opPeriod: string
@@ -83,7 +83,7 @@ export function buildIcs309Log(
 /**
  * `[Status] notes` - status is always shown, not just when it differs from some hardcoded
  * "Normal" default. Status text is a fully operator-configurable string
- * (`SettingsType.fieldReportStatuses`), so special-casing a literal `'Normal'` here would be
+ * (`MissionType.fieldReportStatuses`), so special-casing a literal `'Normal'` here would be
  * exactly the naive-string-match trap this project has already been bitten by once
  * ([[settings-marker-field-trap]]) - it would silently stop bracketing the moment someone
  * renamed their default status.

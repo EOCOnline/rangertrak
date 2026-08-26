@@ -12,7 +12,7 @@ import { MatNativeDateModule } from '@angular/material/core'
 
 import {
   FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
-  SettingsService, SettingsType
+  MissionService, MissionType
 } from '../services/'
 
 type TimeSegment = 'hour' | 'minute' | 'meridiem'

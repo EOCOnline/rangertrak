@@ -1,0 +1,168 @@
+import { AgGridModule } from 'ag-grid-angular'
+import { ColDef, GridOptions } from 'ag-grid-community'
+
+import { CommonModule } from '@angular/common'
+import {
+  ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges
+} from '@angular/core'
+
+import { ensureAgGridRegistered } from '../../../shared/ag-grid-setup'
+import { rangertrakGridTheme } from '../../../shared/ag-grid-theme'
+import {
+  FieldReportService, FieldReportStatusType, LogService, statusColorMeetsAA, statusColorValue,
+  statusInkValue
+} from '../../../shared/services/'
+import { ColorEditor } from '../../color-editor.component'
+
+/**
+ * The Field Report status/colour ag-Grid editor. Sprint C split out of the 429-line
+ * mission.component template - see mission.component.ts for the rest.
+ *
+ * `rowData` is the same array reference the parent's `settings.fieldReportStatuses` (and
+ * the `fieldReportStatuses` form control) point at - grid edits mutate it in place, exactly
+ * as the monolithic component did. `ngOnChanges` re-syncs the local reference when the
+ * parent reassigns it wholesale (import / reset), mirroring what the parent's settings
+ * subscription already does.
+ *
+ * E-73: the Status column used to be always-editable next to a static warning paragraph
+ * ("don't edit status names if they've already been used") - a rule stated in prose, never
+ * enforced. `isStatusInUse()` checks `FieldReportService`'s current in-memory reports
+ * directly rather than tracking separate "used" state, since `FieldReportType.status` is
+ * already the exact status name string - no new persistence needed. Read fresh on every
+ * edit attempt (AG Grid calls `editable` per cell, right before it would start editing),
+ * so a report added while this grid is open is picked up without any extra wiring.
+ */
+@Component({
+  selector: 'rangertrak-mission-field-report-statuses',
+  standalone: true,
+  imports: [CommonModule, AgGridModule],
+  templateUrl: './mission-field-report-statuses.component.html',
+  styleUrls: ['./mission-field-report-statuses.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+export class MissionFieldReportStatusesComponent implements OnChanges {
+  private id = 'Mission Field Report Statuses Component'
+
+  @Input({ required: true }) rowData: FieldReportStatusType[] = []
+
+  private gridApi: any
+  private gridColumnApi: any
+
+  // https://www.ag-grid.com/angular-data-grid/grid-interface/#grid-options-1
+  // https://www.ag-grid.com/javascript-data-grid/row-styles/#highlighting-rows-and-columns
+  gridOptions: GridOptions = {
+    theme: rangertrakGridTheme,
+  }
+
+  defaultColDef: ColDef = {
+    flex: 1, //https://ag-grid.com/angular-data-grid/column-sizing/#column-flex
+    minWidth: 30,
+    editable: true,
+    singleClickEdit: true,
+    resizable: true,
+    sortable: true,
+    filter: true,
+  }
+
+  //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
+  columnDefs = [
+    {
+      headerName: "Status", field: "status", flex: 50,
+      editable: (params: { data: FieldReportStatusType }) => !this.isStatusInUse(params.data.status),
+      cellStyle: (params: { value: string; }) => {
+        // Same fill+ink resolution as the Field Reports grid - see field-reports.component.ts.
+        const stat = this.rowData.find(el => el.status == params.value)
+        const stored = stat ? stat.color : '#A3A3A3'
+        const style: Record<string, string> = {
+          'background-color': statusColorValue(stored), 'color': statusInkValue(stored)
+        }
+        // E-73: a disabled-looking cell that never explains itself is its own defect - this
+        // is visible *before* a scribe tries to type and gets silently refused, not just a
+        // cursor change on hover.
+        if (this.isStatusInUse(params.value)) {
+          style['opacity'] = '0.6'
+          style['cursor'] = 'not-allowed'
+        }
+        return style
+      },
+      tooltipValueGetter: (params: any) =>
+        this.isStatusInUse(params.value)
+          ? `"${params.value}" is used on at least one field report this mission and can't be renamed. Add a new status instead.`
+          : undefined,
+    },
+    {
+      headerName: "Color", field: "color",
+      tooltipField: "one of the built-in accessible colours, or your own CSS colour",
+      cellStyle: (params: { value: string; }) => {
+        this.refreshStatusGrid()
+        const stored = String(params.value ?? '')
+        return {
+          backgroundColor: statusColorValue(stored),
+          color: statusInkValue(stored),
+          // A custom colour that fails WCAG AA against its own ink is flagged rather than
+          // silently accepted - the whole point of Sprint E's colour work is that an
+          // unreadable status is a safety problem, not a taste one. Built-in keys always pass.
+          outline: statusColorMeetsAA(stored) ? 'none' : '2px dashed #B3261E',
+          outlineOffset: '-3px',
+        }
+      },
+      cellEditor: ColorEditor,
+      cellEditorPopup: true,
+      editable: true,
+      width: 300,
+    }
+  ]
+
+  constructor(private log: LogService, private fieldReportService: FieldReportService) {
+    ensureAgGridRegistered()
+  }
+
+  /** E-73: true if any field report in the current mission carries this exact status name. */
+  isStatusInUse(status: string): boolean {
+    return this.fieldReportService.getCurrentFieldReports().fieldReportArray
+      .some(report => report.status === status)
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Angular already assigns the new value to `rowData` before this runs - this just
+    // makes sure the grid redraws when the parent swaps in a new array (import / reset),
+    // matching what the parent's own settings subscription does for its copy.
+    if (changes['rowData']) {
+      this.refreshStatusGrid()
+    }
+  }
+
+  onGridReady = (params: any) => {
+    this.log.verbose(" onGridReady", this.id)
+
+    this.gridApi = params.api
+    this.gridColumnApi = params.columnApi
+
+    this.refreshStatusGrid()
+  }
+
+  onFirstDataRendered(params: any) {
+    this.refreshStatusGrid() // REVIEW: needed???
+  }
+
+  onBtnAddFRStatus() {
+    this.rowData.push({ status: 'New Status', color: '', icon: '' })
+    this.refreshStatusGrid()
+    this.log.verbose(`Reloading window!`, this.id)
+    window.location.reload()
+  }
+
+  refreshStatusGrid() {
+    if (this.gridApi) {
+      this.gridApi.refreshCells()
+      this.gridApi.sizeColumnsToFit();
+    } else {
+      this.log.verbose("no this.gridApi yet in refreshStatusGrid()", this.id)
+    }
+  }
+
+  // https://angular-get-selected-rows.stackblitz.io
+  getSelectedRowData() {
+    let selectedNodes = this.gridApi.getSelectedNodes();
+  }
+}

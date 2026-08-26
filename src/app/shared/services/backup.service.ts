@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core'
 
 import * as packageJson from '../../../../package.json'
 import {
-  FieldReportsType, FieldReportService, LogService, RangerService, RangerType, SettingsService,
-  SettingsType
+  FieldReportsType, FieldReportService, LogService, RangerService, RangerType, MissionService,
+  MissionType
 } from './'
-import { migrateSettings } from './settings-migration'
+import { migrateMission } from './mission-migration'
 import { normalizeRangerIds } from './ranger-migration'
 import { migrateFieldReports } from './field-report-migration'
 
@@ -20,7 +20,7 @@ export type MissionExport = {
   schemaVersion: number,
   exportedAt: string,
   appVersion: string,
-  settings: SettingsType,
+  settings: MissionType,
   rangers: RangerType[],
   fieldReports: Omit<FieldReportsType, 'bounds'>,
 }
@@ -38,7 +38,7 @@ export class BackupService {
   private id = 'Backup Service'
 
   constructor(
-    private settingsService: SettingsService,
+    private missionService: MissionService,
     private rangerService: RangerService,
     private fieldReportService: FieldReportService,
     private log: LogService,
@@ -53,14 +53,14 @@ export class BackupService {
     const { bounds: _omitted, ...fieldReportsSansBounds } = currentFieldReports
 
     // REVIEW: Workaround for "Error: Should not import the named export ... from
-    // default-exporting module" - same pattern already used in settings.service.ts.
+    // default-exporting module" - same pattern already used in mission.service.ts.
     const appVersion = JSON.parse(JSON.stringify(packageJson)).version
 
     return {
       schemaVersion: MISSION_EXPORT_SCHEMA_VERSION,
       exportedAt: new Date().toISOString(),
       appVersion,
-      settings: this.settingsService.settings,
+      settings: this.missionService.settings,
       rangers: this.rangerService.rangers,
       fieldReports: fieldReportsSansBounds,
     }
@@ -98,13 +98,13 @@ export class BackupService {
     // Settings first: FieldReportService.recalcFieldBounds() (called inside
     // replaceAllFieldReports()) requires settings to already be current, and
     // the settings->FieldReportService subscription is synchronous (both are
-    // signal+ReplaySubject-backed - see settings.service.ts), so this
+    // signal+ReplaySubject-backed - see mission.service.ts), so this
     // ordering is safe.
     // Migrated, not applied raw: an export can be arbitrarily old (this is the restore-after-
     // disaster path, and a mission file may sit on a thumb drive for months), and this call
-    // bypasses settings.service.ts's load path entirely - so without this the import would
-    // reinstate a pre-migration shape over freshly-migrated settings. See settings-migration.ts.
-    this.settingsService.updateSettings(migrateSettings(payload.settings, this.settingsService.initSettings()))
+    // bypasses mission.service.ts's load path entirely - so without this the import would
+    // reinstate a pre-migration shape over freshly-migrated settings. See mission-migration.ts.
+    this.missionService.updateMission(migrateMission(payload.settings, this.missionService.initMission()))
     // Same reasoning as the settings migration above, for the same reason it is easy to
     // miss: an imported roster can predate D-42/D-43 entirely, so it may carry no uid and no
     // canonical id. Without this, importing a mission would put un-keyed rangers straight

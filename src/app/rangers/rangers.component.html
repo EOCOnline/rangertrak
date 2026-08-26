@@ -61,128 +61,125 @@
     <!--button (click)="onBtPrinterFriendly()">Printer Friendly Layout</button>
       <button (click)="onBtNormal()">Normal Layout</button-->
 
-    <!-- Moving a roster between devices. Kept out of "Advanced" on purpose: getting a
-         team's roster onto a device is setup, not an expert operation, and burying it is
-         why Import Mission was being used for a job it does badly. -->
-    <div class="roster-transfer">
-      <span class="roster-transfer__label">Roster:</span>
+    <!-- ══ 5. ACTION BAR ══ Material-M3 pass, 2026-08-26. Was five separate rows below the
+         grid, each with its own button treatment: two "roster-transfer" strips (a <label>
+         styled as a button beside a real <button>), a CSV export line mixing a button, a
+         native <select> and a checkbox-in-a-label, then two lone bare buttons. Grouped into
+         one `.rt-action-bar` (the shared pattern from styles/_patterns.scss), with the
+         explanatory prose that used to sit beside each control moved into the Guide drawer -
+         it is reference material, and the drawer is where this redesign puts that.
 
-      <label for="importRosterFile" class="roster-transfer__import"
-        title="Replace the roster from a JSON file, or load a bundle zip containing roster.json and a photos/ folder. Field reports and settings are not affected.">
-        Import roster (JSON or ZIP)</label>
-      <input #importRosterFile id="importRosterFile" type="file"
-        accept="application/json,.json,application/zip,.zip" (change)="onRosterFileSelected($event)" hidden />
+         The <label for=...> elements are deliberately NOT converted to buttons: a native
+         file picker cannot be opened programmatically without a real user gesture on the
+         <input type="file"> itself, so the label IS the control. `matButton` on the label
+         gives it the same box as its sibling buttons - the same approach
+         mission-advanced-options already uses for Import Mission. -->
+    <div class="rt-action-bar rangers__actions">
+      <span class="rt-action-bar__status">{{ rangers().length }} in roster</span>
 
-      <button (click)="onBtnExportRangersJson()"
-        title="Download just the roster as JSON - the file Import roster expects">
-        Export roster (JSON)</button>
+      <div class="rt-action-bar__buttons">
+        <button matButton="outlined" type="button" (click)="onBtnAddRanger()"
+          title="Add a new Ranger, CERT or Team tactical sign - they are handled identically">
+          <mat-icon>add</mat-icon>
+          Add
+        </button>
 
-      <span class="roster-transfer__note">replaces the roster only &mdash; field reports and
-        settings are untouched</span>
-    </div>
-
-    <!-- Photos are operator data (D-35): they stay on this device and never reach a server
-         or the repo. Matched to rangers by filename = callsign. -->
-    <div class="roster-transfer">
-      <span class="roster-transfer__label">Photos:</span>
-
-      <label for="importPhotoFiles" class="roster-transfer__import"
-        title="Store photographs on this device. Name each file after its callsign, e.g. K7VMI.jpg">
-        Import photos</label>
-      <input #importPhotoFiles id="importPhotoFiles" type="file" accept="image/*" multiple
-        (change)="onPhotoFilesSelected($event)" hidden />
-
-      <button (click)="onBtnClearPhotos()" title="Forget every stored photo on this device">
-        Clear photos</button>
-
-      <span class="roster-transfer__note">kept on this device only &mdash; never uploaded,
-        never in the repo. Name files after the callsign.</span>
-    </div>
-
-    <div>
-      <button (click)="onBtnExportToExcel()">Export Rangers</button> as a spreadsheet (CSV),
-      with column separator of
-      <select (change)="onSeperatorChange()" id="columnSeparator" aria-label="Column separator for exported CSV">
-        <option value="none">comma (,)</option>
-        <option value="tab">tab</option>
-        <option value="|">bar (|)</option>
-      </select>
-      <label class="option" for="allRows" title="By default only filtered & sorted rows are exported.">
-        <input id="allRows" type="checkbox" />All Rows</label>
-      <span class="roster-transfer__note">for Excel &mdash; cannot be imported back in; use
-        JSON for that</span>
-    </div>
-    <br />
-    <button (click)="onDeselectAll()">Clear Selection</button>
-    <br />
-    <br />
-    <button (click)="onBtnAddRanger()"
-      title="Add a new Ranger, or a new CERT, or a new Team Tactical sign: they're considered identically">
-      Add new tactical sign
-    </button>
-    <br />
-    <br />
-    <rangertrak-section summary="Advanced">
-
-      <p>
-        The roster is saved in this browser on this device. It is <em>not</em> shared with
-        other devices, and it is not sent anywhere.
-      </p>
-
-      <h3>Replace the roster</h3>
-      <p>
-        <strong>Import roster</strong> above replaces the whole roster from a JSON file and
-        leaves your field reports and settings alone. Use it to bring a team's roster onto a
-        device. The file can be one this app exported, a mission export, or any JSON list of
-        rangers &mdash; each entry needs at least a <code>callsign</code>.
-      </p>
-      <p>
-        <strong>Export roster</strong> writes that file back out. Do it before importing if
-        you want to keep the roster you already have.
-      </p>
-
-      <h3>Start from the built-in station list</h3>
-      <p>
-        <strong>Add station callsigns</strong> appends the 18 built-in Vashon station signs
-        (command post, ACS, CERT and MERT teams) to whatever is already there. They are
-        stations, not people. It <em>adds</em> rather than replaces, so pressing it twice
-        gives you duplicates.
-      </p>
-
-      <h3>Empty the roster</h3>
-      <p>
-        <strong>Delete all rangers</strong> empties it and it stays empty &mdash; including
-        after a reload. (Before v0.15.3 the built-in station list came straight back, which
-        made loading your own roster a fight.)
-      </p>
-
-      <h3>Saving edits</h3>
-      <p>
-        Edits made directly in the grid are held in memory until you press
-        <strong>Save edits</strong>. Importing, adding and deleting save themselves.
-      </p>
-
-      <div class="roster-actions">
-        <button (click)="onBtnUpdateLocalStorage()"
+        <button matButton="outlined" type="button" (click)="onBtnUpdateLocalStorage()"
           title="Write the edits you have made in the grid above to this browser">
-          Save edits</button>
+          <mat-icon>save</mat-icon>
+          Save edits
+        </button>
 
-        <button (click)="onBtnDeleteRangers()"
-          title="Empty the roster. It stays empty until you import or add rangers.">
-          Delete all rangers</button>
+        <button matButton="outlined" type="button" (click)="onDeselectAll()">
+          Clear selection
+        </button>
 
-        <button (click)="loadVashonRangers()" type="button" id="enter__Fake--button"
-          title="Append the 18 built-in Vashon station callsigns to the current roster">
-          Add station callsigns</button>
+        <label matButton="outlined" for="importRosterFile" class="rangers__file-label"
+          title="Replace the roster from a JSON file, or load a bundle zip containing roster.json and a photos/ folder. Field reports and settings are not affected.">
+          <mat-icon>upload</mat-icon>
+          Import roster
+        </label>
+        <input #importRosterFile id="importRosterFile" type="file"
+          accept="application/json,.json,application/zip,.zip" (change)="onRosterFileSelected($event)" hidden />
+
+        <button matButton="outlined" type="button" (click)="onBtnExportRangersJson()"
+          title="Download just the roster as JSON - the file Import roster expects">
+          <mat-icon>download</mat-icon>
+          Export roster
+        </button>
+
+        <label matButton="outlined" for="importPhotoFiles" class="rangers__file-label"
+          title="Store photographs on this device. Name each file after its callsign, e.g. K7VMI.jpg">
+          <mat-icon>image</mat-icon>
+          Import photos
+        </label>
+        <input #importPhotoFiles id="importPhotoFiles" type="file" accept="image/*" multiple
+          (change)="onPhotoFilesSelected($event)" hidden />
       </div>
-    </rangertrak-section>
-
-    <br />
-    <div>
-      To move a <em>whole mission</em> &mdash; roster, settings and field reports together
-      &mdash; use <strong>Export/Import Mission</strong> on the Settings page. To move only
-      the roster, use Import/Export roster above.
     </div>
+
+    <!-- CSV export gets its own row: it carries two controls (separator, all rows) that
+         belong to it and to nothing else in the bar above. -->
+    <div class="rt-action-bar rangers__export">
+      <span class="rt-action-bar__status">
+        Spreadsheet export &mdash; for Excel; cannot be imported back, use Export roster for that
+      </span>
+      <div class="rt-action-bar__buttons">
+        <mat-form-field class="rangers__control">
+          <mat-label>CSV separator</mat-label>
+          <mat-select [value]="columnSeparator()"
+            (selectionChange)="columnSeparator.set($event.value); onSeperatorChange()">
+            @for (opt of separatorOptions; track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-checkbox [checked]="allRows()" (change)="allRows.set($event.checked)"
+          title="By default only the filtered and sorted rows are exported.">
+          All rows
+        </mat-checkbox>
+
+        <button matButton="filled" type="button" (click)="onBtnExportToExcel()">
+          <mat-icon>download</mat-icon>
+          Export CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ 6. DANGER ZONE ══ Was inside "Advanced", styled identically to the prose around
+         it - so emptying the roster, and appending 18 station signs that duplicate on a
+         second press, both looked like reading material. Fenced now, same treatment as
+         Mission's and Reports'. -->
+    <div class="rt-danger-zone">
+      <h2 class="rt-danger-zone__heading">
+        <mat-icon aria-hidden="true">warning</mat-icon>
+        Danger zone
+      </h2>
+      <p class="rt-danger-zone__note">
+        The roster holds participant personal data. Export it first if you need to keep it &mdash;
+        none of these can be undone.
+      </p>
+      <div class="rt-danger-zone__actions">
+        <button matButton="outlined" type="button" class="rangers__danger-button"
+          (click)="onBtnDeleteRangers()"
+          title="Empty the roster. It stays empty until you import or add rangers.">
+          Delete all rangers
+        </button>
+
+        <button matButton="outlined" type="button" class="rangers__danger-button"
+          (click)="loadVashonRangers()" id="enter__Fake--button"
+          title="Append the 18 built-in Vashon station callsigns to the current roster">
+          Add station callsigns &mdash; appends, may duplicate
+        </button>
+
+        <button matButton="outlined" type="button" class="rangers__danger-button"
+          (click)="onBtnClearPhotos()" title="Forget every stored photo on this device">
+          Clear photos
+        </button>
+      </div>
+    </div>
+
   </div>
 
 

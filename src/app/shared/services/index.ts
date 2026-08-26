@@ -4,7 +4,7 @@ export { RangerService } from "./ranger.service"
 export { FieldReportService } from "./field-report.service"
 export { LogService } from "./log.service"
 export { GlobalErrorHandler } from "./global-error-handler"
-export { SettingsService } from "./settings.service"
+export { MissionService } from "./mission.service"
 export { ClockService } from "./clock.service"
 export { UpdateService } from "./update.service"
 export { StoragePersistenceService } from "./storage-persistence.service"
@@ -21,10 +21,10 @@ export {
 export { LocationType, undefinedAddressFlag, undefinedLocation } from "./location.interface"
 export { LogLevel, LogLevelNames, LogType, LogHeadings } from "./log.interface"
 export { RangerType, UnknownRanger } from "./ranger.interface"
-export { SettingsType } from "./settings.interface"
+export { MissionType } from "./mission.interface"
 export {
-  SETTINGS_SCHEMA_VERSION, DEFAULT_FIELD_REPORT_STATUSES, DEFAULT_RECIPIENT_OPTIONS_213, migrateSettings
-} from "./settings-migration"
+  MISSION_SCHEMA_VERSION, DEFAULT_FIELD_REPORT_STATUSES, DEFAULT_RECIPIENT_OPTIONS_213, migrateMission
+} from "./mission-migration"
 export {
   STATUS_KEYS, StatusKey, isStatusKey, statusColorValue, statusInkValue, statusColorMeetsAA,
   contrastRatio, relativeLuminance, parseColor, Rgb

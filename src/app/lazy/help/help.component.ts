@@ -9,7 +9,7 @@ import { SectionComponent } from '../../shared/section/section.component'
 import { FeedbackComponent } from '../../shared/feedback/feedback.component'
 import { PageComponent } from '../../shared/page/page.component'
 
-import { LogService, SettingsService, SettingsType } from '../../shared/services'
+import { LogService, MissionService, MissionType } from '../../shared/services'
 
 import { HelpStartComponent } from './tabs/help-start.component'
 import { HelpEntryComponent } from './tabs/help-entry.component'
@@ -45,24 +45,24 @@ import { HelpFaqComponent } from './tabs/help-faq.component'
   templateUrl: './help.component.html',
   styleUrls: ['./help.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  // Deliberately NOT providing SettingsService: it is providedIn:'root' and a second
+  // Deliberately NOT providing MissionService: it is providedIn:'root' and a second
   // instance here would diverge from everyone else's. See BUG-2 in entry.component.ts.
 })
 export class HelpComponent implements OnDestroy {
 
   id = 'Help'
-  private settingsSubscription!: Subscription
-  private settings!: SettingsType
+  private missionSubscription!: Subscription
+  private settings!: MissionType
   public version = ''
   today = new Date()
 
   constructor(
     private log: LogService,
-    private settingsService: SettingsService
+    private missionService: MissionService
   ) {
-    this.settingsSubscription = this.settingsService.getSettingsObserver().subscribe({
-      next: (newSettings) => {
-        this.settings = newSettings
+    this.missionSubscription = this.missionService.getMissionObserver().subscribe({
+      next: (newMission) => {
+        this.settings = newMission
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -73,6 +73,6 @@ export class HelpComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.settingsSubscription?.unsubscribe()
+    this.missionSubscription?.unsubscribe()
   }
 }

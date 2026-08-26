@@ -4,7 +4,7 @@ import { RangerType } from './ranger.interface'
  * Versioned, forward-only migration for the persisted ranger roster, plus the ID assignment
  * ADR D-42 introduced.
  *
- * Mirrors `settings-migration.ts` deliberately - same shape, same conventions, same purity
+ * Mirrors `mission-migration.ts` deliberately - same shape, same conventions, same purity
  * rules - rather than inventing a second way to do this. Settings has had real migration
  * machinery since Sprint E; rangers and field reports had **none at all** (both were bare
  * `JSON.parse()` calls), which is the gap this closes.
@@ -270,7 +270,7 @@ export function normalizeRangerIds(rangers: readonly RangerType[]): RangerIdAudi
  *
  * Pure: returns a new object and never mutates its argument. A version NEWER than this build
  * understands is passed through untouched rather than mangled - same reasoning as
- * `migrateSettings()`: that is someone running an older build against newer data, and
+ * `migrateMission()`: that is someone running an older build against newer data, and
  * silently "downgrading" it would lose information.
  *
  * Anything unparseable yields an empty, current-version roster. An empty roster is a
