@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.59.2](https://github.com/EOCOnline/rangertrak/compare/v0.59.1...v0.59.2) (2026-08-26)
+
+
+### Bug Fixes
+
+* **entry,mapLeaflet:** submit-button contrast, Note label, trail badge, Mobile icon ([8b8fdfc](https://github.com/EOCOnline/rangertrak/commit/8b8fdfccf8b797ea08e7deca91ae3e48e299acbb))
+
 ### [0.59.1](https://github.com/EOCOnline/rangertrak/compare/v0.31.0...v0.59.1) (2026-08-26)
 
 
