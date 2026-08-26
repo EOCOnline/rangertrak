@@ -4,6 +4,7 @@ import { PreloadAllModules, provideRouter, withPreloading } from '@angular/route
 import { provideHttpClient } from '@angular/common/http'
 import { provideServiceWorker } from '@angular/service-worker'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar'
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field'
 
 import { APP_ROUTES } from './app.routes'
 import { environment } from '../environments/environment'
@@ -40,6 +41,29 @@ export const appConfig: ApplicationConfig = {
       registrationStrategy: 'registerWhenStable:30000'
     }),
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500 } },
+    {
+      // ONE line that restyles every text field in the app, which is the point: the
+      // Material-M3 pass (2026-08-25) decided against per-component field styling, so the
+      // appearance is set once here rather than repeated as an `appearance="..."` attribute
+      // on each `<mat-form-field>` - and, crucially, so fields converted FROM bare `<input>`
+      // markup (the whole Mission page) inherit it without any attribute at all.
+      //
+      // `outline` over `fill`: M3's outlined field draws its own border and notches the
+      // label into it, which reads correctly on this app's tinted `--rt-surface-2` section
+      // backgrounds. `fill` supplies its own tinted box, which double-tints against those
+      // and was one of the things E-47 already removed by hand once.
+      //
+      // `subscriptSizing: 'dynamic'` stops each field reserving a permanent ~20px row for a
+      // hint/error it usually doesn't show. On a page like Mission - dozens of fields, most
+      // with no hint - that reserved space was pure vertical bloat. It expands only when a
+      // field actually has something to say.
+      //
+      // Note time-picker.component.html already sets `appearance="outline"` explicitly and
+      // then hides the outline via ::ng-deep (see its .scss) - an explicit attribute still
+      // wins over this default, so that widget is unaffected.
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: { appearance: 'outline', subscriptSizing: 'dynamic' }
+    },
     {
       // Nominatim by default (no key). Switches to Google only if the user has
       // supplied their own key in Settings (see Decision 1, PRIVATE-Roadmap.md). Read once

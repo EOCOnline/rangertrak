@@ -1,0 +1,139 @@
+// ─────────────────────────────────────────────────────────────────────────────
+//  PAGE PATTERNS  (Material-M3 pass, 2026-08-25)
+//
+//  The three structural blocks every page's layout is made of, defined once here
+//  instead of per page. This is the CSS half of the page-order rule the redesign
+//  settled on:
+//
+//     1 app chrome · 2 page header · 3 alerts (only when live)
+//     4 THE PRIMARY OBJECT · 5 its action bar · 6 danger zone · 7 footer
+//
+//  Instructions are deliberately absent from that list - they moved into the Guide
+//  drawer, which is a component (shared/guide/), not a layout pattern.
+//
+//  Emitted globally from styles.scss rather than @use-d per component: these describe
+//  page structure, and a component that needs one is by definition a routed page.
+// ─────────────────────────────────────────────────────────────────────────────
+
+@use './typography' as type;
+
+// ── 5. Action bar ────────────────────────────────────────────────────────────
+// Controls for the thing on screen, attached to it. Sticks to the viewport bottom
+// while the page scrolls, then settles once the page's end is reached - `position:
+// sticky` clamps to the containing block, so whatever wraps this decides where it
+// stops. settings.component.scss proved the pattern (its own .settings__action-bar,
+// now retired in favour of this); Entry and Reports adopt it here.
+.rt-action-bar {
+  position       : sticky;
+  bottom         : 0;
+  z-index        : 10;
+  display        : flex;
+  align-items    : center;
+  justify-content: space-between;
+  flex-wrap      : wrap;
+  gap            : var(--rt-gap);
+  margin         : 1.5em 0 0;
+  padding        : 0.85em 1em;
+  background     : var(--rt-surface);
+  border-top     : 1px solid var(--rt-line-strong);
+  // Lifts the bar off the content sliding under it. Deliberately softer than the
+  // 0.25-alpha shadow settings.component.scss used - that read as a heavy slab in
+  // light mode, where the surface below it is nearly white.
+  box-shadow     : 0 -2px 12px rgb(0 0 0 / 8%);
+}
+
+.rt-action-bar__status {
+  @include type.type-body-sm;
+  display    : flex;
+  align-items: center;
+  gap        : 0.5em;
+  color      : var(--rt-ink-2);
+}
+
+.rt-action-bar__buttons {
+  display: flex;
+  gap    : 0.6em;
+}
+
+// ── 6. Danger zone ───────────────────────────────────────────────────────────
+// Destructive actions only, fenced, always last on the page. The fence is the point:
+// before this, "Delete ALL Field Reports from local storage" sat in an `Advanced`
+// section styled exactly like `Tips` directly above it, with nothing but the word
+// "Advanced" separating a reversible tip from an unrecoverable wipe.
+//
+// Uses the readiness red rather than a new token - it means the same thing (something
+// here can hurt) and was already vetted for contrast in both schemes.
+.rt-danger-zone {
+  margin       : 1.5em 0 0;
+  padding      : 1em 1.25em;
+  border       : 1px solid var(--rt-readiness-red);
+  border-radius: var(--rt-radius-lg);
+  // A tint, not a fill: 8% keeps the block readable in both schemes without the
+  // solid-red panel that would pull the eye away from the page's real content.
+  background   : color-mix(in srgb, var(--rt-readiness-red) 8%, var(--rt-surface));
+}
+
+.rt-danger-zone__heading {
+  @include type.type-title;
+  display    : flex;
+  align-items: center;
+  gap        : 0.5em;
+  margin     : 0 0 0.25em;
+  color      : var(--rt-readiness-red);
+}
+
+.rt-danger-zone__note {
+  @include type.type-body-sm;
+  margin: 0 0 1em;
+  color : var(--rt-ink-2);
+}
+
+.rt-danger-zone__actions {
+  display    : flex;
+  align-items: center;
+  flex-wrap  : wrap;
+  gap        : 0.75em;
+}
+
+// ── 3. Alerts ────────────────────────────────────────────────────────────────
+// Shown only while true, never permanent furniture. Reuses the notice tokens the
+// Rangers confidentiality bar already established.
+.rt-alert {
+  display      : flex;
+  align-items  : flex-start;
+  gap          : 0.75em;
+  margin       : 0 0 1em;
+  padding      : 0.85em 1.15em;
+  border       : 1px solid var(--rt-notice-line);
+  border-radius: var(--rt-radius-lg);
+  background   : var(--rt-notice);
+  color        : var(--rt-notice-ink);
+}
+
+.rt-alert__body {
+  @include type.type-body-sm;
+  flex: 1;
+}
+
+// ── Field layout ─────────────────────────────────────────────────────────────
+// A row of `<mat-form-field>`s that wraps instead of overflowing. Every page that
+// lays out more than two fields side by side uses this rather than its own grid -
+// `auto-fit` + `minmax` means no per-page breakpoint work, which is what let the
+// Mission page's four-across zoom rows keep working down to phone width.
+.rt-field-grid {
+  display              : grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap                  : 0 var(--rt-gap);
+  align-items          : start;
+}
+
+// Narrower variant for short numeric fields (zoom levels, overview offsets) that
+// would look absurd stretched to 13rem.
+.rt-field-grid--compact {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+}
+
+// A field that should take the row to itself regardless of the grid above.
+.rt-field-grid__wide {
+  grid-column: 1 / -1;
+}
