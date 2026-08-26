@@ -69,7 +69,11 @@
          Signal Forms' [formField] cannot drive a Material checkbox - angular/components#32072,
          same as the coordinate-system and map-marker checkboxes. -->
     <div class="settings__debug">
-      <mat-checkbox [checked]="settingsForm.debugMode().value()"
+      <!-- data-testid, not a class: tools/e2e.js needs a stable hook for this control, and
+           a styling class is the wrong thing to hang that on (it can be renamed by a purely
+           visual change - which is exactly how the old `.settings__Save-button` selector in
+           that suite came to be looking for a class that no longer existed). -->
+      <mat-checkbox data-testid="debug-mode" [checked]="settingsForm.debugMode().value()"
         (change)="settingsForm.debugMode().value.set($event.checked)">Debug mode</mat-checkbox>
       <span class="settings__debug-note">
         Adds a diagnostic panel to the Entry screen and verbose entries to the Log page.
@@ -87,7 +91,8 @@
       </span>
       <div class="rt-action-bar__buttons">
         <button matButton type="button" (click)="onCancel()">Cancel</button>
-        <button matButton="filled" type="submit" [disabled]="settingsForm().invalid()">
+        <button matButton="filled" type="submit" data-testid="settings-save"
+          [disabled]="settingsForm().invalid()">
           Save settings
         </button>
       </div>

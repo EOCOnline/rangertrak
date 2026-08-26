@@ -1525,28 +1525,49 @@ async function checkEntryPhoto() {
 async function checkSettingsFormSave() {
   console.log('\nSettings form (Sprint D, Signal Forms): edit fields in the UI, Save, reload, values persisted')
   await goto('/mission')
+  // 2026-08-26 (Material-M3 pass): all three selectors below changed, and TWO of them were
+  // already broken before this suite ever noticed.
+  //
+  //  - debugMode was `input[placeholder="debugMode"]`. It is a <mat-checkbox> now, which
+  //    renders its own nested native input, so the control is reached through a
+  //    data-testid on the host. The old line then did `debugMode.checked = ...` on null.
+  //  - the Save button was looked up as `.settings__Save-button` - capital S - while the
+  //    template has always rendered `settings__save-button`, lowercase. Class selectors are
+  //    case-sensitive, so that querySelector returned null on every run this check has ever
+  //    made; `hasSaveBtn` was false and the assertion below could not have passed. It never
+  //    surfaced because the debugMode line above threw first and aborted the function. Both
+  //    now use data-testid, which a purely visual rename cannot silently break.
+  //  - the checkbox is toggled with a real .click() on the nested input rather than by
+  //    assigning .checked and dispatching a synthetic event: MatCheckbox emits its own
+  //    change event from the native input's, and that is the path a real user takes.
   const before = await evaluate(`(() => {
     const mission = document.querySelector('input[placeholder="Mission #"]');
-    const debugMode = document.querySelector('input[placeholder="debugMode"]');
+    const debugBox = document.querySelector('[data-testid="debug-mode"] input[type="checkbox"]');
     const setNative = (el, value) => {
       Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, value);
       el.dispatchEvent(new Event('input', { bubbles: true }));
     };
-    setNative(mission, 'E2E-SIGNAL-FORMS');
-    debugMode.checked = !debugMode.checked;
-    const debugModeSet = debugMode.checked;
-    // Signal Forms' [formField] only listens for 'input' (see nativeControlCreate in
-    // @angular/forms/signals), same as every other control - not 'change'. A real click
-    // fires both natively; this synthetic toggle needs 'input' explicitly.
-    debugMode.dispatchEvent(new Event('input', { bubbles: true }));
-    const saveBtn = document.querySelector('.settings__Save-button');
-    return { hasMission: !!mission, hasDebugMode: !!debugMode, hasSaveBtn: !!saveBtn, saveDisabled: saveBtn?.disabled, debugModeSet };
+    if (mission) setNative(mission, 'E2E-SIGNAL-FORMS');
+    const wasChecked = debugBox ? debugBox.checked : null;
+    if (debugBox) debugBox.click();
+    const saveBtn = document.querySelector('[data-testid="settings-save"]');
+    return {
+      hasMission: !!mission,
+      hasDebugMode: !!debugBox,
+      hasSaveBtn: !!saveBtn,
+      saveDisabled: saveBtn ? saveBtn.disabled : null,
+      debugModeSet: debugBox ? debugBox.checked : null,
+      debugModeFlipped: debugBox ? (debugBox.checked !== wasChecked) : false
+    };
   })()`)
   check('mission input found', before.hasMission, true)
   check('debugMode checkbox found', before.hasDebugMode, true)
   check('Save button found and not disabled by required-field validation', before.hasSaveBtn && !before.saveDisabled, true)
+  // Guards the assertion below from passing vacuously: if the click never actually moved
+  // the checkbox, "the saved value matches what we set" is trivially true and proves nothing.
+  check('the debugMode checkbox actually toggled', before.debugModeFlipped, true)
 
-  await evaluate(`document.querySelector('.settings__Save-button').click()`)
+  await evaluate(`document.querySelector('[data-testid="settings-save"]').click()`)
   await sleep(3000) // onFormSubmit() writes localStorage synchronously, then window.location.reload()
 
   const after = await evaluate(`(() => {
