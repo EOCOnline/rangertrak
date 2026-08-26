@@ -922,16 +922,21 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
       // Elapsed-time follow-on (2026-08-24): a static "minutes since" label at the
       // newest point, computed once here - see the method doc comment above for why this
-      // isn't the live clock the original scoping excluded.
+      // isn't the live clock the original scoping excluded. Redone 2026-08-26: the label
+      // is now the bare number (the popup already gives full detail on hover/tap), and an
+      // --rt-elapsed-N modifier class steps its background from clear (under 20 min) toward
+      // full red (90+) in 10-minute bands, so staleness reads at a glance without opening
+      // anything.
       const newest = ordered[ordered.length - 1]
       const elapsedMin = Math.max(0, Math.round((Date.now() - new Date(newest.date).getTime()) / 60000))
+      const elapsedBand = elapsedMin < 20 ? 0 : Math.min(7, Math.floor((elapsedMin - 20) / 10) + 1)
       const label = L.tooltip([newest.location.lat, newest.location.lng], {
         permanent: true,
         direction: 'top',
         offset: [0, -8],
-        className: 'rt-trail-elapsed',
-        opacity: 0.75,
-      }).setContent(`${elapsedMin} min ago`)
+        className: `rt-trail-elapsed rt-trail-elapsed--${elapsedBand}`,
+        opacity: 1,
+      }).setContent(`${elapsedMin}`)
       this.myTrailsLayer.addLayer(label)
     })
   }

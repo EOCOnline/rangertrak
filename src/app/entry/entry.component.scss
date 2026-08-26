@@ -472,11 +472,22 @@ mat-chip-option.enter__status-selected {
   margin-top: 0.5rem;
 }
 
-// .enter__Submit-button is no longer a styling hook - matButton="filled" (in the template)
-// already renders in the theme's own accent colour via mat.theme()'s primary palette
-// (Sprint A), which IS --rt-accent's source. The class stays on the element purely as a
+// .enter__Submit-button is no longer a styling hook for the ENABLED state - matButton="filled"
+// (in the template) already renders in the theme's own accent colour via mat.theme()'s primary
+// palette (Sprint A), which IS --rt-accent's source. The class stays on the element purely as a
 // stable selector: tools/e2e.js's checkEntryAutofocusAndReset() and several other checks
 // reach this exact native <button> directly.
+//
+// The DISABLED state (shown for most of the time a scribe is filling the form out, since
+// formValid() gates it) is a different story: M3's spec default is 12%-opacity-container /
+// 38%-opacity-label over on-surface, which was the actual complaint - not the enabled fill.
+// Overridden here, not globally, since this is the one filled button a user stares at while
+// mid-task; --rt-surface-2/--rt-ink-2 are already the app's own "muted but legible" pair used
+// elsewhere for de-emphasized-but-readable text, and both are theme-aware (light-dark()).
+.enter__Submit-button:disabled {
+  --mdc-filled-button-disabled-container-color: var(--rt-surface-2);
+  --mdc-filled-button-disabled-label-text-color: var(--rt-ink-2);
+}
 
 
 #enter__Submit-info {

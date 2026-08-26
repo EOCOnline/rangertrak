@@ -37,21 +37,43 @@
   font-weight: bold;
 }
 
-// E-80 elapsed-time follow-on: a small, non-obtrusive "N min ago" label at each trail's
-// newest point - overrides Leaflet's default tooltip chrome (white bubble, border, arrow)
-// down to plain small text, per the original ask's own "small non-obtrusive font" framing.
+// E-80 elapsed-time follow-on, redone 2026-08-26: a bare minutes-elapsed number at each
+// trail's newest point - the popup already gives full detail on hover/tap, so this stays
+// down to plain small text with minimal padding rather than obscuring the map underneath
+// it. Text colour is fixed white with a dark halo (not an --rt-ink token) because this sits
+// on arbitrary map tile imagery, not app chrome - it needs to read on both white and black
+// map areas, which a theme-aware ink colour can't promise. The background itself ramps from
+// clear to red via the --rt-trail-elapsed--N modifier classes below, so the number's own
+// halo keeps working even at bucket 0 where there is no background yet.
 .rt-trail-elapsed {
-  background : transparent;
-  border     : none;
-  box-shadow : none;
-  padding    : 0 1px;
-  font-size  : 0.7rem;
-  color      : var(--rt-ink-2);
+  background   : transparent;
+  border       : none;
+  box-shadow   : none;
+  border-radius: 3px;
+  padding      : 0 3px;
+  margin       : 0;
+  font-size    : 0.7rem;
+  font-weight  : 700;
+  color        : #fff;
+  text-shadow  :
+    -1px -1px 1px rgba(0, 0, 0, .85), 1px -1px 1px rgba(0, 0, 0, .85),
+    -1px  1px 1px rgba(0, 0, 0, .85), 1px  1px 1px rgba(0, 0, 0, .85);
 
   &::before {
     display: none; // the little pointer arrow Leaflet draws under a tooltip bubble
   }
 }
+
+// 10-minute bands: 0 (under 20 min) is fully clear, 7 (90+ min) is solid red. Interpolated
+// as this one hue's alpha rather than a colour sweep - "advancing toward red" was the ask,
+// not a traffic-light palette, and a single ramping hue reads as one continuous scale.
+.rt-trail-elapsed--1 { background: rgba(211, 47, 47, .14); }
+.rt-trail-elapsed--2 { background: rgba(211, 47, 47, .28); }
+.rt-trail-elapsed--3 { background: rgba(211, 47, 47, .42); }
+.rt-trail-elapsed--4 { background: rgba(211, 47, 47, .56); }
+.rt-trail-elapsed--5 { background: rgba(211, 47, 47, .70); }
+.rt-trail-elapsed--6 { background: rgba(211, 47, 47, .85); }
+.rt-trail-elapsed--7 { background: rgba(211, 47, 47, 1); }
 
 #mapLeaflet-overview {
   //position: absolute;
