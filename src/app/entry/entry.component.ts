@@ -135,7 +135,15 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   generates213TabIndex = this.notesTabIndex + 1
   replyRequested213TabIndex = this.generates213TabIndex + 1
   message213TabIndex = this.replyRequested213TabIndex + 1
-  recipients213TabIndex = this.message213TabIndex + 1
+  // E-103: the per-mission definable recipients213 checkbox list is a runtime-variable-length
+  // group, not a fixed set of fields - it gets ONE reserved tab stop for the whole group, the
+  // same convention Status's mat-radio-group uses above for its own per-mission configurable
+  // list (settings.fieldReportStatuses). Individual checkboxes render with no explicit
+  // tabindex, so they're naturally focusable (browser default) without disturbing this app's
+  // "contiguous explicit tabindex 1..N" invariant (tools/e2e.js's checkEntryTabOrder) the way
+  // a per-option slot count tied to settings data - unknowable at compile time - would.
+  recipients213CheckboxesTabIndex = this.message213TabIndex + 1
+  recipients213TabIndex = this.recipients213CheckboxesTabIndex + 1
   resetTabIndex = this.recipients213TabIndex + 1
   submitTabIndex = this.resetTabIndex + 1
 
@@ -212,6 +220,25 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onEvidenceLocationChange(newLocation: LocationType | null): void {
     this.evidenceLocation = newLocation
+  }
+
+  // E-103: which of settings.recipientOptions213's per-mission checklist entries are ticked.
+  // A plain signal outside entryModel/entryForm, same reasoning as showEvidenceLocation above -
+  // the option list's length varies per mission, so it can't be a static Signal Forms field.
+  // recipients213 itself (in entryModel) stays free text for anything NOT on the checklist;
+  // mergedFormValue() combines both into the FieldReportType.recipients213 list at submission.
+  selectedRecipients213 = signal<Set<string>>(new Set())
+
+  toggleRecipient213(option: string, checked: boolean) {
+    this.selectedRecipients213.update(current => {
+      const next = new Set(current)
+      if (checked) {
+        next.add(option)
+      } else {
+        next.delete(option)
+      }
+      return next
+    })
   }
 
   // E-48(1): bumped on every reset (see resetAll() below) so LocationComponent can tell
@@ -535,11 +562,14 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       // bearing is how a scribe retracts "never mind, not a real clue," and a submitted
       // report shouldn't carry a marker its own scribe just told the form to forget.
       evidenceLocation: this.showEvidenceLocation() ? this.evidenceLocation : null,
-      // E-103 (2026-08-26): FieldReportType.recipients213 is a list (a per-mission definable
-      // checkbox roster is coming) - Entry still collects free text (the checkbox UI isn't
-      // built yet), split into that list here, the same "one meaningful data boundary"
-      // reasoning as rangerUid/callsign above.
-      recipients213: this.splitRecipients213(this.entryModel().recipients213),
+      // E-103: FieldReportType.recipients213 combines the per-mission checklist's checked
+      // options with anything typed into the "Additional" free text - a Set dedupes the rare
+      // case a scribe both checks a box AND types the same name again, the same "one
+      // meaningful data boundary" reasoning as rangerUid/callsign above.
+      recipients213: Array.from(new Set([
+        ...this.selectedRecipients213(),
+        ...this.splitRecipients213(this.entryModel().recipients213),
+      ])),
     }
   }
 
@@ -623,6 +653,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // component's own job, since both live here, not inside the child.
     this.showEvidenceLocation.set(false)
     this.evidenceLocation = null
+    this.selectedRecipients213.set(new Set())
     this.formGeneration++
   }
 

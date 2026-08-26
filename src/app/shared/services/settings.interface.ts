@@ -68,4 +68,13 @@ export type SettingsType = {
   defFieldReportStatus: number,
   fieldReportStatuses: FieldReportStatusType[],
   // fieldReportKeywords: string[],  // Future...could also just search notes field
+
+  // E-103 (2026-08-26 scoping): per-mission definable checklist of routine ICS-213
+  // recipients (Incident Commander, Ops Section, EOC, ...) - Entry's "To (recipient(s))"
+  // renders one checkbox per entry here, plus a free-text field for anything not listed.
+  // Additive-only, same reasoning as showDD/.../showMaidenhead above
+  // (settings-schema-version-discipline): backfillMissingFields supplies
+  // DEFAULT_RECIPIENT_OPTIONS_213 to any returning user whose stored settings predate this
+  // field - no SETTINGS_SCHEMA_VERSION bump needed.
+  recipientOptions213: string[],
 }

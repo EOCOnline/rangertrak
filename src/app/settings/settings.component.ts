@@ -19,6 +19,7 @@ import { SettingsMissionSectionComponent } from './sections/settings-mission-sec
 import { SettingsLocationSectionComponent } from './sections/settings-location-section/settings-location-section.component'
 import { SettingsMapsSectionComponent } from './sections/settings-maps-section/settings-maps-section.component'
 import { SettingsFieldReportStatusesComponent } from './sections/settings-field-report-statuses/settings-field-report-statuses.component'
+import { SettingsRecipients213Component } from './sections/settings-recipients213/settings-recipients213.component'
 import { SettingsAdvancedOptionsComponent } from './sections/settings-advanced-options/settings-advanced-options.component'
 
 // Placeholder used only until the real settings arrive via the constructor's synchronous
@@ -37,6 +38,7 @@ const blankSettings: SettingsType = {
   maplibre: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   leaflet: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   imageDirectory: '', defFieldReportStatus: 0, fieldReportStatuses: [],
+  recipientOptions213: [],
 }
 
 @Component({
@@ -54,6 +56,7 @@ const blankSettings: SettingsType = {
     SettingsLocationSectionComponent,
     SettingsMapsSectionComponent,
     SettingsFieldReportStatusesComponent,
+    SettingsRecipients213Component,
     SettingsAdvancedOptionsComponent,
     InstallUpdateComponent,
   ],
@@ -123,6 +126,13 @@ export class SettingsComponent implements OnInit, OnDestroy {
   rowData = signal<FieldReportStatusType[]>([])
 
   /**
+   * E-103: the working list behind the recipients-checklist editor, same "re-seeded from the
+   * settings subscription" reasoning as rowData above (Import Mission / Reset Defaults must
+   * replace this list, not leave a stale one from the previous mission showing).
+   */
+  recipientOptions213 = signal<string[]>([])
+
+  /**
    * E-79: the header's readiness dot (ADR D-32) only ever showed the aggregate red/amber/
    * green colour, so a scribe on this page had to hover the header pill and cross-reference
    * its tooltip text back against the sections below to find what was actually wrong.
@@ -180,6 +190,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
         // reset form based on new settings...
         this.settingsModel.set(newSettings)
         this.rowData.set(this.settings.fieldReportStatuses)
+        this.recipientOptions213.set(this.settings.recipientOptions213)
 
         this.opPeriodStart.set(this.settings.opPeriodStart)
         this.opPeriodEnd.set(this.settings.opPeriodEnd)
@@ -236,6 +247,18 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.settings.opPeriodEnd = clamped
     this.opPeriodEnd.set(clamped)
     this.settingsModel.update(m => ({ ...m, opPeriodEnd: clamped }))
+  }
+
+  /**
+   * E-103: the recipients-checklist editor (a plain textarea, one option per line - see
+   * SettingsRecipients213Component) emits its parsed list rather than mutating an array in
+   * place the way the field-report-statuses grid does, so this mirrors onNewTimeEventStart/
+   * End's "child emits, parent writes to both the mirror signal and settingsModel" pattern
+   * instead.
+   */
+  onRecipientOptions213Change(newList: string[]) {
+    this.recipientOptions213.set(newList)
+    this.settingsModel.update(m => ({ ...m, recipientOptions213: newList }))
   }
 
   onBtnResetDefaults() {

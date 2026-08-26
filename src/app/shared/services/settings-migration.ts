@@ -60,6 +60,17 @@ export const DEFAULT_FIELD_REPORT_STATUSES: ReadonlyArray<FieldReportStatusType>
 ]
 
 /**
+ * E-103 starter list, for initSettings() - the maintainer's own suggested routine ICS
+ * positions, editable per-mission via Settings > Field Report Recipients. Additive-only field
+ * (see SettingsType.recipientOptions213's own comment) - backfillMissingFields hands this to
+ * any returning user whose stored settings predate the field, same as DEFAULT_FIELD_REPORT_STATUSES.
+ */
+export const DEFAULT_RECIPIENT_OPTIONS_213: ReadonlyArray<string> = [
+  'Incident Commander', 'Ops Section', 'Planning Section', 'Situation Awareness',
+  'Logistics Section', 'Finance/Admin Section', 'EOC', 'Sheriff/Police', 'Air unit', 'Utilities',
+]
+
+/**
  * Brings a persisted settings object up to SETTINGS_SCHEMA_VERSION.
  *
  * Pure: returns a new object and never mutates its argument. Unknown or missing

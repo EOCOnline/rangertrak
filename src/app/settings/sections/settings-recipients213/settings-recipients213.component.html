@@ -1,0 +1,16 @@
+<!-- ======================================= -->
+<h2>Field Report Recipients (ICS-213 "To")</h2>
+<p>
+  One recipient per line. Entry's ICS-213 "To" field shows each of these as a checkbox,
+  plus a free-text box for anything not listed here.
+</p>
+
+<textarea class="settings__recipients213-area" rows="6" [(ngModel)]="text" (blur)="onBlur()"
+  name="recipientOptions213" placeholder="Incident Commander"></textarea>
+
+<br />
+<button type="button" (click)="onBtnRestoreStarterList()" title="Replace this list with the suggested starter list">
+  Restore suggested starter list
+</button>
+<br />
+<br />

@@ -4,7 +4,9 @@ import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 
 import * as packageJson from '../../../../package.json'
 import { FieldReportStatusType, LogService, SettingsType } from './'
-import { DEFAULT_FIELD_REPORT_STATUSES, SETTINGS_SCHEMA_VERSION, migrateSettings } from './settings-migration'
+import {
+  DEFAULT_FIELD_REPORT_STATUSES, DEFAULT_RECIPIENT_OPTIONS_213, SETTINGS_SCHEMA_VERSION, migrateSettings
+} from './settings-migration'
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService implements OnInit {
@@ -299,6 +301,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       // which maps the old values forward for existing users.
       fieldReportStatuses: [...DEFAULT_FIELD_REPORT_STATUSES],
       // fieldReportKeywords: [''],  // Future...could also just search notes field
+      recipientOptions213: [...DEFAULT_RECIPIENT_OPTIONS_213],
     }
   }
 

@@ -246,7 +246,21 @@
           </label>
           <label class="enter__213-field">
             To (recipient(s))
-            <input type="text" [formField]="entryForm.recipients213" placeholder="Who this is for, comma-separated"
+            <!-- E-103: per-mission definable checklist (settings.recipientOptions213) -
+                 checkboxes get NO explicit tabindex (see recipients213CheckboxesTabIndex's own
+                 comment in entry.component.ts for why); only the group wrapper reserves a
+                 tab stop. -->
+            <div class="enter__213-recipients" role="group" aria-label="Recipients"
+              [attr.tabindex]="recipients213CheckboxesTabIndex">
+              @for (opt of settings.recipientOptions213; track opt) {
+              <label class="rButton">
+                <input type="checkbox" [checked]="selectedRecipients213().has(opt)"
+                  (change)="toggleRecipient213(opt, $any($event.target).checked)" />
+                {{ opt }}
+              </label>
+              }
+            </div>
+            <input type="text" [formField]="entryForm.recipients213" placeholder="Additional, comma-separated"
               [attr.tabindex]="recipients213TabIndex" />
           </label>
         </div>

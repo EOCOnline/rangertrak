@@ -297,6 +297,17 @@ input[type=number] {
   }
 }
 
+// E-103: the per-mission recipients213 checklist reuses .rButton's chip look - same
+// "picking one of a few labelled options" visual language as .enter__Source, just with
+// checkboxes instead of radios since more than one recipient is normal.
+.enter__213-recipients {
+  display    : flex;
+  flex-wrap  : wrap;
+  align-items: center;
+  gap        : 0.4rem;
+  margin-bottom: 0.3rem;
+}
+
 .enter__evidence {
   margin-top: 0.6rem;
 
