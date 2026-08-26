@@ -23,7 +23,7 @@ import {
 // helpers, so importing through it here pulled MapLibre (~800KB) into the eager bundle
 // alongside Leaflet, even though this Leaflet mini-map never touches MapLibre.
 import { AbstractMap } from '../shared/mapping/map'
-import { rangerIconFor } from '../shared/mapping/ranger-icon'
+import { evidenceIconFor, rangerIconFor } from '../shared/mapping/ranger-icon'
 import { formatReportTime } from '../shared/mapping/report-time'
 import { Utility } from '../shared/utility'
 import {
@@ -124,20 +124,11 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     if (this.evidenceMarker) {
       this.evidenceMarker.setLatLng([newLocation.lat, newLocation.lng])
     } else {
-      // A small purple flag, deliberately unlike anything else this map ever draws (not a
-      // hashed ranger colour/shape, not the reporter's own default Leaflet pin, not
-      // rangerIconFor's red-dashed "unassigned" marker) - it means one specific thing,
-      // "the evidence/clue is here," and should never be confused with a ranger position.
-      const icon = L.divIcon({
-        className: 'rt-evidence-marker',
-        html: `<svg width="22" height="26" viewBox="0 0 22 26" xmlns="http://www.w3.org/2000/svg">
-          <line x1="3" y1="25" x2="3" y2="2" stroke="#7c3aed" stroke-width="2"/>
-          <polygon points="3,2 20,7 3,13" fill="#7c3aed" stroke="white" stroke-width="1"/>
-        </svg>`,
-        iconSize: [22, 26],
-        iconAnchor: [3, 25],
+      // See evidenceIconFor()'s own doc comment (shared/mapping/ranger-icon.ts) for why this
+      // is a distinct shared icon rather than something drawn inline here.
+      this.evidenceMarker = L.marker([newLocation.lat, newLocation.lng], {
+        icon: evidenceIconFor(), title: 'Evidence/clue location'
       })
-      this.evidenceMarker = L.marker([newLocation.lat, newLocation.lng], { icon, title: 'Evidence/clue location' })
       this.evidenceMarker.addTo(this.lMap)
     }
   }

@@ -75,6 +75,12 @@
             <div class="field-reports-cards__row field-reports-cards__coords">
               {{ report.location.lat | number:'1.0-4' }}, {{ report.location.lng | number:'1.0-4' }}
             </div>
+            @if (report.evidenceLocation) {
+              <div class="field-reports-cards__row field-reports-cards__coords"
+                title="Evidence/clue location">
+                🚩 {{ report.evidenceLocation.lat | number:'1.0-4' }}, {{ report.evidenceLocation.lng | number:'1.0-4' }}
+              </div>
+            }
             @if (report.notes) {
               <div class="field-reports-cards__notes">{{ report.notes }}</div>
             }

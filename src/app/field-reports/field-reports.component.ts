@@ -216,6 +216,17 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
         //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
       },
       { headerName: "Notes", field: "notes", cellRenderer: this.notesCellRenderer, flex: 50 }, //, maxWidth: 300
+      // E-11 (2026-08-26): evidenceLocation was captured on Entry and visible nowhere
+      // afterward - not the main map, not here. This is the other of the two places the
+      // gap named; see mapLeaflet.component.ts's displayMarkers() for the main-map marker.
+      {
+        headerName: "Evidence", field: "evidenceLocation", flex: 3, editable: false,
+        cellRenderer: this.evidenceCellRenderer,
+        tooltipValueGetter: (params: { data: FieldReportType }) => {
+          const loc = params.data.evidenceLocation
+          return loc ? `Evidence/clue at ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}` : undefined
+        },
+      },
     ];
 
     this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
@@ -254,6 +265,13 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   notesCellRenderer = (params: { data: FieldReportType }) => {
     let title = `Note: ${params.data.notes}`
     return `<span aria-hidden title="${title}"> ${params.data.notes}</span>`
+  }
+
+  /** E-11: a compact flag icon when this report has an evidence/clue location, blank otherwise. */
+  evidenceCellRenderer = (params: { data: FieldReportType }) => {
+    const loc = params.data.evidenceLocation
+    if (!loc) return ''
+    return `<span aria-hidden title="Evidence/clue at ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}">🚩</span>`
   }
 
   /**

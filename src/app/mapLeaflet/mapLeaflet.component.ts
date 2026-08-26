@@ -26,7 +26,8 @@ import {
 } from '@angular/core'
 
 import {
-  AbstractMap, Utility, rangerIconFor, rangerColorFor, fieldReportStatusColor, formatReportTime
+  AbstractMap, Utility, rangerIconFor, rangerColorFor, evidenceIconFor, fieldReportStatusColor,
+  formatReportTime
 } from '../shared'
 import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, SettingsService } from '../shared/services'
 
@@ -835,6 +836,20 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         })
         marker.bindPopup(title)
         this.myMarkerCluster.addLayer(marker);
+
+        // E-11 (2026-08-26): evidenceLocation was captured on Entry and shown only on its
+        // own mini-map - never here, so it was effectively orphaned the moment a report was
+        // submitted. Same icon Entry's mini-map draws (evidenceIconFor(), shared/mapping/
+        // ranger-icon.ts) so a scribe recognises it instantly on the mission overview too.
+        if (i.evidenceLocation) {
+          let evidenceTitle = `Evidence/clue from ${i.callsign} at ${formatReportTime(i.date)}`
+          let evidenceMarker = L.marker(
+            new L.LatLng(i.evidenceLocation.lat, i.evidenceLocation.lng),
+            { title: evidenceTitle, icon: evidenceIconFor() }
+          )
+          evidenceMarker.bindPopup(evidenceTitle)
+          this.myMarkerCluster.addLayer(evidenceMarker)
+        }
       } else {
         console.warn(`displayAllMarkers: skipping report # ${i.id}; bad lat/lng: ${i}: ${JSON.stringify(i)}`)
       }

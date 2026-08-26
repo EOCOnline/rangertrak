@@ -117,3 +117,28 @@ export function rangerIconFor(key: string, statusColor?: string): L.DivIcon {
     popupAnchor: [0, -14],
   })
 }
+
+/**
+ * The evidence/clue marker - a small purple flag, deliberately unlike anything
+ * `rangerIconFor()` ever draws (not a hashed ranger colour/shape, not the red-dashed
+ * "unassigned" marker): it means one specific thing, "the evidence/clue is here," and
+ * should never be confused with a ranger position.
+ *
+ * Originally defined only inline in `mini-mapLeaflet.component.ts` (Entry's own preview map,
+ * 2026-08-26). E-11 (2026-08-26, "shown nowhere except Entry's own mini-map" gap): extracted
+ * here so the main map (`mapLeaflet.component.ts`) draws the IDENTICAL marker for a
+ * `FieldReportType.evidenceLocation` rather than inventing a second look for the same
+ * meaning - a scribe who has seen it once on Entry should recognise it instantly on the
+ * mission overview too.
+ */
+export function evidenceIconFor(): L.DivIcon {
+  return L.divIcon({
+    className: 'rt-evidence-marker',
+    html: `<svg width="22" height="26" viewBox="0 0 22 26" xmlns="http://www.w3.org/2000/svg">
+      <line x1="3" y1="25" x2="3" y2="2" stroke="#7c3aed" stroke-width="2"/>
+      <polygon points="3,2 20,7 3,13" fill="#7c3aed" stroke="white" stroke-width="1"/>
+    </svg>`,
+    iconSize: [22, 26],
+    iconAnchor: [3, 25],
+  })
+}
