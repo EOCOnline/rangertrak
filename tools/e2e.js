@@ -28,6 +28,11 @@
  *   --base=URL      what to test           (default http://localhost:8080)
  *   --read-only     skip anything that writes localStorage/IndexedDB. Use against
  *                   production unless you intend to clobber that browser profile's data.
+ *   --full          also run the slow checks (map engine switch/nav, roster lifecycle,
+ *                   field aliases, bundle zip, mission round trip) - together these account
+ *                   for most of the suite's wall-clock time via sleep()s and IndexedDB
+ *                   polling. Default (no --full) skips them for a fast day-to-day run;
+ *                   run --full at least once before pushing.
  *   --keep-open     leave Chrome running for inspection
  *
  * Exits non-zero if any check fails, so CI can gate on it.
@@ -45,6 +50,7 @@ const arg = (name, fallback) => {
 }
 const BASE = (arg('base', 'http://localhost:8080')).replace(/\/$/, '')
 const READ_ONLY = args.includes('--read-only')
+const FULL = args.includes('--full')
 const KEEP_OPEN = args.includes('--keep-open')
 const PORT = 9444
 
@@ -1415,7 +1421,7 @@ async function checkNoCallsignRangersGetDistinctIdentity() {
   }
 }
 
-async function checkSettingsWithPersistedSettings() {
+async function checkMissionWithPersistedSettings() {
   console.log('\nBUG-3 (open): /mission must not throw for a RETURNING user (dates as ISO strings)')
   // A fresh browser gets initSettings() with real Date objects and never reproduces this.
   // A returning user's settings have round-tripped through JSON, so opPeriodStart/End come
@@ -1446,7 +1452,7 @@ async function checkSettingsWithPersistedSettings() {
 }
 
 async function checkStatusColorMigration() {
-  console.log('\nSettings migration: v0 status colours upgrade to accessible semantic keys')
+  console.log('\nMission migration: v0 status colours upgrade to accessible semantic keys')
 
   // Seed a genuine pre-Sprint-E settings object: no schemaVersion, CSS named colours, and a
   // deliberately customised one that migration must NOT touch.
@@ -1531,8 +1537,8 @@ async function checkEntryPhoto() {
   }
 }
 
-async function checkSettingsFormSave() {
-  console.log('\nSettings form (Sprint D, Signal Forms): edit fields in the UI, Save, reload, values persisted')
+async function checkMissionFormSave() {
+  console.log('\nMission form (Sprint D, Signal Forms): edit fields in the UI, Save, reload, values persisted')
   await goto('/mission')
   // 2026-08-26 (Material-M3 pass): all three selectors below changed, and TWO of them were
   // already broken before this suite ever noticed.
@@ -1540,8 +1546,8 @@ async function checkSettingsFormSave() {
   //  - debugMode was `input[placeholder="debugMode"]`. It is a <mat-checkbox> now, which
   //    renders its own nested native input, so the control is reached through a
   //    data-testid on the host. The old line then did `debugMode.checked = ...` on null.
-  //  - the Save button was looked up as `.settings__Save-button` - capital S - while the
-  //    template has always rendered `settings__save-button`, lowercase. Class selectors are
+  //  - the Save button was looked up as `.mission__Save-button` - capital S - while the
+  //    template has always rendered `mission__save-button`, lowercase. Class selectors are
   //    case-sensitive, so that querySelector returned null on every run this check has ever
   //    made; `hasSaveBtn` was false and the assertion below could not have passed. It never
   //    surfaced because the debugMode line above threw first and aborted the function. Both
@@ -1559,7 +1565,7 @@ async function checkSettingsFormSave() {
     if (mission) setNative(mission, 'E2E-SIGNAL-FORMS');
     const wasChecked = debugBox ? debugBox.checked : null;
     if (debugBox) debugBox.click();
-    const saveBtn = document.querySelector('[data-testid="settings-save"]');
+    const saveBtn = document.querySelector('[data-testid="mission-save"]');
     return {
       hasMission: !!mission,
       hasDebugMode: !!debugBox,
@@ -1576,7 +1582,7 @@ async function checkSettingsFormSave() {
   // the checkbox, "the saved value matches what we set" is trivially true and proves nothing.
   check('the debugMode checkbox actually toggled', before.debugModeFlipped, true)
 
-  await evaluate(`document.querySelector('[data-testid="settings-save"]').click()`)
+  await evaluate(`document.querySelector('[data-testid="mission-save"]').click()`)
   await sleep(3000) // onFormSubmit() writes localStorage synchronously, then window.location.reload()
 
   const after = await evaluate(`(() => {
@@ -1691,8 +1697,12 @@ async function main() {
 
     await checkRoutesRender()
     await checkNavbarLayout()
-    await checkMapEngineSwitch()
-    await checkMapEngineSurvivesNavigation()
+    if (FULL) {
+      await checkMapEngineSwitch()
+      await checkMapEngineSurvivesNavigation()
+    } else {
+      note('fast run: skipping checkMapEngineSwitch, checkMapEngineSurvivesNavigation (pass --full to include)')
+    }
     // Read-only: pure DOM/layout reads and in-memory form edits, nothing persisted - so these
     // are safe against production too, which is where phone-width regressions actually bite.
     await checkEntryTabOrder()
@@ -1710,14 +1720,18 @@ async function main() {
       note('read-only: skipping roster, photo, submit and mission checks')
     } else {
       const fx = makeFixtures(path.join(tmp, 'fixtures'))
-      await checkRosterLifecycle(fx)
-      await checkFieldNameAliases(fx)
-      await checkBundleZip(fx)
+      if (FULL) {
+        await checkRosterLifecycle(fx)
+        await checkFieldNameAliases(fx)
+        await checkBundleZip(fx)
+      } else {
+        note('fast run: skipping checkRosterLifecycle, checkFieldNameAliases, checkBundleZip (pass --full to include)')
+      }
       await checkEntryPhoto()
       await checkEntryAutofocusAndReset() // submits a real report, so read-write only
       await checkEvidenceLocation()
       await checkDerivedValuesDoNotCarryOver() // also submits, same reason
-      await checkSettingsFormSave()
+      await checkMissionFormSave()
       await checkStatusColorMigration()
       await checkStatusColorsBothSchemes()
 
@@ -1727,8 +1741,12 @@ async function main() {
       await checkTeamTrailsRender()
       await checkRangerMarkersAreDistinct()
       await checkNoCallsignRangersGetDistinctIdentity()
-      await checkSettingsWithPersistedSettings()
-      await checkMissionRoundTrip(downloads)
+      await checkMissionWithPersistedSettings()
+      if (FULL) {
+        await checkMissionRoundTrip(downloads)
+      } else {
+        note('fast run: skipping checkMissionRoundTrip (pass --full to include)')
+      }
       await goto('/'); await evaluate(`localStorage.clear()`)
     }
   } catch (e) {
