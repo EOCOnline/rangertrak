@@ -90,10 +90,25 @@ describe('RangerService', () => {
       expect(parsed[0].team).toBe('');
     });
 
-    it('rejects entries with no callsign, naming the row', () => {
+    it('rejects entries with no callsign and no id/rew, naming the row', () => {
       const service = TestBed.inject(RangerService);
       expect(() => service.parseRosterJson(JSON.stringify([one, { fullName: 'No Sign' }])))
-        .toThrowError(/Entry 2 has no "callsign"/);
+        .toThrowError(/Entry 2 has no callsign and no id\/rew/);
+    });
+
+    it('accepts an entry with no callsign but a resolvable id - D-42, not everyone is ham-licensed', () => {
+      const service = TestBed.inject(RangerService);
+      const parsed = service.parseRosterJson(JSON.stringify([{ id: 'VI-0099', fullName: 'No Sign' }]));
+      expect(parsed.length).toBe(1);
+      expect(parsed[0].callsign).toBe('');
+      expect(parsed[0].id).toBe('VI-0099');
+    });
+
+    it('accepts an entry with only a legacy rew, seeding id from it', () => {
+      const service = TestBed.inject(RangerService);
+      const parsed = service.parseRosterJson(JSON.stringify([{ rew: '38', fullName: 'No Sign' }]));
+      expect(parsed.length).toBe(1);
+      expect(parsed[0].id).toBe('REW-0038');
     });
 
     it('maps the field names a real FCC-derived roster actually uses', () => {
@@ -112,6 +127,19 @@ describe('RangerService', () => {
       const parsed = service.parseRosterJson(JSON.stringify([one, { callsign: 'aa1' }]));
       expect(parsed.length).toBe(2);
       expect(service.rosterWarnings(parsed).join(' ')).toMatch(/duplicate callsign/i);
+    });
+
+    it('warns about duplicate ids too - D-42, this is the credential operators actually search on', () => {
+      const service = TestBed.inject(RangerService);
+      const parsed = service.parseRosterJson(JSON.stringify([
+        { callsign: 'AA1', id: 'VI-0099' }, { callsign: 'AA2', id: 'vi-0099' }]));
+      expect(service.rosterWarnings(parsed).join(' ')).toMatch(/duplicate id/i);
+    });
+
+    it('warns about blank ids as an expected, not-checked-in-yet state', () => {
+      const service = TestBed.inject(RangerService);
+      const parsed = service.parseRosterJson(JSON.stringify([one]));
+      expect(service.rosterWarnings(parsed).join(' ')).toMatch(/1 of 1 entries have no id/i);
     });
 
     it('rejects invalid JSON, an empty roster, and a file with no roster in it', () => {

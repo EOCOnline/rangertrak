@@ -133,25 +133,30 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     return `${this.settings.imageDirectory}rangers/androgynous.svg`
   }
 
+  // D-42 phase 7: a blank callsign is no longer a defect - plenty of CERT/MERT responders
+  // are not ham-licensed, and a resolvable `id` (or the internal `uid`) carries the join
+  // now, not callsign. The "⚠ (none set)" treatment this cell used to own moves to
+  // idCellRenderer below, since a blank `id` ("hasn't checked in yet") is the state that
+  // actually leaves a report unattributable.
   callsignCellRenderer = (params: { data: RangerType }) => {
-    // Raised live 2026-08-26, alongside the map's own "unassigned" marker: a blank
-    // callsign isn't just cosmetic here - it's the join key field reports use to attribute
-    // to this ranger at all, and every blank-callsign ranger renders as the IDENTICAL
-    // marker on the map (see rangerIconFor()'s own UNASSIGNED_MARKER). Flagging it here,
-    // where a scribe is actually editing the roster, is the fixable moment - same #c0392b
-    // as that marker so the two read as the same signal, not two different warnings.
-    if (!params.data.callsign?.trim()) {
-      return `<span aria-hidden title="No callsign set - reports from this ranger can't be told apart on the map, and can't be matched back to them by callsign at all" style="color:#c0392b;font-weight:700"> ⚠ (none set)</span>`
-    }
     let title = `${params.data.fullName} | ${params.data.phone}`
     return `<span aria-hidden title="${title}"> ${params.data.callsign}</span>`
+  }
+
+  idCellRenderer = (params: { data: RangerType }) => {
+    // Same #c0392b as the map's UNASSIGNED_MARKER (ranger-icon.ts) so the two read as one
+    // signal, not two different warnings, wherever an operator sees either.
+    if (!params.data.id?.trim()) {
+      return `<span aria-hidden title="No id set - not checked in yet, or no credential on file. Field reports from this ranger can't be attributed by id until one is." style="color:#c0392b;font-weight:700"> ⚠ (none set)</span>`
+    }
+    return `<span aria-hidden> ${params.data.id}</span>`
   }
 
   columnDefs: ColDef[] = [
     { headerName: "Call Sign", field: "callsign", cellRenderer: this.callsignCellRenderer, flex: 10 },
     { headerName: "Full Name", field: "fullName", tooltipField: "FCC Licensee Name", flex: 10 },
     { headerName: "Phone", field: "phone", singleClickEdit: true, flex: 40 },
-    { headerName: "REW", field: "rew", singleClickEdit: true, flex: 10 },
+    { headerName: "ID", field: "id", cellRenderer: this.idCellRenderer, singleClickEdit: true, flex: 10 },
     { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, tooltipField: "image", tooltipComponentParams: { color: '#ececec' }, flex: 5 },
     { headerName: "Role", field: "role", flex: 40 },
     { headerName: "Notes", field: "note", flex: 60 },

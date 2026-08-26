@@ -640,7 +640,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
           : `${this.settings.imageDirectory}rangers/androgynous.svg`)
 
       this.callImg.innerHTML = `<img style="height:60px; margin-bottom:-15px;" alt="Photo of ${ranger.fullName || ranger.callsign}" src="${src}"/>`
-      this.callInfo.innerHTML = `<span class="enter__Callsign-info">${ranger.fullName}<br> ${ranger.phone}<br>${ranger.rew ? ranger.rew : "No REW!"}</span>`
+      this.callInfo.innerHTML = `<span class="enter__Callsign-info">${ranger.fullName}<br> ${ranger.phone}<br>${ranger.id ? ranger.id : "No id - not checked in"}</span>`
 
     } else {
       this.log.warn(`EntryForm CallsignChanged did not find enter__Callsign-image or enter__Callsign-upshot`, this.id)

@@ -318,9 +318,11 @@ export class RangerService implements OnInit {
    *   - a hand-made wrapper:     { rangers: [...] }
    * Importing a roster should not require knowing which of those someone produced.
    *
-   * Strict about the contents, though: every entry needs a callsign, because callsign is
-   * the key the Entry form's autocomplete and every field report join on. A roster whose
-   * rows cannot be referenced is worse than no roster - it looks loaded and is not.
+   * Strict about the contents, though: every entry needs SOME resolvable identity - a
+   * callsign, or an `id`/`rew` credential normalizeRangerIds() can canonicalize. D-42: a
+   * callsign alone is no longer required, since plenty of CERT/MERT responders are not
+   * ham-licensed - but a row with none of the three is a name with nothing to attribute a
+   * field report to, worse than no row at all.
    *
    * Missing optional fields are filled with empty strings rather than left undefined, so
    * the grid and the CSV export do not render "undefined" to an operator.
@@ -354,12 +356,15 @@ export class RangerService implements OnInit {
         throw new Error(`Entry ${i + 1} is not a ranger record.`)
       }
       const callsign = String(entry.callsign ?? '').trim()
-      if (!callsign) {
+      const id = String(entry.id ?? '').trim()
+      const rew = String(entry.rew ?? '').trim()
+      if (!callsign && !id && !rew) {
         throw new Error(
-          `Entry ${i + 1} has no "callsign". Every ranger needs one - it is what field reports are filed against.`)
+          `Entry ${i + 1} has no callsign and no id/rew - there is nothing to attribute a field report to.`)
       }
       return {
         callsign,
+        id,
         // Field-name aliases. Real rosters in hand do not use this app's field names: an
         // FCC-derived export calls the person "licensee", and carries "icon"/"status"
         // where RangerType has "image"/"role". Accepting the aliases is the difference
@@ -367,7 +372,7 @@ export class RangerService implements OnInit {
         fullName: String(entry.fullName ?? entry.licensee ?? entry.name ?? ''),
         phone: String(entry.phone ?? ''),
         image: String(entry.image ?? entry.icon ?? ''),
-        rew: String(entry.rew ?? ''),
+        rew,
         team: String(entry.team ?? ''),
         role: String(entry.role ?? entry.status ?? ''),
         note: String(entry.note ?? entry.notes ?? ''),
@@ -398,22 +403,44 @@ export class RangerService implements OnInit {
     // excluded from it: multiple blank callsigns would otherwise also trip that check
     // (they're all the same empty string), reading as a confusing "1 duplicate callsign: "
     // with nothing printed after the colon, instead of the real, clearer story.
+    //
+    // D-42 phase 7: this used to also tell the operator to "give each one any short unique
+    // identifier" - that advice is now the `id` field itself, so it is reported separately
+    // below rather than repeated here as a workaround.
     const blank = rangers.filter(r => !r.callsign.trim()).length
     if (blank) {
       warnings.push(
-        `${blank} of ${rangers.length} entries have no callsign - not every volunteer is `
-        + `ham-licensed, so this can be expected, but field reports from them will all look `
-        + `identical (the same "unassigned" marker) on the map and can't be told apart. `
-        + `Give each one any short unique identifier, ham callsign or not.`)
+        `${blank} of ${rangers.length} entries have no callsign - expected for volunteers `
+        + `who are not ham-licensed.`)
     }
 
     const signs = rangers.filter(r => r.callsign.trim()).map(r => r.callsign.toUpperCase())
-    const duplicates = [...new Set(signs.filter((c, i) => signs.indexOf(c) !== i))]
-    if (duplicates.length) {
+    const duplicateCallsigns = [...new Set(signs.filter((c, i) => signs.indexOf(c) !== i))]
+    if (duplicateCallsigns.length) {
       warnings.push(
-        `${duplicates.length} duplicate callsign${duplicates.length > 1 ? 's' : ''}: `
-        + `${duplicates.slice(0, 5).join(', ')}${duplicates.length > 5 ? '...' : ''}. `
+        `${duplicateCallsigns.length} duplicate callsign${duplicateCallsigns.length > 1 ? 's' : ''}: `
+        + `${duplicateCallsigns.slice(0, 5).join(', ')}${duplicateCallsigns.length > 5 ? '...' : ''}. `
         + `Field reports filed against these cannot tell the rows apart.`)
+    }
+
+    // D-42: `id` is the displayed, searchable credential (REW-####/TEW-####, or a regional
+    // equivalent like VI-0038). A blank one is expected - "hasn't checked in yet" - not a
+    // defect. A duplicate one is real and ambiguous, and this app never auto-merges or
+    // rewrites it (see normalizeRangerIds()), so it must be surfaced loudly here too.
+    const blankIds = rangers.filter(r => !r.id?.trim()).length
+    if (blankIds) {
+      warnings.push(
+        `${blankIds} of ${rangers.length} entries have no id - not checked in yet, or no `
+        + `credential on file.`)
+    }
+
+    const ids = rangers.filter(r => r.id?.trim()).map(r => r.id!.toUpperCase())
+    const duplicateIds = [...new Set(ids.filter((c, i) => ids.indexOf(c) !== i))]
+    if (duplicateIds.length) {
+      warnings.push(
+        `${duplicateIds.length} duplicate id${duplicateIds.length > 1 ? 's' : ''}: `
+        + `${duplicateIds.slice(0, 5).join(', ')}${duplicateIds.length > 5 ? '...' : ''}. `
+        + `Field reports filed against these cannot be told apart.`)
     }
 
     const nameless = rangers.filter(r => !r.fullName.trim()).length
