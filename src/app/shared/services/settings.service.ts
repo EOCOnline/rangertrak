@@ -259,8 +259,12 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       showDD: true,
       showDDM: true,
       showDMS: true,
-      showMGRS: true,
-      showUTM: true,
+      // Raised live, 2026-08-26: all six defaulted true, so Entry's "Show all systems"
+      // session toggle (location.component.ts's showAllSystems) had nothing left to reveal -
+      // it looked like a no-op the first time anyone tried it. MGRS/UTM off by default means
+      // the toggle now visibly does something out of the gate; DD/DDM/DMS/Maidenhead unchanged.
+      showMGRS: false,
+      showUTM: false,
       showMaidenhead: true,
 
       leaflet: {
