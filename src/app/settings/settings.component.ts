@@ -145,7 +145,13 @@ export class SettingsComponent implements OnInit, OnDestroy {
   readonly readinessGaps = computed(() => {
     const r = this.readiness
     const gaps: { label: string, severity: 'red' | 'amber', link?: string, linkText?: string }[] = []
-    if (!r.missionNamed()) {
+    // Mission name and op period are edited right below this panel on this very page - read
+    // them from the live (unsaved) settingsModel rather than r.missionNamed()/opPeriodCurrent(),
+    // which only update once the form is saved (MissionReadinessService tracks persisted
+    // settings, correctly, for the header dot everywhere else). Without this, typing a name or
+    // adjusting the op period here left the panel showing stale gaps until Save + reload.
+    const live = this.settingsModel()
+    if (!live.mission.trim()) {
       gaps.push({ label: 'Mission name is not set - see the Mission section below.', severity: 'red' })
     }
     if (!r.rosterLoaded()) {
@@ -154,7 +160,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
         link: '/rangers', linkText: 'Load the real roster on Rangers',
       })
     }
-    if (!r.opPeriodCurrent()) {
+    if (new Date(live.opPeriodEnd).getTime() <= Date.now()) {
       gaps.push({ label: 'Operating period has expired - see the Mission section below.', severity: 'amber' })
     }
     if (!r.offlineTilesSaved()) {
@@ -186,19 +192,23 @@ export class SettingsComponent implements OnInit, OnDestroy {
       next: (newSettings) => {
         this.log.excessive(`Received new Settings via subscription: ${JSON.stringify(newSettings)}`, this.id)
         this.settings = newSettings
-
-        // reset form based on new settings...
-        this.settingsModel.set(newSettings)
-        this.rowData.set(this.settings.fieldReportStatuses)
-        this.recipientOptions213.set(this.settings.recipientOptions213)
-
-        this.opPeriodStart.set(this.settings.opPeriodStart)
-        this.opPeriodEnd.set(this.settings.opPeriodEnd)
+        this.applySettingsToForm(newSettings)
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
     })
+  }
+
+  /** Resets the whole editable form (and its mirror signals) to a given settings snapshot -
+   * shared by the settings subscription above and by onCancel() below, which discards
+   * unsaved edits back to the last-saved this.settings rather than reloading the page. */
+  private applySettingsToForm(newSettings: SettingsType): void {
+    this.settingsModel.set(newSettings)
+    this.rowData.set(newSettings.fieldReportStatuses)
+    this.recipientOptions213.set(newSettings.recipientOptions213)
+    this.opPeriodStart.set(newSettings.opPeriodStart)
+    this.opPeriodEnd.set(newSettings.opPeriodEnd)
   }
 
   ngOnInit(): void {
@@ -270,6 +280,13 @@ export class SettingsComponent implements OnInit, OnDestroy {
     //REVIEW: Does this zap existing changes elsewhere on the page (used for reseting field statuses..)
     this.log.verbose(`Reloading window!`, this.id)
     window.location.reload()
+  }
+
+  /** Discards unsaved edits, resetting the form back to the last-saved settings in place -
+   * no reload, unlike Save. */
+  onCancel(): void {
+    this.log.verbose('onCancel: discarding unsaved changes.', this.id)
+    this.applySettingsToForm(this.settings)
   }
 
   onFormSubmit(): void {

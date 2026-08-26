@@ -28,6 +28,68 @@ button {
   //padding: 10px;
 }
 
+// This page is one long form across six sections (Mission, Location, Maps, Field Report
+// Statuses, Recipients, Instructions) plus Debug - the previous single Save button was a
+// plain 80px-wide, uncoloured .eButton stranded at the bottom, easy to lose on a busy page
+// and invisible without scrolling all the way down. `position: sticky; bottom: 0` keeps it
+// (and a new Cancel, previously absent entirely) pinned to the viewport bottom while
+// scrolling: its containing block is this whole <form>, which still has Advanced Options
+// after it, so it stays stuck for the full scroll of the sections above and only settles in
+// place - detaching cleanly, not overlapping - once Advanced Options's own destructive
+// controls come into view.
+.settings__action-bar {
+  position        : sticky;
+  bottom          : 0;
+  z-index         : 10;
+  display         : flex;
+  align-items     : center;
+  justify-content : space-between;
+  flex-wrap       : wrap;
+  gap             : 0.75em;
+  margin          : 1.5em -1em 0;
+  padding         : 0.85em 1em;
+  background      : var(--rt-surface);
+  border-top      : 2px solid var(--rt-accent);
+  border-radius   : var(--rt-radius);
+  box-shadow      : 0 -4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.settings__action-bar-label {
+  font-weight: bold;
+}
+
+.settings__action-bar-buttons {
+  display: flex;
+  gap    : 0.75em;
+}
+
+.settings__save-button,
+.settings__cancel-button {
+  min-width  : 140px;
+  padding    : 0.75em 1.5em;
+  font-size  : 1.15em;
+  font-weight: bold;
+  border-radius: var(--rt-radius);
+  cursor     : pointer;
+}
+
+.settings__save-button {
+  border    : none;
+  background: var(--rt-accent);
+  color     : var(--rt-accent-ink);
+}
+
+.settings__save-button:disabled {
+  opacity: 0.5;
+  cursor : not-allowed;
+}
+
+.settings__cancel-button {
+  background: transparent;
+  border    : 2px solid var(--rt-line-strong);
+  color     : var(--rt-ink);
+}
+
 // E-79: reuses the header readiness dot's own red/amber tokens (mission-readiness.component.scss)
 // so a scribe already reading "red means X" from the header pill sees the same colour
 // language here, not a second one to learn.

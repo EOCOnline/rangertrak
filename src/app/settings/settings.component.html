@@ -56,10 +56,17 @@
 
     <br />
 
-    <span class="strong">Save all settings above: </span>
-    <button [disabled]="settingsForm().invalid()" class="settings__Save-button eButton" type="submit">Save</button>
-    <!-- button tabindex="9" -->
-
+    <!-- Sticky action bar: `position: sticky` clamps to its containing block (this <form>,
+         which still has Advanced Options below), so it stays pinned to the viewport bottom
+         while scrolling this page's many sections, then settles in place once Advanced
+         Options is reached - see settings.component.scss for the physics. -->
+    <div class="settings__action-bar">
+      <span class="settings__action-bar-label">Save all settings above?</span>
+      <div class="settings__action-bar-buttons">
+        <button type="button" class="settings__cancel-button" (click)="onCancel()">Cancel</button>
+        <button [disabled]="settingsForm().invalid()" class="settings__save-button" type="submit">Save</button>
+      </div>
+    </div>
 
     <br />
     <br />
