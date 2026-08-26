@@ -575,8 +575,17 @@ async function checkEvidenceLocation() {
   check('evidence section is hidden by default', before.hiddenByDefault, true)
   check('no evidence marker before the section is used', before.markerExists, false)
 
+  // 2026-08-26 (Material-M3 pass): was a structural
+  // '.enter__evidence > label > input[type=checkbox]' selector, requiring the checkbox to
+  // be a DIRECT child of a <label> that is a DIRECT child of .enter__evidence. The control
+  // is a <mat-checkbox> now (no wrapping <label> at all in the template - mat-checkbox
+  // renders its own internal one, several DOM levels deep), so that exact structural path
+  // no longer exists; a data-testid on the mat-checkbox host is the stable hook, matching
+  // the [[verify-the-measurement-itself]] lesson from the earlier Settings e2e repair (a
+  // class/structural selector is the wrong thing to hang a test hook on - it breaks on a
+  // purely visual/markup change with no warning).
   await evaluate(`(async () => {
-    document.querySelector('.enter__evidence > label > input[type=checkbox]').click();
+    document.querySelector('[data-testid="evidence-toggle"] input[type=checkbox]').click();
     await new Promise(r => setTimeout(r, 300));
     const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
     const set = (el, v) => { setter.call(el, v); el.dispatchEvent(new Event('input', {bubbles:true})); el.dispatchEvent(new Event('change', {bubbles:true})); };

@@ -193,52 +193,70 @@ input[type=number] {
 
 // E-51: was a bare mat-radio-group on a single tinted background - each mat-radio-button
 // below now reads as its own chip instead.
-.enter__Status {
-  display    : flex;
-  flex-wrap  : wrap;
-  align-items: center;
-  gap        : 0.5rem;
-  padding    : 8px 0;
+// Material-M3 pass, 2026-08-26: .rButton and .bottomDrop are gone - Status/Source no
+// longer render as a hand-rolled row of "Label:" text plus custom-styled label/radio pairs
+// (.rButton, defined only here and in settings.component.scss/rangers.component.html
+// before this pass; all now retired). Both fields get the same small sentence-case
+// field-label treatment Mission's real conversion settled on (.settings__coords-legend/
+// .grouplbl - the mockup's own all-caps styling was never actually carried into the real
+// Angular templates, confirmed by grepping settings/ for text-transform before matching
+// it here) via the shared .enter__field-label class below.
+.enter__field-label {
+  margin        : 0.9rem 0 0.4rem;
+  font-size     : var(--rt-type-label-size);
+  line-height   : var(--rt-type-label-line);
+  font-weight   : 500;
+  letter-spacing: 0.4px;
+  color         : var(--rt-ink-2);
 }
 
-// ADR D-39's segmented-chip decision: kept mat-radio-group/mat-radio-button rather than
-// mat-button-toggle-group, restyled as tonal (unselected) / tinted-and-bordered in the
-// status's own colour (selected) - the colour itself, not a generic accent, is deliberate:
-// it's the information Sprint E's contrast work already settled, so the selected state
-// should carry it rather than a one-size accent that says nothing about the status.
-.rButton {
-  border          : 1px solid var(--rt-line);
-  border-radius   : var(--rt-radius-lg);
-  background-color: var(--rt-surface-2);
-  padding         : 0.15rem 0.6rem 0.15rem 0.3rem;
-  transition      : background-color 120ms ease, border-color 120ms ease;
+// mat-chip-listbox/mat-button-toggle-group both wrap their own content, so this is just
+// breathing room - the segmented-row layout itself (previously this class's job) is now
+// MDC's, not ours.
+.enter__Status,
+.enter__Source {
+  margin-bottom: 0.25rem;
 }
 
-.enter__status-selected {
-  border-color    : var(--rt-status-current, var(--rt-accent));
-  background-color: color-mix(in srgb, var(--rt-status-current, var(--rt-accent)) 20%, var(--rt-surface));
+// A small filled dot carrying the status's own colour, ahead of the label text - the
+// mockup's own status-chip anatomy. mat-chip-option already shows an M3 checkmark for the
+// selected option; this dot is what identifies each option's colour even before selection,
+// which the checkmark alone can't do.
+.rt-status-chip__dot {
+  display      : inline-block;
+  width        : 8px;
+  height       : 8px;
+  border-radius: 50%;
+  margin-inline-end: 6px;
+  flex         : none;
+}
+
+// ADR D-39's segmented-chip decision carries forward from mat-radio-group to
+// mat-chip-option: tonal (unselected) / tinted-and-bordered in the status's own colour
+// (selected) - the colour itself, not a generic accent, is deliberate, since it's the
+// information Sprint E's contrast work already settled.
+//
+// M3 chip theming emits its colours as CSS custom properties rather than per-state CSS
+// classes (unlike the legacy M2 theme, which is where a plain `.mat-mdc-chip-selected`
+// class rule would have been enough) - see @angular/material/chips/_chips-theme.scss,
+// confirmed by reading the compiled source, not assumed. Overriding MDC's own internal
+// paint layer is therefore done the same way time-picker.component.scss already does for
+// the same class of problem (its own ::ng-deep .mdc-text-field/.mat-mdc-form-field-infix
+// overrides): ::ng-deep targeting `.mat-mdc-chip-selected` - a class MatChip's own
+// TypeScript host binding toggles unconditionally, independent of M2/M3 theme choice, so
+// it is a stable target regardless of which theming path is active.
+mat-chip-option.enter__status-selected {
+  ::ng-deep.mat-mdc-chip-selected .mdc-evolution-chip__action--primary::before {
+    border-color: var(--rt-status-current, var(--rt-accent));
+  }
+
+  ::ng-deep.mat-mdc-chip-selected {
+    background-color: color-mix(in srgb, var(--rt-status-current, var(--rt-accent)) 20%, var(--rt-surface));
+  }
 
   .Enter__status-value {
     font-weight: 600;
   }
-}
-
-.bottomDrop {
-  //padding      : 8px 0;
-  //margin-top   : 20px;
-  margin-bottom: 8px;
-
-}
-
-// E-41 phase 1 (2026-08-26): Source reuses .enter__Status's own row layout and .rButton's
-// segmented-chip look (below) rather than inventing a second control style for what is,
-// visually, the same kind of "pick one of a few labelled options" field.
-.enter__Source {
-  display    : flex;
-  flex-wrap  : wrap;
-  align-items: center;
-  gap        : 0.5rem;
-  padding    : 8px 0;
 }
 
 // Raised live, 2026-08-26: "a stronger separator for the 213-only section" - the thin
@@ -286,27 +304,24 @@ input[type=number] {
   }
 }
 
+// Material-M3 pass: enter__213-field now wraps either a mat-form-field (213 message,
+// Additional) or the recipients checklist's own <div> - both size to the full row on their
+// own, so the old `textarea, input { width: 100% }` rule (which only ever matched a bare
+// native field) is gone as dead.
 .enter__213-field {
-  display: flex;
+  display       : flex;
   flex-direction: column;
-  gap    : 0.2rem;
-
-  textarea,
-  input {
-    width: 100%;
-  }
+  gap           : 0.3rem;
+  margin-bottom : 0.5rem;
 }
 
-// E-103: the per-mission recipients213 checklist reuses .rButton's chip look - same
-// "picking one of a few labelled options" visual language as .enter__Source, just with
-// checkboxes instead of radios since more than one recipient is normal.
-.enter__213-recipients {
-  display    : flex;
-  flex-wrap  : wrap;
-  align-items: center;
-  gap        : 0.4rem;
-  margin-bottom: 0.3rem;
+.enter__213-message,
+.enter__213-additional {
+  width: 100%;
 }
+
+// .enter__213-recipients (the old wrapping <div>'s flex-wrap layout) is gone - replaced by
+// mat-chip-listbox, which wraps its own mat-chip-options internally.
 
 .enter__evidence {
   margin-top: 0.6rem;
@@ -320,24 +335,12 @@ input[type=number] {
   }
 }
 
-// E-61: Reset and Submit share this box model (min-height, padding, border-radius,
-// font-weight, margin) so they read as a sized pair. Before this, Reset fell back to
-// default browser button sizing - this rule's own `margin: 30 px` is invalid CSS (a
-// stray space breaks the value) and was silently dropped - while Submit got real
-// values via .enter__Submit-button below, which is why they never lined up.
-.eButton {
-  min-width       : 80px;
-  min-height      : var(--rt-tap-min);
-  padding         : 0 1.25rem;
-  margin          : 0 10px 10px 0;
-  font-weight     : 600;
-  border          : 1px solid var(--rt-line-strong);
-  border-radius   : var(--rt-radius);
-  background-color: transparent;
-  color           : var(--rt-ink);
-  cursor          : pointer;
-}
-
+// Material-M3 pass, 2026-08-26: .eButton is gone from this file - Reset and Submit are
+// matButton now (E-61's "read as a sized pair" goal is Material's own job: both take the
+// same button component, just different appearance variants). This was one of four
+// independent copies of this rule across the app (also in settings.component.scss,
+// shared/feedback/feedback.component.scss, settings-advanced-options.component.scss) -
+// all four are gone as of this pass and Mission/Settings' respective conversions.
 .enter__form {
   //margin     : 0px 10px 15px;
   min-width                                               : 160px;
@@ -346,6 +349,11 @@ input[type=number] {
   // 2026-08-21: containing block for #enter__frm-reguritation's `position: absolute` below
   // - see that rule's own comment for why it isn't `float: right` any more.
   position                                                : relative;
+
+  // Spacing for the Reset/Submit row, since matButton carries no external margin of its own.
+  .mat-mdc-button-base + .mat-mdc-button-base {
+    margin-inline-start: 0.6rem;
+  }
 }
 
 .enter__Callsign {
@@ -448,39 +456,28 @@ input[type=number] {
   margin-bottom: 0px;
 }
 
-// E-65: the template's `cols="80"` sized this to ~591px regardless of viewport - the
-// single largest contributor to Entry rendering ~1085px wide inside a 390px phone. `cols`
-// is only a fallback for when CSS says nothing about width, so giving it a real width here
-// overrides it; box-sizing keeps the border/padding inside that width rather than adding
-// to it. Kept `cols` in the template as the no-CSS fallback.
+// Material-M3 pass, 2026-08-26: mat-form-field draws its own outline/background/border-
+// radius now (the previous dotted-purple `border` and `$filledColor` background were this
+// field's own placeholder chrome, predating any real design pass, and would have doubled
+// up against the field's new outline). `cols="80"` is gone from the template too - E-65's
+// concern (a phone-width overflow) is now solved by this rule's own `max-width: 100%`
+// regardless of the textarea's `cols` attribute, the same fix E-65 already relied on, just
+// without the belt-and-braces HTML fallback now that the field is never rendered bare.
 .enter__What--area {
-  width               : 100%;
-  max-width           : 100%;
-  // 2026-08-21: was two literal <br> tags in the template between the status row and this
-  // field - about two line-heights of dead space on top of .enter__Status's own padding.
-  // A small margin here does the same "give it room to breathe" job without the excess.
-  margin-top          : 0.5rem;
-  box-sizing          : border-box;
-  border              : 1px dotted rgb(52, 28, 192);
-  border-radius       : 5px;
-  background-color    : $filledColor;
-  //text-orientation: upright;
-  //text-transform: capitalize;
-  //float             : left;
-  //margin-left       : 75px;
-  //position          : absolute;
-  //bottom:40px;
+  width     : 100%;
+  max-width : 100%;
+  // 2026-08-21: was two literal <br> tags between the status row and this field - about two
+  // line-heights of dead space. A small margin does the same "give it room to breathe" job
+  // without the excess.
+  margin-top: 0.5rem;
 }
 
-.enter__Submit-button {
-  // Sprint B: was rgb(236, 252, 4), an electric yellow that predates any palette. This is
-  // the primary action on the primary screen (10's hot path), so it takes the accent -
-  // the one thing that still sets it apart from Reset now that E-61 unified their box
-  // model in .eButton above.
-  background-color: var(--rt-accent);
-  color           : var(--rt-accent-ink);
-  border-color    : transparent;
-}
+// .enter__Submit-button is no longer a styling hook - matButton="filled" (in the template)
+// already renders in the theme's own accent colour via mat.theme()'s primary palette
+// (Sprint A), which IS --rt-accent's source. The class stays on the element purely as a
+// stable selector: tools/e2e.js's checkEntryAutofocusAndReset() and several other checks
+// reach this exact native <button> directly.
+
 
 #enter__Submit-info {
   margin              : 10px;

@@ -114,12 +114,20 @@
              it after the entire 213 section. See entry.component.ts's tabindex chain comment
              for why the tab-order slots moved with it, not just this markup. -->
         <div class="enter__evidence">
-          <label>
-            <input type="checkbox" [checked]="showEvidenceLocation()"
-              (change)="showEvidenceLocation.set($any($event.target).checked)"
-              [attr.tabindex]="showEvidenceLocationTabIndex" />
-            This report includes evidence/a clue at a different location
-          </label>
+          <!-- Material-M3 pass, 2026-08-26: was a plain native checkbox, already bound
+               manually (showEvidenceLocation is a component signal, not a Signal Forms
+               field) - so this swap carries no [formField]/CVA risk. No wrapping <label>:
+               mat-checkbox renders its own internal <label>, and nesting a second one
+               around it is invalid HTML that can double-fire the click. data-testid, not
+               the old ".enter__evidence > label > input[type=checkbox]" structural
+               selector - MatCheckbox nests its real native input several levels inside its
+               own template, so that direct-child selector no longer reaches it;
+               tools/e2e.js's checkEvidenceLocation() updated to match. -->
+          <mat-checkbox data-testid="evidence-toggle" [checked]="showEvidenceLocation()"
+            [tabIndex]="showEvidenceLocationTabIndex"
+            (change)="showEvidenceLocation.set($event.checked)">
+            This report includes evidence or a clue at a different location
+          </mat-checkbox>
 
           <div [hidden]="!showEvidenceLocation()">
             <rangertrak-evidence-location [origin]="locationParent" [formGeneration]="formGeneration"
@@ -162,51 +170,72 @@
          rendered a border, another instance of the "looks configured, does nothing" trap
          (ADR D-39). enter__section replaces it with the real section-group rule. -->
     <div class="input-group enter__section">
-      <!-- mat-label><div class="strong bottomDrop">Status:</div></mat-label -->
-      <!-- E-51: kept mat-radio-group/mat-radio-button rather than switching to
-           mat-button-toggle-group - ADR D-39's call, so Sprint E's contrast-fixed status
-           colours (statusColor(), below) stay wired to the same labels rather than being
-           re-litigated for a component swap with no accessibility gain. Each radio now
-           reads as a segmented chip via CSS (enter__status-selected below) instead of a
-           bare radio row - the "improve from the present UI" middle ground the mockup's
-           heavier button group was asked to find. -->
-      <mat-radio-group class="enter__Status" labelPosition="after" formControlName="status"
-        [attr.tabindex]="statusTabIndex"><span class="bottomDrop">Status:&nbsp;&nbsp;</span>
-        <mat-radio-button *ngFor="let stat of settings.fieldReportStatuses" value="{{stat.status}}" class="rButton"
+      <!-- Material-M3 pass, 2026-08-26: mat-radio-group -> mat-chip-listbox, superseding
+           E-51's earlier "kept mat-radio-group over mat-button-toggle-group" call (ADR
+           D-39) - that decision predates the redesign's decision to move the whole app onto
+           standard Material components (2026-08-25). Status stays bound via
+           formControlName (entryControlsForm is the classic Reactive-Forms FormGroup this
+           field has used since Sprint D), which is the well-supported, long-standing
+           Material+ReactiveForms integration - NOT the combination angular/components#32072
+           affects, since that bug is specific to the newer Signal Forms [formField]
+           directive's CVA integration, a different code path entirely. [tabIndex]
+           (property binding), not [attr.tabindex]: MatChipListbox exposes a real
+           @Input() tabIndex whose own host binding renders the DOM attribute FROM that
+           property on every change-detection cycle - binding [attr.tabindex] directly in
+           this template would fight that same host binding. Confirmed by reading
+           @angular/material's compiled source (chips.mjs), not assumed. -->
+      <div class="enter__field-label">Status</div>
+      <mat-chip-listbox class="enter__Status" formControlName="status" aria-label="Status"
+        [tabIndex]="statusTabIndex">
+        <mat-chip-option *ngFor="let stat of settings.fieldReportStatuses" [value]="stat.status"
           [class.enter__status-selected]="entryControlsForm.value.status === stat.status"
           [style.--rt-status-current]="statusColor(stat.color)">
+          <span class="rt-status-chip__dot" [style.background]="statusColor(stat.color)" aria-hidden="true"></span>
           <!-- Sprint E: this was an inline color style interpolated straight from stored
                settings, which is how LightYellow-on-white (1.07:1) reached the app's primary
                control. Now resolved via statusColor(), so semantic keys become --rt-status-*
-               tokens carrying their own light/dark pair. The old text-shadow was a blur trying
-               to rescue unreadable text; with accessible colours it only muddies glyph edges. -->
+               tokens carrying their own light/dark pair. checkStatusColorsBothSchemes() /
+               checkStatusColorMigration() in tools/e2e.js read this exact span's computed
+               colour - kept unchanged (class, binding, and content) across this swap. -->
           <span class="Enter__status-value" [style.color]="statusColor(stat.color)">
             {{stat.status}}</span>
-          <!-- Disabling intelephense.diagnostics.embeddedLanguages -->
-        </mat-radio-button>
-      </mat-radio-group>
+        </mat-chip-option>
+      </mat-chip-listbox>
 
       <!-- E-41 phase 1: gathered on every report, always - "every radio call is a 309 entry
-           regardless." Native radios, not mat-radio-button - Signal Forms' [formField] can't
-           reliably check a Material radio (angular/components#32072, same reason Status
-           above stays a classic FormControl), but a plain native radio works fine, which is
-           also why FieldReportSource is a string union rather than a numeric enum (see that
-           type's own comment in field-report.interface.ts). -->
-      <div class="enter__Source" role="radiogroup" aria-label="Source" [attr.tabindex]="sourceTabIndex">
-        <span class="bottomDrop">Source:&nbsp;&nbsp;</span>
+           regardless." Material-M3 pass, 2026-08-26: mat-button-toggle-group now, but bound
+           manually through the FieldState's own WritableSignal
+           (entryForm.source().value() / .value.set()) rather than [formField] -
+           entryForm.source is a genuine Signal Forms field, and mat-button-toggle-group is a
+           Material CVA component, exactly the angular/components#32072 combination the
+           previous native-radio workaround existed to avoid (that reasoning carries over
+           unchanged; only the rendered control changed). This is the identical manual-signal
+           pattern used throughout settings/ for every Signal Forms field driving a Material
+           CVA control - see e.g. settings-location-section's coordinate-system checkboxes.
+           [attr.tabindex], not [tabIndex]: mat-button-toggle-group reads its host's literal
+           tabindex ATTRIBUTE once at construction via HostAttributeToken (the same mechanism
+           mat-radio-group/mat-chip-listbox above rely on for their own reserved slot),
+           confirmed by reading button-toggle.mjs. -->
+      <div class="enter__field-label">Source</div>
+      <mat-button-toggle-group class="enter__Source" aria-label="Source"
+        [attr.tabindex]="sourceTabIndex" [value]="entryForm.source().value()"
+        (change)="entryForm.source().value.set($event.value)">
         @for (opt of sourceOptions; track opt) {
-        <label class="rButton">
-          <!-- No name= : Signal Forms' [formField] directive rejects it (compiler error) -
-               grouping/mutual exclusivity comes from all three radios sharing the same
-               entryForm.source binding, not the native name-attribute mechanism. -->
-          <input type="radio" [value]="opt" [formField]="entryForm.source" />
-          {{ opt }}
-        </label>
+        <mat-button-toggle [value]="opt">{{ opt }}</mat-button-toggle>
         }
-      </div>
+      </mat-button-toggle-group>
 
-      <textarea class="input-group enter__What--area" [formField]="entryForm.notes" id="enter__What--area" cols="80"
-        rows="5" placeholder="Enter Any Notes" [attr.tabindex]="notesTabIndex"></textarea>
+      <!-- Material-M3 pass, 2026-08-26: matInput decorates a REAL native <textarea>
+           (mat-form-field wraps it, it does not replace it), so [formField] here is the
+           safe nativeControlCreate path - no CVA involved, no 32072 risk. cols="80" is gone:
+           it was E-65's fallback for when nothing else constrained width; the field now
+           gets a real width from .enter__What--area's own CSS (max-width:100%; box-sizing
+           unaffected). -->
+      <mat-form-field class="enter__What--area">
+        <mat-label>Notes</mat-label>
+        <textarea matInput [formField]="entryForm.notes" id="enter__What--area" rows="5"
+          placeholder="Enter any notes" [attr.tabindex]="notesTabIndex"></textarea>
+      </mat-form-field>
 
       <!-- E-41 phase 1: "the 213 stays opt-in per entry" - data collection only, no
            export/reporting logic yet (that's phases 2-3). Asking only what the maintainer
@@ -214,10 +243,14 @@
            field's own doc comment in field-report.interface.ts for the "not confirmed
            against the real form" caveat this carries forward. -->
       <div class="enter__213">
-        <label>
-          <input type="checkbox" [formField]="entryForm.generates213" [attr.tabindex]="generates213TabIndex" />
+        <!-- Material-M3 pass: manual WritableSignal binding, not [formField] - same
+             angular/components#32072 reasoning as Source above (entryForm.generates213 is a
+             genuine Signal Forms field; mat-checkbox is a Material CVA component). -->
+        <mat-checkbox [checked]="entryForm.generates213().value()"
+          [tabIndex]="generates213TabIndex"
+          (change)="entryForm.generates213().value.set($event.checked)">
           Also generate an ICS-213 (General Message) from this report
-        </label>
+        </mat-checkbox>
 
         <!-- [hidden], not @if: this app's keyboard-first tab chain (entry.component.ts)
              reserves these three fields' tabindex numbers unconditionally, same reservation
@@ -231,38 +264,49 @@
              attribute), which @if would ALSO have achieved when rendered - so no behavioural
              difference for a real user, only for what the DOM inspection sees. -->
         <div class="enter__213-details" [hidden]="!entryForm.generates213().value()">
-          <label>
-            <input type="checkbox" [formField]="entryForm.replyRequested213"
-              [attr.tabindex]="replyRequested213TabIndex" />
+          <mat-checkbox [checked]="entryForm.replyRequested213().value()"
+            [tabIndex]="replyRequested213TabIndex"
+            (change)="entryForm.replyRequested213().value.set($event.checked)">
             Reply requested
-          </label>
-          <label class="enter__213-field">
-            213 Message
-            <span class="field-help" tabindex="0" role="img"
+          </mat-checkbox>
+          <!-- Material-M3 pass: matInput on a real native <textarea> again - no CVA
+               path, [formField] is safe here exactly as it is on Notes above. The tooltip
+               icon moves into matSuffix rather than sitting ahead of the label as a second
+               piece of inline text, since <mat-label> is now the field's real label. -->
+          <mat-form-field class="enter__213-field enter__213-message">
+            <mat-label>213 message</mat-label>
+            <textarea matInput [formField]="entryForm.message213" rows="3" placeholder="What the 213 should say"
+              [attr.tabindex]="message213TabIndex"></textarea>
+            <span matSuffix class="field-help" tabindex="0" role="img"
               aria-label="213 Message: the text of a separate, addressed ICS-213 message to whoever's listed under To, below - often reworded from your Notes above, not just a copy of them. This is what prints on the actual 213 form."
               title="The text of a separate, addressed ICS-213 message to whoever's listed under To, below - often reworded from your Notes above, not just a copy of them. This is what prints on the actual 213 form.">ⓘ</span>
-            <textarea [formField]="entryForm.message213" rows="3" placeholder="What the 213 should say"
-              [attr.tabindex]="message213TabIndex"></textarea>
-          </label>
-          <label class="enter__213-field">
-            To (recipient(s))
-            <!-- E-103: per-mission definable checklist (settings.recipientOptions213) -
-                 checkboxes get NO explicit tabindex (see recipients213CheckboxesTabIndex's own
-                 comment in entry.component.ts for why); only the group wrapper reserves a
-                 tab stop. -->
-            <div class="enter__213-recipients" role="group" aria-label="Recipients"
-              [attr.tabindex]="recipients213CheckboxesTabIndex">
+          </mat-form-field>
+          <div class="enter__213-field">
+            <div class="enter__field-label">To (recipients)</div>
+            <!-- E-103: per-mission definable checklist (settings.recipientOptions213).
+                 Material-M3 pass: mat-chip-listbox[multiple], with each mat-chip-option's
+                 selection bound manually via [selected]/(selectionChange) rather than the
+                 listbox's own group-level [value]/(change) - this mirrors the EXISTING
+                 per-item toggleRecipient213() architecture exactly (a Set<string>, one
+                 option toggled at a time) instead of introducing a second, array-diffing
+                 binding style for the same state. [tabIndex] (property), not
+                 [attr.tabindex] - same MatChipListbox @Input() reasoning as Status's
+                 listbox above; only the LISTBOX reserves a tab stop (recipients213
+                 CheckboxesTabIndex's own comment in entry.component.ts explains why
+                 individual options don't each get one). -->
+            <mat-chip-listbox [multiple]="true" aria-label="Recipients"
+              [tabIndex]="recipients213CheckboxesTabIndex">
               @for (opt of settings.recipientOptions213; track opt) {
-              <label class="rButton">
-                <input type="checkbox" [checked]="selectedRecipients213().has(opt)"
-                  (change)="toggleRecipient213(opt, $any($event.target).checked)" />
-                {{ opt }}
-              </label>
+              <mat-chip-option [selected]="selectedRecipients213().has(opt)"
+                (selectionChange)="toggleRecipient213(opt, $event.selected)">{{ opt }}</mat-chip-option>
               }
-            </div>
-            <input type="text" [formField]="entryForm.recipients213" placeholder="Additional, comma-separated"
-              [attr.tabindex]="recipients213TabIndex" />
-          </label>
+            </mat-chip-listbox>
+            <mat-form-field class="enter__213-additional">
+              <mat-label>Additional</mat-label>
+              <input matInput type="text" [formField]="entryForm.recipients213"
+                placeholder="Comma-separated" [attr.tabindex]="recipients213TabIndex" />
+            </mat-form-field>
+          </div>
         </div>
       </div>
     </div>
@@ -286,14 +330,30 @@
 
     <!-- ======================================= -->
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->
-    <button (click)="resetEntryForm()" title="Reset all form fields to their defaults" class="eButton" type="button"
-      [attr.tabindex]="resetTabIndex">
+    <!-- Material-M3 pass: [tabIndex] (property), not [attr.tabindex] - matButton is a
+         directive (MatButton extends MatButtonBase applied to this real native <button>),
+         but a directive can still declare its own host bindings, and MatButtonBase does:
+         '[attr.tabindex]': '_getTabIndex()', reading its own tabIndex @Input. Binding
+         [attr.tabindex] directly here was the actual cause of a real, e2e-caught regression
+         - both buttons lost their tabindex attribute entirely (found via
+         checkEntryTabOrder(): count dropped from 45 to 43, with 44/45 - exactly Reset and
+         Submit - the two missing). Confirmed by reading the compiled source
+         (_icon-button-chunk.mjs) after the failure, not assumed beforehand; this is the one
+         spot in this pass where an assumption ("a plain directive won't touch tabindex")
+         turned out wrong, caught only because the FULL e2e suite ran, not just `ng build`. -->
+    <button matButton="outlined" (click)="resetEntryForm()" title="Reset all form fields to their defaults"
+      type="button" [tabIndex]="resetTabIndex">
       Reset
     </button>
 
-    <button class="enter__Submit-button eButton" [disabled]="!formValid()" type="submit"
-      [attr.tabindex]="submitTabIndex">
-      Submit
+    <!-- .enter__Submit-button kept as a plain class, not restyled from - checkEntryAutofocus
+         AndReset() and several other tools/e2e.js checks reach this exact real native
+         <button>'s .disabled property and .click() it directly. matButton="filled" supplies
+         the accent-coloured fill Material's own theme now provides; the old inline
+         background-color/color override in entry.component.scss is gone as redundant. -->
+    <button matButton="filled" class="enter__Submit-button" [disabled]="!formValid()" type="submit"
+      [tabIndex]="submitTabIndex">
+      Submit report
     </button>
 
     <span id="enter__Submit-info"> </span>
