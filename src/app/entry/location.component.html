@@ -280,7 +280,9 @@
         @if (copiedSystem() === '+Codes') {
         <span class="rt-other-formats__copied">copied</span>
         }</button>
-      @if (settings.showMaidenhead) {
+      <!-- 2026-08-26 (maintainer): no longer gated on settings.showMaidenhead - that
+           per-mission toggle is gone from the Mission page (see mission-location-section's
+           own comment), so this is unconditional now, same as Address/+Codes above it. -->
       <button type="button" class="rt-other-formats__row" tabindex="-1"
         (click)="copyCoordinate('Maidenhead', derivedMaidenhead())"
         [attr.aria-label]="'Copy Maidenhead: ' + derivedMaidenhead()"
@@ -289,7 +291,6 @@
         @if (copiedSystem() === 'Maidenhead') {
         <span class="rt-other-formats__copied">copied</span>
         }</button>
-      }
     </div>
   </div>
 </div>

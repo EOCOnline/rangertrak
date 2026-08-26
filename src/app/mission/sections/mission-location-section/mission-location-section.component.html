@@ -28,11 +28,10 @@
       </mat-form-field>
     </div>
 
-    <!-- Sprint H, meaning corrected E-104 (2026-08-26): these do NOT control which formats
+    <!-- Sprint H, meaning corrected E-104 (2026-08-26): this does NOT control which formats
          are reachable on Entry - every format is always one tap away there, via the
-         switcher above Where. Checking one or more here only picks which format Entry
-         OPENS on for this mission (the first checked one, in the order shown below) - a
-         genuine per-mission convenience (a border team that mostly works in MGRS can have
+         switcher above Where. It only picks which format Entry OPENS on for this mission -
+         a genuine per-mission convenience (a border team that mostly works in MGRS can have
          Entry start there), not an access restriction.
 
          Real regression this correction exists to prevent a repeat of: an earlier version
@@ -44,33 +43,31 @@
          mid-incident. See location.component.ts's `availableSystems()` for the fix and the
          full reasoning - keep that method unconditional if this section is touched again.
 
-         Material-M3 pass: these are `mat-checkbox` now, but deliberately NOT via
-         `[formField]` - Signal Forms' formField directive cannot act as the value accessor
-         for a Material checkbox (angular/components#32072, the same limitation
-         entry.component.html documents for mat-radio-button). Reading `.value()` and
-         writing `.value.set()` on the FieldState directly is the supported way round it
-         and keeps these bound to the same form tree as every other field here. -->
+         Widened to a real mat-radio-group 2026-08-26 (maintainer): this was six independent
+         mat-checkboxes that only behaved like a single choice because preferredSystems()
+         picked just the first checked one - genuinely confusing, since checking a second
+         box visibly did nothing. A real radio group makes "exactly one default" the actual
+         UI, not an implementation detail. Maidenhead drops out here entirely (see
+         mission-location-section.component.ts's own comment) - it was never one of the five
+         switchable systems, just a sixth checkbox riding along in the same grid; its
+         "always show as a derived field" behavior lives in location.component.html now,
+         with no per-mission setting left to control it.
+
+         Material-M3 pass: mat-radio-group is a Material CVA component, so [value]/(change)
+         here, not [formField] - same angular/components#32072 avoidance as everywhere else
+         a Signal Forms field drives one of these. -->
     <fieldset class="mission__coords">
       <legend class="mission__coords-legend">Default coordinate format for Entry</legend>
       <p class="mission__coords-note">Every format is always available on Entry - this only
         picks which one it opens on for this mission.</p>
-      <!-- Written out rather than looped: indexing `FieldTree<MissionType>` by a key held
-           in a loop variable resolves to a union of call signatures TypeScript will not
-           narrow, and the six are a fixed set that changes about once a year. -->
-      <div class="mission__coords-grid">
-        <mat-checkbox [checked]="form.showDD().value()"
-          (change)="form.showDD().value.set($event.checked)">Decimal degrees</mat-checkbox>
-        <mat-checkbox [checked]="form.showDDM().value()"
-          (change)="form.showDDM().value.set($event.checked)">Degrees decimal minutes</mat-checkbox>
-        <mat-checkbox [checked]="form.showDMS().value()"
-          (change)="form.showDMS().value.set($event.checked)">Degrees minutes seconds</mat-checkbox>
-        <mat-checkbox [checked]="form.showMGRS().value()"
-          (change)="form.showMGRS().value.set($event.checked)">MGRS</mat-checkbox>
-        <mat-checkbox [checked]="form.showUTM().value()"
-          (change)="form.showUTM().value.set($event.checked)">UTM</mat-checkbox>
-        <mat-checkbox [checked]="form.showMaidenhead().value()"
-          (change)="form.showMaidenhead().value.set($event.checked)">Maidenhead grid locator</mat-checkbox>
-      </div>
+      <mat-radio-group class="mission__coords-grid" aria-label="Default coordinate format for Entry"
+        [value]="currentDefaultFormat()" (change)="selectDefaultFormat($event.value)">
+        <mat-radio-button value="DD">Decimal degrees</mat-radio-button>
+        <mat-radio-button value="DDM">Degrees decimal minutes</mat-radio-button>
+        <mat-radio-button value="DMS">Degrees minutes seconds</mat-radio-button>
+        <mat-radio-button value="MGRS">MGRS</mat-radio-button>
+        <mat-radio-button value="UTM">UTM</mat-radio-button>
+      </mat-radio-group>
     </fieldset>
 
     <!-- E-48(6): moved here (and to FIELD-GUIDE.md) from the Entry screen, which isn't the
