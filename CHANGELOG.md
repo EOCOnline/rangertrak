@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.60.0](https://github.com/EOCOnline/rangertrak/compare/v0.59.2...v0.60.0) (2026-08-26)
+
+
+### Features
+
+* **entry:** embedded field labels, Source chip style, real fix for submit contrast ([54ee42e](https://github.com/EOCOnline/rangertrak/commit/54ee42e0c4ba91cee59b5524594b0bd29120ddda)), closes [#962f10](https://github.com/EOCOnline/rangertrak/issues/962f10) [#442C2](https://github.com/EOCOnline/rangertrak/issues/442C2)
+
 ### [0.59.2](https://github.com/EOCOnline/rangertrak/compare/v0.59.1...v0.59.2) (2026-08-26)
 
 
