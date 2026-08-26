@@ -223,7 +223,7 @@ describe('RangerService', () => {
 
     it('loads an existing roster from localStorage instead of starting blank', () => {
       const seeded: RangerType[] = [
-        { callsign: 'ZZZ1', fullName: 'Seeded Ranger', phone: '', image: '', rew: '', team: '', role: '', note: '' }
+        { callsign: 'ZZZ1', fullName: 'Seeded Ranger', phone: '', image: '', team: '', role: '', note: '' }
       ];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
 
@@ -377,7 +377,7 @@ describe('RangerService', () => {
 
     it('is true once any ranger is present, however they got there', () => {
       const withOne: RangerType[] = [
-        { callsign: 'REAL1', fullName: 'A Real Person', phone: '', image: '', rew: '', team: '', role: '', note: '' },
+        { callsign: 'REAL1', fullName: 'A Real Person', phone: '', image: '', team: '', role: '', note: '' },
       ];
       expect(RangerService.isRealRosterLoaded(withOne)).toBe(true);
     });

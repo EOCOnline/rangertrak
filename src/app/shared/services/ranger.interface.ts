@@ -53,7 +53,6 @@ export interface RangerType {
   fullName: string
   phone: string
   image: string
-  rew: string   // WA's Registered Emergency Worker number
   team: string
   role: string
   note: string
@@ -64,7 +63,6 @@ export const UnknownRanger: RangerType = {
   fullName: "Unknown Ranger",
   phone: "",
   image: "",
-  rew: "",   // WA's Registered Emergency Worker number
   team: "",
   role: "",
   note: "Unknown Ranger entered. Go to Rangers page & enter new folks there!",

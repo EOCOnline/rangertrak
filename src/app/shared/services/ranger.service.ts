@@ -356,9 +356,11 @@ export class RangerService implements OnInit {
         throw new Error(`Entry ${i + 1} is not a ranger record.`)
       }
       const callsign = String(entry.callsign ?? '').trim()
-      const id = String(entry.id ?? '').trim()
-      const rew = String(entry.rew ?? '').trim()
-      if (!callsign && !id && !rew) {
+      // D-42 phase 8: `rew` is retired as a stored field, but a real roster in hand may
+      // still use that name - fold it into `id` right here rather than carrying it any
+      // further. An explicit `id` wins if the file somehow has both.
+      const id = String(entry.id ?? entry.rew ?? '').trim()
+      if (!callsign && !id) {
         throw new Error(
           `Entry ${i + 1} has no callsign and no id/rew - there is nothing to attribute a field report to.`)
       }
@@ -372,7 +374,6 @@ export class RangerService implements OnInit {
         fullName: String(entry.fullName ?? entry.licensee ?? entry.name ?? ''),
         phone: String(entry.phone ?? ''),
         image: String(entry.image ?? entry.icon ?? ''),
-        rew,
         team: String(entry.team ?? ''),
         role: String(entry.role ?? entry.status ?? ''),
         note: String(entry.note ?? entry.notes ?? ''),
@@ -471,8 +472,10 @@ export class RangerService implements OnInit {
       newRanger = JSON.parse(formData)
     } else {
       newRanger = {
-        callsign: "!A_New_Tactical", fullName: "AAA_New_Name",        // licenseKey: number
-        image: "male.png", rew: "VI-00 ", phone: "206-463-0000", team: "", role: "", note: `Manually added at ${formatDate(Date.now(), 'short', "en-US")}.` //https://angular.io/guide/i18n-common-locale-id
+        // D-42: no id here - the app never mints a credential, only an operator or the
+        // incident's own check-in process supplies one.
+        callsign: "!A_New_Tactical", fullName: "AAA_New_Name",
+        image: "male.png", phone: "206-463-0000", team: "", role: "", note: `Manually added at ${formatDate(Date.now(), 'short', "en-US")}.` //https://angular.io/guide/i18n-common-locale-id
       }
     }
     // ADR D-43: mint the surrogate key at creation rather than relying on the next load's
@@ -629,28 +632,30 @@ export class RangerService implements OnInit {
     this.rangers.push(
 
       // NOTE: The image names are case-sensitive!!
-      { callsign: "!CmdPost", fullName: "ACS-CERT Cmd Post", phone: "206-463-", image: "CmdPost.jpg", rew: "CmdPost", team: "T0", role: "Licensed", note: "-" },
+      // D-42 phase 8: no `rew`/`id` seeded here - these are station callsigns, not checked-in
+      // credentials, and the app never mints one (see AddRanger()'s equivalent note above).
+      { callsign: "!CmdPost", fullName: "ACS-CERT Cmd Post", phone: "206-463-", image: "CmdPost.jpg", team: "T0", role: "Licensed", note: "-" },
 
-      { callsign: "ACS1", fullName: "ACS-CERT Team 1", phone: "206-463-", image: "ham_blue.png", rew: "", team: "T1", role: "Licensed", note: "-" },
-      { callsign: "ACS2", fullName: "ACS-CERT Team 2", phone: "206-463-", image: "ham_red.png", rew: "", team: "T1", role: "Licensed", note: "-" },
-      { callsign: "ACS3", fullName: "ACS-CERT Team 3", phone: "206-463-", image: "ham_yellow.png", rew: "", team: "T1", role: "Licensed", note: "-" },
-      { callsign: "ACS4", fullName: "ACS-CERT Team 4", phone: "206-463-", image: "team_brown.png", rew: "", team: "T1", role: "Licensed", note: "-" },
+      { callsign: "ACS1", fullName: "ACS-CERT Team 1", phone: "206-463-", image: "ham_blue.png", team: "T1", role: "Licensed", note: "-" },
+      { callsign: "ACS2", fullName: "ACS-CERT Team 2", phone: "206-463-", image: "ham_red.png", team: "T1", role: "Licensed", note: "-" },
+      { callsign: "ACS3", fullName: "ACS-CERT Team 3", phone: "206-463-", image: "ham_yellow.png", team: "T1", role: "Licensed", note: "-" },
+      { callsign: "ACS4", fullName: "ACS-CERT Team 4", phone: "206-463-", image: "team_brown.png", team: "T1", role: "Licensed", note: "-" },
 
-      { callsign: "CERT1", fullName: "CERT 1", phone: "206-463-", image: "CERT_red.png", rew: "", team: "CERT1", role: "Licensed", note: "-" },
-      { callsign: "CERT2", fullName: "CERT 2", phone: "206-463-", image: "CERT_green.png", rew: "", team: "CERT2", role: "Licensed", note: "-" },
-      { callsign: "CERT3", fullName: "CERT 3", phone: "206-463-", image: "CERT_yellow.png", rew: "", team: "CERT3", role: "Licensed", note: "-" },
-      { callsign: "CERT4", fullName: "CERT 4", phone: "206-463-", image: "CERT_blue.png", rew: "", team: "CERT4", role: "Licensed", note: "-" },
-      { callsign: "CERT5", fullName: "CERT 5", phone: "206-463-", image: "CERT_brown.png", rew: "", team: "CERT5", role: "Licensed", note: "-" },
-      { callsign: "CERT6", fullName: "CERT 6", phone: "206-463-", image: "CERT_purple.png", rew: "", team: "CERT6", role: "Licensed", note: "-" },
+      { callsign: "CERT1", fullName: "CERT 1", phone: "206-463-", image: "CERT_red.png", team: "CERT1", role: "Licensed", note: "-" },
+      { callsign: "CERT2", fullName: "CERT 2", phone: "206-463-", image: "CERT_green.png", team: "CERT2", role: "Licensed", note: "-" },
+      { callsign: "CERT3", fullName: "CERT 3", phone: "206-463-", image: "CERT_yellow.png", team: "CERT3", role: "Licensed", note: "-" },
+      { callsign: "CERT4", fullName: "CERT 4", phone: "206-463-", image: "CERT_blue.png", team: "CERT4", role: "Licensed", note: "-" },
+      { callsign: "CERT5", fullName: "CERT 5", phone: "206-463-", image: "CERT_brown.png", team: "CERT5", role: "Licensed", note: "-" },
+      { callsign: "CERT6", fullName: "CERT 6", phone: "206-463-", image: "CERT_purple.png", team: "CERT6", role: "Licensed", note: "-" },
 
-      { callsign: "MERT1", fullName: "MERT 1", phone: "206-463-", image: "MERT_red.png", rew: "", team: "MERT1", role: "Licensed", note: "-" },
-      { callsign: "MERT2", fullName: "MERT 2", phone: "206-463-", image: "MERT_green.png", rew: "", team: "MERT2", role: "Licensed", note: "-" },
-      { callsign: "MERT3", fullName: "MERT 3", phone: "206-463-", image: "MERT_yellow.png", rew: "", team: "MERT3", role: "Licensed", note: "-" },
-      { callsign: "MERT4", fullName: "MERT 4", phone: "206-463-", image: "MERT_blue.png", rew: "", team: "MERT4", role: "Licensed", note: "-" },
-      { callsign: "MERT5", fullName: "MERT 5", phone: "206-463-", image: "Yacht_purple.png", rew: "", team: "MERT5", role: "Licensed", note: "-" },
-      { callsign: "MERT6", fullName: "MERT 6", phone: "206-463-", image: "sail.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
+      { callsign: "MERT1", fullName: "MERT 1", phone: "206-463-", image: "MERT_red.png", team: "MERT1", role: "Licensed", note: "-" },
+      { callsign: "MERT2", fullName: "MERT 2", phone: "206-463-", image: "MERT_green.png", team: "MERT2", role: "Licensed", note: "-" },
+      { callsign: "MERT3", fullName: "MERT 3", phone: "206-463-", image: "MERT_yellow.png", team: "MERT3", role: "Licensed", note: "-" },
+      { callsign: "MERT4", fullName: "MERT 4", phone: "206-463-", image: "MERT_blue.png", team: "MERT4", role: "Licensed", note: "-" },
+      { callsign: "MERT5", fullName: "MERT 5", phone: "206-463-", image: "Yacht_purple.png", team: "MERT5", role: "Licensed", note: "-" },
+      { callsign: "MERT6", fullName: "MERT 6", phone: "206-463-", image: "sail.png", team: "MERT6", role: "Licensed", note: "-" },
 
-      { callsign: "Mobile", fullName: "Mobile Unit", phone: "206-463-", image: "Ranger.png", rew: "", team: "MERT6", role: "Licensed", note: "-" },
+      { callsign: "Mobile", fullName: "Mobile Unit", phone: "206-463-", image: "Ranger.png", team: "MERT6", role: "Licensed", note: "-" },
     )
 
 

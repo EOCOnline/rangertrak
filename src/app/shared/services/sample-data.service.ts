@@ -90,22 +90,22 @@ export class SampleDataService {
    */
   public buildSampleRangers(): RangerType[] {
     return [
-      { callsign: '!CmdPost', fullName: 'Exercise Command Post', phone: '206-555-0100', image: 'CmdPost.jpg', rew: 'CmdPost', team: 'Command', role: 'Command', note: 'Net control for the exercise' },
+      { callsign: '!CmdPost', fullName: 'Exercise Command Post', phone: '206-555-0100', image: 'CmdPost.jpg', id: 'CmdPost', team: 'Command', role: 'Command', note: 'Net control for the exercise' },
 
-      { callsign: 'ACS1', fullName: 'Radio Team Alpha', phone: '206-555-0111', image: 'ham_blue.png', rew: 'VI-01', team: 'ACS', role: 'Licensed', note: 'Primary voice relay' },
-      { callsign: 'ACS2', fullName: 'Radio Team Bravo', phone: '206-555-0112', image: 'ham_red.png', rew: 'VI-02', team: 'ACS', role: 'Licensed', note: 'Packet / digital' },
+      { callsign: 'ACS1', fullName: 'Radio Team Alpha', phone: '206-555-0111', image: 'ham_blue.png', id: 'VI-01', team: 'ACS', role: 'Licensed', note: 'Primary voice relay' },
+      { callsign: 'ACS2', fullName: 'Radio Team Bravo', phone: '206-555-0112', image: 'ham_red.png', id: 'VI-02', team: 'ACS', role: 'Licensed', note: 'Packet / digital' },
 
-      { callsign: 'CERT1', fullName: 'CERT Team One', phone: '206-555-0121', image: 'CERT_red.png', rew: 'VI-11', team: 'CERT', role: 'Responder', note: 'North island sweep' },
-      { callsign: 'CERT2', fullName: 'CERT Team Two', phone: '206-555-0122', image: 'CERT_green.png', rew: 'VI-12', team: 'CERT', role: 'Responder', note: 'Town center sweep' },
-      { callsign: 'CERT3', fullName: 'CERT Team Three', phone: '206-555-0123', image: 'CERT_yellow.png', rew: 'VI-13', team: 'CERT', role: 'Responder', note: 'South island sweep' },
+      { callsign: 'CERT1', fullName: 'CERT Team One', phone: '206-555-0121', image: 'CERT_red.png', id: 'VI-11', team: 'CERT', role: 'Responder', note: 'North island sweep' },
+      { callsign: 'CERT2', fullName: 'CERT Team Two', phone: '206-555-0122', image: 'CERT_green.png', id: 'VI-12', team: 'CERT', role: 'Responder', note: 'Town center sweep' },
+      { callsign: 'CERT3', fullName: 'CERT Team Three', phone: '206-555-0123', image: 'CERT_yellow.png', id: 'VI-13', team: 'CERT', role: 'Responder', note: 'South island sweep' },
 
-      { callsign: 'MERT1', fullName: 'Marine Unit One', phone: '206-555-0131', image: 'MERT_blue.png', rew: 'VI-21', team: 'MERT', role: 'Marine', note: 'Quartermaster Harbor' },
-      { callsign: 'MERT2', fullName: 'Marine Unit Two', phone: '206-555-0132', image: 'sail.png', rew: 'VI-22', team: 'MERT', role: 'Marine', note: 'West shore' },
+      { callsign: 'MERT1', fullName: 'Marine Unit One', phone: '206-555-0131', image: 'MERT_blue.png', id: 'VI-21', team: 'MERT', role: 'Marine', note: 'Quartermaster Harbor' },
+      { callsign: 'MERT2', fullName: 'Marine Unit Two', phone: '206-555-0132', image: 'sail.png', id: 'VI-22', team: 'MERT', role: 'Marine', note: 'West shore' },
 
-      { callsign: 'Recon1', fullName: 'Mobile Recon One', phone: '206-555-0141', image: 'Ranger.png', rew: 'VI-31', team: 'Recon', role: 'Mobile', note: 'Roving damage assessment' },
-      { callsign: 'Shelter1', fullName: 'Shelter Manager', phone: '206-555-0151', image: 'helmet_orange.png', rew: 'VI-41', team: 'Logistics', role: 'Support', note: 'High school shelter' },
-      { callsign: 'Medic1', fullName: 'Field Medic One', phone: '206-555-0161', image: 'helmet_red.png', rew: 'VI-51', team: 'Medical', role: 'Medical', note: 'Roving aid' },
-      { callsign: 'Ferry1', fullName: 'Ferry Dock Observer', phone: '206-555-0171', image: 'team_blue.png', rew: 'VI-61', team: 'Recon', role: 'Observer', note: 'North terminal' },
+      { callsign: 'Recon1', fullName: 'Mobile Recon One', phone: '206-555-0141', image: 'Ranger.png', id: 'VI-31', team: 'Recon', role: 'Mobile', note: 'Roving damage assessment' },
+      { callsign: 'Shelter1', fullName: 'Shelter Manager', phone: '206-555-0151', image: 'helmet_orange.png', id: 'VI-41', team: 'Logistics', role: 'Support', note: 'High school shelter' },
+      { callsign: 'Medic1', fullName: 'Field Medic One', phone: '206-555-0161', image: 'helmet_red.png', id: 'VI-51', team: 'Medical', role: 'Medical', note: 'Roving aid' },
+      { callsign: 'Ferry1', fullName: 'Ferry Dock Observer', phone: '206-555-0171', image: 'team_blue.png', id: 'VI-61', team: 'Recon', role: 'Observer', note: 'North terminal' },
     ]
   }
 

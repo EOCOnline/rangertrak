@@ -194,6 +194,15 @@ export type RangerIdAudit = {
  *
  * Source of an id, in priority order: an existing valid `id`, then `rew`. Nothing else.
  *
+ * D-42 phase 8: `RangerType` no longer declares `rew` - `parseRosterJson()` and `AddRanger()`
+ * fold it into `id` themselves before a ranger ever reaches this function. The `(ranger as
+ * any)?.rew` read below stays anyway, ONLY for the v0 (bare-array, pre-`id`-field) migration
+ * step: that path hands this function raw, untyped `JSON.parse()` output straight from
+ * localStorage, which - for anyone updating from a build old enough to predate `id` entirely -
+ * may still be a literal `{rew: "VI-0038", ...}` object with no `id` at all. Dropping this
+ * would silently blank out that person's only recorded credential on their very first load of
+ * a phase-8-or-later build.
+ *
  * Pure and idempotent: returns new ranger objects, never mutates its input, and a second run
  * over its own output changes nothing.
  */
@@ -226,8 +235,9 @@ export function normalizeRangerIds(rangers: readonly RangerType[]): RangerIdAudi
 
     // ---- the credential: canonicalized if present, NEVER invented --------------------
     // An explicit `id` wins; `rew` seeds one where no `id` exists yet (ADR D-42 folds the
-    // WA-specific "REW" column into the generic identifier).
-    const id = normalizeRangerId(ranger?.id) || normalizeRangerId(ranger?.rew)
+    // WA-specific "REW" column into the generic identifier). See this function's own header
+    // comment (D-42 phase 8) for why `.rew` is still read here despite not being on the type.
+    const id = normalizeRangerId(ranger?.id) || normalizeRangerId((ranger as any)?.rew)
 
     if (!id) {
       missing++

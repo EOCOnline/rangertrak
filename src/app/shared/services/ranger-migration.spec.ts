@@ -18,10 +18,16 @@ import {
  */
 describe('ranger-migration (ADR D-42)', () => {
 
-  /** A ranger with just enough shape for these tests. */
-  function ranger(callsign: string, extra: Partial<RangerType> = {}): RangerType {
+  /**
+   * A ranger with just enough shape for these tests. `extra` is deliberately untyped
+   * (rather than `Partial<RangerType>`) so it can still carry a legacy `rew` property -
+   * D-42 phase 8 dropped `rew` from `RangerType` itself, but `normalizeRangerIds()` must
+   * keep reading it off raw, untyped data for the v0 migration step (see that function's
+   * own header comment), and these tests are what pin that behaviour.
+   */
+  function ranger(callsign: string, extra: Record<string, unknown> = {}): RangerType {
     return {
-      callsign, fullName: '', phone: '', image: '', rew: '', team: '', role: '', note: '',
+      callsign, fullName: '', phone: '', image: '', team: '', role: '', note: '',
       ...extra
     } as RangerType;
   }
@@ -95,7 +101,7 @@ describe('ranger-migration (ADR D-42)', () => {
 
     it('preserves an existing uid - it is the join key and must be stable', () => {
       // If a uid changed on load, every report pointing at it would orphan.
-      const result = normalizeRangerIds([ranger('ACS1', { uid: 'stable-uid-1' } as Partial<RangerType>)]);
+      const result = normalizeRangerIds([ranger('ACS1', { uid: 'stable-uid-1' })]);
 
       expect(result.rangers[0].uid).toBe('stable-uid-1');
       expect(result.uidsMinted).toBe(0);
@@ -107,8 +113,8 @@ describe('ranger-migration (ADR D-42)', () => {
       // credential is a real claim about two people that only the operator can adjudicate -
       // see the duplicate-id test below, which deliberately does NOT rewrite anything.
       const result = normalizeRangerIds([
-        ranger('A', { uid: 'same' } as Partial<RangerType>),
-        ranger('B', { uid: 'same' } as Partial<RangerType>),
+        ranger('A', { uid: 'same' }),
+        ranger('B', { uid: 'same' }),
       ]);
 
       expect(result.rangers[0].uid).toBe('same');
@@ -135,7 +141,7 @@ describe('ranger-migration (ADR D-42)', () => {
     });
 
     it('prefers an explicit id over the rew it would otherwise be seeded from', () => {
-      const result = normalizeRangerIds([ranger('ACS1', { id: 'TEW-1003', rew: 'VI-01' } as Partial<RangerType>)]);
+      const result = normalizeRangerIds([ranger('ACS1', { id: 'TEW-1003', rew: 'VI-01' })]);
 
       expect(result.rangers[0].id).toBe('TEW-1003');
     });
