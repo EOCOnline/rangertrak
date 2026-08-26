@@ -2,7 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.56.0](https://github.com/EOCOnline/rangertrak/commit/5ab63b103208f8c58794b7f39275dddf1acc5d29) (2026-08-26)
+## [0.57.0](https://github.com/EOCOnline/rangertrak/commit/PLACEHOLDER) (2026-08-26)
+
+### Features
+
+* **export:** ICS-213 PDF fill service - fills FEMA's own real fillable form (downloaded and verified field-by-field, not a layout drawn from scratch), and an ICS-309 log data shaper that orders field reports chronologically into Time/From/Message rows. First two of four pieces toward a printable 309/213 workflow (E-31/E-41 phase 3); not wired into any UI yet.
+
+### Fixes
+
+* **entry:** the ICS-213 section's fields (Reply requested/213 Message/To) rendered regardless of the "Also generate an ICS-213" checkbox - an unconditional `display: flex` was overriding the browser's native `[hidden]` behavior. Caught live and verified fixed before/after with a real browser, not just read from the code.
+* **settings:** MGRS/UTM coordinate systems are off by default now, so Entry's "Show all coordinate systems" toggle actually reveals something the first time someone tries it, instead of everything already being shown
+* **entry:** moved the evidence/clue-location section into the Where area (it IS a location) instead of after the entire ICS-213 section, recomputing the full keyboard tab-order chain to match; renamed "Message" to "213 Message" and added hover-tooltips clarifying it from Notes (the always-saved communications-log entry vs. a separate addressed message some reports also generate); the ICS-213 section now reads as a clearly bounded box instead of a thin indent
+* **field-reports:** `recipients213` changed from a bare string to a list - a per-mission definable recipient checklist is coming, and a list is the natural fit for it and for future delivery options (email, etc.)
 
 ### Features
 
