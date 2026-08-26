@@ -241,17 +241,49 @@ input[type=number] {
   padding    : 8px 0;
 }
 
+// Raised live, 2026-08-26: "a stronger separator for the 213-only section" - the thin
+// left-border-only treatment (still used for the simpler evidence section below) read as too
+// close to ordinary form flow for something that produces a whole separate outgoing message.
+// A full box (border + rounded corners + a tinted surface) wraps the checkbox AND its details
+// together, so the entire 213 feature reads as one clearly bounded, opt-in section rather than
+// blending into the rest of the "What" group.
 .enter__213 {
-  margin-top: 0.6rem;
+  margin-top: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--rt-line-strong);
+  border-radius: var(--rt-radius);
+  background: var(--rt-surface-2);
 }
 
+// Raised live, 2026-08-26: Notes vs. 213 Message read as synonymous - they aren't. A plain
+// title-attribute tooltip, matching this app's existing idiom (rangers.component.ts's
+// callsignCellRenderer) rather than a new one. tabindex="0" so it's keyboard-reachable, and
+// aria-label carries the same text for screen readers, since a native `title` alone isn't
+// announced or focus-triggered consistently.
+.field-help {
+  display     : inline-block;
+  margin-inline-start: 0.3rem;
+  color       : var(--rt-ink-3);
+  font-size   : 0.85em;
+  cursor      : help;
+  user-select : none;
+}
+
+// Real bug, caught live 2026-08-26 (not a stale screenshot - reproduced with the checkbox
+// genuinely unchecked): an unconditional `display: flex` here overrode the browser's native
+// `[hidden] { display: none }` default, so the fields rendered regardless of the checkbox -
+// Angular's own [hidden] binding was always correct, this class fought it. `.enter__evidence`
+// right below already had the correct pattern (`:not([hidden])`) - matched here instead of
+// inventing a second way to do this.
 .enter__213-details {
-  display      : flex;
-  flex-direction: column;
-  gap          : 0.5rem;
-  margin       : 0.5rem 0 0 1.5rem;
-  padding      : 0.6rem 0.8rem;
-  border-inline-start: 3px solid var(--rt-line-strong);
+  &:not([hidden]) {
+    display      : flex;
+    flex-direction: column;
+    gap          : 0.5rem;
+    margin       : 0.5rem 0 0 1.5rem;
+    padding      : 0.6rem 0.8rem;
+    border-inline-start: 3px solid var(--rt-line-strong);
+  }
 }
 
 .enter__213-field {

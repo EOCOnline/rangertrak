@@ -108,6 +108,26 @@
         <!-- span class="small" id="enter__where-debug">And meanwhile, back in the PARENT: lat:{{locationParent.lat}};
           lng:{{locationParent.lat}};
           addr:{{locationParent.address}}; {{locationParent.derivedFromAddress}}</span -->
+
+        <!-- Raised live, 2026-08-26: moved here from below the whole form - it IS a location,
+             reading it right after the reporter's own position makes more sense than finding
+             it after the entire 213 section. See entry.component.ts's tabindex chain comment
+             for why the tab-order slots moved with it, not just this markup. -->
+        <div class="enter__evidence">
+          <label>
+            <input type="checkbox" [checked]="showEvidenceLocation()"
+              (change)="showEvidenceLocation.set($any($event.target).checked)"
+              [attr.tabindex]="showEvidenceLocationTabIndex" />
+            This report includes evidence/a clue at a different location
+          </label>
+
+          <div [hidden]="!showEvidenceLocation()">
+            <rangertrak-evidence-location [origin]="locationParent" [formGeneration]="formGeneration"
+              [tabIndexStart]="evidenceLocationTabIndexStart"
+              (locationChange)="onEvidenceLocationChange($event)">
+            </rangertrak-evidence-location>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -127,6 +147,15 @@
     <!-- ======================================= -->
     <h2 class="elegant">
       <mat-label>What</mat-label>
+      <!-- Raised live, 2026-08-26: Notes vs. the 213 section's own "213 Message" field read as
+           synonymous - they are not. This is the always-saved communications-log entry (feeds
+           the Reports grid and the ICS-309 log, shared/export/ics309-log.ts); the 213 Message
+           is a separate, addressed message some reports also generate. `title`, matching this
+           app's existing hover-tooltip idiom (e.g. rangers.component.ts's callsignCellRenderer)
+           rather than a new pattern. -->
+      <span class="field-help" tabindex="0" role="img"
+        aria-label="Notes: the general record of this report - always saved here, and what shows on the Reports grid and in the ICS-309 communications log. Not the same as a 213 Message (below) - that's a separate, addressed message only some reports generate."
+        title="The general record of this report - always saved here, and what shows on the Reports grid and in the ICS-309 communications log. Not the same as a 213 Message (below) - that's a separate, addressed message only some reports generate.">ⓘ</span>
     </h2>
     <!-- E-47/E-52: was `input-group bordered` - .bordered's own declaration
          (`border: 2 px solid ...`) was invalid CSS (stray space) and never actually
@@ -208,35 +237,18 @@
             Reply requested
           </label>
           <label class="enter__213-field">
-            Message
+            213 Message
+            <span class="field-help" tabindex="0" role="img"
+              aria-label="213 Message: the text of a separate, addressed ICS-213 message to whoever's listed under To, below - often reworded from your Notes above, not just a copy of them. This is what prints on the actual 213 form."
+              title="The text of a separate, addressed ICS-213 message to whoever's listed under To, below - often reworded from your Notes above, not just a copy of them. This is what prints on the actual 213 form.">ⓘ</span>
             <textarea [formField]="entryForm.message213" rows="3" placeholder="What the 213 should say"
               [attr.tabindex]="message213TabIndex"></textarea>
           </label>
           <label class="enter__213-field">
             To (recipient(s))
-            <input type="text" [formField]="entryForm.recipients213" placeholder="Who this is for"
+            <input type="text" [formField]="entryForm.recipients213" placeholder="Who this is for, comma-separated"
               [attr.tabindex]="recipients213TabIndex" />
           </label>
-        </div>
-      </div>
-
-      <!-- Architecture decision, 2026-08-26: evidence/clue location - where the thing being
-           reported about actually is, distinct from the reporter's own position above.
-           Hidden by default, a checkbox reveals it - same [hidden]-not-@if reasoning as the
-           213 section, so its reserved tab stops stay contiguous while collapsed. -->
-      <div class="enter__evidence">
-        <label>
-          <input type="checkbox" [checked]="showEvidenceLocation()"
-            (change)="showEvidenceLocation.set($any($event.target).checked)"
-            [attr.tabindex]="showEvidenceLocationTabIndex" />
-          This report includes evidence/a clue at a different location
-        </label>
-
-        <div [hidden]="!showEvidenceLocation()">
-          <rangertrak-evidence-location [origin]="locationParent" [formGeneration]="formGeneration"
-            [tabIndexStart]="evidenceLocationTabIndexStart"
-            (locationChange)="onEvidenceLocationChange($event)">
-          </rangertrak-evidence-location>
         </div>
       </div>
     </div>

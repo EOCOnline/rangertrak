@@ -105,7 +105,20 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // own slot count - correct once, instead of five places each hardcoding an offset.
   callsignTabIndex = 1
   locationTabIndexStart = 2
-  dateTabIndex = this.locationTabIndexStart + LocationComponent.TAB_SLOT_COUNT
+  // Raised live, 2026-08-26: evidence/clue location moved into the Where section itself
+  // (entry.component.html) - it IS a location, and reading it right after the reporter's own
+  // position makes more sense than finding it after the whole 213 section, far down the
+  // form. Reordering the chain, not just the HTML, is the point: this app's own
+  // checkEntryTabOrder e2e check asserts tabindexes ascend in DOM order, so a moved element
+  // needs its slot moved too, not left where it was.
+  //
+  // Architecture decision, 2026-08-26 (unchanged since): evidence/clue location is hidden by
+  // default behind a checkbox - same [hidden]-not-@if reasoning as the 213 fields below, so
+  // its 3 reserved slots (EvidenceLocationComponent's own distance/unit/bearing, see its ti()
+  // offsets) don't break tab-order contiguity while collapsed, the common case.
+  showEvidenceLocationTabIndex = this.locationTabIndexStart + LocationComponent.TAB_SLOT_COUNT
+  evidenceLocationTabIndexStart = this.showEvidenceLocationTabIndex + 1
+  dateTabIndex = this.evidenceLocationTabIndexStart + 3
   // 2026-08-22: was `timeTabIndex = this.dateTabIndex + 1` (a single slot) - the time
   // picker's hour/minute/AM-PM now each need their own tab stop (see
   // TimePickerComponent.TIME_TAB_SLOT_COUNT), same reservation pattern as Location's own
@@ -123,13 +136,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   replyRequested213TabIndex = this.generates213TabIndex + 1
   message213TabIndex = this.replyRequested213TabIndex + 1
   recipients213TabIndex = this.message213TabIndex + 1
-  // Architecture decision, 2026-08-26: evidence/clue location, hidden by default behind a
-  // checkbox - same [hidden]-not-@if reasoning as the 213 fields above, so its 3 reserved
-  // slots (EvidenceLocationComponent's own distance/unit/bearing, see its ti() offsets)
-  // don't break tab-order contiguity while collapsed, the common case.
-  showEvidenceLocationTabIndex = this.recipients213TabIndex + 1
-  evidenceLocationTabIndexStart = this.showEvidenceLocationTabIndex + 1
-  resetTabIndex = this.evidenceLocationTabIndexStart + 3
+  resetTabIndex = this.recipients213TabIndex + 1
   submitTabIndex = this.resetTabIndex + 1
 
   // E-41 phase 1: source options for the template's @for - the values themselves are
@@ -528,7 +535,17 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       // bearing is how a scribe retracts "never mind, not a real clue," and a submitted
       // report shouldn't carry a marker its own scribe just told the form to forget.
       evidenceLocation: this.showEvidenceLocation() ? this.evidenceLocation : null,
+      // E-103 (2026-08-26): FieldReportType.recipients213 is a list (a per-mission definable
+      // checkbox roster is coming) - Entry still collects free text (the checkbox UI isn't
+      // built yet), split into that list here, the same "one meaningful data boundary"
+      // reasoning as rangerUid/callsign above.
+      recipients213: this.splitRecipients213(this.entryModel().recipients213),
     }
+  }
+
+  /** Comma-separated free text -> a trimmed, non-empty list. See mergedFormValue()'s note. */
+  private splitRecipients213(raw: string): string[] {
+    return raw.split(',').map(r => r.trim()).filter(r => r.length > 0)
   }
 
   /**

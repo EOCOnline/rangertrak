@@ -72,9 +72,17 @@ export type FieldReportsType = {
  * safe, already-correct answer for a plain `JSON.parse()` (field-report.service.ts has no
  * migration path today, unlike SettingsType) - nothing reads these fields yet, so there is
  * nothing for their absence to break. `message213`/`replyRequested213`/`recipients213` are
- * a best-effort answer to "whatever the 213's initial version requires" - the roadmap's own
- * notes say this was "not confirmed against the actual ICS-213 form fields yet," carried
- * forward here rather than resolved, since this session didn't verify the real form either.
+ * a best-effort answer to "whatever the 213's initial version requires" - now confirmed
+ * against the real official ICS-213 AcroForm (E-31/E-41 phase 3, 2026-08-26 - see
+ * `shared/export/ics213-pdf.ts`).
+ *
+ * `recipients213` changed from `string` to `string[]` the same day (maintainer, E-103
+ * scoping): a per-mission definable checklist of routine recipients (Incident Commander, Ops
+ * Section, EOC, ...) is coming, checkbox-shaped, and a list is the natural fit - a comma-
+ * joined string would only need re-splitting once that lands. **No migration written or
+ * needed** - the maintainer's own call: "This app is not currently in use." Entry still
+ * collects free text today (the checkbox UI is E-103, not yet built); `mergedFormValue()`
+ * splits the typed string into this array at the form/storage boundary.
  */
 export type FieldReportType = {
   // NOTE the two different identifiers below, deliberately named apart:
@@ -111,7 +119,7 @@ export type FieldReportType = {
   generates213?: boolean,
   replyRequested213?: boolean,
   message213?: string,
-  recipients213?: string,
+  recipients213?: string[],
   // Architecture decision, 2026-08-26: resolves the "second coordinate" question the Five
   // Open Questions discussion doc left open (topic 1/6) - where a clue/evidence item
   // actually IS, distinct from the reporting ranger's own position (`location` above).
