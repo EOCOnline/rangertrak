@@ -562,10 +562,18 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    * Roadmap "Offline map area" item, parts (1) and (2): shows each saved area's actual
    * file size next to "Remove saved tiles", and an anticipated MB estimate next to "Save
    * this area for offline use" before the user commits to a download. Both numbers are
-   * appended as plain text next to the plugin's own buttons rather than through an Angular
+   * appended as plain text INSIDE the plugin's own buttons (rather than through an Angular
    * template - `ControlSaveTiles` renders its own DOM outside Angular's view, the same way
    * the rest of this plugin's UI already does, so there is no template-reactivity gap to
-   * close (see Sprint G's own scoping rule for why that matters here).
+   * close - see Sprint G's own scoping rule for why that matters here).
+   *
+   * Raised live, 2026-08-27: these used to be their own full-width rows above/below the
+   * buttons, which is also what made the buttons themselves stretch full-width (block-level
+   * siblings in the same non-flex container). Appending each estimate as a `<span>` inside
+   * its own button's `<a>` (found via the plugin's own stable `savetiles`/`rmtiles` classes -
+   * see node_modules/leaflet.offline's `_createButton`) both integrates the text into the
+   * button as asked and removes the reason the row needed to be full-width at all - see the
+   * width fix on `.savetiles.leaflet-bar a` in the stylesheet.
    *
    * `tiles`' URL template is what `getStorageInfo` keys off, and it never changes after
    * construction, so it's read once and captured rather than re-read per refresh.
@@ -578,24 +586,30 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       this.log.error('wireOfflineAreaInfo(): saveTilesControl has no container', this.id)
       return
     }
+    const saveButton = container.querySelector('a.savetiles')
+    const rmButton = container.querySelector('a.rmtiles')
+    if (!saveButton || !rmButton) {
+      this.log.error('wireOfflineAreaInfo(): savetiles/rmtiles buttons not found in container', this.id)
+      return
+    }
     const urlTemplate = (tiles as any)._url as string
 
-    const savedInfo = this.document.createElement('div')
+    const savedInfo = this.document.createElement('span')
     savedInfo.className = 'offline-area-info offline-area-info--saved'
-    container.appendChild(savedInfo)
+    rmButton.appendChild(savedInfo)
 
-    const estimateInfo = this.document.createElement('div')
+    const estimateInfo = this.document.createElement('span')
     estimateInfo.className = 'offline-area-info offline-area-info--estimate'
-    container.insertBefore(estimateInfo, container.firstChild)
+    saveButton.appendChild(estimateInfo)
 
     this.refreshSavedAreaInfo = () => {
       getStorageInfo(urlTemplate).then((stored) => {
         if (stored.length === 0) {
-          savedInfo.textContent = 'No tiles saved for offline use yet'
+          savedInfo.textContent = '(no tiles saved yet)'
           return
         }
         const bytes = stored.reduce((sum, t) => sum + (t.blob?.size ?? 0), 0)
-        savedInfo.textContent = `Saved: ${stored.length} tiles, ~${formatBytes(bytes)}`
+        savedInfo.textContent = `(${stored.length} tiles, ~${formatBytes(bytes)})`
       }).catch((err) => this.log.error(`refreshSavedAreaInfo(): ${err}`, this.id))
     }
 
@@ -630,7 +644,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         const avgBytes = stored.length > 0
           ? stored.reduce((sum, t) => sum + (t.blob?.size ?? 0), 0) / stored.length
           : FALLBACK_TILE_BYTES
-        estimateInfo.textContent = `Current view: ~${tileCount} tiles, ~${formatBytes(tileCount * avgBytes)}`
+        estimateInfo.textContent = `(~${tileCount} tiles, ~${formatBytes(tileCount * avgBytes)})`
       }).catch((err) => this.log.error(`refreshEstimatedAreaInfo(): ${err}`, this.id))
     }
 

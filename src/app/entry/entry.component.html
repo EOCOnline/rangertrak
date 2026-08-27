@@ -132,7 +132,7 @@
           <mat-checkbox data-testid="evidence-toggle" [checked]="showEvidenceLocation()"
             [tabIndex]="showEvidenceLocationTabIndex"
             (change)="showEvidenceLocation.set($event.checked)">
-            This report includes evidence or a clue at a different location (or Alt+click the map above)
+            This report includes evidence or a clue at a different location (or Alt+click the map)
           </mat-checkbox>
 
           <div [hidden]="!showEvidenceLocation()">

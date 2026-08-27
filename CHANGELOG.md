@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.76.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+
+### Fixes
+
+* **entry:** the evidence-location checkbox's label (long enough with the Alt+click hint appended) could run past its section's own width toward the mini-map beside it instead of wrapping - `mat-checkbox`'s host and internal form-field both shrink-to-fit by default, so a bare checkbox wasn't guaranteed to stay capped at the section's width in every layout it could end up in. Forced to a full-width block with the icon top-aligned instead. Also dropped "above" from the hint text, since the map isn't always positioned above the checkbox.
+* **entry:** typing a street address, +Code, or Maidenhead locator into Where's address field and pressing Enter did nothing - the field only handled the native `change` event, which browsers fire on Enter only as part of implicit form submission, and Entry's Submit button is disabled until the whole report is valid, which suppresses that path entirely. Added an explicit Enter-key handler that runs the lookup directly. This was also why the derived Address/+Code/Maidenhead panel only ever updated from a map click. Renamed "+Codes" to "+Code" in that panel to match the singular value shown.
+* **map:** the "Save this area for offline use"/"Remove saved tiles" buttons on the full map page stretched the full page width (block-level flex items with no width constraint); now shrink-wrapped to their own content. The tile-count/size estimates that used to sit as their own full-width rows above and below the buttons are now appended inside each button's own label instead.
+
 ## [0.75.0](https://github.com/EOCOnline/rangertrak/commit/860a678877fbbfd9d31bb294eba442d8b5746264) (2026-08-27)
 
 ### Features

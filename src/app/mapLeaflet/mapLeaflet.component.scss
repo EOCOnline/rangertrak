@@ -128,7 +128,12 @@
   a {
     display      : flex;
     align-items  : center;
-    width        : auto;
+    // Raised live, 2026-08-27: was `width: auto`, which on a block-level flex item just
+    // means "fill the containing block" - same reason a plain block <div> stretches full
+    // width. `.savetiles.leaflet-bar` above has no width of its own either, so both buttons
+    // ran the full width of the page. `fit-content` shrink-wraps each button (now including
+    // the appended .offline-area-info text below) to its own content instead.
+    width        : fit-content;
     height       : auto;
     min-height   : var(--rt-tap-min);
     padding      : 0 0.75em;
@@ -156,15 +161,14 @@
   margin-top: 0.5em;
 }
 
-// Roadmap "Offline map area" item: saved/estimated size lines injected next to the
-// buttons above by LmapComponent.wireOfflineAreaInfo(), plain text nodes appended to the
-// plugin's own (non-Angular) control container.
+// Roadmap "Offline map area" item: saved/estimated size text, appended by
+// LmapComponent.wireOfflineAreaInfo() as a <span> INSIDE each button's own <a> (a.savetiles/
+// a.rmtiles) rather than as a separate full-width row - see that method's own comment for
+// why. Inherits the button's own font/background; just dims the size text a shade and
+// spaces it off the button's label.
 :host ::ng-deep .savetiles.leaflet-bar .offline-area-info {
-  padding    : 0.35em 0.75em;
-  font-size  : 0.75rem;
+  margin-left: 0.4em;
   color      : var(--rt-ink-2);
-  background : var(--rt-surface);
-  white-space: nowrap;
 }
 
 // https://www.w3.org/TR/CSS21/ui.html#propdef-cursor

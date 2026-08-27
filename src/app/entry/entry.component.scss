@@ -365,6 +365,24 @@ mat-chip-option.enter__source-selected {
 .enter__evidence {
   margin-top: 0.6rem;
 
+  // Raised live, 2026-08-27: the checkbox's own label is long enough (with the Alt+click
+  // hint appended) to run past .enter__section's width and toward the mini-map beside it.
+  // mat-checkbox's host is `display: inline-block` and its internal `.mat-internal-form-field`
+  // is `display: inline-flex` - both shrink-to-fit by default, so a bare mat-checkbox
+  // dropped into a plain block div isn't guaranteed to be capped at the section's own width
+  // in every layout this can end up in. Forcing it to a full-width block, with the icon
+  // top-aligned rather than centered, makes the label wrap inside this section like
+  // ordinary text instead of extending past it.
+  mat-checkbox {
+    display: block;
+    width: 100%;
+
+    ::ng-deep .mat-internal-form-field {
+      align-items: flex-start;
+      white-space: normal;
+    }
+  }
+
   // [hidden] is a boolean attribute Angular removes entirely when false (never renders
   // hidden="false") - :not([hidden]) is the correct way to target "visible right now".
   > div:not([hidden]) {

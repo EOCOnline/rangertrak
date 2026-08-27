@@ -219,7 +219,8 @@
       <mat-label>Street address, +Code, or Maidenhead grid locator</mat-label>
       <input matInput #address type="text" id="enter__Where-Address"
         title="Optionally enter www.Plus.Codes, a Maidenhead grid locator (e.g. CN87ux), or street address for geocoding."
-        [formField]="addressForm" data-lpignore="true" (change)="onAddressChg()" [attr.tabindex]="ti(25)" />
+        [formField]="addressForm" data-lpignore="true" (change)="onAddressChg()"
+        (keydown.enter)="$event.preventDefault(); onAddressChg()" [attr.tabindex]="ti(25)" />
     </mat-form-field>
   </form>
 
@@ -282,11 +283,11 @@
         <span class="rt-other-formats__copied">copied</span>
         }</button>
       <button type="button" class="rt-other-formats__row" tabindex="-1"
-        (click)="copyCoordinate('+Codes', derivedPCodes())"
-        [attr.aria-label]="'Copy +Codes: ' + derivedPCodes()"
-        title="Click to copy"><span class="rt-other-formats__system">+Codes:</span>
+        (click)="copyCoordinate('+Code', derivedPCodes())"
+        [attr.aria-label]="'Copy +Code: ' + derivedPCodes()"
+        title="Click to copy"><span class="rt-other-formats__system">+Code:</span>
         <span class="rt-other-formats__value" id="pCodes">{{ derivedPCodes() }}</span>
-        @if (copiedSystem() === '+Codes') {
+        @if (copiedSystem() === '+Code') {
         <span class="rt-other-formats__copied">copied</span>
         }</button>
       <!-- 2026-08-26 (maintainer): no longer gated on settings.showMaidenhead - that
