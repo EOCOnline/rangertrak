@@ -2,6 +2,39 @@
   margin: 0.5rem 0 1rem;
 }
 
+// E-item 13 (2026-08-27): hidden on screen - the app already shows the mission name in the
+// header/status pill, and a live clock, so repeating both here would just be noise while
+// looking at a monitor. It earns its place only on paper, which has neither.
+.map-print-header {
+  display: none;
+}
+
+@media print {
+  .map-print-header {
+    display      : block;
+    margin-bottom: 0.5rem;
+
+    h1 {
+      margin   : 0;
+      font-size: 1.4rem;
+    }
+
+    p {
+      margin: 0.2rem 0 0;
+      color : #444; // a fixed grey, not an --rt-ink token: light-dark() has no meaning on
+                     // paper, and print output should stay legible regardless of which
+                     // scheme happened to be active on screen when this was printed.
+    }
+  }
+
+  // Controls that only make sense interactively - flipping engines or filling the
+  // browser viewport - printed as inert chrome otherwise.
+  .map-engine-switch,
+  .fullscreen-toggle {
+    display: none;
+  }
+}
+
 // E-78: plain text button matching this app's own UI language (same border/radius/token
 // approach mapLeaflet.component.scss uses for the offline "save this area" control), not
 // borrowed browser/plugin chrome.

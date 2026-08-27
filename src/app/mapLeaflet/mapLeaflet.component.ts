@@ -404,6 +404,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     }
     L.control.layers(baseLayers, overlayLayers, { position: 'topright' }).addTo(this.lMap)
 
+    // Raised live, 2026-08-27, comparing against a real IMT wildfire ops map: a length/
+    // scale legend, same as that map's own "0 ... 2 Miles" bar. Leaflet's own built-in
+    // control - both units shown (its own default), a scribe can read whichever they
+    // think in, rather than this app guessing which one that is.
+    L.control.scale({ position: 'bottomleft' }).addTo(this.lMap)
+
     // Maintainer, 2026-08-26: zoom out to show the full saved-tiles extent when the
     // checkbox is switched ON, so a scribe checking "what's actually saved" (the whole
     // point of this overlay, per its own scoping note above) doesn't land on an empty
@@ -510,27 +516,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
 
 
-  // ------------ Legend ---------------
-  // create legend
-
-  //let scale = new L.control
-  //scale.scale().addTo(this.lMap)
-
-
-  /* from  https://tomik23.github.io/leaflet-examples/#28.adding-map-description
-  const legend = L.control({ position: "bottomleft" });
-
-  legend.onAdd = function () {
-    let div = L.DomUtil.create("div", "description");
-    L.DomEvent.disableClickPropagation(div);
-    const text =
-      "<b>Lorem Ipsum</b> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book...";
-    div.insertAdjacentHTML("beforeend", text);
-    return div;
-  };
-
-  legend.addTo(map);
-  */
+  // The real scale control this was scoping now lives right after the layers control
+  // above, alongside the E-85 base-layer switcher it was always meant to sit next to.
 
   // ----------------------- Scale
 

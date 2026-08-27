@@ -1,4 +1,13 @@
 <rangertrak-page [title]="title" [description]="pageDescr">
+  <!-- E-item 13 (2026-08-27): screen-only hidden (see map-page.component.scss's own
+       @media print block), shown only in a printed copy - a map on paper has no page
+       title, URL bar, or app chrome to say what it is or when it was current, unlike one
+       on screen. -->
+  <div class="map-print-header">
+    <h1>{{ (mission$ | async)?.mission || 'RangerTrak' }}</h1>
+    <p>Printed {{ printedAt() | date:'medium' }}</p>
+  </div>
+
   <div class="map-fullscreen-area" #fullscreenArea>
     <button type="button" class="fullscreen-toggle" (click)="toggleFullscreen()">
       {{ isFullscreen() ? 'Exit full screen' : 'Full screen' }}

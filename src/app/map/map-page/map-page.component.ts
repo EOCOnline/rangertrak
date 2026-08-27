@@ -1,10 +1,11 @@
-import { NgComponentOutlet } from '@angular/common'
+import { AsyncPipe, DatePipe, NgComponentOutlet } from '@angular/common'
 import {
-  ChangeDetectionStrategy, Component, ElementRef, HostListener, OnInit, Type, ViewChild, signal
+  ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, Type, ViewChild, signal
 } from '@angular/core'
 
 import { LmapComponent } from '../../mapLeaflet/mapLeaflet.component'
 import { PageComponent } from '../../shared/page/page.component'
+import { MissionService } from '../../shared/services'
 import { MapEngineService } from '../map-engine.service'
 
 /**
@@ -23,12 +24,12 @@ import { MapEngineService } from '../map-engine.service'
 @Component({
   selector: 'rangertrak-map-page',
   standalone: true,
-  imports: [PageComponent, LmapComponent, NgComponentOutlet],
+  imports: [PageComponent, LmapComponent, NgComponentOutlet, AsyncPipe, DatePipe],
   templateUrl: './map-page.component.html',
   styleUrls: ['./map-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
-export class MapPageComponent implements OnInit {
+export class MapPageComponent implements OnInit, OnDestroy {
   // D-31: "the primary takes the plain name" - now the only nav item, so no scribe-facing
   // reason to distinguish it from either engine by name.
   title = 'Map'
@@ -54,7 +55,19 @@ export class MapPageComponent implements OnInit {
 
   @ViewChild('fullscreenArea') private fullscreenArea!: ElementRef<HTMLElement>
 
-  constructor(private engineService: MapEngineService) { }
+  // E-item 13 (2026-08-27), raised comparing against a real IMT wildfire ops map: a
+  // print-only header showing the mission name and a timestamp, same as that map's own
+  // title block ("Sinlahekin / WA-NES-001791 / 2026/08/01"). mission$ over a signal here
+  // since this is read once, in the template, purely for display - no need for the extra
+  // machinery a subscribe()/signal pair would add for a value nothing else in this
+  // component reacts to. printedAt is captured on the browser's own `beforeprint` event,
+  // not page-load time, so a map printed an hour after it was opened shows when it was
+  // actually printed, not when the route was first visited.
+  readonly mission$ = this.missionService.getMissionObserver()
+  printedAt = signal(new Date())
+  private readonly onBeforePrint = () => this.printedAt.set(new Date())
+
+  constructor(private engineService: MapEngineService, private missionService: MissionService) { }
 
   get engine() {
     return this.engineService.engine
@@ -73,6 +86,11 @@ export class MapPageComponent implements OnInit {
     if (this.engine() === 'maplibre') {
       this.loadMaplibre()
     }
+    window.addEventListener('beforeprint', this.onBeforePrint)
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('beforeprint', this.onBeforePrint)
   }
 
   private async loadMaplibre(): Promise<void> {
