@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.72.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+## [0.72.0](https://github.com/EOCOnline/rangertrak/commit/1412f30c2afc725e3e33fa79ac23ebeaf73bebd4) (2026-08-27)
 
 ### Fixes
 
