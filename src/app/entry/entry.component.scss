@@ -522,6 +522,14 @@ mat-chip-option.enter__source-selected {
   // line-heights of dead space. A small margin does the same "give it room to breathe" job
   // without the excess.
   margin-top: 0.5rem;
+
+  // Raised live, 2026-08-27: "super wide, on a wide screen anyway" - a 4-row textarea
+  // spanning the form's full width (up to 1000px, .enter__form's own cap) reads as
+  // disproportionate. Capped on laptop-up only; tablet/phone keep the full-width 100%
+  // above, where a narrower cap would waste the screen's own limited width instead.
+  @include bp.laptop-up {
+    max-width: 600px;
+  }
 }
 
 // .enter__Submit-button is no longer a styling hook for the ENABLED state - matButton="filled"

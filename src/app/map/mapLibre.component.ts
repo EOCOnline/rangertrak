@@ -78,35 +78,6 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
     registerPmtilesProtocol()
 
-    // Mission Readiness's "bundled MapLibre asset warmed" signal (mission-readiness.service.ts)
-    // does a plain, read-only `caches.match(DEFAULT_PMTILES_URL)` - but this map's own tile
-    // source (pmtiles-js, via registerPmtilesProtocol above) only ever fetches that file with
-    // Range headers, which Angular's service worker deliberately never intercepts or caches
-    // (its documented limitation: caching a partial-content response under a full-file URL
-    // would wrongly serve a byte range to a later full-file request). Confirmed live,
-    // 2026-08-27: no code path ever put this URL in any cache, so that readiness signal could
-    // never turn green no matter how many times a scribe opened this page. One plain,
-    // non-Range fetch here - cached under this app's own name, not ngsw's internal one - is
-    // enough: the readiness check's `caches.match()` searches every cache in this origin, so
-    // the two never needed to share one, only the URL key.
-    //
-    // `cache: 'no-store'` added 2026-08-27 as a real-but-unconfirmed suspect, not a verified
-    // fix: a live report found the basemap rendering blank (hillshade - a separate, external
-    // source - unaffected), matching this session's own `checkMapEngineSwitch` e2e failure
-    // ("MapLibre error (source \"basemap\"): Server returned no content-length header...").
-    // Theory: this plain fetch of the SAME URL pmtiles-js Range-fetches could let the
-    // browser's own HTTP cache learn about DEFAULT_PMTILES_URL, and a later Range request get
-    // serviced against that cached full-file entry instead of the network, producing a
-    // synthetic response missing Content-Length. Tested by rebuilding and re-running the e2e
-    // check with this change alone - the exact same error still reproduced, byte for byte, so
-    // this theory is NOT confirmed and the bug is NOT fixed. Left in as a real improvement on
-    // its own merits (this fetch has no reason to touch the browser's ambient HTTP cache
-    // either way), but whoever picks this up next should treat the actual cause as still
-    // unknown rather than trust this comment's own theory.
-    fetch(DEFAULT_PMTILES_URL, { cache: 'no-store' })
-      .then(res => res.ok ? caches.open('rangertrak-pmtiles-warm').then(c => c.put(DEFAULT_PMTILES_URL, res)) : undefined)
-      .catch(err => this.log.warn(`Failed to warm bundled PMTiles cache entry: ${err}`, 'MapLibreComponent'))
-
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => { this.settings = newMission },
       error: (e) => this.log.error('MapLibreComponent mission subscription error: ' + e, 'MapLibreComponent')
@@ -150,6 +121,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addReportsSource()
       this.refreshMarkers()
       this.fitToBounds()
+      this.warmBundledPmtilesCache()
     })
 
     this.map.on('zoomend', () => { this.zoomDisplay.set(Math.round(this.map.getZoom())) })
@@ -196,6 +168,45 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private clamp(num: number, min: number, max: number): number {
     return Math.min(Math.max(num, min), max)
+  }
+
+  /**
+   * Mission Readiness's "bundled MapLibre asset warmed" signal (mission-readiness.service.ts)
+   * does a plain, read-only `caches.match(DEFAULT_PMTILES_URL)` - but this map's own tile
+   * source (pmtiles-js, via registerPmtilesProtocol) only ever fetches that file with Range
+   * headers, which Angular's service worker deliberately never intercepts or caches (its
+   * documented limitation: caching a partial-content response under a full-file URL would
+   * wrongly serve a byte range to a later full-file request). One plain, non-Range fetch
+   * here - cached under this app's own name, not ngsw's internal one - is enough: the
+   * readiness check's `caches.match()` searches every cache in this origin, so the two never
+   * needed to share one, only the URL key.
+   *
+   * ROOT-CAUSED 2026-08-27, moved out of the constructor to here (called from `'load'`, so
+   * it only runs after the map's own critical basemap fetches have already resolved): a live
+   * report found the basemap rendering blank - `pmtiles-js`'s Range-fetch of this same URL
+   * was getting back a plain 200 response with the FULL file's Content-Length instead of a
+   * 206 partial one, which its own `FetchSource.getBytes()` treats as fatal ("Server
+   * returned no content-length header or content-length exceeding request"). Confirmed via
+   * `tools/serve-dist.js`'s own Range logic being correct in isolation (206 + proper
+   * Content-Range/Content-Length when `req.headers.range` is present) - so the request that
+   * arrived at the server without triggering that branch must have lost its Range header,
+   * which points at browser-level request coalescing: this plain fetch and pmtiles-js's own
+   * Range fetch, both firing within milliseconds of each other at the *same URL* from the
+   * constructor and `ngAfterViewInit()` respectively, are exactly the shape of request a
+   * browser may de-duplicate/merge, handing the Range caller back whatever the plain request
+   * received. Sequencing this to run only after `'load'` (i.e., after the basemap's own
+   * fetches are done, not racing them) removes that window entirely for a fresh mount.
+   *
+   * `cache: 'no-store'` kept as defense in depth for a *repeat* mount (navigate away from
+   * `/map` and back, or flip engines twice): without it, this fetch's own response could sit
+   * in the browser's ambient HTTP cache and be there to interfere with a LATER instance's
+   * pmtiles-js Range fetch, even though this instance's own race is already closed by the
+   * sequencing above.
+   */
+  private warmBundledPmtilesCache(): void {
+    fetch(DEFAULT_PMTILES_URL, { cache: 'no-store' })
+      .then(res => res.ok ? caches.open('rangertrak-pmtiles-warm').then(c => c.put(DEFAULT_PMTILES_URL, res)) : undefined)
+      .catch(err => this.log.warn(`Failed to warm bundled PMTiles cache entry: ${err}`, 'MapLibreComponent'))
   }
 
   /**

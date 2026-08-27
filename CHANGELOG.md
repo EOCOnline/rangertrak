@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.73.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+
+### Fixes
+
+* **map:** the MapLibre basemap rendering blank (water/roads/buildings/landuse missing, only field-report markers visible - hillshade, a separate external source, was unaffected). Root cause: the Mission Readiness cache-warming fetch added in `0.68.0` did a plain `fetch(DEFAULT_PMTILES_URL)` from `MapLibreComponent`'s constructor, racing `pmtiles-js`'s own Range-based fetch of that same URL from `ngAfterViewInit()` moments later - both firing within milliseconds of each other let the browser coalesce them, handing the Range-requesting caller a full 200 response instead of the 206 partial one it needed (confirmed via `tools/serve-dist.js`'s own Range logic being correct in isolation). Moved the warming fetch to run only after the map's `'load'` event, once its own basemap fetches have already resolved, closing the race entirely; verified via `tools/e2e.js --full`'s `checkMapEngineSwitch`, which reproduced this exact error reliably before the fix and is clean after it, not just `ng build`.
+* **entry:** Notes for radio log textarea capped to 600px on laptop-up screens - unconstrained, it spanned the full ~1000px form width despite being only 4 rows tall.
+
 ## [0.72.0](https://github.com/EOCOnline/rangertrak/commit/1412f30c2afc725e3e33fa79ac23ebeaf73bebd4) (2026-08-27)
 
 ### Fixes
