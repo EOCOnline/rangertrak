@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.68.0](https://github.com/EOCOnline/rangertrak/compare/v0.67.0...v0.68.0) (2026-08-27)
+
+
+### Bug Fixes
+
+* **entry:** clean up derived-coordinate/213 text and default recipients ([d704fcc](https://github.com/EOCOnline/rangertrak/commit/d704fcc8d6dbab9b9e127a0376d2ac0d94ed8f1b))
+* **map:** the bundled MapLibre readiness signal could never turn green ([97daf71](https://github.com/EOCOnline/rangertrak/commit/97daf715e5e017284a3076f2207a2131cf073155))
+
 ## [0.67.0](https://github.com/EOCOnline/rangertrak/compare/v0.66.0...v0.67.0) (2026-08-27)
 
 
