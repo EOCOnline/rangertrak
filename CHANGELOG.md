@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.70.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+## [0.70.0](https://github.com/EOCOnline/rangertrak/commit/7695624f069cfc2b5c04a290f400d446b64c6f4a) (2026-08-27)
 
 Material-M3 completeness audit: the redesign had been assumed complete since `0.58.0`/`0.59.0`,
 but this was never actually re-verified against the code. It wasn't - three components had
