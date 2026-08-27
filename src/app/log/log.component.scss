@@ -4,8 +4,8 @@
   font-size       : 0.75em;
   line-height     : 1.45;
   padding         : 4px 6px;
-  background-color: rgb(234, 244, 177);
-  border          : 1px solid #030;
+  background-color: var(--rt-surface-2);
+  border          : 1px solid var(--rt-line-strong);
   border-radius   : 4px;
   overflow        : auto;
 }
@@ -25,36 +25,36 @@
 .log-line .tiny {
   font-family: monospace;
   font-size  : 0.85em;
-  color      : #6a6a6a;
+  color      : var(--rt-ink-3);
   margin-right: 0.25em;
 }
 
 .log-empty {
   padding   : 1em;
-  color     : #777;
+  color     : var(--rt-ink-2);
   font-style: italic;
 }
 
 .excessive {
-  color: #8a8a8a;
+  color: var(--rt-ink-3);
 }
 
 .verbose {
-  color: #545454;
+  color: var(--rt-ink-2);
 }
 
 .info {
-  color: #14561f;
+  color: var(--rt-readiness-green);
 }
 
 .warn {
-  color           : #7a4a00;
-  background-color: rgba(255, 165, 0, 0.18);
+  color           : var(--rt-notice-ink);
+  background-color: var(--rt-notice);
 }
 
 .error {
-  color           : #8a1010;
-  background-color: rgba(255, 0, 0, 0.12);
+  color           : var(--rt-readiness-red);
+  background-color: color-mix(in srgb, var(--rt-readiness-red) 12%, transparent);
   font-weight     : 600;
 }
 
@@ -68,16 +68,24 @@ h3 {
 
 .log-count {
   font-size: 0.85em;
-  color    : #555;
+  color    : var(--rt-ink-2);
   margin   : 0.75em 0;
 }
 
 .log-warning {
   font-size    : 0.85em;
-  color        : #8a6100;
-  background   : #fff8e1;
-  border-left  : 4px solid #d9a300;
+  color        : var(--rt-notice-ink);
+  background   : var(--rt-notice);
+  border-left  : 4px solid var(--rt-notice-line);
   border-radius: 3px;
   padding      : .5em .75em;
   margin       : 1em 0 0 0;
+}
+
+// Same recipe as .reports__danger-button / .mission__danger-button - the warn palette on
+// an outlined matButton, so Clear Log reads as destructive rather than an ordinary action.
+.log__danger-button {
+  --mat-button-outlined-label-text-color: var(--rt-readiness-red);
+  --mat-button-outlined-outline-color   : var(--rt-readiness-red);
+  color                                 : var(--rt-readiness-red);
 }

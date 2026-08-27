@@ -2,6 +2,7 @@ import { AsyncPipe, DatePipe, NgComponentOutlet } from '@angular/common'
 import {
   ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, Type, ViewChild, signal
 } from '@angular/core'
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 import { LmapComponent } from '../../mapLeaflet/mapLeaflet.component'
 import { PageComponent } from '../../shared/page/page.component'
@@ -24,7 +25,7 @@ import { MapEngineService } from '../map-engine.service'
 @Component({
   selector: 'rangertrak-map-page',
   standalone: true,
-  imports: [PageComponent, LmapComponent, NgComponentOutlet, AsyncPipe, DatePipe],
+  imports: [PageComponent, LmapComponent, NgComponentOutlet, AsyncPipe, DatePipe, MatSlideToggleModule],
   templateUrl: './map-page.component.html',
   styleUrls: ['./map-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -101,8 +102,8 @@ export class MapPageComponent implements OnInit, OnDestroy {
     this.maplibreComponentType.set(MapLibreComponent)
   }
 
-  async onEngineSwitchChanged(event: Event): Promise<void> {
-    const useMaplibre = (event.target as HTMLInputElement).checked
+  async onEngineSwitchChanged(event: MatSlideToggleChange): Promise<void> {
+    const useMaplibre = event.checked
 
     if (useMaplibre) {
       await this.loadMaplibre()

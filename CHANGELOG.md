@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.70.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+
+Material-M3 completeness audit: the redesign had been assumed complete since `0.58.0`/`0.59.0`,
+but this was never actually re-verified against the code. It wasn't - three components had
+non-Material markup left over, plus three straggler hardcoded colours the token layer was
+supposed to have replaced everywhere by now.
+
+### Fixes
+
+* **feedback:** the in-app feedback form (Help page) was still entirely pre-M3 - a stale `.eButton`/plain `<textarea>`/`<input>`/`<label>` combination. `entry.component.scss`'s own comment from the `0.58.0` pass claimed all four copies of this rule (entry, mission, feedback, mission-advanced-options) were removed - three were, this one was missed and its markup never updated to match. Now `matButton`/`mat-form-field`/`matInput`, same as the other three.
+* **log:** the "Save Log File" and "Clear Log" buttons were bare, unstyled native `<button>` elements - not even the `.eButton` class, no class at all. Now `matButton="outlined"`, with Clear Log using the same warn-palette treatment as Field Reports' and Mission's own danger buttons. The whole severity-colour palette (`.excessive`/`.verbose`/`.info`/`.warn`/`.error`) and the log panel's own background/border were hardcoded hex, never tokenized even at Sprint A - now resolve through `--rt-ink-*`/`--rt-readiness-*`/`--rt-notice-*`, so the Log page finally responds to light/dark and skin switching like every other page.
+* **entry,field-reports:** three straggler hardcoded hex colours the token layer should have replaced - `entry.component.scss`'s error-state border/text (`#b3261e` → `--rt-readiness-red`, an exact match already used elsewhere) and Field Reports' `.cell-fail`/`.cell-pass` (`#f44336`/`#4caf50` → `--rt-readiness-red`/`--rt-readiness-green`).
+* **map,mapLeaflet:** the map-engine switch, the terrain-hillshade toggle, and both engines' "All ({{n}}) / just those selected" control were raw `<input type="checkbox">` styled by hand - inconsistent with Entry's own coordinate-system toggle, already standardized to `<mat-slide-toggle>` back on 2026-08-22. All four converted; `tools/e2e.js`'s map-engine-switch checks updated from mutating a native checkbox's `.checked` property to clicking the toggle's underlying button and reading `aria-checked` (confirmed against a real `--full` run before and after, not just `ng build`).
+
+### Also this session (documentation only, no code)
+
+* Corrected a research error from earlier the same session: a claim that the Guide drawer rollout never extended past Entry was wrong - the design is route-driven and centralized in the shared header, and `guide-content.ts` already has full content for all five main routes. See `Private Roadmap.md`'s START HERE section and its own struck-through backlog row for the full correction.
+* Brought `Private Roadmap.md`'s START HERE section current from `0.53.0` (16 releases stale) through `0.69.0`, and reconciled this document against the GitHub issue tracker's own current state (23 issues closed by the maintainer 2026-08-26, 11 remain open, all already tracked here).
+* Confirmed, via `git stash` + a clean `--full` e2e run on unmodified `main`, that five e2e failures are pre-existing and unrelated to this batch: an Entry-page phone-width overflow (`.enter__form` 408px / document 425px against a 390px device - not yet root-caused, `.mapLeaflet-container`'s recent explicit `width: min(35vw, 500px)` is the leading suspect but unconfirmed), and a MapLibre PMTiles console error on the engine-switch round trip ("Server returned no content-length header"). Neither blocks this push; both are recorded as new Path-to-0.99.0-alpha rows.
+
 ## [0.69.0](https://github.com/EOCOnline/rangertrak/compare/v0.68.0...v0.69.0) (2026-08-27)
 
 

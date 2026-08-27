@@ -96,11 +96,11 @@
 .cell-fail {
   text-align      : center;
   font-weight     : bold;
-  background-color: #f44336;
+  background-color: var(--rt-readiness-red);
 }
 
 .cell-pass {
   text-align      : center;
   font-weight     : bold;
-  background-color: #4caf50;
+  background-color: var(--rt-readiness-green);
 }

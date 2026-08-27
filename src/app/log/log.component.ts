@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatCardModule } from '@angular/material/card'
+import { MatButtonModule } from '@angular/material/button'
 
 import { PageComponent } from '../shared/page/page.component'
 import { Utility } from '../shared'
@@ -33,7 +34,7 @@ import { LogLevel, LogService, LogType } from '../shared/services/'
 @Component({
   selector: 'rangertrak-log',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCheckboxModule, MatCardModule, PageComponent],
+  imports: [CommonModule, FormsModule, MatCheckboxModule, MatCardModule, MatButtonModule, PageComponent],
   templateUrl: './log.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./log.component.scss']

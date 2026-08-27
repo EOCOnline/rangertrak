@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 import { MapPageComponent } from './map-page.component';
 import { MapLibreComponent } from '../mapLibre.component';
@@ -51,7 +52,7 @@ describe('MapPageComponent', () => {
   it('dynamically imports and mounts MapLibre only when the switch is flipped', async () => {
     expect(component.maplibreComponentType()).toBeNull();
 
-    const fakeEvent = { target: { checked: true } } as unknown as Event;
+    const fakeEvent = { checked: true } as MatSlideToggleChange;
     await component.onEngineSwitchChanged(fakeEvent);
     fixture.detectChanges();
 
@@ -65,7 +66,7 @@ describe('MapPageComponent', () => {
   });
 
   it('flipping back to Leaflet unmounts MapLibre and remounts Leaflet', async () => {
-    const toMaplibre = { target: { checked: true } } as unknown as Event;
+    const toMaplibre = { checked: true } as MatSlideToggleChange;
     await component.onEngineSwitchChanged(toMaplibre);
     fixture.detectChanges();
     // Let Leaflet's own zoom-in animation settle before the next mount/destroy cycle -
@@ -73,7 +74,7 @@ describe('MapPageComponent', () => {
     // Leaflet-internal animation timer and throw asynchronously in afterAll.
     await new Promise(resolve => setTimeout(resolve, 300));
 
-    const toLeaflet = { target: { checked: false } } as unknown as Event;
+    const toLeaflet = { checked: false } as MatSlideToggleChange;
     await component.onEngineSwitchChanged(toLeaflet);
     fixture.detectChanges();
 

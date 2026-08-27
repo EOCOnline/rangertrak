@@ -15,17 +15,15 @@
 <div #overviewContainer id="pmtiles-overview"></div>
 <br />
 
-<label for="selectedFieldReportsPmtiles">Field reports to show: All ({{numAllRows()}})</label>
-<input id="selectedFieldReportsPmtiles" type="checkbox" (change)="onSwitchSelectedFieldReports()" />
-<label for="selectedFieldReportsPmtiles">Just those ({{numSelectedRows()}}) selected in the Field Report
-  panel</label>
+Field reports to show: All ({{numAllRows()}})
+<mat-slide-toggle (change)="onSwitchSelectedFieldReports()">
+  Just those ({{numSelectedRows()}}) selected in the Field Report panel
+</mat-slide-toggle>
 
 <div class="map-hillshade-toggle">
-  <label for="pmtilesHillshadeToggle">
-    <input id="pmtilesHillshadeToggle" type="checkbox" [checked]="hillshadeVisible()"
-      (change)="onToggleHillshade($event)" />
+  <mat-slide-toggle [checked]="hillshadeVisible()" (change)="onToggleHillshade($event)">
     Show terrain relief (hillshade)
-  </label>
+  </mat-slide-toggle>
 </div>
 
 <ng-container *ngTemplateOutlet="engineSwitchTemplate"></ng-container>

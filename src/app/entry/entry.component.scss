@@ -99,8 +99,8 @@ $filledColor: var(--rt-surface-2);
 }
 
 .minimap-placeholder--error {
-  border-color: #b3261e;
-  color       : #b3261e;
+  border-color: var(--rt-readiness-red);
+  color       : var(--rt-readiness-red);
   font-style  : normal;
 }
 

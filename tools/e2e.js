@@ -261,9 +261,7 @@ async function checkMapEngineSwitch() {
   check('E-85 phase 2: at least one alternate base layer is offered alongside OSM', before.baseLayerCount >= 2, true)
 
   await evaluate(`(() => {
-    const cb = document.getElementById('mapEngineSwitch')
-    cb.checked = true
-    cb.dispatchEvent(new Event('change'))
+    document.querySelector('[data-testid="mapEngineSwitch"] button').click()
   })()`)
   await sleep(2500) // dynamic import() of the MapLibre chunk + map construction
 
@@ -274,9 +272,7 @@ async function checkMapEngineSwitch() {
   check('flipping the switch mounts MapLibre and unmounts Leaflet', !afterSwitch.leaflet && afterSwitch.maplibre, true)
 
   await evaluate(`(() => {
-    const cb = document.getElementById('mapEngineSwitch')
-    cb.checked = false
-    cb.dispatchEvent(new Event('change'))
+    document.querySelector('[data-testid="mapEngineSwitch"] button').click()
   })()`)
   await sleep(1500)
 
@@ -305,9 +301,7 @@ async function checkMapEngineSurvivesNavigation() {
   await goto('/map')
 
   await evaluate(`(() => {
-    const cb = document.getElementById('mapEngineSwitch')
-    cb.checked = true
-    cb.dispatchEvent(new Event('change'))
+    document.querySelector('[data-testid="mapEngineSwitch"] button').click()
   })()`)
   await sleep(2500)
 
@@ -317,7 +311,7 @@ async function checkMapEngineSurvivesNavigation() {
   await navigateInApp('Map', 2500)
 
   const state = await evaluate(`(() => ({
-    switchChecked: document.getElementById('mapEngineSwitch')?.checked,
+    switchChecked: document.querySelector('[data-testid="mapEngineSwitch"] button')?.getAttribute('aria-checked') === 'true',
     maplibre: !!document.querySelector('.map-container'),
     leaflet: !!document.querySelector('.mapLeaflet-container'),
     canvasCount: document.querySelectorAll('canvas').length,

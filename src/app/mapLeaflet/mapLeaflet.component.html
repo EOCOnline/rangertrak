@@ -18,9 +18,10 @@
 <div #overviewContainer id="mapLeaflet-overview"></div>
 <br />
 
-<label for="selectedFieldReports">Field reports to show: All ({{numAllRows()}})</label>
-<input id="selectedFieldReports" type="checkbox" (change)="onSwitchSelectedFieldReports()" />
-<label for="selectedFieldReports">Just those ({{numSelectedRows()}}) selected in the Field Report panel</label>
+Field reports to show: All ({{numAllRows()}})
+<mat-slide-toggle (change)="onSwitchSelectedFieldReports()">
+  Just those ({{numSelectedRows()}}) selected in the Field Report panel
+</mat-slide-toggle>
 
 <br />
 <ng-container *ngTemplateOutlet="engineSwitchTemplate"></ng-container>

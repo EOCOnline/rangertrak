@@ -12,27 +12,6 @@
   color: var(--rt-ink-2);
 }
 
-.feedback__label {
-  @include type.type-body-sm;
-  display      : flex;
-  flex-direction: column;
-  gap          : 0.2rem;
-  font-weight  : 600;
-  color        : var(--rt-ink);
-}
-
-.feedback__message,
-.feedback__contact {
-  @include type.type-body;
-  font-family   : inherit;
-  border        : 1px solid var(--rt-line-strong);
-  border-radius : var(--rt-radius);
-  background    : var(--rt-surface);
-  color         : var(--rt-ink);
-  padding       : 0.4rem 0.6rem;
-  resize        : vertical;
-}
-
 .feedback__error {
   @include type.type-body-sm;
   color: var(--rt-status-urgent, #B3261E);
@@ -43,26 +22,11 @@
   color: var(--rt-ink);
 }
 
-// Same recipe as .eButton in entry.component.scss / mission.component.scss - each of
-// those is its own component-scoped copy already, not a shared global class, so this one
-// is too rather than reaching for a class this component was never given.
-.eButton {
-  min-width        : 80px;
-  min-height       : var(--rt-tap-min);
-  padding          : 0 1.25rem;
-  font-weight      : 600;
-  border           : 1px solid var(--rt-line-strong);
-  border-radius    : var(--rt-radius);
-  background-color : transparent;
-  color            : var(--rt-ink);
-  cursor           : pointer;
-
-  &:disabled {
-    opacity: 0.5;
-    cursor : not-allowed;
-  }
-}
-
+// Material-M3 pass, 2026-08-26: .eButton is gone from this file too. entry.component.scss's
+// own note claimed all four copies of this rule (entry, mission, feedback,
+// mission-advanced-options) were removed in the same pass - this one was missed, and this
+// component's markup was still using it (plain <label>/<textarea>/<input>, no matInput)
+// months after that claim was written. Now matButton/mat-form-field, same as the others.
 .feedback__submit {
   align-self: flex-start;
 }

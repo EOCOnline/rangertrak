@@ -21,11 +21,10 @@
          child's call. -->
     <ng-template #engineSwitchTpl>
       <div class="map-engine-switch">
-        <label for="mapEngineSwitch">
-          <input id="mapEngineSwitch" type="checkbox" [checked]="engine() === 'maplibre'"
-            (change)="onEngineSwitchChanged($event)" />
+        <mat-slide-toggle data-testid="mapEngineSwitch" [checked]="engine() === 'maplibre'"
+          (change)="onEngineSwitchChanged($event)">
           Use MapLibre + PMTiles Map - instead of Leaflet Map
-        </label>
+        </mat-slide-toggle>
       </div>
     </ng-template>
 

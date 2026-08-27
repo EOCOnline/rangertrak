@@ -7,6 +7,7 @@ import {
   AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, Input, OnDestroy, OnInit,
   TemplateRef, ViewChild, signal
 } from '@angular/core'
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 import { buildPmtilesStyle, DEFAULT_PMTILES_URL, registerPmtilesProtocol } from '../shared/mapping/map-style'
 import { fieldReportStatusColor, resolveCssColorForCanvas } from '../shared/mapping/report-marker-status'
@@ -25,7 +26,7 @@ const REPORTS_SOURCE_ID = 'field-reports'
 @Component({
   selector: 'rangertrak-mapLibre',
   standalone: true,
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, MatSlideToggleModule],
   templateUrl: './mapLibre.component.html',
   styleUrls: ['./mapLibre.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager
@@ -218,8 +219,8 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  onToggleHillshade(event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked
+  onToggleHillshade(event: MatSlideToggleChange): void {
+    const checked = event.checked
     this.hillshadeVisible.set(checked)
     this.map.setLayoutProperty('hillshade', 'visibility', checked ? 'visible' : 'none')
   }

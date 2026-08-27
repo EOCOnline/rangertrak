@@ -24,6 +24,7 @@ import {
   AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, TemplateRef, ViewChild,
   ChangeDetectionStrategy
 } from '@angular/core'
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 import {
   AbstractMap, Utility, rangerIconFor, rangerColorFor, evidenceIconFor, fieldReportStatusColor,
@@ -80,7 +81,7 @@ function formatBytes(bytes: number): string {
 @Component({
   selector: 'rangertrak-mapLeaflet',
   standalone: true,
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, MatSlideToggleModule],
   templateUrl: './mapLeaflet.component.html',
   styleUrls: [
     './mapLeaflet.component.scss'

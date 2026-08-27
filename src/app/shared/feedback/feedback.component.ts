@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
 
 import { LogService } from '../services'
+import { MATERIAL_IMPORTS } from '../../material-imports'
 
 const GITHUB_ISSUE_URL = 'https://github.com/EOCOnline/rangertrak/issues/new'
 
@@ -27,7 +28,7 @@ const GITHUB_ISSUE_URL = 'https://github.com/EOCOnline/rangertrak/issues/new'
 @Component({
   selector: 'rangertrak-feedback',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ...MATERIAL_IMPORTS],
   templateUrl: './feedback.component.html',
   styleUrls: ['./feedback.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

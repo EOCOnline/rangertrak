@@ -33,11 +33,12 @@
         need to keep it.
       </p>
 
-      <button (click)="onBtnSaveLog()" title="Download the event log as a CSV file">
+      <button matButton="outlined" (click)="onBtnSaveLog()" title="Download the event log as a CSV file">
         Save Log File
       </button>
       &nbsp;
-      <button (click)="onBtnClearLog()" title="Discard all log entries currently in memory">
+      <button matButton="outlined" class="log__danger-button" (click)="onBtnClearLog()"
+        title="Discard all log entries currently in memory">
         Clear Log
       </button>
 
