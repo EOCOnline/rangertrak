@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.62.0](https://github.com/EOCOnline/rangertrak/compare/v0.61.2...v0.62.0) (2026-08-27)
+
+
+### Features
+
+* **entry,mission:** app-wide spacing scale, Material density -2, cap mini-map growth ([3e186d0](https://github.com/EOCOnline/rangertrak/commit/3e186d05c5f406b0208eb992e6cc491564d70331))
+
 ### [0.61.2](https://github.com/EOCOnline/rangertrak/compare/v0.61.1...v0.61.2) (2026-08-27)
 
 
