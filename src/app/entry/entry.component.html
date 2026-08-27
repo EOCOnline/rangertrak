@@ -124,10 +124,15 @@
                selector - MatCheckbox nests its real native input several levels inside its
                own template, so that direct-child selector no longer reaches it;
                tools/e2e.js's checkEvidenceLocation() updated to match. -->
+          <!-- E-item 5 discoverability gap, found 2026-08-27: the Alt+click hint used to live
+               only on the mini-map's hover title and this section's own empty-state text -
+               both invisible until a scribe already had this section open, so nobody who'd
+               never checked the box (or read the Guide) could learn Alt+click exists. This
+               label is the one thing every scribe sees regardless, so the hint moved here. -->
           <mat-checkbox data-testid="evidence-toggle" [checked]="showEvidenceLocation()"
             [tabIndex]="showEvidenceLocationTabIndex"
             (change)="showEvidenceLocation.set($event.checked)">
-            This report includes evidence or a clue at a different location
+            This report includes evidence or a clue at a different location (or Alt+click the map above)
           </mat-checkbox>
 
           <div [hidden]="!showEvidenceLocation()">

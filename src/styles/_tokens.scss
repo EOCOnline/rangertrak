@@ -16,7 +16,7 @@
 
 // Emits one skin's surface/ink/chrome/accent tokens. Was a flat :root block reading a
 // single compile-time-selected map (styles/_active-skin.scss, now gone) - widened
-// 2026-08-26 so all three skins ship in one build and a scribe can switch between them at
+// 2026-08-26 so all five skins ship in one build and a scribe can switch between them at
 // runtime (shared/services/skin.service.ts sets a `data-skin` attribute on <html>; see
 // this file's own :root[data-skin="..."] blocks below). Same light-dark() pattern as
 // before, just parameterized over which map supplies the values.
@@ -125,4 +125,12 @@
 
 :root[data-skin="nightwatch"] {
   @include _rt-chrome-tokens(chrome.$nightwatch);
+}
+
+:root[data-skin="sagebrush"] {
+  @include _rt-chrome-tokens(chrome.$sagebrush);
+}
+
+:root[data-skin="signal"] {
+  @include _rt-chrome-tokens(chrome.$signal);
 }

@@ -13,6 +13,8 @@
 @use './styles/skins/ridgeline' as ridgeline;
 @use './styles/skins/command' as command;
 @use './styles/skins/nightwatch' as nightwatch;
+@use './styles/skins/sagebrush' as sagebrush;
+@use './styles/skins/signal' as signal;
 @use './styles/tokens';
 // Page-structure patterns (action bar, danger zone, alert, field grid) - see
 // styles/_patterns.scss. Emitted globally, after tokens, because every rule in it reads
@@ -24,10 +26,10 @@
 // a first-class colour-scheme rather than a bolted-on media block.
 //
 // Widened 2026-08-26 from a single compile-time-selected palette (styles/_active-skin.scss,
-// now gone) to all three, each scoped to the same `data-skin` attribute
+// now gone) to all five, each scoped to the same `data-skin` attribute
 // styles/_tokens.scss's own chrome tokens now switch on - shared/services/skin.service.ts
 // sets it on <html> at runtime. mat.theme() is designed to be scoped to any selector (the
-// documented pattern for a themed sub-section); three calls differing only in `color` is
+// documented pattern for a themed sub-section); five calls differing only in `color` is
 // the same idea applied to the whole document instead of a sub-section. Scoped to :root
 // rather than html so it composes with tokens.scss's own :root block.
 :root {
@@ -59,6 +61,28 @@
     color: (
       primary: nightwatch.$primary-palette,
       tertiary: nightwatch.$tertiary-palette,
+    ),
+    typography: Roboto,
+    density: -2,
+  ));
+}
+
+:root[data-skin="sagebrush"] {
+  @include mat.theme((
+    color: (
+      primary: sagebrush.$primary-palette,
+      tertiary: sagebrush.$tertiary-palette,
+    ),
+    typography: Roboto,
+    density: -2,
+  ));
+}
+
+:root[data-skin="signal"] {
+  @include mat.theme((
+    color: (
+      primary: signal.$primary-palette,
+      tertiary: signal.$tertiary-palette,
     ),
     typography: Roboto,
     density: -2,

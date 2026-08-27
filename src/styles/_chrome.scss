@@ -98,3 +98,61 @@ $nightwatch: (
   accent-ink: #FFFFFF,
   accent-ink-dark: #04211E,
 );
+
+// Warm greys and dry olive - the colour of the terrain the teams are actually standing in.
+// Softer than Command without going as warm as Ridgeline.
+$sagebrush: (
+  ground: #F2F1EA,
+  ground-dark: #101208,
+  surface: #FFFFFF,
+  surface-dark: #1A1D12,
+  surface-2: #E5E5D7,
+  surface-2-dark: #242819,
+  ink: #22261B,
+  ink-dark: #EDEFE2,
+  ink-2: #4E5442,
+  ink-2-dark: #B4BAA1,
+  ink-3: #7C806C,
+  ink-3-dark: #858B73,
+  line: #DEDDCC,
+  line-dark: #2A2E1E,
+  line-strong: #C2C2AC,
+  line-strong-dark: #3E442D,
+  chrome: #2F3A26,
+  chrome-dark: #0A0C05,
+  chrome-ink: #F1F3EA,
+  chrome-ink-dark: #E7EADC,
+  accent: #4F6B14,
+  accent-dark: #A8C55A,
+  accent-ink: #FFFFFF,
+  accent-ink-dark: #1A2005,
+);
+
+// Near-monochrome slate with one high-visibility amber. Maximum legibility, minimum
+// decoration - the accent only ever marks the thing you act on.
+$signal: (
+  ground: #F4F5F7,
+  ground-dark: #0D0F12,
+  surface: #FFFFFF,
+  surface-dark: #16191E,
+  surface-2: #E7E9ED,
+  surface-2-dark: #1F242A,
+  ink: #14181D,
+  ink-dark: #E9ECF0,
+  ink-2: #464C55,
+  ink-2-dark: #A8AFB9,
+  ink-3: #767C84,
+  ink-3-dark: #7C838D,
+  line: #DCDFE4,
+  line-dark: #242A31,
+  line-strong: #BEC3CB,
+  line-strong-dark: #39414A,
+  chrome: #14181D,
+  chrome-dark: #08090B,
+  chrome-ink: #EEF0F3,
+  chrome-ink-dark: #E4E7EB,
+  accent: #9A5B00,
+  accent-dark: #F0A93C,
+  accent-ink: #FFFFFF,
+  accent-ink-dark: #1A1200,
+);

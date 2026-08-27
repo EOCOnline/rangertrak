@@ -71,7 +71,7 @@
       // already are command's values.
       try {
         var rtSkin = localStorage.getItem('skinChoice');
-        if (rtSkin === 'ridgeline' || rtSkin === 'nightwatch') {
+        if (rtSkin === 'ridgeline' || rtSkin === 'nightwatch' || rtSkin === 'sagebrush' || rtSkin === 'signal') {
           document.documentElement.setAttribute('data-skin', rtSkin);
         }
       } catch (e) { /* localStorage unavailable - fall back to command */ }

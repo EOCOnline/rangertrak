@@ -2,7 +2,7 @@ import { Injectable, signal } from "@angular/core"
 
 import { LogService } from "./log.service"
 
-export type Skin = 'ridgeline' | 'command' | 'nightwatch'
+export type Skin = 'ridgeline' | 'command' | 'nightwatch' | 'sagebrush' | 'signal'
 
 const SKIN_KEY = 'skinChoice'
 
@@ -13,19 +13,23 @@ export const SKINS: { value: Skin; label: string; accent: string }[] = [
   { value: 'ridgeline', label: 'Ridgeline', accent: '#9A3412' },
   { value: 'command', label: 'Command', accent: '#0B5FA8' },
   { value: 'nightwatch', label: 'Nightwatch', accent: '#0F6E63' },
+  { value: 'sagebrush', label: 'Sagebrush', accent: '#4F6B14' },
+  { value: 'signal', label: 'Signal', accent: '#9A5B00' },
 ]
 
 function isSkin(value: string | null): value is Skin {
   return value === 'ridgeline' || value === 'command' || value === 'nightwatch'
+    || value === 'sagebrush' || value === 'signal'
 }
 
 /**
- * Owns the user's colour-scheme (skin) choice. 2026-08-26: the three skins in
+ * Owns the user's colour-scheme (skin) choice. 2026-08-26: the skins in
  * styles/_chrome.scss (and their generated M3 palettes in styles/skins/) used to be a
  * single compile-time choice - styles/_active-skin.scss, one line to edit and rebuild. This
  * is that made runtime: every RangerTrak token (styles/_tokens.scss) and every Material
- * component token (styles.scss's three scoped mat.theme() calls) is now defined for all
- * three skins at once, gated on a `data-skin` attribute this service sets on <html>. No
+ * component token (styles.scss's scoped mat.theme() calls) is now defined for all five
+ * skins at once (Sagebrush and Signal added same day, completing the redesign canvas's own
+ * five-scheme set), gated on a `data-skin` attribute this service sets on <html>. No
  * attribute (or 'command') is the default - matches both stylesheets' own choice of default,
  * so this service never needs to touch anything for the common case.
  */
