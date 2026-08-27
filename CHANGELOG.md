@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.77.2](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+
+### Fixes
+
+* **entry:** a short +Code entered in its normal shareable form - "CODE LOCALITY", e.g. "FGPM+MC7 Vashon, Washington" - silently did nothing on Enter or Tab, in Where's address field, even after `0.76.0`'s Enter-key fix. Root cause: `chkPCodes()` validated the WHOLE string including the locality text, and every letter/space/comma in a locality fails `OpenLocationCode`'s own alphabet check, so `isValid()` returned false and the function did nothing at all - no error, no fallback. Now only the first whitespace-delimited token (the code itself, which never contains spaces) is validated/decoded; the locality text is ignored, since a short code is already recovered against this mission's own default lat/lng, a better reference for an incident-local code anyway.
+
 ## [0.77.1](https://github.com/EOCOnline/rangertrak/commit/9c64a19553e309a2b6f03b2a56df383ae1866c7f) (2026-08-27)
 
 ### Fixes

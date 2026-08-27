@@ -711,6 +711,18 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
         return
       }
 
+      // Bug, found live 2026-08-27: Google's own standard shareable format for a SHORT code
+      // is "CODE LOCALITY" (e.g. "FGPM+MC7 Vashon, Washington") - a short code is meaningless
+      // without a reference point, and that's the normal way one gets shared/typed. Every
+      // character of a locality (letters, spaces, commas) fails OpenLocationCode's own
+      // alphabet check, so isValid() below returned false for the FULL string and this
+      // function did nothing at all - no error, no fallback, just silence. The locality text
+      // isn't needed anyway: isShort() below already recovers a short code against this
+      // mission's own defLat/defLng, a better reference for an incident-local code than
+      // geocoding the locality text would be. Only the first token (the code itself - never
+      // contains whitespace) is validated/decoded; anything after the first space is ignored.
+      pCode = pCode.trim().split(/\s+/)[0]
+
       if (OpenLocationCode.isValid(pCode)) {
         if (OpenLocationCode.isShort(pCode)) {
           pCode = OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
