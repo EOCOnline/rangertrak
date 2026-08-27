@@ -332,6 +332,36 @@ export function destinationPoint(originLat: number, originLng: number, distanceM
   }
 }
 
+/**
+ * The inverse of destinationPoint() above: given an origin and an absolute destination,
+ * the range-and-bearing FROM the origin TO it. E-105 (2026-08-27): backs the evidence-
+ * location map click - a scribe places a marker directly at the clue instead of typing a
+ * distance/bearing they'd otherwise have to estimate by eye, and this converts that click
+ * back into the same distance/unit/bearing model EvidenceLocationComponent already owns,
+ * so the rest of that component (computedLocation, the emitted LocationType) is unchanged.
+ * Standard haversine distance + initial-bearing formulas, same spherical-Earth assumption
+ * and EARTH_RADIUS_M constant as destinationPoint() - accurate enough for this use, not
+ * for surveying.
+ */
+export function bearingAndDistance(originLat: number, originLng: number, destLat: number, destLng: number): { distanceMeters: number, bearingDegrees: number } {
+  const φ1 = originLat * Math.PI / 180
+  const φ2 = destLat * Math.PI / 180
+  const Δφ = (destLat - originLat) * Math.PI / 180
+  const Δλ = (destLng - originLng) * Math.PI / 180
+
+  const a = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  const distanceMeters = EARTH_RADIUS_M * c
+
+  const θ = Math.atan2(
+    Math.sin(Δλ) * Math.cos(φ2),
+    Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ)
+  )
+  const bearingDegrees = (θ * 180 / Math.PI + 360) % 360
+
+  return { distanceMeters, bearingDegrees }
+}
+
 
 /*
 Use Google.geocode instead

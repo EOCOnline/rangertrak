@@ -34,7 +34,8 @@
            form and is visible right away - so this loads as soon as the app is idle. -->
       @defer (on idle) {
       <mini-mapLeaflet [locationUpdated]="locationParent" (locationChange)="onNewLocationEvent($event)"
-        [evidenceLocationUpdated]="showEvidenceLocation() ? evidenceLocation : null">LMAP
+        [evidenceLocationUpdated]="showEvidenceLocation() ? evidenceLocation : null"
+        (evidenceLocationClicked)="onEvidenceMapClick($event)">LMAP
         HERE</mini-mapLeaflet>
       } @placeholder {
       <div class="minimap-placeholder">Map still loading&hellip;</div>
@@ -131,7 +132,7 @@
 
           <div [hidden]="!showEvidenceLocation()">
             <rangertrak-evidence-location [origin]="locationParent" [formGeneration]="formGeneration"
-              [tabIndexStart]="evidenceLocationTabIndexStart"
+              [tabIndexStart]="evidenceLocationTabIndexStart" [clickedPosition]="evidenceClickedPosition()"
               (locationChange)="onEvidenceLocationChange($event)">
             </rangertrak-evidence-location>
           </div>

@@ -1,7 +1,8 @@
 <div class="mapLeaflet-container">
   <h2 class="Entry__MapLeaflet-head">Current Location</h2>
   <div class="mapLeaflet-frame">
-    <div #mapContainer id="entry-minimap" (click)="onMouseClick($event)"></div>
+    <div #mapContainer id="entry-minimap" (click)="onMouseClick($event)"
+      title="Click to set your position, or Alt+click to mark evidence/a clue at a different location"></div>
   </div>
 
   <!-- https://angular.io/api/common/DecimalPipe#digitsinfo -->

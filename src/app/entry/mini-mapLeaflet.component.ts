@@ -139,6 +139,12 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
   // the parent Entry form, so the marker didn't move and the Where fields didn't update.
   @Output() locationChange = new EventEmitter<LocationType>()
 
+  // E-105 (2026-08-27): Alt+click marks the EVIDENCE location instead of moving the
+  // reporter's own position - a scribe places a marker directly at the clue rather than
+  // estimating a distance/bearing by eye. A modifier key, not a second click target,
+  // because there's only one map and "click" already means "this is where I am."
+  @Output() evidenceLocationClicked = new EventEmitter<{ lat: number, lng: number }>()
+
   // Replaces a direct `document.getElementById('Entry__LMinimap-status').innerText =`
   // write (the pre-Sprint-G pattern) - see clickStatus below and the template binding.
   clickStatus = signal('Click map to copy coordinates')
@@ -449,6 +455,14 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     const lat = Math.round(latlng.lat * 10000) / 10000
     const lng = Math.round(latlng.lng * 10000) / 10000
     let coords = `${lat}, ${lng}`
+
+    // E-105: Alt+click marks evidence instead - moving the reporter's own position AND
+    // marking evidence off the same click would put a scribe's own marker at the clue by
+    // accident whenever they meant only one of the two.
+    if (ev.altKey) {
+      this.evidenceLocationClicked.emit({ lat, lng })
+      return
+    }
 
     this.addMarker(lat, lng, coords)
     this.locationChange.emit({

@@ -230,6 +230,24 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.evidenceLocation = newLocation
   }
 
+  // E-105 (2026-08-27): Alt+click on the mini-map marks evidence directly instead of typing
+  // a distance/bearing - see mini-mapLeaflet.component.ts's own onMouseClick for why this is
+  // a modifier key, not a second click target. Reveals the field if it wasn't already open;
+  // a scribe who Alt+clicks clearly wants it, so requiring the checkbox first would just be
+  // a second, redundant step. A signal, not a plain field: this app is zoneless, and a
+  // second Alt+click while the field is already open would otherwise change only a plain
+  // property with nothing left to trigger the change detection pass that reads it -
+  // showEvidenceLocation.set(true) is a no-op (already true) in exactly that case, so it
+  // can't be relied on to do that job. A fresh object every call, not reusing the previous
+  // one, is what makes EvidenceLocationComponent's ngOnChanges register repeat clicks on
+  // the same spot as real changes rather than a no-op of its own.
+  evidenceClickedPosition = signal<{ lat: number, lng: number } | null>(null)
+
+  onEvidenceMapClick(pos: { lat: number, lng: number }): void {
+    this.showEvidenceLocation.set(true)
+    this.evidenceClickedPosition.set({ ...pos })
+  }
+
   // E-103: which of settings.recipientOptions213's per-mission checklist entries are ticked.
   // A plain signal outside entryModel/entryForm, same reasoning as showEvidenceLocation above -
   // the option list's length varies per mission, so it can't be a static Signal Forms field.

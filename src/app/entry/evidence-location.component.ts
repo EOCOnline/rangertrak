@@ -6,7 +6,7 @@ import {
 import { form, FormField, max, min } from '@angular/forms/signals'
 
 import { MATERIAL_IMPORTS } from '../material-imports'
-import { destinationPoint } from '../shared/mapping/coordinate'
+import { bearingAndDistance, destinationPoint } from '../shared/mapping/coordinate'
 import { LocationType, undefinedAddressFlag } from '../shared/services'
 
 /**
@@ -47,9 +47,19 @@ export class EvidenceLocationComponent implements OnChanges {
   // from the last report doesn't silently carry forward onto the next one's map marker.
   @Input() formGeneration = 0
 
+  // E-105 (2026-08-27): the mini-map's Alt+click handler (entry.component.ts's
+  // onEvidenceMapClick) sets this to a fresh object each click - ngOnChanges fires on
+  // reference change, not a diff, which is exactly right here: clicking the same spot
+  // twice in a row should still register as two clicks, not be silently ignored as "no
+  // change." null on init/reset; the click handler never reads it back.
+  @Input() clickedPosition: { lat: number, lng: number } | null = null
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['formGeneration'] && !changes['formGeneration'].firstChange) {
       this.reset()
+    }
+    if (changes['clickedPosition'] && this.clickedPosition) {
+      this.setFromAbsolute(this.clickedPosition.lat, this.clickedPosition.lng)
     }
   }
 
@@ -91,5 +101,23 @@ export class EvidenceLocationComponent implements OnChanges {
 
   reset(): void {
     this.model.set({ distance: null, unit: 'm', bearing: null })
+  }
+
+  /**
+   * E-105 (2026-08-27): fills distance/bearing from an absolute point instead of typed
+   * numbers - the mini-map's Alt+click handler calls this with wherever the scribe clicked.
+   * Silently does nothing without an origin (can't compute a bearing FROM nowhere) - the
+   * map click handler itself is expected not to fire before a position exists, but this
+   * stays defensive rather than trusting that at a distance. Always reports in meters
+   * (matches destinationPoint()'s own units); a scribe who prefers feet can still switch
+   * the unit afterward without losing the computed distance - the model stores meters
+   * regardless of displayed unit today (see the 'ft' branch in computedLocation above),
+   * so this is consistent with typing a distance in meters and picking meters as the unit.
+   */
+  setFromAbsolute(lat: number, lng: number): void {
+    const origin = this.origin()
+    if (!origin || origin.lat == null) return
+    const { distanceMeters, bearingDegrees } = bearingAndDistance(origin.lat, origin.lng, lat, lng)
+    this.model.set({ distance: Math.round(distanceMeters), unit: 'm', bearing: Math.round(bearingDegrees) })
   }
 }

@@ -113,6 +113,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             bullets: [
               'Type a position in whichever format it was read to you — the rest are derived and shown below the fields.',
               'Click the map to move the pin, which fills the coordinates in for you.',
+              'Alt+click the map to mark evidence or a clue at a different location instead, once that section is showing.',
               'Every format here assumes WGS84 / modern GPS. A position read off an older paper topo quad may use NAD27 instead, which can be 100–200 m off in the western US.'
             ]
           },
