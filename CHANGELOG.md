@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.69.0](https://github.com/EOCOnline/rangertrak/compare/v0.68.0...v0.69.0) (2026-08-27)
+
+
+### Features
+
+* **map:** mile grid overlay on the Leaflet map ([e7cecae](https://github.com/EOCOnline/rangertrak/commit/e7cecaeecb3a8ebc9ed6c8ce148deed6d8ab5eeb))
+
 ## [0.68.0](https://github.com/EOCOnline/rangertrak/compare/v0.67.0...v0.68.0) (2026-08-27)
 
 
