@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.65.0](https://github.com/EOCOnline/rangertrak/compare/v0.64.0...v0.65.0) (2026-08-27)
+
+
+### Features
+
+* **entry:** Alt+click the mini-map to mark an evidence location (E-item 5) ([c575423](https://github.com/EOCOnline/rangertrak/commit/c5754239782280aa9a1b95878327fbb7d1b7582e))
+
 ## [0.64.0](https://github.com/EOCOnline/rangertrak/compare/v0.63.1...v0.64.0) (2026-08-27)
 
 
