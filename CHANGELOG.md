@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.63.1](https://github.com/EOCOnline/rangertrak/compare/v0.63.0...v0.63.1) (2026-08-27)
+
+
+### Bug Fixes
+
+* **mission:** floatLabel="always" on every remaining placeholder field ([8fc60a4](https://github.com/EOCOnline/rangertrak/commit/8fc60a4a25956abb7b1e51596fc338d2355891bc))
+
 ## [0.63.0](https://github.com/EOCOnline/rangertrak/compare/v0.62.0...v0.63.0) (2026-08-27)
 
 
