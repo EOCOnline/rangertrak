@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.64.0](https://github.com/EOCOnline/rangertrak/compare/v0.63.1...v0.64.0) (2026-08-27)
+
+
+### Features
+
+* **theme:** runtime colour-scheme switcher (E-item 3, the mockup's 3 skins) ([0675714](https://github.com/EOCOnline/rangertrak/commit/0675714d72708b6a4674fa7c404320edca03370d))
+
 ### [0.63.1](https://github.com/EOCOnline/rangertrak/compare/v0.63.0...v0.63.1) (2026-08-27)
 
 
