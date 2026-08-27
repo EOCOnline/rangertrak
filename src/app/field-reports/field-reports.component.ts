@@ -41,8 +41,12 @@ export class myUnusedPipe implements PipeTransform {
 export class FieldReportsComponent implements OnInit, OnDestroy {
 
   private id = 'Field Report'
-  title = 'Field Reports'
-  pageDescr = `Grid display of reported ranger positions and status throughout a mission`
+  // 2026-08-27: was "Field Reports" - renamed "Radio Log" (nav/route followed, see
+  // app.routes.ts and navbar.component.html). The class/file/id above keep their original
+  // name deliberately - this is still the same field-report grid, only the page's own
+  // user-facing name changed, not renaming that everywhere would be pure churn.
+  title = 'Radio Log'
+  pageDescr = `Every field report, in one grid - who, where, when, and what they said.`
 
   private fieldReportsSubscription!: Subscription
 

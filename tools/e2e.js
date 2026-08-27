@@ -200,7 +200,7 @@ function makeFixtures(dir) {
 
 // ── the checks ───────────────────────────────────────────────────────────────
 
-const ROUTES = ['/', '/map', '/reports', '/rangers', '/mission', '/help', '/log']
+const ROUTES = ['/', '/map', '/radio-log', '/messages', '/rangers', '/mission', '/help', '/log']
 
 async function checkRoutesRender() {
   console.log('\nEvery route renders, with no console errors')
@@ -307,7 +307,7 @@ async function checkMapEngineSurvivesNavigation() {
 
   // Navigate away and back the way a scribe actually would - client-side routing, not a
   // reload (a reload would reset MapEngineService too, which would hide this exact bug).
-  await navigateInApp('Reports', 2000)
+  await navigateInApp('Radio Log', 2000)
   await navigateInApp('Map', 2500)
 
   const state = await evaluate(`(() => ({
@@ -626,6 +626,76 @@ async function checkEvidenceLocation() {
   })()`)
   check('the section collapses again after submit+reset', afterReset.hiddenAfterReset, true)
   check('the evidence marker is removed after submit+reset', afterReset.markerGone, true)
+}
+
+/**
+ * Messages page (ICS-309/213 IA restructuring, scoped and built 2026-08-27): a field report
+ * with "Also generate an ICS-213" checked should show up here, in full, with a working
+ * Print as ICS-213 button - not just render an empty page.
+ */
+async function checkMessagesPage() {
+  console.log('\nMessages: a generates213 report shows up, in full, with a working Print as ICS-213 button')
+  await goto('/')
+  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await goto('/')
+  await sleep(1200)
+
+  await evaluate(`(() => {
+    document.querySelector('[data-testid="generates213-toggle"] input[type=checkbox]').click();
+  })()`)
+  await sleep(300)
+
+  await evaluate(`(async () => {
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    const taSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
+    const setInput = (el, v) => { setter.call(el, v); el.dispatchEvent(new Event('input', {bubbles:true})); el.dispatchEvent(new Event('change', {bubbles:true})); };
+    const setTextarea = (el, v) => { taSetter.call(el, v); el.dispatchEvent(new Event('input', {bubbles:true})); el.dispatchEvent(new Event('change', {bubbles:true})); };
+
+    const msg = document.querySelector('.enter__213-message textarea');
+    setTextarea(msg, 'E2E-MSG test message body');
+
+    // mat-chip-option's host element has no click listener of its own - the real one is on
+    // its internal .mat-mdc-chip-action element (confirmed by reading Angular Material's own
+    // chips.mjs template before guessing, same lesson as this file's mat-slide-toggle fix).
+    const firstChipAction = document.querySelector('.enter__213 mat-chip-option .mat-mdc-chip-action');
+    firstChipAction?.click();
+
+    const cs = document.getElementById('enter__Callsign-input');
+    setInput(cs, 'E2E-MSG');
+    await new Promise(r => setTimeout(r, 900));
+    document.querySelector('.enter__Submit-button')?.click();
+    await new Promise(r => setTimeout(r, 1200));
+  })()`)
+
+  const stored = await evaluate(`(() => {
+    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
+    const report = (r.fieldReportArray || []).find(f => f.callsign === 'E2E-MSG');
+    return report ?? null;
+  })()`)
+  check('the submitted report has generates213 set', stored?.generates213, true)
+  check('the submitted report stored the message text', stored?.message213, 'E2E-MSG test message body')
+  check('the submitted report stored at least one recipient', (stored?.recipients213 || []).length > 0, true)
+
+  await goto('/messages')
+  await sleep(500)
+  const page = await evaluate(`(() => {
+    const items = [...document.querySelectorAll('.messages__list-item')];
+    const selectedText = document.querySelector('.messages__detail')?.textContent || '';
+    return {
+      listCount: items.length,
+      hasE2EItem: items.some(el => el.textContent.includes('E2E-MSG')),
+      detailShowsMessage: selectedText.includes('E2E-MSG test message body'),
+    };
+  })()`)
+  check('the message appears in the list', page.hasE2EItem, true)
+  check('the newest message is selected and shown in the detail pane by default', page.detailShowsMessage, true)
+
+  await evaluate(`(() => {
+    const btn = [...document.querySelectorAll('.messages__detail button')].find(b => b.textContent.includes('Print as ICS-213'));
+    btn?.click();
+  })()`)
+  await sleep(1500) // fetch the template + fill the PDF
+  check('printing as ICS-213 raised no console errors', consoleErrors.slice(0, 2), [])
 }
 
 async function checkEntryPhoneWidth() {
@@ -963,7 +1033,7 @@ async function checkLocationDdDdmDmsSync() {
 async function checkFieldReportsPhoneLayout() {
   console.log('\nField Reports: phone width shows cards not the grid, tablet-up shows the grid not cards (Sprint F carve-out)')
   await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 3, mobile: true })
-  await goto('/reports')
+  await goto('/radio-log')
   const phone = await evaluate(`(() => ({
     grid: !!document.querySelector('#reportsgrid ag-grid-angular .ag-root-wrapper'),
     cards: !!document.querySelector('.field-reports-cards'),
@@ -974,7 +1044,7 @@ async function checkFieldReportsPhoneLayout() {
 
   // Tablet-up (D-33): a folding-table command post, not a phone.
   await send('Emulation.setDeviceMetricsOverride', { width: 900, height: 800, deviceScaleFactor: 1, mobile: false })
-  await goto('/reports')
+  await goto('/radio-log')
   const tablet = await evaluate(`(() => ({
     grid: !!document.querySelector('#reportsgrid ag-grid-angular .ag-root-wrapper'),
     cards: !!document.querySelector('.field-reports-cards'),
@@ -987,7 +1057,7 @@ async function checkFieldReportsPhoneLayout() {
 async function checkGridThemeUsesTokens() {
   console.log('\nAG Grid Theming API resolves through --rt-* tokens (Sprint F: legacy ag-theme-alpine.css is gone)')
   const read = async () => {
-    await goto('/reports')
+    await goto('/radio-log')
     // AG Grid v36's Theming API (cacfeb3, the ag-grid 35->36 bump) paints the header
     // background on .ag-header-row's ::after pseudo-element, not directly on .ag-header
     // as v35 did - .ag-header itself now has no background-color at all. Confirmed live
@@ -1129,7 +1199,7 @@ async function checkReportsSurviveNavigation() {
   check('both reports reached storage', stored, 2)
 
   // Click through, do NOT reload: a reload rebuilds every service and hides the bug.
-  await navigateInApp('Reports', 3500)
+  await navigateInApp('Radio Log', 3500)
   // .ag-center-cols-container is gone in AG Grid v36 (cacfeb3) - the row-container
   // structure was rebuilt (.ag-grid-scrolling-rows and friends replace it). .ag-row itself
   // is still the real row class, scoped to #reportsgrid so it can't pick up another grid.
@@ -1731,8 +1801,9 @@ async function main() {
       await checkEntryAutofocusAndReset() // submits a real report, so read-write only
       if (FULL) {
         await checkEvidenceLocation()
+        await checkMessagesPage()
       } else {
-        note('fast run: skipping checkEvidenceLocation (pass --full to include)')
+        note('fast run: skipping checkEvidenceLocation, checkMessagesPage (pass --full to include)')
       }
       await checkDerivedValuesDoNotCarryOver() // also submits, same reason
       await checkMissionFormSave()

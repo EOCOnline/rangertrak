@@ -1,0 +1,98 @@
+@use "../../styles/breakpoints" as bp;
+
+.messages__empty {
+  color: var(--rt-ink-2);
+}
+
+.messages__layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 1fr;
+  gap: var(--rt-gap);
+  align-items: start;
+
+  @include bp.tablet-down {
+    grid-template-columns: 1fr;
+  }
+}
+
+.messages__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rt-space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 70vh;
+  overflow-y: auto;
+
+  @include bp.tablet-down {
+    max-height: 40vh;
+  }
+}
+
+.messages__list-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: var(--rt-space-sm) var(--rt-space-md);
+  border: 1px solid var(--rt-line);
+  border-radius: var(--rt-radius);
+  background: var(--rt-surface);
+  color: var(--rt-ink);
+  text-align: start;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--rt-surface-2);
+  }
+}
+
+.messages__list-item--selected {
+  border-color: var(--rt-accent);
+  background: var(--rt-surface-2);
+}
+
+.messages__list-callsign {
+  font-weight: 600;
+}
+
+.messages__list-time {
+  font-size: var(--rt-type-label-size);
+  color: var(--rt-ink-2);
+}
+
+.messages__list-preview {
+  font-size: var(--rt-type-body-sm-size);
+  color: var(--rt-ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.messages__placeholder {
+  color: var(--rt-ink-2);
+  font-style: italic;
+}
+
+.messages__fields {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--rt-space-xs) var(--rt-space-md);
+  margin: 0;
+}
+
+.messages__fields dt {
+  font-weight: 600;
+  color: var(--rt-ink-2);
+}
+
+.messages__fields dd {
+  margin: 0;
+}
+
+.messages__message-text {
+  white-space: pre-wrap;
+}

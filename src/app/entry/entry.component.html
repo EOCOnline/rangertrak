@@ -255,7 +255,7 @@
         <!-- Material-M3 pass: manual WritableSignal binding, not [formField] - same
              angular/components#32072 reasoning as Source above (entryForm.generates213 is a
              genuine Signal Forms field; mat-checkbox is a Material CVA component). -->
-        <mat-checkbox [checked]="entryForm.generates213().value()"
+        <mat-checkbox data-testid="generates213-toggle" [checked]="entryForm.generates213().value()"
           [tabIndex]="generates213TabIndex"
           (change)="entryForm.generates213().value.set($event.checked)">
           Also generate an ICS-213 (General Message) from this report

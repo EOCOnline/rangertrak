@@ -119,7 +119,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           },
           {
             heading: 'Notes and 213 messages are not the same thing',
-            text: 'Notes is the general record of this report — always saved, and what appears on the Reports grid and in the ICS-309 communications log. A 213 message is a separate, addressed message that only some reports generate, and is often reworded rather than copied from your notes.'
+            text: 'Notes is the general record of this report — always saved, and what appears on the Radio Log grid and in the ICS-309 communications log. A 213 message is a separate, addressed message that only some reports generate (see the Messages page), and is often reworded rather than copied from your notes.'
           }
         ]
       },
@@ -127,8 +127,8 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
     ]
   },
 
-  '/reports': {
-    screen: 'Field Reports',
+  '/radio-log': {
+    screen: 'Radio Log',
     tabs: [
       {
         label: 'This page',
@@ -160,6 +160,30 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
     ]
   },
 
+  '/messages': {
+    screen: 'Messages',
+    tabs: [
+      {
+        label: 'This page',
+        blocks: [
+          {
+            heading: 'What shows up here',
+            text: 'Only field reports with "Also generate an ICS-213" checked on Entry - not every report, and not the same list as Radio Log.'
+          },
+          {
+            heading: 'Reading one',
+            text: 'Click a message in the list to read it in full on the right, including who it is addressed to and whether a reply was requested.'
+          },
+          {
+            heading: 'Printing',
+            text: 'Print as ICS-213 fills FEMA’s own real ICS-213 form and downloads it as a PDF, ready to hand off or file. Subject and Approved by are left blank on the printed form - Entry does not collect either today.'
+          }
+        ]
+      },
+      YOUR_DATA
+    ]
+  },
+
   '/rangers': {
     screen: 'Rangers & Teams',
     tabs: [
@@ -168,7 +192,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
         blocks: [
           {
             heading: 'Edits here are NOT saved automatically',
-            text: 'Unlike the Reports grid, changes typed into this grid need the Save edits button before they stick. Importing, adding and deleting a ranger all save themselves.'
+            text: 'Unlike the Radio Log grid, changes typed into this grid need the Save edits button before they stick. Importing, adding and deleting a ranger all save themselves.'
           },
           {
             heading: 'Loading a roster',
@@ -228,7 +252,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             bullets: [
               'Set the mission name and operational period — both feed the header and every printed ICS form.',
               'Load or update the roster on the Rangers page.',
-              'Clear out the previous exercise’s field reports from the Reports page.',
+              'Clear out the previous exercise’s field reports from the Radio Log page.',
               'Or reset everything at once from the Danger zone at the bottom of this page.'
             ]
           },
@@ -256,7 +280,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             heading: 'What is shown',
             bullets: [
               'All field reports for all rangers, by default.',
-              'If rows are selected on the Reports page, the switch below the map isolates just those.',
+              'If rows are selected on the Radio Log page, the switch below the map isolates just those.',
               'Nearby reports group into clusters — click a cluster to zoom in.',
               'Each ranger has their own marker shape and color, consistent everywhere.'
             ]

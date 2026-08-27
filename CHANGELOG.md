@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.75.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+
+### Features
+
+* **radio-log,messages:** the ICS-309/213 IA restructuring - Reports is now Radio Log (route `reports` → `radio-log`, redirect kept for old links; same grid, same behavior, just renamed) and a genuinely new Messages page (route `messages`) shows every field report with "Also generate an ICS-213" checked. Messages is deliberately not a second AG Grid clone - a list of messages plus an expanded detail pane for the selected one, since a message is opt-in per report and the list is expected to stay short. A **Print as ICS-213** button on the detail pane fills FEMA's real ICS-213 form (`fillIcs213Pdf()`, shipped `0.57.0` but never wired to any UI until now) and downloads the result as a PDF. `FieldReportType` has no Subject or Approved-by field today, so those two of the form's eight fillable fields print blank rather than invented.
+* **guide,help:** every Reports/`/reports` reference across the Guide drawer and the Help page's tabs updated to Radio Log/`/radio-log`, plus a new Messages Guide entry - a rename that only touched the nav label and left every cross-reference stale would have been worse than not renaming at all.
+
 ## [0.74.0](https://github.com/EOCOnline/rangertrak/commit/a6a95bb36bc2dc42c71d6d08ab9d60f7b5c1baf9) (2026-08-27)
 
 ### Features

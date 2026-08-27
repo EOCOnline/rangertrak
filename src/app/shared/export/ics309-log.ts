@@ -53,7 +53,7 @@ export interface Ics309MissionInfo {
 }
 
 /**
- * `reports` is filtered by the caller first (Reports page's "all visible", "selected", or
+ * `reports` is filtered by the caller first (Radio Log page's "all visible", "selected", or
  * "since the last print" scope picker - see the roadmap note) - this function only orders
  * and formats whatever it's handed, it does not itself decide which reports belong in a log.
  */

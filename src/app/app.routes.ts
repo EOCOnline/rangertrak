@@ -32,9 +32,18 @@ export const APP_ROUTES: Routes = [
   { path: '', component: EntryComponent },
 
   // LAZY: loaded on first navigation (and preloaded in the background - see above).
+  // 2026-08-27: was 'reports' - renamed to match the page's new "Radio Log" nav label/title
+  // (same "URL matches nav label" convention 'settings'->'mission' and 'about'->'help'
+  // already followed). Redirect below covers old bookmarks.
   {
-    path: 'reports',
+    path: 'radio-log',
     loadComponent: () => import('./field-reports/field-reports.component').then(m => m.FieldReportsComponent)
+  },
+  // New 2026-08-27: ICS-213 messages (field reports with generates213 set), list + detail
+  // view rather than a second grid - see the roadmap's ICS-309/213 scoping note.
+  {
+    path: 'messages',
+    loadComponent: () => import('./messages/messages.component').then(m => m.MessagesComponent)
   },
   // E-64: one route for both engines - MapPageComponent is a thin shell that mounts
   // Leaflet by default and dynamically imports MapLibre only if the on-page switch is
@@ -69,9 +78,10 @@ export const APP_ROUTES: Routes = [
     loadChildren: () => import('./lazy/lazy.routes').then(m => m.LAZY_ROUTES)
   },
 
-  // Redirects for the two renames above - old bookmarks/links keep working.
+  // Redirects for the renames above - old bookmarks/links keep working.
   { path: 'settings', redirectTo: 'mission' },
   { path: 'about', redirectTo: 'help' },
+  { path: 'reports', redirectTo: 'radio-log' },
 
   // Page not found route
   {

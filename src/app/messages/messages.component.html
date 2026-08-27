@@ -1,0 +1,53 @@
+<rangertrak-page [title]="title" [description]="pageDescr">
+  @if (messages().length === 0) {
+    <p class="messages__empty">
+      No ICS-213 messages yet. Check "Also generate an ICS-213" on a field report
+      (Entry page) to have it appear here.
+    </p>
+  } @else {
+    <div class="messages__layout">
+      <ul class="messages__list">
+        @for (m of messages(); track m.id) {
+          <li>
+            <button type="button" class="messages__list-item"
+              [class.messages__list-item--selected]="m.id === selectedId()" (click)="select(m)">
+              <span class="messages__list-callsign">{{ m.callsign || '(no callsign)' }}</span>
+              <span class="messages__list-time">{{ formatTime(m.date) }}</span>
+              <span class="messages__list-preview">{{ m.message213 }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+
+      <div class="messages__detail">
+        @if (selected; as m) {
+          <mat-card appearance="outlined">
+            <mat-card-header>
+              <mat-card-title>{{ m.callsign || '(no callsign)' }}</mat-card-title>
+              <mat-card-subtitle>{{ m.date | date:'medium' }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <dl class="messages__fields">
+                <dt>To</dt>
+                <dd>{{ (m.recipients213 && m.recipients213.length) ? m.recipients213.join(', ') : '(none set)' }}</dd>
+                <dt>Message</dt>
+                <dd class="messages__message-text">{{ m.message213 }}</dd>
+                @if (m.replyRequested213) {
+                  <dt>Reply</dt>
+                  <dd>Requested</dd>
+                }
+              </dl>
+            </mat-card-content>
+            <mat-card-actions>
+              <button matButton="filled" type="button" [disabled]="printing()" (click)="printAsIcs213()">
+                {{ printing() ? 'Preparing…' : 'Print as ICS-213' }}
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        } @else {
+          <p class="messages__placeholder">Select a message to view it.</p>
+        }
+      </div>
+    </div>
+  }
+</rangertrak-page>
