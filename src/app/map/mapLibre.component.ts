@@ -8,7 +8,7 @@ import {
   TemplateRef, ViewChild, signal
 } from '@angular/core'
 
-import { buildPmtilesStyle, registerPmtilesProtocol } from '../shared/mapping/map-style'
+import { buildPmtilesStyle, DEFAULT_PMTILES_URL, registerPmtilesProtocol } from '../shared/mapping/map-style'
 import { fieldReportStatusColor, resolveCssColorForCanvas } from '../shared/mapping/report-marker-status'
 import {
   FieldReportsType, FieldReportService, FieldReportType, LogService, MissionService, MissionType
@@ -76,6 +76,21 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document
   ) {
     registerPmtilesProtocol()
+
+    // Mission Readiness's "bundled MapLibre asset warmed" signal (mission-readiness.service.ts)
+    // does a plain, read-only `caches.match(DEFAULT_PMTILES_URL)` - but this map's own tile
+    // source (pmtiles-js, via registerPmtilesProtocol above) only ever fetches that file with
+    // Range headers, which Angular's service worker deliberately never intercepts or caches
+    // (its documented limitation: caching a partial-content response under a full-file URL
+    // would wrongly serve a byte range to a later full-file request). Confirmed live,
+    // 2026-08-27: no code path ever put this URL in any cache, so that readiness signal could
+    // never turn green no matter how many times a scribe opened this page. One plain,
+    // non-Range fetch here - cached under this app's own name, not ngsw's internal one - is
+    // enough: the readiness check's `caches.match()` searches every cache in this origin, so
+    // the two never needed to share one, only the URL key.
+    fetch(DEFAULT_PMTILES_URL)
+      .then(res => res.ok ? caches.open('rangertrak-pmtiles-warm').then(c => c.put(DEFAULT_PMTILES_URL, res)) : undefined)
+      .catch(err => this.log.warn(`Failed to warm bundled PMTiles cache entry: ${err}`, 'MapLibreComponent'))
 
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => { this.settings = newMission },
