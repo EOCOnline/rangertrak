@@ -22,7 +22,7 @@
          offline once tiles are saved for the area, so neither engine is "the offline one". -->
     <h3 class="mission__subhead">Leaflet &mdash; primary</h3>
     <div class="rt-field-grid rt-field-grid--compact">
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>Default zoom</mat-label>
         <input matInput type="number" [formField]="form.leaflet.defZoom" placeholder="15" />
         @if (form.leaflet.defZoom().touched() && form.leaflet.defZoom().invalid()) {
@@ -30,7 +30,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>Overview offset</mat-label>
         <input matInput type="number" [formField]="form.leaflet.overviewDifference" placeholder="5" />
         @if (form.leaflet.overviewDifference().touched() && form.leaflet.overviewDifference().invalid()) {
@@ -38,7 +38,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>Overview min</mat-label>
         <input matInput type="number" [formField]="form.leaflet.overviewMinZoom" placeholder="5" />
         @if (form.leaflet.overviewMinZoom().touched() && form.leaflet.overviewMinZoom().invalid()) {
@@ -46,7 +46,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>Overview max</mat-label>
         <input matInput type="number" [formField]="form.leaflet.overviewMaxZoom" placeholder="21" />
         @if (form.leaflet.overviewMaxZoom().touched() && form.leaflet.overviewMaxZoom().invalid()) {
@@ -57,7 +57,7 @@
 
     <h3 class="mission__subhead">Backup map &mdash; MapLibre + PMTiles</h3>
     <div class="rt-field-grid rt-field-grid--compact">
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>Default zoom</mat-label>
         <input matInput type="number" [formField]="form.maplibre.defZoom" placeholder="15" />
         @if (form.maplibre.defZoom().touched() && form.maplibre.defZoom().invalid()) {
@@ -65,7 +65,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>Overview offset</mat-label>
         <input matInput type="number" [formField]="form.maplibre.overviewDifference" placeholder="5" />
         @if (form.maplibre.overviewDifference().touched() && form.maplibre.overviewDifference().invalid()) {
@@ -73,7 +73,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>Overview min</mat-label>
         <input matInput type="number" [formField]="form.maplibre.overviewMinZoom" placeholder="5" />
         @if (form.maplibre.overviewMinZoom().touched() && form.maplibre.overviewMinZoom().invalid()) {
@@ -81,7 +81,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>Overview max</mat-label>
         <input matInput type="number" [formField]="form.maplibre.overviewMaxZoom" placeholder="21" />
         @if (form.maplibre.overviewMaxZoom().touched() && form.maplibre.overviewMaxZoom().invalid()) {
@@ -91,7 +91,7 @@
     </div>
 
     <h3 class="mission__subhead">Geocoding</h3>
-    <mat-form-field class="mission__api-key">
+    <mat-form-field class="mission__api-key" floatLabel="always">
       <mat-label>Google geocoding API key &mdash; optional</mat-label>
       <input matInput type="text" [formField]="form.googleGeocodingApiKey"
         placeholder="Leave blank to use Nominatim (OpenStreetMap)" data-lpignore="true" />

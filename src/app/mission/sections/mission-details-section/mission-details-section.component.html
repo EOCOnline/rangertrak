@@ -12,12 +12,12 @@
   </mat-card-header>
   <mat-card-content>
     <div class="rt-field-grid">
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>ID or number</mat-label>
         <input matInput [formField]="form.mission" placeholder="Mission #" type="text" data-lpignore="true" />
       </mat-form-field>
 
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>Name</mat-label>
         <input matInput [formField]="form.event" placeholder="Event name" type="text" data-lpignore="true" />
         <!-- D-32 signal 1: an unnamed mission is one of the six readiness checks, so say so
@@ -26,7 +26,7 @@
       </mat-form-field>
     </div>
 
-    <mat-form-field class="rt-field-grid__wide mission__notes">
+    <mat-form-field class="rt-field-grid__wide mission__notes" floatLabel="always">
       <mat-label>Notes</mat-label>
       <textarea matInput [formField]="form.eventNotes" rows="3"
         placeholder="Event description, if needed"></textarea>
@@ -41,7 +41,7 @@
       ICS-309 log covers.</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <mat-form-field class="mission__period-name">
+    <mat-form-field class="mission__period-name" floatLabel="always">
       <mat-label>Period name</mat-label>
       <input matInput [formField]="form.opPeriod" placeholder="Operational Period" type="text"
         data-lpignore="true" />
