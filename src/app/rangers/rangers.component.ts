@@ -173,18 +173,28 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     return `<span aria-hidden> ${params.data.id}</span>`
   }
 
-  columnDefs: ColDef[] = [
-    { headerName: "Call Sign", field: "callsign", cellRenderer: this.callsignCellRenderer, minWidth: 110, maxWidth: 200 },
-    { headerName: "Full Name", field: "fullName", tooltipField: "FCC Licensee Name", minWidth: 150, maxWidth: 300 },
-    { headerName: "Phone", field: "phone", singleClickEdit: true, maxWidth: 170 },
-    { headerName: "ID", field: "id", cellRenderer: this.idCellRenderer, singleClickEdit: true, maxWidth: 170 },
-    // Fixed: the cell renders a 40x40 <img>, so measuring its content is pointless -
-    // it is always exactly one thumbnail wide.
-    { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, tooltipField: "image", tooltipComponentParams: { color: '#ececec' }, width: 80, maxWidth: 80, resizable: false },
-    { headerName: "Role", field: "role", maxWidth: 200 },
-    // The only flex column - takes whatever the content-sized columns leave over.
-    { headerName: "Notes", field: "note", flex: 1, minWidth: 150 },
-  ]
+  // Raised live, 2026-08-27: what to CALL a ranger's unique id varies by agency/region
+  // (settings.idFieldLabel, MissionType) - WA uses REW, other agencies use something else
+  // entirely. This is a method, not a static array, so it can rebuild with a new
+  // headerName whenever settings change (see the settings subscription in ngOnInit) - AG
+  // Grid's Angular wrapper picks up a NEW columnDefs array reference reactively, so
+  // reassigning `this.columnDefs` here is enough, no grid API call needed.
+  private buildColumnDefs(idFieldLabel: string): ColDef[] {
+    return [
+      { headerName: "Call Sign", field: "callsign", cellRenderer: this.callsignCellRenderer, minWidth: 110, maxWidth: 200 },
+      { headerName: "Full Name", field: "fullName", tooltipField: "FCC Licensee Name", minWidth: 150, maxWidth: 300 },
+      { headerName: "Phone", field: "phone", singleClickEdit: true, maxWidth: 170 },
+      { headerName: idFieldLabel || 'ID', field: "id", cellRenderer: this.idCellRenderer, singleClickEdit: true, maxWidth: 170 },
+      // Fixed: the cell renders a 40x40 <img>, so measuring its content is pointless -
+      // it is always exactly one thumbnail wide.
+      { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, tooltipField: "image", tooltipComponentParams: { color: '#ececec' }, width: 80, maxWidth: 80, resizable: false },
+      { headerName: "Role", field: "role", maxWidth: 200 },
+      // The only flex column - takes whatever the content-sized columns leave over.
+      { headerName: "Notes", field: "note", flex: 1, minWidth: 150 },
+    ]
+  }
+
+  columnDefs: ColDef[] = this.buildColumnDefs('ID')
 
   constructor(
     //private teamService: TeamService,
@@ -219,6 +229,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => {
         this.settings = newMission
+        this.columnDefs = this.buildColumnDefs(newMission.idFieldLabel)
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),

@@ -7,7 +7,7 @@
 
     <!-- E-84: this page used to be one long scroll, which is how six shipped features ended
          up documented nowhere - there was no obvious place to add them and no way to see
-         what was already covered. Six tabs, each its own component in ./tabs.
+         what was already covered. Eight tabs, each its own component in ./tabs.
 
          Content rule, from the maintainer: keep it minimal, the UI should be
          self-explanatory. These tabs deliberately cover only what a screen cannot say for
@@ -17,6 +17,9 @@
     <mat-tab-group class="help-tabs" mat-stretch-tabs="false" animationDuration="0ms">
       <mat-tab label="Start here">
         <rangertrak-help-start></rangertrak-help-start>
+      </mat-tab>
+      <mat-tab label="About">
+        <rangertrak-help-about></rangertrak-help-about>
       </mat-tab>
       <mat-tab label="Entering reports">
         <rangertrak-help-entry></rangertrak-help-entry>
@@ -29,6 +32,9 @@
       </mat-tab>
       <mat-tab label="Your data">
         <rangertrak-help-data></rangertrak-help-data>
+      </mat-tab>
+      <mat-tab label="Log">
+        <rangertrak-help-log></rangertrak-help-log>
       </mat-tab>
       <mat-tab label="FAQ">
         <rangertrak-help-faq></rangertrak-help-faq>

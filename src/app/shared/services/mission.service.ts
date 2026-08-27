@@ -305,6 +305,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       fieldReportStatuses: [...DEFAULT_FIELD_REPORT_STATUSES],
       // fieldReportKeywords: [''],  // Future...could also just search notes field
       recipientOptions213: [...DEFAULT_RECIPIENT_OPTIONS_213],
+      idFieldLabel: 'ID',
     }
   }
 

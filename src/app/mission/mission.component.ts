@@ -18,7 +18,6 @@ import {
 import { InstallUpdateComponent } from '../shared/install-update/install-update.component'
 
 import { MATERIAL_IMPORTS } from '../material-imports'
-import { MissionInstructionsComponent } from './sections/mission-instructions/mission-instructions.component'
 import { MissionDetailsSectionComponent } from './sections/mission-details-section/mission-details-section.component'
 import { MissionLocationSectionComponent } from './sections/mission-location-section/mission-location-section.component'
 import { MissionMapsSectionComponent } from './sections/mission-maps-section/mission-maps-section.component'
@@ -42,7 +41,7 @@ const blankMission: MissionType = {
   maplibre: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   leaflet: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   imageDirectory: '', defFieldReportStatus: 0, fieldReportStatuses: [],
-  recipientOptions213: [],
+  recipientOptions213: [], idFieldLabel: '',
 }
 
 @Component({
@@ -54,7 +53,6 @@ const blankMission: MissionType = {
     RouterLink,
     ...MATERIAL_IMPORTS,
     PageComponent,
-    MissionInstructionsComponent,
     MissionDetailsSectionComponent,
     MissionLocationSectionComponent,
     MissionMapsSectionComponent,

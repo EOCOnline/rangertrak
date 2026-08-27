@@ -77,4 +77,14 @@ export type MissionType = {
   // DEFAULT_RECIPIENT_OPTIONS_213 to any returning user whose stored settings predate this
   // field - no MISSION_SCHEMA_VERSION bump needed.
   recipientOptions213: string[],
+
+  // Raised live, 2026-08-27: what a ranger's unique identifier is CALLED varies by
+  // agency/region - WA uses REW, an IMT or another agency uses something else entirely, and
+  // a large multi-agency incident may have several systems in play at once with no single
+  // right answer. The identifier itself is still required to be unique (D-42/D-43's own
+  // constraint, unchanged) - this only controls the LABEL shown for it, on the Rangers grid
+  // column header and wherever else it is displayed as a field name. Additive-only, same
+  // reasoning as recipientOptions213 immediately above - no MISSION_SCHEMA_VERSION bump
+  // needed, backfillMissingFields supplies the default to any returning user.
+  idFieldLabel: string,
 }

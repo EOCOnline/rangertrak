@@ -11,12 +11,14 @@ import { PageComponent } from '../../shared/page/page.component'
 
 import { LogService, MissionService, MissionType } from '../../shared/services'
 
+import { HelpAboutComponent } from './tabs/help-about.component'
 import { HelpStartComponent } from './tabs/help-start.component'
 import { HelpEntryComponent } from './tabs/help-entry.component'
 import { HelpMapsComponent } from './tabs/help-maps.component'
 import { HelpMissionComponent } from './tabs/help-mission.component'
 import { HelpDataComponent } from './tabs/help-data.component'
 import { HelpFaqComponent } from './tabs/help-faq.component'
+import { HelpLogComponent } from './tabs/help-log.component'
 
 /**
  * The in-app user documentation, and (E-84 decision, 2026-08-24) the canonical one: it ships
@@ -27,8 +29,10 @@ import { HelpFaqComponent } from './tabs/help-faq.component'
  * This page was one long scroll until E-84. That is how six shipped features (route trails,
  * per-ranger markers, base-layer switching, offline tile saving, the theme toggle, the
  * readiness dot) ended up documented nowhere at all - there was no obvious place to add
- * anything and no way to see what was already covered. Content now lives in six sibling
- * components under ./tabs, one per tab.
+ * anything and no way to see what was already covered. Content now lives in sibling
+ * components under ./tabs, one per tab (eight as of 2026-08-27: "Start here" split into a
+ * separate About tab - it had been doing two jobs at once - and a Log tab was added so the
+ * Log page, deliberately absent from the main nav, is still easy to find).
  *
  * Content rule for anything added here, from the maintainer: keep it minimal, the UI should
  * be self-explanatory. These tabs deliberately cover only what a screen cannot say for
@@ -39,8 +43,8 @@ import { HelpFaqComponent } from './tabs/help-faq.component'
   standalone: true,
   imports: [
     CommonModule, PageComponent, SectionComponent, RouterLink, FeedbackComponent, MatTabsModule,
-    HelpStartComponent, HelpEntryComponent, HelpMapsComponent,
-    HelpMissionComponent, HelpDataComponent, HelpFaqComponent,
+    HelpAboutComponent, HelpStartComponent, HelpEntryComponent, HelpMapsComponent,
+    HelpMissionComponent, HelpDataComponent, HelpLogComponent, HelpFaqComponent,
   ],
   templateUrl: './help.component.html',
   styleUrls: ['./help.component.scss'],

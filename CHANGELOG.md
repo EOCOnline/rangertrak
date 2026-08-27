@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.74.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+
+### Features
+
+* **help:** "Start here" split into two tabs - it was doing two jobs at once (what RangerTrak is, and the first-five-minutes walkthrough). A new About tab carries the former; Start here keeps the onboarding steps and the offline-capability reference table.
+* **help:** a new Log tab gives the Log page (deliberately absent from the main nav - it is a diagnostic tool, not a workflow page) a clearly-labelled way to be found, rather than only a link buried in the Your data tab's "Reporting a problem" prose.
+* **mission,rangers:** per-mission label for a ranger's unique identifier (`idFieldLabel`, `MissionType`) - WA calls it REW; an IMT or another agency calls it something else, and a large multi-agency incident may have several systems in play with no single right answer. Only the label is settable (Mission Setup, under the Mission card); the identifier itself is still required to be unique. The Rangers grid's id column header now reads this setting live. Additive-only field, defaults to "ID" - no `MISSION_SCHEMA_VERSION` bump needed, `backfillMissingFields` supplies the default to any returning user, same mechanism `recipientOptions213` already relies on.
+
+### Fixes
+
+* **mission:** removed a real leftover - a static "Instructions" disclosure block dating to Sprint C, still rendering below the Danger zone on Mission Setup, that survived every later M3/E-84 pass untouched. Its substance already duplicated the `/mission` Guide entry (which the E-84 pass had written specifically to replace exactly this kind of on-page block); the one line with no equivalent (a generic "zoom with Ctrl+scroll" browser tip) wasn't RangerTrak-specific enough to be worth keeping either.
+
 ## [0.73.0](https://github.com/EOCOnline/rangertrak/commit/3066ce60e60f2f1c128017d5a95558d1438f4b64) (2026-08-27)
 
 ### Fixes

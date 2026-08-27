@@ -2,7 +2,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterLink } from '@angular/router'
 
 /**
- * Help tab: What RangerTrak is, who it is for, and the first five minutes on a new device.
+ * Help tab: the first five minutes on a new device, and working offline.
+ *
+ * Split from a combined "Start here" 2026-08-27 (raised live: it was doing two jobs at
+ * once) - what RangerTrak IS now lives in HelpAboutComponent instead. This tab keeps only
+ * the onboarding steps and reference material a scribe needs to actually start using it.
  *
  * E-84: the Help page was one long scroll of ~8 prose blocks plus three disclosures, which
  * is why six shipped features ended up documented nowhere - there was no obvious place to

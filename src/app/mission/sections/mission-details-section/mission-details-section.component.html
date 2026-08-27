@@ -31,6 +31,17 @@
       <textarea matInput [formField]="form.eventNotes" rows="3"
         placeholder="Event description, if needed"></textarea>
     </mat-form-field>
+
+    <!-- Raised live, 2026-08-27: WA calls this REW; an IMT or another agency calls it
+         something else entirely, and a large multi-agency incident may have several systems
+         in play with no single right answer. Only the LABEL is settable here - the
+         identifier itself is still required to be unique (D-42/D-43, unchanged). -->
+    <mat-form-field class="rt-field-grid__wide mission__id-label" floatLabel="always">
+      <mat-label>Ranger ID field name</mat-label>
+      <input matInput [formField]="form.idFieldLabel" placeholder="ID" type="text" data-lpignore="true" />
+      <mat-hint>What to call each ranger's unique identifier on the Rangers grid - e.g. "REW" for
+        Washington, or whatever this mission's agency uses.</mat-hint>
+    </mat-form-field>
   </mat-card-content>
 </mat-card>
 

@@ -30,15 +30,18 @@ describe('HelpComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // E-84: the page is six tabs, not one long scroll. The previous test here asserted an
+  // E-84: the page is tabs, not one long scroll. The previous test here asserted an
   // <h2>Help</h2> that the tab shell no longer has - the labels are the structure now.
-  it('renders the six documentation tabs, in the planned order', () => {
+  // 2026-08-27: "Start here" split into a separate About tab (was doing two jobs at once),
+  // and a Log tab was added so the Log page (deliberately absent from the main nav) is
+  // still easy to find.
+  it('renders the eight documentation tabs, in the planned order', () => {
     const labels: string[] = Array.from(
       fixture.nativeElement.querySelectorAll('.help-tabs .mdc-tab__text-label') as NodeListOf<HTMLElement>
     ).map(el => el.textContent!.trim());
 
     expect(labels).toEqual([
-      'Start here', 'Entering reports', 'Maps', 'Mission setup', 'Your data', 'FAQ'
+      'Start here', 'About', 'Entering reports', 'Maps', 'Mission setup', 'Your data', 'Log', 'FAQ'
     ]);
   });
 

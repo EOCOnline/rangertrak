@@ -776,18 +776,23 @@ async function checkWelcomePanelDismissAndReopen() {
 }
 
 /**
- * E-84: the Help page is six tabs, and is the app's canonical user documentation.
+ * E-84: the Help page is tabs, and is the app's canonical user documentation.
  *
  * Scoped deliberately to '.help-tabs' rather than to Material's tab chrome generally: a
  * selector like '.mat-mdc-tab' would match a tab strip anywhere in the app, so this check
  * would pass on a page that has tabs for some other reason and keep passing if Help itself
  * regressed to one long scroll. Confirmed red before the tabs existed.
  *
- * Asserts the bodies actually swap, not just that six labels render - a tab strip whose
+ * Asserts the bodies actually swap, not just that the labels render - a tab strip whose
  * panels all show the same content is the plausible-looking failure here.
+ *
+ * 2026-08-27: "Start here" split into a separate About tab (was doing two jobs at once -
+ * describing what RangerTrak is, and walking through the first five minutes on a new
+ * device), and a Log tab was added so the Log page (deliberately absent from the main nav)
+ * is still easy to find - eight tabs now, not six.
  */
 async function checkHelpTabs() {
-  console.log('\nE-84: Help renders six tabs and switching them changes the body')
+  console.log('\nE-84: Help renders eight tabs and switching them changes the body')
   await goto('/help')
 
   const labels = await evaluate(`(() => {
@@ -796,8 +801,8 @@ async function checkHelpTabs() {
     return [...group.querySelectorAll('.mat-mdc-tab .mdc-tab__text-label')]
       .map(el => el.textContent.trim()).join('|');
   })()`)
-  check('six tabs, in the planned order', labels,
-    'Start here|Entering reports|Maps|Mission setup|Your data|FAQ')
+  check('eight tabs, in the planned order', labels,
+    'Start here|About|Entering reports|Maps|Mission setup|Your data|Log|FAQ')
 
   const firstBody = await evaluate(`document.querySelector('.help-tabs rangertrak-help-start') ? 'start' : 'missing'`)
   check('the first tab shows the Start here body', firstBody, 'start')
