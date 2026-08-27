@@ -40,8 +40,10 @@
   // Was a single un-wrapping row: at any viewport narrower than the links' combined
   // width (~650px) the row simply didn't fit, and mobile browsers respond to that by
   // widening the whole page's layout viewport to avoid clipping it - so every route was
-  // forced to a ~650-1100px minimum width on phones, not just this nav. Wrapping is the
-  // minimal fix for that; a real collapsed/hamburger treatment is Sprint E's job.
+  // forced to a ~650-1100px minimum width on phones, not just this nav. flex-wrap was the
+  // stopgap fix for that at the time; below bp.phone this now collapses behind
+  // .nav-toggle instead (2026-08-26, see that rule's own comment) - flex-wrap stays here
+  // as the tablet-width fallback, in case the link list ever grows past one row there too.
   flex-wrap      : wrap;
   row-gap        : 0.2em;
 }
@@ -158,6 +160,29 @@
   filter      : invert(1);
 }
 
+// Same circular hover treatment as .theme-toggle, since the two sit side by side.
+// Hidden at tablet-up: the link list stays a plain inline row there (unchanged), so
+// there's nothing for this to toggle.
+.nav-toggle {
+  display        : none;
+  align-items    : center;
+  justify-content: center;
+  width          : var(--rt-tap-min);
+  height         : var(--rt-tap-min);
+  margin-right   : 0.2em;
+  padding        : 0;
+  border         : 0;
+  border-radius  : 50%;
+  background     : transparent;
+  color          : inherit;
+  cursor         : pointer;
+}
+
+.nav-toggle:hover,
+.nav-toggle:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .main-nav a {
   margin-left    : 5px;
   margin-right   : 5px;
@@ -172,12 +197,48 @@
   opacity: 1;
 }
 
+// 2026-08-26: replaces the old `flex-direction: column` stopgap (three stacked rows -
+// brand, links, icons - ~143px measured live) with a real collapsed menu, the treatment
+// this file's own .main-nav>ul comment already flagged as deferred ("a real collapsed/
+// hamburger treatment is Sprint E's job"). Brand + toggle + theme + GitHub now stay one
+// row; the link list hides behind .nav-toggle and, when open, drops down as its own
+// block below that row instead of wrapping mid-row.
 @include bp.phone {
   .main-nav {
-    flex-direction: column;
+    flex-wrap: wrap;
+    row-gap  : 0;
   }
 
-  .main-nav ul {
-    margin-bottom: 0.1em;
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .main-nav>ul {
+    display    : none;
+    // Forces this onto its own line below the brand/toggle/icons row regardless of DOM
+    // position - a flex item at 100% basis always starts a new line in a wrapping flex
+    // container. order:3 (higher than .rightAlign's default 0) keeps .rightAlign visually
+    // BEFORE this forced line break, so the icons stay on row 1 with the brand instead of
+    // being pushed down alongside the links.
+    flex-basis : 100%;
+    order      : 3;
+    margin-left: 0;
+    row-gap    : 0;
+  }
+
+  .main-nav>ul.open {
+    display       : flex;
+    flex-direction: column;
+    align-items   : stretch;
+  }
+
+  .main-nav>ul li {
+    margin-right: 0;
+  }
+
+  .main-nav a {
+    display: block;
+    padding: 0.6em 0.4em;
+    margin : 0;
   }
 }

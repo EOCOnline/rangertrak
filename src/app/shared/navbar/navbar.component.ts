@@ -32,6 +32,23 @@ export class NavbarComponent implements OnInit {
   faMapMarkedAlt = faMapMarkedAlt
   recycled = 0
 
+  /**
+   * 2026-08-26: phone-width nav links used to just wrap onto extra rows - a deliberate
+   * stopgap noted in navbar.component.scss's own comment ("a real collapsed/hamburger
+   * treatment is Sprint E's job") that was never revisited. This is that treatment: the
+   * link list collapses behind a toggle button below bp.phone (575px), and stays exactly
+   * as it was (a plain inline row, this signal never read) at every wider size.
+   */
+  navOpen = signal(false)
+
+  toggleNav(): void {
+    this.navOpen.set(!this.navOpen())
+  }
+
+  closeNav(): void {
+    this.navOpen.set(false)
+  }
+
   constructor(
     private log: LogService,
     //private missionService: MissionService,
@@ -47,6 +64,7 @@ export class NavbarComponent implements OnInit {
           // REVIEW: This seems to help page get properly loaded????
           Utility.sleep(100)
           this.isNavigating.set(true)
+          this.navOpen.set(false)
 
           if (false) {
             //if (this.recycled++ < 3) {

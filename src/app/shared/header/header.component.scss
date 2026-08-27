@@ -11,7 +11,7 @@
     background     : var(--rt-surface-2);
     color          : var(--rt-ink);
     border-bottom  : 1px solid var(--rt-line);
-    padding        : 0 5px 0.75em 5px;
+    padding        : 0 5px var(--rt-space-sm) 5px;
     //margin : 0;
     display        : flex;
     flex-flow      : row wrap;
@@ -53,12 +53,12 @@
   .status-cluster {
     display      : flex;
     align-items  : center;
-    gap          : 0.6em;
+    gap          : var(--rt-space-sm);
     flex-wrap    : wrap;
     background   : var(--rt-surface);
     border       : 1px solid var(--rt-line);
     border-radius: 999px;
-    padding      : 0.3em 0.9em;
+    padding      : var(--rt-space-xs) var(--rt-gap);
     // E-83: the whole pill is a click target (reopens the Entry welcome panel) - the
     // readiness dot inside it is its own separate link and keeps its own pointer cursor.
     cursor       : pointer;
@@ -96,7 +96,7 @@
   .header__right {
     display    : flex;
     align-items: center;
-    gap        : 0.6em;
+    gap        : var(--rt-space-sm);
     flex-wrap  : wrap;
     // On a phone the title takes the first line and this group wraps below it; without
     // this it would sit hard against the left edge under the title.
