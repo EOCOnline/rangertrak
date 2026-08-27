@@ -10,7 +10,9 @@
 //     for why light-dark() is used instead.
 
 @use '@angular/material' as mat;
-@use './styles/active-skin' as skin;
+@use './styles/skins/ridgeline' as ridgeline;
+@use './styles/skins/command' as command;
+@use './styles/skins/nightwatch' as nightwatch;
 @use './styles/tokens';
 // Page-structure patterns (action bar, danger zone, alert, field grid) - see
 // styles/_patterns.scss. Emitted globally, after tokens, because every rule in it reads
@@ -21,12 +23,42 @@
 // the token layer 19a item 1 said was missing on the Material side, and gives light/dark as
 // a first-class colour-scheme rather than a bolted-on media block.
 //
-// Scoped to :root rather than html so it composes with tokens.scss's :root block.
+// Widened 2026-08-26 from a single compile-time-selected palette (styles/_active-skin.scss,
+// now gone) to all three, each scoped to the same `data-skin` attribute
+// styles/_tokens.scss's own chrome tokens now switch on - shared/services/skin.service.ts
+// sets it on <html> at runtime. mat.theme() is designed to be scoped to any selector (the
+// documented pattern for a themed sub-section); three calls differing only in `color` is
+// the same idea applied to the whole document instead of a sub-section. Scoped to :root
+// rather than html so it composes with tokens.scss's own :root block.
 :root {
+  // command is the default (no data-skin attribute) - matches tokens.scss's own choice of
+  // default, so the --rt-* and --mat-sys-* layers always agree on which skin is "unmarked".
   @include mat.theme((
     color: (
-      primary: skin.$primary-palette,
-      tertiary: skin.$tertiary-palette,
+      primary: command.$primary-palette,
+      tertiary: command.$tertiary-palette,
+    ),
+    typography: Roboto,
+    density: -2,
+  ));
+}
+
+:root[data-skin="ridgeline"] {
+  @include mat.theme((
+    color: (
+      primary: ridgeline.$primary-palette,
+      tertiary: ridgeline.$tertiary-palette,
+    ),
+    typography: Roboto,
+    density: -2,
+  ));
+}
+
+:root[data-skin="nightwatch"] {
+  @include mat.theme((
+    color: (
+      primary: nightwatch.$primary-palette,
+      tertiary: nightwatch.$tertiary-palette,
     ),
     typography: Roboto,
     density: -2,
@@ -114,6 +146,8 @@ rangertrak-footer {
   border: 0;
 }
 
-// Sprint A gate check (D-26): with a real token layer in place, changing ONE value in
-// styles/_active-skin.scss must visibly change the whole app. If that is not true, nothing
-// else in the UI phase should start.
+// Sprint A gate check (D-26): with a real token layer in place, changing the active skin
+// must visibly change the whole app. Originally verified by editing one value in
+// styles/_active-skin.scss (a compile-time choice, since removed); now the same fact holds
+// at runtime instead - toggling the `data-skin` attribute (shared/services/skin.service.ts)
+// changes the whole app immediately, no rebuild required.

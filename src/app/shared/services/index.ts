@@ -12,6 +12,7 @@ export { InstallableService } from "./installable.service"
 export { SampleDataService } from "./sample-data.service"
 export { MissionReadinessService, ReadinessLevel } from "./mission-readiness.service"
 export { ThemeService, ThemeMode } from "./theme.service"
+export { SkinService, Skin, SKINS } from "./skin.service"
 export { WelcomePanelService } from "./welcome-panel.service"
 
 export {

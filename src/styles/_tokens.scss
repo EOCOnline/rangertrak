@@ -11,35 +11,43 @@
 // render form controls, scrollbars and the canvas in the right scheme for free.
 
 @use 'sass:map';
-@use './active-skin' as skin;
+@use './chrome';
 @use './status';
 
-$c: skin.$chrome;
+// Emits one skin's surface/ink/chrome/accent tokens. Was a flat :root block reading a
+// single compile-time-selected map (styles/_active-skin.scss, now gone) - widened
+// 2026-08-26 so all three skins ship in one build and a scribe can switch between them at
+// runtime (shared/services/skin.service.ts sets a `data-skin` attribute on <html>; see
+// this file's own :root[data-skin="..."] blocks below). Same light-dark() pattern as
+// before, just parameterized over which map supplies the values.
+@mixin _rt-chrome-tokens($c) {
+  // ── Surfaces and ink ──────────────────────────────────────────────
+  --rt-ground: #{light-dark(map.get($c, ground), map.get($c, ground-dark))};
+  --rt-surface: #{light-dark(map.get($c, surface), map.get($c, surface-dark))};
+  --rt-surface-2: #{light-dark(map.get($c, surface-2), map.get($c, surface-2-dark))};
+  --rt-ink: #{light-dark(map.get($c, ink), map.get($c, ink-dark))};
+  --rt-ink-2: #{light-dark(map.get($c, ink-2), map.get($c, ink-2-dark))};
+  --rt-ink-3: #{light-dark(map.get($c, ink-3), map.get($c, ink-3-dark))};
+  --rt-line: #{light-dark(map.get($c, line), map.get($c, line-dark))};
+  --rt-line-strong: #{light-dark(map.get($c, line-strong), map.get($c, line-strong-dark))};
 
-@function _pair($key) {
-  @return light-dark(#{map.get($c, $key)}, #{map.get($c, $key + '-dark')});
+  // ── Chrome (navbar, mission strip) ────────────────────────────────
+  --rt-chrome: #{light-dark(map.get($c, chrome), map.get($c, chrome-dark))};
+  --rt-chrome-ink: #{light-dark(map.get($c, chrome-ink), map.get($c, chrome-ink-dark))};
+
+  // ── Accent ────────────────────────────────────────────────────────
+  --rt-accent: #{light-dark(map.get($c, accent), map.get($c, accent-dark))};
+  --rt-accent-ink: #{light-dark(map.get($c, accent-ink), map.get($c, accent-ink-dark))};
 }
 
 :root {
   color-scheme: light dark;
 
-  // ── Surfaces and ink ──────────────────────────────────────────────
-  --rt-ground: #{_pair(ground)};
-  --rt-surface: #{_pair(surface)};
-  --rt-surface-2: #{_pair(surface-2)};
-  --rt-ink: #{_pair(ink)};
-  --rt-ink-2: #{_pair(ink-2)};
-  --rt-ink-3: #{_pair(ink-3)};
-  --rt-line: #{_pair(line)};
-  --rt-line-strong: #{_pair(line-strong)};
-
-  // ── Chrome (navbar, mission strip) ────────────────────────────────
-  --rt-chrome: #{_pair(chrome)};
-  --rt-chrome-ink: #{_pair(chrome-ink)};
-
-  // ── Accent ────────────────────────────────────────────────────────
-  --rt-accent: #{_pair(accent)};
-  --rt-accent-ink: #{_pair(accent-ink)};
+  // command is the default (no data-skin attribute set) - matches this app's existing
+  // light/dark convention (ThemeService), where the unmarked state is a real choice, not
+  // an absence of one, and an explicit override always wins via the attribute selectors
+  // below.
+  @include _rt-chrome-tokens(chrome.$command);
 
   // ── Notice / caution ──────────────────────────────────────────────
   // Deliberately NOT per-skin. A caution means the same thing under every skin, which is
@@ -104,4 +112,17 @@ $c: skin.$chrome;
   --rt-type-body-sm-line: 1.25rem;
   --rt-type-label-size: 0.75rem;
   --rt-type-label-line: 1rem;
+}
+
+// Explicit overrides - only the tokens that actually vary per skin (surfaces/ink/chrome/
+// accent, via the mixin above); everything else in the :root block (spacing, type scale,
+// notice/readiness/status colours) is deliberately not per-skin and inherits unchanged.
+// No :root[data-skin="command"] block: command's values already ARE :root's default
+// above, so an explicit choice of "command" resolves identically without repeating them.
+:root[data-skin="ridgeline"] {
+  @include _rt-chrome-tokens(chrome.$ridgeline);
+}
+
+:root[data-skin="nightwatch"] {
+  @include _rt-chrome-tokens(chrome.$nightwatch);
 }

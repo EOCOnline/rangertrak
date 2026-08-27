@@ -137,6 +137,44 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+// Same circular hover treatment as .theme-toggle, which it sits next to.
+.skin-toggle {
+  display        : inline-flex;
+  align-items    : center;
+  justify-content: center;
+  width          : var(--rt-tap-min);
+  height         : var(--rt-tap-min);
+  margin-right   : 0.2em;
+  padding        : 0;
+  border         : 0;
+  border-radius  : 50%;
+  background     : transparent;
+  color          : inherit;
+  cursor         : pointer;
+}
+
+.skin-toggle:hover,
+.skin-toggle:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+// Menu items render in Material's own surface/on-surface tokens (not the navbar's dark
+// chrome ones), so these two need no colour of their own beyond what the swatch itself is.
+.skin-swatch {
+  display      : inline-block;
+  width        : 0.9em;
+  height       : 0.9em;
+  border-radius: 50%;
+  margin-right : 0.6em;
+  flex         : none;
+}
+
+.skin-check {
+  margin-left: auto;
+  padding-left: 0.6em;
+  font-weight: 700;
+}
+
 .git_NOTUSED {
   //align-self: flex-end;
   position          : absolute;

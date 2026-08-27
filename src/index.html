@@ -63,6 +63,18 @@
           document.documentElement.style.colorScheme = rtThemeMode;
         }
       } catch (e) { /* localStorage unavailable (e.g. blocked in this context) - fall back to auto */ }
+
+      // Same reasoning as the block above, for the colour-scheme ("skin") choice instead of
+      // light/dark. 'skinChoice' must match SKIN_KEY in
+      // src/app/shared/services/skin.service.ts. 'command' (or nothing stored) is the
+      // default and needs no attribute - styles.scss/_tokens.scss's own :root blocks
+      // already are command's values.
+      try {
+        var rtSkin = localStorage.getItem('skinChoice');
+        if (rtSkin === 'ridgeline' || rtSkin === 'nightwatch') {
+          document.documentElement.setAttribute('data-skin', rtSkin);
+        }
+      } catch (e) { /* localStorage unavailable - fall back to command */ }
   </script>
   <!-- E-44 audit, 2026-08-26: removed a dead SystemJS-era script comment, a mangled
        commented-out Leaflet CDN tag, and this What3Words SDK include - it loaded

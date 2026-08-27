@@ -3,18 +3,19 @@ import { Component, OnInit, ChangeDetectionStrategy, signal } from '@angular/cor
 import { NavigationEnd, NavigationError, NavigationStart, Router, RouterModule } from '@angular/router';
 import { faL, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
+import { MatMenuModule } from '@angular/material/menu'
 import { MDCTopAppBar } from '@material/top-app-bar'
 // import { MatButton } from '@angular/material/button'
 // import { MatButtonModule } from '@angular/material/button'
 import { subscribeOn } from 'rxjs';
-import { LogService, MissionService, MissionType, ThemeService } from '../services';
+import { LogService, MissionService, MissionType, Skin, SKINS, SkinService, ThemeService } from '../services';
 import { Utility } from '../utility';
 //https://material.io/components/app-bars-top/web#regular-top-app-bar
 
 @Component({
   selector: 'rangertrak-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatProgressBarModule],
+  imports: [CommonModule, RouterModule, MatProgressBarModule, MatMenuModule],
   templateUrl: './navbar.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./navbar.component.scss']
@@ -49,11 +50,14 @@ export class NavbarComponent implements OnInit {
     this.navOpen.set(false)
   }
 
+  protected readonly skins = SKINS
+
   constructor(
     private log: LogService,
     //private missionService: MissionService,
     private router: Router,
-    protected theme: ThemeService
+    protected theme: ThemeService,
+    protected skin: SkinService
   ) {
     this.log.verbose("constructor", this.id)
 

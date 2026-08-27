@@ -98,6 +98,35 @@
       }
     </button>
 
+    <!-- 2026-08-26: the mockup showed three colour schemes (styles/_chrome.scss's
+         ridgeline/command/nightwatch), but there was never a way to actually pick one - it
+         was a compile-time edit to styles/_active-skin.scss, one line, then a rebuild. This
+         is that made real: shared/services/skin.service.ts owns the choice, a `data-skin`
+         attribute on <html> is all either stylesheet (styles.scss/_tokens.scss) reads. A
+         menu, not a cycle button like the theme toggle above - three NAMED options read
+         better as a list with the current one checked than as an unlabelled icon a scribe
+         has to click through blind. -->
+    <button type="button" class="skin-toggle" [matMenuTriggerFor]="skinMenu"
+      aria-label="Colour scheme" title="Colour scheme">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />
+        <circle cx="12" cy="8" r="1.6" fill="currentColor" />
+        <circle cx="8.2" cy="13" r="1.6" fill="currentColor" />
+        <circle cx="15.8" cy="13" r="1.6" fill="currentColor" />
+      </svg>
+    </button>
+    <mat-menu #skinMenu="matMenu">
+      @for (opt of skins; track opt.value) {
+      <button mat-menu-item (click)="skin.set(opt.value)">
+        <span class="skin-swatch" [style.background]="opt.accent" aria-hidden="true"></span>
+        {{ opt.label }}
+        @if (skin.skin() === opt.value) {
+        <span class="skin-check" aria-hidden="true">&check;</span>
+        }
+      </button>
+      }
+    </mat-menu>
+
     <!-- E-57(1) follow-up: install/update used to render here too, plus the footer's
          [stickyBottom] instance, plus a separate MatSnackBar UpdateService opened
          directly - three surfaces for the same "update ready" notice. Maintainer: "New
