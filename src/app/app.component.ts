@@ -11,6 +11,7 @@ import { AlertsComponent } from './shared/alerts/alerts.component'
 import { BackToTopComponent } from './shared/back-to-top/back-to-top.component'
 import { StaleOriginNoticeComponent } from './shared/stale-origin-notice/stale-origin-notice.component'
 import { GuideDrawerComponent } from './shared/guide/guide-drawer.component'
+import { InstallUpdateComponent } from './shared/install-update/install-update.component'
 
 @Component({
   selector: 'rangertrak-root',
@@ -23,7 +24,8 @@ import { GuideDrawerComponent } from './shared/guide/guide-drawer.component'
     FooterComponent,
     BackToTopComponent,
     StaleOriginNoticeComponent,
-    GuideDrawerComponent
+    GuideDrawerComponent,
+    InstallUpdateComponent
   ],
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

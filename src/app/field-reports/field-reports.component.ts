@@ -12,6 +12,10 @@ import { MATERIAL_IMPORTS } from '../material-imports';
 import { Utility } from '../shared'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../shared/ag-grid-theme'
+// Imported from its own file, not the '../shared/' barrel - that barrel also re-exports the
+// MapLibre style helpers, and this route is already its own lazy chunk (loadComponent in
+// app.routes.ts); going through the barrel would drag MapLibre into THIS chunk for no reason.
+import { rangerColorFor } from '../shared/mapping/ranger-icon'
 import {
   FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
   RangerService, MissionService, MissionType, statusColorValue, statusInkValue
@@ -93,7 +97,107 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     { value: 'tab', label: 'tab' },
     { value: '|', label: 'bar (|)' },
   ]
+  // NOT initialized here with `= this.buildColumnDefs('ID')` the way rangers.component.ts's
+  // own columnDefs field is - that only works there because its cellRenderer fields are
+  // declared BEFORE columnDefs (class field initializers run top-to-bottom at construction
+  // time). This file's statusCellRenderer/notesCellRenderer/evidenceCellRenderer are declared
+  // further down, so calling buildColumnDefs() from a field initializer here would capture
+  // them as still-undefined. Built in ngOnInit instead, same as before this pass - by then
+  // every field on the class is already assigned.
   public columnDefs!: any
+
+  /**
+   * Raised live, 2026-08-27, four fixes at once:
+   *  - `id` (this report's own sequential number, NOT a ranger identifier - see
+   *    FieldReportType's own comment on the two) was headed "ID", easily confused with the
+   *    ranger-identifier column two over. Renamed to "#", what it actually is: this row's
+   *    line number in the radio log.
+   *  - CallSign's own header now reads this mission's "Ranger ID field name"
+   *    (`idFieldLabel`), same live-settings pattern rangers.component.ts's own
+   *    buildColumnDefs() already uses for its id column - one mission calls it REW, another
+   *    calls it something else, and this column already IS how a scribe recognizes who filed
+   *    a report, callsign or not.
+   *  - CallSign's text now colours by ranger identity via `rangerColorFor` - the exact same
+   *    hash-based colour already used for that ranger's map marker/trail (ranger-icon.ts),
+   *    so the same person's reports are easy to pick out scanning down the column, and the
+   *    colour matches what a scribe already sees on the map for that ranger.
+   *  - Address/Notes get `tooltipField`: AG Grid's own cell-level tooltip, which (unlike the
+   *    native `title` on Notes' cellRenderer span, still left below) covers the WHOLE cell
+   *    including the empty space past a truncated value, not just the visible characters
+   *    themselves - the actual gap in "hovering doesn't show the full text."
+   */
+  private buildColumnDefs(idFieldLabel: string): any[] {
+    return [
+      { headerName: "#", field: "id", headerTooltip: 'This report\'s line number in the radio log', maxWidth: 90, editable: false },
+      {
+        headerName: idFieldLabel || 'Callsign', field: "callsign", tooltipField: "team", maxWidth: 160,
+        cellStyle: (params: { data: FieldReportType }) => {
+          const key = params.data.rangerUid || params.data.callsign
+          return key ? { color: rangerColorFor(key), 'font-weight': 600 } : null
+        }
+      },
+      // { headerName: "Team", field: "team" },
+      // Dot path, not "address": the address lives on the nested location object, exactly
+      // as lat/lng do below. Bound to the wrong field, this column rendered blank for
+      // every report - the addresses were in the data all along.
+      // The column most often holding a long value, and the one that used to lose the
+      // argument with Lat/Lng. A floor of 180px keeps it legible even when every visible
+      // row happens to be a short address; the ceiling stops one 90-character address from
+      // pushing Status and Notes off screen.
+      {
+        headerName: "Address", field: "location.address", singleClickEdit: true, minWidth: 180, maxWidth: 420,
+        tooltipField: "location.address"
+      },
+      {
+        // valueSetter, not just field: "lat" - the real value lives at location.lat,
+        // so without this an edit wrote a phantom top-level `lat` that nothing reads
+        // and the displayed coordinate snapped back on the next refresh.
+        headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell', maxWidth: 130,
+        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lat * 10000) / 10000.0 },
+        valueSetter: (params: { data: FieldReportType, newValue: any }) => this.setCoordinate(params.data, 'lat', params.newValue)
+      },
+      {
+        headerName: "Lng", field: "lng", singleClickEdit: true, cellClass: 'number-cell', maxWidth: 130,
+        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lng * 10000) / 10000.0 },
+        valueSetter: (params: { data: FieldReportType, newValue: any }) => this.setCoordinate(params.data, 'lng', params.newValue)
+      },
+      { headerName: "Reported", headerTooltip: 'Report date', valueGetter: this.myDateGetter, maxWidth: 170, editable: false },
+      { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, maxWidth: 130, editable: false },
+      {
+        headerName: "Status", field: "status", minWidth: 130, maxWidth: 220, cellRenderer: this.statusCellRenderer,
+        cellStyle: (params: { value: string; }) => {
+          // Sprint E: the fill now resolves through the token layer (semantic key ->
+          // --rt-status-*, custom colour passes through), and an explicit ink colour is set
+          // alongside it. Previously only background-color was set, so the label inherited
+          // whatever text colour was in scope - which is unreadable on roughly half the palette.
+          const stat = this.fieldReportStatuses.find(el => el.status == params.value)
+          const stored = stat ? stat.color : '#A3A3A3'
+          return { 'background-color': statusColorValue(stored), 'color': statusInkValue(stored) }
+        }
+        //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
+      },
+      // The ONLY flex column, on purpose - see autoSizeStrategy above. Notes is both the
+      // most variable-length field and the one a scribe most wants extra room for, so it
+      // takes whatever width the content-sized columns leave behind. minWidth raised from
+      // 200 to 260 (raised live, 2026-08-27) - longer entries were getting squeezed toward
+      // the old floor by the other columns' own content-driven widths.
+      {
+        headerName: "Notes", field: "notes", cellRenderer: this.notesCellRenderer, flex: 1, minWidth: 260,
+        tooltipField: "notes"
+      },
+      // E-11 (2026-08-26): evidenceLocation was captured on Entry and visible nowhere
+      // afterward - not the main map, not here. This is the other of the two places the
+      // gap named; see mapLeaflet.component.ts's displayMarkers() for the main-map marker.
+      {
+        headerName: "Evidence", field: "evidenceLocation", maxWidth: 110, editable: false,
+        cellRenderer: this.evidenceCellRenderer,
+        tooltipValueGetter: (params: { data: FieldReportType }) => {
+          const loc = params.data.evidenceLocation
+          return loc ? `Evidence/clue at ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}` : undefined
+        },
+      },
+    ]
+  }
 
   /**
    * Sprint F phone carve-out: the grid is never constructed on a phone (not just
@@ -200,6 +304,11 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => {
         this.settings = newMission
+        // Raised live, 2026-08-27: rebuilt whenever settings change, same reactive pattern
+        // rangers.component.ts's buildColumnDefs() already uses - the CallSign column's own
+        // header now reads this mission's "Ranger ID field name" (idFieldLabel), same as the
+        // Rangers grid's id column already does.
+        this.columnDefs = this.buildColumnDefs(newMission.idFieldLabel)
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -210,64 +319,13 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       this.log.error(`this.settings was null in ngOnInit`, this.id)
     }
 
-    //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
-    //!Future: Hover over notes to show entire (multi-line) note
-    this.columnDefs = [
-      { headerName: "ID", field: "id", headerTooltip: 'Is this even needed?!', maxWidth: 90, editable: false }, // TODO:
-      { headerName: "CallSign", field: "callsign", tooltipField: "team", maxWidth: 160 },
-      // { headerName: "Team", field: "team" },
-      // Dot path, not "address": the address lives on the nested location object, exactly
-      // as lat/lng do below. Bound to the wrong field, this column rendered blank for
-      // every report - the addresses were in the data all along.
-      // The column most often holding a long value, and the one that used to lose the
-      // argument with Lat/Lng. A floor of 180px keeps it legible even when every visible
-      // row happens to be a short address; the ceiling stops one 90-character address from
-      // pushing Status and Notes off screen.
-      { headerName: "Address", field: "location.address", singleClickEdit: true, minWidth: 180, maxWidth: 420 },
-      {
-        // valueSetter, not just field: "lat" - the real value lives at location.lat,
-        // so without this an edit wrote a phantom top-level `lat` that nothing reads
-        // and the displayed coordinate snapped back on the next refresh.
-        headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell', maxWidth: 130,
-        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lat * 10000) / 10000.0 },
-        valueSetter: (params: { data: FieldReportType, newValue: any }) => this.setCoordinate(params.data, 'lat', params.newValue)
-      },
-      {
-        headerName: "Lng", field: "lng", singleClickEdit: true, cellClass: 'number-cell', maxWidth: 130,
-        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lng * 10000) / 10000.0 },
-        valueSetter: (params: { data: FieldReportType, newValue: any }) => this.setCoordinate(params.data, 'lng', params.newValue)
-      },
-      { headerName: "Reported", headerTooltip: 'Report date', valueGetter: this.myDateGetter, maxWidth: 170, editable: false },
-      { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, maxWidth: 130, editable: false },
-      {
-        headerName: "Status", field: "status", minWidth: 130, maxWidth: 220, cellRenderer: this.statusCellRenderer,
-        cellStyle: (params: { value: string; }) => {
-          // Sprint E: the fill now resolves through the token layer (semantic key ->
-          // --rt-status-*, custom colour passes through), and an explicit ink colour is set
-          // alongside it. Previously only background-color was set, so the label inherited
-          // whatever text colour was in scope - which is unreadable on roughly half the palette.
-          const stat = this.fieldReportStatuses.find(el => el.status == params.value)
-          const stored = stat ? stat.color : '#A3A3A3'
-          return { 'background-color': statusColorValue(stored), 'color': statusInkValue(stored) }
-        }
-        //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
-      },
-      // The ONLY flex column, on purpose - see autoSizeStrategy above. Notes is both the
-      // most variable-length field and the one a scribe most wants extra room for, so it
-      // takes whatever width the content-sized columns leave behind.
-      { headerName: "Notes", field: "notes", cellRenderer: this.notesCellRenderer, flex: 1, minWidth: 200 },
-      // E-11 (2026-08-26): evidenceLocation was captured on Entry and visible nowhere
-      // afterward - not the main map, not here. This is the other of the two places the
-      // gap named; see mapLeaflet.component.ts's displayMarkers() for the main-map marker.
-      {
-        headerName: "Evidence", field: "evidenceLocation", maxWidth: 110, editable: false,
-        cellRenderer: this.evidenceCellRenderer,
-        tooltipValueGetter: (params: { data: FieldReportType }) => {
-          const loc = params.data.evidenceLocation
-          return loc ? `Evidence/clue at ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}` : undefined
-        },
-      },
-    ];
+    // Fallback build: the subscription above's `next` already ran synchronously in the
+    // normal case (getMissionObserver() replays its current value), so this is a no-op
+    // then - but if it ever doesn't, columnDefs must still exist before the grid renders
+    // rather than staying unset until settings eventually arrives.
+    if (!this.columnDefs) {
+      this.columnDefs = this.buildColumnDefs(this.settings?.idFieldLabel || 'ID')
+    }
 
     this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
       next: (newReport) => {

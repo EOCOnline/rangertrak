@@ -65,9 +65,13 @@ export const DEFAULT_FIELD_REPORT_STATUSES: ReadonlyArray<FieldReportStatusType>
  * (see MissionType.recipientOptions213's own comment) - backfillMissingFields hands this to
  * any returning user whose stored settings predate the field, same as DEFAULT_FIELD_REPORT_STATUSES.
  */
+// Raised live, 2026-08-27: shortened from the previous 10-entry list (Incident Commander,
+// Ops Section, Planning Section, Situation Awareness, Logistics Section, Finance/Admin
+// Section, EOC, Sheriff/Police, Air unit, Utilities) to this shorter, plainer-worded set -
+// existing missions' own saved lists are untouched either way, this only changes what
+// "Restore suggested starter list" restores and what a brand-new mission starts with.
 export const DEFAULT_RECIPIENT_OPTIONS_213: ReadonlyArray<string> = [
-  'Incident Commander', 'Ops Section', 'Planning Section',
-  'Logistics Section', 'Finance/Admin Section', 'EOC', 'Sheriff/Police',
+  'Incident Commander', 'Ops', 'Planning', 'Logistics', 'Finance', 'EOC', 'LEO', 'PI',
 ]
 
 /**

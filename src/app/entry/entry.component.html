@@ -55,14 +55,21 @@
            enter__section left-rule below now supplies the grouping cue instead. -->
       <div class="enter__section">
         <mat-form-field class="enter__Callsign" floatLabel="always">
-          <mat-label>CallSign</mat-label>
+          <!-- Raised live, 2026-08-27: this picker still matches on callsign/name/id
+               together (ADR D-42/D-43, see callsignCtrlChanged() below) and still stores
+               the ranger's callsign - only the LABEL follows Mission Setup's "Ranger ID
+               field name" (settings.idFieldLabel) now, same setting the Rangers grid's id
+               column already reads live, so this field reads using whatever term this
+               mission actually calls a ranger's identifier instead of always "Callsign". -->
+          <mat-label>{{ settings?.idFieldLabel || 'Callsign' }}</mat-label>
           <!-- BUG-1 (2026-08-19): this carried BOTH [formControl]="callsignCtrl" and
                formControlName="callsign". Only one directive can be the value accessor, so
                entryControlsForm.callsign stayed '' and every saved report lost its callsign
                while the autocomplete (which reads callsignCtrl) looked perfectly fine.
                callsignCtrl is now the single source of truth for this field. -->
           <input #callsignInput matInput [formControl]="callsignCtrl" type="text" placeholder="Pick one"
-            aria-label="Callsigns" [matAutocomplete]="auto" (change)="this.callsignCtrlChanged()"
+            [attr.aria-label]="settings?.idFieldLabel || 'Callsign'" [matAutocomplete]="auto"
+            (change)="this.callsignCtrlChanged()"
             id="enter__Callsign-input" [attr.tabindex]="callsignTabIndex" data-lpignore="true" spellcheck="false" />
           <!-- ADR D-42/D-43: falls back to the name when a ranger has no callsign. Bound to
                `ranger.callsign` alone, a no-callsign ranger's option value was the EMPTY

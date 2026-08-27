@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.77.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+
+### Features
+
+* **app:** the "Reload now - a new version is ready" bar (previously only shown inline on Mission, `[detailed]` mode of the shared `InstallUpdateComponent`) now also renders app-wide, just below the navbar on every page - revisits E-57(1)'s earlier "top banner -> footer only" call, since the footer's `[stickyBottom]` instance only pins near the bottom of view once a page has actually scrolled that far, so a short page could go a while without a visible prompt. Mission keeps its own instance too - same intentional multi-surface overlap `InstallUpdateComponent`'s own doc comment already covers for navbar/footer/Settings.
+* **entry:** the ranger picker's label ("CallSign") now reads this mission's own "Ranger ID field name" (`idFieldLabel`, Mission Setup) instead of always "Callsign" - same live-settings pattern already used by the Rangers grid's id column.
+* **radio-log:** four grid fixes/renames at once - the `id` column (this report's own sequential number, not a ranger identifier) renamed "ID" to "#", clearer about what it actually is; the CallSign column's header now reads the mission's "Ranger ID field name" too, same as Entry's picker above; CallSign text now colours by ranger identity (`rangerColorFor`, the same hash-based colour already used for that ranger's map marker/trail), so one person's reports are easy to pick out scanning the column; Address and Notes both get a real AG Grid cell tooltip (`tooltipField`) showing the full value on hover over the whole cell, not just the visible truncated characters; Notes' minimum width raised from 200 to 260 for more room on longer entries.
+
+### Fixes
+
+* **mission:** the Field Report Recipients card renamed "ICS-213 recipients" to "Listed Message Recipients" (mentioning 213 in the subtitle instead), and its suggested starter list shortened/simplified from the original ten entries (Incident Commander, Ops Section, Planning Section, Situation Awareness, Logistics Section, Finance/Admin Section, EOC, Sheriff/Police, Air unit, Utilities) to Incident Commander, Ops, Planning, Logistics, Finance, EOC, LEO, PI. Existing missions' own saved lists are untouched - this only changes what "Restore suggested starter list" restores and what a brand-new mission starts with.
+
 ## [0.76.0](https://github.com/EOCOnline/rangertrak/commit/78007d5f8d9aff767e5fd89cb60a69aadaf6b6f9) (2026-08-27)
 
 ### Fixes
