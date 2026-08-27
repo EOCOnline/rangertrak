@@ -75,14 +75,17 @@
       Reset mission to defaults
     </button>
 
-    <!-- The file input stays visually hidden and is driven by its own <label>: a native
-         file picker cannot be opened programmatically without a real user gesture on an
-         <input type="file">, so the label IS the button here rather than a matButton that
-         forwards a click. `matButton` on the label gives it the same box as its siblings. -->
-    <label matButton="outlined" for="importMissionFile" class="mission__danger-button"
+    <!-- The file input stays visually hidden; a real matButton triggers it via .click(),
+         called synchronously inside this button's own click handler - a native file picker
+         opens fine that way (the user-activation flag carries through a synchronous call),
+         it just can't be opened from a non-gesture context like a timer. `matButton` only
+         attaches to button/a elements (its own selector), never label - an earlier <label
+         matButton> here silently did nothing, same bug found on Rangers. -->
+    <button matButton="outlined" type="button" class="mission__danger-button"
+      (click)="importMissionFile.click()"
       title="Restore a mission from a previously exported JSON file - replaces everything currently on this device">
       Import mission &mdash; replaces everything
-    </label>
+    </button>
     <input #importMissionFile id="importMissionFile" type="file" accept="application/json,.json"
       (change)="onImportFileSelected($event)" class="mission__file-input" />
 

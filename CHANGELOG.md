@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.72.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+
+### Fixes
+
+* **rangers,mission:** the "Import roster"/"Import photos" (Rangers) and "Import mission" (Mission Advanced) file-picker controls were `<label matButton="outlined">` - `matButton`'s own selector only matches `button`/`a` elements, so it silently never attached, and all three rendered as bare unstyled text next to their real-button siblings. Now real `matButton` buttons that trigger their hidden `<input type="file">` via `.click()`, called synchronously inside the button's own click handler (opens the native file picker fine - the user-activation flag carries through a synchronous call).
+* **guide:** several Rangers/Map guide-content corrections from live feedback: a "colour"/"color" inconsistency; the roster-import note said every entry "needs at least a callsign" (stale since D-42/D-43 - it needs an id, callsign is optional); the photo-naming line said "callsign" only (should be id-or-callsign) and didn't name accepted formats; "Tactical call signs" reworded to plainly describe rangers needing a unique id (often a state-issued credential) rather than framing it around ham-radio callsigns; the MapLibre offline-tiles note now says plainly that there is no in-app way to prepare additional coverage beyond the bundled pilot region today.
+
+### Also this session
+
+* Investigated a live report of the MapLibre basemap rendering blank (hillshade, a separate external source, unaffected) - matches this repo's own previously-known `checkMapEngineSwitch` e2e console-error failure exactly. Found a real suspect (`fetch(DEFAULT_PMTILES_URL)` in `mapLibreComponent`'s constructor, added `0.68.0`, competing with `pmtiles-js`'s own Range-based fetches of the same URL) and applied `cache: 'no-store'` to it - **tested and NOT confirmed**: the exact same e2e error still reproduced afterward. Left in as a real improvement on its own merits, but the actual cause is still unknown. See `Private Roadmap.md` for the full write-up - this is now the top open item.
+
 ## [0.71.0](https://github.com/EOCOnline/rangertrak/commit/729861196b65681fdb27764b1b57aedf7f5e718b) (2026-08-27)
 
 ### Fixes

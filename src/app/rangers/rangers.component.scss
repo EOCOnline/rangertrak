@@ -59,12 +59,6 @@ label {
 // hand-rolled button look for the two file-picker <label>s - `matButton` on the label gives
 // them the real thing now, so there is nothing left to imitate.
 
-// The file-picker <label>s carry `matButton`, which styles them correctly but does not
-// give them a button's pointer affordance (it is a <label>, not a <button>).
-.rangers__file-label {
-  cursor: pointer;
-}
-
 // Sized for its own floating label ("CSV separator"), not just its widest value - a
 // mat-form-field's notched outline gives the label no room to wrap, so an under-sized field
 // clips it. Same lesson as Reports' own rows-per-page picker.

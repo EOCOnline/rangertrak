@@ -89,7 +89,21 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     // non-Range fetch here - cached under this app's own name, not ngsw's internal one - is
     // enough: the readiness check's `caches.match()` searches every cache in this origin, so
     // the two never needed to share one, only the URL key.
-    fetch(DEFAULT_PMTILES_URL)
+    //
+    // `cache: 'no-store'` added 2026-08-27 as a real-but-unconfirmed suspect, not a verified
+    // fix: a live report found the basemap rendering blank (hillshade - a separate, external
+    // source - unaffected), matching this session's own `checkMapEngineSwitch` e2e failure
+    // ("MapLibre error (source \"basemap\"): Server returned no content-length header...").
+    // Theory: this plain fetch of the SAME URL pmtiles-js Range-fetches could let the
+    // browser's own HTTP cache learn about DEFAULT_PMTILES_URL, and a later Range request get
+    // serviced against that cached full-file entry instead of the network, producing a
+    // synthetic response missing Content-Length. Tested by rebuilding and re-running the e2e
+    // check with this change alone - the exact same error still reproduced, byte for byte, so
+    // this theory is NOT confirmed and the bug is NOT fixed. Left in as a real improvement on
+    // its own merits (this fetch has no reason to touch the browser's ambient HTTP cache
+    // either way), but whoever picks this up next should treat the actual cause as still
+    // unknown rather than trust this comment's own theory.
+    fetch(DEFAULT_PMTILES_URL, { cache: 'no-store' })
       .then(res => res.ok ? caches.open('rangertrak-pmtiles-warm').then(c => c.put(DEFAULT_PMTILES_URL, res)) : undefined)
       .catch(err => this.log.warn(`Failed to warm bundled PMTiles cache entry: ${err}`, 'MapLibreComponent'))
 

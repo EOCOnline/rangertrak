@@ -94,11 +94,16 @@
           Clear selection
         </button>
 
-        <label matButton="outlined" for="importRosterFile" class="rangers__file-label"
+        <!-- matButton only attaches to button/a elements (its own selector, never label) -
+             an earlier <label matButton> here silently did nothing, rendering as plain
+             unstyled text next to its real-button siblings. A real button now triggers the
+             hidden input via .click(), called synchronously inside this click handler -
+             opens the native file picker fine (the user-activation flag carries through). -->
+        <button matButton="outlined" type="button" (click)="importRosterFile.click()"
           title="Replace the roster from a JSON file, or load a bundle zip containing roster.json and a photos/ folder. Field reports and settings are not affected.">
           <mat-icon>upload</mat-icon>
           Import roster
-        </label>
+        </button>
         <input #importRosterFile id="importRosterFile" type="file"
           accept="application/json,.json,application/zip,.zip" (change)="onRosterFileSelected($event)" hidden />
 
@@ -108,11 +113,11 @@
           Export roster
         </button>
 
-        <label matButton="outlined" for="importPhotoFiles" class="rangers__file-label"
+        <button matButton="outlined" type="button" (click)="importPhotoFiles.click()"
           title="Store photographs on this device. Name each file after its callsign, e.g. K7VMI.jpg">
           <mat-icon>image</mat-icon>
           Import photos
-        </label>
+        </button>
         <input #importPhotoFiles id="importPhotoFiles" type="file" accept="image/*" multiple
           (change)="onPhotoFilesSelected($event)" hidden />
       </div>
