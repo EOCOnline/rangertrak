@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.67.0](https://github.com/EOCOnline/rangertrak/compare/v0.66.0...v0.67.0) (2026-08-27)
+
+
+### Features
+
+* **theme:** complete the redesign canvas's five-scheme skin set; surface Alt+click on the evidence checkbox ([f699ba4](https://github.com/EOCOnline/rangertrak/commit/f699ba4a6229c3d79867665b093a96ec397fa4dc))
+
 ## [0.66.0](https://github.com/EOCOnline/rangertrak/compare/v0.65.0...v0.66.0) (2026-08-27)
 
 
