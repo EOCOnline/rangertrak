@@ -29,6 +29,7 @@ import {
   AbstractMap, Utility, rangerIconFor, rangerColorFor, evidenceIconFor, fieldReportStatusColor,
   formatReportTime
 } from '../shared'
+import { DDToUTM, UTMToDD } from '../shared/mapping/coordinate'
 import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, MissionService } from '../shared/services'
 
 
@@ -62,6 +63,13 @@ L.Marker.prototype.options.icon = iconDefault;
 // number falls back to this - a typical 256px OSM PNG raster tile - until at least one real
 // tile has been saved, at which point the average of what's actually stored is used instead.
 const FALLBACK_TILE_BYTES = 15 * 1024
+
+// E-item, raised 2026-08-27 comparing against a real IMT wildfire ops map: a mile grid
+// overlay, same as that map's own township/range-style reference lines. A UTM-based grid,
+// not a lat/lng graticule - degrees of longitude aren't a fixed distance (they shrink toward
+// the poles), so a lat/lng grid can't be spaced in real miles the way this one is. Reuses
+// this app's own DDToUTM/UTMToDD (Sprint H) rather than adding a second projection library.
+const MILE_METERS = 1609.344
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
@@ -126,6 +134,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   // scoping). A plain layer group, not clustered - clustering exists to collapse crowded
   // point markers and would be actively wrong for line geometry.
   myTrailsLayer = L.layerGroup()
+  // Mile grid overlay (see MILE_METERS' own comment) - redrawn on pan/zoom by
+  // refreshMileGrid(), only while this layer is actually checked on in the layers control.
+  mileGridLayer = L.layerGroup()
   mapOptions = ""
 
   //markerClusterGroup: L.MarkerClusterGroup // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
@@ -401,8 +412,24 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     const overlayLayers: Record<string, L.Layer> = {
       'Hillshade (terrain relief)': hillshadeOverlay,
       'Saved offline tiles': savedTilesOverlay,
+      'Mile grid': this.mileGridLayer,
     }
     L.control.layers(baseLayers, overlayLayers, { position: 'topright' }).addTo(this.lMap)
+
+    // Off by default (not .addTo(this.lMap) above, same as Hillshade) - only drawn once a
+    // scribe actually wants it, and only kept in sync with the viewport while it's checked
+    // on. this.lMap.hasLayer() is the guard both handlers below share, so panning/zooming
+    // with the grid off costs nothing beyond the check itself.
+    this.lMap.on('moveend zoomend', () => {
+      if (this.lMap.hasLayer(this.mileGridLayer)) {
+        this.refreshMileGrid()
+      }
+    })
+    this.lMap.on('overlayadd', (e: L.LayersControlEvent) => {
+      if (e.layer === this.mileGridLayer) {
+        this.refreshMileGrid()
+      }
+    })
 
     // Raised live, 2026-08-27, comparing against a real IMT wildfire ops map: a length/
     // scale legend, same as that map's own "0 ... 2 Miles" bar. Leaflet's own built-in
@@ -848,6 +875,88 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     // to refresh markers that have changed:
     // https://github.com/Leaflet/Leaflet.markercluster#refreshing-the-clusters-icon
+  }
+
+  /**
+   * Redraws the mile grid overlay (see MILE_METERS' own comment) for the current viewport.
+   * Clears and rebuilds from scratch rather than diffing - cheap enough at the line counts
+   * a capped, zoomed-in-enough grid actually produces (see maxLines below), and far simpler
+   * than tracking which lines are still in view across an arbitrary pan/zoom.
+   *
+   * UTM, not lat/lng: a degree of longitude is not a fixed distance (it shrinks toward the
+   * poles), so only a projected system gives lines that are actually 1 mile apart on the
+   * ground. Every corner of the viewport is converted using the CENTER's own UTM zone/
+   * hemisphere - correct as long as the viewport doesn't itself straddle a zone boundary,
+   * which is guaranteed true at every zoom level this draws at (zone boundaries are almost
+   * 4° of longitude apart; this grid never draws below zoom 12, well inside a single
+   * viewport's-worth of one zone).
+   */
+  private refreshMileGrid(): void {
+    this.mileGridLayer.clearLayers()
+
+    const zoom = this.lMap.getZoom()
+    if (zoom < 12) {
+      // Below this, a 1-mile grid over the visible area would be hundreds of lines -
+      // unreadable, and expensive to compute/render for no benefit. Leaflet's scale bar
+      // (added above) already covers "how big is this on screen" at wider zooms.
+      return
+    }
+
+    // A small pad so a line doesn't visibly pop in right at the viewport's edge on pan.
+    const bounds = this.lMap.getBounds().pad(0.15)
+    const center = bounds.getCenter()
+    const { zone, hemisphere } = DDToUTM(center.lat, center.lng)
+
+    const corners = [
+      bounds.getNorthWest(), bounds.getNorthEast(), bounds.getSouthWest(), bounds.getSouthEast(),
+    ].map(c => DDToUTM(c.lat, c.lng))
+    const minE = Math.min(...corners.map(c => c.easting))
+    const maxE = Math.max(...corners.map(c => c.easting))
+    const minN = Math.min(...corners.map(c => c.northing))
+    const maxN = Math.max(...corners.map(c => c.northing))
+
+    // Guards against a pathological viewport (e.g. right at a UTM zone edge, where the
+    // corners' eastings can disagree wildly) producing an absurd number of lines.
+    const maxLines = 60
+    const eastLines = Math.floor((maxE - minE) / MILE_METERS) + 1
+    const northLines = Math.floor((maxN - minN) / MILE_METERS) + 1
+    if (eastLines > maxLines || northLines > maxLines) {
+      return
+    }
+
+    // Each line is sampled at several points and drawn as a polyline, not a single
+    // two-point segment: a constant-easting or constant-northing line in UTM is not
+    // perfectly straight in lat/lng (meridian convergence), so a straight two-point chord
+    // would visibly drift from the true grid line over a mile-plus span at typical
+    // operational zoom levels.
+    const STEPS = 6
+    const gridStyle: L.PolylineOptions = { color: '#3355ff', weight: 1, opacity: 0.55, interactive: false }
+
+    const startE = Math.ceil(minE / MILE_METERS) * MILE_METERS
+    for (let e = startE; e <= maxE; e += MILE_METERS) {
+      const pts: L.LatLngExpression[] = []
+      for (let i = 0; i <= STEPS; i++) {
+        const n = minN + (maxN - minN) * i / STEPS
+        const dd = UTMToDD(zone, hemisphere, e, n)
+        if (dd) pts.push([dd.lat, dd.lng])
+      }
+      if (pts.length > 1) {
+        this.mileGridLayer.addLayer(L.polyline(pts, gridStyle))
+      }
+    }
+
+    const startN = Math.ceil(minN / MILE_METERS) * MILE_METERS
+    for (let n = startN; n <= maxN; n += MILE_METERS) {
+      const pts: L.LatLngExpression[] = []
+      for (let i = 0; i <= STEPS; i++) {
+        const e = minE + (maxE - minE) * i / STEPS
+        const dd = UTMToDD(zone, hemisphere, e, n)
+        if (dd) pts.push([dd.lat, dd.lng])
+      }
+      if (pts.length > 1) {
+        this.mileGridLayer.addLayer(L.polyline(pts, gridStyle))
+      }
+    }
   }
 
   /**
