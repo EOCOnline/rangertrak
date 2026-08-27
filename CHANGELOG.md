@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.66.0](https://github.com/EOCOnline/rangertrak/compare/v0.65.0...v0.66.0) (2026-08-27)
+
+
+### Features
+
+* **map:** scale legend and print-only mission title/timestamp (E-item 13) ([9e9a217](https://github.com/EOCOnline/rangertrak/commit/9e9a217df87a98f791dd1c688baaf8dd0cd8839a))
+
 ## [0.65.0](https://github.com/EOCOnline/rangertrak/compare/v0.64.0...v0.65.0) (2026-08-27)
 
 
