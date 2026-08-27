@@ -52,6 +52,25 @@ export class InstallUpdateComponent {
   @Input() detailed = false
 
   /**
+   * Raised live, 2026-08-27: Mission ended up showing two update bars at once once the
+   * app-shell instance (app.component.html) was added above every page's own content -
+   * Mission's own pre-existing `[detailed]` instance still showed the SAME update-ready
+   * message a second time, right below it. Rather than just deleting one instance outright,
+   * split what each surface is FOR: a scribe mid-incident needs a version-update prompt to
+   * be impossible to miss (that's the whole point of the app-shell instance now being
+   * everywhere), but an "install this app" offer is a different, lower-urgency thing that has
+   * no business competing for attention on an incident-tracking page - it already has its own
+   * unobtrusive home in the footer. `showUpdate`/`showInstall` (both default true, so the
+   * footer/navbar's existing usage is unaffected) let each instance opt out of the HALF it
+   * shouldn't show rather than the whole component: the app-shell instance sets
+   * `[showInstall]="false"` (update only, everywhere), Mission's own instance sets
+   * `[showUpdate]="false"` (install offer only, with its fuller explanation - the update half
+   * is already covered app-wide).
+   */
+  @Input() showUpdate = true
+  @Input() showInstall = true
+
+  /**
    * The footer's own instance: `position: sticky; bottom: 0`, so it stays reachable
    * regardless of scroll position the same way the old top-fixed banner did - see the
    * class doc comment for why this replaced `[fixed]`.

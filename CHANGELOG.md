@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.77.1](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+
+### Fixes
+
+* **app,mission:** `0.77.0`'s new app-wide update bar duplicated Mission's own pre-existing `[detailed]` instance, showing two identical "Reload now" bars on that one page. `InstallUpdateComponent` gets two new inputs, `showUpdate`/`showInstall` (both default `true`, so navbar/footer are unaffected) - the app-shell instance now sets `[showInstall]="false"` (version updates only, everywhere - a scribe mid-incident needs these to be impossible to miss), and Mission's own instance sets `[showUpdate]="false"` (install offer only, with its fuller explanation - the update half is already covered app-wide). An "install this app" offer stays low-key (footer, plus Mission's explanation) rather than competing for attention on an incident-tracking page.
+
 ## [0.77.0](https://github.com/EOCOnline/rangertrak/commit/250b156b5d780251ac0b36db00a565b9e689f6cd) (2026-08-27)
 
 ### Features

@@ -1,4 +1,4 @@
-@if (updateReady) {
+@if (updateReady && showUpdate) {
   @if (detailed) {
     <!-- [stickyBottom] gets its own class so it can be pinned to the viewport (see .scss) -
          independent of whatever this instance is nested inside (currently only the footer). -->
@@ -43,7 +43,7 @@
       </div>
     </span>
   }
-} @else if (installable) {
+} @else if (installable && showInstall) {
   @if (detailed) {
     <div class="rt-install-update rt-install-update--install" [class.rt-install-update--sticky-bottom]="stickyBottom"
       [class.rt-install-update--detailed]="detailed">

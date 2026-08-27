@@ -3,8 +3,13 @@
   <!-- ══ 3. ALERTS - live only, never permanent furniture ══ -->
 
   <!-- E-55: one install surface, shared with the navbar and footer. See
-       InstallUpdateComponent's doc comment; `detailed` keeps this page's fuller wording. -->
-  <rangertrak-install-update [detailed]="true"></rangertrak-install-update>
+       InstallUpdateComponent's doc comment; `detailed` keeps this page's fuller wording.
+       [showUpdate]="false" (2026-08-27): the app-shell now shows the update-ready message
+       above every page (app.component.html) - this instance duplicated it right below,
+       giving Mission two update bars at once. Narrowed to install-offer-only here, which is
+       still worth its fuller explanation on Mission specifically, just no longer the update
+       message too. -->
+  <rangertrak-install-update [detailed]="true" [showUpdate]="false"></rangertrak-install-update>
 
   <!-- E-79: which specific gap(s) are behind the header's red/amber readiness dot, rather
        than just the aggregate colour. Never rendered once every signal is green. -->

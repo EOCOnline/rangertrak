@@ -12,11 +12,13 @@
      short page (its `position: sticky` only pins once the page has scrolled enough for the
      footer to reach the bottom edge), and Mission's own [detailed] instance only ever showed
      on Mission. Same component, same [detailed] wording as Mission's, now app-wide ahead of
-     every page's own content - self-hiding, so it renders nothing when no update/install is
-     pending. Mission keeps its own instance too (E-55's shared-component doc comment already
-     covers the intentional footer+navbar+Settings overlap; this is one more of those, not a
-     replacement for Mission's). -->
-<rangertrak-install-update [detailed]="true"></rangertrak-install-update>
+     every page's own content - self-hiding, so it renders nothing when no update is pending.
+     [showInstall]="false": an "install this app" offer is a different, lower-urgency thing
+     with no business competing for attention on an incident-tracking page mid-response - it
+     already has its own unobtrusive home in the footer, plus a detailed explanation on
+     Mission (see mission.component.html). A version update, in contrast, genuinely needs to
+     be noticed wherever a scribe happens to be. -->
+<rangertrak-install-update [detailed]="true" [showInstall]="false"></rangertrak-install-update>
 
 <div class="content">
   <router-outlet></router-outlet>
