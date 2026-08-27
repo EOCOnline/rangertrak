@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.71.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-27)
+
+### Fixes
+
+* **entry:** root-caused (not just re-described) the long-standing Entry phone-viewport overflow - `.enter__Callsign` had `padding: 5px 5px` on the default `content-box` sizing, so its phone-breakpoint `width: 100%` added that 10px on top of the parent's available width instead of including it. Now `box-sizing: border-box`. One real, measured contributor found and fixed; a second, smaller overflow source remains on the same page and is not yet found - see `Private Roadmap.md`'s Path to 0.99.0-alpha checklist.
+* **entry:** Notes for radio log textarea defaults to 4 rows instead of 5, per live feedback.
+* **guide:** the Map page's guide content said "marker shape and colour" (should read "color" for consistency with the rest of that sentence) and understated MapLibre's offline limitation - it only works offline within its bundled pilot-region file, with no in-app way to prepare additional coverage before a mission; the guide now says so plainly and points to Leaflet's "Save this area" as the alternative for missions outside that region.
+
 ## [0.70.0](https://github.com/EOCOnline/rangertrak/commit/7695624f069cfc2b5c04a290f400d446b64c6f4a) (2026-08-27)
 
 Material-M3 completeness audit: the redesign had been assumed complete since `0.58.0`/`0.59.0`,

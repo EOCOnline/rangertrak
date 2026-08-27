@@ -258,12 +258,15 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
               'All field reports for all rangers, by default.',
               'If rows are selected on the Reports page, the switch below the map isolates just those.',
               'Nearby reports group into clusters — click a cluster to zoom in.',
-              'Each ranger has their own marker shape and colour, consistent everywhere.'
+              'Each ranger has their own marker shape and color, consistent everywhere.'
             ]
           },
           {
             heading: 'Working offline',
-            text: 'Leaflet caches the tiles you have already viewed, and can bulk-save an area ahead of time. The MapLibre + PMTiles engine carries its own bundled tiles for the pilot region and needs no network at all.'
+            bullets: [
+              'Leaflet caches the tiles you have already viewed as you pan around, and its "Save this area" control can bulk-download a region ahead of time — use this if your mission is outside the pilot region below.',
+              'The MapLibre + PMTiles engine needs no network at all, but only for the pilot region its bundled file already covers — there is currently no in-app way to download additional MapLibre coverage before a mission. If you need offline maps outside that pilot region, use Leaflet\'s "Save this area" instead.'
+            ]
           }
         ]
       },

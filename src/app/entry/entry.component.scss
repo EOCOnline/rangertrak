@@ -402,6 +402,13 @@ mat-chip-option.enter__source-selected {
 }
 
 .enter__Callsign {
+  // content-box (the default) adds this rule's own 10px of horizontal padding ON TOP OF
+  // the phone breakpoint's `width: 100%` below, which is what actually caused the
+  // long-standing Entry phone-viewport overflow (measured live: the field rendered exactly
+  // 10px past .enter__form's own right edge, matching this padding exactly) - root-caused
+  // 2026-08-27, not previously found because past sessions checked `.enter__Callsign`'s own
+  // min-width/width rather than its box-sizing.
+  box-sizing        : border-box;
   width             : 35%;
   min-width         : 350px;
   padding           : 5px 5px;
