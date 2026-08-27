@@ -6,7 +6,7 @@
   </mat-card-header>
   <mat-card-content>
     <div class="rt-field-grid">
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>Default latitude</mat-label>
         <input matInput type="number" step=".01" [formField]="form.defLat"
           placeholder="{{settings.defLat.toFixed(4)}}" data-lpignore="true" />
@@ -18,7 +18,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
         <mat-label>Default longitude</mat-label>
         <input matInput type="number" step=".01" [formField]="form.defLng"
           placeholder="{{settings.defLng.toFixed(4)}}" data-lpignore="true" />

@@ -162,12 +162,12 @@ $filledColor: var(--rt-surface-2);
   display       : flex;
   align-items   : center;
   flex-wrap     : wrap;
-  gap           : 0.4rem 0.6rem;
-  margin-bottom : 0.5rem;
+  gap           : var(--rt-space-sm) var(--rt-gap);
+  margin-bottom : var(--rt-space-sm);
   min-width     : 0;
   border        : 1px solid var(--rt-line-strong);
   border-radius : var(--rt-radius);
-  padding       : 0.5rem 0.6rem 0.6rem;
+  padding       : var(--rt-space-sm) var(--rt-gap) var(--rt-gap);
 }
 
 // Raised live, 2026-08-26: Lat and Lng never reach full width on their own for any system,
@@ -177,7 +177,7 @@ $filledColor: var(--rt-surface-2);
 .rt-coord-latlng {
   display  : flex;
   flex-wrap: wrap;
-  gap      : 0.4rem 0.6rem;
+  gap      : var(--rt-space-sm) var(--rt-gap);
 
   // flex: 0 1 auto (size to content, don't grow), not a percentage basis: a percentage
   // flex-basis needs the flex container itself to have a DEFINITE width to resolve

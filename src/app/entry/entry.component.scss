@@ -29,13 +29,13 @@ $filledColor: var(--rt-surface-2);
   display      : flex;
   align-items  : center;
   flex-wrap    : wrap;
-  gap          : 0.5em;
+  gap          : var(--rt-space-sm);
   background   : var(--rt-surface-2);
   border       : 1px solid var(--rt-line);
   border-left  : 6px solid var(--rt-accent);
   border-radius: var(--rt-radius);
-  padding      : 0.5em 0.75em;
-  margin       : 0 0 1em 0;
+  padding      : var(--rt-space-sm) var(--rt-space-md);
+  margin       : 0 0 var(--rt-space-lg) 0;
 }
 
 .entry-welcome__text {
@@ -67,8 +67,14 @@ $filledColor: var(--rt-surface-2);
   align-items     : center;
   justify-content : center;
   float           : right;
-  width           : 35vw;
-  height          : 35vh;
+  // Capped 2026-08-26: 35vw/35vh are relative to the WHOLE viewport, not .enter__form's own
+  // (now capped, see .enter__form's max-width) width - on a genuinely wide monitor the map
+  // kept growing past what the now-narrower text column could reasonably sit beside, so far
+  // taller than Who's own content that Where appeared to float in empty space beneath it.
+  // min() lets it keep scaling down on smaller screens exactly as before, just not up
+  // without bound on large ones.
+  width           : min(35vw, 500px);
+  height          : min(35vh, 450px);
   margin-left     : 16px;
   margin-right    : 16px;
   background-color: $filledColor;
@@ -213,8 +219,8 @@ input[type=number] {
 // block sibling's - the fieldset is what needs the top margin now.
 .enter__field-fieldset {
   min-width    : 0;
-  margin       : 0.9rem 0 0.4rem;
-  padding      : 0.6rem 0.6rem 0.5rem;
+  margin       : var(--rt-space-lg) 0 var(--rt-space-xs);
+  padding      : var(--rt-space-md) var(--rt-space-md) var(--rt-space-sm);
   border       : 1px solid var(--rt-line-strong);
   border-radius: var(--rt-radius);
 }

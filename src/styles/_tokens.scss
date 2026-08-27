@@ -70,7 +70,22 @@ $c: skin.$chrome;
   // one-off values, not to build a full design system in Sprint A.
   --rt-radius: 6px;
   --rt-radius-lg: 10px;
-  --rt-gap: 0.75rem;
+
+  // --rt-space-scale, raised live 2026-08-26: a single multiplier for the app's OWN
+  // hand-rolled margins/padding/gaps below - separate from and unrelated to Material's
+  // `density` (set in styles.scss's mat.theme() call, which only reaches Material component
+  // internals - form-field/button/chip height). Measured live on Entry at phone width: the
+  // navbar, page header, and welcome banner alone consumed ~55% of the viewport before any
+  // form field appeared, dwarfing anything density touched. 0.7 (30% tighter) is the current
+  // value - change this one line to retune every consumer below at once instead of hunting
+  // down and re-tuning each rule by hand.
+  --rt-space-scale: 0.7;
+  --rt-space-xs: calc(0.25rem * var(--rt-space-scale));
+  --rt-space-sm: calc(0.5rem * var(--rt-space-scale));
+  --rt-space-md: calc(0.75rem * var(--rt-space-scale));
+  --rt-space-lg: calc(1rem * var(--rt-space-scale));
+  --rt-space-xl: calc(1.5rem * var(--rt-space-scale));
+  --rt-gap: var(--rt-space-md);
 
   // Field-conditions minimum. D-33 puts a phone in scope for the Entry screen, and
   // 10 describes gloved hands outdoors - 44px is the floor for anything tappable.

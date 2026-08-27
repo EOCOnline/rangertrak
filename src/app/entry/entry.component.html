@@ -53,7 +53,7 @@
            with the field chrome. ADR D-39 decided this wasn't earning its place: the
            enter__section left-rule below now supplies the grouping cue instead. -->
       <div class="enter__section">
-        <mat-form-field class="enter__Callsign">
+        <mat-form-field class="enter__Callsign" floatLabel="always">
           <mat-label>CallSign</mat-label>
           <!-- BUG-1 (2026-08-19): this carried BOTH [formControl]="callsignCtrl" and
                formControlName="callsign". Only one directive can be the value accessor, so
@@ -292,7 +292,7 @@
                 (selectionChange)="toggleRecipient213(opt, $event.selected)">{{ opt }}</mat-chip-option>
               }
             </mat-chip-listbox>
-            <mat-form-field class="enter__213-additional">
+            <mat-form-field class="enter__213-additional" floatLabel="always">
               <mat-label>Additional recipients</mat-label>
               <input matInput type="text" [formField]="entryForm.recipients213"
                 placeholder="Comma-separated" [attr.tabindex]="recipients213TabIndex" />

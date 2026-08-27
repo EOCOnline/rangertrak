@@ -12,8 +12,11 @@
 @mixin section-header {
   @include type.type-title;
   color         : var(--rt-ink);
-  margin        : 1.5rem 0 0.5rem;
-  padding-bottom: 0.25rem;
+  // Raised live, 2026-08-26: was a flat 1.5rem/0.5rem - now scales with --rt-space-scale
+  // (_tokens.scss) like the rest of Entry's own spacing, rather than being the one
+  // hardcoded exception a future retune would miss.
+  margin        : var(--rt-space-xl) 0 var(--rt-space-sm);
+  padding-bottom: var(--rt-space-xs);
   border-bottom : 2px solid var(--rt-accent);
   // E-69: a float shortens a block's line boxes but not its border box, so without this
   // the border-bottom ran under a floated sibling (Entry's mini-map) and re-emerged past
@@ -32,7 +35,7 @@
   @include type.type-body;
   font-weight: 600;
   color      : var(--rt-ink-2);
-  margin     : 1rem 0 0.35rem;
+  margin     : var(--rt-space-lg) 0 var(--rt-space-xs);
 }
 
 // Grouping cue for a section's fields, replacing the tinted-background containers E-47

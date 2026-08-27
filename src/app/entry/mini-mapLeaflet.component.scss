@@ -15,7 +15,10 @@
 .mapLeaflet-container {
   display         : block;
   float           : right;
-  width           : 35vw;
+  // Capped 2026-08-26, matching .minimap-placeholder's own fix in entry.component.scss
+  // (see its comment) - 35vw alone kept growing past what a wide screen's now-capped
+  // .enter__form column could reasonably sit beside.
+  width           : min(35vw, 500px);
   background-color: var(--rt-surface-2);
   margin-left     : 16px;
   margin-right    : 16px;
@@ -36,7 +39,7 @@
 }
 
 #entry-minimap {
-  height: 35vh; //100%;
+  height: min(35vh, 450px); //100%;
 
   @include bp.tablet-down {
     height: 30vh;
