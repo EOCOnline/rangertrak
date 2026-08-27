@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.61.2](https://github.com/EOCOnline/rangertrak/compare/v0.61.1...v0.61.2) (2026-08-27)
+
+
+### Bug Fixes
+
+* **entry:** cap form width, pair Lat/Lng on one row, drop redundant info icon ([b0e0b12](https://github.com/EOCOnline/rangertrak/commit/b0e0b125218b4a7d53c3585f8343c47ebf9b2179))
+
 ### [0.61.1](https://github.com/EOCOnline/rangertrak/compare/v0.61.0...v0.61.1) (2026-08-26)
 
 
