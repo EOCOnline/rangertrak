@@ -122,6 +122,7 @@ $filledColor: var(--rt-surface-2);
 
 .rt-other-formats__system {
   color: var(--rt-ink-2);
+  font-weight: 600;
   // The label and value are separate inline spans with a newline between them in the
   // template, which HTML collapses to nothing here because the <button> is a flex/block
   // context boundary - so without an explicit gap they render flush ("MGRS:10TET 40506").

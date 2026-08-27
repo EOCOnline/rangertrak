@@ -773,10 +773,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
           pCode = OpenLocationCode.shorten(fullCode, this.settings.defLat, this.settings.defLng)
         }
         this.log.verbose(`New PlusCodes: ${pCode} ; Global: ${fullCode}`, this.id)
-        this.derivedPCodes.set(`+Code: ${pCode}  Global: ${fullCode}`)
+        // E-item, 2026-08-27: dropped the "+Code: " prefix this string used to open with -
+        // the row's own "+Codes:" label (location.component.html) already says that, so the
+        // two together used to read "+Codes: +Code: 8QQ2..." on screen.
+        this.derivedPCodes.set(`${pCode}  Global: ${fullCode}`)
       } else {
         this.log.verbose(`Invalid +PlusCode: ${pCode}`, this.id)
-        this.derivedPCodes.set("Unable to get +Code")
+        this.derivedPCodes.set("Unable to get code")
       }
     }
 

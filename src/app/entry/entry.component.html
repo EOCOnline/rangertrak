@@ -241,9 +241,9 @@
            of it until focus - forcing the float keeps the embedded-in-the-border label
            always visible, matching every other field on this page. -->
       <mat-form-field class="enter__What--area" floatLabel="always">
-        <mat-label>Note - for radio log</mat-label>
+        <mat-label>Notes for radio log</mat-label>
         <textarea matInput [formField]="entryForm.notes" id="enter__What--area" rows="5"
-          placeholder="Enter any notes" [attr.tabindex]="notesTabIndex"></textarea>
+          [attr.tabindex]="notesTabIndex"></textarea>
       </mat-form-field>
 
       <!-- E-41 phase 1: "the 213 stays opt-in per entry" - data collection only, no
@@ -314,7 +314,7 @@
                the Notes field above, which is the distinction that actually confuses. -->
           <mat-form-field class="enter__213-field enter__213-message" floatLabel="always">
             <mat-label>Message</mat-label>
-            <textarea matInput [formField]="entryForm.message213" rows="3" placeholder="What the 213 should say"
+            <textarea matInput [formField]="entryForm.message213" rows="3"
               [attr.tabindex]="message213TabIndex"></textarea>
             <span matSuffix class="field-help" tabindex="0" role="img"
               aria-label="Message: the text of a separate, addressed ICS-213 message to whoever's listed under To, above - often reworded from your Notes above, not just a copy of them. This is what prints on the actual 213 form."

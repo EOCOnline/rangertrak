@@ -66,8 +66,8 @@ export const DEFAULT_FIELD_REPORT_STATUSES: ReadonlyArray<FieldReportStatusType>
  * any returning user whose stored settings predate the field, same as DEFAULT_FIELD_REPORT_STATUSES.
  */
 export const DEFAULT_RECIPIENT_OPTIONS_213: ReadonlyArray<string> = [
-  'Incident Commander', 'Ops Section', 'Planning Section', 'Situation Awareness',
-  'Logistics Section', 'Finance/Admin Section', 'EOC', 'Sheriff/Police', 'Air unit', 'Utilities',
+  'Incident Commander', 'Ops Section', 'Planning Section',
+  'Logistics Section', 'Finance/Admin Section', 'EOC', 'Sheriff/Police',
 ]
 
 /**
