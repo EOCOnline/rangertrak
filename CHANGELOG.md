@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.63.0](https://github.com/EOCOnline/rangertrak/compare/v0.62.0...v0.63.0) (2026-08-27)
+
+
+### Features
+
+* **navbar,header:** collapse phone nav behind a hamburger menu ([7c15993](https://github.com/EOCOnline/rangertrak/commit/7c1599381f824a7117db6474f03e923c042a8cd4))
+
 ## [0.62.0](https://github.com/EOCOnline/rangertrak/compare/v0.61.2...v0.62.0) (2026-08-27)
 
 
