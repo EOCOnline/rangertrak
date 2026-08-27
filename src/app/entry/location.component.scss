@@ -170,6 +170,29 @@ $filledColor: var(--rt-surface-2);
   padding       : 0.5rem 0.6rem 0.6rem;
 }
 
+// Raised live, 2026-08-26: Lat and Lng never reach full width on their own for any system,
+// so pairing them onto one row uses the space better than stacking two half-empty boxes.
+// flex-wrap lets them fall back to stacked when the row is too narrow for both (phone
+// widths) rather than forcing an overflow or a hand-picked breakpoint.
+.rt-coord-latlng {
+  display  : flex;
+  flex-wrap: wrap;
+  gap      : 0.4rem 0.6rem;
+
+  // flex: 0 1 auto (size to content, don't grow), not a percentage basis: a percentage
+  // flex-basis needs the flex container itself to have a DEFINITE width to resolve
+  // against, and .rt-coord-latlng's own width here is itself content-derived (it sits
+  // beside .enter__Where-div's floated map, not stretched to fill a known column) - an
+  // indefinite container falls back to content-sizing per the flex spec anyway, which is
+  // what flex-grow:1 then expanded to fill, stretching each box to ~94% of the row and
+  // forcing them to wrap. flex-grow:0 lets each box take only what its own content (the
+  // legend plus its number segments) actually needs.
+  .rt-coord-axis {
+    flex         : 0 1 auto;
+    margin-bottom: 0;
+  }
+}
+
 // [hidden] would already win against a bare `display: flex` above under normal CSS cascade
 // rules (same selector specificity, [hidden] declared via the UA stylesheet - but this
 // rule's OWN specificity, ".rt-coord-axis", is higher than the UA default's plain "[hidden]"

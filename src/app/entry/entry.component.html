@@ -153,17 +153,13 @@
     </div>
 
     <!-- ======================================= -->
+    <!-- Raised live, 2026-08-26: the circled-i here explaining Notes vs. the 213 section's
+         own "213 Message" field is redundant now - the same distinction is already covered
+         by the Guide drawer's "Notes and 213 messages are not the same thing" block
+         (guide-content.ts) and by field-level tips elsewhere on this page. Removed rather
+         than kept as a third copy of the same explanation. -->
     <h2 class="elegant">
       <mat-label>What</mat-label>
-      <!-- Raised live, 2026-08-26: Notes vs. the 213 section's own "213 Message" field read as
-           synonymous - they are not. This is the always-saved communications-log entry (feeds
-           the Reports grid and the ICS-309 log, shared/export/ics309-log.ts); the 213 Message
-           is a separate, addressed message some reports also generate. `title`, matching this
-           app's existing hover-tooltip idiom (e.g. rangers.component.ts's callsignCellRenderer)
-           rather than a new pattern. -->
-      <span class="field-help" tabindex="0" role="img"
-        aria-label="Notes: the general record of this report - always saved here, and what shows on the Reports grid and in the ICS-309 communications log. Not the same as a 213 Message (below) - that's a separate, addressed message only some reports generate."
-        title="The general record of this report - always saved here, and what shows on the Reports grid and in the ICS-309 communications log. Not the same as a 213 Message (below) - that's a separate, addressed message only some reports generate.">ⓘ</span>
     </h2>
     <!-- E-47/E-52: was `input-group bordered` - .bordered's own declaration
          (`border: 2 px solid ...`) was invalid CSS (stray space) and never actually
@@ -235,7 +231,10 @@
            it was E-65's fallback for when nothing else constrained width; the field now
            gets a real width from .enter__What--area's own CSS (max-width:100%; box-sizing
            unaffected). -->
-      <mat-form-field class="enter__What--area">
+      <!-- floatLabel="always": with a placeholder set, an unfloated label would sit on top
+           of it until focus - forcing the float keeps the embedded-in-the-border label
+           always visible, matching every other field on this page. -->
+      <mat-form-field class="enter__What--area" floatLabel="always">
         <mat-label>Note - for radio log</mat-label>
         <textarea matInput [formField]="entryForm.notes" id="enter__What--area" rows="5"
           placeholder="Enter any notes" [attr.tabindex]="notesTabIndex"></textarea>
@@ -307,7 +306,7 @@
                inside a box already headed "Also generate an ICS-213", so the prefix was
                restating its own container. The tooltip still spells out how it differs from
                the Notes field above, which is the distinction that actually confuses. -->
-          <mat-form-field class="enter__213-field enter__213-message">
+          <mat-form-field class="enter__213-field enter__213-message" floatLabel="always">
             <mat-label>Message</mat-label>
             <textarea matInput [formField]="entryForm.message213" rows="3" placeholder="What the 213 should say"
               [attr.tabindex]="message213TabIndex"></textarea>

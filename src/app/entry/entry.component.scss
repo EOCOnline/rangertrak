@@ -377,7 +377,13 @@ mat-chip-option.enter__source-selected {
 .enter__form {
   //margin     : 0px 10px 15px;
   min-width                                               : 160px;
-  //max-width: 300px;
+  // Raised live, 2026-08-26: on a wide desktop monitor the Who/Where/When boxes stretched
+  // edge-to-edge with no cap at all - long unbroken rows and a bordered box with mostly
+  // empty middle read as unfinished rather than intentional. Capped and centered rather
+  // than left-aligned, so it reads as a deliberately narrow column, not content that ran
+  // out of things to fill a still-wide left side.
+  max-width                                               : 1000px;
+  margin-inline                                           : auto;
   width                                                   : 100%;
   // 2026-08-21: containing block for #enter__frm-reguritation's `position: absolute` below
   // - see that rule's own comment for why it isn't `float: right` any more.
