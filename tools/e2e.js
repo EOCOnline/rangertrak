@@ -559,7 +559,9 @@ async function checkEntryTabOrder() {
   // defaulted off for a fresh install, and this check is what caught it. Now [hidden]
   // throughout, matching every other conditional section.
   check('Entry tab stops are contiguous 1..N with no gaps', r.contiguous, true)
-  check('Entry exposes the expected number of keyboard stops', r.count, 45)
+  // 47, not 45: F29-47 (2026-08-29) inserted subject213TabIndex and operatorTabIndex at the
+  // tail of the chain - see entry.component.ts's own comment on why both landed together.
+  check('Entry exposes the expected number of keyboard stops', r.count, 47)
 }
 
 async function checkEntryAutofocusAndReset() {
@@ -897,6 +899,12 @@ async function checkWelcomePanelDismissAndReopen() {
  * describing what RangerTrak is, and walking through the first five minutes on a new
  * device), and a Log tab was added so the Log page (deliberately absent from the main nav)
  * is still easy to find - eight tabs now, not six.
+ *
+ * 2026-08-29 (D-d, F29-32, F29-33): reordered/relabelled again - "Mission setup" merged
+ * into "Start here" as one onboarding checklist, FAQ moved up, "After mission" split out of
+ * "Your data" (the merge and the split cancel out - still eight), and "Log" renamed
+ * "Feedback" - it now also carries the feedback form, so the Log link moved with it, off
+ * the About tab.
  */
 async function checkHelpTabs() {
   console.log('\nE-84: Help renders eight tabs and switching them changes the body')
@@ -909,7 +917,7 @@ async function checkHelpTabs() {
       .map(el => el.textContent.trim()).join('|');
   })()`)
   check('eight tabs, in the planned order', labels,
-    'Start here|About|Entering reports|Maps|Mission setup|Your data|Log|FAQ')
+    'Start here|About|FAQ|Entering reports|Maps|Your data|After mission|Feedback')
 
   const firstBody = await evaluate(`document.querySelector('.help-tabs rangertrak-help-start') ? 'start' : 'missing'`)
   check('the first tab shows the Start here body', firstBody, 'start')
@@ -925,17 +933,18 @@ async function checkHelpTabs() {
   check('...and the Start here body is gone', await evaluate(`!!document.querySelector('.help-tabs rangertrak-help-start')`), false)
 
   // The Log link started in the prose (E-57(1)), then moved to the About strip below the
-  // tab group (E-84). F29-25 (2026-08-29) moved it again, into the About tab itself - the
-  // strip below the tabs was rendering under EVERY tab, not just About, which is what F29-25
-  // was fixing. It must survive each move - it is the path a bug reporter is told to follow.
+  // tab group (E-84), then into the About tab itself (F29-25, 2026-08-29). D-d (same day,
+  // later) moved it again, into the new Feedback tab (renamed from Log, which now also
+  // carries the feedback form) - it must survive each move, since it's the path a bug
+  // reporter is told to follow.
   await evaluate(`(() => {
     const tab = [...document.querySelectorAll('.help-tabs .mat-mdc-tab')]
-      .find(t => t.textContent.trim() === 'About');
+      .find(t => t.textContent.trim() === 'Feedback');
     tab?.click();
   })()`)
   await sleep(600)
-  check('the About tab still links to the Log page',
-    await evaluate(`!!document.querySelector('.help-tabs rangertrak-help-about a[href="/log"]')`), true)
+  check('the Feedback tab links to the Log page',
+    await evaluate(`!!document.querySelector('.help-tabs rangertrak-help-feedback a[href="/log"]')`), true)
 }
 
 /**
