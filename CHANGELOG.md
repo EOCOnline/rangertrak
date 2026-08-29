@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.83.0](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-29)
+
+### Fixes
+
+* **help:** Wave 4 content pass (F29-35, F29-36, F29-38) - Help's "Entering reports" and "Maps" tabs were substantially duplicating their own page's in-app Guide drawer content (button-by-button walkthroughs), rather than the "what does this mean" job Help is actually for. Trimmed to what the Guide drawer doesn't cover; the Guide's own Entry ("Positions") and Map ("What is shown") sections picked up the operational detail that had nowhere else to live. Also fixed a real overclaim introduced by `0.82.0`'s marker-colour fix: "each ranger has their own marker shape and colour" was never true for MapLibre (colour only, no distinct shapes) - now says so precisely on both engines. Coordinate-format Help now links out to a neutral explainer for MGRS/UTM instead of duplicating one.
+
 ## [0.82.1](https://github.com/EOCOnline/rangertrak/commit/2ec5e2e59e326ac2c372bddb1bba6d65d417aad5) (2026-08-29)
 
 ### Fixes

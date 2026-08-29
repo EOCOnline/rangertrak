@@ -1,8 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { RouterLink } from '@angular/router'
 
 /**
- * Help tab: The two map engines, base layers, saving an area for offline use, markers and trails.
+ * Help tab: choosing between the two map engines, and route trails.
+ *
+ * F29-36 (2026-08-29): trimmed of button-pressing instructions (saving an area, reading
+ * markers/clusters, isolating selected reports) that duplicated the Map page's own Guide
+ * drawer - see this file's own template comment.
  *
  * E-84: the Help page was one long scroll of ~8 prose blocks plus three disclosures, which
  * is why six shipped features ended up documented nowhere - there was no obvious place to
@@ -16,7 +19,7 @@ import { RouterLink } from '@angular/router'
 @Component({
   selector: 'rangertrak-help-maps',
   standalone: true,
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './help-maps.component.html',
   styleUrls: ['./help-tab.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

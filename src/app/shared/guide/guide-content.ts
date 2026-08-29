@@ -114,7 +114,8 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
               'Type a position in whichever format it was read to you — the rest are derived and shown below the fields.',
               'Click the map to move the pin, which fills the coordinates in for you.',
               'Alt+click the map to mark evidence or a clue at a different location instead, once that section is showing.',
-              'Every format here assumes WGS84 / modern GPS. A position read off an older paper topo quad may use NAD27 instead, which can be 100–200 m off in the western US.'
+              'Every format here assumes WGS84 / modern GPS. A position read off an older paper topo quad may use NAD27 instead, which can be 100–200 m off in the western US.',
+              'Not seeing a format you expected? Each one can be switched off for the mission, under Mission → Location Defaults — a team that only ever speaks MGRS can hide the rest. The Show all coordinate systems toggle brings them all back for the current session only, without changing the mission\'s own setting.'
             ]
           },
           {
@@ -282,7 +283,12 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
               'All field reports for all rangers, by default.',
               'If rows are selected on the Radio Log page, the switch below the map isolates just those.',
               'Nearby reports group into clusters — click a cluster to zoom in.',
-              'Each ranger has their own marker shape and color, consistent everywhere.'
+              // F29-7/8 (2026-08-29): MapLibre's markers only got per-ranger COLOUR this
+              // session, not distinct shapes too (that would need a symbol layer with
+              // pre-registered images - a bigger change, not built yet) - this used to claim
+              // "shape and color" unconditionally, which overclaimed for MapLibre specifically.
+              'Each ranger has their own marker colour, consistent across sessions. Leaflet also gives each ranger a distinct marker shape; MapLibre currently distinguishes by colour only.',
+              'On the Leaflet map, the control in the top-right corner switches the base map between street and topographic.'
             ]
           },
           {
