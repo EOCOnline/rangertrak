@@ -11,6 +11,16 @@ import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/sl
 
 import { buildPmtilesStyle, DEFAULT_PMTILES_URL, registerPmtilesProtocol } from '../shared/mapping/map-style'
 import { fieldReportStatusColor, resolveCssColorForCanvas } from '../shared/mapping/report-marker-status'
+// F29-7/8 (2026-08-29): rangerColorFor's own file imports Leaflet (for rangerIconFor's return
+// type - a real, if type-only-adjacent, module import), which E-64 otherwise keeps out of
+// MapLibre's lazy chunk on purpose. Accepted here anyway: Leaflet is ALWAYS the default
+// engine and mounts first on every /map visit (see checkMapEngineSwitch), so by the time a
+// visitor has switched engines and MapLibre's own chunk loads, Leaflet is already loaded
+// regardless - this costs nothing extra in practice, only a "this chunk technically imports
+// Leaflet" purity concern, not a real download. Reusing the SAME function as the Leaflet
+// map's markers/trails (rather than a second colour scheme) is the actual point - ranger-
+// icon.ts's own doc comment on why this exists at all.
+import { rangerColorFor } from '../shared/mapping/ranger-icon'
 import {
   FieldReportsType, FieldReportService, FieldReportType, LogService, MissionService, MissionType
 } from '../shared/services'
@@ -277,7 +287,17 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       source: REPORTS_SOURCE_ID,
       filter: ['!', ['has', 'point_count']],
       paint: {
-        'circle-color': '#c0392b',
+        // F29-7/8 (2026-08-29): was a single hardcoded colour for every report regardless of
+        // which ranger filed it - "only as red dots, not as unique per ranger markers" was
+        // the maintainer's exact complaint, and reading this code confirmed it directly: no
+        // per-ranger marker system was ever built for MapLibre, unlike Leaflet's
+        // rangerIconFor(). Data-driven off each feature's own `rangerColor` property
+        // (buildGeoJson() resolves it per point, same rangerColorFor() Leaflet's markers and
+        // trails already use), same treatment as `statusColor` below already gets. Distinct
+        // per-ranger SHAPES (not just colour) would need MapLibre's `symbol` layer type with
+        // pre-registered images instead of a plain `circle` layer - a bigger change, not
+        // attempted here; colour alone already answers the complaint as reported.
+        'circle-color': ['get', 'rangerColor'],
         'circle-radius': 8,
         // Raised live 2026-08-26: a status "shadow" ring, data-driven off each feature's own
         // `statusColor` property (buildGeoJson() resolves it per point) - same treatment as
@@ -296,7 +316,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     this.map.on('mouseleave', 'unclustered-point', () => { this.map.getCanvas().style.cursor = '' })
   }
 
-  private buildGeoJson(): FeatureCollection<Point, { title: string, statusColor: string }> {
+  private buildGeoJson(): FeatureCollection<Point, { title: string, statusColor: string, rangerColor: string }> {
     const reportsToShow = this.showingSelectedOnly
       ? this.fieldReportService.getSelectedFieldReports().fieldReportArray
       : (this.fieldReports?.fieldReportArray ?? [])
@@ -321,6 +341,10 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
             properties: {
               title: `${r.callsign} at ${formatReportTime(r.date)} with ${r.status}`,
               statusColor: rawColor ? resolveCssColorForCanvas(rawColor) : '#888888',
+              // F29-7/8: same identity key (rangerUid preferred, callsign fallback - D-42
+              // phase 5) and same colour function Leaflet's markers/trails already use, so a
+              // ranger's dot is the same colour on both map engines.
+              rangerColor: rangerColorFor(r.rangerUid || r.callsign),
             }
           }
         })

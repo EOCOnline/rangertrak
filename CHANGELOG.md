@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.82.0](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-29)
+
+### Fixes
+
+* **map:** MapLibre's report markers now colour by ranger identity (the same `rangerColorFor()` Leaflet's own markers and route trails already use), instead of every report rendering as an identical red dot. This was never a regression - MapLibre never had a per-ranger marker system built for it at all. Distinct per-ranger *shapes* (matching Leaflet's) would need a bigger change (a `symbol` layer with pre-registered images) and isn't done here; colour alone answers the reported complaint. The basemap-not-rendering half of this report is still open - see the roadmap for what was and wasn't ruled out this pass.
+* **entry:** dropped the operator field's "Optional - blank is fine" placeholder text.
+
 ## [0.81.0](https://github.com/EOCOnline/rangertrak/commit/a0e49940356781a154364537fcbe9d99b7eef832) (2026-08-29)
 
 ### Features
