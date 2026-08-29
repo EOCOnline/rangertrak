@@ -19,6 +19,14 @@
 
   <link rel="preconnect" href="https://fonts.gstatic.com">
 
+  <!-- PageSpeed Insights (2026-08-29): Entry's own reverse-geocode of the mission's
+       default position sits on the critical path (~956ms) on first load, and flagged
+       Nominatim as a preconnect candidate (~310ms of that spent on DNS+TLS that
+       preconnect can overlap with everything else loading). Only the connection is
+       warmed here - no request is sent early, so this doesn't touch when/whether that
+       geocode itself fires. -->
+  <link rel="preconnect" href="https://nominatim.openstreetmap.org" crossorigin>
+
   <!-- E-44 audit, 2026-08-26: was requesting 8 font families (Open Sans Condensed, Saira
        Extra Condensed, Boogaloo, Anton, Arima Madurai, Black Ops One) left over from the
        Font Explorium tool, which was extracted out of the app entirely on 2026-08-20 (see

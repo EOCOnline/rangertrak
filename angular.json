@@ -108,6 +108,58 @@
               "namedChunks": false,
               "extractLicenses": true
             },
+            "profiling": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "1mb",
+                  "maximumError": "1mb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": {
+                "fonts": {
+                  "inline": true
+                },
+                "styles": {
+                  "inlineCritical": true
+                }
+              },
+              "outputHashing": "all",
+              // 2026-08-29: same optimized/minified output as "production" (real-world
+              // DevTools traces need production's actual bundle shape, not dev's unminified
+              // one), but with real .map files so Chrome can attribute minified execution
+              // back to source instead of dumping it in an "[unattributed]" bucket - the gap
+              // that showed up chasing a PageSpeed Insights report. `hidden: true` omits the
+              // `//# sourceMappingURL` comment so DevTools only picks these up when manually
+              // pointed at them, not automatically for a random visitor with DevTools open -
+              // but that is NOT a real access control, just a discoverability one, and this
+              // repo's `wrangler.jsonc` deploys its ENTIRE build output directory as public
+              // static assets with no exclusion mechanism. `production` above (the one
+              // `npm run build` / CI actually uses to deploy - see package.json,
+              // deploy.yml) deliberately keeps `sourceMap: false` untouched, so a real
+              // deploy never produces `.map` files to leak in the first place. Use
+              // `ng build --configuration profiling` (or `npm run build:profiling`) for a
+              // local-only build to load into DevTools when investigating performance -
+              // never deploy this configuration's output.
+              "sourceMap": {
+                "scripts": true,
+                "styles": true,
+                "hidden": true
+              },
+              "namedChunks": false,
+              "extractLicenses": true
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,

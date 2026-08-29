@@ -193,6 +193,12 @@
 // to, so invert it - safe unconditionally, since the chrome bar never becomes light
 // under this skin regardless of scheme.
 #gitLogo {
+  // PSI flagged this rendering at 32x29 against the source PNG's real 32x32 - only
+  // `height` was set here, so the HTML `width="32"` attribute stayed fixed while the
+  // em-based height shrank at this page's actual root font-size, stretching the mark
+  // slightly out of square. Setting both to the same 1.5em keeps it scaling with the
+  // toolbar (the original intent) without distorting the aspect ratio.
+  width       : 1.5em;
   height      : 1.5em;
   margin-right: 2px;
   filter      : invert(1);
