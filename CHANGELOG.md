@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.82.1](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-29)
+
+### Fixes
+
+* **map:** the "Just those... selected" and "Use MapLibre..." toggles below each engine's overview map dropped to full width underneath it on a phone, instead of wrapping into the narrower column beside it - raised live from a phone screenshot. MDC's slide-toggle lays its switch+label out as an unconstrained line with no wrap, so the whole control needed one long line that didn't fit beside the floated 175px overview map and dropped below it instead. Capped to the space actually available beside the map, with the label now wrapping onto more than one line - saves real vertical space on a phone.
+
 ## [0.82.0](https://github.com/EOCOnline/rangertrak/commit/e35b86dfd95fe5022b5d53404f795daa854c42a4) (2026-08-29)
 
 ### Fixes

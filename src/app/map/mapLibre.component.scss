@@ -22,6 +22,23 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
+// Same fix as mapLeaflet.component.scss's own copy of this comment (live phone screenshot,
+// 2026-08-29) - MDC's slide-toggle needs an explicit width cap and label wrapping to slot
+// into the column beside the floated overview map instead of dropping full-width below it.
+mat-slide-toggle {
+  display  : inline-block;
+  max-width: calc(100% - 175px - 0.5rem);
+
+  ::ng-deep .mdc-form-field {
+    white-space: normal;
+  }
+
+  ::ng-deep .mdc-label {
+    white-space: normal;
+    min-width  : 0;
+  }
+}
+
 .map-hillshade-toggle {
   margin: 0.5rem 0;
 }

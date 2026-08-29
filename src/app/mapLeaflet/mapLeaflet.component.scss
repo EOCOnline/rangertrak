@@ -87,6 +87,29 @@
   cursor    : crosshair;
 }
 
+// Maintainer, 2026-08-29 (live phone screenshot): the "Just those... selected" toggle below
+// this overview map dropped to full width underneath it instead of wrapping into the
+// narrower column beside it. MDC's slide-toggle lays its switch+label out as an
+// unconstrained inline-flex row - with no width limit and no wrap on the label text, the
+// whole control needs one long unbroken line, which doesn't fit in the space left beside the
+// floated 175px overview map above, so the browser drops the whole thing below the float
+// instead of squeezing it in. Capping the toggle's own width to what's actually available
+// beside the map, and letting its label wrap onto more than one line, is what lets it slot
+// into that column instead - saves real vertical space on a phone.
+mat-slide-toggle {
+  display  : inline-block;
+  max-width: calc(100% - 175px - 0.5rem);
+
+  ::ng-deep .mdc-form-field {
+    white-space: normal;
+  }
+
+  ::ng-deep .mdc-label {
+    white-space: normal;
+    min-width  : 0;
+  }
+}
+
 .leaflet-container.crosshair-cursor-enabled {
   cursor: crosshair;
 }
