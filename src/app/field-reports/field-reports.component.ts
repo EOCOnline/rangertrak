@@ -176,6 +176,15 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
         }
         //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
       },
+      // F29-46 (2026-08-29): Source was gathered on every report since E-41 phase 1 but never
+      // surfaced anywhere - a live gap this column closes. Non-editable: it's how the report
+      // actually arrived, not a value a later correction should change.
+      { headerName: "Source", field: "source", maxWidth: 110, editable: false },
+      // F29-48 (2026-08-29, D-44): same "captured but never surfaced" shape as Source above -
+      // whoever was filing the report when Submit was pressed. Blank on any report that
+      // predates this field, or where the scribe left it blank - both legitimate, never
+      // substitute the current session's operator for a missing one.
+      { headerName: "Operator", field: "operator", maxWidth: 140, editable: false },
       // The ONLY flex column, on purpose - see autoSizeStrategy above. Notes is both the
       // most variable-length field and the one a scribe most wants extra room for, so it
       // takes whatever width the content-sized columns leave behind. minWidth raised from

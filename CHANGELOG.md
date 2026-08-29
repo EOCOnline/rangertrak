@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.81.0](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-29)
+
+### Features
+
+* **entry:** Source now includes "Phone" (F29-43), and is finally shown - a Radio Log column and an ICS-309 export column, since capturing it on every report and never surfacing it anywhere made adding a new option pointless on its own (F29-46).
+* **entry:** operator identity (D-44, ADR-worthy) - a name field right above Submit, stamped onto each report at the moment it's filed and never looked up later, so a mid-mission shift change can't retroactively re-attribute a past report. Carries forward from the previous entry within the same session (no persisted setting, no device default); collapses to a compact summary line with an edit affordance once set, so the hot path doesn't carry a permanently-open extra input for the common case of many entries by the same scribe. Fills ICS-213's "8 Approved by Name" and a new `Ics309LogHeader.preparedBy`; also a Radio Log column.
+* **entry:** a genuinely new "Subject" field, last inside the "Also generate an ICS-213" section, right after Message - fills "4 Subject", declared on the real ICS-213 form since the original PDF-fill work but never actually populated, so it printed blank on every 213 generated until now.
+* **mission:** the "Ranger ID field name" setting now states the operational expectation plainly - every responder should have their own, and anyone without one shows as not yet checked in - worded as an expectation, not an enforced rule the app will block on (F29-45).
+
 ## [0.80.0](https://github.com/EOCOnline/rangertrak/commit/81fbd3194e2f349691884c232bdf09df04a72638) (2026-08-29)
 
 ### Features

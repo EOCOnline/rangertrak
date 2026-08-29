@@ -110,13 +110,22 @@ export class MessagesComponent implements OnInit, OnDestroy {
       const templateBytes = new Uint8Array(await res.arrayBuffer())
       const d = new Date(report.date)
 
+      // F29-47 (2026-08-29): '4 Subject' and '8 Approved by Name' were both declared in
+      // ICS213_FIELDS since E-31/E-41 phase 3 but never passed a value here, so every 213
+      // generated printed them blank. Subject is its own scribe-entered field (subject213),
+      // not derived from the message text; Approved by Name is the operator who filed the
+      // report - D-e: never the CURRENT session's operator, only whatever was actually
+      // stamped on this specific report at submit time, so a shift change can't
+      // retroactively re-attribute it.
       const filled = await fillIcs213Pdf(templateBytes, {
         '1 Incident Name Optional': this.settings?.event || this.settings?.mission || '',
         '2 To Name and Position': (report.recipients213 ?? []).join(', '),
         '3 From Name and Position': report.callsign,
+        '4 Subject': report.subject213 ?? '',
         '5 Date': d.toLocaleDateString(),
         '6 Time': d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
         '7 Message': report.message213 ?? '',
+        '8 Approved by Name': report.operator ?? '',
       })
 
       // TS's DOM lib types Uint8Array's `.buffer` as ArrayBufferLike (which could in theory

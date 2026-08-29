@@ -31,11 +31,22 @@ export interface Ics309LogHeader {
   incidentName: string
   operationalPeriod: string
   datePrepared: Date
+  // F29-48 (2026-08-29, D-44): the real ICS-309 form's "Prepared by: Name / Position /
+  // Signature" footer - whoever is generating THIS log printout, not any one report's own
+  // operator (FieldReportType.operator, a separate per-row concept this module doesn't
+  // surface - see the roadmap for why). Optional/blank same as datePrepared has no "unknown"
+  // sentinel: this module has no UI wired to it yet (E-31/E-41 phase 3 status), so there is
+  // nowhere for a caller to source this from today beyond passing it through.
+  preparedBy: string
 }
 
 export interface Ics309LogRow {
   time: Date
   from: string
+  // F29-46 (2026-08-29): ICS-309 has a genuine notion of how traffic arrived (radio, phone,
+  // packet, ...) - a real per-contact fact, unlike `preparedBy` above which describes the log
+  // as a whole. Blank for anything filed before `source` existed (E-41 phase 1).
+  source: string
   message: string
 }
 
@@ -61,12 +72,14 @@ export function buildIcs309Log(
   reports: readonly FieldReportType[],
   mission: Ics309MissionInfo,
   now: Date = new Date(),
+  preparedBy: string = '',
 ): Ics309Log {
   const rows = [...reports]
     .sort((a, b) => a.date.getTime() - b.date.getTime())
     .map((r): Ics309LogRow => ({
       time: r.date,
       from: r.callsign?.trim() || '(no callsign)',
+      source: r.source ?? '',
       message: formatMessage(r),
     }))
 
@@ -75,6 +88,7 @@ export function buildIcs309Log(
       incidentName: mission.mission,
       operationalPeriod: formatOperationalPeriod(mission),
       datePrepared: now,
+      preparedBy,
     },
     rows,
   }

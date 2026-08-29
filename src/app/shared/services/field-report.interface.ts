@@ -12,7 +12,9 @@ import { LocationType } from './location.interface'
 // DOM attribute value is a string - a numeric model value could never strictly-equal a radio
 // element's own string `value`, so the control would silently never show as checked. Confirmed
 // by reading that file before choosing this, not guessed.
-export const FIELD_REPORT_SOURCES = ['Voice', 'Packet', 'APRS', 'Email'] as const
+// F29-43 (2026-08-29): 'Phone' added - 'Voice' stays first (array order is UI order, and
+// radio-over-voice is the hot-path common case).
+export const FIELD_REPORT_SOURCES = ['Voice', 'Phone', 'Packet', 'APRS', 'Email'] as const
 export type FieldReportSource = typeof FIELD_REPORT_SOURCES[number]
 
 /**
@@ -120,6 +122,23 @@ export type FieldReportType = {
   replyRequested213?: boolean,
   message213?: string,
   recipients213?: string[],
+  // F29-47 (2026-08-29, ADR D-44): "5 Approved by Name"/ICS-309's Name-Position-Signature
+  // header, whichever scribe actually filed the report. Deliberately optional, additive, no
+  // schema bump - same shape as `source` above. Stamped at submit from whatever the entry
+  // form showed at that moment (see entry.component.ts's operatorModel, deliberately NOT part
+  // of that form's own resettable model) and NEVER retroactively looked up - rewriting who
+  // logged a report after the fact is a records-integrity failure for a document (ICS-309)
+  // whose whole purpose is who-logged-what-when. A report with no operator (predates this
+  // field, or the scribe left it blank - both legitimate) renders blank; never substitute the
+  // current session's operator for a missing one.
+  operator?: string,
+  // F29-47 (2026-08-29): the ICS-213's "4 Subject" line, declared in ICS213_FIELDS since
+  // E-31/E-41 phase 3 but never actually filled - it printed blank on every 213 generated.
+  // A genuinely separate scribe-entered field (not derived from message213), placed last
+  // inside the 213 section per the maintainer's own ask, so it inherits that section's
+  // opt-in [hidden] behaviour for free. Same additive/no-migration treatment as the other
+  // *213 fields.
+  subject213?: string,
   // Architecture decision, 2026-08-26: resolves the "second coordinate" question the Five
   // Open Questions discussion doc left open (topic 1/6) - where a clue/evidence item
   // actually IS, distinct from the reporting ranger's own position (`location` above).

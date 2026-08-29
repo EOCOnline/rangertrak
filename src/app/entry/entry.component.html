@@ -327,6 +327,17 @@
               aria-label="Message: the text of a separate, addressed ICS-213 message to whoever's listed under To, above - often reworded from your Notes above, not just a copy of them. This is what prints on the actual 213 form."
               title="The text of a separate, addressed ICS-213 message to whoever's listed under To, above - often reworded from your Notes above, not just a copy of them. This is what prints on the actual 213 form.">ⓘ</span>
           </mat-form-field>
+
+          <!-- F29-47 (2026-08-29): "4 Subject" - declared on the real ICS-213 AcroForm since
+               E-31/E-41 phase 3 but never actually filled (messages.component.ts's fill call
+               only covered 6 of 8 fields), so every 213 generated printed it blank. Last
+               inside this box, right after Message, per the maintainer's own placement ask -
+               a genuinely separate scribe-entered field, not derived from the message text. -->
+          <mat-form-field class="enter__213-field" floatLabel="always">
+            <mat-label>Subject</mat-label>
+            <input matInput type="text" [formField]="entryForm.subject213"
+              [attr.tabindex]="subject213TabIndex" />
+          </mat-form-field>
         </div>
       </div>
     </div>
@@ -347,6 +358,33 @@
       </div>
     </div-->
     <br />
+
+    <!-- D-44/F29-47 (2026-08-29): operator identity, right above Submit per the maintainer's
+         own placement instinct - OUTSIDE the 213 box above, since this applies to every
+         report, not just 213s. Starts editable (nothing to summarize yet); collapses to a
+         compact read-only line once resetAll() has run with a name entered, so the hot path
+         doesn't carry a permanently-open extra input for the common case (many entries, same
+         scribe) - see entry.component.ts's operatorEditing/resetAll(). Stamped at submit,
+         never looked up later (D-e): a shift change must not retroactively re-attribute a
+         past report. -->
+    <div class="enter__operator">
+      @if (operatorEditing()) {
+      <mat-form-field class="enter__operator-field" floatLabel="always">
+        <mat-label>Operator (your name)</mat-label>
+        <input matInput type="text" [formField]="operatorForm.operator"
+          [attr.tabindex]="operatorTabIndex" placeholder="Optional - blank is fine"
+          title="Whoever is filing this report. Carries forward to your next entry this session; blank is fine." />
+      </mat-form-field>
+      } @else {
+      <span class="enter__operator-summary">
+        Operator: <strong>{{ operatorForm.operator().value() }}</strong>
+        <button matButton="outlined" type="button" (click)="onBtnEditOperator()"
+          [tabIndex]="operatorTabIndex" title="Change the operator name">
+          Edit
+        </button>
+      </span>
+      }
+    </div>
 
     <!-- ======================================= -->
     <!--button (click)="this.entryDetailsForm.reset()" type="reset">Reset (native)</button> <br-->

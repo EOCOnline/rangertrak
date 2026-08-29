@@ -151,7 +151,13 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // its old slot would have left the sequence reading 40, 42, 43, 41 - the exact failure
   // the coordinate-system reorder already hit once. Total is unchanged at 45.
   message213TabIndex = this.recipients213TabIndex + 1
-  resetTabIndex = this.message213TabIndex + 1
+  // F29-47 (2026-08-29): two new fields inserted at the tail of the chain, from two
+  // different items - subject213 belongs INSIDE the 213 section (last, after Message, per
+  // the maintainer's own placement ask), operator belongs OUTSIDE it (applies to every
+  // report, not only 213s) - see entry.component.html's own tabindex-chain comment.
+  subject213TabIndex = this.message213TabIndex + 1
+  operatorTabIndex = this.subject213TabIndex + 1
+  resetTabIndex = this.operatorTabIndex + 1
   submitTabIndex = this.resetTabIndex + 1
 
   // E-41 phase 1: source options for the template's @for - the values themselves are
@@ -196,8 +202,27 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     id: -1, location: undefinedLocation, date: new Date(), notes: '',
     source: 'Voice',
     generates213: false, replyRequested213: false, message213: '', recipients213: '',
+    subject213: '',
   })
   public entryForm = form(this.entryModel)
+
+  // D-44 (2026-08-29): operator identity, deliberately OUTSIDE entryModel - unlike every
+  // field above, resetAll() must NOT clear this. The maintainer's rule: it carries forward
+  // from the previous entry within the same session (successive entries are usually the same
+  // scribe), blank only on a fresh page load - "blank values (at least historically) are
+  // fine." Stamped onto the report at submit time (mergedFormValue()), never looked up
+  // later - rewriting who logged a past entry after a shift change would be a records-
+  // integrity failure, not a cosmetic one. No persisted setting/default - the field sitting
+  // right above Submit, reviewed on every entry, is the safety mechanism, not storage.
+  private operatorModel = signal({ operator: '' })
+  public operatorForm = form(this.operatorModel)
+
+  // Starts editable (nothing entered yet has nothing to summarize). Collapses to a compact
+  // read-only line once resetAll() runs with a non-blank operator, so the common case (same
+  // scribe, many entries) doesn't carry a permanently-open extra input on the hot path - the
+  // maintainer's own "readily reviewed & changed" is served by the edit affordance, not by
+  // leaving the box open. See resetAll() and the template's own operator section.
+  operatorEditing = signal(true)
 
   // Constructed once, here, as a field initializer - like entryForm above. SignalFormControl's
   // constructor needs an injection context (NG0203), which a field initializer is but a method
@@ -552,7 +577,9 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       notes: '',
       source: 'Voice',
       generates213: false, replyRequested213: false, message213: '', recipients213: '',
+      subject213: '',
     })
+    // operatorModel is deliberately NOT reset here - see its own declaration above.
     this.callsignCtrl.setValue('')
     this.entryControlsForm.setValue({
       status: this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status
@@ -584,6 +611,9 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       rangerUid: match?.uid ?? '',
       callsign: match ? match.callsign : typed,
       status: this.entryControlsForm.value.status,
+      // D-44: stamped from whatever operatorModel holds AT SUBMIT - see its own declaration.
+      // Trimmed so "typed then deleted" reads as blank, not whitespace.
+      operator: this.operatorModel().operator.trim(),
       // Only when the section is actually open - collapsing it after entering a range/
       // bearing is how a scribe retracts "never mind, not a real clue," and a submitted
       // report shouldn't carry a marker its own scribe just told the form to forget.
@@ -668,7 +698,17 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       notes: '',
       source: 'Voice',
       generates213: false, replyRequested213: false, message213: '', recipients213: '',
+      subject213: '',
     })
+    // D-44: operatorModel is deliberately NOT reset - it carries forward across entries in
+    // the same session (see its own declaration). Only its EDITING state changes here: once
+    // a name has actually been entered, later resets collapse it to the compact summary line
+    // rather than reopening a live input every single time - still one click away via the
+    // edit affordance. A blank operator stays open, since there is nothing to summarize and
+    // it's still worth a scribe's attention.
+    if (this.operatorModel().operator.trim()) {
+      this.operatorEditing.set(false)
+    }
     this.callsignCtrl.reset('')
     this.entryControlsForm.reset({
       status: this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status
@@ -681,6 +721,11 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.evidenceLocation = null
     this.selectedRecipients213.set(new Set())
     this.formGeneration++
+  }
+
+  /** The operator summary line's edit affordance. */
+  onBtnEditOperator() {
+    this.operatorEditing.set(true)
   }
 
   callsignChanged(callsign: string) { // Just serves timer for input field - post interaction
