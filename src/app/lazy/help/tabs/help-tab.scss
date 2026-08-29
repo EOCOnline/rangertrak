@@ -49,6 +49,13 @@ li {
   margin-block: 0.3rem;
 }
 
+// F29-32: the merged Start-here/Mission-setup checklist's steps carry more than a line of
+// text each (some nest a warning callout) - more room between them than a plain reference
+// list needs.
+.help-checklist > li {
+  margin-block: 1rem;
+}
+
 // A control name as it appears on screen. Distinct from <strong> so a reader can tell
 // "press the thing labelled X" from ordinary emphasis - the whole point of the E-84 audit
 // was that button names in docs had drifted from button names in the app.

@@ -14,6 +14,10 @@
          itself - consequences (what is irreversible, what is confidential), and behaviour
          with no on-screen affordance (why a coordinate row vanished). Where the UI is NOT
          self-explanatory, the fix belongs in the UI, not in another paragraph here. -->
+    <!-- 2026-08-29 (D-d, F29-32): reordered per that day's feedback batch - "Mission setup"
+         merged into "Start here" (one onboarding checklist), FAQ moved up next to About,
+         "After mission" split out of "Your data", and "Log" renamed "Feedback" (it now also
+         carries the feedback form, moved on from About). -->
     <mat-tab-group class="help-tabs" mat-stretch-tabs="false" animationDuration="0ms">
       <mat-tab label="Start here">
         <rangertrak-help-start></rangertrak-help-start>
@@ -21,23 +25,23 @@
       <mat-tab label="About">
         <rangertrak-help-about></rangertrak-help-about>
       </mat-tab>
+      <mat-tab label="FAQ">
+        <rangertrak-help-faq></rangertrak-help-faq>
+      </mat-tab>
       <mat-tab label="Entering reports">
         <rangertrak-help-entry></rangertrak-help-entry>
       </mat-tab>
       <mat-tab label="Maps">
         <rangertrak-help-maps></rangertrak-help-maps>
       </mat-tab>
-      <mat-tab label="Mission setup">
-        <rangertrak-help-mission></rangertrak-help-mission>
-      </mat-tab>
       <mat-tab label="Your data">
         <rangertrak-help-data></rangertrak-help-data>
       </mat-tab>
-      <mat-tab label="Log">
-        <rangertrak-help-log></rangertrak-help-log>
+      <mat-tab label="After mission">
+        <rangertrak-help-after-mission></rangertrak-help-after-mission>
       </mat-tab>
-      <mat-tab label="FAQ">
-        <rangertrak-help-faq></rangertrak-help-faq>
+      <mat-tab label="Feedback">
+        <rangertrak-help-feedback></rangertrak-help-feedback>
       </mat-tab>
     </mat-tab-group>
 

@@ -155,35 +155,41 @@
     <!-- ══ 6. DANGER ZONE ══ Was inside "Advanced", styled identically to the prose around
          it - so emptying the roster, and appending 18 station signs that duplicate on a
          second press, both looked like reading material. Fenced now, same treatment as
-         Mission's and Reports'. -->
-    <div class="rt-danger-zone">
-      <h2 class="rt-danger-zone__heading">
+         Mission's and Reports'.
+         F29-18 (2026-08-29): collapsed behind ExpandableSectionComponent so a stray click
+         can't land on a destructive button, and these read as exceptional actions rather
+         than furniture on the page - see that component's own doc comment for why this is a
+         deliberate, named exception to the 2026-08-25 "no collapsible sections" removal. -->
+    <rangertrak-expandable-section class="rt-danger-zone-trigger">
+      <span rtSummary class="rt-danger-zone__summary">
         <mat-icon aria-hidden="true">warning</mat-icon>
         Danger zone
-      </h2>
-      <p class="rt-danger-zone__note">
-        The roster holds participant personal data. Export it first if you need to keep it &mdash;
-        none of these can be undone.
-      </p>
-      <div class="rt-danger-zone__actions">
-        <button matButton="outlined" type="button" class="rangers__danger-button"
-          (click)="onBtnDeleteRangers()"
-          title="Empty the roster. It stays empty until you import or add rangers.">
-          Delete all rangers
-        </button>
+      </span>
+      <div class="rt-danger-zone">
+        <p class="rt-danger-zone__note">
+          The roster holds participant personal data. Export it first if you need to keep it &mdash;
+          none of these can be undone.
+        </p>
+        <div class="rt-danger-zone__actions">
+          <button matButton="outlined" type="button" class="rangers__danger-button"
+            (click)="onBtnDeleteRangers()"
+            title="Empty the roster. It stays empty until you import or add rangers.">
+            Delete all rangers
+          </button>
 
-        <button matButton="outlined" type="button" class="rangers__danger-button"
-          (click)="loadVashonRangers()" id="enter__Fake--button"
-          title="Append the 18 built-in Vashon station callsigns to the current roster">
-          Add station callsigns &mdash; appends, may duplicate
-        </button>
+          <button matButton="outlined" type="button" class="rangers__danger-button"
+            (click)="loadVashonRangers()" id="enter__Fake--button"
+            title="Append the 18 built-in Vashon station callsigns to the current roster">
+            Add station callsigns &mdash; appends, may duplicate
+          </button>
 
-        <button matButton="outlined" type="button" class="rangers__danger-button"
-          (click)="onBtnClearPhotos()" title="Forget every stored photo on this device">
-          Clear photos
-        </button>
+          <button matButton="outlined" type="button" class="rangers__danger-button"
+            (click)="onBtnClearPhotos()" title="Forget every stored photo on this device">
+            Clear photos
+          </button>
+        </div>
       </div>
-    </div>
+    </rangertrak-expandable-section>
 
   </div>
 

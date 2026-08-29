@@ -1,17 +1,35 @@
-<h3>The first five minutes on a new device</h3>
+<h3>Get set up</h3>
 
-<ol>
-  <li>Open <a routerLink="/mission">Mission</a> and set the mission name and operational period.</li>
-  <li>Open <a routerLink="/rangers">Rangers</a> and load your roster.</li>
+<!-- F29-32 (2026-08-29): merged with the former "Mission setup" tab, per the maintainer's own
+     conditional answer ("if the result is not a horrendously long tab") - reformatted as one
+     linear checklist rather than two tabs a newcomer has to know to visit in order. Settings
+     detail, the offline-capability table, and Mission's Advanced Options each move behind an
+     ExpandableSectionComponent below, so the checklist itself stays short and scannable - the
+     abort condition the scoping note set ("collapse advanced content, don't split the tab back
+     up") applied up front rather than waited on. -->
+<ol class="help-checklist">
   <li>
-    Go back to <a routerLink="/">Field Entry</a> (aka the home page, click the RangerTrak name
-    to go there). That is where you will spend the incident.
+    <strong>Set up your mission.</strong> Open <a routerLink="/mission">Mission</a> and set
+    the mission name, the operational period, and a default latitude/longitude near your
+    operating area — new reports start from there, which saves typing on every single one.
+    <div class="warn">
+      Mission settings are not saved until you press <span class="ui">Save</span>. Unlike the
+      Radio Log and Rangers grids, which save edits themselves, this page waits for you.
+    </div>
+  </li>
+  <li>
+    <strong>Load your roster.</strong> Open <a routerLink="/rangers">Rangers</a> and import
+    or add your team.
+  </li>
+  <li>
+    <strong>Go to Field Entry.</strong> Click the RangerTrak name in the header to get there
+    (it is also the home page). That is where you will spend the incident.
   </li>
 </ol>
 
 <p>
-  The coloured dot in the page header tracks those steps. Hover it for what is still missing;
-  click it to jump to Mission.
+  The coloured dot in the page header tracks those three steps. Hover it for what is still
+  missing; click it to jump to Mission.
 </p>
 
 <div class="warn">
@@ -21,33 +39,97 @@
   still have a signal.
 </div>
 
-<h3>Working offline</h3>
+<rangertrak-expandable-section summary="Mission settings worth knowing about">
+  <p>
+    Most of the rest of the Mission page has a sensible default and can be left alone. These
+    are the ones worth knowing about, because their effect shows up somewhere else.
+  </p>
+  <table class="reference">
+    <thead>
+      <tr>
+        <th>Setting</th>
+        <th>What it changes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Coordinate systems shown on Entry</td>
+        <td>Hides formats your team never uses from the entry screen. If a format has gone
+          missing, this is why.</td>
+      </tr>
+      <tr>
+        <td>Field Report Statuses</td>
+        <td>The status buttons on the entry screen, and the marker colours. A status already
+          used by a report cannot be renamed.</td>
+      </tr>
+      <tr>
+        <td>Google Geocoding API key</td>
+        <td>Optional. Address lookup uses OpenStreetMap by default, free and with no key. Your
+          own Google key switches address lookup to Google, at your own cost. Neither works
+          offline.</td>
+      </tr>
+      <tr>
+        <td>Debug Mode</td>
+        <td>Adds diagnostic detail to the entry screen and the grids. For reporting a problem,
+          not for normal use.</td>
+      </tr>
+    </tbody>
+  </table>
+</rangertrak-expandable-section>
 
-<table class="reference reference--parallel">
-  <thead>
-    <tr>
-      <th>Works with no Internet</th>
-      <th>Needs a connection</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Entering and saving reports</td>
-      <td>Looking up a street address</td>
-    </tr>
-    <tr>
-      <td>All coordinate formats, and Plus Codes</td>
-      <td>Map areas you have not already viewed or saved</td>
-    </tr>
-    <tr>
-      <td>Roster, report table, export and import</td>
-      <td>Sending feedback from the About section</td>
-    </tr>
-  </tbody>
-</table>
+<rangertrak-expandable-section summary="Working offline">
+  <table class="reference reference--parallel">
+    <thead>
+      <tr>
+        <th>Works with no Internet</th>
+        <th>Needs a connection</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Entering and saving reports</td>
+        <td>Looking up a street address</td>
+      </tr>
+      <tr>
+        <td>All coordinate formats, and Plus Codes</td>
+        <td>Map areas you have not already viewed or saved</td>
+      </tr>
+      <tr>
+        <td>Roster, report table, export and import</td>
+        <td>Sending feedback</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Coordinates and Plus Codes are calculated on your device, so they keep working when nothing
+    else does. Addresses have to be looked up. See <strong>Maps</strong> for saving map coverage
+    ahead of time.
+  </p>
+</rangertrak-expandable-section>
 
-<p>
-  Coordinates and Plus Codes are calculated on your device, so they keep working when nothing
-  else does. Addresses have to be looked up. See <strong>Maps</strong> for saving map coverage
-  ahead of time.
-</p>
+<rangertrak-expandable-section summary="Mission's Advanced Options">
+  <p>Collapsed at the bottom of the Mission page. Four things live there:</p>
+  <ul>
+    <li>
+      <span class="ui">Request Persistent Storage</span> — ask the browser not to discard your
+      mission when it is short of space. Accept if offered.
+    </li>
+    <li>
+      <span class="ui">Export Mission</span> / <span class="ui">Import Mission</span> — the whole
+      mission as one file, for backup or handover to another device.
+    </li>
+    <li>
+      <span class="ui">Load Sample Mission</span> — a ready-made demonstration mission, for
+      training or showing someone the app.
+    </li>
+    <li>
+      <span class="ui">Reset mission to defaults</span> — back to defaults, at the start of a
+      new incident.
+    </li>
+  </ul>
+  <div class="warn">
+    <span class="ui">Load Sample Mission</span>, <span class="ui">Import Mission</span> and
+    <span class="ui">Reset mission to defaults</span> all replace what is on this device.
+    Export first if you need to keep it.
+  </div>
+</rangertrak-expandable-section>

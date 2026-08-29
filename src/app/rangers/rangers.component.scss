@@ -75,6 +75,25 @@ label {
   color                                 : var(--rt-readiness-red);
 }
 
+// F29-18: the danger zone now opens from a collapsed ExpandableSectionComponent instead of
+// sitting permanently visible - this styles its (projected) summary to read as a warning
+// the same way the old always-visible `.rt-danger-zone__heading` did.
+.rt-danger-zone__summary {
+  display    : flex;
+  align-items: center;
+  gap        : 0.5em;
+  color      : var(--rt-readiness-red);
+  font-weight: bold;
+}
+
+// The red-tinted box itself still applies once expanded - only its own heading moved out.
+.rt-danger-zone-trigger .rt-danger-zone {
+  margin-top: 0;
+  border    : none;
+  background: none;
+  padding   : 0;
+}
+
 // The two action bars stack directly on top of each other; without this they read as one
 // undifferentiated block of controls.
 .rangers__export {

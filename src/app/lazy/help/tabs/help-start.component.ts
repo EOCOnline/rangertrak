@@ -1,12 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterLink } from '@angular/router'
 
+import { ExpandableSectionComponent } from '../../../shared/expandable-section/expandable-section.component'
+
 /**
- * Help tab: the first five minutes on a new device, and working offline.
+ * Help tab: the first five minutes on a new device, as one linear checklist, plus reference
+ * material behind expandable sections.
  *
- * Split from a combined "Start here" 2026-08-27 (raised live: it was doing two jobs at
- * once) - what RangerTrak IS now lives in HelpAboutComponent instead. This tab keeps only
- * the onboarding steps and reference material a scribe needs to actually start using it.
+ * F29-32 (2026-08-29): merged with the former "Mission setup" tab - see this template's own
+ * comment for the reasoning and the abort-condition mechanism. Before that, this tab had
+ * already been split from a combined "Start here" 2026-08-27 (it was doing two jobs at once -
+ * onboarding steps and "what RangerTrak is", which now lives in HelpAboutComponent).
  *
  * E-84: the Help page was one long scroll of ~8 prose blocks plus three disclosures, which
  * is why six shipped features ended up documented nowhere - there was no obvious place to
@@ -20,7 +24,7 @@ import { RouterLink } from '@angular/router'
 @Component({
   selector: 'rangertrak-help-start',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ExpandableSectionComponent],
   templateUrl: './help-start.component.html',
   styleUrls: ['./help-tab.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

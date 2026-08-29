@@ -37,6 +37,11 @@
         Save Log File
       </button>
       &nbsp;
+      <button matButton="outlined" (click)="onBtnCopyLog()"
+        title="Copy the event log to the clipboard, to paste into a feedback report">
+        {{copied() ? 'Copied!' : 'Copy log to clipboard'}}
+      </button>
+      &nbsp;
       <button matButton="outlined" class="log__danger-button" (click)="onBtnClearLog()"
         title="Discard all log entries currently in memory">
         Clear Log

@@ -32,16 +32,17 @@ describe('HelpComponent', () => {
 
   // E-84: the page is tabs, not one long scroll. The previous test here asserted an
   // <h2>Help</h2> that the tab shell no longer has - the labels are the structure now.
-  // 2026-08-27: "Start here" split into a separate About tab (was doing two jobs at once),
-  // and a Log tab was added so the Log page (deliberately absent from the main nav) is
-  // still easy to find.
+  // 2026-08-29 (D-d, F29-32): "Mission setup" merged into "Start here" as one onboarding
+  // checklist; FAQ moved up; "After mission" split out of "Your data"; "Log" renamed
+  // "Feedback" and took over the feedback form that had briefly been on "About" - still
+  // eight tabs (the merge and the split cancel out), just a different eight.
   it('renders the eight documentation tabs, in the planned order', () => {
     const labels: string[] = Array.from(
       fixture.nativeElement.querySelectorAll('.help-tabs .mdc-tab__text-label') as NodeListOf<HTMLElement>
     ).map(el => el.textContent!.trim());
 
     expect(labels).toEqual([
-      'Start here', 'About', 'Entering reports', 'Maps', 'Mission setup', 'Your data', 'Log', 'FAQ'
+      'Start here', 'About', 'FAQ', 'Entering reports', 'Maps', 'Your data', 'After mission', 'Feedback'
     ]);
   });
 

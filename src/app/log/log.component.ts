@@ -145,4 +145,25 @@ export class LogComponent {
     }
     this.logService.clear()
   }
+
+  /**
+   * F29-29: Help used to say "export the log and attach it to your report" - not actually
+   * possible, since the in-app feedback form (ADR D-15) is plain text with no file-attach
+   * capability. Copying to the clipboard instead lets a scribe paste the log straight into
+   * that form (or a GitHub issue) in one step. Same `navigator.clipboard.writeText()` idiom
+   * the coordinate rows and the two Leaflet maps already use for their own click-to-copy.
+   */
+  copied = signal(false)
+
+  onBtnCopyLog() {
+    navigator.clipboard.writeText(this.logService.toCsv())
+      .then(() => {
+        this.copied.set(true)
+        setTimeout(() => this.copied.set(false), 2000)
+        this.logService.info(`Copied ${this.totalEntries()} log entries to the clipboard.`, this.id)
+      })
+      .catch(err => {
+        this.logService.error(`Log NOT copied to clipboard, error: ${err}`, this.id)
+      })
+  }
 }

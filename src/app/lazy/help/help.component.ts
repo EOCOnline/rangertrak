@@ -10,13 +10,13 @@ import { PageComponent } from '../../shared/page/page.component'
 import { LogService, MissionService, MissionType } from '../../shared/services'
 
 import { HelpAboutComponent } from './tabs/help-about.component'
+import { HelpAfterMissionComponent } from './tabs/help-after-mission.component'
 import { HelpStartComponent } from './tabs/help-start.component'
 import { HelpEntryComponent } from './tabs/help-entry.component'
+import { HelpFeedbackComponent } from './tabs/help-feedback.component'
 import { HelpMapsComponent } from './tabs/help-maps.component'
-import { HelpMissionComponent } from './tabs/help-mission.component'
 import { HelpDataComponent } from './tabs/help-data.component'
 import { HelpFaqComponent } from './tabs/help-faq.component'
-import { HelpLogComponent } from './tabs/help-log.component'
 
 /**
  * The in-app user documentation, and (E-84 decision, 2026-08-24) the canonical one: it ships
@@ -28,9 +28,12 @@ import { HelpLogComponent } from './tabs/help-log.component'
  * per-ranger markers, base-layer switching, offline tile saving, the theme toggle, the
  * readiness dot) ended up documented nowhere at all - there was no obvious place to add
  * anything and no way to see what was already covered. Content now lives in sibling
- * components under ./tabs, one per tab (eight as of 2026-08-27: "Start here" split into a
- * separate About tab - it had been doing two jobs at once - and a Log tab was added so the
- * Log page, deliberately absent from the main nav, is still easy to find).
+ * components under ./tabs, one per tab - still eight as of 2026-08-29 (D-d, F29-32): "Mission
+ * setup" merged into "Start here" as one onboarding checklist, and "After mission" split out
+ * of "Your data" - a merge and a split that cancel out. "Log" (2026-08-27, so the Log page,
+ * deliberately absent from the main nav, stayed easy to find) is now "Feedback" - it also
+ * carries the feedback form, per the maintainer's own reasoning that reading/copying the log
+ * is mostly a feedback-adjacent task.
  *
  * Content rule for anything added here, from the maintainer: keep it minimal, the UI should
  * be self-explanatory. These tabs deliberately cover only what a screen cannot say for
@@ -42,7 +45,7 @@ import { HelpLogComponent } from './tabs/help-log.component'
   imports: [
     CommonModule, PageComponent, SectionComponent, MatTabsModule,
     HelpAboutComponent, HelpStartComponent, HelpEntryComponent, HelpMapsComponent,
-    HelpMissionComponent, HelpDataComponent, HelpLogComponent, HelpFaqComponent,
+    HelpDataComponent, HelpAfterMissionComponent, HelpFeedbackComponent, HelpFaqComponent,
   ],
   templateUrl: './help.component.html',
   styleUrls: ['./help.component.scss'],

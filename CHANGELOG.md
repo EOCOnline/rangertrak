@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.80.0](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-29)
+
+### Features
+
+* **help:** restructured the Help page (D-d, F29-32, F29-33) - "Start here" and "Mission setup" merged into one onboarding checklist (still eight tabs total: a new "After mission" tab, split out of "Your data", offsets the merge); FAQ moved up next to About, its answers collapsed by default and independently expandable; "Log" renamed "Feedback" and now carries the in-app feedback form (moved on from "About", where it landed as an interim stop in the previous release) with the diagnostic log folded in as an optional, closed-by-default section.
+* **shared:** new `ExpandableSectionComponent` - a collapsed-by-default, click-to-open block, sibling to the always-open `SectionComponent`. Built once and reused for the FAQ, the Log-inside-Feedback section, and both Rangers' and Mission's danger zones (F29-18) - a stray click can no longer land on a destructive button, and the section stays visually out of the way as the exceptional action it is. This is a deliberate, named exception to the 2026-08-25 "remove all collapsible sections" decision, not a reversal of it - `SectionComponent` itself is untouched and still always renders open.
+* **log:** a "Copy log to clipboard" button (F29-29), so the diagnostic log can be pasted straight into the feedback form or a GitHub issue - replaces an instruction to "export the log and attach it to your report," which was never actually possible with a plain-text feedback form.
+
+### Fixes
+
+* **help:** fixed two spots that still promised "attach the log to your report" - a leftover from before the clipboard button existed.
+
 ## [0.79.0](https://github.com/EOCOnline/rangertrak/commit/5bb97b1993a0bca0414e6b5b8fe64478523eb33e) (2026-08-29)
 
 ### Fixes

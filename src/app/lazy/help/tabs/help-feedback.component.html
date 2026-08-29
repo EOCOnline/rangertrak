@@ -1,0 +1,42 @@
+<h3>Report a problem or suggest something</h3>
+
+<p>
+  RangerTrak is free and open source, built by
+  <a href="https://eoc.online/" target="_blank">eoc.online</a>. Use the form below, or visit
+  <a href="https://github.com/EOCOnline/RangerTrak" target="_blank">the project on GitHub</a>
+  directly. Not all feedback needs to become an issue - if you're unsure, describe what you
+  saw and let the maintainer sort it.
+</p>
+
+<!-- ADR D-15: primary in-app feedback path - see feedback.component.ts. -->
+<rangertrak-feedback></rangertrak-feedback>
+
+<!-- D-d (2026-08-29): Log folds into an optional section here, closed by default - it was
+     its own tab (0.74.0) but the maintainer's own reasoning is the record: "the main reason
+     to read/copy/send the log is for feedback purposes... I don't imagine too much feedback
+     were we need it." See ExpandableSectionComponent's own doc comment for why this is a
+     deliberate, named exception to the 2026-08-25 "no collapsible sections" removal. -->
+<rangertrak-expandable-section summary="Diagnostic log (optional)">
+  <p>
+    RangerTrak keeps a running record of what it did this session - useful when something
+    goes wrong and you want to report it, or figure out why.
+  </p>
+
+  <p>
+    <a matButton="outlined" routerLink="/log">Open the Log page</a>
+  </p>
+
+  <div class="note">
+    There is no menu entry for it on purpose - it is a diagnostic tool, not something you need
+    during normal use. This section exists so it is still easy to find when you do need it.
+  </div>
+
+  <!-- F29-29: replaces the old "export the log and attach it to your report" instruction,
+       which was not actually possible - the feedback form above is plain text with no
+       attach capability. -->
+  <p>
+    On the Log page, press <span class="ui">Copy log to clipboard</span>, then paste it into
+    the message field above (or into a GitHub issue). It is far more useful to a diagnosis
+    than a description of what went wrong.
+  </p>
+</rangertrak-expandable-section>

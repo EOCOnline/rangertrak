@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core'
 
 import { MATERIAL_IMPORTS } from '../../../material-imports'
+import { ExpandableSectionComponent } from '../../../shared/expandable-section/expandable-section.component'
 import {
   BackupService, LogService, SampleDataService, StoragePersistenceService
 } from '../../../shared/services/'
@@ -28,7 +29,7 @@ import {
 @Component({
   selector: 'rangertrak-mission-advanced-options',
   standalone: true,
-  imports: [CommonModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, ExpandableSectionComponent, ...MATERIAL_IMPORTS],
   templateUrl: './mission-advanced-options.component.html',
   styleUrls: ['./mission-advanced-options.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

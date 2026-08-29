@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+// Flat, matching this app's other Material surfaces rather than a floating elevated card -
+// see [[material-m3-is-the-direction]]: standard Material, minimal bespoke CSS.
+.rt-expandable-section {
+  box-shadow: none;
+  border: 1px solid var(--rt-line);
+  border-radius: var(--rt-radius);
+  margin-bottom: 0.5em;
+
+  &::ng-deep .mat-expansion-panel-header {
+    height: auto;
+    padding: 0.5em 0.75em;
+  }
+
+  &::ng-deep .mat-expansion-panel-body {
+    padding: 0 0.75em 0.75em;
+  }
+}

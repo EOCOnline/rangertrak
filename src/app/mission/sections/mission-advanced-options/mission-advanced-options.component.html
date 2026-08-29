@@ -57,48 +57,53 @@
   </mat-card-content>
 </mat-card>
 
-<!-- ══ 6. DANGER ZONE ══ Everything below replaces data that is already on the device. -->
-<div class="rt-danger-zone rt-mission-card">
-  <h2 class="rt-danger-zone__heading">
+<!-- ══ 6. DANGER ZONE ══ Everything below replaces data that is already on the device.
+     F29-18 (2026-08-29): collapsed behind ExpandableSectionComponent so a stray click can't
+     land on a destructive button - see that component's own doc comment for why this is a
+     deliberate, named exception to the 2026-08-25 "no collapsible sections" removal. -->
+<rangertrak-expandable-section class="rt-danger-zone-trigger rt-mission-card">
+  <span rtSummary class="rt-danger-zone__summary">
     <mat-icon aria-hidden="true">warning</mat-icon>
     Danger zone
-  </h2>
-  <p class="rt-danger-zone__note">
-    Each of these replaces or discards data already on this device, and cannot be undone.
-    Export your mission first if you need to keep it.
-  </p>
+  </span>
+  <div class="rt-danger-zone">
+    <p class="rt-danger-zone__note">
+      Each of these replaces or discards data already on this device, and cannot be undone.
+      Export your mission first if you need to keep it.
+    </p>
 
-  <div class="rt-danger-zone__actions">
-    <button matButton="outlined" type="button" class="mission__danger-button"
-      (click)="resetDefaults.emit()"
-      title="Return every setting above to its default value">
-      Reset mission to defaults
-    </button>
+    <div class="rt-danger-zone__actions">
+      <button matButton="outlined" type="button" class="mission__danger-button"
+        (click)="resetDefaults.emit()"
+        title="Return every setting above to its default value">
+        Reset mission to defaults
+      </button>
 
-    <!-- The file input stays visually hidden; a real matButton triggers it via .click(),
-         called synchronously inside this button's own click handler - a native file picker
-         opens fine that way (the user-activation flag carries through a synchronous call),
-         it just can't be opened from a non-gesture context like a timer. `matButton` only
-         attaches to button/a elements (its own selector), never label - an earlier <label
-         matButton> here silently did nothing, same bug found on Rangers. -->
-    <button matButton="outlined" type="button" class="mission__danger-button"
-      (click)="importMissionFile.click()"
-      title="Restore a mission from a previously exported JSON file - replaces everything currently on this device">
-      Import mission &mdash; replaces everything
-    </button>
-    <input #importMissionFile id="importMissionFile" type="file" accept="application/json,.json"
-      (change)="onImportFileSelected($event)" class="mission__file-input" />
+      <!-- The file input stays visually hidden; a real matButton triggers it via .click(),
+           called synchronously inside this button's own click handler - a native file picker
+           opens fine that way (the user-activation flag carries through a synchronous call),
+           it just can't be opened from a non-gesture context like a timer. `matButton` only
+           attaches to button/a elements (its own selector), never label - an earlier <label
+           matButton> here silently did nothing, same bug found on Rangers. -->
+      <button matButton="outlined" type="button" class="mission__danger-button"
+        (click)="importMissionFile.click()"
+        title="Restore a mission from a previously exported JSON file - replaces everything currently on this device">
+        Import mission &mdash; replaces everything
+      </button>
+      <input #importMissionFile id="importMissionFile" type="file" accept="application/json,.json"
+        (change)="onImportFileSelected($event)" class="mission__file-input" />
 
-    <button matButton="outlined" type="button" class="mission__danger-button"
-      (click)="onBtnLoadSampleData()"
-      title="Replace rangers and field reports with a demonstration mission">
-      Load sample mission &mdash; replaces rangers and reports
-    </button>
+      <button matButton="outlined" type="button" class="mission__danger-button"
+        (click)="onBtnLoadSampleData()"
+        title="Replace rangers and field reports with a demonstration mission">
+        Load sample mission &mdash; replaces rangers and reports
+      </button>
+    </div>
+
+    <p class="mission__note mission__sample-note">
+      The sample mission is a roster of 12 units and about 30 field reports spread across
+      Vashon Island over the last several hours &mdash; useful for demonstrating RangerTrak, or
+      for seeing how a screen looks with realistic data on a brand-new install.
+    </p>
   </div>
-
-  <p class="mission__note mission__sample-note">
-    The sample mission is a roster of 12 units and about 30 field reports spread across
-    Vashon Island over the last several hours &mdash; useful for demonstrating RangerTrak, or
-    for seeing how a screen looks with realistic data on a brand-new install.
-  </p>
-</div>
+</rangertrak-expandable-section>

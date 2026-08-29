@@ -15,6 +15,7 @@ import { Utility } from '../shared'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
+import { ExpandableSectionComponent } from '../shared/expandable-section/expandable-section.component'
 import {
   FieldReportService, FieldReportType, LogService, RangerService, RangerType,
   MissionService, MissionType
@@ -29,7 +30,7 @@ import { CustomTooltip } from './customTooltip'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, ...MATERIAL_IMPORTS],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
