@@ -18,8 +18,10 @@
       the clipboard instead.
     </p>
 
-    <!-- D-31: "Leaflet"/"Backup Map", not "online"/"offline" - Leaflet is also usable
-         offline once tiles are saved for the area, so neither engine is "the offline one". -->
+    <!-- D-31: "Leaflet"/"Alternative Map", not "online"/"offline" - Leaflet is also usable
+         offline once tiles are saved for the area, so neither engine is "the offline one".
+         Reversed 2026-08-29 (F29-10): "Backup Map" retired - it ranked the engines rather
+         than naming a real differentiator. See the ADR's D-31 reversal note. -->
     <h3 class="mission__subhead">Leaflet &mdash; primary</h3>
     <div class="rt-field-grid rt-field-grid--compact">
       <mat-form-field floatLabel="always">
@@ -55,7 +57,7 @@
       </mat-form-field>
     </div>
 
-    <h3 class="mission__subhead">Backup map &mdash; MapLibre + PMTiles</h3>
+    <h3 class="mission__subhead">Alternative map &mdash; MapLibre + PMTiles</h3>
     <div class="rt-field-grid rt-field-grid--compact">
       <mat-form-field floatLabel="always">
         <mat-label>Default zoom</mat-label>

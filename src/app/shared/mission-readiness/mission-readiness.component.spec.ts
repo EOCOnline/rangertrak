@@ -41,7 +41,7 @@ describe('MissionReadinessComponent', () => {
     expect(component.tooltip).toContain('Real roster loaded');
     expect(component.tooltip).toContain('Operating period current');
     expect(component.tooltip).toContain('Offline map tiles saved');
-    expect(component.tooltip).toContain('Backup map warmed');
+    expect(component.tooltip).toContain('Alternative map warmed');
     expect(component.tooltip).toContain('Storage protected');
     expect(component.tooltip.toLowerCase()).not.toContain('cannot');
     expect(component.tooltip.toLowerCase()).not.toContain('disabled');

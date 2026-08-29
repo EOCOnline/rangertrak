@@ -14,7 +14,7 @@
     <span class="status-divider"></span>
     <span class="event" title={{eventDetails()}}>{{eventInfo()}}</span>
     <span class="status-divider"></span>
-    <span class="opPeriod" title={{opPeriodDetails()}}>{{opPeriod()}} {{timeElapsed$ | async}} &
+    <span class="opPeriod" title={{opPeriodDetails()}}>{{opPeriod()}} <span class="opPeriod__pipe">|</span> {{timeElapsed$ | async}} &
       {{timeLeft$ | async}}</span>
     <span class="status-divider"></span>
     <span class="clock">{{timeCurrent | async | date: 'MMM d, hh:mm:ss'}}</span>

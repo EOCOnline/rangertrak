@@ -181,13 +181,15 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // reassigning `this.columnDefs` here is enough, no grid API call needed.
   private buildColumnDefs(idFieldLabel: string): ColDef[] {
     return [
-      { headerName: "Call Sign", field: "callsign", cellRenderer: this.callsignCellRenderer, minWidth: 110, maxWidth: 200 },
-      { headerName: "Full Name", field: "fullName", tooltipField: "FCC Licensee Name", minWidth: 150, maxWidth: 300 },
-      { headerName: "Phone", field: "phone", singleClickEdit: true, maxWidth: 170 },
-      { headerName: idFieldLabel || 'ID', field: "id", cellRenderer: this.idCellRenderer, singleClickEdit: true, maxWidth: 170 },
+      // F29-12 (2026-08-29): Image first, then the mission's identity field, then callsign -
+      // matches the order a scribe actually scans a roster row in.
       // Fixed: the cell renders a 40x40 <img>, so measuring its content is pointless -
       // it is always exactly one thumbnail wide.
       { headerName: "Image", field: "image", cellRenderer: this.imageCellRenderer, tooltipField: "image", tooltipComponentParams: { color: '#ececec' }, width: 80, maxWidth: 80, resizable: false },
+      { headerName: idFieldLabel || 'ID', field: "id", cellRenderer: this.idCellRenderer, singleClickEdit: true, maxWidth: 170 },
+      { headerName: "Call Sign", field: "callsign", cellRenderer: this.callsignCellRenderer, minWidth: 110, maxWidth: 200 },
+      { headerName: "Full Name", field: "fullName", tooltipField: "FCC Licensee Name", minWidth: 150, maxWidth: 300 },
+      { headerName: "Phone", field: "phone", singleClickEdit: true, maxWidth: 170 },
       { headerName: "Role", field: "role", maxWidth: 200 },
       // The only flex column - takes whatever the content-sized columns leave over.
       { headerName: "Notes", field: "note", flex: 1, minWidth: 150 },

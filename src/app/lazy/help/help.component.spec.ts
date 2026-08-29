@@ -45,12 +45,4 @@ describe('HelpComponent', () => {
     ]);
   });
 
-  // E-57(1): "...and put a link to the Log page there, but not link to Log from the main
-  // menu." E-84 moved that link out of the prose and into the About strip below the tabs;
-  // it still has to be reachable, since it is the path a bug reporter is told to follow.
-  it('links to the Log page from the About strip', () => {
-    const link: HTMLAnchorElement | null =
-      fixture.nativeElement.querySelector('.help-about a[href="/log"]');
-    expect(link).not.toBeNull();
-  });
 });

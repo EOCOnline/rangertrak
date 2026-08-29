@@ -2,11 +2,9 @@ import { Subscription } from 'rxjs'
 
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { RouterLink } from '@angular/router'
 import { MatTabsModule } from '@angular/material/tabs'
 
 import { SectionComponent } from '../../shared/section/section.component'
-import { FeedbackComponent } from '../../shared/feedback/feedback.component'
 import { PageComponent } from '../../shared/page/page.component'
 
 import { LogService, MissionService, MissionType } from '../../shared/services'
@@ -42,7 +40,7 @@ import { HelpLogComponent } from './tabs/help-log.component'
   selector: 'rangertrak-help',
   standalone: true,
   imports: [
-    CommonModule, PageComponent, SectionComponent, RouterLink, FeedbackComponent, MatTabsModule,
+    CommonModule, PageComponent, SectionComponent, MatTabsModule,
     HelpAboutComponent, HelpStartComponent, HelpEntryComponent, HelpMapsComponent,
     HelpMissionComponent, HelpDataComponent, HelpLogComponent, HelpFaqComponent,
   ],

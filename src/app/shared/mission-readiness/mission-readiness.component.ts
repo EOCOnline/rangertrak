@@ -43,7 +43,7 @@ export class MissionReadinessComponent implements OnInit {
       line(r.rosterLoaded(), 'Real roster loaded'),
       line(r.opPeriodCurrent(), 'Operating period current'),
       line(r.offlineTilesSaved(), 'Offline map tiles saved (Leaflet)'),
-      line(r.bundledMapWarmed(), 'Backup map warmed (MapLibre)'),
+      line(r.bundledMapWarmed(), 'Alternative map warmed (MapLibre)'),
       line(r.storagePersisted(), 'Storage protected from eviction'),
     ].join('\n')
   }
@@ -58,7 +58,7 @@ export class MissionReadinessComponent implements OnInit {
       { ok: r.rosterLoaded(), label: 'Real roster loaded' },
       { ok: r.opPeriodCurrent(), label: 'Operating period current' },
       { ok: r.offlineTilesSaved(), label: 'Offline map tiles saved (Leaflet)' },
-      { ok: r.bundledMapWarmed(), label: 'Backup map warmed (MapLibre)' },
+      { ok: r.bundledMapWarmed(), label: 'Alternative map warmed (MapLibre)' },
       { ok: r.storagePersisted(), label: 'Storage protected from eviction' },
     ]
   }

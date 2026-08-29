@@ -142,7 +142,7 @@ Both engines live on the one **Map** page now, switched with the toggle above th
   levels you expect to use, and press **💾 Save this area for offline use**. This stores
   those road map tiles on the device. Only the areas and zoom levels you actually save will
   be available later.
-- Flip the switch to try the **Backup map (MapLibre + PMTiles)** at least once. The bundled
+- Flip the switch to try the **Alternative map (MapLibre + PMTiles)** at least once. The bundled
   map data is only stored on your device the first time you open it, so visiting it once
   while connected is what makes it available later with no Internet.
 
@@ -174,7 +174,7 @@ status, add notes, and submit. Reports save to the device immediately.
 RangerTrak look it up. The small "Current Location" map right on the Home page is the
 fastest way — click anywhere on it and that position is set immediately, no typing or
 pasting needed (it's also copied to your clipboard, in case you want it elsewhere too).
-The full Map and Backup Map pages don't set the location this way; clicking them copies
+The full Map and Alternative Map pages don't set the location this way; clicking them copies
 the coordinates under your cursor so you can paste them into Home yourself.
 
 RangerTrak accepts a position in whichever format it was called in over the radio. A
@@ -345,7 +345,7 @@ seeing what a busy mission looks like.
 
 - **Roster edits are not saved automatically.** Press **Save Rangers** on the Rangers page,
   or your changes are lost on reload.
-- **The Backup map covers Vashon Island only.** Outside that area you get a plain
+- **The Alternative map covers Vashon Island only.** Outside that area you get a plain
   background with your report markers on it — correct positions, no streets. Broader
   coverage is planned.
 - **Report selection resets** when you reload the page or move between pages.

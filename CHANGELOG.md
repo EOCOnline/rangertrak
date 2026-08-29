@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.77.3](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-29)
+
+### Fixes
+
+* **rangers:** column order changed to Image, [Ranger ID], Call Sign, Full Name, Phone, Role, Notes - identity now leads the row instead of trailing it.
+* **header:** a `|` now separates the mission pill's operational-period label from the elapsed-time clock, so a bare number can't be misread as a clock time - enlarged and heavier than surrounding text, since a plain `|` at body-sm size was easy to lose, especially in dark mode.
+* **help:** the marmot backdrop's opacity raised from 0.15 to 0.30 (an absolute change, not a relative one) - reported as too dim to read as a photograph at the old value.
+* **guide:** roster-import guidance now says "a UNIQUE ID" instead of "at least an id"; the stale "(Before v0.15.3 ...)" parenthetical about the built-in station list is removed.
+* **radio-log:** the CallSign column's header no longer reads the mission's "Ranger ID field name" (`idFieldLabel`) while the column itself still shows callsign data - a mission that renamed that label (e.g. to "REW") could show a column headed "REW" full of callsigns. The header now always says "Callsign", matching what the column actually holds. (Whether to collapse this column with the roster's own id column, when a mission's id field IS the callsign, is a separate, still-open question.)
+* **help:** the About/Send Feedback/How-it's-built content that used to sit below the tab group - and so rendered beneath whichever tab was open, not just About - now lives inside the About tab itself, once instead of on every tab.
+* **nav,mission,map:** "Backup Map" retired app-wide in favour of "Alternative Map" (ADR D-31, reversed 2026-08-29) - the old wording ranked the two map engines against each other rather than naming an actual difference between them.
+* **forms:** the app-wide outlined `mat-form-field` notches its floating label into the field's own top edge; a few extra px of top margin keeps that notch from colliding with whatever content sits directly above the field.
+
 ## [0.77.2](https://github.com/EOCOnline/rangertrak/commit/4170b9d2b26bc8d3a60ba80ab49113f7fc701e3d) (2026-08-27)
 
 ### Fixes

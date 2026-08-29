@@ -154,6 +154,16 @@ rangertrak-footer {
   display: block;
 }
 
+// F29-20 (2026-08-29): the app-wide outline appearance (see MAT_FORM_FIELD_DEFAULT_OPTIONS in
+// app.config.ts) notches its floating label into the field's own top border - the label sits
+// right at the field's top edge. With no margin above it, that notch collides with whatever
+// content sits directly above the field (a preceding row, a paragraph, another field). A few
+// extra px of top margin gives the notch clearance, site-wide, without touching per-page
+// layout.
+.mat-mdc-form-field {
+  margin-top: 8px;
+}
+
 // Sprint E, step 6 (2026-08-19): a heading landmark for screen-reader navigation, present
 // in the accessibility tree without duplicating a visible page title on screen. The
 // standard clip-based pattern - `display:none`/`visibility:hidden` both remove an element

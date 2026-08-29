@@ -34,7 +34,7 @@ export class MapPageComponent implements OnInit, OnDestroy {
   // D-31: "the primary takes the plain name" - now the only nav item, so no scribe-facing
   // reason to distinguish it from either engine by name.
   title = 'Map'
-  pageDescr = 'Leaflet is shown by default. Use the switch below to try the MapLibre + PMTiles backup engine.'
+  pageDescr = 'Leaflet is shown by default. Use the switch below to try the MapLibre + PMTiles alternative engine.'
 
   // MapLibre's component class, once dynamically imported. null until loaded - stays
   // cached afterward so flipping back and forth doesn't re-fetch the module (the browser's

@@ -112,11 +112,6 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
    *    FieldReportType's own comment on the two) was headed "ID", easily confused with the
    *    ranger-identifier column two over. Renamed to "#", what it actually is: this row's
    *    line number in the radio log.
-   *  - CallSign's own header now reads this mission's "Ranger ID field name"
-   *    (`idFieldLabel`), same live-settings pattern rangers.component.ts's own
-   *    buildColumnDefs() already uses for its id column - one mission calls it REW, another
-   *    calls it something else, and this column already IS how a scribe recognizes who filed
-   *    a report, callsign or not.
    *  - CallSign's text now colours by ranger identity via `rangerColorFor` - the exact same
    *    hash-based colour already used for that ranger's map marker/trail (ranger-icon.ts),
    *    so the same person's reports are easy to pick out scanning down the column, and the
@@ -126,11 +121,16 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
    *    including the empty space past a truncated value, not just the visible characters
    *    themselves - the actual gap in "hovering doesn't show the full text."
    */
-  private buildColumnDefs(idFieldLabel: string): any[] {
+  private buildColumnDefs(): any[] {
     return [
       { headerName: "#", field: "id", headerTooltip: 'This report\'s line number in the radio log', maxWidth: 90, editable: false },
+      // F29-44 (partial, 2026-08-29): headerName was `idFieldLabel || 'Callsign'` while field
+      // stayed hardcoded "callsign" - a mission that renames its id field (e.g. to "REW")
+      // rendered a column headed "REW" full of callsign data. Header now names what the
+      // field actually holds. The collapse-when-callsign-is-the-key behaviour (F29-44's other
+      // half) is a separate, still-open decision - see the handoff doc.
       {
-        headerName: idFieldLabel || 'Callsign', field: "callsign", tooltipField: "team", maxWidth: 160,
+        headerName: 'Callsign', field: "callsign", tooltipField: "team", maxWidth: 160,
         cellStyle: (params: { data: FieldReportType }) => {
           const key = params.data.rangerUid || params.data.callsign
           return key ? { color: rangerColorFor(key), 'font-weight': 600 } : null
@@ -304,11 +304,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => {
         this.settings = newMission
-        // Raised live, 2026-08-27: rebuilt whenever settings change, same reactive pattern
-        // rangers.component.ts's buildColumnDefs() already uses - the CallSign column's own
-        // header now reads this mission's "Ranger ID field name" (idFieldLabel), same as the
-        // Rangers grid's id column already does.
-        this.columnDefs = this.buildColumnDefs(newMission.idFieldLabel)
+        this.columnDefs = this.buildColumnDefs()
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
@@ -324,7 +320,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     // then - but if it ever doesn't, columnDefs must still exist before the grid renders
     // rather than staying unset until settings eventually arrives.
     if (!this.columnDefs) {
-      this.columnDefs = this.buildColumnDefs(this.settings?.idFieldLabel || 'ID')
+      this.columnDefs = this.buildColumnDefs()
     }
 
     this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({

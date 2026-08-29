@@ -24,7 +24,10 @@
   background-position                     : center;
   // One value for both schemes on purpose: `light-dark()` takes colours, not numbers, and
   // a scrim that needs a per-scheme opacity is a scrim that is too strong in one of them.
-  opacity                                 : 0.15;
+  // F29-34 (2026-08-29): maintainer reported it as too dim; raised 0.15 -> 0.30 (an absolute
+  // +15 percentage points, not a relative +15%, since a relative bump would be invisible at
+  // +0.02). Flagging here so it can be dialled back if 0.30 turns out too strong.
+  opacity                                 : 0.30;
   pointer-events                          : none;
 }
 

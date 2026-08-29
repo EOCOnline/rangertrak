@@ -6,7 +6,7 @@ import { MissionType } from '../../../shared/services/'
 import { MATERIAL_IMPORTS } from '../../../material-imports'
 
 /**
- * Maps checkbox, Leaflet settings, Geocoding, and Backup Map (MapLibre + PMTiles) settings.
+ * Maps checkbox, Leaflet settings, Geocoding, and Alternative Map (MapLibre + PMTiles) settings.
  * Sprint C split out of the 429-line mission.component template - see mission.component.ts.
  *
  * The old `formGroupName="leaflet"`/`"google"` wrapper divs are gone - Signal Forms' native

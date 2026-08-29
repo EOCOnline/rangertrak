@@ -42,39 +42,12 @@
     </mat-tab-group>
 
     <!-- Reference, not reading: deliberately a strip below the tab body rather than a
-         seventh tab. Nobody goes looking for the licence, but it has to be here. -->
+         seventh tab. Nobody goes looking for the licence, but it has to be here.
+         F29-25 (2026-08-29): the About/feedback/How-it's-built content that used to open
+         this section moved into the About tab itself (help-about.component.html) - sitting
+         here, outside mat-tab-group, meant it rendered below EVERY tab, not just About. -->
     <section class="help-about">
       <h2>About</h2>
-
-      <p>
-        RangerTrak is free and open source, built by
-        <a href="https://eoc.online/" target="_blank">eoc.online</a>, which makes free tools
-        for Emergency Operations Centers and local emergency services.
-        <strong>To report a problem or suggest something</strong>, use the form below or visit
-        <a href="https://github.com/EOCOnline/RangerTrak" target="_blank">the project on GitHub</a>.
-        A diagnostic <a routerLink="/log">Log</a> is worth attaching to a bug report.
-      </p>
-
-      <!-- ADR D-15: primary in-app feedback path - see feedback.component.ts. -->
-      <rangertrak-section summary="Send Feedback">
-        <rangertrak-feedback></rangertrak-feedback>
-      </rangertrak-section>
-
-      <rangertrak-section summary="How it is built">
-        <small>
-          <ul>
-            <li>A Progressive Web App: installable, and runs with no Internet once loaded</li>
-            <li>Angular 22 with TypeScript, signals, zoneless change detection, and Material Design</li>
-            <li>Leaflet maps with marker clustering, an overview map, and offline tile saving</li>
-            <li>MapLibre GL + PMTiles: a vector map with basemap data bundled into the app</li>
-            <li>Address lookup via OpenStreetMap's Nominatim by default, with no API key -
-              an optional Google Geocoding key can be supplied instead in Mission Settings</li>
-            <li>Plus Codes and all lat/long conversion computed on-device</li>
-            <li>AG Grid tables with searching, sorting, filtering and export</li>
-            <li>No cookies, no accounts, no server: data stays in your browser's local storage</li>
-          </ul>
-        </small>
-      </rangertrak-section>
 
       <rangertrak-section emphasis="plain">
         <span rtSummary>&copy;2019&ndash;{{today | date: 'y'}}

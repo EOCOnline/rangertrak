@@ -197,7 +197,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           {
             heading: 'Loading a roster',
             bullets: [
-              'Import roster replaces the whole roster from a JSON file (or a zip holding roster.json and a photos/ folder) and leaves field reports and settings alone. Each entry needs at least an id — a callsign is optional.',
+              'Import roster replaces the whole roster from a JSON file (or a zip holding roster.json and a photos/ folder) and leaves field reports and settings alone. Each entry needs a UNIQUE ID — a callsign is optional.',
               'Export roster writes that file back out. Do it before importing if you want to keep the roster you already have.',
               'JSON round-trips: it can be imported back in. Export CSV is for Excel and cannot.',
               'Photos are kept on this device only, never uploaded and never in the repo. Name each file after the ranger\'s id or callsign - any common image format works (JPG, PNG, GIF, WEBP, etc.).'
@@ -209,7 +209,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           },
           {
             heading: 'Emptying the roster',
-            text: 'Delete all rangers empties it and it stays empty, including after a reload. (Before v0.15.3 the built-in station list came straight back, which made loading your own roster a fight.)'
+            text: 'Delete all rangers empties it and it stays empty, including after a reload.'
           },
           {
             heading: 'Moving a whole mission',

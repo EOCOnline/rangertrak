@@ -8,7 +8,7 @@
 }
 
 // Deliberately lighter than a card title: three of these sit inside one card (Leaflet,
-// Backup map, Geocoding), and if a subhead carries the same weight as the card's own
+// Alternative map, Geocoding), and if a subhead carries the same weight as the card's own
 // title it stops reading as subordinate to it. Matches styles/_section.scss's
 // subsection-header reasoning without pulling the mixin in for one rule.
 .mission__subhead {

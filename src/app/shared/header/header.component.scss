@@ -84,6 +84,18 @@
     font-weight: 700;
   }
 
+  // F29-19 (2026-08-29): without a visible separator, a bare op-period number running
+  // straight into the elapsed-time number reads as one value, or as a clock time. A literal
+  // `|` glyph disambiguates them; enlarged and heavier than surrounding text because a plain
+  // `|` at body-sm size is easy to lose against dark-mode surfaces, and was somewhat too
+  // faint in light mode as well.
+  .opPeriod__pipe {
+    font-weight: 900;
+    font-size  : 1.3em;
+    opacity    : 0.8;
+    margin     : 0 0.05em;
+  }
+
   .clock {
     text-align : right;
     @include type.type-body;
