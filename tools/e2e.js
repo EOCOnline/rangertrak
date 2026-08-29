@@ -887,11 +887,18 @@ async function checkHelpTabs() {
   check('switching to FAQ mounts the FAQ body', await evaluate(`!!document.querySelector('.help-tabs rangertrak-help-faq')`), true)
   check('...and the Start here body is gone', await evaluate(`!!document.querySelector('.help-tabs rangertrak-help-start')`), false)
 
-  // The Log link moved into the About strip below the tabs (E-57(1) put it on this page;
-  // E-84 moved it out of the prose). It must survive that move - it is the path a bug
-  // reporter is told to follow.
-  check('the About strip still links to the Log page',
-    await evaluate(`!!document.querySelector('.help-about a[href="/log"]')`), true)
+  // The Log link started in the prose (E-57(1)), then moved to the About strip below the
+  // tab group (E-84). F29-25 (2026-08-29) moved it again, into the About tab itself - the
+  // strip below the tabs was rendering under EVERY tab, not just About, which is what F29-25
+  // was fixing. It must survive each move - it is the path a bug reporter is told to follow.
+  await evaluate(`(() => {
+    const tab = [...document.querySelectorAll('.help-tabs .mat-mdc-tab')]
+      .find(t => t.textContent.trim() === 'About');
+    tab?.click();
+  })()`)
+  await sleep(600)
+  check('the About tab still links to the Log page',
+    await evaluate(`!!document.querySelector('.help-tabs rangertrak-help-about a[href="/log"]')`), true)
 }
 
 /**
