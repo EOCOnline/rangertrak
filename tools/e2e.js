@@ -34,6 +34,12 @@
  *                   polling. Default (no --full) skips them for a fast day-to-day run;
  *                   run --full at least once before pushing.
  *   --keep-open     leave Chrome running for inspection
+ *   --real-geocoding  hit the real Nominatim service instead of the built-in mock (see
+ *                   MOCK_NOMINATIM_SCRIPT below). Only for an occasional deliberate check
+ *                   that the real integration still works - never the default, since a full
+ *                   run visits Entry (and so triggers a reverse-geocode) many times over,
+ *                   and this suite running repeatedly in CI is exactly the kind of automated
+ *                   traffic that got this app's own requests rate-limited by Nominatim.
  *
  * Exits non-zero if any check fails, so CI can gate on it.
  */
@@ -52,7 +58,38 @@ const BASE = (arg('base', 'http://localhost:8080')).replace(/\/$/, '')
 const READ_ONLY = args.includes('--read-only')
 const FULL = args.includes('--full')
 const KEEP_OPEN = args.includes('--keep-open')
+const REAL_GEOCODING = args.includes('--real-geocoding')
 const PORT = 9444
+
+/**
+ * 2026-08-29: this suite's own traffic got Nominatim's rate limit (~1 req/sec, see
+ * nominatim-geocoder.ts) tripped - every visit to Entry fires a reverse-geocode for the
+ * mission's default position, and a full run visits Entry repeatedly, so a suite that
+ * exercises the app at all thoroughly is, on its own, exactly the automated-traffic pattern
+ * Nominatim's usage policy exists to catch.
+ *
+ * Installed via Page.addScriptToEvaluateOnNewDocument, so it is in place before ANY app
+ * script runs on every navigation (a fresh `goto()` reload included, not just the first
+ * page load). Wraps window.fetch rather than reaching into geocoding-provider internals -
+ * this way the app's own retry/error-handling code in NominatimGeocoder still runs for
+ * real, only the network hop underneath it is faked. Real display_name text does not
+ * matter to any check here; every one only asserts non-empty / found, never exact wording.
+ */
+const MOCK_NOMINATIM_SCRIPT = `(() => {
+  const REAL_FETCH = window.fetch.bind(window)
+  window.fetch = (input, init) => {
+    const url = typeof input === 'string' ? input : (input && input.url) || ''
+    if (url.includes('nominatim.openstreetmap.org')) {
+      const body = url.includes('/reverse')
+        ? { display_name: 'E2E Mock Address, Vashon Island, Washington, USA' }
+        : [{ lat: '47.4472', lon: '-122.4627', display_name: 'E2E Mock Address, Vashon Island, Washington, USA' }]
+      return Promise.resolve(new Response(JSON.stringify(body), {
+        status: 200, headers: { 'Content-Type': 'application/json' },
+      }))
+    }
+    return REAL_FETCH(input, init)
+  }
+})()`
 
 // ── tiny CDP client ──────────────────────────────────────────────────────────
 
@@ -1770,6 +1807,11 @@ async function main() {
     }
 
     await send('Page.enable'); await send('Runtime.enable'); await send('DOM.enable')
+    if (REAL_GEOCODING) {
+      note('--real-geocoding: hitting the real Nominatim service, not the mock')
+    } else {
+      await send('Page.addScriptToEvaluateOnNewDocument', { source: MOCK_NOMINATIM_SCRIPT })
+    }
     await send('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: downloads })
 
     await checkRoutesRender()
