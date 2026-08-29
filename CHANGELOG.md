@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.79.0](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-29)
+
+### Fixes
+
+* **rangers:** "Clear photos" used to unconditionally promise rangers would show the generic silhouette afterward - false whenever a ranger's roster entry already names its own `image`, a separate source (untouched by the on-device photo store this button actually clears). Read as the button not working when it had; the confirmation dialog now says so accurately.
+* **mission:** the Field Report status grid's `no this.gridApi yet in refreshStatusGrid()` console log, previously firing on every normal page load - it was being called on the very first `rowData` binding, before ag-Grid had mounted. The grid's own `onGridReady()` already refreshes itself once it exists; the early call only mattered for a later reassignment (import/reset), which is what it still does.
+* **perf:** preconnect to `nominatim.openstreetmap.org` (Entry's reverse-geocode of the mission's default position sits on the critical path on first load) and fix the navbar GitHub mark rendering slightly out of square (32x29 against its real 32x32 source), both flagged by a PageSpeed Insights pass. Also adds a `profiling` build configuration (production's optimized output plus hidden source maps) for local DevTools investigation, kept separate from the `production` configuration CI actually deploys.
+
 ## [0.78.0](https://github.com/EOCOnline/rangertrak/commit/fe0c047af70555e12d27a3e26543ffde813d8335) (2026-08-29)
 
 ### Fixes
