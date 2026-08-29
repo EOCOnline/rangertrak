@@ -471,10 +471,16 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** Forgets every stored photo on this device. The roster itself is untouched. */
   async onBtnClearPhotos() {
+    // F29-13: this used to unconditionally promise "the generic silhouette" afterward -
+    // false whenever a ranger has a roster-declared `image` (photoSrc()'s tier 2, above).
+    // Clearing this device's photo store correctly leaves that source untouched, so those
+    // rangers keep showing their roster image, not the silhouette - the dialog just used to
+    // lie about it, which read as "Clear photos doesn't clear" even though it had.
     if (!Utility.getConfirmation(
-      `Delete all ${this.photos.count()} ranger photos from this browser?\n\n`
-      + `The roster is not affected. Rangers will show the generic silhouette until you `
-      + `import photos again.`)) {
+      `Delete all ${this.photos.count()} ranger photos stored on this device?\n\n`
+      + `The roster is not affected. Rangers with no photo of their own will show the `
+      + `generic silhouette until you import photos again - rangers whose roster entry `
+      + `already names an image will keep showing that instead.`)) {
       return
     }
     await this.photos.clear()

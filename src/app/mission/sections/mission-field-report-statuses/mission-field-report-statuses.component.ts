@@ -127,7 +127,14 @@ export class MissionFieldReportStatusesComponent implements OnChanges {
     // Angular already assigns the new value to `rowData` before this runs - this just
     // makes sure the grid redraws when the parent swaps in a new array (import / reset),
     // matching what the parent's own settings subscription does for its copy.
-    if (changes['rowData']) {
+    //
+    // F29-1: ngOnChanges fires on the FIRST binding too, before ag-Grid has mounted and
+    // called onGridReady() - refreshStatusGrid() had no gridApi yet at that point, on every
+    // normal page load, which is exactly the "no this.gridApi yet" log noise this was
+    // fixing. onGridReady() (below) already does its own refreshStatusGrid() once the grid
+    // actually exists, so the first change needs no action here - only a later reassignment
+    // (import/reset) does.
+    if (changes['rowData'] && !changes['rowData'].firstChange) {
       this.refreshStatusGrid()
     }
   }
