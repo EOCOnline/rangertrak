@@ -218,7 +218,12 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           },
           {
             heading: 'Tactical call signs',
-            text: 'A responder without an amateur licence still needs to be pickable on Entry. Add them a tactical sign, or leave the call sign blank and RangerTrak will fall back to their name.'
+            // F29-16 (2026-08-29): reworded to lead with Ranger ID - post-D-42, that (not
+            // callsign) is what actually identifies a responder throughout the app. Callsign
+            // is what gets said over the radio, which not everyone has (no amateur licence);
+            // the old wording implied callsign was the identifier, which stopped being true
+            // once D-42 shipped.
+            text: 'Every responder is identified by their Ranger ID, not their call sign - so a responder without an amateur licence still needs to be pickable on Entry. Give them a tactical sign, or leave the call sign blank and RangerTrak will fall back to their name.'
           }
         ]
       },

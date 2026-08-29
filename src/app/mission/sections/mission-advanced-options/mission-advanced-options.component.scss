@@ -6,6 +6,18 @@
   display: contents;
 }
 
+// F29-22 (2026-08-29): same auto-fit/minmax pattern mission.component.scss's own
+// .mission__grid uses, so Data safety and the danger zone sit side by side once a wide
+// monitor has room for both (30rem floor, same reasoning as that grid's own comment - the
+// widest single control, the geocoding API key field, needs about that much), and stack on
+// anything narrower with no breakpoint math needed.
+.mission-advanced__grid {
+  display              : grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr));
+  gap                  : 0 var(--rt-gap);
+  align-items          : start;
+}
+
 .mission__subhead {
   font-size  : var(--rt-type-body-size);
   line-height: var(--rt-type-body-line);

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.84.0](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-29)
+
+### Fixes
+
+* **mission:** the persistent-storage-granted message now notes iOS/iPadOS doesn't reliably honour it, with an "export regularly regardless" nudge - the guarantee it implied was never fully true there (F29-24).
+* **guide:** the "Tactical call signs" Guide text now leads with Ranger ID, not call sign, as what actually identifies a responder - the old wording implied callsign was the identifier, which stopped being true once D-42 shipped (F29-16).
+* **mission:** Data safety and the danger zone now sit side by side on a wide monitor instead of both always being full width - the component never had a grid parent to fulfil `.rt-mission-card`'s own layout contract (F29-22).
+
 ## [0.83.0](https://github.com/EOCOnline/rangertrak/commit/dc37558f60477fe3baa5521e11e2aca8c12f09be) (2026-08-29)
 
 ### Fixes

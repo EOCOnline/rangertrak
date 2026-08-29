@@ -7,6 +7,15 @@
      Storage Protection and the export half of Mission Backup are NOT destructive, so they
      stay outside the fence in their own card. -->
 
+<!-- F29-22 (2026-08-29): Data safety and the danger zone below used to always stack full
+     width, one per row, regardless of screen size - this component sits outside
+     mission.component.html's own `.mission__grid`, so `.rt-mission-card`'s "parent sets
+     align-items: start" contract (styles/_patterns.scss) had no grid parent to fulfil it
+     here. `.mission-advanced__grid` gives it one, same auto-fit/minmax pattern
+     `.mission__grid` already uses, so the two sit side by side once a wide monitor has room
+     for both, and stack on anything narrower with no breakpoint math needed. -->
+<div class="mission-advanced__grid">
+
 <mat-card appearance="outlined" class="rt-mission-card">
   <mat-card-header>
     <mat-card-title>Data safety</mat-card-title>
@@ -19,7 +28,8 @@
     <p class="mission__status mission__status--ok">
       <mat-icon aria-hidden="true">check_circle</mat-icon>
       Persistent storage is granted. This browser should not clear RangerTrak&rsquo;s data
-      without your explicit action.
+      without your explicit action &mdash; except iOS/iPadOS, which does not reliably honour
+      this. Export your mission regularly as a precaution regardless of this setting.
     </p>
     } @else if (storagePersistence.persisted() === false) {
     <p class="mission__status mission__status--warn">
@@ -107,3 +117,5 @@
     </p>
   </div>
 </rangertrak-expandable-section>
+
+</div>
