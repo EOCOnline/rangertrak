@@ -12,8 +12,37 @@
     title="Click to go to Field Entry and reopen the welcome panel">
     <rangertrak-mission-readiness></rangertrak-mission-readiness>
     <span class="status-divider"></span>
-    <span class="event" title={{eventDetails()}}>{{eventInfo()}}</span>
+    <!-- Raised live 2026-08-30: the mission name/notes used to sit inline here as free text,
+         which is what actually made the pill nearly full-width and wrap poorly - that data
+         barely changes once a mission is set up, unlike the countdown/clock beside it. Moved
+         into a proper HTML popup (mat-menu, not a native `title` tooltip) behind a small
+         "More info" icon that invites a click rather than requiring a hover to discover.
+         Gated on eventInfo() - same "collapses to nothing when empty" rule the old .event
+         span had (see this file's own E-57(1) comment above): a fresh/default mission with
+         nothing to show yet renders no button here at all, not a dead icon with an empty
+         popup. FOUND 2026-08-30 via e2e (checkPhoneWidth): rendering it unconditionally added
+         a fixed-width element the OLD span never contributed when empty, which was just
+         enough to push the whole page past a 390px phone viewport. -->
+    @if (eventInfo()) {
+    <button type="button" class="header__info-btn" [matMenuTriggerFor]="missionInfoMenu"
+      (click)="$event.stopPropagation()" aria-label="More mission info" title="More info">
+      <mat-icon>info</mat-icon>
+    </button>
+    <mat-menu #missionInfoMenu="matMenu" class="rt-mission-info-menu">
+      <div class="rt-mission-info" (click)="$event.stopPropagation()">
+        <h3 class="rt-mission-info__title">{{ eventInfo() }}</h3>
+        @if (missionNotes()) {
+        <p class="rt-mission-info__notes">{{ missionNotes() }}</p>
+        }
+        <dl class="rt-mission-info__grid">
+          <dt>Op period</dt><dd>{{ opPeriod() || '—' }}</dd>
+          <dt>Starts</dt><dd>{{ opPeriodStartDisplay() }}</dd>
+          <dt>Ends</dt><dd>{{ opPeriodEndDisplay() }}</dd>
+        </dl>
+      </div>
+    </mat-menu>
     <span class="status-divider"></span>
+    }
     <span class="opPeriod" title={{opPeriodDetails()}}>{{opPeriod()}} <span class="opPeriod__pipe">|</span> {{timeElapsed$ | async}} &
       {{timeLeft$ | async}}</span>
     <span class="status-divider"></span>

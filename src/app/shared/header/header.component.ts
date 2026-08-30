@@ -5,6 +5,7 @@ import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject, s
 import { Router } from '@angular/router'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
+import { MatMenuModule } from '@angular/material/menu'
 
 import { ClockService, LogService, MissionService, MissionType, WelcomePanelService } from '../services'
 import { Utility } from '../'
@@ -24,7 +25,7 @@ import { GuideService } from '../guide/guide.service'
 @Component({
   selector: 'pageHeader',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MissionReadinessComponent],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule, MissionReadinessComponent],
   templateUrl: './header.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./header.component.scss']
@@ -54,6 +55,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public eventDetails = signal('')
   public opPeriod = signal('')
   public opPeriodDetails = signal('')
+
+  // Raised live 2026-08-30: the pill was "nearly full width" and wrapped poorly on a real
+  // screen once a mission name was long - eventInfo/eventDetails above (native `title`
+  // tooltip text) were the only place that data ever showed. These back the new "More info"
+  // popup (mat-menu, below) instead: mission notes and the op-period's actual date range are
+  // relatively STATIC (set once at mission setup) compared to the live elapsed/left countdown
+  // that stays in the pill itself - moving the static half out is the actual width fix, not
+  // just a smaller font or a second line, which would still have the same content fighting
+  // for space on every page.
+  public missionNotes = signal('')
+  public opPeriodStartDisplay = signal('')
+  public opPeriodEndDisplay = signal('')
 
   public opPeriodStart = new Date()
 
@@ -113,6 +126,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     //  let s: string = start.toDateString()
     //  let e: string = end.toDateString()
     this.opPeriodDetails.set(`${this.settings.opPeriod}: ${this.settings.opPeriodStart} to ${this.settings.opPeriodEnd}`)
+    this.missionNotes.set(this.settings.eventNotes.trim())
+    this.opPeriodStartDisplay.set(new Date(this.settings.opPeriodStart).toLocaleString())
+    this.opPeriodEndDisplay.set(new Date(this.settings.opPeriodEnd).toLocaleString())
 
     // if (!this.settings.opPeriodStart) {
     //   console.error(`OpPeriod had no Start time! Reset to 2 hours ago...`, this.id)
@@ -136,7 +152,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.timeElapsed$ = timer(0, 1000)
       .pipe(map(() => {
         let diff = Utility.timeDiff(msStartTime, new Date().getTime())
-        return (`${diff.string} ${(diff.negative ? ` before period starts` : ` elapsed`)}`)
+        // Raised live 2026-08-30: "before period starts" was the single longest fragment in
+        // the pill's op-period readout - shortened per the maintainer's own suggested wording.
+        return (`${diff.string} ${(diff.negative ? ` until period` : ` elapsed`)}`)
       }
       ))
 

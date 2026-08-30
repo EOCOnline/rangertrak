@@ -71,11 +71,74 @@
     flex       : none;
   }
 
-  .event {
-    @include type.type-body;
-    font-weight: 700;
-    font-style : italic;
-    text-align : center;
+  // Raised live 2026-08-30: replaces the old always-visible `.event` span (mission #/name,
+  // free text) - that content moved into the "More info" popup below since it barely changes
+  // once a mission is set up, and free text of arbitrary length was the actual reason the
+  // pill went nearly full-width and wrapped badly.
+  .header__info-btn {
+    display        : inline-flex;
+    align-items    : center;
+    justify-content: center;
+    width          : 1.6em;
+    height         : 1.6em;
+    padding        : 0;
+    border         : none;
+    border-radius  : 50%;
+    background     : none;
+    color          : inherit;
+    cursor         : pointer;
+
+    mat-icon {
+      font-size: 1.15em;
+      width    : 1.15em;
+      height   : 1.15em;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: var(--rt-surface-2);
+    }
+  }
+
+  // The menu panel itself is Material's own overlay element, not part of this component's
+  // template - it never gets this component's view-encapsulation attribute, so reaching it
+  // needs ::ng-deep. Widened past MDC's default ~280px so the op-period range doesn't wrap
+  // mid-date; the inner .rt-mission-info div (below) caps its own width to match.
+  :host ::ng-deep .rt-mission-info-menu {
+    max-width: 360px;
+  }
+
+  .rt-mission-info {
+    max-width: 320px;
+    padding  : 0.25em 0.5em;
+
+    &__title {
+      @include type.type-body;
+      margin     : 0 0 0.35em;
+      font-weight: 700;
+    }
+
+    &__notes {
+      margin     : 0 0 0.6em;
+      color      : var(--rt-ink-2);
+      white-space: pre-wrap;
+    }
+
+    &__grid {
+      display              : grid;
+      grid-template-columns: auto 1fr;
+      gap                  : 0.15em 0.75em;
+      margin               : 0;
+
+      dt {
+        color      : var(--rt-ink-2);
+        font-weight: 600;
+      }
+
+      dd {
+        margin: 0;
+      }
+    }
   }
 
   .opPeriod {
