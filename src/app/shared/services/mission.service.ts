@@ -251,7 +251,14 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       opPeriodEnd: endDt,
 
       application: 'RangerTrak',
-      version: '0', // not exposed in Mission Component, so set in constructor
+      // Raised live 2026-08-30: was a literal '0' placeholder with a comment saying the
+      // constructor patches it in afterward - true only the FIRST time initMission() runs
+      // (app startup, when no mission exists yet). ResetDefaults() calls initMission() again
+      // later and nothing re-patches it that time, so 'Reset mission to defaults' left the
+      // footer showing 'Version 0' until the next full page load (e.g. loading sample data,
+      // which reloads the page) re-ran the constructor's own patch. Read directly here
+      // instead, so this is correct regardless of which caller asks for a fresh mission.
+      version: packageJson.version,
       debugMode: false,
 
       defLat: 47.4472,
@@ -298,8 +305,8 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       // https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#fully_saturated_colors
       // https://m3.material.io/styles/icons/applying-icons#ebb3ae7d-d274-4a25-9356-436e82084f1f
       // https://fonts.google.com/icons
-      // Sprint E: these are semantic keys resolving to --rt-status-*, not raw CSS colours.
-      // The old CSS named colours (LightYellow, Chartreuse, Aquamarine, Silver...) were
+      // Sprint E: these are semantic keys resolving to --rt-status-*, not raw CSS colors.
+      // The old CSS named colors (LightYellow, Chartreuse, Aquamarine, Silver...) were
       // painted as TEXT on the Entry status radios and measured as low as 1.07:1 - a fresh
       // install shipped inaccessible, not just upgraded ones. See mission-migration.ts,
       // which maps the old values forward for existing users.
