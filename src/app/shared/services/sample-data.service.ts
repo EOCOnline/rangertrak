@@ -163,8 +163,11 @@ export class SampleDataService {
     // search actually moves.
     const MAURY = { lat: 47.4050, lng: -122.4200, name: 'Maury Island Marine Park' }
     const DOCKTON = { lat: 47.3739, lng: -122.4560, name: 'Dockton Park' }
-    // Every report below, including MERT1's, sits on land (trail, dock, or shoreline) -
-    // a marker plotted mid-harbor read as a data error, not a boat.
+    // Live report, 2026-08-30: every OTHER report below sits on land (trail, dock, or
+    // shoreline) - a boat-team marker plotted mid-harbor first read as a data error, not a
+    // boat, when it was the only water-based point in the set. Restored as a real water track
+    // for MERT1 specifically (see its four Quartermaster Harbor waypoints below) - one of the
+    // several team tracks on the water is the ask, not zero and not all of them.
 
     type Row = {
       callsign: string
@@ -214,10 +217,18 @@ export class SampleDataService {
 
       // ── Dockton Park cluster - walking search pattern ──────────────────────────
       { callsign: 'CERT3', minutesAgo: 292, lat: DOCKTON.lat, lng: DOCKTON.lng, address: `${DOCKTON.name} - boat launch`, statusIndex: 4, notes: 'Team checked in at the boat launch, beginning shoreline sweep.', source: 'Voice', operator: 'Penny Chartwell' },
-      { callsign: 'MERT1', minutesAgo: 284, lat: DOCKTON.lat + 0.0008, lng: DOCKTON.lng - 0.0015, address: `${DOCKTON.name} - marina dock`, statusIndex: 4, notes: 'Checked in at the marina dock, beginning a shoreline sweep on foot.', source: 'Packet', operator: 'Penny Chartwell' },
+      { callsign: 'MERT1', minutesAgo: 284, lat: DOCKTON.lat + 0.0008, lng: DOCKTON.lng - 0.0015, address: `${DOCKTON.name} - marina dock`, statusIndex: 4, notes: 'Launched from the marina, transiting Quartermaster Harbor at idle speed.', source: 'Packet', operator: 'Penny Chartwell' },
       { callsign: 'Medic1', minutesAgo: 276, lat: DOCKTON.lat - 0.0010, lng: DOCKTON.lng + 0.0012, address: `${DOCKTON.name} - picnic shelter`, statusIndex: 4, notes: 'First-aid post set up at the picnic shelter, staged and ready.', source: 'Voice', operator: 'Penny Chartwell' },
       { callsign: 'CERT3', minutesAgo: 244, lat: DOCKTON.lat + 0.0022, lng: DOCKTON.lng + 0.0018, address: `${DOCKTON.name} - north shoreline trail`, statusIndex: 2, notes: 'Debris field along the north shoreline, photographed for assessment.', source: 'Voice', operator: 'Penny Chartwell' },
-      { callsign: 'MERT1', minutesAgo: 200, lat: DOCKTON.lat + 0.0015, lng: DOCKTON.lng - 0.0020, address: `${DOCKTON.name} - shoreline overlook`, statusIndex: 0, notes: 'Shoreline patrol on foot, harbor visually clear, no vessels in distress observed.', source: 'Packet', operator: 'Penny Chartwell' },
+      // Live report, 2026-08-30: a small boat-patrol track on the water is wanted after all -
+      // just not the WHOLE sample mission, which is otherwise deliberately on-foot (see the
+      // land-only note above). Four waypoints down Quartermaster Harbor and back, bookended
+      // by the marina dock check-in/check-out above and below - the one team in this data set
+      // that's actually afloat.
+      { callsign: 'MERT1', minutesAgo: 260, lat: DOCKTON.lat - 0.0015, lng: DOCKTON.lng - 0.0025, address: 'Quartermaster Harbor, north entrance', statusIndex: 0, notes: 'Position report, no vessels in distress observed.', source: 'Packet', operator: 'Penny Chartwell' },
+      { callsign: 'MERT1', minutesAgo: 230, lat: DOCKTON.lat - 0.0035, lng: DOCKTON.lng - 0.0040, address: 'Quartermaster Harbor, mid-channel', statusIndex: 0, notes: 'Continuing south down the channel, harbor clear so far.', source: 'Packet', operator: 'Penny Chartwell' },
+      { callsign: 'MERT1', minutesAgo: 200, lat: DOCKTON.lat - 0.0055, lng: DOCKTON.lng - 0.0030, address: 'Quartermaster Harbor, south end near the point', statusIndex: 0, notes: 'Rounding the point, visual sweep of the shoreline.', source: 'Packet', operator: 'Penny Chartwell' },
+      { callsign: 'MERT1', minutesAgo: 170, lat: DOCKTON.lat - 0.0030, lng: DOCKTON.lng - 0.0060, address: 'Quartermaster Harbor, west shore', statusIndex: 0, notes: 'Heading back up-channel toward the dock.', source: 'Packet', operator: 'Penny Chartwell' },
       {
         callsign: 'CERT3', minutesAgo: 160, lat: DOCKTON.lat + 0.0022, lng: DOCKTON.lng + 0.0018, address: `${DOCKTON.name} - north shoreline trail`, statusIndex: 6,
         notes: 'URGENT: possible propane smell near the park maintenance shed, evacuating the picnic area as a precaution.', source: 'Voice', operator: 'Penny Chartwell',
@@ -226,7 +237,7 @@ export class SampleDataService {
         recipients213: ['Incident Commander', 'Logistics'],
       },
       { callsign: 'Medic1', minutesAgo: 152, lat: DOCKTON.lat - 0.0010, lng: DOCKTON.lng + 0.0012, address: `${DOCKTON.name} - picnic shelter`, statusIndex: 0, notes: 'Relocated first-aid post away from the shed as a precaution, no injuries.', source: 'Voice', operator: 'Penny Chartwell' },
-      { callsign: 'MERT1', minutesAgo: 100, lat: DOCKTON.lat + 0.0008, lng: DOCKTON.lng - 0.0015, address: `${DOCKTON.name} - marina dock`, statusIndex: 5, notes: 'Shoreline sweep complete, back at the dock, checking out.', source: 'Packet', operator: 'Penny Chartwell' },
+      { callsign: 'MERT1', minutesAgo: 100, lat: DOCKTON.lat + 0.0008, lng: DOCKTON.lng - 0.0015, address: `${DOCKTON.name} - marina dock`, statusIndex: 5, notes: 'Marine sweep complete, back at the dock, checking out.', source: 'Packet', operator: 'Penny Chartwell' },
       { callsign: 'CERT3', minutesAgo: 60, lat: DOCKTON.lat + 0.0022, lng: DOCKTON.lng + 0.0018, address: `${DOCKTON.name} - north shoreline trail`, statusIndex: 5, notes: 'Shoreline sweep complete, propane smell traced to a stored camp stove, resolved. Checking out.', source: 'Voice', operator: 'Penny Chartwell' },
 
       // ── Wrap-up ────────────────────────────────────────────────────────────────
