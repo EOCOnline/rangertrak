@@ -86,7 +86,12 @@ export const DEFAULT_LOCATION_TYPES: ReadonlyArray<LocationCategoryType> = [
   { type: 'Command Post', color: '#1565C0' },
   { type: 'Staging Area', color: '#EF6C00' },
   { type: 'Ranger First Aid', color: '#C62828' },
-  { type: 'Other', color: '#616161' },
+  // Expanded live 2026-08-30 from the original four (which included a catch-all "Other" -
+  // dropped here per the maintainer's own specified list; locationIconFor()'s generic-pin
+  // fallback still covers any category name a mission adds beyond this starter set).
+  { type: 'EOC', color: '#6A1B9A' },
+  { type: 'Fire Station', color: '#D84315' },
+  { type: 'Dock', color: '#00838F' },
 ]
 
 /**

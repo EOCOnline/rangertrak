@@ -25,6 +25,20 @@ const SHAPES: Record<string, (color: string) => string> = {
     <rect x="1" y="1" width="22" height="22" rx="3" fill="${color}"/>
     <rect x="10" y="5" width="4" height="14" fill="white"/>
     <rect x="5" y="10" width="14" height="4" fill="white"/>`,
+  // Added 2026-08-30 alongside DEFAULT_LOCATION_TYPES' expansion (mission-migration.ts) -
+  // same "letter panel" treatment as Staging Area, for the two categories with no obvious
+  // pictogram of their own at this icon size.
+  'EOC': color => `
+    <rect x="1" y="1" width="22" height="22" rx="3" fill="${color}"/>
+    <text x="12" y="17" text-anchor="middle" font-size="14" font-weight="700" font-family="sans-serif" fill="white">E</text>`,
+  // A flame, not a letter - "F" would be too easily misread as First Aid's panel at a
+  // glance, and a fire station has an obvious real pictogram unlike EOC/Dock.
+  'Fire Station': color => `
+    <rect x="1" y="1" width="22" height="22" rx="3" fill="${color}"/>
+    <path d="M12 4c-1 3-4 4-4 8a4 4 0 0 0 8 0c0-1.5-.7-2.5-1.3-3.3.1 1-.4 1.8-1 1.8-.8 0-1-1-.7-2C13.4 7 12.6 5.5 12 4z" fill="white"/>`,
+  'Dock': color => `
+    <rect x="1" y="1" width="22" height="22" rx="3" fill="${color}"/>
+    <text x="12" y="17" text-anchor="middle" font-size="14" font-weight="700" font-family="sans-serif" fill="white">D</text>`,
 }
 
 /** Generic pin, used for "Other" and any category with no dedicated shape above. */

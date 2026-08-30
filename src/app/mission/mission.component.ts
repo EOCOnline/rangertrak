@@ -14,8 +14,8 @@ import { RouterLink } from '@angular/router'
 
 import { PageComponent } from '../shared/page/page.component'
 import {
-  FieldReportStatusType, LogService, MissionReadinessService, MISSION_SCHEMA_VERSION,
-  MissionService, MissionType
+  FieldReportStatusType, LocationCategoryType, LogService, MissionReadinessService,
+  MISSION_SCHEMA_VERSION, MissionService, MissionType
 } from '../shared/services/'
 import { InstallUpdateComponent } from '../shared/install-update/install-update.component'
 import { HasUnsavedChanges } from '../shared/guards/unsaved-changes.guard'
@@ -25,6 +25,7 @@ import { MissionDetailsSectionComponent } from './sections/mission-details-secti
 import { MissionLocationSectionComponent } from './sections/mission-location-section/mission-location-section.component'
 import { MissionMapsSectionComponent } from './sections/mission-maps-section/mission-maps-section.component'
 import { MissionFieldReportStatusesComponent } from './sections/mission-field-report-statuses/mission-field-report-statuses.component'
+import { MissionLocationTypesComponent } from './sections/mission-location-types/mission-location-types.component'
 import { MissionRecipients213Component } from './sections/mission-recipients213/mission-recipients213.component'
 import { MissionAdvancedOptionsComponent } from './sections/mission-advanced-options/mission-advanced-options.component'
 
@@ -60,6 +61,7 @@ const blankMission: MissionType = {
     MissionLocationSectionComponent,
     MissionMapsSectionComponent,
     MissionFieldReportStatusesComponent,
+    MissionLocationTypesComponent,
     MissionRecipients213Component,
     MissionAdvancedOptionsComponent,
     InstallUpdateComponent,
@@ -128,6 +130,13 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
    * visible on submit without any explicit sync.
    */
   rowData = signal<FieldReportStatusType[]>([])
+
+  /**
+   * ADR D-49: same "re-seeded from the settings subscription, same array reference as
+   * missionModel().locationTypes" pattern as rowData above, for the mission-editable
+   * Location category list (MissionLocationTypesComponent).
+   */
+  locationTypesRowData = signal<LocationCategoryType[]>([])
 
   /**
    * E-103: the working list behind the recipients-checklist editor, same "re-seeded from the
@@ -218,6 +227,7 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
   private applyMissionToForm(newMission: MissionType): void {
     this.settingsForm().reset(newMission)
     this.rowData.set(newMission.fieldReportStatuses)
+    this.locationTypesRowData.set(newMission.locationTypes)
     this.recipientOptions213.set(newMission.recipientOptions213)
     this.opPeriodStart.set(newMission.opPeriodStart)
     this.opPeriodEnd.set(newMission.opPeriodEnd)
