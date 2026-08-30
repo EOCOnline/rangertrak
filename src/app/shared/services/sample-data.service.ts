@@ -58,8 +58,22 @@ export class SampleDataService {
   private id = 'Sample Data Service'
 
   /** Marks the loaded mission as demo data, in the UI and in any export of it. */
-  public static readonly SAMPLE_MISSION_NAME = 'SAMPLE - Vashon Island Exercise'
-  public static readonly SAMPLE_EVENT_NAME = 'Sample Data (demonstration only)'
+  public static readonly SAMPLE_EVENT_NAME = 'Missing Person Exercise'
+  public static readonly SAMPLE_EVENT_NOTES = 'Investigate report of several lost individuals'
+
+  /**
+   * Raised live 2026-08-30: the mission ID a real agency would actually assign - a
+   * year-month-type code, e.g. "2026-08-Search" - rather than the previous fixed
+   * "SAMPLE - Vashon Island Exercise" string. Computed at load time (not a static constant)
+   * so it always reflects the month the demo is actually run, not the month this file was
+   * last edited.
+   */
+  private static sampleMissionId(): string {
+    const now = new Date()
+    const yyyy = now.getFullYear()
+    const mm = String(now.getMonth() + 1).padStart(2, '0')
+    return `${yyyy}-${mm}-Search`
+  }
 
   constructor(
     private missionService: MissionService,
@@ -95,8 +109,9 @@ export class SampleDataService {
     // bounds and needs current settings already in place.
     this.missionService.updateMission({
       ...this.missionService.settings,
-      mission: SampleDataService.SAMPLE_MISSION_NAME,
+      mission: SampleDataService.sampleMissionId(),
       event: SampleDataService.SAMPLE_EVENT_NAME,
+      eventNotes: SampleDataService.SAMPLE_EVENT_NOTES,
     })
     this.rangerService.replaceAllRangers(rangers)
     this.fieldReportService.replaceAllFieldReports(fieldReports)
