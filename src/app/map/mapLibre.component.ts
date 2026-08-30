@@ -131,7 +131,9 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addReportsSource()
       this.refreshMarkers()
       this.fitToBounds()
-      this.warmBundledPmtilesCache()
+      // Not called here directly - see warmBundledPmtilesCache()'s own doc comment for why
+      // firing it inside this same handler reopens exactly the race it was written to close.
+      this.map.once('idle', () => this.warmBundledPmtilesCache())
     })
 
     this.map.on('zoomend', () => { this.zoomDisplay.set(Math.round(this.map.getZoom())) })
@@ -201,11 +203,22 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
    * Content-Range/Content-Length when `req.headers.range` is present) - so the request that
    * arrived at the server without triggering that branch must have lost its Range header,
    * which points at browser-level request coalescing: this plain fetch and pmtiles-js's own
-   * Range fetch, both firing within milliseconds of each other at the *same URL* from the
-   * constructor and `ngAfterViewInit()` respectively, are exactly the shape of request a
-   * browser may de-duplicate/merge, handing the Range caller back whatever the plain request
-   * received. Sequencing this to run only after `'load'` (i.e., after the basemap's own
-   * fetches are done, not racing them) removes that window entirely for a fresh mount.
+   * Range fetch, both firing within milliseconds of each other at the *same URL*, are exactly
+   * the shape of request a browser may de-duplicate/merge, handing the Range caller back
+   * whatever the plain request received.
+   *
+   * RE-ROOT-CAUSED 2026-08-30 (live report: main map stayed grey background + hillshade only,
+   * while the overview thumbnail - same style, same URL, just no warming call - rendered the
+   * real basemap correctly at the identical location): sequencing this call to fire from
+   * inside the `'load'` handler was *not* enough, because that handler's own `fitToBounds()`
+   * call (just above) changes the viewport, which itself kicks off a fresh round of Range
+   * fetches for whatever tiles the new bounds need - fired at the exact point `'load'` had
+   * already fired, i.e. exactly when this function used to run. So the plain warming fetch
+   * was racing THOSE fetches instead, the same failure mode moved one step later rather than
+   * closed. Deferred to the map's `'idle'` event (fired once no source has outstanding
+   * requests) instead of calling this synchronously in the `'load'` handler - by then every
+   * Range fetch fitToBounds() triggered has already resolved, so there is nothing left for
+   * this plain fetch to race.
    *
    * `cache: 'no-store'` kept as defense in depth for a *repeat* mount (navigate away from
    * `/map` and back, or flip engines twice): without it, this fetch's own response could sit
