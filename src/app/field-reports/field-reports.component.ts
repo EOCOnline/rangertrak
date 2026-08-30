@@ -49,7 +49,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   // app.routes.ts and navbar.component.html). The class/file/id above keep their original
   // name deliberately - this is still the same field-report grid, only the page's own
   // user-facing name changed, not renaming that everywhere would be pure churn.
-  title = 'Radio Log'
+  title = 'Radio Log — ICS-309'
   pageDescr = `Every field report, in one grid - who, where, when, and what they said.`
 
   private fieldReportsSubscription!: Subscription

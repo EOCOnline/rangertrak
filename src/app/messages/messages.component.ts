@@ -38,7 +38,7 @@ import {
 })
 export class MessagesComponent implements OnInit, OnDestroy {
   private id = 'Messages'
-  title = 'Messages'
+  title = 'Messages — ICS-213s'
   pageDescr = 'ICS-213 general messages generated from field reports.'
 
   messages = signal<FieldReportType[]>([])
