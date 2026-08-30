@@ -139,7 +139,7 @@
           <mat-checkbox data-testid="evidence-toggle" [checked]="showEvidenceLocation()"
             [tabIndex]="showEvidenceLocationTabIndex"
             (change)="showEvidenceLocation.set($event.checked)">
-            This report includes evidence or a clue at a different location (or Alt+click the map)
+            Include evidence/clue at a different location (or Alt+click map)
           </mat-checkbox>
 
           <div [hidden]="!showEvidenceLocation()">
@@ -357,7 +357,6 @@
         </div>
       </div>
     </div-->
-    <br />
 
     <!-- D-44/F29-47 (2026-08-29): operator identity, right above Submit per the maintainer's
          own placement instinct - OUTSIDE the 213 box above, since this applies to every

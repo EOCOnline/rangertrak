@@ -365,8 +365,12 @@ mat-chip-option.enter__source-selected {
 // D-44/F29-47 (2026-08-29): operator identity, right above Submit - see the template's own
 // comment. `.enter__operator-field` reuses `.enter__213-field`'s column layout; the collapsed
 // summary line gets its own small inline treatment instead.
+// Raised live 2026-08-30: "lots of top-margin" - a stray leftover `<br />` (removed from the
+// template, right after a long-dead commented-out Keywords block) was stacking with this
+// rule's own top margin. Top trimmed now that the `<br />` is gone; bottom kept as-is, it
+// reads correctly against Reset/Submit below.
 .enter__operator {
-  margin: 0.75rem 0;
+  margin: 0.25rem 0 0.75rem;
 }
 
 .enter__operator-field {
