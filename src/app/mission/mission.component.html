@@ -93,10 +93,19 @@
         Mission data lives in this browser only, and is never uploaded
       </span>
       <div class="rt-action-bar__buttons">
+        <!-- F29-23 (2026-08-30): only shown once there's something TO discard - Cancel doing
+             nothing when the form is already clean would just be a confusing extra button. -->
+        @if (settingsForm().dirty()) {
         <button matButton type="button" (click)="onCancel()">Cancel</button>
+        }
+        <!-- F29-23: the dirty class is the visual half of "warn before losing unsaved work" -
+             the CanDeactivate guard/beforeunload listener (mission.component.ts) are the
+             half that actually stops a scribe from leaving by accident; this is what tells
+             them there's something to lose in the first place, before they try. -->
         <button matButton="filled" type="submit" data-testid="mission-save"
+          class="mission__save-button" [class.mission__save-button--dirty]="settingsForm().dirty()"
           [disabled]="settingsForm().invalid()">
-          Save settings
+          {{ settingsForm().dirty() ? 'Save settings *' : 'Save settings' }}
         </button>
       </div>
     </div>

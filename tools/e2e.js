@@ -1716,6 +1716,57 @@ async function checkMissionFormSave() {
   check('edited debugMode value survived Save + reload', after.debugMode, before.debugModeSet)
 }
 
+/**
+ * F29-23 (2026-08-30): the shared unsavedChangesGuard (src/app/shared/guards/
+ * unsaved-changes.guard.ts), wired onto the /mission route. Confirms it actually prompts -
+ * dialogs[] already logs every dialog this harness auto-accepts (see the CDP client at the
+ * top of this file), so a confirm() firing shows up there even though nothing here has to
+ * handle it manually. Also confirms the Cancel button (only rendered while dirty) both
+ * clears dirty AND lets navigation through with no prompt at all - the two halves of "Cancel
+ * discarding edits" and "the guard only fires when there's something to discard."
+ */
+async function checkMissionUnsavedChangesGuard() {
+  console.log('\nMission: the unsaved-changes guard prompts before leaving a dirty form (F29-23)')
+  await goto('/mission')
+
+  const cancelBeforeEdit = await evaluate(`!!document.querySelector('[data-testid="mission-save"].mission__save-button--dirty')`)
+  check('Save is not marked dirty before any edit', cancelBeforeEdit, false)
+
+  await evaluate(`(() => {
+    const mission = document.querySelector('input[placeholder="Mission #"]');
+    Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(mission, 'E2E-GUARD-TEST');
+    mission.dispatchEvent(new Event('input', { bubbles: true }));
+  })()`)
+  await sleep(200)
+  check('Save is marked dirty after an edit', await evaluate(`document.querySelector('[data-testid="mission-save"]').classList.contains('mission__save-button--dirty')`), true)
+  check('Cancel appears once the form is dirty', await evaluate(`!![...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Cancel')`), true)
+
+  // navigateInApp (a real routerLink click), not goto() - CanDeactivate only ever runs for
+  // in-app Router navigation. goto()'s Page.navigate is a hard reload that bypasses the
+  // Router entirely, same gap navigateInApp's own doc comment already names ("Users don't do
+  // that - they click the nav... production bugs reproduce ONLY this way").
+  const dialogsBefore = dialogs.length
+  await navigateInApp('Rangers')
+  check('leaving a dirty Mission form triggers a confirm dialog', dialogs.length > dialogsBefore, true)
+  check('...and (auto-accepted) navigation actually proceeded', await evaluate(`location.pathname`), '/rangers')
+
+  // Cancel: dirty -> clean, and the guard lets a clean form go with no prompt.
+  await goto('/mission')
+  await evaluate(`(() => {
+    const mission = document.querySelector('input[placeholder="Mission #"]');
+    Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(mission, 'E2E-GUARD-TEST-2');
+    mission.dispatchEvent(new Event('input', { bubbles: true }));
+  })()`)
+  await sleep(200)
+  await evaluate(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Cancel')?.click()`)
+  await sleep(200)
+  check('Cancel clears the dirty state', await evaluate(`document.querySelector('[data-testid="mission-save"]').classList.contains('mission__save-button--dirty')`), false)
+
+  const dialogsBeforeClean = dialogs.length
+  await navigateInApp('Rangers')
+  check('leaving a CLEAN Mission form triggers no dialog', dialogs.length, dialogsBeforeClean)
+}
+
 async function checkMissionRoundTrip(downloads) {
   console.log('\nMission export -> wipe all storage -> import: the disaster path')
   await goto('/mission')
@@ -1918,6 +1969,7 @@ async function main() {
       }
       await checkDerivedValuesDoNotCarryOver() // also submits, same reason
       await checkMissionFormSave()
+      await checkMissionUnsavedChangesGuard()
       await checkStatusColorMigration()
       await checkStatusColorsBothSchemes()
 

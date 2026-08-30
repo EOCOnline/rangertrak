@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router'
 
 import { EntryComponent } from './entry/entry.component'
+import { unsavedChangesGuard } from './shared/guards/unsaved-changes.guard'
 
 // https://angular.io/guide/router
 // https://angular.io/api/router/Resolve#usage-notes - Processing order: BaseGuard, ChildGuard, BaseDataResolver, ChildDataResolver
@@ -63,7 +64,12 @@ export const APP_ROUTES: Routes = [
   // break, since this route predates that rename and may be bookmarked.
   {
     path: 'mission',
-    loadComponent: () => import('./mission/mission.component').then(m => m.MissionComponent)
+    loadComponent: () => import('./mission/mission.component').then(m => m.MissionComponent),
+    // F29-23 (2026-08-30): warns before navigating away with unsaved Mission edits - the
+    // shared guard (src/app/shared/guards/unsaved-changes.guard.ts) only needs the target
+    // component to implement HasUnsavedChanges, so any future manual-Save page adopts this
+    // the same way, not by rebuilding the guard.
+    canDeactivate: [unsavedChangesGuard],
   },
   {
     path: 'log',

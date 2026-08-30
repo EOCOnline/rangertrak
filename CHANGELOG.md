@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.87.0](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-30)
+
+### Features
+
+* **mission:** warns before leaving Mission with unsaved changes (F29-23) - a shared guard (`src/app/shared/guards/unsaved-changes.guard.ts`), not a Mission-only fix, so any future manual-Save page can adopt it by implementing one interface. Covers both in-app navigation (a router CanDeactivate guard) and closing the tab/refreshing/typing a new URL (a `beforeunload` listener) - a router guard alone can't see the second kind. The Save button turns amber and gains a `*` once the form is actually dirty, and Cancel only appears then too.
+* Fixed a real bug found while building this: `onCancel()` reset the form's data but never its Signal Forms `dirty` state (a raw signal `.set()` doesn't clear `dirty` - only an explicit `reset()` does, confirmed by reading Signal Forms' own type definitions before assuming). Left uncaught, this would have made the guard fire a false "unsaved changes" warning immediately after using Cancel to discard those very changes.
+
 ## [0.86.0](https://github.com/EOCOnline/rangertrak/commit/016dace596efd91d89721ce018503003210154ed) (2026-08-30)
 
 ### Features

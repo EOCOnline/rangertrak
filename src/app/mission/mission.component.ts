@@ -1,7 +1,9 @@
 import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, computed, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, computed, signal
+} from '@angular/core'
 import { FormsModule } from '@angular/forms'
 // FormField (the template directive) is gone from this component's own template: every
 // control it used to drive is now a Material component bound through the FieldState's
@@ -16,6 +18,7 @@ import {
   MissionService, MissionType
 } from '../shared/services/'
 import { InstallUpdateComponent } from '../shared/install-update/install-update.component'
+import { HasUnsavedChanges } from '../shared/guards/unsaved-changes.guard'
 
 import { MATERIAL_IMPORTS } from '../material-imports'
 import { MissionDetailsSectionComponent } from './sections/mission-details-section/mission-details-section.component'
@@ -67,7 +70,7 @@ const blankMission: MissionType = {
   // Deliberately NOT providing MissionService: it is providedIn:'root' and a second
   // instance here would diverge from everyone else's. See BUG-2 in entry.component.ts.
 })
-export class MissionComponent implements OnInit, OnDestroy {
+export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
   private id = 'Mission Component'
   title = 'Mission'
   pageDescr = `Set various defaults and values for use in the program`
@@ -203,13 +206,46 @@ export class MissionComponent implements OnInit, OnDestroy {
 
   /** Resets the whole editable form (and its mirror signals) to a given settings snapshot -
    * shared by the settings subscription above and by onCancel() below, which discards
-   * unsaved edits back to the last-saved this.settings rather than reloading the page. */
+   * unsaved edits back to the last-saved this.settings rather than reloading the page.
+   *
+   * F29-23 (2026-08-30): `settingsForm().reset(newMission)`, not a raw `missionModel.set()` -
+   * confirmed by reading Signal Forms' own type definitions (_structure-chunk.d.ts) before
+   * assuming either way: "Programmatic changes to a control's value do not mark it dirty" is
+   * the classic Reactive Forms rule this API inherits, and dirty/touched only clear via an
+   * explicit `reset()` call, never implicitly from the model signal changing underneath it.
+   * A plain `.set()` here would have left `hasUnsavedChanges()` (below) reporting true right
+   * after Cancel discarded the very edits it's supposed to be watching for. */
   private applyMissionToForm(newMission: MissionType): void {
-    this.missionModel.set(newMission)
+    this.settingsForm().reset(newMission)
     this.rowData.set(newMission.fieldReportStatuses)
     this.recipientOptions213.set(newMission.recipientOptions213)
     this.opPeriodStart.set(newMission.opPeriodStart)
     this.opPeriodEnd.set(newMission.opPeriodEnd)
+  }
+
+  /**
+   * F29-23: backs both halves of the "are you sure you want to leave?" guard -
+   * `unsavedChangesGuard` (in-app router navigation, wired in app.routes.ts) and this
+   * component's own `beforeunload` listener just below (browser-level exit: tab close,
+   * refresh, typing a new URL - a router guard cannot see either). Both read this exact
+   * method rather than `settingsForm().dirty()` directly, so the two can never disagree
+   * about what "unsaved" means.
+   */
+  hasUnsavedChanges(): boolean {
+    return this.settingsForm().dirty()
+  }
+
+  /** Browser-level half of F29-23's guard - see hasUnsavedChanges()'s own comment for why
+   * this is separate from the router's CanDeactivate guard. Standard beforeunload contract:
+   * setting returnValue is what actually triggers the browser's native confirmation dialog;
+   * modern browsers show their own generic wording regardless of what string is set here,
+   * but the assignment itself is still required to opt in. */
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    if (this.hasUnsavedChanges()) {
+      event.preventDefault()
+      event.returnValue = ''
+    }
   }
 
   ngOnInit(): void {
@@ -297,6 +333,11 @@ export class MissionComponent implements OnInit, OnDestroy {
       imageDirectory: this.imgDir,  //! SECURITY: BUGBUG: Hardcoded image directory: should this be confidential/encrypted for security?
     }
     this.missionService.updateMission(newMission)
+    // F29-23: without this, hasUnsavedChanges() still reads true for the brief window before
+    // reloadPage() actually navigates away, and the beforeunload listener below would show
+    // "are you sure you want to leave, you have unsaved changes" on a save that just
+    // succeeded - confusing at best, actively wrong at worst.
+    this.settingsForm().reset(newMission)
 
     this.log.verbose(`onFormSubmit: Reloading window!`, this.id)
     this.reloadPage()

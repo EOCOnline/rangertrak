@@ -99,6 +99,17 @@
   height   : 18px;
 }
 
+// F29-23 (2026-08-30): a visible "there's something to lose here" cue - the amber
+// readiness token, not a bespoke colour, since it already means "attention, not done yet"
+// everywhere else in the app (readiness dot, status warnings). White label text: confirmed
+// against _tokens.scss that --rt-readiness-amber is a real dark amber/gold (#8A5A00 light,
+// #D9A300 dark), not a light pastel, so white reads on it in both schemes - no separate
+// "ink for amber" token exists to reach for instead.
+.mission__save-button--dirty {
+  --mdc-filled-button-container-color: var(--rt-readiness-amber);
+  --mdc-filled-button-label-text-color: #ffffff;
+}
+
 // ── Debug ────────────────────────────────────────────────────────────────────
 // Was its own `<h2>Debug</h2>` section with a bare checkbox under it - a full section
 // heading for one developer-facing switch, sitting at the same level as Mission and Maps.
