@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.89.2](https://github.com/EOCOnline/rangertrak/compare/v0.89.1...v0.89.2) (2026-08-30)
+
+
+### Features
+
+* **entry:** offer Load Demo Data on the welcome panel for a genuinely fresh install ([f963f76](https://github.com/EOCOnline/rangertrak/commit/f963f76b280c5614fbe06555d90dc55c67415bc5))
+
+
+### Bug Fixes
+
+* **map:** move the overview mini-map directly under the main map ([1900f83](https://github.com/EOCOnline/rangertrak/commit/1900f83c963c161c80adda0559ee8e30a3a4242d))
+* **messages:** reorder detail fields per maintainer spec ([386ece2](https://github.com/EOCOnline/rangertrak/commit/386ece2505f134347fa180a19212407a027a1497))
+
 ### [0.89.1](https://github.com/EOCOnline/rangertrak/compare/v0.69.0...v0.89.1) (2026-08-30)
 
 
