@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.88.0](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-30)
+## [0.88.0](https://github.com/EOCOnline/rangertrak/commit/c86f2afcc4df6bd3f24693453642b61cc9c31908) (2026-08-30)
 
 ### Features
 
