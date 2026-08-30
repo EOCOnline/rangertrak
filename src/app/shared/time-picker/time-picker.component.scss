@@ -21,7 +21,11 @@
 .rt-datetime {
   display      : inline-flex;
   align-items  : stretch;
-  background   : var(--rt-surface);
+  // Live report, 2026-08-30: was var(--rt-surface) (pure white) - every other grouped field
+  // on Entry (.enter__213, .enter__section, the .filled callsign/notes boxes) sits on
+  // --rt-surface-2, the app's "muted grouped-panel" tint. This pill was the one outlier
+  // painting itself brighter than its surroundings instead of blending in with them.
+  background   : var(--rt-surface-2);
   border       : 1px solid var(--rt-line);
   border-radius: var(--rt-radius);
   // Live review, 2026-08-22: "still too much horizontal white space" even after the infix
@@ -132,9 +136,14 @@
   margin-left: 0.15em;
 }
 
+// var(--rt-surface), not --rt-surface-2: the pill's own resting background is now
+// --rt-surface-2 (see .rt-datetime above), so a hover/focus fill of that same token would
+// no longer read as a state change. --rt-surface is guaranteed distinct from --rt-surface-2
+// in both themes (light: white vs. tinted; dark: base vs. raised-panel), so it stays visible
+// either way.
 .rt-datetime__seg:hover,
 .rt-datetime__seg:focus-visible {
-  background: var(--rt-surface-2);
+  background: var(--rt-surface);
 }
 
 .rt-datetime__seg:focus-visible {
@@ -167,8 +176,10 @@
   color        : var(--rt-ink);
   cursor       : pointer;
 
+  // Same reasoning as .rt-datetime__seg's hover rule above: --rt-surface, not
+  // --rt-surface-2, since the pill's own background is --rt-surface-2 now.
   &:hover,
   &:focus-visible {
-    background: var(--rt-surface-2);
+    background: var(--rt-surface);
   }
 }
