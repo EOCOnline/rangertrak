@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.86.0](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-30)
+
+### Features
+
+* **sample data:** rewrote the demo mission (F29-11) - a real ICS command structure (Incident Commander, three Section Chiefs, a PIO) instead of a flat list of interchangeable "Team N" callsigns; every name deliberately, obviously invented; field-team positions now cluster within walking distance inside two real Vashon-Maury parks (Maury Island Marine Park, Dockton Park) instead of spanning the whole island at driving-distance intervals; two real ICS-213 messages, since the original version of this data had none despite that being the actual original ask. Roster photos are AI-generated synthetic faces (thispersondoesnotexist.org) - real images, but of no real person, downscaled to a sane avatar size before shipping as bundled assets.
+* **e2e:** new `checkSampleMissionLoads` check verifies the rewritten sample data's counts/roles/messages, and is the first check to exercise clicking a button inside a collapsed danger-zone section in read-write mode - a real regression net `--read-only` runs never touched.
+
 ## [0.85.0](https://github.com/EOCOnline/rangertrak/commit/ac443322e804f63208cb4ba269bbec56de14d33b) (2026-08-30)
 
 ### Features

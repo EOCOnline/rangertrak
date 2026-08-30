@@ -1750,6 +1750,59 @@ async function checkMissionRoundTrip(downloads) {
   check('mission import restores the mission name', restored.mission, 'E2E-MISSION')
 }
 
+/**
+ * F29-11 (2026-08-30): the sample mission's roster/report content was substantially rewritten
+ * (an ICS role spread, walking-distance park clusters, real ICS-213 messages) - this check
+ * verifies the new counts land correctly, not just that the button still exists. Also a real
+ * regression net for F29-18's danger-zone collapse (Batch 3): "Load sample mission" sits
+ * inside Mission Advanced Options' now-collapsed ExpandableSectionComponent, so this is the
+ * first check to click that section open before reaching a button inside it - confirms the
+ * pattern other danger-zone buttons (Rangers' "Delete all rangers") rely on in --read-only
+ * mode, which this suite's read-only runs never actually exercise.
+ */
+async function checkSampleMissionLoads() {
+  console.log('\nMission: Load sample mission seeds the ICS-structured roster/reports/messages (F29-11)')
+  await goto('/mission')
+  await evaluate(`localStorage.clear()`)
+  await goto('/mission')
+
+  // Open the collapsed danger-zone section before reaching the button inside it.
+  await evaluate(`(() => {
+    const header = [...document.querySelectorAll('.mat-expansion-panel-header')]
+      .find(h => h.textContent.includes('Danger zone'));
+    header?.click();
+  })()`)
+  await sleep(400)
+
+  await evaluate(`(() => {
+    [...document.querySelectorAll('button')].find(b => /Load sample mission/i.test(b.textContent))?.click();
+  })()`)
+  await sleep(3000) // confirm()/alert() auto-accepted, then onBtnLoadSampleData()'s own reload
+
+  const seeded = await evaluate(`(() => {
+    const rangers = (JSON.parse(localStorage.getItem('rangers')||'{"rangers":[]}').rangers||[]);
+    const reports = (JSON.parse(localStorage.getItem('fieldReports')||'{"fieldReportArray":[]}').fieldReportArray||[]);
+    return {
+      rangerCount: rangers.length,
+      reportCount: reports.length,
+      roles: rangers.map(r => r.role),
+      messages: reports.filter(r => r.generates213).length,
+      operatorsSet: reports.every(r => !!r.operator),
+    };
+  })()`)
+  check('sample mission seeds 12 rangers', seeded.rangerCount, 12)
+  check('...including an Incident Commander', seeded.roles.includes('Incident Commander'), true)
+  check('...and at least one Section Chief', seeded.roles.some(r => (r || '').includes('Section Chief')), true)
+  check('sample mission seeds field reports', seeded.reportCount > 20, true)
+  check('sample mission includes 2 ICS-213 messages', seeded.messages, 2)
+  check('every sample report has an operator stamped', seeded.operatorsSet, true)
+
+  await goto('/messages')
+  await sleep(800)
+  const messageRows = await evaluate(`document.querySelectorAll('.messages__list-item').length`)
+  check('the Messages page renders both sample messages', messageRows, 2)
+}
+
 // ── runner ───────────────────────────────────────────────────────────────────
 
 function findChrome() {
@@ -1885,8 +1938,9 @@ async function main() {
       await checkMissionWithPersistedSettings()
       if (FULL) {
         await checkMissionRoundTrip(downloads)
+        await checkSampleMissionLoads()
       } else {
-        note('fast run: skipping checkMissionRoundTrip (pass --full to include)')
+        note('fast run: skipping checkMissionRoundTrip, checkSampleMissionLoads (pass --full to include)')
       }
       await goto('/'); await evaluate(`localStorage.clear()`)
     }

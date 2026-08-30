@@ -6,7 +6,7 @@ import {
 } from './'
 
 /**
- * A ready-made demonstration mission: a roster and a few hours of field reports
+ * A ready-made demonstration mission: a roster and a few hours of field reports/messages
  * spread across Vashon Island.
  *
  * A virgin instance is genuinely empty - no field reports, so the Reports grid says
@@ -19,9 +19,34 @@ import {
  * notes, useful for load-testing the grid but useless for a demo since every marker
  * landed in one indistinguishable clump. It was removed 2026-08-25 as a dead control
  * (E-94) once its only caller, the Field Reports "fake report generator," was removed
- * too. The data here is hand-authored and fixed: recognizable Vashon locations far
- * enough apart to exercise map bounds/zoom and marker clustering, every status
- * represented so the grid's color coding is visible, and plausible dispatch-log notes.
+ * too. The data here is hand-authored and fixed: recognizable Vashon locations,
+ * every status represented so the grid's color coding is visible, and plausible
+ * dispatch-log notes.
+ *
+ * F29-11 (2026-08-29, maintainer's own live note, re-scoped 2026-08-30): three problems with
+ * the previous version of this data, fixed here -
+ *
+ * 1. **Flat roster, no ICS structure.** Twelve interchangeable "Team N" callsigns told no
+ *    story about who is actually running an incident. Rewritten around a real command
+ *    staff (Incident Commander, three Section Chiefs, a PIO) plus field teams who report to
+ *    them - using the existing `role` field, no new data model needed (Teams/Facilities as
+ *    real entities is D-a, still deferred).
+ * 2. **Names that read as real people.** "Radio Team Alpha," "CERT Team One" were at least
+ *    honestly generic, but earlier drafts of this kind of data tend to drift toward
+ *    realistic-sounding names that could be mistaken for someone real. Every name here is
+ *    deliberately, obviously invented - the point is a demo that reads as a demo.
+ * 3. **Reports spread the length of the island at driving-distance intervals.** Real field
+ *    teams in this app's own scenario (SAR/CERT on foot, not in vehicles) work a tight
+ *    search pattern, not a road trip. Field team positions now cluster within two real
+ *    Vashon-Maury parks - Maury Island Marine Park and Dockton Park, both already used as
+ *    verified points in the previous version of this file - at distances a walking team
+ *    would actually cover. Command staff (Incident Commander, Command Post, the three
+ *    Section Chiefs, the PIO) stay near one fixed post, which is the correct picture for
+ *    people running an incident rather than searching one.
+ *
+ * Also new: two ICS-213 messages (`generates213`/`message213`/`recipients213`/`subject213`/
+ * `operator`) - the ORIGINAL ask behind F29-11 ("sample data should include messages as well
+ * as radio log entries") was never actually met by the previous version, which had zero.
  *
  * Report timestamps are the one thing computed rather than fixed - they're offsets
  * back from "now", so the Reports grid's Elapsed column always reads like a mission
@@ -82,35 +107,46 @@ export class SampleDataService {
   // ---------------------------------------------------------------------------
 
   /**
-   * A demonstration roster: a command post, two ACS radio teams, three CERT teams,
-   * two marine units and three individual rangers - enough variety to show teams,
-   * roles and per-ranger icons without naming any real person.
+   * A demonstration roster: an Incident Commander, three Section Chiefs, a PIO and Command
+   * Post net control staying at one fixed post, plus six field-team rangers split between
+   * two walking-search clusters (see buildSampleFieldReports()). Twelve total, matching the
+   * "12 units" the Advanced Options sample-mission note already describes.
    *
-   * Every `image` here is a file that actually ships in assets/imgs/rangers/.
+   * Every name here is deliberately, obviously invented - this is demo data and should read
+   * as such, not as a roster of real people. Every `image` is a file that actually ships in
+   * assets/imgs/rangers/.
    */
   public buildSampleRangers(): RangerType[] {
     return [
-      { callsign: '!CmdPost', fullName: 'Exercise Command Post', phone: '206-555-0100', image: 'CmdPost.jpg', id: 'CmdPost', team: 'Command', role: 'Command', note: 'Net control for the exercise' },
+      // Command staff - one fixed post, not a walking search pattern. Every photo here is an
+      // AI-generated synthetic face (thispersondoesnotexist.org, maintainer-supplied
+      // 2026-08-29) - a real image, but of no real person, so it's safe to ship in a public
+      // repo the same way the drawn icon assets are. Downscaled to 240x240 (~10-14KB each,
+      // was ~200-280KB straight off the generator) before committing - these are BUNDLED app
+      // assets fetched by every install, not user-uploaded photos, so the same "don't ship
+      // more bytes than a 40-60px avatar needs" reasoning RangerPhotoService's own MAX_EDGE
+      // applies here even more directly.
+      { callsign: 'IC-Actual', fullName: 'Hazel "Compass" Winterbourne', phone: '206-555-0100', image: 'ic-actual.jpg', id: 'IC-1', team: 'Command', role: 'Incident Commander', note: 'Overall exercise command' },
+      { callsign: '!CmdPost', fullName: 'Exercise Command Post', phone: '206-555-0101', image: 'CmdPost.jpg', id: 'CP-1', team: 'Command', role: 'Command', note: 'Net control for the exercise' },
+      { callsign: 'OpsChief', fullName: 'Ollie Fogbank', phone: '206-555-0110', image: 'ops-chief.jpg', id: 'OPS-1', team: 'Command', role: 'Operations Section Chief', note: 'Directs field teams' },
+      { callsign: 'PlanChief', fullName: 'Penny Chartwell', phone: '206-555-0111', image: 'plan-chief.jpg', id: 'PLN-1', team: 'Command', role: 'Planning Section Chief', note: 'Tracks status boards and maps' },
+      { callsign: 'LogChief', fullName: 'Iggy Sparrowgrass', phone: '206-555-0112', image: 'log-chief.jpg', id: 'LOG-1', team: 'Command', role: 'Logistics Section Chief', note: 'Supplies, food, rest rotations' },
+      { callsign: 'PIO1', fullName: 'Ivy Loudhailer', phone: '206-555-0113', image: 'pio.jpg', id: 'PIO-1', team: 'Command', role: 'Public Information Officer', note: 'Fields press and family inquiries' },
 
-      { callsign: 'ACS1', fullName: 'Radio Team Alpha', phone: '206-555-0111', image: 'ham_blue.png', id: 'VI-01', team: 'ACS', role: 'Licensed', note: 'Primary voice relay' },
-      { callsign: 'ACS2', fullName: 'Radio Team Bravo', phone: '206-555-0112', image: 'ham_red.png', id: 'VI-02', team: 'ACS', role: 'Licensed', note: 'Packet / digital' },
+      // Field team - Maury Island Marine Park cluster.
+      { callsign: 'CERT1', fullName: 'Gus Underbrush', phone: '206-555-0121', image: 'cert1.jpg', id: 'VI-11', team: 'CERT', role: 'Team Lead', note: 'Marine Park, north loop' },
+      { callsign: 'CERT2', fullName: 'Wanda Woodsy', phone: '206-555-0122', image: 'cert2.jpg', id: 'VI-12', team: 'CERT', role: 'Responder', note: 'Marine Park, south loop' },
+      { callsign: 'Recon1', fullName: 'Chip Trailblaze', phone: '206-555-0123', image: 'recon1.jpg', id: 'VI-13', team: 'Recon', role: 'Mobile', note: 'Marine Park, beach access trail' },
 
-      { callsign: 'CERT1', fullName: 'CERT Team One', phone: '206-555-0121', image: 'CERT_red.png', id: 'VI-11', team: 'CERT', role: 'Responder', note: 'North island sweep' },
-      { callsign: 'CERT2', fullName: 'CERT Team Two', phone: '206-555-0122', image: 'CERT_green.png', id: 'VI-12', team: 'CERT', role: 'Responder', note: 'Town center sweep' },
-      { callsign: 'CERT3', fullName: 'CERT Team Three', phone: '206-555-0123', image: 'CERT_yellow.png', id: 'VI-13', team: 'CERT', role: 'Responder', note: 'South island sweep' },
-
-      { callsign: 'MERT1', fullName: 'Marine Unit One', phone: '206-555-0131', image: 'MERT_blue.png', id: 'VI-21', team: 'MERT', role: 'Marine', note: 'Quartermaster Harbor' },
-      { callsign: 'MERT2', fullName: 'Marine Unit Two', phone: '206-555-0132', image: 'sail.png', id: 'VI-22', team: 'MERT', role: 'Marine', note: 'West shore' },
-
-      { callsign: 'Recon1', fullName: 'Mobile Recon One', phone: '206-555-0141', image: 'Ranger.png', id: 'VI-31', team: 'Recon', role: 'Mobile', note: 'Roving damage assessment' },
-      { callsign: 'Shelter1', fullName: 'Shelter Manager', phone: '206-555-0151', image: 'helmet_orange.png', id: 'VI-41', team: 'Logistics', role: 'Support', note: 'High school shelter' },
-      { callsign: 'Medic1', fullName: 'Field Medic One', phone: '206-555-0161', image: 'helmet_red.png', id: 'VI-51', team: 'Medical', role: 'Medical', note: 'Roving aid' },
-      { callsign: 'Ferry1', fullName: 'Ferry Dock Observer', phone: '206-555-0171', image: 'team_blue.png', id: 'VI-61', team: 'Recon', role: 'Observer', note: 'North terminal' },
+      // Field team - Dockton Park cluster.
+      { callsign: 'CERT3', fullName: 'Marge Tidepool', phone: '206-555-0131', image: 'cert3.jpg', id: 'VI-21', team: 'CERT', role: 'Team Lead', note: 'Dockton Park, north end' },
+      { callsign: 'MERT1', fullName: 'Barnaby Fogg', phone: '206-555-0132', image: 'mert1.jpg', id: 'VI-22', team: 'MERT', role: 'Marine', note: 'Dockton Park, boat launch' },
+      { callsign: 'Medic1', fullName: 'Dr. Sunny Skipper', phone: '206-555-0133', image: 'medic1.jpg', id: 'VI-23', team: 'Medical', role: 'Medical', note: 'Dockton Park, first-aid post' },
     ]
   }
 
   /**
-   * Field reports for the sample mission.
+   * Field reports and messages for the sample mission.
    *
    * `bounds` is deliberately absent: FieldReportService.replaceAllFieldReports()
    * recalculates it from the report coordinates, exactly as it does for a real import.
@@ -119,65 +155,107 @@ export class SampleDataService {
     const statuses = this.statusNames()
     const now = Date.now()
 
-    // [callsign, minutesAgo, lat, lng, address, statusIndex, note]
+    // Command post - one fixed location for the whole exercise.
+    const CP = { lat: 47.4472, lng: -122.4627, address: '10014 SW Bank Rd, Vashon' }
+    // Two real Vashon-Maury parks, each covered by a walking-distance cluster of points
+    // (roughly 100-500m apart) rather than one pin - the previous version of this data had
+    // field teams scattered island-wide at car-trip distances, which is not how a foot
+    // search actually moves.
+    const MAURY = { lat: 47.4050, lng: -122.4200, name: 'Maury Island Marine Park' }
+    const DOCKTON = { lat: 47.3739, lng: -122.4560, name: 'Dockton Park' }
+
+    type Row = {
+      callsign: string
+      minutesAgo: number
+      lat: number
+      lng: number
+      address: string
+      statusIndex: number
+      notes: string
+      source?: FieldReportType['source']
+      operator?: string
+      generates213?: boolean
+      replyRequested213?: boolean
+      subject213?: string
+      message213?: string
+      recipients213?: string[]
+    }
+
     // Status indices point into the default fieldReportStatuses list:
     // 0 Normal, 1 Location Report, 2 Evidence Report, 3 Need Rest/Food,
     // 4 Incident Check-in, 5 Incident Check-out, 6 Urgent.
-    const rows: [string, number, number, number, string, number, string][] = [
-      ['!CmdPost', 335, 47.4472, -122.4627, '10014 SW Bank Rd, Vashon', 4, 'Command post established, net open on primary.'],
-      ['ACS1', 330, 47.4470, -122.4590, '17705 Vashon Hwy SW, Vashon', 4, 'Checking in, signal strength good to CP.'],
-      ['CERT1', 328, 47.4801, -122.4903, 'Cedarhurst Rd SW, Vashon', 4, 'Team of four checking in, starting north sweep.'],
-      ['CERT2', 326, 47.4468, -122.4576, 'SW 174th St, Vashon', 4, 'Checked in, beginning town center sweep.'],
-      ['CERT3', 324, 47.3951, -122.4652, 'SW Burton Dr, Burton', 4, 'On scene Burton, three responders.'],
+    const rows: Row[] = [
+      // ── Command staff check in from the post ──────────────────────────────────
+      { callsign: '!CmdPost', minutesAgo: 335, ...CP, statusIndex: 4, notes: 'Command post established, net open on primary.', source: 'Voice', operator: 'Ivy Loudhailer' },
+      { callsign: 'IC-Actual', minutesAgo: 333, ...CP, statusIndex: 4, notes: 'Assuming command for the exercise.', source: 'Voice', operator: 'Hazel "Compass" Winterbourne' },
+      { callsign: 'OpsChief', minutesAgo: 330, ...CP, statusIndex: 4, notes: 'Ops section staffed, briefing field teams now.', source: 'Voice', operator: 'Ollie Fogbank' },
+      { callsign: 'PlanChief', minutesAgo: 328, ...CP, statusIndex: 4, notes: 'Status boards up, map display ready.', source: 'Voice', operator: 'Penny Chartwell' },
+      { callsign: 'LogChief', minutesAgo: 326, ...CP, statusIndex: 4, notes: 'Water and snacks staged for rotating teams.', source: 'Voice', operator: 'Iggy Sparrowgrass' },
+      { callsign: 'PIO1', minutesAgo: 324, ...CP, statusIndex: 4, notes: 'Media staging area set up at the road entrance.', source: 'Voice', operator: 'Ivy Loudhailer' },
 
-      ['Ferry1', 300, 47.5133, -122.4636, 'Vashon Ferry Terminal', 1, 'In position at north terminal, sightline to dock is clear.'],
-      ['MERT1', 292, 47.3739, -122.4560, 'Dockton Park boat launch', 1, 'Launched, transiting Quartermaster Harbor.'],
-      ['Recon1', 285, 47.4300, -122.4700, 'SW Cemetery Rd, Vashon', 0, 'Roads passable southbound, no obstructions noted.'],
-      ['ACS2', 278, 47.4470, -122.4592, '17705 Vashon Hwy SW, Vashon', 0, 'Packet link to CP established, 1200 baud.'],
-      ['Shelter1', 270, 47.4402, -122.4610, '9825 SW 204th St, Vashon', 4, 'Shelter open, capacity 120, currently 0 occupants.'],
+      // ── Maury Island Marine Park cluster - walking search pattern ─────────────
+      { callsign: 'CERT1', minutesAgo: 300, lat: MAURY.lat, lng: MAURY.lng, address: `${MAURY.name} - main trailhead`, statusIndex: 4, notes: 'Team of two checking in, starting north loop on foot.', source: 'Voice', operator: 'Ollie Fogbank' },
+      { callsign: 'CERT2', minutesAgo: 296, lat: MAURY.lat + 0.0018, lng: MAURY.lng - 0.0022, address: `${MAURY.name} - south loop junction`, statusIndex: 4, notes: 'Checked in, beginning south loop.', source: 'Voice', operator: 'Ollie Fogbank' },
+      { callsign: 'Recon1', minutesAgo: 288, lat: MAURY.lat - 0.0012, lng: MAURY.lng + 0.0028, address: `${MAURY.name} - beach access trail`, statusIndex: 0, notes: 'Beach access trail passable, tide line clear.', source: 'Voice', operator: 'Ollie Fogbank' },
+      { callsign: 'CERT1', minutesAgo: 250, lat: MAURY.lat + 0.0035, lng: MAURY.lng + 0.0010, address: `${MAURY.name} - north bluff overlook`, statusIndex: 2, notes: 'Downed branch partially blocking the overlook spur, photographed for assessment.', source: 'Voice', operator: 'Ollie Fogbank' },
+      { callsign: 'CERT2', minutesAgo: 210, lat: MAURY.lat + 0.0025, lng: MAURY.lng - 0.0035, address: `${MAURY.name} - south loop, mile 1`, statusIndex: 0, notes: 'South loop clear so far, continuing toward the point.', source: 'Voice', operator: 'Ollie Fogbank' },
+      {
+        callsign: 'Recon1', minutesAgo: 180, lat: MAURY.lat - 0.0020, lng: MAURY.lng + 0.0015, address: `${MAURY.name} - beach access trail, low tide flats`, statusIndex: 6,
+        notes: 'URGENT: hiker with a twisted ankle at the low tide flats, cannot self-evacuate.', source: 'Phone', operator: 'Ollie Fogbank',
+        generates213: true, replyRequested213: true, subject213: 'Injured hiker, Marine Park beach trail',
+        message213: 'One hiker, ankle injury, unable to walk out. Requesting Medic1 respond to the beach access trail low tide flats. Not life-threatening but needs assistance evacuating before the tide turns.',
+        recipients213: ['Incident Commander', 'Ops'],
+      },
+      { callsign: 'Recon1', minutesAgo: 172, lat: MAURY.lat - 0.0020, lng: MAURY.lng + 0.0015, address: `${MAURY.name} - beach access trail, low tide flats`, statusIndex: 0, notes: 'Staying with the hiker, keeping them warm and off the wet sand until Medic1 arrives.', source: 'Voice', operator: 'Ollie Fogbank' },
+      { callsign: 'CERT1', minutesAgo: 140, lat: MAURY.lat + 0.0035, lng: MAURY.lng + 0.0010, address: `${MAURY.name} - north bluff overlook`, statusIndex: 5, notes: 'North loop complete, no further hazards found, checking out.', source: 'Voice', operator: 'Ollie Fogbank' },
+      { callsign: 'CERT2', minutesAgo: 96, lat: MAURY.lat + 0.0025, lng: MAURY.lng - 0.0035, address: `${MAURY.name} - south loop, mile 1`, statusIndex: 3, notes: 'South loop complete, team requesting food and rest.', source: 'Voice', operator: 'Ollie Fogbank' },
 
-      ['CERT1', 244, 47.4703, -122.5001, 'Fern Cove, Vashon', 2, 'Photographed downed tree blocking beach access road.'],
-      ['CERT2', 236, 47.4455, -122.4548, 'SW Cove Rd, Vashon', 2, 'Two structures with visible damage, photos attached.'],
-      ['Medic1', 228, 47.4468, -122.4580, 'Vashon Hwy SW at SW 178th St', 0, 'Staged at town center, no patients at this time.'],
-      ['MERT2', 220, 47.4650, -122.5050, 'West shore off Peter Point', 1, 'Position report, transiting north along west shore.'],
-      ['CERT3', 212, 47.3878, -122.3743, 'Point Robinson Lighthouse', 1, 'Arrived Point Robinson, beginning shoreline check.'],
+      // ── Dockton Park cluster - walking search pattern ──────────────────────────
+      { callsign: 'CERT3', minutesAgo: 292, lat: DOCKTON.lat, lng: DOCKTON.lng, address: `${DOCKTON.name} - boat launch`, statusIndex: 4, notes: 'Team checked in at the boat launch, beginning shoreline sweep.', source: 'Voice', operator: 'Penny Chartwell' },
+      { callsign: 'MERT1', minutesAgo: 284, lat: DOCKTON.lat + 0.0008, lng: DOCKTON.lng - 0.0015, address: `${DOCKTON.name} - marina dock`, statusIndex: 4, notes: 'Launched from the marina, transiting Quartermaster Harbor at idle speed.', source: 'Packet', operator: 'Penny Chartwell' },
+      { callsign: 'Medic1', minutesAgo: 276, lat: DOCKTON.lat - 0.0010, lng: DOCKTON.lng + 0.0012, address: `${DOCKTON.name} - picnic shelter`, statusIndex: 4, notes: 'First-aid post set up at the picnic shelter, staged and ready.', source: 'Voice', operator: 'Penny Chartwell' },
+      { callsign: 'CERT3', minutesAgo: 244, lat: DOCKTON.lat + 0.0022, lng: DOCKTON.lng + 0.0018, address: `${DOCKTON.name} - north shoreline trail`, statusIndex: 2, notes: 'Debris field along the north shoreline, photographed for assessment.', source: 'Voice', operator: 'Penny Chartwell' },
+      { callsign: 'MERT1', minutesAgo: 200, lat: DOCKTON.lat - 0.0005, lng: DOCKTON.lng - 0.0030, address: 'Quartermaster Harbor, mid-channel off Dockton', statusIndex: 0, notes: 'Position report, no vessels in distress observed.', source: 'Packet', operator: 'Penny Chartwell' },
+      {
+        callsign: 'CERT3', minutesAgo: 160, lat: DOCKTON.lat + 0.0022, lng: DOCKTON.lng + 0.0018, address: `${DOCKTON.name} - north shoreline trail`, statusIndex: 6,
+        notes: 'URGENT: possible propane smell near the park maintenance shed, evacuating the picnic area as a precaution.', source: 'Voice', operator: 'Penny Chartwell',
+        generates213: true, replyRequested213: true, subject213: 'Possible gas leak, Dockton Park maintenance shed',
+        message213: 'Team reports a possible propane odor near the maintenance shed on the north shoreline trail. Clearing the picnic shelter as a precaution and holding a 50m perimeter. Requesting Logistics confirm whether county gas utility should be notified.',
+        recipients213: ['Incident Commander', 'Logistics'],
+      },
+      { callsign: 'Medic1', minutesAgo: 152, lat: DOCKTON.lat - 0.0010, lng: DOCKTON.lng + 0.0012, address: `${DOCKTON.name} - picnic shelter`, statusIndex: 0, notes: 'Relocated first-aid post away from the shed as a precaution, no injuries.', source: 'Voice', operator: 'Penny Chartwell' },
+      { callsign: 'MERT1', minutesAgo: 100, lat: DOCKTON.lat + 0.0008, lng: DOCKTON.lng - 0.0015, address: `${DOCKTON.name} - marina dock`, statusIndex: 5, notes: 'Marine sweep complete, back at the dock, checking out.', source: 'Packet', operator: 'Penny Chartwell' },
+      { callsign: 'CERT3', minutesAgo: 60, lat: DOCKTON.lat + 0.0022, lng: DOCKTON.lng + 0.0018, address: `${DOCKTON.name} - north shoreline trail`, statusIndex: 5, notes: 'Shoreline sweep complete, propane smell traced to a stored camp stove, resolved. Checking out.', source: 'Voice', operator: 'Penny Chartwell' },
 
-      ['Recon1', 190, 47.4050, -122.4200, 'Maury Island Marine Park', 0, 'Access road to marine park is clear.'],
-      ['CERT1', 178, 47.4780, -122.4870, 'SW 116th St, Vashon', 6, 'URGENT: partial road collapse, one lane only. Advise reroute.'],
-      ['!CmdPost', 174, 47.4472, -122.4627, '10014 SW Bank Rd, Vashon', 0, 'Acknowledged CERT1 road collapse, notifying county roads.'],
-      ['Medic1', 166, 47.4779, -122.4869, 'SW 116th St, Vashon', 1, 'Responding to CERT1 location as precaution.'],
-      ['ACS1', 158, 47.4470, -122.4590, '17705 Vashon Hwy SW, Vashon', 0, 'Relayed traffic to county EOC, receipt confirmed.'],
-
-      ['CERT2', 140, 47.4230, -122.4300, 'KVI Beach, Vashon', 2, 'Debris field along beach, photographed for assessment.'],
-      ['MERT1', 128, 47.3800, -122.4480, 'Quartermaster Harbor, mid-channel', 1, 'Position report, no vessels in distress observed.'],
-      ['Shelter1', 116, 47.4402, -122.4610, '9825 SW 204th St, Vashon', 0, 'Six occupants registered, supplies adequate.'],
-      ['CERT3', 104, 47.3335, -122.5060, 'Tahlequah Ferry Terminal', 1, 'South terminal checked, dock intact.'],
-      ['Recon1', 96, 47.4600, -122.4550, 'SW 148th St, Vashon', 3, 'Requesting rotation, team has been out six hours.'],
-
-      ['Medic1', 78, 47.4779, -122.4869, 'SW 116th St, Vashon', 0, 'No injuries at road collapse site, returning to staging.'],
-      ['CERT1', 62, 47.4801, -122.4903, 'Cedarhurst Rd SW, Vashon', 3, 'North sweep complete, requesting food and rest.'],
-      ['Ferry1', 48, 47.5133, -122.4636, 'Vashon Ferry Terminal', 0, 'Sailings resumed on normal schedule.'],
-      ['MERT2', 34, 47.4700, -122.5000, 'Fern Cove, Vashon', 5, 'Marine unit two off the water, checking out.'],
-      ['CERT2', 18, 47.4468, -122.4576, 'SW 174th St, Vashon', 5, 'Town center sweep complete, team checking out.'],
+      // ── Wrap-up ────────────────────────────────────────────────────────────────
+      { callsign: 'IC-Actual', minutesAgo: 30, ...CP, statusIndex: 0, notes: 'Both parks swept, no outstanding hazards. Standing down field teams.', source: 'Voice', operator: 'Hazel "Compass" Winterbourne' },
+      { callsign: '!CmdPost', minutesAgo: 12, ...CP, statusIndex: 5, notes: 'Exercise complete, closing net.', source: 'Voice', operator: 'Ivy Loudhailer' },
     ]
 
     const known = new Set(rangers.map(r => r.callsign))
     const fieldReportArray: FieldReportType[] = []
 
-    rows.forEach(([callsign, minutesAgo, lat, lng, address, statusIndex, notes], index) => {
-      if (!known.has(callsign)) {
+    rows.forEach((row, index) => {
+      if (!known.has(row.callsign)) {
         // Guards the roster and the report table against drifting apart: an unmatched
         // callsign would render as an orphan row the grid can't tie back to a ranger.
-        this.log.error(`Sample report ${index} references unknown callsign "${callsign}" - skipped.`, this.id)
+        this.log.error(`Sample report ${index} references unknown callsign "${row.callsign}" - skipped.`, this.id)
         return
       }
       fieldReportArray.push({
         id: fieldReportArray.length,
-        callsign,
-        location: { lat, lng, address, derivedFromAddress: false },
-        date: new Date(now - minutesAgo * 60 * 1000),
-        status: statuses[statusIndex] ?? statuses[0],
-        notes,
+        callsign: row.callsign,
+        location: { lat: row.lat, lng: row.lng, address: row.address, derivedFromAddress: false },
+        date: new Date(now - row.minutesAgo * 60 * 1000),
+        status: statuses[row.statusIndex] ?? statuses[0],
+        notes: row.notes,
+        source: row.source,
+        operator: row.operator,
+        generates213: row.generates213,
+        replyRequested213: row.replyRequested213,
+        subject213: row.subject213,
+        message213: row.message213,
+        recipients213: row.recipients213,
       })
     })
 
