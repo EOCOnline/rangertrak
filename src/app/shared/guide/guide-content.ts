@@ -127,6 +127,10 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             text: 'Who is reporting, where they are, when it happened, and what they said. Tab moves through them in radio-call order, so a whole report can be typed without touching the mouse.'
           },
           {
+            heading: 'Operator',
+            text: 'Not who the report is about — who is at the keyboard recording it. Stamped on each report and message at submit, and never changed later, so a shift change never retroactively re-attributes a report someone else logged.'
+          },
+          {
             heading: 'Positions',
             bullets: [
               'Type a position in whichever format it was read to you — the rest are derived and shown below the fields.',
