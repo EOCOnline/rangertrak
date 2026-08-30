@@ -8,20 +8,28 @@
 // account for it, letting whatever follows in page DOM (the app-level footer) move up and
 // overlap the still-floating overview map at some viewport heights. `flow-root` both makes
 // the host block-level and contains the float, same fix E-67/E-69 used in _section.scss.
+// Raised live 2026-08-30: the map frame itself got a generous margin below, but
+// #mapLeaflet-overview, the field-report toggle, and the Add Location/engine-switch controls
+// all sit AFTER .mapLeaflet-container as this component's own later siblings - they never
+// inherited that margin, only the app-wide page margin (PageComponent's `.main { margin: 0
+// 1em }`, a mere 16px), which read as "jammed against the edge" next to the nicely-inset map
+// above them. Moved to :host so it covers everything this component renders, not just the
+// one div explicitly classed for it - fixes this in fullscreen mode too, since the fullscreen
+// area's own padding (map-page.component.scss) wraps this same host.
 :host {
-  display: flow-root;
-}
-
-.mapLeaflet-container {
-  position     : block;
-  // position: relative;
-  top          : 0;
-  left         : 0;
-  right        : 0;
-  bottom       : 0;
+  display      : flow-root;
   margin       : 5vw; //120px;
   margin-top   : 5px;
   margin-bottom: 5px;
+}
+
+.mapLeaflet-container {
+  position: block;
+  // position: relative;
+  top     : 0;
+  left    : 0;
+  right   : 0;
+  bottom  : 0;
 }
 
 .mapLeaflet-frame {

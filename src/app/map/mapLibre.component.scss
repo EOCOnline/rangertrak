@@ -1,3 +1,18 @@
+// Raised live 2026-08-30: this component had NO host margin at all - #pmtiles-overview, the
+// field-report toggle, the hillshade toggle, and the Add Location/engine-switch controls all
+// sat flush against the app's own thin page margin (PageComponent's `.main { margin: 0 1em
+// }`, 16px), reading as jammed against the edge in both normal and fullscreen mode. Matches
+// LmapComponent's own :host margin (mapLeaflet.component.scss) for a consistent feel between
+// engines. `flow-root` also contains #pmtiles-overview's float, same reasoning as
+// LmapComponent's own E-99 fix - `rangertrak-mapLibre` is an unknown tag to the browser and
+// would otherwise default to inline, letting the float escape this host's own height.
+:host {
+  display      : flow-root;
+  margin       : 5vw;
+  margin-top   : 5px;
+  margin-bottom: 5px;
+}
+
 .strong {
   font-weight: bold;
 }
