@@ -33,14 +33,13 @@ describe('TimePickerComponent', () => {
 
     const hourInput: HTMLInputElement = fixture.nativeElement.querySelector('.rt-datetime__seg--hour');
     const minuteInput: HTMLInputElement = fixture.nativeElement.querySelector('.rt-datetime__seg--minute');
-    const meridiemBtn: HTMLButtonElement = fixture.nativeElement.querySelector('.rt-datetime__seg--meridiem');
-    expect(hourInput.value).toBe('2');
+    // 24-hour display (2026-08-30): 14:30, not 2:30 PM - no AM/PM segment any more.
+    expect(hourInput.value).toBe('14');
     expect(minuteInput.value).toBe('30');
-    expect(meridiemBtn.textContent?.trim()).toBe('PM');
   });
 
   it('segment-aware ▲/▼: steps whichever segment last had focus, not always minutes', () => {
-    // 14:30 -> hour segment focused -> step up -> 15:30 (3:30 PM)
+    // 14:30 -> hour segment focused -> step up -> 15:30
     component.initialDate = new Date('2026-08-20T14:30:00');
     component.ngOnChanges({
       initialDate: { firstChange: false, currentValue: component.initialDate, previousValue: null, isFirstChange: () => false }
@@ -53,7 +52,7 @@ describe('TimePickerComponent', () => {
 
     const hourInput: HTMLInputElement = fixture.nativeElement.querySelector('.rt-datetime__seg--hour');
     const minuteInput: HTMLInputElement = fixture.nativeElement.querySelector('.rt-datetime__seg--minute');
-    expect(hourInput.value).toBe('3');
+    expect(hourInput.value).toBe('15');
     expect(minuteInput.value).toBe('30');
   });
 
@@ -69,24 +68,6 @@ describe('TimePickerComponent', () => {
 
     const minuteInput: HTMLInputElement = fixture.nativeElement.querySelector('.rt-datetime__seg--minute');
     expect(minuteInput.value).toBe('31');
-  });
-
-  it('toggleMeridiem() flips AM/PM without changing the displayed hour/minute', () => {
-    component.initialDate = new Date('2026-08-20T14:30:00'); // 2:30 PM
-    component.ngOnChanges({
-      initialDate: { firstChange: false, currentValue: component.initialDate, previousValue: null, isFirstChange: () => false }
-    });
-    fixture.detectChanges();
-
-    component.toggleMeridiem();
-    fixture.detectChanges();
-
-    const hourInput: HTMLInputElement = fixture.nativeElement.querySelector('.rt-datetime__seg--hour');
-    const minuteInput: HTMLInputElement = fixture.nativeElement.querySelector('.rt-datetime__seg--minute');
-    const meridiemBtn: HTMLButtonElement = fixture.nativeElement.querySelector('.rt-datetime__seg--meridiem');
-    expect(hourInput.value).toBe('2');
-    expect(minuteInput.value).toBe('30');
-    expect(meridiemBtn.textContent?.trim()).toBe('AM');
   });
 
   it('does not reapply on the first change - ngOnInit already handled it', () => {

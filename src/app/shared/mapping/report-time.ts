@@ -6,7 +6,8 @@
  */
 export function formatReportTime(date: Date | string): string {
   const d = new Date(date)
-  const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+  // hour12: false - this app uses a 24-hour clock throughout, not the locale default.
+  const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
   const minutesAgo = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000))
   return `${time} (${minutesAgo} min ago)`
 }

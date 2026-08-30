@@ -13,16 +13,17 @@
 
   <span class="rt-datetime__divider"></span>
 
-  <!-- 2026-08-22: replaces a native <input type="time">. Three plain segments instead of
-       one opaque control - see the component's own comment on why this was necessary, not
-       just nicer: JS cannot ask a native time input which of its internal segments is
-       focused, which is exactly what the shared ▲/▼ stepper below needs to know. -->
-  <span class="rt-datetime__time" role="group" [attr.aria-label]="datePickerLabel + ' time'">
-    <input #hourInput type="number" inputmode="numeric" min="1" max="12" step="1"
+  <!-- 2026-08-22: replaces a native <input type="time">. Plain segments instead of one
+       opaque control - see the component's own comment on why this was necessary, not just
+       nicer: JS cannot ask a native time input which of its internal segments is focused,
+       which is exactly what the shared ▲/▼ stepper below needs to know. 24-hour (2026-08-30):
+       two segments, hour (0-23) and minute - the AM/PM segment that used to sit here is gone. -->
+  <span class="rt-datetime__time" role="group" [attr.aria-label]="datePickerLabel + ' time (24-hour)'">
+    <input #hourInput type="number" inputmode="numeric" min="0" max="23" step="1"
       class="rt-datetime__seg rt-datetime__seg--hour" [value]="hourDisplay()"
-      [attr.aria-label]="datePickerLabel + ' hour'" [attr.tabindex]="ti(0)" data-lpignore="true"
+      [attr.aria-label]="datePickerLabel + ' hour (24-hour)'" [attr.tabindex]="ti(0)" data-lpignore="true"
       (focus)="onSegmentFocus('hour')" (change)="onHourChange($event)"
-      (input)="onSegmentTyping($event, 1, minuteInput)"
+      (input)="onSegmentTyping($event, 2, minuteInput)"
       (keydown.arrowup)="onSegmentKeyStep($event, 'hour', 1)"
       (keydown.arrowdown)="onSegmentKeyStep($event, 'hour', -1)" />
     <span class="rt-datetime__colon" aria-hidden="true">:</span>
@@ -30,14 +31,8 @@
       class="rt-datetime__seg rt-datetime__seg--minute" [value]="minuteDisplay()"
       [attr.aria-label]="datePickerLabel + ' minute'" [attr.tabindex]="ti(1)" data-lpignore="true"
       (focus)="onSegmentFocus('minute')" (change)="onMinuteChange($event)"
-      (input)="onSegmentTyping($event, 5, meridiemBtn)"
       (keydown.arrowup)="onSegmentKeyStep($event, 'minute', 1)"
       (keydown.arrowdown)="onSegmentKeyStep($event, 'minute', -1)" />
-    <button #meridiemBtn type="button" class="rt-datetime__seg rt-datetime__seg--meridiem"
-      [attr.aria-label]="datePickerLabel + ' AM or PM'" [attr.tabindex]="ti(2)"
-      (focus)="onSegmentFocus('meridiem')" (click)="toggleMeridiem()"
-      (keydown.arrowup)="onSegmentKeyStep($event, 'meridiem', 1)"
-      (keydown.arrowdown)="onSegmentKeyStep($event, 'meridiem', -1)">{{ meridiem() }}</button>
   </span>
 
   <!-- E-50: the native time input's own up/down arrows are easy to miss - these are an

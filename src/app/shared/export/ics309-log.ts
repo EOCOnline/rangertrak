@@ -111,5 +111,9 @@ function formatMessage(report: FieldReportType): string {
 function formatOperationalPeriod(mission: Ics309MissionInfo): string {
   if (!mission.opPeriod && !mission.opPeriodStart && !mission.opPeriodEnd) return ''
   const label = mission.opPeriod ? `${mission.opPeriod}: ` : ''
-  return `${label}${mission.opPeriodStart.toLocaleString()} - ${mission.opPeriodEnd.toLocaleString()}`
+  // hour12: false - 24-hour clock throughout the app, and ICS-309's own convention.
+  const opts: Intl.DateTimeFormatOptions = {
+    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false
+  }
+  return `${label}${mission.opPeriodStart.toLocaleString([], opts)} - ${mission.opPeriodEnd.toLocaleString([], opts)}`
 }

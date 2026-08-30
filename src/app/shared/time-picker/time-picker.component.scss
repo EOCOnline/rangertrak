@@ -89,8 +89,9 @@
 
 // E-50 sized this down from a 400px original. 2026-08-21: tightened again to the actual
 // longest expected value now that no label needs extra room to its side - "12/31/2026"
-// (10 characters) for the date, "12:59 PM" (8, native time input shows the AM/PM segment)
-// for time - rather than the earlier, more generous guesses.
+// (10 characters) - rather than the earlier, more generous guess. This rule sizes only the
+// DATE field; the segmented time fields beside it size themselves (.rt-datetime__seg--hour/
+// --minute, below).
 .timepicker__When-input {
   width: 88px;
 }
@@ -128,12 +129,6 @@
 .rt-datetime__seg--hour,
 .rt-datetime__seg--minute {
   width: 1.6em;
-}
-
-.rt-datetime__seg--meridiem {
-  width  : 2.4em;
-  cursor : pointer;
-  margin-left: 0.15em;
 }
 
 // var(--rt-surface), not --rt-surface-2: the pill's own resting background is now

@@ -127,8 +127,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     //  let e: string = end.toDateString()
     this.opPeriodDetails.set(`${this.settings.opPeriod}: ${this.settings.opPeriodStart} to ${this.settings.opPeriodEnd}`)
     this.missionNotes.set(this.settings.eventNotes.trim())
-    this.opPeriodStartDisplay.set(new Date(this.settings.opPeriodStart).toLocaleString())
-    this.opPeriodEndDisplay.set(new Date(this.settings.opPeriodEnd).toLocaleString())
+    // hour12: false - 24-hour clock throughout the app, not the locale default toLocaleString() would use.
+    const timeOpts: Intl.DateTimeFormatOptions = {
+      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false
+    }
+    this.opPeriodStartDisplay.set(new Date(this.settings.opPeriodStart).toLocaleString([], timeOpts))
+    this.opPeriodEndDisplay.set(new Date(this.settings.opPeriodEnd).toLocaleString([], timeOpts))
 
     // if (!this.settings.opPeriodStart) {
     //   console.error(`OpPeriod had no Start time! Reset to 2 hours ago...`, this.id)

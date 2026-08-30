@@ -123,7 +123,8 @@ export class MessagesComponent implements OnInit, OnDestroy {
         '3 From Name and Position': report.callsign,
         '4 Subject': report.subject213 ?? '',
         '5 Date': d.toLocaleDateString(),
-        '6 Time': d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+        // hour12: false - 24-hour throughout the app, and the ICS-213's own convention.
+        '6 Time': d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
         '7 Message': report.message213 ?? '',
         '8 Approved by Name': report.operator ?? '',
       })

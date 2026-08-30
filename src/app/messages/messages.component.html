@@ -24,7 +24,7 @@
           <mat-card appearance="outlined">
             <mat-card-header>
               <mat-card-title>{{ m.callsign || '(no callsign)' }}</mat-card-title>
-              <mat-card-subtitle>{{ m.date | date:'medium' }}</mat-card-subtitle>
+              <mat-card-subtitle>{{ m.date | date:'MMM d, y, HH:mm:ss' }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
               <dl class="messages__fields">

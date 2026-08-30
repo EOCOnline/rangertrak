@@ -120,9 +120,11 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   evidenceLocationTabIndexStart = this.showEvidenceLocationTabIndex + 1
   dateTabIndex = this.evidenceLocationTabIndexStart + 3
   // 2026-08-22: was `timeTabIndex = this.dateTabIndex + 1` (a single slot) - the time
-  // picker's hour/minute/AM-PM now each need their own tab stop (see
+  // picker's hour/minute each need their own tab stop (see
   // TimePickerComponent.TIME_TAB_SLOT_COUNT), same reservation pattern as Location's own
-  // TAB_SLOT_COUNT above.
+  // TAB_SLOT_COUNT above. (A third slot, AM/PM, existed here until 2026-08-30 when the
+  // picker switched to 24-hour display - TIME_TAB_SLOT_COUNT dropping to 2 renumbers
+  // everything after it automatically.)
   timeTabIndexStart = this.dateTabIndex + 1
   statusTabIndex = this.timeTabIndexStart + TimePickerComponent.TIME_TAB_SLOT_COUNT
   // E-41 phase 1 (2026-08-26): Source is gathered on every report, always - reserved right

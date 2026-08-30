@@ -559,9 +559,12 @@ async function checkEntryTabOrder() {
   // defaulted off for a fresh install, and this check is what caught it. Now [hidden]
   // throughout, matching every other conditional section.
   check('Entry tab stops are contiguous 1..N with no gaps', r.contiguous, true)
-  // 47, not 45: F29-47 (2026-08-29) inserted subject213TabIndex and operatorTabIndex at the
-  // tail of the chain - see entry.component.ts's own comment on why both landed together.
-  check('Entry exposes the expected number of keyboard stops', r.count, 47)
+  // 46, not 47: the time picker's AM/PM segment (a tab stop of its own,
+  // TimePickerComponent.TIME_TAB_SLOT_COUNT) was removed 2026-08-30 when the picker switched
+  // to 24-hour display, one fewer stop than the 47 that count included after F29-47
+  // (2026-08-29) inserted subject213TabIndex and operatorTabIndex at the tail of the chain -
+  // see entry.component.ts's own comments on both changes.
+  check('Entry exposes the expected number of keyboard stops', r.count, 46)
 }
 
 async function checkEntryAutofocusAndReset() {

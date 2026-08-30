@@ -5,7 +5,7 @@
        on screen. -->
   <div class="map-print-header">
     <h1>{{ (mission$ | async)?.mission || 'RangerTrak' }}</h1>
-    <p>Printed {{ printedAt() | date:'medium' }}</p>
+    <p>Printed {{ printedAt() | date:'MMM d, y, HH:mm:ss' }}</p>
   </div>
 
   <div class="map-fullscreen-area" #fullscreenArea>
