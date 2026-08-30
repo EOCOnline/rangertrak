@@ -289,15 +289,38 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     // Doing this avoids lots of type guards/hassles.
 
 
-    // tileLayerOffline shares its IndexedDB tile cache with LmapComponent's - tiles
-    // saved via the full map's "Save this area for offline use" control render here
-    // too, offline. No save control here though; that's the full map's job, not this
-    // small preview's.
-    const tiles = tileLayerOffline('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 21,  // REVIEW: put into settings?
+    // F29-6 (2026-08-29): OpenTopoMap, not plain OSM, so this preview shows real contour
+    // lines by default - baked directly into OpenTopoMap's own tile rendering, same source
+    // LmapComponent's "OpenTopoMap (contours)" base layer already uses. tileLayerOffline
+    // still shares its IndexedDB tile cache with LmapComponent's - tiles saved via the full
+    // map's "Save this area for offline use" control render here too, offline, PROVIDED the
+    // full map had OpenTopoMap selected when Save was pressed (the full map's own
+    // baselayerchange handler now rebinds that control to whichever base is active, so this
+    // is a real path, not a dead end). maxZoom 17 matches OpenTopoMap's own published tile-
+    // generation limit (21 was fine for OSM, but asking OpenTopoMap past 17 returns blank
+    // tiles) - a scribe zooming this preview in past that sees the last available level held
+    // at its native resolution, same behaviour LmapComponent's own OpenTopoMap layer already
+    // has. No save control here though; that's the full map's job, not this small preview's.
+    const tiles = tileLayerOffline('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      maxZoom: 17,
       minZoom: 3,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
     })
+
+    // F29-6: terrain relief shading, on by default (unlike the full map's own equivalent
+    // overlay, which stays opt-in behind its layer-control checkbox) - this preview has no
+    // controls at all, so "on by default" is the only way to offer it here. Same Esri
+    // World_Hillshade source and 50% opacity as LmapComponent's hillshadeOverlay, so the two
+    // previews of the same spot look consistent. A plain L.tileLayer, not tileLayerOffline:
+    // advisory shading laid over the base map, not a navigation layer of its own, so it sits
+    // outside the offline-caching story above (same reasoning as the full map's copy).
+    const hillshadeOverlay = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 16, minZoom: 3, opacity: 0.5,
+        attribution: 'Hillshade: &copy; <a href="https://www.esri.com">Esri</a>',
+      }
+    )
 
     // TODO: Consider allowing addition of SVG overlay (of known trails and other overlays): https://leafletjs.com/reference.html#svgoverlay
     /*
@@ -310,6 +333,7 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     */
 
     tiles.addTo(this.lMap)
+    hillshadeOverlay.addTo(this.lMap)
     // !debugger
     if (this.displayReports && this.fieldReports) {
       // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....

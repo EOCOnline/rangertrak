@@ -234,10 +234,14 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
   // Offline-area sizing: kept for teardown (.off()) in ngOnDestroy, since these listeners
   // are registered directly on the layer/map objects, not through Angular's own bindings.
-  private offlineTileLayer?: ReturnType<typeof tileLayerOffline>
+  // F29-6 (2026-08-29): "Save this area" used to be permanently bound to OSM only - now
+  // tracks EVERY tileLayerOffline base layer (OSM and OpenTopoMap) so both get saveend/
+  // tilesremoved listeners and both get torn down here, not just whichever was active last.
+  private offlineTileLayers: ReturnType<typeof tileLayerOffline>[] = []
   private refreshSavedAreaInfo?: () => void
   private refreshEstimatedAreaInfo?: () => void
   private refreshSavedTilesOverlay?: () => void
+  private rebindOfflineAreaInfo?: (newTiles: ReturnType<typeof tileLayerOffline>) => void
 
   ngAfterViewInit() {
     this.afterViewInitTimer = setTimeout(() => {
@@ -463,8 +467,21 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       maxZoom: 19,
       parallel: 3
     }).addTo(this.lMap)
-    this.offlineTileLayer = tiles
+    this.offlineTileLayers = [tiles, openTopoTiles]
     this.wireOfflineAreaInfo(tiles, saveTilesControl, savedTilesOverlay)
+
+    // F29-6 (2026-08-29): "Save this area for offline use" used to be permanently bound to
+    // OSM (`tiles`), regardless of which base layer the switcher above actually had active -
+    // a scribe who picked OpenTopoMap (for contours) and pressed Save got OSM tiles cached
+    // for an area they might never look at on that engine again. `ControlSaveTiles.setLayer`
+    // (leaflet.offline's own public API for exactly this) rebinds the button; the info-panel
+    // tracking wireOfflineAreaInfo drives needs its own rebind too, since it captured OSM's
+    // URL template once at construction - see rebindOfflineAreaInfo() below.
+    this.lMap.on('baselayerchange', (e: L.LayersControlEvent) => {
+      const newBase = e.layer as ReturnType<typeof tileLayerOffline>
+      saveTilesControl.setLayer(newBase)
+      this.rebindOfflineAreaInfo?.(newBase)
+    })
 
     // Maintainer, 2026-08-24: moved out of Leaflet's floating corner-control system (it was
     // overlaying the map tiles) into normal page flow, just below the map - a plain
@@ -575,8 +592,11 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    * button as asked and removes the reason the row needed to be full-width at all - see the
    * width fix on `.savetiles.leaflet-bar a` in the stylesheet.
    *
-   * `tiles`' URL template is what `getStorageInfo` keys off, and it never changes after
-   * construction, so it's read once and captured rather than re-read per refresh.
+   * `tiles`' URL template is what `getStorageInfo` keys off. F29-6 (2026-08-29): this used
+   * to never change after construction, permanently pinning the whole info panel to OSM -
+   * `activeTiles`/`urlTemplate` are now `let`s, and `rebindOfflineAreaInfo()` (stored as a
+   * component field so the `baselayerchange` handler above can reach it) reassigns them and
+   * re-runs every refresh when the base layer switcher picks a different tileLayerOffline.
    */
   private wireOfflineAreaInfo(
     tiles: ReturnType<typeof tileLayerOffline>, control: L.Control, savedTilesOverlay: L.GeoJSON
@@ -592,7 +612,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       this.log.error('wireOfflineAreaInfo(): savetiles/rmtiles buttons not found in container', this.id)
       return
     }
-    const urlTemplate = (tiles as any)._url as string
+    let activeTiles = tiles
+    let urlTemplate = (activeTiles as any)._url as string
 
     const savedInfo = this.document.createElement('span')
     savedInfo.className = 'offline-area-info offline-area-info--saved'
@@ -622,9 +643,17 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       getStorageInfo(urlTemplate).then((stored) => {
         savedTilesOverlay.clearLayers()
         if (stored.length > 0) {
-          savedTilesOverlay.addData(getStoredTilesAsJson(tiles.getTileSize(), stored))
+          savedTilesOverlay.addData(getStoredTilesAsJson(activeTiles.getTileSize(), stored))
         }
       }).catch((err) => this.log.error(`refreshSavedTilesOverlay(): ${err}`, this.id))
+    }
+
+    this.rebindOfflineAreaInfo = (newTiles: ReturnType<typeof tileLayerOffline>) => {
+      activeTiles = newTiles
+      urlTemplate = (newTiles as any)._url as string
+      this.refreshSavedAreaInfo?.()
+      this.refreshEstimatedAreaInfo?.()
+      this.refreshSavedTilesOverlay?.()
     }
 
     this.refreshEstimatedAreaInfo = () => {
@@ -638,7 +667,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         this.lMap.project(bounds.getNorthWest(), zoom),
         this.lMap.project(bounds.getSouthEast(), zoom)
       )
-      const tileCount = getTilePoints(area, tiles.getTileSize()).length
+      const tileCount = getTilePoints(area, activeTiles.getTileSize()).length
 
       getStorageInfo(urlTemplate).then((stored) => {
         const avgBytes = stored.length > 0
@@ -648,10 +677,17 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       }).catch((err) => this.log.error(`refreshEstimatedAreaInfo(): ${err}`, this.id))
     }
 
-    tiles.on('saveend', this.refreshSavedAreaInfo)
-    tiles.on('tilesremoved', this.refreshSavedAreaInfo)
-    tiles.on('saveend', this.refreshSavedTilesOverlay)
-    tiles.on('tilesremoved', this.refreshSavedTilesOverlay)
+    // F29-6: every offline base layer gets these, not just the one passed in above - a save/
+    // remove on WHICHEVER layer is currently active should refresh the panel, and since
+    // refreshSavedAreaInfo()/refreshSavedTilesOverlay() above always read the current
+    // activeTiles/urlTemplate (not whatever layer originally fired the event), this stays
+    // correct even for a listener left on a layer that isn't the active one anymore.
+    for (const layer of this.offlineTileLayers) {
+      layer.on('saveend', this.refreshSavedAreaInfo)
+      layer.on('tilesremoved', this.refreshSavedAreaInfo)
+      layer.on('saveend', this.refreshSavedTilesOverlay)
+      layer.on('tilesremoved', this.refreshSavedTilesOverlay)
+    }
     this.lMap.on('moveend zoomend', this.refreshEstimatedAreaInfo)
 
     this.refreshSavedAreaInfo()
@@ -1345,10 +1381,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     super.ngOnDestroy()
     clearTimeout(this.afterViewInitTimer)
     if (this.refreshSavedAreaInfo) {
-      this.offlineTileLayer?.off('saveend', this.refreshSavedAreaInfo)
-      this.offlineTileLayer?.off('tilesremoved', this.refreshSavedAreaInfo)
-      this.offlineTileLayer?.off('saveend', this.refreshSavedTilesOverlay)
-      this.offlineTileLayer?.off('tilesremoved', this.refreshSavedTilesOverlay)
+      for (const layer of this.offlineTileLayers) {
+        layer.off('saveend', this.refreshSavedAreaInfo)
+        layer.off('tilesremoved', this.refreshSavedAreaInfo)
+        layer.off('saveend', this.refreshSavedTilesOverlay)
+        layer.off('tilesremoved', this.refreshSavedTilesOverlay)
+      }
     }
     if (this.refreshEstimatedAreaInfo) {
       this.lMap?.off('moveend zoomend', this.refreshEstimatedAreaInfo)

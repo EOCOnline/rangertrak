@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.85.0](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-30)
+
+### Features
+
+* **entry:** the Entry mini-map now shows real contour lines (OpenTopoMap, not plain street tiles) and terrain relief shading by default (F29-6) - both baked in/overlaid the same way the full Map page's opt-in equivalents already work, so the two previews of the same spot look consistent.
+* **map:** "Save this area for offline use" now follows whichever base layer is actually selected (OSM or OpenTopoMap), instead of always saving OSM regardless - closes the gap that would have made the Entry mini-map's new OpenTopoMap default unreliable offline. Fixes a real, pre-existing limitation, not just new-feature plumbing.
+
 ## [0.84.0](https://github.com/EOCOnline/rangertrak/commit/af5af2e30e39016d1261b373c5696d002e4b1fff) (2026-08-29)
 
 ### Fixes
