@@ -71,6 +71,16 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   // Address/+Codes/What3Words text before its own position has resolved.
   showDerived = signal(false)
 
+  // Raised live 2026-08-30: street-address geocoding (chkStreetAddress(), below) needs the
+  // network - unlike +Code and Maidenhead, which are pure offline conversions - so the label
+  // dims the word "Street address" specifically while offline, rather than leaving a scribe
+  // to discover the distinction only after typing an address and getting nothing back. Plain
+  // `navigator.onLine`/`online`/`offline` rather than a shared service: nothing else in the
+  // app tracks connectivity today, and this is the only place that currently needs it.
+  isOnline = signal(navigator.onLine)
+  private readonly onOnline = () => this.isOnline.set(true)
+  private readonly onOffline = () => this.isOnline.set(false)
+
   // Base tabindex for this leaf's fields (DD/DDM/DMS lat+lng, MGRS, UTM, then address),
   // in the exact top-to-bottom/left-to-right DOM order the template renders them.
   // Unset (no tabindex attribute rendered) unless Entry's keyboard-first pass supplies
@@ -422,6 +432,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     // NOTE: gets called before ngOnInit, during parent's construction (via ngOnChanges too,
     // if the input already had a non-default value at that point)
     this.newLocationToFormAndEmit(this.location)
+
+    window.addEventListener('online', this.onOnline)
+    window.addEventListener('offline', this.onOffline)
   }
 
   /**
@@ -992,5 +1005,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   ngOnDestroy() {
     this.missionSubscription?.unsubscribe()
+    window.removeEventListener('online', this.onOnline)
+    window.removeEventListener('offline', this.onOffline)
   }
 }

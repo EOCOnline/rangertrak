@@ -146,6 +146,18 @@ $filledColor: var(--rt-surface-2);
   font-size          : var(--rt-type-label-size);
 }
 
+// Raised live 2026-08-30: unlike +Code/Maidenhead (pure offline conversions), the derived
+// Address is a reverse-geocode - a network call - so it can't just be missing with no
+// explanation while offline. Distinct from .enter__word--offline (dims an input's label
+// wording): this is a DERIVED value that is itself unavailable, so it gets an explicit tag
+// rather than a dimmed word.
+.rt-other-formats__offline-tag {
+  margin-inline-end: 0.35em;
+  color            : var(--rt-ink-2);
+  font-style       : normal;
+  font-size        : var(--rt-type-label-size);
+}
+
 // E-48(5)/(3)/(4): each system's own row - unlike the old always-simultaneous layout, only
 // ONE of these is ever visible at once now (isVisible()), so the old "wrap as a whole unit
 // instead of breaking mid-group" flex-wrap concern (multiple systems joined by "or" on one
@@ -314,6 +326,13 @@ $filledColor: var(--rt-surface-2);
 .enter__Where-Address {
   width    : 100%;
   max-width: 420px;
+}
+
+// Raised live 2026-08-30: only "Street address" needs the network (Nominatim geocoding);
+// +Code and Maidenhead are pure offline conversions. Dimmed, not hidden - the word is still
+// meaningful (explains what the field accepts once back online), just visibly inactive.
+.enter__word--offline {
+  opacity: 0.5;
 }
 
 // https://www.codingtag.com/remove-arrows-from-input-type-number

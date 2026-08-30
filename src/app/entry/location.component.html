@@ -216,7 +216,10 @@
 
     <!------------------------------------------------------------>
     <mat-form-field class="enter__Where-Address" floatLabel="always">
-      <mat-label>Street address, +Code, or Maidenhead grid locator</mat-label>
+      <mat-label>
+        <span [class.enter__word--offline]="!isOnline()"
+          [title]="!isOnline() ? 'Street address needs a network connection to look up - unavailable while offline. +Code and Maidenhead still work.' : ''">Street address</span>, +Code, or Maidenhead grid locator
+      </mat-label>
       <input matInput #address type="text" id="enter__Where-Address"
         title="Optionally enter www.Plus.Codes, a Maidenhead grid locator (e.g. CN87ux), or street address for geocoding."
         [formField]="addressForm" data-lpignore="true" (change)="onAddressChg()"
@@ -276,8 +279,11 @@
     <div class="enter__Where-Results" [class.enter__Where-Results--hidden]="!showDerived()">
       <button type="button" class="rt-other-formats__row" tabindex="-1"
         (click)="copyCoordinate('Address', derivedAddress())"
-        [attr.aria-label]="'Copy Address: ' + derivedAddress()"
+        [attr.aria-label]="'Copy Address: ' + derivedAddress() + (!isOnline() ? ' (unavailable when offline)' : '')"
         title="Click to copy"><span class="rt-other-formats__system">Address:</span>
+        @if (!isOnline()) {
+        <span class="rt-other-formats__offline-tag">(offline)</span>
+        }
         <span class="rt-other-formats__value" id="derivedAddress">{{ derivedAddress() }}</span>
         @if (copiedSystem() === 'Address') {
         <span class="rt-other-formats__copied">copied</span>

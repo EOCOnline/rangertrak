@@ -387,15 +387,20 @@ mat-chip-option.enter__source-selected {
   // mat-checkbox's host is `display: inline-block` and its internal `.mat-internal-form-field`
   // is `display: inline-flex` - both shrink-to-fit by default, so a bare mat-checkbox
   // dropped into a plain block div isn't guaranteed to be capped at the section's own width
-  // in every layout this can end up in. Forcing it to a full-width block, with the icon
-  // top-aligned rather than centered, makes the label wrap inside this section like
-  // ordinary text instead of extending past it.
+  // in every layout this can end up in. Forcing it to a full-width block, plus
+  // `white-space: normal`, makes the label wrap inside this section like ordinary text
+  // instead of extending past it.
+  //
+  // Deliberately NOT `align-items: flex-start` (tried 2026-08-27, reverted 2026-08-30):
+  // Material's own default centers the checkbox against a single line of text using
+  // padding baked into `.mdc-checkbox`'s 40px touch target - overriding to flex-start broke
+  // that compensation and left the box visibly floating above single-line text (raised
+  // live). Centering against the whole label block is the right trade-off when it wraps too.
   mat-checkbox {
     display: block;
     width: 100%;
 
     ::ng-deep .mat-internal-form-field {
-      align-items: flex-start;
       white-space: normal;
     }
   }
