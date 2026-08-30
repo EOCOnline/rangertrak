@@ -3,7 +3,7 @@
 // This file lost most of its length, and that is the point. Removed as dead or superseded:
 //
 //   - the `@use "@material/theme" with ($primary: #962f10 ...)` block and its four MDC
-//     package @uses. That seed colour predates Sprint A's token layer by two skins, and
+//     package @uses. That seed color predates Sprint A's token layer by two skins, and
 //     every @include from those packages was already commented out except
 //     "@material/button/styles" - which was emitting real CSS for buttons this page no
 //     longer hand-rolls. Material's own theme (styles.scss's `mat.theme()`) is the only
@@ -100,7 +100,7 @@
 }
 
 // F29-23 (2026-08-30): a visible "there's something to lose here" cue - the amber
-// readiness token, not a bespoke colour, since it already means "attention, not done yet"
+// readiness token, not a bespoke color, since it already means "attention, not done yet"
 // everywhere else in the app (readiness dot, status warnings). White label text: confirmed
 // against _tokens.scss that --rt-readiness-amber is a real dark amber/gold (#8A5A00 light,
 // #D9A300 dark), not a light pastel, so white reads on it in both schemes - no separate

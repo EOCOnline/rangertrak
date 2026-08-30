@@ -141,12 +141,12 @@
   //
   // 2026-08-25: that clearance used to be `bottom: 0` plus `margin-bottom: 20px`, which
   // bought the offset at the cost of the pill sitting visibly HIGH in the footer row -
-  // reported as "should be vertically centred like the other footer content". The cause
+  // reported as "should be vertically centered like the other footer content". The cause
   // is that .rt-footer__left is `display: flex; align-items: center`, and flex centring
   // aligns each item's MARGIN box, not its border box: a lone 20px bottom margin therefore
-  // pushed the visible pill 10px above the row's centreline. Putting the same 20px on the
+  // pushed the visible pill 10px above the row's centerline. Putting the same 20px on the
   // sticky offset instead delivers identical stuck-state clearance with zero margin, so
-  // the pill centres correctly against the brand/copyright text in normal flow.
+  // the pill centers correctly against the brand/copyright text in normal flow.
   bottom    : 20px;
   z-index   : 10;
 
@@ -216,7 +216,7 @@
   visibility: visible;
 }
 
-// FIX (2026-08-24 defect sweep): `left: 0` against an anchor that sits right of centre
+// FIX (2026-08-24 defect sweep): `left: 0` against an anchor that sits right of center
 // pushed this panel's right edge well past the viewport at phone width even though its
 // own max-width was already correctly capped - the bug was anchoring, not sizing.
 // Flipping to the right edge below the phone breakpoint keeps the panel on-screen.

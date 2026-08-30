@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { RangerPhotoService } from './ranger-photo.service';
 
 /**
- * Photos are operator data held on the device (D-35 / E-38). These pin the behaviour that
+ * Photos are operator data held on the device (D-35 / E-38). These pin the behavior that
  * matters in the field: a photo reaches the right ranger, a mismatched file is reported
  * rather than silently dropped, and a ranger with no photo yields no URL so the caller can
  * fall back to the silhouette. D-42 phase 6: matching tries `id` first, `callsign` second,

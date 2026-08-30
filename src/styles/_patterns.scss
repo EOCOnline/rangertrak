@@ -22,7 +22,7 @@
 // while the page scrolls, then settles once the page's end is reached - `position:
 // sticky` clamps to the containing block, so whatever wraps this decides where it
 // stops. mission.component.scss proved the pattern (its own .mission__action-bar,
-// now retired in favour of this); Entry and Reports adopt it here.
+// now retired in favor of this); Entry and Reports adopt it here.
 .rt-action-bar {
   position       : sticky;
   bottom         : 0;
@@ -129,7 +129,7 @@
 // by CHILD components (settings' six section components each emit their own
 // `<mat-card>`s). Angular's emulated encapsulation means a rule in the parent's stylesheet
 // cannot reach them, so a per-page definition would silently do nothing - the same class
-// of "looks configured, does nothing" trap ADR D-39 already catalogued.
+// of "looks configured, does nothing" trap ADR D-39 already cataloged.
 //
 // `mat-card appearance="outlined"` supplies the border, radius and surface itself; this
 // only owns how a card sits in a column of other cards.

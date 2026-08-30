@@ -1,7 +1,7 @@
 // A dot, not text/icon - the header strip is already dense on a phone. Full breakdown lives
 // in the hover/focus panel below (see the component's `items` getter) and the aria-label
 // carries the same text (plain, via `tooltip`) for screen readers, so this is never
-// colour-only information.
+// color-only information.
 .readiness {
   position: relative;
   display : inline-block;

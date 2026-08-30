@@ -1,10 +1,10 @@
-// Field-report status colours.
+// Field-report status colors.
 //
 // These are DATA, not brand: a status means the same thing whichever skin is active, so one
 // accessible set serves all three, with a light and a dark variant. See PRIVATE-Roadmap.md
 // 22 for the argument.
 //
-// The defaults shipped before Sprint A were CSS named colours painted as *text* on a white
+// The defaults shipped before Sprint A were CSS named colors painted as *text* on a white
 // form - LightYellow measured 1.07:1, Chartreuse 1.42:1, Aquamarine 1.29:1, Silver 1.74:1.
 // On the Entry screen's status radios, which is the primary control on the primary screen,
 // they were effectively invisible (19f item 1). Every value below clears WCAG AA (4.5:1)

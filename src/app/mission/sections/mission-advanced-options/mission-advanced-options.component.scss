@@ -56,7 +56,7 @@
 }
 
 // Was a literal ✅ / ⚠️ / ℹ️ emoji at the start of each string. Those render at whatever
-// size and colour the platform emoji font decides, which is neither this app's type scale
+// size and color the platform emoji font decides, which is neither this app's type scale
 // nor its status palette - and they carried meaning no screen reader announced usefully.
 // mat-icon + aria-hidden puts the meaning in the sentence and the glyph in the token layer.
 .mission__status mat-icon {

@@ -52,7 +52,7 @@
   </noscript>
 
   <!-- E-42: theme-color was Angular Material's default blue (#1976d2), unrelated to the
-       app's actual Command skin accent (#0B5FA8, ADR D-37) - this is what colours the
+       app's actual Command skin accent (#0B5FA8, ADR D-37) - this is what colors the
        browser chrome/status bar around an installed PWA, so it was one more place the
        Angular-default identity was leaking through. Was also duplicated (this link/meta
        pair appeared twice) and, above, a malformed meta tag that mixed an HTTP header
@@ -72,7 +72,7 @@
         }
       } catch (e) { /* localStorage unavailable (e.g. blocked in this context) - fall back to auto */ }
 
-      // Same reasoning as the block above, for the colour-scheme ("skin") choice instead of
+      // Same reasoning as the block above, for the color-scheme ("skin") choice instead of
       // light/dark. 'skinChoice' must match SKIN_KEY in
       // src/app/shared/services/skin.service.ts. 'command' (or nothing stored) is the
       // default and needs no attribute - styles.scss/_tokens.scss's own :root blocks

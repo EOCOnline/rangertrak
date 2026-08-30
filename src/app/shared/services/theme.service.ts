@@ -14,7 +14,7 @@ function isThemeMode(value: string | null): value is ThemeMode {
 }
 
 /**
- * Owns the user's light/dark override. Every RangerTrak colour token has exactly one
+ * Owns the user's light/dark override. Every RangerTrak color token has exactly one
  * definition, via CSS light-dark() (styles/_tokens.scss), driven by the used value of
  * `color-scheme` on the root element - 'auto' leaves that at the stylesheet's `light dark`
  * default (follows the OS/browser), 'light'/'dark' pin it via an inline style on <html>,

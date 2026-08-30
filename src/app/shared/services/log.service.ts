@@ -51,7 +51,7 @@ export class LogService {
 
   /**
    * Entries below this level are dropped at the source - neither stored nor written to the
-   * console. Defaults to capturing everything, preserving existing behaviour; raise it to
+   * console. Defaults to capturing everything, preserving existing behavior; raise it to
    * quiet a noisy session without editing call sites.
    */
   public minCaptureLevel: LogLevel = LogLevel.Excessive

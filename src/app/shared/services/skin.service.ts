@@ -23,7 +23,7 @@ function isSkin(value: string | null): value is Skin {
 }
 
 /**
- * Owns the user's colour-scheme (skin) choice. 2026-08-26: the skins in
+ * Owns the user's color-scheme (skin) choice. 2026-08-26: the skins in
  * styles/_chrome.scss (and their generated M3 palettes in styles/skins/) used to be a
  * single compile-time choice - styles/_active-skin.scss, one line to edit and rebuild. This
  * is that made runtime: every RangerTrak token (styles/_tokens.scss) and every Material

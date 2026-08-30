@@ -7,7 +7,7 @@ import { InstallableService, UpdateService } from '../services'
 /**
  * E-55: RangerTrak used to offer "install this app" and "a new version is ready" through
  * four different, unrelated implementations - the navbar's own button, Settings' own panel
- * (raw hex colours, a fixed 250px width, opacity:0.8 - see git history), the footer's update
+ * (raw hex colors, a fixed 250px width, opacity:0.8 - see git history), the footer's update
  * indicator, and an entirely separate, never-cleaned-up "Add to Home Screen" button in
  * app.component.ts/.html with its own duplicate `beforeinstallprompt` listener and state
  * (which, unlike the other three, never hid itself after the app was actually installed -

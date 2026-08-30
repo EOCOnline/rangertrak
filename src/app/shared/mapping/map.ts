@@ -85,7 +85,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   // to be read off an MDCSwitch instance built by hand from a querySelector, and
   // the switch's own click handler raced Angular's - so the map read the state
   // from *before* the click and appeared to reset itself to All. That is what the
-  // "[Broken:]" label in the template was apologising for.
+  // "[Broken:]" label in the template was apologizing for.
   protected showingSelectedOnly = false
   public numSelectedRows = signal(0)
   public numAllRows = signal(0)
@@ -317,7 +317,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     this.fieldReportArray = newReports.fieldReportArray
     console.assert(this.numAllRows() == this.fieldReportArray.length)
     // Keeps displayedFieldReportArray and the row counts in step with the new
-    // reports while honouring the current all/selected choice.
+    // reports while honoring the current all/selected choice.
     this.updateFieldReports()
     if (this.map) {
       this.refreshMap()

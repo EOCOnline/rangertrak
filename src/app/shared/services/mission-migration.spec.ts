@@ -8,11 +8,11 @@ import { statusColorMeetsAA, statusColorValue, statusInkValue } from './status-c
  * migrateMission() is deliberately pure, so these are plain function tests - no TestBed, no
  * browser. The point of the mechanism is that settings written by an older build can arrive
  * at ANY time (localStorage on load, or a mission export months later), so the cases that
- * matter are the awkward ones: absent version, custom colours, reordered/renamed statuses.
+ * matter are the awkward ones: absent version, custom colors, reordered/renamed statuses.
  */
 describe('migrateMission', () => {
 
-  /** A v0 (pre-Sprint-E) settings object, with the CSS named colours as originally shipped. */
+  /** A v0 (pre-Sprint-E) settings object, with the CSS named colors as originally shipped. */
   function v0Settings(): MissionType {
     return {
       settingsName: '', settingsDate: new Date(0),
@@ -41,7 +41,7 @@ describe('migrateMission', () => {
     expect(out.schemaVersion).toBe(MISSION_SCHEMA_VERSION)
   })
 
-  it('converts every legacy default colour to its semantic key', () => {
+  it('converts every legacy default color to its semantic key', () => {
     const out = migrateMission(v0Settings())
     expect(out.fieldReportStatuses.map(s => s.color)).toEqual([
       'normal', 'location-report', 'evidence-report', 'need-rest-food',
@@ -58,17 +58,17 @@ describe('migrateMission', () => {
     expect(out.fieldReportStatuses[out.defFieldReportStatus].status).toBe('Normal')
   })
 
-  it('leaves a colour the user deliberately customised alone', () => {
+  it('leaves a color the user deliberately customized alone', () => {
     const input = v0Settings()
-    input.fieldReportStatuses[6].color = '#FF00FF' // user recoloured Urgent
+    input.fieldReportStatuses[6].color = '#FF00FF' // user recolored Urgent
     const out = migrateMission(input)
     expect(out.fieldReportStatuses[6].color).toBe('#FF00FF')
-    // ...while its untouched neighbours still migrate.
+    // ...while its untouched neighbors still migrate.
     expect(out.fieldReportStatuses[5].color).toBe('incident-check-out')
   })
 
-  it('does not rewrite a status wearing another status\'s old default colour', () => {
-    // Matching on colour alone would turn this into 'normal' and silently change its meaning.
+  it('does not rewrite a status wearing another status\'s old default color', () => {
+    // Matching on color alone would turn this into 'normal' and silently change its meaning.
     const input = v0Settings()
     input.fieldReportStatuses[6].color = 'LightYellow' // Urgent, but yellow, on purpose
     const out = migrateMission(input)
@@ -229,24 +229,24 @@ describe('migrateMission', () => {
   })
 })
 
-describe('status colours', () => {
-  it('resolves the shipped defaults to token references, not raw colours', () => {
+describe('status colors', () => {
+  it('resolves the shipped defaults to token references, not raw colors', () => {
     for (const s of DEFAULT_FIELD_REPORT_STATUSES) {
       expect(statusColorValue(s.color)).toBe(`var(--rt-status-${s.color})`)
       expect(statusInkValue(s.color)).toBe('var(--rt-status-ink)')
     }
   })
 
-  it('passes a custom colour through untouched', () => {
+  it('passes a custom color through untouched', () => {
     expect(statusColorValue('#FF00FF')).toBe('#FF00FF')
   })
 
-  it('picks readable ink for custom colours at both ends of the range', () => {
+  it('picks readable ink for custom colors at both ends of the range', () => {
     expect(statusInkValue('#000080')).toBe('#FFFFFF') // dark navy -> white text
     expect(statusInkValue('#FFFF00')).toBe('#111111') // bright yellow -> near-black text
   })
 
-  it('flags a custom colour that cannot carry readable text', () => {
+  it('flags a custom color that cannot carry readable text', () => {
     // The band that fails against BOTH inks is narrower than "mid grey" intuition suggests:
     // #787878 peaks at 4.42:1 (white 4.42, near-black 4.28) and fails, while #7c7c7c already
     // clears it at 4.52:1 against near-black. Worth pinning precisely - an earlier draft of

@@ -15,7 +15,7 @@ import { MATERIAL_IMPORTS } from '../../material-imports'
  * now always renders open with no toggle state at all. This component is the 2026-08-29
  * exception to that: the maintainer asked for exactly this pattern in three places in the
  * same feedback batch (F29-18 danger zones, F29-31 FAQ, and Help's Log-inside-Feedback
- * decision) - reusing `SectionComponent`'s name for the opposite behaviour would misdescribe
+ * decision) - reusing `SectionComponent`'s name for the opposite behavior would misdescribe
  * it for its other, still-always-open callers.
  *
  * Wrap several in a `<mat-accordion multi>` for independent open/close (FAQ); a single one

@@ -5,7 +5,7 @@ import { MissionReadinessService } from '../services'
 
 /**
  * ADR D-32: the persistent readiness indicator, rendered once inside HeaderComponent so it
- * appears on every page. A coloured dot rather than text/icon - the header strip is already
+ * appears on every page. A colored dot rather than text/icon - the header strip is already
  * dense on a phone - with the full breakdown in its `title` tooltip. Deliberately never
  * reads as a permission gate: nothing here disables Entry or any other action.
  *
@@ -35,7 +35,7 @@ export class MissionReadinessComponent implements OnInit {
   }
 
   // Plain-text form, kept for the accessible name (aria-label) - a screen reader has no
-  // use for the coloured HTML breakdown below, and this is what the existing spec asserts
+  // use for the colored HTML breakdown below, and this is what the existing spec asserts
   // against.
   get tooltip(): string {
     const r = this.readiness
@@ -52,8 +52,8 @@ export class MissionReadinessComponent implements OnInit {
   }
 
   // Structured form of the same six signals, for the visual tooltip - lets the template
-  // colour each mark (green ✓ / red ✗) instead of the plain-text glyphs a native `title`
-  // attribute is stuck rendering in whatever colour the OS tooltip uses.
+  // color each mark (green ✓ / red ✗) instead of the plain-text glyphs a native `title`
+  // attribute is stuck rendering in whatever color the OS tooltip uses.
   //
   // F29-21 (2026-08-30): `route`/`fragment` on each row is the actual feature the maintainer
   // asked for - "should each readiness line link directly to the page+field that fixes it?

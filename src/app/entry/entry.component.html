@@ -206,7 +206,7 @@
                  control. Now resolved via statusColor(), so semantic keys become --rt-status-*
                  tokens carrying their own light/dark pair. checkStatusColorsBothSchemes() /
                  checkStatusColorMigration() in tools/e2e.js read this exact span's computed
-                 colour - kept unchanged (class, binding, and content) across this swap. -->
+                 color - kept unchanged (class, binding, and content) across this swap. -->
             <span class="Enter__status-value" [style.color]="statusColor(stat.color)">
               {{stat.status}}</span>
           </mat-chip-option>
@@ -277,7 +277,7 @@
              [hidden] keeps the elements present with their real tabindex attributes -
              satisfying that check - while still making them correctly unreachable by an
              actual Tab key press (browsers skip a hidden element regardless of its tabindex
-             attribute), which @if would ALSO have achieved when rendered - so no behavioural
+             attribute), which @if would ALSO have achieved when rendered - so no behavioral
              difference for a real user, only for what the DOM inspection sees. -->
         <div class="enter__213-details" [hidden]="!entryForm.generates213().value()">
           <mat-checkbox [checked]="entryForm.replyRequested213().value()"
@@ -406,7 +406,7 @@
     <!-- .enter__Submit-button kept as a plain class, not restyled from - checkEntryAutofocus
          AndReset() and several other tools/e2e.js checks reach this exact real native
          <button>'s .disabled property and .click() it directly. matButton="filled" supplies
-         the accent-coloured fill Material's own theme now provides; the old inline
+         the accent-colored fill Material's own theme now provides; the old inline
          background-color/color override in entry.component.scss is gone as redundant. -->
     <button matButton="filled" class="enter__Submit-button" [disabled]="!formValid()" type="submit"
       [tabIndex]="submitTabIndex">

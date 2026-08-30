@@ -23,7 +23,7 @@ import {
 // visitor has switched engines and MapLibre's own chunk loads, Leaflet is already loaded
 // regardless - this costs nothing extra in practice, only a "this chunk technically imports
 // Leaflet" purity concern, not a real download. Reusing the SAME function as the Leaflet
-// map's markers/trails (rather than a second colour scheme) is the actual point - ranger-
+// map's markers/trails (rather than a second color scheme) is the actual point - ranger-
 // icon.ts's own doc comment on why this exists at all.
 import { rangerColorFor } from '../shared/mapping/ranger-icon'
 // ADR D-49: same Leaflet-import acceptance as rangerColorFor above - locationMarkerSvg()
@@ -345,22 +345,22 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       source: REPORTS_SOURCE_ID,
       filter: ['!', ['has', 'point_count']],
       paint: {
-        // F29-7/8 (2026-08-29): was a single hardcoded colour for every report regardless of
+        // F29-7/8 (2026-08-29): was a single hardcoded color for every report regardless of
         // which ranger filed it - "only as red dots, not as unique per ranger markers" was
         // the maintainer's exact complaint, and reading this code confirmed it directly: no
         // per-ranger marker system was ever built for MapLibre, unlike Leaflet's
         // rangerIconFor(). Data-driven off each feature's own `rangerColor` property
         // (buildGeoJson() resolves it per point, same rangerColorFor() Leaflet's markers and
         // trails already use), same treatment as `statusColor` below already gets. Distinct
-        // per-ranger SHAPES (not just colour) would need MapLibre's `symbol` layer type with
+        // per-ranger SHAPES (not just color) would need MapLibre's `symbol` layer type with
         // pre-registered images instead of a plain `circle` layer - a bigger change, not
-        // attempted here; colour alone already answers the complaint as reported.
+        // attempted here; color alone already answers the complaint as reported.
         'circle-color': ['get', 'rangerColor'],
         'circle-radius': 8,
         // Raised live 2026-08-26: a status "shadow" ring, data-driven off each feature's own
         // `statusColor` property (buildGeoJson() resolves it per point) - same treatment as
-        // the Leaflet markers' halo, same colour lookup. Widened from a plain 2px white
-        // outline to carry that colour visibly.
+        // the Leaflet markers' halo, same color lookup. Widened from a plain 2px white
+        // outline to carry that color visibly.
         'circle-stroke-width': 4,
         'circle-stroke-color': ['get', 'statusColor']
       }
@@ -384,11 +384,11 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       features: reportsToShow
         .filter((r: FieldReportType) => r.location?.lat && r.location?.lng)
         .map((r: FieldReportType) => {
-          // Raised live 2026-08-26: a status "shadow" ring around each point, same colour
+          // Raised live 2026-08-26: a status "shadow" ring around each point, same color
           // lookup as the Leaflet markers (report-marker-status.ts). MapLibre's paint
           // expressions run in its own WebGL renderer, not the DOM/CSSOM, so a semantic
-          // `var(--rt-status-*)` token has to be resolved to a concrete colour up front -
-          // resolveCssColorForCanvas() is exactly that, and a raw custom colour passes
+          // `var(--rt-status-*)` token has to be resolved to a concrete color up front -
+          // resolveCssColorForCanvas() is exactly that, and a raw custom color passes
           // through unchanged either way. Falls back to a neutral grey (not the ring's own
           // default absence) so an unknown/blank status is visibly "unset," not silently
           // invisible in a paint expression that expects a string every time.
@@ -400,8 +400,8 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
               title: `${r.callsign} at ${formatReportTime(r.date)} with ${r.status}`,
               statusColor: rawColor ? resolveCssColorForCanvas(rawColor) : '#888888',
               // F29-7/8: same identity key (rangerUid preferred, callsign fallback - D-42
-              // phase 5) and same colour function Leaflet's markers/trails already use, so a
-              // ranger's dot is the same colour on both map engines.
+              // phase 5) and same color function Leaflet's markers/trails already use, so a
+              // ranger's dot is the same color on both map engines.
               rangerColor: rangerColorFor(r.rangerUid || r.callsign),
             }
           }

@@ -22,7 +22,7 @@ import { StatusKey } from './status-color'
  * Mirrors MISSION_EXPORT_SCHEMA_VERSION in backup.service.ts rather than inventing a second
  * convention.
  *
- * 1 - status colours become semantic keys rather than raw CSS colour strings.
+ * 1 - status colors become semantic keys rather than raw CSS color strings.
  * 2 - backfill any field MissionType declares that the stored object lacks (BUG-3).
  * 3 - rename the legacy `google` settings block to `maplibre` (E-70).
  * 4 - drop `w3wLocale` and `defPlusCode`, both dead controls removed from MissionType
@@ -31,11 +31,11 @@ import { StatusKey } from './status-color'
 export const MISSION_SCHEMA_VERSION = 4
 
 /**
- * The status colours as shipped before v1, paired with the semantic key each becomes.
+ * The status colors as shipped before v1, paired with the semantic key each becomes.
  *
- * Matched on BOTH status name and colour, deliberately. Matching on colour alone would
- * rewrite a status the user had recoloured to some other status's old default; matching on
- * name alone would discard a custom colour the user chose on purpose. A stored colour is
+ * Matched on BOTH status name and color, deliberately. Matching on color alone would
+ * rewrite a status the user had recolored to some other status's old default; matching on
+ * name alone would discard a custom color the user chose on purpose. A stored color is
  * only replaced where it is still the untouched factory default for that status - anything
  * else is the user's decision and is left exactly as it is.
  */
@@ -77,7 +77,7 @@ export const DEFAULT_RECIPIENT_OPTIONS_213: ReadonlyArray<string> = [
 
 /**
  * ADR D-49 starter list, for initMission() - the Locations feature's default categories.
- * Colours are literal hex, not the semantic `--rt-status-*` keys fieldReportStatuses uses:
+ * Colors are literal hex, not the semantic `--rt-status-*` keys fieldReportStatuses uses:
  * those tokens are specifically for field-report status and adding a second consumer would
  * mean touching `_status.scss`/`_tokens.scss`/STATUS_KEYS for an unrelated feature. Editable
  * per-mission via `MissionType.locationTypes`, same as fieldReportStatuses.

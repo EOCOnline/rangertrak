@@ -23,7 +23,7 @@ describe('ranger-migration (ADR D-42)', () => {
    * (rather than `Partial<RangerType>`) so it can still carry a legacy `rew` property -
    * D-42 phase 8 dropped `rew` from `RangerType` itself, but `normalizeRangerIds()` must
    * keep reading it off raw, untyped data for the v0 migration step (see that function's
-   * own header comment), and these tests are what pin that behaviour.
+   * own header comment), and these tests are what pin that behavior.
    */
   function ranger(callsign: string, extra: Record<string, unknown> = {}): RangerType {
     return {

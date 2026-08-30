@@ -8,10 +8,10 @@
 // Candidates and their reasoning are in PRIVATE-Roadmap.md 22.
 //
 // Each map's `accent` is deliberately close to, but not identical to, the M3 primary
-// generated from the same seed colour (see skins/_*.scss). M3 snaps a seed onto its own
+// generated from the same seed color (see skins/_*.scss). M3 snaps a seed onto its own
 // tonal ramp; these are the literal brand values, used where we draw rather than Material.
 
-// Evolves the colour the app already used: #962f10 appeared in five component stylesheets
+// Evolves the color the app already used: #962f10 appeared in five component stylesheets
 // before Sprint A, with #442C2E as its dark companion.
 $ridgeline: (
   ground: #F3F0ED,
@@ -99,7 +99,7 @@ $nightwatch: (
   accent-ink-dark: #04211E,
 );
 
-// Warm greys and dry olive - the colour of the terrain the teams are actually standing in.
+// Warm greys and dry olive - the color of the terrain the teams are actually standing in.
 // Softer than Command without going as warm as Ridgeline.
 $sagebrush: (
   ground: #F2F1EA,

@@ -12,7 +12,7 @@
   <rangertrak-install-update [detailed]="true" [showUpdate]="false"></rangertrak-install-update>
 
   <!-- E-79: which specific gap(s) are behind the header's red/amber readiness dot, rather
-       than just the aggregate colour. Never rendered once every signal is green. -->
+       than just the aggregate color. Never rendered once every signal is green. -->
   @if (readinessGaps().length > 0) {
   <div class="rt-alert mission__readiness" role="note" aria-label="Mission readiness gaps">
     <mat-icon class="mission__readiness-icon" aria-hidden="true">warning</mat-icon>

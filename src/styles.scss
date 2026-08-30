@@ -23,7 +23,7 @@
 
 // The real theme. `mat.theme()` emits the `--mat-sys-*` system custom properties, which is
 // the token layer 19a item 1 said was missing on the Material side, and gives light/dark as
-// a first-class colour-scheme rather than a bolted-on media block.
+// a first-class color-scheme rather than a bolted-on media block.
 //
 // Widened 2026-08-26 from a single compile-time-selected palette (styles/_active-skin.scss,
 // now gone) to all five, each scoped to the same `data-skin` attribute

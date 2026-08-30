@@ -2,7 +2,7 @@
   <mat-card-header>
     <mat-card-title>Location defaults</mat-card-title>
     <mat-card-subtitle>Seeds the Entry form&rsquo;s starting position. Maps do not use these &mdash; they
-      auto-centre on the centroid of the reports actually entered, then zoom to fit.</mat-card-subtitle>
+      auto-center on the centroid of the reports actually entered, then zoom to fit.</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
     <div class="rt-field-grid">
@@ -12,7 +12,7 @@
           placeholder="{{settings.defLat.toFixed(4)}}" data-lpignore="true" />
         <!-- Was a `.text-sm.text-danger` div rendered by an @if beside the input. mat-error
              shows itself on the same condition Material already tracks, and takes the
-             field's own error colour rather than a hand-picked one. -->
+             field's own error color rather than a hand-picked one. -->
         @if (form.defLat().touched() && form.defLat().invalid()) {
         <mat-error>Must be between -89.99&deg; and 89.99&deg;</mat-error>
         }

@@ -15,7 +15,7 @@ import {
 import { ColorEditor } from '../../color-editor.component'
 
 /**
- * The Field Report status/colour ag-Grid editor. Sprint C split out of the 429-line
+ * The Field Report status/color ag-Grid editor. Sprint C split out of the 429-line
  * mission.component template - see mission.component.ts for the rest.
  *
  * `rowData` is the same array reference the parent's `settings.fieldReportStatuses` (and
@@ -92,15 +92,15 @@ export class MissionFieldReportStatusesComponent implements OnChanges {
     },
     {
       headerName: "Color", field: "color",
-      tooltipField: "one of the built-in accessible colours, or your own CSS colour",
+      tooltipField: "one of the built-in accessible colors, or your own CSS color",
       cellStyle: (params: { value: string; }) => {
         this.refreshStatusGrid()
         const stored = String(params.value ?? '')
         return {
           backgroundColor: statusColorValue(stored),
           color: statusInkValue(stored),
-          // A custom colour that fails WCAG AA against its own ink is flagged rather than
-          // silently accepted - the whole point of Sprint E's colour work is that an
+          // A custom color that fails WCAG AA against its own ink is flagged rather than
+          // silently accepted - the whole point of Sprint E's color work is that an
           // unreadable status is a safety problem, not a taste one. Built-in keys always pass.
           outline: statusColorMeetsAA(stored) ? 'none' : '2px dashed #B3261E',
           outlineOffset: '-3px',

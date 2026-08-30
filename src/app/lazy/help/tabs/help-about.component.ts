@@ -17,7 +17,7 @@ import { SectionComponent } from '../../../shared/section/section.component'
  * The feedback form that also landed here in that pass moved again, to the Feedback tab
  * (D-d, same day) - see help-feedback.component.ts.
  *
- * Live report, 2026-08-30: the licence section had NOT actually followed the F29-25 move
+ * Live report, 2026-08-30: the license section had NOT actually followed the F29-25 move
  * despite this file's own doc comment claiming it had - it was still sitting in
  * help.component.html, outside that page's mat-tab-group, so it kept rendering below every
  * tab rather than only About. Moved here for real now, alongside its `today` (used only by

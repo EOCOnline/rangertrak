@@ -8,7 +8,7 @@
 // pass, but this file was missed. `@material/button/styles` auto-emits real MDC button CSS
 // on `@use` alone (no `@include` needed), scoped to this component's view encapsulation -
 // so `.enter__Submit-button` (matButton="filled", which renders `.mdc-button--unelevated`)
-// was picking up ITS colours (the hardcoded #962f10/#442C2E seed above) instead of Material's
+// was picking up ITS colors (the hardcoded #962f10/#442C2E seed above) instead of Material's
 // own theme (styles.scss's mat.theme(), correctly blue/white here). Confirmed live: computed
 // background/color were exactly rgb(150,47,16)/rgb(68,44,46) - literally #962f10/#442C2E -
 // while --mat-sys-primary/--rt-accent both correctly resolved to blue. Removing this block
@@ -242,9 +242,9 @@ input[type=number] {
   margin-bottom: 0.25rem;
 }
 
-// A small filled dot carrying the status's own colour, ahead of the label text - the
+// A small filled dot carrying the status's own color, ahead of the label text - the
 // mockup's own status-chip anatomy. mat-chip-option already shows an M3 checkmark for the
-// selected option; this dot is what identifies each option's colour even before selection,
+// selected option; this dot is what identifies each option's color even before selection,
 // which the checkmark alone can't do.
 .rt-status-chip__dot {
   display      : inline-block;
@@ -256,11 +256,11 @@ input[type=number] {
 }
 
 // ADR D-39's segmented-chip decision carries forward from mat-radio-group to
-// mat-chip-option: tonal (unselected) / tinted-and-bordered in the status's own colour
-// (selected) - the colour itself, not a generic accent, is deliberate, since it's the
+// mat-chip-option: tonal (unselected) / tinted-and-bordered in the status's own color
+// (selected) - the color itself, not a generic accent, is deliberate, since it's the
 // information Sprint E's contrast work already settled.
 //
-// M3 chip theming emits its colours as CSS custom properties rather than per-state CSS
+// M3 chip theming emits its colors as CSS custom properties rather than per-state CSS
 // classes (unlike the legacy M2 theme, which is where a plain `.mat-mdc-chip-selected`
 // class rule would have been enough) - see @angular/material/chips/_chips-theme.scss,
 // confirmed by reading the compiled source, not assumed. Overriding MDC's own internal
@@ -283,7 +283,7 @@ mat-chip-option.enter__status-selected {
   }
 }
 
-// Source has no per-option colour to carry (unlike Status's stored status.color), so this
+// Source has no per-option color to carry (unlike Status's stored status.color), so this
 // is the same selected-chip treatment above minus the --rt-status-current override - it
 // falls straight through to --rt-accent, which is what that property's own fallback is for.
 mat-chip-option.enter__source-selected {
@@ -577,7 +577,7 @@ mat-chip-option.enter__source-selected {
 }
 
 // .enter__Submit-button is no longer a styling hook for the ENABLED state - matButton="filled"
-// (in the template) already renders in the theme's own accent colour via mat.theme()'s primary
+// (in the template) already renders in the theme's own accent color via mat.theme()'s primary
 // palette (Sprint A), which IS --rt-accent's source. The class stays on the element purely as a
 // stable selector: tools/e2e.js's checkEntryAutofocusAndReset() and several other checks
 // reach this exact native <button> directly.

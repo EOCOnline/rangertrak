@@ -1,7 +1,7 @@
 /**
  * A well-mixed string hash, shared by E-80's teamColorFor() (mapLeaflet.component.ts) and
  * E-86's rangerIconFor() (ranger-icon.ts) - both need a deterministic "turn an arbitrary
- * name into a number" step to pick a colour (and, for rangerIconFor, a shape) with no
+ * name into a number" step to pick a color (and, for rangerIconFor, a shape) with no
  * lookup table or stored assignment.
  *
  * A naive `hash = hash*31 + charCode` accumulator (the original implementation of both
@@ -9,7 +9,7 @@
  * actually sees: SAR team/ranger callsigns are commonly sequential ("ACS1", "ACS2",
  * "ACS3", "Team1", "Team2"...). Two inputs differing by one character's char code differ
  * by only that same small amount in the final hash too, which barely moves `hash % 360`
- * (colour) or a small modulus (shape index) - confirmed live 2026-08-24: "ACS1" and
+ * (color) or a small modulus (shape index) - confirmed live 2026-08-24: "ACS1" and
  * "ACS3" landed 2 hue-degrees apart (indistinguishable) and on the identical shape. The
  * Murmur3-style finalizer below (avalanche mixing) fixes this: a one-character difference
  * in input produces an unpredictable, well-spread difference in output.

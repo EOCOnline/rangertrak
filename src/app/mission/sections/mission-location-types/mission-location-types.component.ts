@@ -63,7 +63,7 @@ export class MissionLocationTypesComponent implements OnChanges {
     { headerName: "Category", field: "type", flex: 50 },
     {
       headerName: "Color", field: "color",
-      tooltipField: "one of the built-in accessible colours, or your own CSS colour",
+      tooltipField: "one of the built-in accessible colors, or your own CSS color",
       cellStyle: (params: { value: string; }) => {
         this.refreshGrid()
         const stored = String(params.value ?? '')

@@ -1,15 +1,15 @@
 /**
- * Field-report status colours: the bridge between what settings *store* and what the DOM
+ * Field-report status colors: the bridge between what settings *store* and what the DOM
  * needs to *paint*.
  *
- * Sprint E moved stored status colours from raw CSS colour strings ('LightYellow', '#00ff00')
+ * Sprint E moved stored status colors from raw CSS color strings ('LightYellow', '#00ff00')
  * to **semantic keys** ('normal', 'urgent', ...) that resolve to the `--rt-status-*` custom
  * properties emitted by `src/styles/_tokens.scss`. That indirection is what lets one stored
- * value serve both colour schemes: a single stored hex cannot, since it is one colour and
+ * value serve both color schemes: a single stored hex cannot, since it is one color and
  * light/dark need two.
  *
- * A stored value may still legitimately be a raw colour - the user can pick a custom one in
- * the settings colour editor, and un-migrated data can reach here too. So everything below
+ * A stored value may still legitimately be a raw color - the user can pick a custom one in
+ * the settings color editor, and un-migrated data can reach here too. So everything below
  * is deliberately TOLERANT: a known key resolves to its token, anything else passes through
  * untouched. That is what allows the migration and the view layer to land independently
  * without a broken state in between.
@@ -36,7 +36,7 @@ export function isStatusKey(value: string): value is StatusKey {
 }
 
 /**
- * The CSS colour to paint for a stored status value - as a text colour on the Entry radios,
+ * The CSS color to paint for a stored status value - as a text color on the Entry radios,
  * or as a cell background in the grids. Semantic keys become `var(--rt-status-*)`, which
  * already carries its own light/dark pair; anything else is passed through as the literal
  * the user chose.
@@ -46,12 +46,12 @@ export function statusColorValue(stored: string): string {
 }
 
 /**
- * The colour to place ON TOP of `statusColorValue()` when it is used as a background.
+ * The color to place ON TOP of `statusColorValue()` when it is used as a background.
  *
  * For semantic keys this is `--rt-status-ink`, which `_status.scss` defines per scheme
  * (white on the dark light-mode fills, near-black on the lighter dark-mode fills). For a
- * custom colour there is no token, so pick whichever of black/white contrasts better -
- * previously nothing was set at all and custom backgrounds inherited whatever text colour
+ * custom color there is no token, so pick whichever of black/white contrasts better -
+ * previously nothing was set at all and custom backgrounds inherited whatever text color
  * happened to be in scope, which is how unreadable grid cells happened.
  */
 export function statusInkValue(stored: string): string {
@@ -65,7 +65,7 @@ export type Rgb = [number, number, number]
 
 /**
  * Parses `#rgb` / `#rrggbb` / `rgb(r,g,b)`. Returns null for anything else - including CSS
- * named colours, which cannot be resolved without a browser and which this file must stay
+ * named colors, which cannot be resolved without a browser and which this file must stay
  * usable without (it is imported by the pure, unit-tested migration).
  */
 export function parseColor(value: string): Rgb | null {
@@ -106,10 +106,10 @@ export function contrastRatio(a: Rgb, b: Rgb): number {
 }
 
 /**
- * Whether a custom status colour clears WCAG AA (4.5:1) against the ink that would be placed
+ * Whether a custom status color clears WCAG AA (4.5:1) against the ink that would be placed
  * on it. Semantic keys always pass - `_status.scss` guarantees it - so they return true
  * without measurement. Unparseable values return true as well: we cannot measure a CSS named
- * colour here, and warning on something we have not actually evaluated would be noise.
+ * color here, and warning on something we have not actually evaluated would be noise.
  */
 export function statusColorMeetsAA(stored: string): boolean {
   if (isStatusKey(stored)) return true

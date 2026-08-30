@@ -21,7 +21,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from
  *    </rangertrak-section>
  *
  * `emphasis="plain"` renders the heading as plain small print (no `<h3>`, no bold/larger
- * styling) rather than a real heading - for content like the licence line that is genuinely
+ * styling) rather than a real heading - for content like the license line that is genuinely
  * a footer, not a section a reader would look for by name.
  */
 @Component({

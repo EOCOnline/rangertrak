@@ -136,7 +136,7 @@ export type FieldReportType = {
   // E-31/E-41 phase 3 but never actually filled - it printed blank on every 213 generated.
   // A genuinely separate scribe-entered field (not derived from message213), placed last
   // inside the 213 section per the maintainer's own ask, so it inherits that section's
-  // opt-in [hidden] behaviour for free. Same additive/no-migration treatment as the other
+  // opt-in [hidden] behavior for free. Same additive/no-migration treatment as the other
   // *213 fields.
   subject213?: string,
   // Architecture decision, 2026-08-26: resolves the "second coordinate" question the Five

@@ -56,9 +56,9 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
   /**
    * Read through to the service rather than snapshotting in ngOnInit, which is what this
-   * used to do. The statuses (and their colours) are per-mission settings, so Import
+   * used to do. The statuses (and their colors) are per-mission settings, so Import
    * Mission, Load Sample Mission and Reset Settings all change them - and the snapshot
-   * left this grid colouring rows by the *previous* mission's status list. Read at
+   * left this grid coloring rows by the *previous* mission's status list. Read at
    * cell-render time, so a getter is enough; MissionService.settings reads a signal.
    */
   private get fieldReportStatuses(): FieldReportStatusType[] {
@@ -112,10 +112,10 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
    *    FieldReportType's own comment on the two) was headed "ID", easily confused with the
    *    ranger-identifier column two over. Renamed to "#", what it actually is: this row's
    *    line number in the radio log.
-   *  - CallSign's text now colours by ranger identity via `rangerColorFor` - the exact same
-   *    hash-based colour already used for that ranger's map marker/trail (ranger-icon.ts),
+   *  - CallSign's text now colors by ranger identity via `rangerColorFor` - the exact same
+   *    hash-based color already used for that ranger's map marker/trail (ranger-icon.ts),
    *    so the same person's reports are easy to pick out scanning down the column, and the
-   *    colour matches what a scribe already sees on the map for that ranger.
+   *    color matches what a scribe already sees on the map for that ranger.
    *  - Address/Notes get `tooltipField`: AG Grid's own cell-level tooltip, which (unlike the
    *    native `title` on Notes' cellRenderer span, still left below) covers the WHOLE cell
    *    including the empty space past a truncated value, not just the visible characters
@@ -127,7 +127,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       // F29-44 (partial, 2026-08-29): headerName was `idFieldLabel || 'Callsign'` while field
       // stayed hardcoded "callsign" - a mission that renames its id field (e.g. to "REW")
       // rendered a column headed "REW" full of callsign data. Header now names what the
-      // field actually holds. The collapse-when-callsign-is-the-key behaviour (F29-44's other
+      // field actually holds. The collapse-when-callsign-is-the-key behavior (F29-44's other
       // half) is a separate, still-open decision - see the handoff doc.
       {
         headerName: 'Callsign', field: "callsign", tooltipField: "team", maxWidth: 160,
@@ -167,9 +167,9 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
         headerName: "Status", field: "status", minWidth: 130, maxWidth: 220, cellRenderer: this.statusCellRenderer,
         cellStyle: (params: { value: string; }) => {
           // Sprint E: the fill now resolves through the token layer (semantic key ->
-          // --rt-status-*, custom colour passes through), and an explicit ink colour is set
+          // --rt-status-*, custom color passes through), and an explicit ink color is set
           // alongside it. Previously only background-color was set, so the label inherited
-          // whatever text colour was in scope - which is unreadable on roughly half the palette.
+          // whatever text color was in scope - which is unreadable on roughly half the palette.
           const stat = this.fieldReportStatuses.find(el => el.status == params.value)
           const stored = stat ? stat.color : '#A3A3A3'
           return { 'background-color': statusColorValue(stored), 'color': statusInkValue(stored) }
@@ -231,7 +231,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     // PROPERTIES
     theme: rangertrakGridTheme,
     // v32.2+ object form. checkboxes/headerCheckbox off + enableClickSelection keeps the
-    // original "multiple" behaviour (click a row to select, ctrl/shift to extend) rather
+    // original "multiple" behavior (click a row to select, ctrl/shift to extend) rather
     // than the new default, which would add a checkbox column the layout doesn't expect.
     rowSelection: {
       mode: 'multiRow',
@@ -379,7 +379,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
 
   /**
    * Same fill/ink resolution the grid's Status column cellStyle uses (see columnDefs
-   * above) - one source of truth for status colour, reused by the phone card view.
+   * above) - one source of truth for status color, reused by the phone card view.
    */
   statusFill(status: string): string {
     const stat = this.fieldReportStatuses.find(el => el.status == status)

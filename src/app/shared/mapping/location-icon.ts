@@ -47,9 +47,9 @@ const GENERIC_PIN = (color: string) => `
   <circle cx="12" cy="9.5" r="3" fill="white"/>`
 
 /**
- * The raw `<svg>` markup for a location category name + its configured colour
+ * The raw `<svg>` markup for a location category name + its configured color
  * (`MissionType.locationTypes`). Falls back to a generic pin for a category with no dedicated
- * shape (including the built-in "Other") - a location always draws as SOMETHING recognisable,
+ * shape (including the built-in "Other") - a location always draws as SOMETHING recognizable,
  * never blank, even for a category name the app has never seen before.
  *
  * Engine-agnostic on purpose (no Leaflet import, unlike this file's own `locationIconFor()`
@@ -62,7 +62,7 @@ export function locationMarkerSvg(type: string, color: string): string {
 }
 
 /**
- * A distinct Leaflet icon for a given location category name + its configured colour. See
+ * A distinct Leaflet icon for a given location category name + its configured color. See
  * `locationMarkerSvg()` for the shared drawing logic and MapLibre's own equivalent.
  */
 export function locationIconFor(type: string, color: string): L.DivIcon {

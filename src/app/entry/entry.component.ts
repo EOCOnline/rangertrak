@@ -637,8 +637,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Stored status colour -> a CSS colour for the status radio labels. Semantic keys resolve
-   * to their --rt-status-* token (which carries light/dark); a custom colour passes through.
+   * Stored status color -> a CSS color for the status radio labels. Semantic keys resolve
+   * to their --rt-status-* token (which carries light/dark); a custom color passes through.
    * See status-color.ts.
    */
   statusColor(stored: string): string {

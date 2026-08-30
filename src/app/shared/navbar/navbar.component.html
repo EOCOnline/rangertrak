@@ -6,7 +6,7 @@
   <!-- E-63b: the brand mark IS the Home affordance now - the separate "Home" nav item is
        gone. Icon is favicon.svg's own path (Material's "explore"/compass mark, already the
        app's real icon per E-42/E-62 - not a new logo), inlined with currentColor so it
-       follows .title's colour with no separate asset request. routerLinkActive mirrors
+       follows .title's color with no separate asset request. routerLinkActive mirrors
        what "Home" used to show: active only on an exact match, not on every route (this
        link's target). -->
   <span title="RangerTrak" class="title">
@@ -103,7 +103,7 @@
       }
     </button>
 
-    <!-- 2026-08-26: the mockup showed three colour schemes (styles/_chrome.scss's
+    <!-- 2026-08-26: the mockup showed three color schemes (styles/_chrome.scss's
          ridgeline/command/nightwatch), but there was never a way to actually pick one - it
          was a compile-time edit to styles/_active-skin.scss, one line, then a rebuild. This
          is that made real: shared/services/skin.service.ts owns the choice, a `data-skin`
@@ -112,7 +112,7 @@
          better as a list with the current one checked than as an unlabelled icon a scribe
          has to click through blind. -->
     <button type="button" class="skin-toggle" [matMenuTriggerFor]="skinMenu"
-      aria-label="Colour scheme" title="Colour scheme">
+      aria-label="Color scheme" title="Color scheme">
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
         <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />
         <circle cx="12" cy="8" r="1.6" fill="currentColor" />

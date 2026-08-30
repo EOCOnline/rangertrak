@@ -262,10 +262,10 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             heading: 'Tactical call signs',
             // F29-16 (2026-08-29): reworded to lead with Ranger ID - post-D-42, that (not
             // callsign) is what actually identifies a responder throughout the app. Callsign
-            // is what gets said over the radio, which not everyone has (no amateur licence);
+            // is what gets said over the radio, which not everyone has (no amateur license);
             // the old wording implied callsign was the identifier, which stopped being true
             // once D-42 shipped.
-            text: 'Every responder is identified by their Ranger ID, not their call sign - so a responder without an amateur licence still needs to be pickable on Entry. Give them a tactical sign, or leave the call sign blank and RangerTrak will fall back to their name.'
+            text: 'Every responder is identified by their Ranger ID, not their call sign - so a responder without an amateur license still needs to be pickable on Entry. Give them a tactical sign, or leave the call sign blank and RangerTrak will fall back to their name.'
           }
         ]
       },
@@ -306,11 +306,11 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           },
           {
             heading: 'Location defaults',
-            text: 'These seed the Entry form’s starting position only. Maps ignore them — a map auto-centres on the centroid of the reports actually entered, then zooms to fit them all.'
+            text: 'These seed the Entry form’s starting position only. Maps ignore them — a map auto-centers on the centroid of the reports actually entered, then zooms to fit them all.'
           },
           {
             heading: 'Readiness',
-            text: 'The coloured dot in the page header tracks six setup checks. When it is not green, this page lists exactly which ones are failing and links to the field that fixes each.'
+            text: 'The colored dot in the page header tracks six setup checks. When it is not green, this page lists exactly which ones are failing and links to the field that fixes each.'
           },
           {
             heading: 'Backup and advanced options',
@@ -341,7 +341,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
               // session, not distinct shapes too (that would need a symbol layer with
               // pre-registered images - a bigger change, not built yet) - this used to claim
               // "shape and color" unconditionally, which overclaimed for MapLibre specifically.
-              'Each ranger has their own marker colour, consistent across sessions. Leaflet also gives each ranger a distinct marker shape; MapLibre currently distinguishes by colour only.',
+              'Each ranger has their own marker color, consistent across sessions. Leaflet also gives each ranger a distinct marker shape; MapLibre currently distinguishes by color only.',
               'On the Leaflet map, the control in the top-right corner switches the base map between street and topographic.'
             ]
           },

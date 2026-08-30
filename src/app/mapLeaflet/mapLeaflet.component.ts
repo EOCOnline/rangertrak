@@ -407,7 +407,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     //
     // Fixed 2026-08-26 (live report): the layer had NO effect at all - toggling the
     // checkbox correctly added/removed it (confirmed reading L.Control.Layers, standard
-    // Leaflet behaviour), but every tile request 404'd, so there was nothing to see either
+    // Leaflet behavior), but every tile request 404'd, so there was nothing to see either
     // way. What looked like "hillshade never turns off" was OpenTopoMap's own baked-in
     // relief shading (it's a full contour basemap, not a plain one) being mistaken for this
     // overlay; "never turns on" over OSM was this broken layer genuinely rendering nothing.
@@ -449,7 +449,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // `tiles` (OSM) specifically, same scope wireOfflineAreaInfo() has - OpenTopoMap's own
     // saved tiles aren't shown here yet, same open item that row's own comment already
     // names for the bulk-save control.
-    // Plain literal colour, not a --rt-* token: Leaflet's SVG renderer sets these as real
+    // Plain literal color, not a --rt-* token: Leaflet's SVG renderer sets these as real
     // presentation attributes at construction time, before this element is ever in the
     // document to inherit a token from - same reasoning that ruled out a token for
     // MapLibre's own paint config just above (a different renderer, same underlying
@@ -942,7 +942,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // Redraw from scratch. Without this, toggling all/selected or receiving new
     // reports piled fresh markers on top of the old ones - and the line removed
     // just above reassigned displayedFieldReportArray to *all* reports, so the
-    // selected-only view could never be honoured no matter what the switch said.
+    // selected-only view could never be honored no matter what the switch said.
     this.clearMarkers()
 
     this.log.verbose(`displayMarkers: ${this.displayedFieldReportArray.length} of 'em`, this.id)
@@ -951,9 +951,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         let title = `${i.callsign} at ${formatReportTime(i.date)} with ${i.status}`
         //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
-        // E-86 (narrowed): a distinct shape+colour per ranger callsign, team ignored for now.
-        // Raised live 2026-08-26: the status halo behind it, coloured per the Mission page's
-        // own configured status colours - same lookup the Entry/Reports status controls use.
+        // E-86 (narrowed): a distinct shape+color per ranger callsign, team ignored for now.
+        // Raised live 2026-08-26: the status halo behind it, colored per the Mission page's
+        // own configured status colors - same lookup the Entry/Reports status controls use.
         const statusColor = fieldReportStatusColor(i.status, this.settings.fieldReportStatuses)
         // D-42 phase 5: rangerUid (unique per ranger, set even with a blank callsign) takes
         // priority over callsign - see ranger-icon.ts's header comment for why.
@@ -966,7 +966,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         // E-11 (2026-08-26): evidenceLocation was captured on Entry and shown only on its
         // own mini-map - never here, so it was effectively orphaned the moment a report was
         // submitted. Same icon Entry's mini-map draws (evidenceIconFor(), shared/mapping/
-        // ranger-icon.ts) so a scribe recognises it instantly on the mission overview too.
+        // ranger-icon.ts) so a scribe recognizes it instantly on the mission overview too.
         if (i.evidenceLocation) {
           let evidenceTitle = `Evidence/clue from ${i.callsign} at ${formatReportTime(i.date)}`
           let evidenceMarker = L.marker(
@@ -1120,9 +1120,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   }
 
   /**
-   * E-80 phase 1: static per-callsign route trails, coloured by the callsign's current
+   * E-80 phase 1: static per-callsign route trails, colored by the callsign's current
    * team. Drawn from the same displayedFieldReportArray markers use, so the all/selected
-   * switch and new-report redraws are honoured automatically (both call displayMarkers(),
+   * switch and new-report redraws are honored automatically (both call displayMarkers(),
    * which calls this after clearMarkers() has emptied myTrailsLayer).
    *
    * Deliberately still no animation or timer - only the elapsed-time READOUT itself was
@@ -1158,9 +1158,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       // plausible while being wrong) if drawn in array order instead of report date.
       const ordered = [...reports].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       // E-97: was teamColorFor(ranger.team) - team is usually blank (E-80 deferred it),
-      // so nearly every trail fell through to one grey "unknown" colour. rangerColorFor()
+      // so nearly every trail fell through to one grey "unknown" color. rangerColorFor()
       // is the same identity-keyed function the marker fill uses, so a ranger's trail and
-      // marker can never show different colours.
+      // marker can never show different colors.
       const color = rangerColorFor(key)
       const segmentCount = ordered.length - 1
 

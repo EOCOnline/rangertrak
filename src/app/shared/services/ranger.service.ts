@@ -662,7 +662,7 @@ export class RangerService implements OnInit {
     // A second, commented-out roster of ~307 entries used to sit here: 267 distinct real
     // names and 197 street addresses for licensed amateurs in the 98070/98013 ZIPs, pulled
     // from the FCC ULS. It was dead code - already commented out, never executed - but it
-    // was *tracked* source in a public repository, which is a worse place for neighbours'
+    // was *tracked* source in a public repository, which is a worse place for neighbors'
     // home addresses than a gitignored data file (see PRIVATE-Roadmap.md Section 9f).
     //
     // Deleted 2026-08-14. The live seed above is stations only. Real rosters arrive via

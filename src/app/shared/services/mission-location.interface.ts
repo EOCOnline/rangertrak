@@ -13,9 +13,9 @@
 
 /**
  * A mission-configured category of location - Command Post, Staging Area, Ranger First Aid,
- * Other, etc. Mirrors FieldReportStatusType's shape (a name plus a colour, mission-editable),
+ * Other, etc. Mirrors FieldReportStatusType's shape (a name plus a color, mission-editable),
  * minus `icon`: locations are drawn as one shape family on the map (locationIconFor()),
- * distinguished from each other by colour and label, not by a per-category image asset.
+ * distinguished from each other by color and label, not by a per-category image asset.
  */
 export type LocationCategoryType = {
   type: string,
@@ -31,7 +31,7 @@ export type LocationCategoryType = {
  * later rather than a breaking change to this shape.
  *
  * `type` stores the category NAME (a string), resolved against the mission's own
- * `locationTypes` list for its colour - same indirection FieldReportType.status uses against
+ * `locationTypes` list for its color - same indirection FieldReportType.status uses against
  * fieldReportStatuses, not a second enum to keep in sync.
  */
 export type MissionLocationType = {

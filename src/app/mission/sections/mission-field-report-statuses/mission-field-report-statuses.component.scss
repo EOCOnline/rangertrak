@@ -1,7 +1,7 @@
 @use "../../../../styles/section" as section;
 // E-65: `width: 400px` was a hard floor, so on a 390px phone this grid pushed the whole
 // Settings page's layout viewport out to ~417px rather than scrolling inside itself. The
-// Rangers grid is the reference for the intended behaviour ("reachable, not broken,
+// Rangers grid is the reference for the intended behavior ("reachable, not broken,
 // horizontal scroll inside its own container is acceptable" - the deliberately-deferred
 // phone-layout decision): it stays within the page and scrolls internally. max-width
 // gives this grid the same property while keeping 400px as the size it wants when there

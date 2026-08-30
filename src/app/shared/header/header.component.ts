@@ -175,7 +175,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
    * E-83: "clicking somewhere on the wide pill next to the Field Entry header should bring
    * it back up" - the status-cluster is shared/app-wide (every route renders HeaderComponent),
    * so rather than scoping this to Entry-only, clicking it from anywhere navigates to Entry
-   * AND reopens the panel - a simpler, equally discoverable behaviour than disabling the
+   * AND reopens the panel - a simpler, equally discoverable behavior than disabling the
    * click on every other route. Ignores clicks that landed on the readiness dot specifically
    * (its own `routerLink="/mission"` already handles those) so the two don't both fire.
    */

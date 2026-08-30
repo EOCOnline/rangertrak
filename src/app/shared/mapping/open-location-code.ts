@@ -372,7 +372,7 @@ export  class OpenLocationCode {   // TODO: default
         .replace(new RegExp(OpenLocationCode.PADDING_CHARACTER_ + OpenLocationCode.SEPARATOR_), '')
         .toUpperCase();
 
-    // Initialise the values for each section. We work them out as integers and
+    // Initialize the values for each section. We work them out as integers and
     // convert them to floats at the end.
     let normalLat = -OpenLocationCode.LATITUDE_MAX_ * OpenLocationCode.PAIR_PRECISION_;
     let normalLng = -OpenLocationCode.LONGITUDE_MAX_ * OpenLocationCode.PAIR_PRECISION_;
@@ -395,7 +395,7 @@ export  class OpenLocationCode {   // TODO: default
     let lngPrecision = pv / OpenLocationCode.PAIR_PRECISION_;
     // Process any extra precision digits.
     if (editedCode.length > OpenLocationCode.PAIR_CODE_LENGTH_) {
-      // Initialise the place values for the grid.
+      // Initialize the place values for the grid.
       let rowpv = OpenLocationCode.GRID_LAT_FIRST_PLACE_VALUE_;
       let colpv = OpenLocationCode.GRID_LNG_FIRST_PLACE_VALUE_;
       // How many digits do we have to process?

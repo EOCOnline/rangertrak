@@ -82,7 +82,7 @@ export class MapPageComponent implements OnInit, OnDestroy {
   // maplibreComponentType() was null again because nothing had re-triggered the dynamic
   // import for this new instance - the switch showed checked over an empty page. Loading
   // MapLibre here, whenever a fresh instance finds the engine already set to it, closes
-  // that gap without touching the switch's own behaviour.
+  // that gap without touching the switch's own behavior.
   ngOnInit(): void {
     if (this.engine() === 'maplibre') {
       this.loadMaplibre()

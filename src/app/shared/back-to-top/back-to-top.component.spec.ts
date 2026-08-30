@@ -33,7 +33,7 @@ describe('BackToTopComponent', () => {
     component.toTop();
     expect(spy).toHaveBeenCalled();
     // Whatever the motion preference resolves to in the test browser, it must be one of
-    // the two valid behaviours - never undefined, which would silently mean "auto".
+    // the two valid behaviors - never undefined, which would silently mean "auto".
     const arg = spy.calls.mostRecent().args[0] as ScrollToOptions;
     expect(arg.top).toBe(0);
     expect(['smooth', 'auto']).toContain(arg.behavior as string);

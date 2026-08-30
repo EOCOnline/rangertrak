@@ -121,7 +121,7 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
   imgDir = "./assets/imgs/"  //! NOTE: Hardcoded, not possible to edit & potential security risk?!
 
   /**
-   * The editable working set behind the status/colour grid, owned here and handed to
+   * The editable working set behind the status/color grid, owned here and handed to
    * `MissionFieldReportStatusesComponent` by reference. Unlike the read-only mirrors
    * elsewhere this cannot be a getter - the user edits these rows and the grid's
    * `addStatus()` pushes to them - so it is re-seeded from the settings subscription
@@ -149,7 +149,7 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
 
   /**
    * E-79: the header's readiness dot (ADR D-32) only ever showed the aggregate red/amber/
-   * green colour, so a scribe on this page had to hover the header pill and cross-reference
+   * green color, so a scribe on this page had to hover the header pill and cross-reference
    * its tooltip text back against the sections below to find what was actually wrong.
    * `MissionReadinessService`'s six signals already exist individually - no new
    * decomposition needed, just surfacing them here. Two (mission name, operating period)

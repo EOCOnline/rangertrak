@@ -299,7 +299,7 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     // is a real path, not a dead end). maxZoom 17 matches OpenTopoMap's own published tile-
     // generation limit (21 was fine for OSM, but asking OpenTopoMap past 17 returns blank
     // tiles) - a scribe zooming this preview in past that sees the last available level held
-    // at its native resolution, same behaviour LmapComponent's own OpenTopoMap layer already
+    // at its native resolution, same behavior LmapComponent's own OpenTopoMap layer already
     // has. No save control here though; that's the full map's job, not this small preview's.
     const tiles = tileLayerOffline('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
       maxZoom: 17,
@@ -619,7 +619,7 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
         let title = `${i.callsign} at ${formatReportTime(i.date)} with ${i.status}`
         //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
-        // E-86 (narrowed): a distinct shape+colour per ranger callsign, team ignored for now.
+        // E-86 (narrowed): a distinct shape+color per ranger callsign, team ignored for now.
         // NOT given the status halo the main map's markers got (2026-08-26) - this mini-map
         // is deliberately minimal by design (a crosshair-cursor position picker for the
         // CURRENT report, not a mission overview), reverted same day once that was raised.

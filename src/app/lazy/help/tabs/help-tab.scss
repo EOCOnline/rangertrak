@@ -2,7 +2,7 @@
 // the same prose rules - the per-page duplication PageComponent/SectionComponent exist
 // to avoid, applied here too.
 //
-// Everything below is expressed in --rt-* tokens, never raw colours, so the tabs follow the
+// Everything below is expressed in --rt-* tokens, never raw colors, so the tabs follow the
 // skin and both schemes without a prefers-color-scheme block of their own. See
 // styles/_tokens.scss for why light-dark() pairs are structurally mandatory here.
 
@@ -88,7 +88,7 @@ li {
   color                   : var(--rt-notice-ink);
 }
 
-// Licence paragraphs on the About tab.
+// License paragraphs on the About tab.
 .indented {
   margin-inline-start: 1rem;
 }
@@ -161,7 +161,7 @@ li {
   // (the bold treatment above is scoped to <th>, which only ever existed in the now-hidden
   // header row), so a setting name like "Google Geocoding API key" read as identical body
   // text to the sentence describing it. Gives the first cell in each row the same
-  // font-weight/colour .reference th already carries at desktop width, restoring the
+  // font-weight/color .reference th already carries at desktop width, restoring the
   // label-vs-value hierarchy the two-column layout conveyed through position alone.
   //
   // NOT applied to .reference--parallel (help-start's "works offline" / "needs a

@@ -2,7 +2,7 @@
 
 // Sprint B (25a item 1): the marmot stays - Help is prose and can carry a photograph -
 // but it was painted with a `to bottom` scrim that ended at rgba(8,8,8,0.5) while the text
-// colour was hardcoded `black`. So the further down the page you read, the closer the text
+// color was hardcoded `black`. So the further down the page you read, the closer the text
 // came to black-on-dark, and the photo credit was the least legible line of all.
 //
 // Now the image is a fixed, low-opacity wash on its own layer and the text is plain token
@@ -22,7 +22,7 @@
   background-image                        : url("../../../assets/imgs/AlpineMarmot.png");
   background-size                         : cover;
   background-position                     : center;
-  // One value for both schemes on purpose: `light-dark()` takes colours, not numbers, and
+  // One value for both schemes on purpose: `light-dark()` takes colors, not numbers, and
   // a scrim that needs a per-scheme opacity is a scrim that is too strong in one of them.
   // F29-34 (2026-08-29): maintainer reported it as too dim; raised 0.15 -> 0.30 (an absolute
   // +15 percentage points, not a relative +15%, since a relative bump would be invisible at
@@ -43,7 +43,7 @@ filter: brightness(30%);
 //https://rapidapi.com/guides/css-painting-api
 
 // E-84: tab shell. The tab body carries the page's prose, so it needs breathing room the
-// bare Material panel does not give it; the tab strip itself keeps Material's own behaviour
+// bare Material panel does not give it; the tab strip itself keeps Material's own behavior
 // (keyboard nav, focus ring, overflow paging on narrow screens) untouched.
 .help-tabs {
   margin-block: 1rem 2rem;
@@ -51,7 +51,7 @@ filter: brightness(30%);
 
 // mat-stretch-tabs="false" leaves labels at their natural width, so six of them scroll
 // rather than each being squeezed to a sixth of the viewport - Material pages them on a
-// phone, which is the behaviour we want here.
+// phone, which is the behavior we want here.
 .help-tabs .mat-mdc-tab-body-content {
   padding-block: 1rem;
   // Material sets overflow:hidden on the body content; prose that ends up wider than the

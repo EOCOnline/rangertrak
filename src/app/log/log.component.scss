@@ -2,7 +2,7 @@
   height          : 70vh;
   font-family     : monospace;
   // Raised live 2026-08-30: 0.75em read too small for a dense monospace log meant to be
-  // actually read, not just scanned for colour.
+  // actually read, not just scanned for color.
   font-size       : 0.9em;
   line-height     : 1.45;
   padding         : 4px 6px;
@@ -12,7 +12,7 @@
   overflow        : auto;
 }
 
-// One entry. Note these level colours only started taking effect once the panel was
+// One entry. Note these level colors only started taking effect once the panel was
 // rendered from the template: hand-built innerHTML never receives the component's style
 // scoping attribute, so the old code's classes could never match (its own comment said as
 // much). Kept muted deliberately - the point is to distinguish levels at a glance in a

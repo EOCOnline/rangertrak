@@ -7,7 +7,7 @@
 //@include icon-button.core-styles;
 
 // Sprint A: the active route was bold+italic only. 19f confirmed that reads as weak rather
-// than absent, so it keeps the weight and gains a token-coloured underline instead of a
+// than absent, so it keeps the weight and gains a token-colored underline instead of a
 // second font style.
 .active {
   font-weight  : 600;
@@ -17,7 +17,7 @@
 .main-nav {
   display        : flex;
   // Requested in live review: the brand mark, nav links, and right-side icons were each
-  // sitting at their own natural top-of-line height instead of a shared centreline.
+  // sitting at their own natural top-of-line height instead of a shared centerline.
   align-items    : center;
   // Sprint A: was rgb(183, 244, 255), a pale cyan that belonged to no palette.
   background     : var(--rt-chrome);
@@ -159,7 +159,7 @@
 }
 
 // Menu items render in Material's own surface/on-surface tokens (not the navbar's dark
-// chrome ones), so these two need no colour of their own beyond what the swatch itself is.
+// chrome ones), so these two need no color of their own beyond what the swatch itself is.
 .skin-swatch {
   display      : inline-block;
   width        : 0.9em;
@@ -187,9 +187,9 @@
 }
 
 // E-53: was invisible - the navbar chrome is dark navy in both light and dark app
-// scheme under the Command skin (--rt-chrome / --rt-chrome-dark are both dark colours,
+// scheme under the Command skin (--rt-chrome / --rt-chrome-dark are both dark colors,
 // see styles/_chrome.scss), and this PNG is GitHub's near-black mark on a transparent
-// background, so it was rendering dark-on-dark. No light-coloured asset exists to swap
+// background, so it was rendering dark-on-dark. No light-colored asset exists to swap
 // to, so invert it - safe unconditionally, since the chrome bar never becomes light
 // under this skin regardless of scheme.
 #gitLogo {

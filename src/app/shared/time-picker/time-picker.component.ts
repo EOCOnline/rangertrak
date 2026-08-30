@@ -197,7 +197,7 @@ export class TimePickerComponent implements OnInit, OnChanges {
   /**
    * Pure derivation of the combined date+time from the model - replaces the old
    * FormGroup.valueChanges subscription. Read, not subscribed to: onNewTime() below
-   * still fires emission explicitly, matching the original event-driven-only behaviour
+   * still fires emission explicitly, matching the original event-driven-only behavior
    * (no emission on load, only on user-facing date/time DOM events).
    */
   private combinedTime = computed<Date>(() => {
@@ -256,7 +256,7 @@ export class TimePickerComponent implements OnInit, OnChanges {
 
   /**
    * E-50's shared ▲/▼ buttons, now segment-aware. Falls back to minute (the original,
-   * only-ever behaviour) if nothing has been focused yet this session.
+   * only-ever behavior) if nothing has been focused yet this session.
    */
   adjustTime(delta: number) {
     this.stepSegment(this.activeSegment ?? 'minute', delta)

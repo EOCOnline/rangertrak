@@ -12,7 +12,7 @@ import { MATERIAL_IMPORTS } from '../../../material-imports'
  *
  * A plain one-option-per-line textarea rather than the ag-Grid `MissionFieldReportStatusesComponent`
  * uses for statuses: a recipient option is a single string with no per-row properties (no
- * colour, no icon), so a full grid would be pure overhead for what a scribe using this is
+ * color, no icon), so a full grid would be pure overhead for what a scribe using this is
  * going to do 95% of the time - add or rename a line. Parses on blur so a half-typed line
  * mid-edit never produces a change event.
  */
