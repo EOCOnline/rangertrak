@@ -89,11 +89,17 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   // Terrain overlay, off by default (same default as Leaflet's own equivalent checkbox
   // below) - see addHillshadeLayer()'s own comment for the source and why it's a real
   // MapLibre layer rather than a second style.
-  // Raised live 2026-08-30: on by default, matching LmapComponent's own new default
-  // (contour base layer + hillshade). MapLibre's PMTiles style has no contour data to switch
-  // to (buildPmtilesStyle() carries only water/landuse/roads/buildings, no elevation source),
-  // so hillshade is the one piece of that request this engine can actually offer.
-  public hillshadeVisible = signal(true)
+  // REVERTED live 2026-08-30, same day it was turned on: a live report (screenshots, phone,
+  // zoomed both out and in to Vashon) showed hillshade rendering as a full-viewport pale
+  // relief texture with NO visible basemap underneath at all - no roads, no water, no land
+  // colour. This engine's bundled vashon.pmtiles is already known to have very sparse tile
+  // coverage (Private Roadmap.md's own root-cause note: ~350 tiles total for the whole-island
+  // bounds its header claims), a data problem, not a code one. With hillshade off, a missing
+  // basemap read as an obviously-blank map; with it on, the same gap gets dressed up in a
+  // relief texture that looks like it might be real terrain, which is worse - it hides the
+  // fact that the basemap itself failed to render rather than surfacing it. Back to off by
+  // default until the tileset itself is regenerated with real coverage.
+  public hillshadeVisible = signal(false)
 
   // ADR D-49: Locations (Command Post, Staging Area, Ranger First Aid, ...). Plain
   // `maplibregl.Marker` DOM overlays, not a GeoJSON `symbol` layer like the field-report
@@ -283,8 +289,9 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
    * equivalent checkbox (mapLeaflet.component.ts) - kept as ONE real MapLibre layer added
    * on top of the vector basemap, not a second style, so toggling it is a plain
    * `setLayoutProperty` visibility flip rather than swapping the whole map's style (which
-   * would flash/reload the basemap and lose the reports source). Starts VISIBLE as of
-   * 2026-08-30 (`hillshadeVisible`'s own comment) - previously hidden by default;
+   * would flash/reload the basemap and lose the reports source). Starts hidden
+   * (`visibility: 'none'`) so the default view is unchanged - briefly turned on by default
+   * 2026-08-30, reverted the same day (see `hillshadeVisible`'s own comment for why);
    * `raster-opacity` matches Leaflet's own 50% so the vector roads/water/buildings stay
    * legible underneath.
    *
