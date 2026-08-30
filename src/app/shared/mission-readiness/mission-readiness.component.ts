@@ -6,15 +6,15 @@ import { MissionReadinessService } from '../services'
 /**
  * ADR D-32: the persistent readiness indicator, rendered once inside HeaderComponent so it
  * appears on every page. A colored dot rather than text/icon - the header strip is already
- * dense on a phone - with the full breakdown in its `title` tooltip. Deliberately never
- * reads as a permission gate: nothing here disables Entry or any other action.
+ * dense on a phone. Deliberately never reads as a permission gate: nothing here disables
+ * Entry or any other action.
  *
  * The dot itself is a `routerLink` to /mission - a reasonable general-purpose fallback, and
- * where three of the six signals live anyway. F29-21 (2026-08-30) went further: each row in
- * the tooltip breakdown is now its OWN link, straight to the specific section that actually
- * fixes that one signal (Rangers for the roster, Map for the two offline-prep checks) - "each
- * readiness line links directly to the page+field that fixes it" was the maintainer's own
- * framing of what the dot's single generic link was missing. See the `items` getter below.
+ * where three of the six signals live anyway. The full six-item breakdown, each row its own
+ * link straight to the section that fixes it (F29-21, 2026-08-30 - "each readiness line
+ * links directly to the page+field that fixes it"), lives in HeaderComponent's own hover
+ * panel now, not here - see that component's `readinessItems()` for the ported version of
+ * what used to be this component's own `items` getter.
  */
 @Component({
   selector: 'rangertrak-mission-readiness',
@@ -51,27 +51,8 @@ export class MissionReadinessComponent implements OnInit {
     ].join('\n')
   }
 
-  // Structured form of the same six signals, for the visual tooltip - lets the template
-  // color each mark (green ✓ / red ✗) instead of the plain-text glyphs a native `title`
-  // attribute is stuck rendering in whatever color the OS tooltip uses.
-  //
-  // F29-21 (2026-08-30): `route`/`fragment` on each row is the actual feature the maintainer
-  // asked for - "should each readiness line link directly to the page+field that fixes it?
-  // yes, that is the real feature." Previously only the dot itself linked anywhere, and only
-  // to Mission generically, regardless of which signal was actually failing. Each id here is
-  // a real element in the target page (see that element's own "F29-21" comment) -
-  // withInMemoryScrolling's anchorScrolling (app.config.ts) is what turns the fragment into
-  // an actual scroll-to-element on arrival, not just a URL change. Mission named and
-  // Operating period current share one target: both live in the same Mission Details card.
-  get items(): { ok: boolean, label: string, route: string, fragment: string }[] {
-    const r = this.readiness
-    return [
-      { ok: r.missionNamed(), label: 'Mission named', route: '/mission', fragment: 'readiness-mission-details' },
-      { ok: r.rosterLoaded(), label: 'Real roster loaded', route: '/rangers', fragment: 'rangersgrid' },
-      { ok: r.opPeriodCurrent(), label: 'Operating period current', route: '/mission', fragment: 'readiness-mission-details' },
-      { ok: r.offlineTilesSaved(), label: 'Offline map tiles saved (Leaflet)', route: '/map', fragment: 'readiness-offline-tiles' },
-      { ok: r.bundledMapWarmed(), label: 'Alternative map warmed (MapLibre)', route: '/map', fragment: 'readiness-map-engine-switch' },
-      { ok: r.storagePersisted(), label: 'Storage protected from eviction', route: '/mission', fragment: 'readiness-storage-protection' },
-    ]
-  }
+  // Raised live 2026-08-30: the structured (route/fragment-linked) form of this breakdown
+  // moved to HeaderComponent.readinessItems() - this dot is only ever used inside that
+  // component's own pill now, and having both render their own competing hover panels was
+  // the actual complaint. This getter stays for the plain-text tooltip/aria-label above.
 }

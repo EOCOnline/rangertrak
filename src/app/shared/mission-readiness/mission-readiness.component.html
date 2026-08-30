@@ -1,23 +1,12 @@
-<span class="readiness">
-  <a class="readiness-dot" routerLink="/mission" [class.readiness-dot--red]="readiness.level() === 'red'"
-    [class.readiness-dot--amber]="readiness.level() === 'amber'"
-    [class.readiness-dot--green]="readiness.level() === 'green'"
-    [attr.aria-label]="tooltip + '. Go to Mission to resolve issues.'" role="img"></a>
-
-  <!-- Custom hover/focus panel, not a native `title` - a browser tooltip can't color
-       individual characters, and green ✓ / red ✗ was the whole point of this pass. -->
-  <div class="readiness-tooltip" role="tooltip">
-    <div class="readiness-tooltip__level">Mission readiness: {{ readiness.level() }}</div>
-    <!-- F29-21 (2026-08-30): each row is now a real link straight to the section that fixes
-         it, not just plain text - see the items getter's own comment. A failing row (item.ok
-         false) is the one a scribe actually wants to click; a passing row still links to the
-         same place, since jumping to "where this lives" is harmless either way. -->
-    @for (item of items; track item.label) {
-      <a class="readiness-tooltip__row" [routerLink]="item.route" [fragment]="item.fragment">
-        <span class="readiness-tooltip__mark" [class.readiness-tooltip__mark--ok]="item.ok"
-          [class.readiness-tooltip__mark--bad]="!item.ok">{{ item.ok ? '✓' : '✗' }}</span>
-        {{ item.label }}
-      </a>
-    }
-  </div>
-</span>
+<!-- Raised live 2026-08-30: this dot used to carry its own separate hover tooltip
+     (readiness breakdown) - since this component is only ever embedded inside
+     HeaderComponent's own status-cluster pill, that meant hovering the tiny dot showed one
+     panel while hovering the rest of the pill showed a different one. HeaderComponent's own
+     .rt-mission-info-panel now includes this same readiness breakdown (ported from this
+     component's own items/tooltip getters below), so this is just the dot + its accessible
+     name; `title` is enough to explain it in isolation via keyboard/AT if the dot itself
+     receives focus outside the pill's own hover panel. -->
+<a class="readiness-dot" routerLink="/mission" [class.readiness-dot--red]="readiness.level() === 'red'"
+  [class.readiness-dot--amber]="readiness.level() === 'amber'"
+  [class.readiness-dot--green]="readiness.level() === 'green'"
+  [attr.title]="tooltip" [attr.aria-label]="tooltip + '. Go to Mission to resolve issues.'" role="img"></a>

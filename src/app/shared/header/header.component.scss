@@ -18,18 +18,18 @@
     justify-content: space-between;
   }
 
-  // ADR D-39/E-54: all four rules below used to reference `Lato, 'Arial Narrow Bold',
-  // sans-serif` - Lato was never actually loaded (only in a commented-out old Google
+  // ADR D-39/E-54: all four rules below used to reference Lato, Arial Narrow Bold,
+  // sans-serif - Lato was never actually loaded (only in a commented-out old Google
   // Fonts link in index.html), so this was silently falling through to whatever
   // sans-serif the OS substituted. Now uses the real type-scale tokens (Roboto, already
   // loaded) rather than a second dead font reference.
-  // The maintainer reported .status-cluster's own padding as "way too high" - measured
-  // live and it wasn't the padding. `.header` is `display:flex` with the default
-  // `align-items: stretch`, and this heading carried no margin rule of its own, so it
-  // fell back to the browser's default `<h1>` margin (0.67em top+bottom, ~18.76px each
-  // at this type role's size) - unreset UA chrome, not a deliberate value. That inflated
-  // this element's own outer (margin) box to ~73.5px, and stretch then forced
-  // .status-cluster to match it, even though the cluster's own content + padding only
+  // The maintainer reported .status-cluster own padding as "way too high" - measured
+  // live and it was not the padding. .header is display:flex with the default
+  // align-items: stretch, and this heading carried no margin rule of its own, so it
+  // fell back to the browser default h1 margin (0.67em top+bottom, ~18.76px each
+  // at this type role size) - unreset UA chrome, not a deliberate value. That inflated
+  // this element own outer (margin) box to ~73.5px, and stretch then forced
+  // .status-cluster to match it, even though the cluster own content + padding only
   // wanted ~36px. Zeroing the margin here fixes it at the source rather than compensating
   // in the cluster.
   .title {
@@ -46,11 +46,12 @@
 
   // E-57(1): the grouped status readout - readiness dot, mission info, op-period timers,
   // clock - as one visual unit (surface card + dividers) rather than four independent flex
-  // items spread by the header's own space-between. Wraps on narrow screens rather than
+  // items spread by the header own space-between. Wraps on narrow screens rather than
   // overflowing; each piece still collapses to nothing when its own content is empty
-  // (Angular's interpolation), but now that emptiness reads as "a shorter pill", not as
+  // (Angular interpolation), but now that emptiness reads as "a shorter pill", not as
   // debris floating in open space.
   .status-cluster {
+    position     : relative;
     display      : flex;
     align-items  : center;
     gap          : var(--rt-space-sm);
@@ -64,6 +65,13 @@
     cursor       : pointer;
   }
 
+  // F29-19 (2026-08-29) separator between the op-period number and the elapsed-time
+  // countdown used to be a bold, enlarged literal pipe glyph - visually inconsistent with
+  // the plain 1px .status-divider bars between every other section of the pill. Raised live
+  // 2026-08-30: all the pipes throughout the mission pill should have the same styling -
+  // the markup now reuses this same class inline (see the template), just needing
+  // display:inline-block since .opPeriod is plain inline text, not a flex container (a flex
+  // item used display is auto-blockified even without this; a plain inline span is not).
   .status-divider {
     width      : 1px;
     height     : 1em;
@@ -71,28 +79,97 @@
     flex       : none;
   }
 
-  // Raised live 2026-08-30: replaces the old always-visible `.event` span (mission #/name,
-  // free text) - that content moved into the "More info" popup below since it barely changes
-  // once a mission is set up, and free text of arbitrary length was the actual reason the
-  // pill went nearly full-width and wrapped badly.
-  .header__info-btn {
-    display        : inline-flex;
-    align-items    : center;
-    justify-content: center;
-    width          : 1.6em;
-    height         : 1.6em;
-    padding        : 0;
-    border         : none;
-    border-radius  : 50%;
-    background     : none;
-    color          : inherit;
-    cursor         : pointer;
+  .status-divider--inline {
+    display       : inline-block;
+    vertical-align: -0.15em;
+    margin        : 0 0.1em;
+  }
 
-    mat-icon {
-      font-size: 1.15em;
-      width    : 1.15em;
-      height   : 1.15em;
+  // Raised live 2026-08-30: one hover panel for the whole pill (mission info + readiness
+  // together), replacing an earlier click-only icon+mat-menu popup. Same proven CSS-only
+  // reveal pattern MissionReadinessComponent own (now-removed) tooltip used: opacity and
+  // visibility toggled by the ancestor hover/focus-within state, no JS open/close timing
+  // to get wrong.
+  .rt-mission-info-panel {
+    position     : absolute;
+    top          : calc(100% + 8px);
+    left         : 0;
+    // Matches the readiness dot own former tooltip - see that component history for why
+    // (Leaflet internal panes and zoom control both compete for z-index near the map).
+    z-index      : 1100;
+    width        : max-content;
+    max-width    : 360px;
+    background   : var(--rt-surface);
+    color        : var(--rt-ink);
+    border       : 1px solid var(--rt-line);
+    border-radius: var(--rt-radius);
+    box-shadow   : 0 4px 12px rgba(0, 0, 0, 0.25);
+    padding      : 0.6em 0.8em;
+    font-size    : 0.85rem;
+    line-height  : 1.4;
+    text-align   : left;
+    cursor       : default; // the pill itself is a click target; this panel own text is not
+
+    opacity       : 0;
+    visibility    : hidden;
+    pointer-events: none;
+    transition    : opacity 0.1s ease;
+  }
+
+  .status-cluster:hover .rt-mission-info-panel,
+  .status-cluster:focus-within .rt-mission-info-panel {
+    opacity       : 1;
+    visibility    : visible;
+    pointer-events: auto; // the readiness rows inside are real links - see the base rule above
+  }
+
+  .rt-mission-info-panel__title {
+    @include type.type-body;
+    margin     : 0 0 0.35em;
+    font-weight: 700;
+  }
+
+  .rt-mission-info-panel__notes {
+    margin     : 0 0 0.6em;
+    color      : var(--rt-ink-2);
+    white-space: pre-wrap;
+  }
+
+  .rt-mission-info-panel__grid {
+    display              : grid;
+    grid-template-columns: auto 1fr;
+    gap                  : 0.15em 0.75em;
+    margin               : 0;
+
+    dt {
+      color      : var(--rt-ink-2);
+      font-weight: 600;
     }
+
+    dd {
+      margin: 0;
+    }
+  }
+
+  .rt-mission-info-panel__readiness {
+    margin-top : 0.6em;
+    padding-top: 0.5em;
+    border-top : 1px solid var(--rt-line);
+  }
+
+  .rt-mission-info-panel__readiness-level {
+    font-weight  : 700;
+    margin-bottom: 0.3em;
+  }
+
+  .rt-mission-info-panel__readiness-row {
+    display        : block;
+    color          : inherit;
+    text-decoration: none;
+    border-radius  : 3px;
+    margin         : 0 -0.3em;
+    padding        : 0.1em 0.3em;
+    white-space    : nowrap;
 
     &:hover,
     &:focus-visible {
@@ -100,63 +177,24 @@
     }
   }
 
-  // The menu panel itself is Material's own overlay element, not part of this component's
-  // template - it never gets this component's view-encapsulation attribute, so reaching it
-  // needs ::ng-deep. Widened past MDC's default ~280px so the op-period range doesn't wrap
-  // mid-date; the inner .rt-mission-info div (below) caps its own width to match.
-  :host ::ng-deep .rt-mission-info-menu {
-    max-width: 360px;
+  .rt-mission-info-panel__readiness-mark {
+    display    : inline-block;
+    width      : 1.1em;
+    font-weight: 700;
   }
 
-  .rt-mission-info {
-    max-width: 320px;
-    padding  : 0.25em 0.5em;
+  .rt-mission-info-panel__readiness-mark--ok {
+    color: var(--rt-readiness-green);
+  }
 
-    &__title {
-      @include type.type-body;
-      margin     : 0 0 0.35em;
-      font-weight: 700;
-    }
-
-    &__notes {
-      margin     : 0 0 0.6em;
-      color      : var(--rt-ink-2);
-      white-space: pre-wrap;
-    }
-
-    &__grid {
-      display              : grid;
-      grid-template-columns: auto 1fr;
-      gap                  : 0.15em 0.75em;
-      margin               : 0;
-
-      dt {
-        color      : var(--rt-ink-2);
-        font-weight: 600;
-      }
-
-      dd {
-        margin: 0;
-      }
-    }
+  .rt-mission-info-panel__readiness-mark--bad {
+    color: var(--rt-readiness-red);
   }
 
   .opPeriod {
     text-align : right;
     @include type.type-body-sm;
     font-weight: 700;
-  }
-
-  // F29-19 (2026-08-29): without a visible separator, a bare op-period number running
-  // straight into the elapsed-time number reads as one value, or as a clock time. A literal
-  // `|` glyph disambiguates them; enlarged and heavier than surrounding text because a plain
-  // `|` at body-sm size is easy to lose against dark-mode surfaces, and was somewhat too
-  // faint in light mode as well.
-  .opPeriod__pipe {
-    font-weight: 900;
-    font-size  : 1.3em;
-    opacity    : 0.8;
-    margin     : 0 0.05em;
   }
 
   .clock {
@@ -166,8 +204,8 @@
   }
 
   // Material-M3 pass, 2026-08-25: the status cluster and the new Guide button share the
-  // header's right-hand side, so they need a wrapper of their own - `.header` itself is a
-  // `space-between` row holding the title and this group.
+  // header right-hand side, so they need a wrapper of their own - .header itself is a
+  // space-between row holding the title and this group.
   .header__right {
     display    : flex;
     align-items: center;

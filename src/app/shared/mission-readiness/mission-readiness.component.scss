@@ -1,12 +1,8 @@
-// A dot, not text/icon - the header strip is already dense on a phone. Full breakdown lives
-// in the hover/focus panel below (see the component's `items` getter) and the aria-label
-// carries the same text (plain, via `tooltip`) for screen readers, so this is never
-// color-only information.
-.readiness {
-  position: relative;
-  display : inline-block;
-}
-
+// A dot, not text/icon - the header strip is already dense on a phone. Full breakdown
+// (2026-08-30: moved into HeaderComponent's own .rt-mission-info-panel, see that
+// component's readinessItems()) lives in the pill's shared hover panel now, not a tooltip
+// of this dot's own - the aria-label still carries the plain-text form (`tooltip`) for
+// screen readers regardless of which panel is showing.
 .readiness-dot {
   display                    : inline-block;
   // Requested in live review: was 12px, enlarged 20%.
@@ -51,82 +47,4 @@
   .readiness-dot--red {
     animation: none;
   }
-}
-
-.readiness-tooltip {
-  position             : absolute;
-  top                  : calc(100% + 8px);
-  left                 : 0;
-  // Confirmed live: 20 lost to Leaflet's own internal panes (tile/overlay/marker, up to
-  // ~650) once the mini-map is on-screen below the header - its container doesn't isolate
-  // its own stacking context, so those pane z-indexes compete directly against this one
-  // instead of staying scoped to the map. 1000 (Leaflet's panes' own ceiling) still lost to
-  // the zoom +/- control specifically - `.leaflet-top`/`.leaflet-bottom` (leaflet.css) sit
-  // at exactly z-index:1000 too, a tie this element's later DOM position doesn't win.
-  // Comfortably above that now.
-  z-index              : 1100;
-  min-width            : 240px;
-  background           : var(--rt-surface);
-  color                : var(--rt-ink);
-  border               : 1px solid var(--rt-line);
-  border-radius        : var(--rt-radius);
-  box-shadow           : 0 4px 12px rgba(0, 0, 0, 0.25);
-  padding              : 0.6em 0.8em;
-  font-size            : 0.85rem;
-  line-height          : 1.4;
-  text-align           : left;
-  white-space          : nowrap;
-
-  opacity       : 0;
-  visibility    : hidden;
-  pointer-events: none;
-  transition    : opacity 0.1s ease;
-}
-
-.readiness:hover .readiness-tooltip,
-.readiness:focus-within .readiness-tooltip {
-  opacity   : 1;
-  visibility: visible;
-  // F29-21 (2026-08-30): the base rule's pointer-events:none (above) was never a problem
-  // before - a plain-text tooltip has nothing to click - but it silently blocks every click
-  // on the real links each row is now, if left un-overridden here. Confirmed by reading the
-  // base rule, not assumed: it does NOT reset pointer-events on its own.
-  pointer-events: auto;
-}
-
-.readiness-tooltip__level {
-  font-weight  : 700;
-  margin-bottom: 0.3em;
-}
-
-// F29-21 (2026-08-30): was a plain <div>, no rule of its own - block layout came free from
-// the tag's own default display. Now a real <a>, which defaults to inline - display:block
-// restores the original one-row-per-line look, and the rest is standard "this is a link,
-// but not a blue-underlined one" treatment plus a hover cue so it reads as clickable.
-.readiness-tooltip__row {
-  display        : block;
-  color          : inherit;
-  text-decoration: none;
-  border-radius  : 3px;
-  margin         : 0 -0.3em;
-  padding        : 0.1em 0.3em;
-
-  &:hover,
-  &:focus-visible {
-    background: var(--rt-surface-2);
-  }
-}
-
-.readiness-tooltip__mark {
-  display    : inline-block;
-  width      : 1.1em;
-  font-weight: 700;
-}
-
-.readiness-tooltip__mark--ok {
-  color: var(--rt-readiness-green);
-}
-
-.readiness-tooltip__mark--bad {
-  color: var(--rt-readiness-red);
 }

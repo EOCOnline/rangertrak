@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
@@ -19,8 +20,10 @@ describe('HeaderComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ HeaderComponent ],
       // Renders MissionReadinessComponent, whose readiness dot is now a routerLink to
-      // /settings - needs a Router present.
-      providers: [ provideRouter([]) ]
+      // /settings - needs a Router present. HeaderComponent itself now injects
+      // MissionReadinessService directly too (2026-08-30, readinessItems()), which needs
+      // HttpClient.
+      providers: [ provideRouter([]), provideHttpClient() ]
     })
     .compileComponents();
   });
@@ -57,6 +60,39 @@ describe('HeaderComponent', () => {
     it('shows the real format once an event name is set', () => {
       component.onNewSettings(settingsWith('', 'Vashon SAR Exercise'));
       expect(component.eventInfo()).toBe('#: Vashon SAR Exercise');
+    });
+  });
+
+  // Raised live 2026-08-30: ported from MissionReadinessComponent's own now-removed
+  // `items` getter, since its per-row hover tooltip merged into this component's
+  // `.rt-mission-info-panel` - see that component's own updated spec/comment for why.
+  describe('readinessItems() (ported from MissionReadinessComponent)', () => {
+    it('has six items, each linking to the specific page+section that fixes it', () => {
+      const items = component.readinessItems();
+      expect(items.length).toBe(6);
+
+      const roster = items.find(i => i.label.includes('Real roster loaded'));
+      expect(roster?.route).toBe('/rangers');
+      expect(roster?.fragment).toBe('rangersgrid');
+
+      const tiles = items.find(i => i.label.includes('Offline map tiles saved'));
+      expect(tiles?.route).toBe('/map');
+      expect(tiles?.fragment).toBe('readiness-offline-tiles');
+
+      const warmed = items.find(i => i.label.includes('Alternative map warmed'));
+      expect(warmed?.route).toBe('/map');
+      expect(warmed?.fragment).toBe('readiness-map-engine-switch');
+
+      const storage = items.find(i => i.label.includes('Storage protected'));
+      expect(storage?.route).toBe('/mission');
+      expect(storage?.fragment).toBe('readiness-storage-protection');
+
+      const mission = items.find(i => i.label === 'Mission named');
+      const opPeriod = items.find(i => i.label.includes('Operating period current'));
+      expect(mission?.route).toBe('/mission');
+      expect(mission?.fragment).toBe('readiness-mission-details');
+      expect(opPeriod?.route).toBe('/mission');
+      expect(opPeriod?.fragment).toBe('readiness-mission-details');
     });
   });
 });

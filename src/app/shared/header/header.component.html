@@ -8,45 +8,49 @@
 <div class="header">
   <h1 class="title" title="{{pageDescription}}">{{parentTitle}} </h1>
   <div class="header__right">
+    <!-- Raised live 2026-08-30: replaces the earlier click-a-small-icon popup (mat-menu) -
+         "one shouldn't have to click the circled i, just hover over the pill" - and folds
+         mission readiness into the SAME panel rather than the readiness dot showing its own
+         separate one (MissionReadinessComponent no longer renders its own tooltip - it is
+         only ever used here, inside this unified pill). Plain CSS :hover/:focus-within reveal
+         (.rt-mission-info-panel below), same proven pattern as that old per-dot tooltip used -
+         no JS hover-tracking, no MatMenu open/close timing to get right. -->
     <div class="status-cluster" (click)="onStatusClusterClick($event)"
     title="Click to go to Field Entry and reopen the welcome panel">
     <rangertrak-mission-readiness></rangertrak-mission-readiness>
     <span class="status-divider"></span>
-    <!-- Raised live 2026-08-30: the mission name/notes used to sit inline here as free text,
-         which is what actually made the pill nearly full-width and wrap poorly - that data
-         barely changes once a mission is set up, unlike the countdown/clock beside it. Moved
-         into a proper HTML popup (mat-menu, not a native `title` tooltip) behind a small
-         "More info" icon that invites a click rather than requiring a hover to discover.
-         Gated on eventInfo() - same "collapses to nothing when empty" rule the old .event
-         span had (see this file's own E-57(1) comment above): a fresh/default mission with
-         nothing to show yet renders no button here at all, not a dead icon with an empty
-         popup. FOUND 2026-08-30 via e2e (checkPhoneWidth): rendering it unconditionally added
-         a fixed-width element the OLD span never contributed when empty, which was just
-         enough to push the whole page past a 390px phone viewport. -->
-    @if (eventInfo()) {
-    <button type="button" class="header__info-btn" [matMenuTriggerFor]="missionInfoMenu"
-      (click)="$event.stopPropagation()" aria-label="More mission info" title="More info">
-      <mat-icon>info</mat-icon>
-    </button>
-    <mat-menu #missionInfoMenu="matMenu" class="rt-mission-info-menu">
-      <div class="rt-mission-info" (click)="$event.stopPropagation()">
-        <h3 class="rt-mission-info__title">{{ eventInfo() }}</h3>
-        @if (missionNotes()) {
-        <p class="rt-mission-info__notes">{{ missionNotes() }}</p>
-        }
-        <dl class="rt-mission-info__grid">
-          <dt>Op period</dt><dd>{{ opPeriod() || '—' }}</dd>
-          <dt>Starts</dt><dd>{{ opPeriodStartDisplay() }}</dd>
-          <dt>Ends</dt><dd>{{ opPeriodEndDisplay() }}</dd>
-        </dl>
-      </div>
-    </mat-menu>
-    <span class="status-divider"></span>
-    }
-    <span class="opPeriod" title={{opPeriodDetails()}}>{{opPeriod()}} <span class="opPeriod__pipe">|</span> {{timeElapsed$ | async}} &
+    <span class="opPeriod">{{opPeriod()}} <span class="status-divider status-divider--inline"></span> {{timeElapsed$ | async}} &
       {{timeLeft$ | async}}</span>
     <span class="status-divider"></span>
     <span class="clock">{{timeCurrent | async | date: 'MMM d, HH:mm:ss'}}</span>
+
+    <div class="rt-mission-info-panel" role="tooltip" (click)="$event.stopPropagation()">
+      @if (eventInfo()) {
+      <h3 class="rt-mission-info-panel__title">{{ eventInfo() }}</h3>
+      } @else {
+      <h3 class="rt-mission-info-panel__title">No mission set</h3>
+      }
+      @if (missionNotes()) {
+      <p class="rt-mission-info-panel__notes">{{ missionNotes() }}</p>
+      }
+      <dl class="rt-mission-info-panel__grid">
+        <dt>Op period</dt><dd>{{ opPeriod() || '—' }}</dd>
+        <dt>Starts</dt><dd>{{ opPeriodStartDisplay() }}</dd>
+        <dt>Ends</dt><dd>{{ opPeriodEndDisplay() }}</dd>
+      </dl>
+
+      <div class="rt-mission-info-panel__readiness">
+        <div class="rt-mission-info-panel__readiness-level">Mission readiness: {{ readiness.level() }}</div>
+        @for (item of readinessItems(); track item.label) {
+        <a class="rt-mission-info-panel__readiness-row" [routerLink]="item.route" [fragment]="item.fragment">
+          <span class="rt-mission-info-panel__readiness-mark"
+            [class.rt-mission-info-panel__readiness-mark--ok]="item.ok"
+            [class.rt-mission-info-panel__readiness-mark--bad]="!item.ok">{{ item.ok ? '✓' : '✗' }}</span>
+          {{ item.label }}
+        </a>
+        }
+      </div>
+    </div>
     </div>
 
     <!-- Material-M3 pass, 2026-08-25: the single entry point to this screen's reference

@@ -52,31 +52,9 @@ describe('MissionReadinessComponent', () => {
     expect(dot.getAttribute('href')).toBe('/mission');
   });
 
-  // F29-21 (2026-08-30): each tooltip row used to be plain text; now it links straight to
-  // the section that fixes that specific signal, not just to Mission generically.
-  it('each readiness row links to the specific page+section that fixes it', () => {
-    const rows: HTMLAnchorElement[] = Array.from(
-      fixture.nativeElement.querySelectorAll('.readiness-tooltip__row')
-    );
-    expect(rows.length).toBe(6);
-
-    const roster = rows.find(r => r.textContent!.includes('Real roster loaded'));
-    expect(roster?.getAttribute('href')).toBe('/rangers#rangersgrid');
-
-    const tiles = rows.find(r => r.textContent!.includes('Offline map tiles saved'));
-    expect(tiles?.getAttribute('href')).toBe('/map#readiness-offline-tiles');
-
-    const warmed = rows.find(r => r.textContent!.includes('Alternative map warmed'));
-    expect(warmed?.getAttribute('href')).toBe('/map#readiness-map-engine-switch');
-
-    const storage = rows.find(r => r.textContent!.includes('Storage protected'));
-    expect(storage?.getAttribute('href')).toBe('/mission#readiness-storage-protection');
-
-    const mission = rows.find(r => r.textContent!.includes('Mission named'));
-    const opPeriod = rows.find(r => r.textContent!.includes('Operating period current'));
-    expect(mission?.getAttribute('href')).toBe('/mission#readiness-mission-details');
-    expect(opPeriod?.getAttribute('href')).toBe('/mission#readiness-mission-details');
-  });
+  // F29-21's row-links-to-specific-section test moved to header.component.spec.ts
+  // (readinessItems()) - 2026-08-30, this component no longer renders its own tooltip rows,
+  // see this file's own header comment.
 
   it('calls refresh() on init to pick up the async signals for this page view', () => {
     const readiness = TestBed.inject(MissionReadinessService);

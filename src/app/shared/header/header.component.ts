@@ -2,12 +2,13 @@ import { map, Observable, Subscription, timer } from 'rxjs'
 
 import { CommonModule } from '@angular/common'
 import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core'
-import { Router } from '@angular/router'
+import { Router, RouterLink } from '@angular/router'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
-import { MatMenuModule } from '@angular/material/menu'
 
-import { ClockService, LogService, MissionService, MissionType, WelcomePanelService } from '../services'
+import {
+  ClockService, LogService, MissionReadinessService, MissionService, MissionType, WelcomePanelService
+} from '../services'
 import { Utility } from '../'
 import { MissionReadinessComponent } from '../mission-readiness/mission-readiness.component'
 import { GuideService } from '../guide/guide.service'
@@ -25,7 +26,7 @@ import { GuideService } from '../guide/guide.service'
 @Component({
   selector: 'pageHeader',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule, MissionReadinessComponent],
+  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule, MissionReadinessComponent],
   templateUrl: './header.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./header.component.scss']
@@ -41,6 +42,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
    * routes with no guide content - see GuideService.available.
    */
   readonly guide = inject(GuideService)
+  readonly readiness = inject(MissionReadinessService)
 
   private id = 'Header component'
 
@@ -52,18 +54,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // there has no guaranteed path back into change detection. Signals close that gap
   // (Sprint G). Rendered on every page, so a stale value here would be widely visible.
   public eventInfo = signal('')
-  public eventDetails = signal('')
   public opPeriod = signal('')
-  public opPeriodDetails = signal('')
 
   // Raised live 2026-08-30: the pill was "nearly full width" and wrapped poorly on a real
-  // screen once a mission name was long - eventInfo/eventDetails above (native `title`
-  // tooltip text) were the only place that data ever showed. These back the new "More info"
-  // popup (mat-menu, below) instead: mission notes and the op-period's actual date range are
-  // relatively STATIC (set once at mission setup) compared to the live elapsed/left countdown
-  // that stays in the pill itself - moving the static half out is the actual width fix, not
-  // just a smaller font or a second line, which would still have the same content fighting
-  // for space on every page.
+  // screen once a mission name was long - eventInfo above (native `title` tooltip text,
+  // since removed) was the only place this data ever showed. These back the hover panel
+  // (.rt-mission-info-panel, header.component.html) instead: mission notes and the op-
+  // period's actual date range are relatively STATIC (set once at mission setup) compared to
+  // the live elapsed/left countdown that stays visible in the pill itself - moving the
+  // static half into a hover-reveal panel is the actual width fix, not just a smaller font
+  // or a second line, which would still have the same content fighting for space on every
+  // page.
   public missionNotes = signal('')
   public opPeriodStartDisplay = signal('')
   public opPeriodEndDisplay = signal('')
@@ -119,13 +120,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const mission = this.settings.mission.trim()
     const event = this.settings.event.trim()
     this.eventInfo.set(mission || event ? `#${mission}: ${event}` : '')
-    this.eventDetails.set(`Mission #: ${this.settings.mission}; Mission Name: ${this.settings.event}; Notes: ${this.settings.eventNotes}`)
     this.opPeriod.set(`${this.settings.opPeriod}`)
-    //   let start: Date = this.settings.opPeriodStart
-    // let end: Date = this.settings.opPeriodEnd
-    //  let s: string = start.toDateString()
-    //  let e: string = end.toDateString()
-    this.opPeriodDetails.set(`${this.settings.opPeriod}: ${this.settings.opPeriodStart} to ${this.settings.opPeriodEnd}`)
     this.missionNotes.set(this.settings.eventNotes.trim())
     // hour12: false - 24-hour clock throughout the app, not the locale default toLocaleString() would use.
     const timeOpts: Intl.DateTimeFormatOptions = {
@@ -179,6 +174,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
    * click on every other route. Ignores clicks that landed on the readiness dot specifically
    * (its own `routerLink="/mission"` already handles those) so the two don't both fire.
    */
+  /**
+   * ADR D-32/F29-21, ported from MissionReadinessComponent (2026-08-30): that component is
+   * only ever used here (inside this pill), and used to render its OWN separate hover
+   * tooltip on just the dot - raised live as one hover panel with mission info AND
+   * readiness together being clearer than two overlapping ones. Same six signals, same
+   * route/fragment targets as that component's own `items` getter.
+   */
+  readonly readinessItems = () => {
+    const r = this.readiness
+    return [
+      { ok: r.missionNamed(), label: 'Mission named', route: '/mission', fragment: 'readiness-mission-details' },
+      { ok: r.rosterLoaded(), label: 'Real roster loaded', route: '/rangers', fragment: 'rangersgrid' },
+      { ok: r.opPeriodCurrent(), label: 'Operating period current', route: '/mission', fragment: 'readiness-mission-details' },
+      { ok: r.offlineTilesSaved(), label: 'Offline map tiles saved (Leaflet)', route: '/map', fragment: 'readiness-offline-tiles' },
+      { ok: r.bundledMapWarmed(), label: 'Alternative map warmed (MapLibre)', route: '/map', fragment: 'readiness-map-engine-switch' },
+      { ok: r.storagePersisted(), label: 'Storage protected from eviction', route: '/mission', fragment: 'readiness-storage-protection' },
+    ]
+  }
+
   onStatusClusterClick(event: MouseEvent) {
     if ((event.target as HTMLElement).closest('.readiness-dot')) return
     this.welcomePanel.show()
