@@ -2,6 +2,65 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.89.1](https://github.com/EOCOnline/rangertrak/compare/v0.69.0...v0.89.1) (2026-08-30)
+
+
+### Features
+
+* **app,entry,radio-log,mission:** update banner app-wide, ranger-ID labels, grid fixes (0.77.0) ([250b156](https://github.com/EOCOnline/rangertrak/commit/250b156b5d780251ac0b36db00a565b9e689f6cd))
+* **entry,map:** F29-6 - Entry mini-map shows contours + hillshading by default ([ac44332](https://github.com/EOCOnline/rangertrak/commit/ac443322e804f63208cb4ba269bbec56de14d33b))
+* **entry,mission,messages:** Batch 4 Source + operator identity from the 2026-08-29 feedback stream (F29-43, F29-45, F29-46, F29-47, F29-48) ([a0e4994](https://github.com/EOCOnline/rangertrak/commit/a0e49940356781a154364537fcbe9d99b7eef832))
+* **feedback,log,map,mapLeaflet:** Material-M3 completeness audit (0.70.0) ([7695624](https://github.com/EOCOnline/rangertrak/commit/7695624f069cfc2b5c04a290f400d446b64c6f4a))
+* **help,mission,rangers:** Help tab split, Log discoverability, per-mission ID label (0.74.0) ([a6a95bb](https://github.com/EOCOnline/rangertrak/commit/a6a95bb36bc2dc42c71d6d08ab9d60f7b5c1baf9))
+* **help,shared,log:** Batch 3 Help restructure from the 2026-08-29 feedback stream (D-d, F29-18, F29-29, F29-31, F29-32, F29-33) ([81fbd31](https://github.com/EOCOnline/rangertrak/commit/81fbd3194e2f349691884c232bdf09df04a72638))
+* **messages:** show Subject/Operator, make messages editable, warn once printed ([061f489](https://github.com/EOCOnline/rangertrak/commit/061f4891869aa3b2a160aad3118f122356a655f5))
+* **mission-readiness:** F29-21 - each readiness row links to the section that fixes it ([c86f2af](https://github.com/EOCOnline/rangertrak/commit/c86f2afcc4df6bd3f24693453642b61cc9c31908))
+* **mission,map:** add Locations (ADR D-49) - place, edit, delete on the map ([c978931](https://github.com/EOCOnline/rangertrak/commit/c97893197016c1980934ea534fd408e044b09f97))
+* **mission,shared:** F29-23 - warn before leaving Mission with unsaved changes ([9e06977](https://github.com/EOCOnline/rangertrak/commit/9e0697742a1f689dfbe35fa52c85c809d12700fb))
+* **mission:** add a Locations list; fix "honour" for a US audience ([631a4c7](https://github.com/EOCOnline/rangertrak/commit/631a4c76d1307fb9daf0d8ab77ea3c8468b5226c))
+* **mission:** make Location categories mission-editable ([a6b238d](https://github.com/EOCOnline/rangertrak/commit/a6b238dfb807ae6fa5897f5b0b8ea63366582d1f))
+* **radio-log,messages:** ICS-309/213 IA restructuring (0.75.0) ([860a678](https://github.com/EOCOnline/rangertrak/commit/860a678877fbbfd9d31bb294eba442d8b5746264))
+* **sample-data:** F29-11 - rewrite the demo mission with an ICS structure, walking-distance clusters, and real messages ([016dace](https://github.com/EOCOnline/rangertrak/commit/016dace596efd91d89721ce018503003210154ed))
+* **time:** use a 24-hour clock everywhere, drop the AM/PM segment ([b6a7158](https://github.com/EOCOnline/rangertrak/commit/b6a7158c1b2a70f62b3c63730355826d13868565))
+
+
+### Bug Fixes
+
+* **app,mission:** stop Mission's double update bar, keep install offer low-key (0.77.1) ([9c64a19](https://github.com/EOCOnline/rangertrak/commit/9c64a19553e309a2b6f03b2a56df383ae1866c7f))
+* **entry,guide:** root-cause a phone-viewport overflow contributor, Notes rows, guide text (0.71.0) ([7298611](https://github.com/EOCOnline/rangertrak/commit/729861196b65681fdb27764b1b57aedf7f5e718b))
+* **entry,map:** evidence-checkbox wrap, address Enter key, offline-tile buttons (0.76.0) ([78007d5](https://github.com/EOCOnline/rangertrak/commit/78007d5f8d9aff767e5fd89cb60a69aadaf6b6f9))
+* **entry:** center the evidence checkbox; flag offline geocoding ([a00968d](https://github.com/EOCOnline/rangertrak/commit/a00968d0ffef222f13b84006f06dde01897700b3))
+* **entry:** remove a stray <br/> inflating the Operator row's top gap; tighten evidence checkbox wording ([57d9458](https://github.com/EOCOnline/rangertrak/commit/57d94580fab57b4ac39ede7ee83d83471001d44a))
+* **entry:** strip locality suffix before validating a short +Code (0.77.2) ([4170b9d](https://github.com/EOCOnline/rangertrak/commit/4170b9d2b26bc8d3a60ba80ab49113f7fc701e3d))
+* **entry:** unify the When field's background with every other field ([95360b2](https://github.com/EOCOnline/rangertrak/commit/95360b29148069512e2fd44e5b08d3a86a454033))
+* **export:** drop the ICS-213 template's sample/instructions page ([a5e4422](https://github.com/EOCOnline/rangertrak/commit/a5e4422b79896416bbd00166aeca42e515717f62))
+* **field-reports,messages:** name pages after the ICS form they produce ([9761833](https://github.com/EOCOnline/rangertrak/commit/97618331a9830c9def60cff8b7d1d4c7d926e9d9))
+* **guide:** correct Entry guide wording, link coordinate-format terms ([ea80a93](https://github.com/EOCOnline/rangertrak/commit/ea80a93ab2f5d22d1a59ae58da6b82f038bb885a))
+* **guide:** explain what Operator means on the Entry page ([d668487](https://github.com/EOCOnline/rangertrak/commit/d6684878497631512080c0f4adb980aa3fde7d47))
+* **header:** hover reveals the mission-info panel, folds in readiness, drops the icon ([e248dd8](https://github.com/EOCOnline/rangertrak/commit/e248dd81141a1ef3de04e21426d3ab6c83b554d6))
+* **header:** move mission name/notes into a popup, narrow the status pill ([3d3ceb4](https://github.com/EOCOnline/rangertrak/commit/3d3ceb4fb381e634b2a5d40d1af1a60eeb02aa26))
+* **help:** scope the licence text to About; move page-specific tabs to Guide ([c12a4c5](https://github.com/EOCOnline/rangertrak/commit/c12a4c57da8d0a41946c0cb80c982665943cb1d1))
+* **i18n:** convert British spelling to American throughout the app ([dacb873](https://github.com/EOCOnline/rangertrak/commit/dacb8735a17bf790d791e243ce1bbf6dc8b05cdc))
+* **log:** bump font size for readability ([5a184d4](https://github.com/EOCOnline/rangertrak/commit/5a184d458357d208d17bed5042a8a701a3062bfa))
+* **map,entry:** Batch 5 first pass - MapLibre per-ranger marker colour (F29-7/8, partial) ([e35b86d](https://github.com/EOCOnline/rangertrak/commit/e35b86dfd95fe5022b5d53404f795daa854c42a4)), closes [#c0392](https://github.com/EOCOnline/rangertrak/issues/c0392)
+* **map:** default to contour base layer with hillshading on ([0f0cdec](https://github.com/EOCOnline/rangertrak/commit/0f0cdec1480ca724bf8dfbf2d6c506bfdeed9fe3))
+* **map:** give the whole map page a consistent margin, not just the frame ([72d72ec](https://github.com/EOCOnline/rangertrak/commit/72d72ec087db12ff13c381b0b7a926fe847d87f7))
+* **mapLeaflet:** green-orange-red scale for elapsed-time trail labels ([af7e41e](https://github.com/EOCOnline/rangertrak/commit/af7e41e238ae847715a8cef7346c0982e7675c79))
+* **map:** revert MapLibre hillshade default-on from earlier today ([6e1c8ce](https://github.com/EOCOnline/rangertrak/commit/6e1c8ce96d08023656c3a4ce8c940672606dd334))
+* **map:** stop MapLibre's basemap-warm fetch from racing fitBounds()'s tiles ([fcecdd1](https://github.com/EOCOnline/rangertrak/commit/fcecdd16070a7406274b3ec906b04b198bd9da12))
+* **map:** stop the MapLibre basemap-cache-warming fetch racing pmtiles-js's Range fetch (0.73.0) ([3066ce6](https://github.com/EOCOnline/rangertrak/commit/3066ce60e60f2f1c128017d5a95558d1438f4b64))
+* **map:** trail-elapsed tooltip styling never actually rendered ([62288dd](https://github.com/EOCOnline/rangertrak/commit/62288dd4baedcb35833c2371ab2d87d40dfd1052))
+* **map:** wrap the map-page toggles beside the overview map on a phone ([2ec5e2e](https://github.com/EOCOnline/rangertrak/commit/2ec5e2e59e326ac2c372bddb1bba6d65d417aad5))
+* **mission,guide:** §8 small items - F29-24, F29-16, F29-22 ([af5af2e](https://github.com/EOCOnline/rangertrak/commit/af5af2e30e39016d1261b373c5696d002e4b1fff))
+* **mission,sample-data:** "REW/TEW" hint; realistic sample mission fields ([da20a63](https://github.com/EOCOnline/rangertrak/commit/da20a63ef92872c189616cda3618c2713f2c443b))
+* **mission:** "Reset mission to defaults" left the footer showing "Version 0" ([0a6ad63](https://github.com/EOCOnline/rangertrak/commit/0a6ad633eb1d28dba9191118ca2cf9018333999a))
+* **rangers,mission,map,guide:** matButton-on-label bug, guide text corrections (0.72.0) ([1412f30](https://github.com/EOCOnline/rangertrak/commit/1412f30c2afc725e3e33fa79ac23ebeaf73bebd4))
+* **rangers,mission:** Batch 2 self-contained bugs from the 2026-08-29 feedback stream (F29-13, F29-1) ([fdf6e4d](https://github.com/EOCOnline/rangertrak/commit/fdf6e4da902345b71575e3e97ac1305e38be93a0))
+* **sample-data:** keep every demo mission report on land ([5463b1c](https://github.com/EOCOnline/rangertrak/commit/5463b1cad5b85eec9d8479ccd096989cff9e5e6b))
+* **sample-data:** restore MERT1's boat patrol as one water-based track ([93cdef8](https://github.com/EOCOnline/rangertrak/commit/93cdef8c944c3108266e53ed68fa745a3a074866))
+* **ui:** Batch 1 mechanical fixes from the 2026-08-29 feedback stream (0.77.3) ([1a1bb56](https://github.com/EOCOnline/rangertrak/commit/1a1bb56f21979d6a3f026cde256e255c86d94f88))
+* **ui:** tint the whole Danger Zone header row, not just its label ([8d16155](https://github.com/EOCOnline/rangertrak/commit/8d161551538af3a4189fc19d50d94fe97f7c208a))
+
 ## [0.89.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-30)
 
 ### Fixes
