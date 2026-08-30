@@ -163,6 +163,8 @@ export class SampleDataService {
     // search actually moves.
     const MAURY = { lat: 47.4050, lng: -122.4200, name: 'Maury Island Marine Park' }
     const DOCKTON = { lat: 47.3739, lng: -122.4560, name: 'Dockton Park' }
+    // Every report below, including MERT1's, sits on land (trail, dock, or shoreline) -
+    // a marker plotted mid-harbor read as a data error, not a boat.
 
     type Row = {
       callsign: string
@@ -212,10 +214,10 @@ export class SampleDataService {
 
       // ── Dockton Park cluster - walking search pattern ──────────────────────────
       { callsign: 'CERT3', minutesAgo: 292, lat: DOCKTON.lat, lng: DOCKTON.lng, address: `${DOCKTON.name} - boat launch`, statusIndex: 4, notes: 'Team checked in at the boat launch, beginning shoreline sweep.', source: 'Voice', operator: 'Penny Chartwell' },
-      { callsign: 'MERT1', minutesAgo: 284, lat: DOCKTON.lat + 0.0008, lng: DOCKTON.lng - 0.0015, address: `${DOCKTON.name} - marina dock`, statusIndex: 4, notes: 'Launched from the marina, transiting Quartermaster Harbor at idle speed.', source: 'Packet', operator: 'Penny Chartwell' },
+      { callsign: 'MERT1', minutesAgo: 284, lat: DOCKTON.lat + 0.0008, lng: DOCKTON.lng - 0.0015, address: `${DOCKTON.name} - marina dock`, statusIndex: 4, notes: 'Checked in at the marina dock, beginning a shoreline sweep on foot.', source: 'Packet', operator: 'Penny Chartwell' },
       { callsign: 'Medic1', minutesAgo: 276, lat: DOCKTON.lat - 0.0010, lng: DOCKTON.lng + 0.0012, address: `${DOCKTON.name} - picnic shelter`, statusIndex: 4, notes: 'First-aid post set up at the picnic shelter, staged and ready.', source: 'Voice', operator: 'Penny Chartwell' },
       { callsign: 'CERT3', minutesAgo: 244, lat: DOCKTON.lat + 0.0022, lng: DOCKTON.lng + 0.0018, address: `${DOCKTON.name} - north shoreline trail`, statusIndex: 2, notes: 'Debris field along the north shoreline, photographed for assessment.', source: 'Voice', operator: 'Penny Chartwell' },
-      { callsign: 'MERT1', minutesAgo: 200, lat: DOCKTON.lat - 0.0005, lng: DOCKTON.lng - 0.0030, address: 'Quartermaster Harbor, mid-channel off Dockton', statusIndex: 0, notes: 'Position report, no vessels in distress observed.', source: 'Packet', operator: 'Penny Chartwell' },
+      { callsign: 'MERT1', minutesAgo: 200, lat: DOCKTON.lat + 0.0015, lng: DOCKTON.lng - 0.0020, address: `${DOCKTON.name} - shoreline overlook`, statusIndex: 0, notes: 'Shoreline patrol on foot, harbor visually clear, no vessels in distress observed.', source: 'Packet', operator: 'Penny Chartwell' },
       {
         callsign: 'CERT3', minutesAgo: 160, lat: DOCKTON.lat + 0.0022, lng: DOCKTON.lng + 0.0018, address: `${DOCKTON.name} - north shoreline trail`, statusIndex: 6,
         notes: 'URGENT: possible propane smell near the park maintenance shed, evacuating the picnic area as a precaution.', source: 'Voice', operator: 'Penny Chartwell',
@@ -224,7 +226,7 @@ export class SampleDataService {
         recipients213: ['Incident Commander', 'Logistics'],
       },
       { callsign: 'Medic1', minutesAgo: 152, lat: DOCKTON.lat - 0.0010, lng: DOCKTON.lng + 0.0012, address: `${DOCKTON.name} - picnic shelter`, statusIndex: 0, notes: 'Relocated first-aid post away from the shed as a precaution, no injuries.', source: 'Voice', operator: 'Penny Chartwell' },
-      { callsign: 'MERT1', minutesAgo: 100, lat: DOCKTON.lat + 0.0008, lng: DOCKTON.lng - 0.0015, address: `${DOCKTON.name} - marina dock`, statusIndex: 5, notes: 'Marine sweep complete, back at the dock, checking out.', source: 'Packet', operator: 'Penny Chartwell' },
+      { callsign: 'MERT1', minutesAgo: 100, lat: DOCKTON.lat + 0.0008, lng: DOCKTON.lng - 0.0015, address: `${DOCKTON.name} - marina dock`, statusIndex: 5, notes: 'Shoreline sweep complete, back at the dock, checking out.', source: 'Packet', operator: 'Penny Chartwell' },
       { callsign: 'CERT3', minutesAgo: 60, lat: DOCKTON.lat + 0.0022, lng: DOCKTON.lng + 0.0018, address: `${DOCKTON.name} - north shoreline trail`, statusIndex: 5, notes: 'Shoreline sweep complete, propane smell traced to a stored camp stove, resolved. Checking out.', source: 'Voice', operator: 'Penny Chartwell' },
 
       // ── Wrap-up ────────────────────────────────────────────────────────────────
