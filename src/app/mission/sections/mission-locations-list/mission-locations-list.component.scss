@@ -1,0 +1,40 @@
+@use "../../../../styles/section" as section;
+
+h2 {
+  @include section.section-header;
+}
+
+.rt-locations-list__empty {
+  color: var(--rt-ink-2);
+}
+
+.rt-locations-list {
+  width          : 100%;
+  max-width      : 640px;
+  border-collapse: collapse;
+
+  th, td {
+    text-align   : left;
+    padding      : 0.35em 0.6em;
+    border-bottom: 1px solid var(--rt-line);
+  }
+
+  th {
+    color      : var(--rt-ink-2);
+    font-weight: 600;
+  }
+}
+
+.rt-locations-list__swatch {
+  display      : inline-block;
+  width        : 0.8em;
+  height       : 0.8em;
+  border-radius: 2px;
+  margin-right : 0.4em;
+  vertical-align: -0.05em;
+}
+
+.rt-locations-list__actions {
+  white-space: nowrap;
+  text-align : right;
+}

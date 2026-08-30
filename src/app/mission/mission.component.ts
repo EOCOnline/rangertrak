@@ -26,6 +26,7 @@ import { MissionLocationSectionComponent } from './sections/mission-location-sec
 import { MissionMapsSectionComponent } from './sections/mission-maps-section/mission-maps-section.component'
 import { MissionFieldReportStatusesComponent } from './sections/mission-field-report-statuses/mission-field-report-statuses.component'
 import { MissionLocationTypesComponent } from './sections/mission-location-types/mission-location-types.component'
+import { MissionLocationsListComponent } from './sections/mission-locations-list/mission-locations-list.component'
 import { MissionRecipients213Component } from './sections/mission-recipients213/mission-recipients213.component'
 import { MissionAdvancedOptionsComponent } from './sections/mission-advanced-options/mission-advanced-options.component'
 
@@ -62,6 +63,7 @@ const blankMission: MissionType = {
     MissionMapsSectionComponent,
     MissionFieldReportStatusesComponent,
     MissionLocationTypesComponent,
+    MissionLocationsListComponent,
     MissionRecipients213Component,
     MissionAdvancedOptionsComponent,
     InstallUpdateComponent,
