@@ -1,7 +1,9 @@
 #log {
   height          : 70vh;
   font-family     : monospace;
-  font-size       : 0.75em;
+  // Raised live 2026-08-30: 0.75em read too small for a dense monospace log meant to be
+  // actually read, not just scanned for colour.
+  font-size       : 0.9em;
   line-height     : 1.45;
   padding         : 4px 6px;
   background-color: var(--rt-surface-2);
