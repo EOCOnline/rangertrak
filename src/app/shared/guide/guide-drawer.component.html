@@ -25,12 +25,12 @@
         <section class="guide__block">
           <h3 class="guide__heading">{{ block.heading }}</h3>
           @if (block.text) {
-          <p class="guide__text">{{ block.text }}</p>
+          <p class="guide__text" [innerHTML]="renderText(block.text)"></p>
           }
           @if (block.bullets) {
           <ul class="guide__list">
             @for (bullet of block.bullets; track bullet) {
-            <li>{{ bullet }}</li>
+            <li [innerHTML]="renderText(bullet)"></li>
             }
           </ul>
           }

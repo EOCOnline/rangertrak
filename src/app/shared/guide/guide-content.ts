@@ -31,6 +31,24 @@ export interface GuideBlock {
   bullets?: string[]
 }
 
+/**
+ * Renders a `text`/bullet string for display, turning any `[label](https://...)` markers
+ * into a real external link. Everything else is HTML-escaped first, so this is safe to bind
+ * via `[innerHTML]` even though the source is a plain string, not markdown - the guide has no
+ * other use for HTML markup, and this content is developer-authored, never user input.
+ */
+export function renderGuideText(raw: string): string {
+  const escaped = raw
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+  return escaped.replace(
+    /\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g,
+    (_match, label: string, href: string) =>
+      `<a href="${href}" target="_blank" rel="noopener noreferrer">${label}</a>`
+  )
+}
+
 /** One tab in the drawer. */
 export interface GuideTab {
   label: string
@@ -120,7 +138,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           },
           {
             heading: 'Notes and 213 messages are not the same thing',
-            text: 'Notes is the general record of this report — always saved, and what appears on the Radio Log grid and in the ICS-309 communications log. A 213 message is a separate, addressed message that only some reports generate (see the Messages page), and is often reworded rather than copied from your notes.'
+            text: 'Notes is the general record of this report — always saved, and what appears on the Radio Log grid and in the ICS-309 communications log: a ranger\'s status, purpose, or what happened. A 213 message is a separate, addressed message that only some reports generate (see the Messages page) — a formal request, order, or notification to a specific recipient. It is typed independently, not derived from your notes, because the two often serve different purposes entirely.'
           },
           {
             heading: 'Location formats',
@@ -129,10 +147,9 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
               'Decimal Degrees (DD) — 47.4476° −122.4626°',
               'Degrees + Decimal Minutes (DDM) — 47° 26.8′ N',
               'Degrees Minutes Seconds (DMS) — 47° 26′ 51″ N',
-              'MGRS — 10TFS 12345 67890',
-              'UTM — Zone 10 N, easting, northing',
-              'Plus Code, Maidenhead, or a street address — the single field below the coordinates',
-              'New to MGRS or UTM? Wikipedia\'s Military Grid Reference System article covers what they are and why SAR/wildland fire/military teams use them.'
+              '[MGRS](https://en.wikipedia.org/wiki/Military_Grid_Reference_System) (Military Grid Reference System) — 10TFS 12345 67890',
+              '[UTM](https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system) (Universal Transverse Mercator) — Zone 10 N, easting, northing',
+              '[Plus Code](https://en.wikipedia.org/wiki/Open_Location_Code), [Maidenhead](https://en.wikipedia.org/wiki/Maidenhead_Locator_System), or a street address — the single field below the coordinates'
             ]
           },
           {
@@ -141,7 +158,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           },
           {
             heading: 'The map beside the form',
-            text: 'The small map confirms where the location you typed actually landed. It is a check, not a drawing surface — glance at it, and if the pin is in the water, re-read the coordinates back over the radio.'
+            text: 'The small map confirms where the location you typed actually landed — glance at it, and if the pin is in the water, re-read the coordinates back over the radio. It is also a drawing surface: click anywhere on it to set the location directly instead of typing coordinates.'
           }
         ]
       },
