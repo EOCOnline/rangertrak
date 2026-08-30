@@ -19,3 +19,23 @@
     padding: 0 0.75em 0.75em;
   }
 }
+
+// Raised live 2026-08-30: on a wide header, the projected "Danger zone" label (left) and
+// Material's own expand/collapse chevron (always pinned to the far right of
+// mat-expansion-panel-header) read as unrelated - nothing tied the label to the row that
+// actually toggles it. Tinting the whole header, not just the label text
+// (.rt-danger-zone__summary in each caller already colours that), makes the entire clickable
+// row read as one warning-coloured unit regardless of how far apart its ends are.
+:host(.rt-danger-zone-trigger) {
+  &::ng-deep .mat-expansion-panel-header {
+    background: color-mix(in srgb, var(--rt-readiness-red) 8%, transparent);
+
+    &:hover, &.cdk-keyboard-focused, &.cdk-program-focused {
+      background: color-mix(in srgb, var(--rt-readiness-red) 16%, transparent);
+    }
+
+    .mat-expansion-indicator::after {
+      color: var(--rt-readiness-red);
+    }
+  }
+}
