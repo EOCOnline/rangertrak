@@ -8,12 +8,16 @@
        individual characters, and green ✓ / red ✗ was the whole point of this pass. -->
   <div class="readiness-tooltip" role="tooltip">
     <div class="readiness-tooltip__level">Mission readiness: {{ readiness.level() }}</div>
+    <!-- F29-21 (2026-08-30): each row is now a real link straight to the section that fixes
+         it, not just plain text - see the items getter's own comment. A failing row (item.ok
+         false) is the one a scribe actually wants to click; a passing row still links to the
+         same place, since jumping to "where this lives" is harmless either way. -->
     @for (item of items; track item.label) {
-      <div class="readiness-tooltip__row">
+      <a class="readiness-tooltip__row" [routerLink]="item.route" [fragment]="item.fragment">
         <span class="readiness-tooltip__mark" [class.readiness-tooltip__mark--ok]="item.ok"
           [class.readiness-tooltip__mark--bad]="!item.ok">{{ item.ok ? '✓' : '✗' }}</span>
         {{ item.label }}
-      </div>
+      </a>
     }
   </div>
 </span>

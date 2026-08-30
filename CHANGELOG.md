@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.88.0](https://github.com/EOCOnline/rangertrak/commit/TBD) (2026-08-30)
+
+### Features
+
+* **mission-readiness:** each row in the header readiness dot's tooltip breakdown now links straight to the section that fixes that specific signal (F29-21) - Rangers for the roster, Map for the two offline-prep checks, Mission for the rest - instead of every row being plain text pointing nowhere in particular, with only the dot itself linking (generically) to Mission. Uses the Router's fragment-scrolling (newly enabled app-wide) to land on the actual section, not just the page.
+
 ## [0.87.0](https://github.com/EOCOnline/rangertrak/commit/9e0697742a1f689dfbe35fa52c85c809d12700fb) (2026-08-30)
 
 ### Features

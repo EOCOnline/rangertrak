@@ -87,11 +87,34 @@
 .readiness:focus-within .readiness-tooltip {
   opacity   : 1;
   visibility: visible;
+  // F29-21 (2026-08-30): the base rule's pointer-events:none (above) was never a problem
+  // before - a plain-text tooltip has nothing to click - but it silently blocks every click
+  // on the real links each row is now, if left un-overridden here. Confirmed by reading the
+  // base rule, not assumed: it does NOT reset pointer-events on its own.
+  pointer-events: auto;
 }
 
 .readiness-tooltip__level {
   font-weight  : 700;
   margin-bottom: 0.3em;
+}
+
+// F29-21 (2026-08-30): was a plain <div>, no rule of its own - block layout came free from
+// the tag's own default display. Now a real <a>, which defaults to inline - display:block
+// restores the original one-row-per-line look, and the rest is standard "this is a link,
+// but not a blue-underlined one" treatment plus a hover cue so it reads as clickable.
+.readiness-tooltip__row {
+  display        : block;
+  color          : inherit;
+  text-decoration: none;
+  border-radius  : 3px;
+  margin         : 0 -0.3em;
+  padding        : 0.1em 0.3em;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--rt-surface-2);
+  }
 }
 
 .readiness-tooltip__mark {

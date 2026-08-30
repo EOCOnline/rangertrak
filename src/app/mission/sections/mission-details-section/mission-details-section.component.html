@@ -5,7 +5,10 @@
      dynamic subscript come from MAT_FORM_FIELD_DEFAULT_OPTIONS in app.config.ts, so no
      `appearance=` attribute is needed (or wanted) on any of them. -->
 
-<mat-card appearance="outlined" class="rt-mission-card">
+<!-- F29-21 (2026-08-30): id is a fragment-scroll target for the header readiness dot's
+     tooltip - "Mission named" and "Operating period current" both live in this one card, so
+     both readiness rows point here. See mission-readiness.component.ts's own comment. -->
+<mat-card appearance="outlined" class="rt-mission-card" id="readiness-mission-details">
   <mat-card-header>
     <mat-card-title>Mission</mat-card-title>
     <mat-card-subtitle>Names this incident on every report, export and printed ICS form.</mat-card-subtitle>

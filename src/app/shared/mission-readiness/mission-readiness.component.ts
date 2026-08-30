@@ -9,9 +9,12 @@ import { MissionReadinessService } from '../services'
  * dense on a phone - with the full breakdown in its `title` tooltip. Deliberately never
  * reads as a permission gate: nothing here disables Entry or any other action.
  *
- * The dot is a `routerLink` to /settings, not just a tooltip - every signal it tracks
- * (mission name, roster, op-period, offline tiles, storage persistence) is resolved from
- * there, so a scribe who hovers to read "what's wrong" has somewhere to click and fix it.
+ * The dot itself is a `routerLink` to /mission - a reasonable general-purpose fallback, and
+ * where three of the six signals live anyway. F29-21 (2026-08-30) went further: each row in
+ * the tooltip breakdown is now its OWN link, straight to the specific section that actually
+ * fixes that one signal (Rangers for the roster, Map for the two offline-prep checks) - "each
+ * readiness line links directly to the page+field that fixes it" was the maintainer's own
+ * framing of what the dot's single generic link was missing. See the `items` getter below.
  */
 @Component({
   selector: 'rangertrak-mission-readiness',
@@ -51,15 +54,24 @@ export class MissionReadinessComponent implements OnInit {
   // Structured form of the same six signals, for the visual tooltip - lets the template
   // colour each mark (green ✓ / red ✗) instead of the plain-text glyphs a native `title`
   // attribute is stuck rendering in whatever colour the OS tooltip uses.
-  get items(): { ok: boolean, label: string }[] {
+  //
+  // F29-21 (2026-08-30): `route`/`fragment` on each row is the actual feature the maintainer
+  // asked for - "should each readiness line link directly to the page+field that fixes it?
+  // yes, that is the real feature." Previously only the dot itself linked anywhere, and only
+  // to Mission generically, regardless of which signal was actually failing. Each id here is
+  // a real element in the target page (see that element's own "F29-21" comment) -
+  // withInMemoryScrolling's anchorScrolling (app.config.ts) is what turns the fragment into
+  // an actual scroll-to-element on arrival, not just a URL change. Mission named and
+  // Operating period current share one target: both live in the same Mission Details card.
+  get items(): { ok: boolean, label: string, route: string, fragment: string }[] {
     const r = this.readiness
     return [
-      { ok: r.missionNamed(), label: 'Mission named' },
-      { ok: r.rosterLoaded(), label: 'Real roster loaded' },
-      { ok: r.opPeriodCurrent(), label: 'Operating period current' },
-      { ok: r.offlineTilesSaved(), label: 'Offline map tiles saved (Leaflet)' },
-      { ok: r.bundledMapWarmed(), label: 'Alternative map warmed (MapLibre)' },
-      { ok: r.storagePersisted(), label: 'Storage protected from eviction' },
+      { ok: r.missionNamed(), label: 'Mission named', route: '/mission', fragment: 'readiness-mission-details' },
+      { ok: r.rosterLoaded(), label: 'Real roster loaded', route: '/rangers', fragment: 'rangersgrid' },
+      { ok: r.opPeriodCurrent(), label: 'Operating period current', route: '/mission', fragment: 'readiness-mission-details' },
+      { ok: r.offlineTilesSaved(), label: 'Offline map tiles saved (Leaflet)', route: '/map', fragment: 'readiness-offline-tiles' },
+      { ok: r.bundledMapWarmed(), label: 'Alternative map warmed (MapLibre)', route: '/map', fragment: 'readiness-map-engine-switch' },
+      { ok: r.storagePersisted(), label: 'Storage protected from eviction', route: '/mission', fragment: 'readiness-storage-protection' },
     ]
   }
 }

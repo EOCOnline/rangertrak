@@ -16,7 +16,10 @@
      for both, and stack on anything narrower with no breakpoint math needed. -->
 <div class="mission-advanced__grid">
 
-<mat-card appearance="outlined" class="rt-mission-card">
+<!-- F29-21 (2026-08-30): id is a fragment-scroll target for the header readiness dot's
+     "Storage protected from eviction" row - see mission-readiness.component.ts's own
+     comment. -->
+<mat-card appearance="outlined" class="rt-mission-card" id="readiness-storage-protection">
   <mat-card-header>
     <mat-card-title>Data safety</mat-card-title>
     <mat-card-subtitle>Everything RangerTrak knows lives in this browser, on this device.

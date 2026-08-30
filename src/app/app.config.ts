@@ -1,6 +1,8 @@
 import { ApplicationConfig, ErrorHandler, isDevMode, provideZonelessChangeDetection } from '@angular/core'
 import { provideAnimations } from '@angular/platform-browser/animations'
-import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router'
+import {
+  PreloadAllModules, provideRouter, withInMemoryScrolling, withPreloading
+} from '@angular/router'
 import { provideHttpClient } from '@angular/common/http'
 import { provideServiceWorker } from '@angular/service-worker'
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar'
@@ -33,7 +35,17 @@ export const appConfig: ApplicationConfig = {
     // field user can actually see - see global-error-handler.ts.
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideHttpClient(),
-    provideRouter(APP_ROUTES, withPreloading(PreloadAllModules)),
+    // F29-21 (2026-08-30): withInMemoryScrolling's anchorScrolling lets the header readiness
+    // dot's per-row links (mission-readiness.component.ts) jump straight to the section that
+    // fixes each one, not just the right page. scrollPositionRestoration 'enabled' alongside
+    // it is the standard pairing (restores scroll on back/forward too) - not itself part of
+    // F29-21, but leaving it at Angular's implicit default of 'disabled' when explicitly
+    // opting into the scrolling feature would be an odd half-measure.
+    provideRouter(
+      APP_ROUTES,
+      withPreloading(PreloadAllModules),
+      withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
+    ),
     provideServiceWorker('ngsw-worker.js', {
       enabled: environment.production || !isDevMode(),
       // Register the ServiceWorker as soon as the app is stable
