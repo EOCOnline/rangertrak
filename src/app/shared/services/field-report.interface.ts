@@ -148,6 +148,20 @@ export type FieldReportType = {
   // as the E-41 fields above: no schema-version bump, a returning user's older reports
   // simply lack it.
   evidenceLocation?: LocationType | null,
+  // Raised live 2026-08-30, tied directly to D-47 (reports/messages stay editable
+  // indefinitely, no time lock): that ADR anticipated exactly this pair - "indefinitely
+  // editable" and "visibly edited" - as the natural follow-on once it mattered in practice.
+  // `revisedAt` is stamped whenever MessagesComponent's own edit form saves a change (NOT by
+  // the Radio Log grid's cell edits - this is scoped to the Messages page's own new edit
+  // capability, not a general audit trail for every field). Optional/additive, same
+  // no-migration treatment as every other field added this way - a report with none simply
+  // has never been edited there.
+  revisedAt?: Date,
+  // Set the first time "Print as ICS-213" succeeds for this report (messages.component.ts),
+  // and never overwritten by a later reprint - it answers "has this gone out at all," not
+  // "when was it last printed." Drives the "you're editing a message that may have already
+  // been sent" warning - D-47's own "warning, not a block" policy, not a new one.
+  printedAt?: Date,
 }
 
 /**

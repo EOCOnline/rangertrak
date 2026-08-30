@@ -27,9 +27,14 @@
               <mat-card-subtitle>{{ m.date | date:'MMM d, y, HH:mm:ss' }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
+              @if (!editing()) {
               <dl class="messages__fields">
+                <dt>Operator</dt>
+                <dd>{{ m.operator || '(none recorded)' }}</dd>
                 <dt>To</dt>
                 <dd>{{ (m.recipients213 && m.recipients213.length) ? m.recipients213.join(', ') : '(none set)' }}</dd>
+                <dt>Subject</dt>
+                <dd>{{ m.subject213 || '(none set)' }}</dd>
                 <dt>Message</dt>
                 <dd class="messages__message-text">{{ m.message213 }}</dd>
                 @if (m.replyRequested213) {
@@ -37,11 +42,52 @@
                   <dd>Requested</dd>
                 }
               </dl>
+              <!-- Non-editable by design - see revisedAt/printedAt's own doc comments
+                   (field-report.interface.ts). Shown only once there is something to say;
+                   a never-edited, never-printed message shows neither line. -->
+              @if (m.revisedAt || m.printedAt) {
+              <p class="messages__meta">
+                @if (m.printedAt) {
+                <span>Printed {{ formatTime(m.printedAt) }}</span>
+                }
+                @if (m.revisedAt) {
+                <span>Last revised {{ formatTime(m.revisedAt) }}</span>
+                }
+              </p>
+              }
+              } @else {
+              <!-- Edit mode: message/subject/recipients/reply-requested only - the report's
+                   own `date` (when it was first filed) is deliberately not exposed here, see
+                   onSaveEdit()'s own comment. -->
+              <div class="messages__edit-form">
+                <mat-form-field appearance="outline">
+                  <mat-label>Subject</mat-label>
+                  <input matInput [ngModel]="editSubject()" (ngModelChange)="editSubject.set($event)" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>To (recipients, comma-separated)</mat-label>
+                  <input matInput [ngModel]="editRecipients()" (ngModelChange)="editRecipients.set($event)" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Message</mat-label>
+                  <textarea matInput rows="4" [ngModel]="editMessage()" (ngModelChange)="editMessage.set($event)"></textarea>
+                </mat-form-field>
+                <mat-checkbox [checked]="editReplyRequested()" (change)="editReplyRequested.set($event.checked)">
+                  Reply requested
+                </mat-checkbox>
+              </div>
+              }
             </mat-card-content>
             <mat-card-actions>
+              @if (!editing()) {
+              <button matButton="outlined" type="button" (click)="onEdit()">Edit</button>
               <button matButton="filled" type="button" [disabled]="printing()" (click)="printAsIcs213()">
                 {{ printing() ? 'Preparing…' : 'Print as ICS-213' }}
               </button>
+              } @else {
+              <button matButton type="button" (click)="onCancelEdit()">Cancel</button>
+              <button matButton="filled" type="button" (click)="onSaveEdit()">Save</button>
+              }
             </mat-card-actions>
           </mat-card>
         } @else {

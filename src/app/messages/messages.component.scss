@@ -96,3 +96,20 @@
 .messages__message-text {
   white-space: pre-wrap;
 }
+
+// Raised live 2026-08-30: revisedAt/printedAt - deliberately quiet, small text below the
+// main fields, not another dt/dd row - this is metadata ABOUT the message, not part of it.
+.messages__meta {
+  display   : flex;
+  gap       : var(--rt-space-md);
+  margin    : var(--rt-space-sm) 0 0;
+  color     : var(--rt-ink-2);
+  font-size : var(--rt-type-label-size);
+  font-style: italic;
+}
+
+.messages__edit-form {
+  display       : flex;
+  flex-direction: column;
+  gap           : var(--rt-space-sm);
+}
