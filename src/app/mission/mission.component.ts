@@ -44,7 +44,7 @@ const blankMission: MissionType = {
   maplibre: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   leaflet: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   imageDirectory: '', defFieldReportStatus: 0, fieldReportStatuses: [],
-  recipientOptions213: [], idFieldLabel: '',
+  recipientOptions213: [], idFieldLabel: '', locationTypes: [],
 }
 
 @Component({

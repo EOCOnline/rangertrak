@@ -16,22 +16,29 @@ import {
 import * as L from 'leaflet'
 
 //import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
-import { throwError } from 'rxjs'
+import { Subscription, throwError } from 'rxjs'
 
 import { DOCUMENT, NgTemplateOutlet } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
   AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, TemplateRef, ViewChild,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy, signal
 } from '@angular/core'
+import { MatButtonModule } from '@angular/material/button'
+import { MatDialog } from '@angular/material/dialog'
+import { MatIconModule } from '@angular/material/icon'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 import {
   AbstractMap, Utility, rangerIconFor, rangerColorFor, evidenceIconFor, fieldReportStatusColor,
-  formatReportTime
+  locationCategoryColor, locationIconFor, formatReportTime
 } from '../shared'
 import { DDToUTM, UTMToDD } from '../shared/mapping/coordinate'
-import { FieldReportService, FieldReportType, LocationType, LogService, RangerService, MissionService } from '../shared/services'
+import {
+  FieldReportService, FieldReportType, LocationType, LogService, MissionLocationService,
+  MissionLocationType, RangerService, MissionService
+} from '../shared/services'
+import { LocationDialogComponent } from '../map/location-dialog/location-dialog.component'
 
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
@@ -81,7 +88,7 @@ function formatBytes(bytes: number): string {
 @Component({
   selector: 'rangertrak-mapLeaflet',
   standalone: true,
-  imports: [NgTemplateOutlet, MatSlideToggleModule],
+  imports: [NgTemplateOutlet, MatSlideToggleModule, MatButtonModule, MatIconModule],
   templateUrl: './mapLeaflet.component.html',
   styleUrls: [
     './mapLeaflet.component.scss'
@@ -140,6 +147,22 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   mileGridLayer = L.layerGroup()
   mapOptions = ""
 
+  // ADR D-49: Locations (Command Post, Staging Area, Ranger First Aid, ...). A plain layer
+  // group, not clustered - locations are few and named, unlike field-report markers, so
+  // collapsing them into a cluster bubble would hide the exact thing a scribe opened the map
+  // to find. `locations` is cached from the subscription below and redrawn in full on every
+  // change, same "redraw from scratch" reasoning displayMarkers() already documents for
+  // field reports - cheap enough at the count a mission's own location list ever reaches.
+  private locationsLayer = L.layerGroup()
+  private locations: MissionLocationType[] = []
+  private locationsSubscription!: Subscription
+
+  // Armed by the "Add Location" button (template) - the NEXT plain map click places a
+  // location there instead of copying coordinates (onMouseClick, below), then disarms
+  // itself. One-shot, same "click, done" shape as the mini-map's Alt+click-for-evidence
+  // gesture, rather than a persistent mode a scribe could forget is still on.
+  placingLocation = signal(false)
+
   //markerClusterGroup: L.MarkerClusterGroup // MarkerClusterGroup extends FeatureGroup, retaining it's methods, e.g., clearLayers() & removeLayers()
   //markerClusterData = []
 
@@ -151,6 +174,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     httpClient: HttpClient,
     log: LogService,
     private rangerService: RangerService,
+    private locationService: MissionLocationService,
+    private dialog: MatDialog,
     @Inject(DOCUMENT) protected override document: Document
   ) {
     super(missionService,
@@ -166,6 +191,18 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     this.hasSelectedReports = true
 
     // this.markerClusterGroup = L.markerClusterGroup({ removeOutsideVisibleBounds: true });
+
+    // Cached here (constructor, same as AbstractMap's own mission/field-report
+    // subscriptions above via super()) rather than only read on demand: the ReplaySubject(1)
+    // replays synchronously, but `this.lMap` doesn't exist yet at that point - refreshLocation
+    // Markers() guards on it and ngOnInit calls it again once the map is actually built.
+    this.locationsSubscription = this.locationService.getLocationsObserver().subscribe({
+      next: (newLocations) => {
+        this.locations = newLocations
+        this.refreshLocationMarkers()
+      },
+      error: (e) => this.log.error(`Locations subscription error: ${e}`, this.id)
+    })
   }
 
   // override ngOnInit() {
@@ -179,6 +216,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     this.log.excessive("ngOnInit()", this.id)
 
     this.initMainMap()  //! REVIEW: Causes LOTS of "mapLeaflet:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
+
+    this.lMap.addLayer(this.locationsLayer)
+    this.refreshLocationMarkers()
 
     if (this.hasOverviewMap) {
       this.initOverviewMap()
@@ -792,6 +832,16 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     }
 
     let latlng = this.lMap.mouseEventToLatLng(ev)
+
+    // ADR D-49: armed by the "Add Location" button. Takes over this one click instead of the
+    // usual copy-to-clipboard, then disarms - see placingLocation's own comment for why this
+    // is one-shot rather than a persistent mode.
+    if (this.placingLocation()) {
+      this.placingLocation.set(false)
+      this.openLocationDialog(undefined, { lat: latlng.lat, lng: latlng.lng })
+      return
+    }
+
     let coords = `${Math.round(latlng.lat * 10000) / 10000}, ${Math.round(latlng.lng * 10000) / 10000}`
     navigator.clipboard.writeText(coords)
       .then(() => {
@@ -926,6 +976,53 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     // to refresh markers that have changed:
     // https://github.com/Leaflet/Leaflet.markercluster#refreshing-the-clusters-icon
+  }
+
+  /**
+   * ADR D-49: redraws every Location marker from scratch, same "clear and rebuild" approach
+   * displayMarkers() uses for field reports - cheap at the count a mission's own location
+   * list reaches, and simpler than diffing which locations changed.
+   *
+   * Guarded on `this.lMap`: the locations subscription (constructor) can fire before the map
+   * exists (ReplaySubject(1) replays synchronously) - see that subscription's own comment.
+   */
+  private refreshLocationMarkers(): void {
+    if (!this.lMap) {
+      return
+    }
+    this.locationsLayer.clearLayers()
+
+    this.locations.forEach(loc => {
+      const color = locationCategoryColor(loc.type, this.settings.locationTypes)
+      const marker = L.marker([loc.lat, loc.lng], { title: loc.name, icon: locationIconFor(loc.type, color) })
+      // Leaflet's default bubblingMouseEvents means a marker click ALSO reaches the map's
+      // own click handler (onMouseClick, bound on the container div in the template) unless
+      // stopped here - without this, clicking a location would also copy its coordinates to
+      // the clipboard and, worse, would fire the "place a new location" flow if placingLocation
+      // happened to be armed at the same time.
+      marker.on('click', (ev: L.LeafletMouseEvent) => {
+        ev.originalEvent?.stopPropagation()
+        this.openLocationDialog(loc)
+      })
+      this.locationsLayer.addLayer(marker)
+    })
+  }
+
+  /** Opens the add/edit dialog. `coords` for a fresh placement; `existing` to edit/delete one already on the map. */
+  private openLocationDialog(existing?: MissionLocationType, coords?: { lat: number, lng: number }): void {
+    this.dialog.open(LocationDialogComponent, {
+      data: {
+        lat: coords?.lat ?? existing?.lat ?? this.settings.defLat,
+        lng: coords?.lng ?? existing?.lng ?? this.settings.defLng,
+        locationTypes: this.settings.locationTypes,
+        existing,
+      }
+    })
+  }
+
+  /** Toggled by the "Add Location" button (template). Arms the next plain map click. */
+  onToggleAddLocation(): void {
+    this.placingLocation.set(!this.placingLocation())
   }
 
   /**
@@ -1379,6 +1476,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    */
   override ngOnDestroy(): void {
     super.ngOnDestroy()
+    this.locationsSubscription?.unsubscribe()
     clearTimeout(this.afterViewInitTimer)
     if (this.refreshSavedAreaInfo) {
       for (const layer of this.offlineTileLayers) {

@@ -5,7 +5,8 @@ import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 import * as packageJson from '../../../../package.json'
 import { FieldReportStatusType, LogService, MissionType } from './'
 import {
-  DEFAULT_FIELD_REPORT_STATUSES, DEFAULT_RECIPIENT_OPTIONS_213, MISSION_SCHEMA_VERSION, migrateMission
+  DEFAULT_FIELD_REPORT_STATUSES, DEFAULT_LOCATION_TYPES, DEFAULT_RECIPIENT_OPTIONS_213,
+  MISSION_SCHEMA_VERSION, migrateMission
 } from './mission-migration'
 
 @Injectable({ providedIn: 'root' })
@@ -306,6 +307,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       // fieldReportKeywords: [''],  // Future...could also just search notes field
       recipientOptions213: [...DEFAULT_RECIPIENT_OPTIONS_213],
       idFieldLabel: 'ID',
+      locationTypes: [...DEFAULT_LOCATION_TYPES],
     }
   }
 

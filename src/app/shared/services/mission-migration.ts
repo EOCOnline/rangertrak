@@ -1,4 +1,5 @@
 import { FieldReportStatusType } from './field-report.interface'
+import { LocationCategoryType } from './mission-location.interface'
 import { MissionType } from './mission.interface'
 import { StatusKey } from './status-color'
 
@@ -72,6 +73,20 @@ export const DEFAULT_FIELD_REPORT_STATUSES: ReadonlyArray<FieldReportStatusType>
 // "Restore suggested starter list" restores and what a brand-new mission starts with.
 export const DEFAULT_RECIPIENT_OPTIONS_213: ReadonlyArray<string> = [
   'Incident Commander', 'Ops', 'Planning', 'Logistics', 'Finance', 'EOC', 'LEO', 'PI',
+]
+
+/**
+ * ADR D-49 starter list, for initMission() - the Locations feature's default categories.
+ * Colours are literal hex, not the semantic `--rt-status-*` keys fieldReportStatuses uses:
+ * those tokens are specifically for field-report status and adding a second consumer would
+ * mean touching `_status.scss`/`_tokens.scss`/STATUS_KEYS for an unrelated feature. Editable
+ * per-mission via `MissionType.locationTypes`, same as fieldReportStatuses.
+ */
+export const DEFAULT_LOCATION_TYPES: ReadonlyArray<LocationCategoryType> = [
+  { type: 'Command Post', color: '#1565C0' },
+  { type: 'Staging Area', color: '#EF6C00' },
+  { type: 'Ranger First Aid', color: '#C62828' },
+  { type: 'Other', color: '#616161' },
 ]
 
 /**

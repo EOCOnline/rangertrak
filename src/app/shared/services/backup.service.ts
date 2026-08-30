@@ -3,11 +3,12 @@ import { Injectable } from '@angular/core'
 import * as packageJson from '../../../../package.json'
 import {
   FieldReportsType, FieldReportService, LogService, RangerService, RangerType, MissionService,
-  MissionType
+  MissionType, MissionLocationService, MissionLocationType
 } from './'
 import { migrateMission } from './mission-migration'
 import { normalizeRangerIds } from './ranger-migration'
 import { migrateFieldReports } from './field-report-migration'
+import { normalizeLocationUids } from './mission-location-migration'
 
 /**
  * A full mission backup: everything needed to restore the app to its
@@ -15,6 +16,11 @@ import { migrateFieldReports } from './field-report-migration'
  * `fieldReports.bounds` is intentionally omitted - it's derived data
  * (recalculated by FieldReportService.recalcFieldBounds() on every load),
  * not source-of-truth data, so there is nothing to usefully export there.
+ *
+ * `locations` (ADR D-49, 2026-08-30): optional on the TYPE, but always WRITTEN by
+ * buildExportPayload() - "optional" here means "a pre-D-49 export file may lack it," not
+ * "a caller may omit it going forward." importMission() defaults a missing one to `[]` so an
+ * older export still imports cleanly rather than being rejected outright.
  */
 export type MissionExport = {
   schemaVersion: number,
@@ -23,6 +29,7 @@ export type MissionExport = {
   settings: MissionType,
   rangers: RangerType[],
   fieldReports: Omit<FieldReportsType, 'bounds'>,
+  locations?: MissionLocationType[],
 }
 
 export const MISSION_EXPORT_SCHEMA_VERSION = 1
@@ -41,6 +48,7 @@ export class BackupService {
     private missionService: MissionService,
     private rangerService: RangerService,
     private fieldReportService: FieldReportService,
+    private locationService: MissionLocationService,
     private log: LogService,
   ) { }
 
@@ -63,6 +71,7 @@ export class BackupService {
       settings: this.missionService.settings,
       rangers: this.rangerService.rangers,
       fieldReports: fieldReportsSansBounds,
+      locations: this.locationService.getCurrentLocations(),
     }
   }
 
@@ -112,6 +121,9 @@ export class BackupService {
     this.rangerService.replaceAllRangers(normalizeRangerIds(payload.rangers).rangers)
     this.fieldReportService.replaceAllFieldReports(
       migrateFieldReports(payload.fieldReports) ?? payload.fieldReports)
+    // Missing on a pre-D-49 export (2026-08-30) - defaults to an empty list rather than
+    // rejecting the import, same tolerance every other additive field in this app gets.
+    this.locationService.replaceAllLocations(normalizeLocationUids(payload.locations ?? []))
 
     this.log.warn(`Imported mission from export dated ${payload.exportedAt} (schema v${payload.schemaVersion}, app v${payload.appVersion})`, this.id)
   }

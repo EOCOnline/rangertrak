@@ -1,4 +1,5 @@
 import { FieldReportStatusType } from './field-report.interface'
+import { LocationCategoryType } from './mission-location.interface'
 
 /**
  * This has 'all' event data (aside from Rangers & Field Reports)
@@ -87,4 +88,11 @@ export type MissionType = {
   // reasoning as recipientOptions213 immediately above - no MISSION_SCHEMA_VERSION bump
   // needed, backfillMissingFields supplies the default to any returning user.
   idFieldLabel: string,
+
+  // ADR D-49 (2026-08-30): mission-editable categories for the Locations feature (Command
+  // Post, Staging Area, Ranger First Aid, ...) - same indirection fieldReportStatuses already
+  // uses for FieldReportType.status, not a second mechanism. Additive-only field, same
+  // reasoning as recipientOptions213/idFieldLabel above - no MISSION_SCHEMA_VERSION bump
+  // needed, backfillMissingFields supplies DEFAULT_LOCATION_TYPES to any returning user.
+  locationTypes: LocationCategoryType[],
 }

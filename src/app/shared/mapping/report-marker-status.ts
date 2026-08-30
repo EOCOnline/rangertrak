@@ -1,4 +1,4 @@
-import { FieldReportStatusType, statusColorValue } from '../services'
+import { FieldReportStatusType, LocationCategoryType, statusColorValue } from '../services'
 
 /**
  * Resolves a field report's configured status colour for use as a marker "shadow" (a
@@ -14,6 +14,24 @@ export function fieldReportStatusColor(
 ): string | undefined {
   const entry = fieldReportStatuses.find(s => s.status === status)
   return entry ? statusColorValue(entry.color) : undefined
+}
+
+/**
+ * ADR D-49: resolves a Location's configured category colour against the mission's own
+ * `locationTypes` list - same indirection as fieldReportStatusColor() above, for the same
+ * reason (a mission can rename/recolour "Command Post" without this lookup changing). Unlike
+ * that function, `LocationCategoryType.color` is always a literal hex (mission-migration.ts's
+ * own comment on DEFAULT_LOCATION_TYPES explains why it deliberately skips the
+ * `--rt-status-*` semantic-token indirection `statusColorValue()` resolves) - so no
+ * `statusColorValue()` call is needed here, and the fallback is a neutral grey for a
+ * category name the mission's list no longer has (renamed/deleted after the location was
+ * placed), same "never silently invisible" reasoning as fieldReportStatusColor's callers.
+ */
+export function locationCategoryColor(
+  type: string,
+  locationTypes: LocationCategoryType[]
+): string {
+  return locationTypes.find(t => t.type === type)?.color ?? '#616161'
 }
 
 /**

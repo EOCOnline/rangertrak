@@ -1,4 +1,4 @@
-import { GeoJSONSource, Map as MaplibreMap, MapLayerMouseEvent, MapMouseEvent, Popup } from 'maplibre-gl'
+import { GeoJSONSource, Map as MaplibreMap, MapLayerMouseEvent, MapMouseEvent, Marker, Popup } from 'maplibre-gl'
 import type { FeatureCollection, Point } from 'geojson'
 import { Subscription } from 'rxjs'
 
@@ -7,10 +7,15 @@ import {
   AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, Input, OnDestroy, OnInit,
   TemplateRef, ViewChild, signal
 } from '@angular/core'
+import { MatButtonModule } from '@angular/material/button'
+import { MatDialog } from '@angular/material/dialog'
+import { MatIconModule } from '@angular/material/icon'
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 import { buildPmtilesStyle, DEFAULT_PMTILES_URL, registerPmtilesProtocol } from '../shared/mapping/map-style'
-import { fieldReportStatusColor, resolveCssColorForCanvas } from '../shared/mapping/report-marker-status'
+import {
+  fieldReportStatusColor, locationCategoryColor, resolveCssColorForCanvas
+} from '../shared/mapping/report-marker-status'
 // F29-7/8 (2026-08-29): rangerColorFor's own file imports Leaflet (for rangerIconFor's return
 // type - a real, if type-only-adjacent, module import), which E-64 otherwise keeps out of
 // MapLibre's lazy chunk on purpose. Accepted here anyway: Leaflet is ALWAYS the default
@@ -21,10 +26,16 @@ import { fieldReportStatusColor, resolveCssColorForCanvas } from '../shared/mapp
 // map's markers/trails (rather than a second colour scheme) is the actual point - ranger-
 // icon.ts's own doc comment on why this exists at all.
 import { rangerColorFor } from '../shared/mapping/ranger-icon'
+// ADR D-49: same Leaflet-import acceptance as rangerColorFor above - locationMarkerSvg()
+// itself touches no Leaflet API (it returns a plain SVG string), but its file also exports
+// the Leaflet-typed locationIconFor(), so importing it here pulls that module in regardless.
+import { locationMarkerSvg } from '../shared/mapping/location-icon'
 import {
-  FieldReportsType, FieldReportService, FieldReportType, LogService, MissionService, MissionType
+  FieldReportsType, FieldReportService, FieldReportType, LogService, MissionLocationService,
+  MissionLocationType, MissionService, MissionType
 } from '../shared/services'
 import { Utility, formatReportTime } from '../shared'
+import { LocationDialogComponent } from './location-dialog/location-dialog.component'
 
 const REPORTS_SOURCE_ID = 'field-reports'
 
@@ -36,7 +47,7 @@ const REPORTS_SOURCE_ID = 'field-reports'
 @Component({
   selector: 'rangertrak-mapLibre',
   standalone: true,
-  imports: [NgTemplateOutlet, MatSlideToggleModule],
+  imports: [NgTemplateOutlet, MatSlideToggleModule, MatButtonModule, MatIconModule],
   templateUrl: './mapLibre.component.html',
   styleUrls: ['./mapLibre.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager
@@ -80,9 +91,25 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   // MapLibre layer rather than a second style.
   public hillshadeVisible = signal(false)
 
+  // ADR D-49: Locations (Command Post, Staging Area, Ranger First Aid, ...). Plain
+  // `maplibregl.Marker` DOM overlays, not a GeoJSON `symbol` layer like the field-report
+  // dots above - locations are few and named, and a real DOM element is the simplest way to
+  // reuse locationMarkerSvg()'s own SVG string unchanged (a `symbol` layer would need each
+  // shape pre-registered as a raster/SDF image via `map.addImage()` instead).
+  private locationMarkers: Marker[] = []
+  private locations: MissionLocationType[] = []
+  private locationsSubscription!: Subscription
+
+  // Armed by the "Add Location" button (template) - the next plain map click places a
+  // location there instead of copying coordinates (onMapClick, below), then disarms itself.
+  // Mirrors LmapComponent's own placingLocation - see its comment for why one-shot.
+  public placingLocation = signal(false)
+
   constructor(
     private missionService: MissionService,
     private fieldReportService: FieldReportService,
+    private locationService: MissionLocationService,
+    private dialog: MatDialog,
     private log: LogService,
     @Inject(DOCUMENT) private document: Document
   ) {
@@ -91,6 +118,18 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => { this.settings = newMission },
       error: (e) => this.log.error('MapLibreComponent mission subscription error: ' + e, 'MapLibreComponent')
+    })
+
+    // Cached here rather than only read on demand, same reasoning as LmapComponent's own
+    // constructor subscription: the ReplaySubject(1) replays synchronously, before `this.map`
+    // exists - refreshLocationMarkers() guards on it, and the `'load'` handler below calls it
+    // again once the map is actually built.
+    this.locationsSubscription = this.locationService.getLocationsObserver().subscribe({
+      next: (newLocations) => {
+        this.locations = newLocations
+        this.refreshLocationMarkers()
+      },
+      error: (e) => this.log.error(`MapLibreComponent locations subscription error: ${e}`, 'MapLibreComponent')
     })
 
     this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
@@ -130,6 +169,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addHillshadeLayer()
       this.addReportsSource()
       this.refreshMarkers()
+      this.refreshLocationMarkers()
       this.fitToBounds()
       // Not called here directly - see warmBundledPmtilesCache()'s own doc comment for why
       // firing it inside this same handler reopens exactly the race it was written to close.
@@ -421,6 +461,14 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
 
+    // ADR D-49: armed by the "Add Location" button. Takes over this one click instead of the
+    // usual copy-to-clipboard, then disarms - see placingLocation's own comment for why.
+    if (this.placingLocation()) {
+      this.placingLocation.set(false)
+      this.openLocationDialog(undefined, { lat: ev.lngLat.lat, lng: ev.lngLat.lng })
+      return
+    }
+
     const coords = `${Math.round(ev.lngLat.lat * 10000) / 10000}, ${Math.round(ev.lngLat.lng * 10000) / 10000}`
     navigator.clipboard.writeText(coords)
       .then(() => {
@@ -433,9 +481,59 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       .catch((err) => this.log.error(`onMapClick: coords NOT copied to clipboard: ${err}`, 'MapLibreComponent'))
   }
 
+  /**
+   * ADR D-49: redraws every Location marker from scratch - same "clear and rebuild" approach
+   * refreshMarkers() takes for field reports, cheap at the count a mission's own location
+   * list reaches. Guarded on `this.map`: the locations subscription (constructor) can fire
+   * before the map exists (ReplaySubject(1) replays synchronously) - see its own comment.
+   */
+  private refreshLocationMarkers(): void {
+    if (!this.map) {
+      return
+    }
+    this.locationMarkers.forEach(m => m.remove())
+    this.locationMarkers = this.locations.map(loc => {
+      const color = locationCategoryColor(loc.type, this.settings.locationTypes)
+      const el = document.createElement('div')
+      el.className = 'rt-location-marker'
+      el.innerHTML = locationMarkerSvg(loc.type, color)
+      el.title = loc.name
+      // MapLibre's marker element sits in the same container the map's own 'click' listener
+      // is bound to (unlike Leaflet's synthetic event system) - without stopping propagation
+      // here, clicking a location would ALSO fire onMapClick, copying its coordinates and,
+      // worse, triggering the "place a new location" flow if placingLocation were armed.
+      el.addEventListener('click', (ev) => {
+        ev.stopPropagation()
+        this.openLocationDialog(loc)
+      })
+      return new Marker({ element: el, anchor: 'bottom' })
+        .setLngLat([loc.lng, loc.lat])
+        .addTo(this.map)
+    })
+  }
+
+  /** Opens the add/edit dialog. `coords` for a fresh placement; `existing` to edit/delete one already on the map. */
+  private openLocationDialog(existing?: MissionLocationType, coords?: { lat: number, lng: number }): void {
+    this.dialog.open(LocationDialogComponent, {
+      data: {
+        lat: coords?.lat ?? existing?.lat ?? this.settings.defLat,
+        lng: coords?.lng ?? existing?.lng ?? this.settings.defLng,
+        locationTypes: this.settings.locationTypes,
+        existing,
+      }
+    })
+  }
+
+  /** Toggled by the "Add Location" button (template). Arms the next plain map click. */
+  onToggleAddLocation(): void {
+    this.placingLocation.set(!this.placingLocation())
+  }
+
   ngOnDestroy(): void {
     this.missionSubscription?.unsubscribe()
     this.fieldReportsSubscription?.unsubscribe()
+    this.locationsSubscription?.unsubscribe()
+    this.locationMarkers.forEach(m => m.remove())
     this.overviewMap?.remove()
     this.map?.remove()
   }

@@ -26,5 +26,15 @@ Field reports to show: All ({{numAllRows()}})
   </mat-slide-toggle>
 </div>
 
+<br />
+<!-- ADR D-49: arms the next plain map click to place a Location there instead of copying
+     coordinates - see placingLocation's own comment (mapLibre.component.ts) for why this is
+     one-shot rather than a persistent mode. -->
+<button matButton="outlined" type="button" (click)="onToggleAddLocation()"
+  [attr.aria-pressed]="placingLocation()">
+  <mat-icon>add_location</mat-icon>
+  {{ placingLocation() ? 'Click the map to place it…' : 'Add Location' }}
+</button>
+
 <ng-container *ngTemplateOutlet="engineSwitchTemplate"></ng-container>
 

@@ -1,6 +1,7 @@
 export { BackupService, MissionExport, MISSION_EXPORT_SCHEMA_VERSION } from "./backup.service"
 export { RangerPhotoService } from "./ranger-photo.service"
 export { RangerService } from "./ranger.service"
+export { MissionLocationService } from "./mission-location.service"
 export { FieldReportService } from "./field-report.service"
 export { LogService } from "./log.service"
 export { GlobalErrorHandler } from "./global-error-handler"
@@ -23,9 +24,14 @@ export { LocationType, undefinedAddressFlag, undefinedLocation } from "./locatio
 export { LogLevel, LogLevelNames, LogType, LogHeadings } from "./log.interface"
 export { RangerType, UnknownRanger } from "./ranger.interface"
 export { MissionType } from "./mission.interface"
+export { LocationCategoryType, MissionLocationType } from "./mission-location.interface"
 export {
-  MISSION_SCHEMA_VERSION, DEFAULT_FIELD_REPORT_STATUSES, DEFAULT_RECIPIENT_OPTIONS_213, migrateMission
+  MISSION_SCHEMA_VERSION, DEFAULT_FIELD_REPORT_STATUSES, DEFAULT_RECIPIENT_OPTIONS_213,
+  DEFAULT_LOCATION_TYPES, migrateMission
 } from "./mission-migration"
+export {
+  LOCATION_SCHEMA_VERSION, migrateLocations, normalizeLocationUids
+} from "./mission-location-migration"
 export {
   STATUS_KEYS, StatusKey, isStatusKey, statusColorValue, statusInkValue, statusColorMeetsAA,
   contrastRatio, relativeLuminance, parseColor, Rgb

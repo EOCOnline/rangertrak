@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>{{ isEditing ? 'Edit location' : 'Add location' }}</h2>
+
+<div mat-dialog-content class="rt-location-dialog">
+  <mat-form-field appearance="outline">
+    <mat-label>Name</mat-label>
+    <input matInput [ngModel]="name()" (ngModelChange)="name.set($event)" required
+      placeholder="e.g. Command Post, Staging Area 2" cdkFocusInitial />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Category</mat-label>
+    <mat-select [ngModel]="type()" (ngModelChange)="type.set($event)">
+      @for (t of data.locationTypes; track t.type) {
+      <mat-option [value]="t.type">{{ t.type }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Address (optional)</mat-label>
+    <input matInput [ngModel]="address()" (ngModelChange)="address.set($event)" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Note (optional)</mat-label>
+    <textarea matInput [ngModel]="note()" (ngModelChange)="note.set($event)" rows="2"></textarea>
+  </mat-form-field>
+
+  <p class="rt-location-dialog__coords">
+    {{ (data.existing?.lat ?? data.lat).toFixed(5) }}, {{ (data.existing?.lng ?? data.lng).toFixed(5) }}
+  </p>
+</div>
+
+<div mat-dialog-actions>
+  @if (isEditing) {
+  <button matButton="outlined" type="button" class="rt-location-dialog__delete" (click)="onDelete()">
+    Delete
+  </button>
+  }
+  <span class="rt-location-dialog__spacer"></span>
+  <button matButton type="button" (click)="onCancel()">Cancel</button>
+  <button matButton="filled" type="button" [disabled]="!name().trim()" (click)="onSave()">Save</button>
+</div>
