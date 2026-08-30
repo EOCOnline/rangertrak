@@ -22,37 +22,45 @@
       <div class="messages__detail">
         @if (selected; as m) {
           <mat-card appearance="outlined">
+            <!-- Raised live 2026-08-30: "subject line should be at top of each message" -
+                 the card title is now Subject, not the ranger's callsign (which moves down
+                 into the body's own ordered field list, as "Ranger" - see below). -->
             <mat-card-header>
-              <mat-card-title>{{ m.callsign || '(no callsign)' }}</mat-card-title>
-              <mat-card-subtitle>{{ m.date | date:'MMM d, y, HH:mm:ss' }}</mat-card-subtitle>
+              <mat-card-title>{{ m.subject213 || '(no subject)' }}</mat-card-title>
             </mat-card-header>
             <mat-card-content>
               @if (!editing()) {
+              <!-- Field order per the maintainer's own live spec, 2026-08-30: Subject (the
+                   card title, above) - To/Reply requested - Time (with minutes elapsed,
+                   plus Last edited if it differs) - Ranger originating the message - the
+                   message itself - and finally Operator. -->
               <dl class="messages__fields">
-                <dt>Operator</dt>
-                <dd>{{ m.operator || '(none recorded)' }}</dd>
                 <dt>To</dt>
                 <dd>{{ (m.recipients213 && m.recipients213.length) ? m.recipients213.join(', ') : '(none set)' }}</dd>
-                <dt>Subject</dt>
-                <dd>{{ m.subject213 || '(none set)' }}</dd>
+                @if (m.replyRequested213) {
+                <dt>Reply</dt>
+                <dd>Requested</dd>
+                }
+                <dt>Time</dt>
+                <dd>
+                  {{ formatTime(m.date) }}
+                  @if (m.revisedAt) {
+                  (Last edited: {{ formatTime(m.revisedAt) }})
+                  }
+                </dd>
+                <dt>Ranger</dt>
+                <dd>{{ m.callsign || '(no callsign)' }}</dd>
                 <dt>Message</dt>
                 <dd class="messages__message-text">{{ m.message213 }}</dd>
-                @if (m.replyRequested213) {
-                  <dt>Reply</dt>
-                  <dd>Requested</dd>
-                }
+                <dt>Operator</dt>
+                <dd>{{ m.operator || '(none recorded)' }}</dd>
               </dl>
-              <!-- Non-editable by design - see revisedAt/printedAt's own doc comments
-                   (field-report.interface.ts). Shown only once there is something to say;
-                   a never-edited, never-printed message shows neither line. -->
-              @if (m.revisedAt || m.printedAt) {
+              <!-- Non-editable by design - see printedAt's own doc comment
+                   (field-report.interface.ts). revisedAt now shows inline on the Time row
+                   above instead of down here, so this is printedAt-only. -->
+              @if (m.printedAt) {
               <p class="messages__meta">
-                @if (m.printedAt) {
                 <span>Printed {{ formatTime(m.printedAt) }}</span>
-                }
-                @if (m.revisedAt) {
-                <span>Last revised {{ formatTime(m.revisedAt) }}</span>
-                }
               </p>
               }
               } @else {
