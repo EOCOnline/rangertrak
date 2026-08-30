@@ -11,6 +11,17 @@
       <a routerLink="/rangers">Rangers</a> page), then review the
       <a routerLink="/mission">Mission</a> settings. Reports entered here are saved to this
       device even with no internet connection.
+      <!-- Raised live 2026-08-30: "makes it REAL easy to do a demo/try it out" - shown only
+           on a genuinely untouched install (see canLoadDemoData()'s own comment for the exact
+           three conditions), so it never appears once there is anything real to lose. No
+           confirm() dialog, unlike every other place this same action is offered
+           (mission-advanced-options.component.ts) - those all guard a REPLACE of existing
+           data; this one is only ever offered when there is nothing to replace. -->
+      @if (canLoadDemoData()) {
+      <button type="button" class="entry-welcome__demo" (click)="onLoadDemoData()">
+        Load Demo Data
+      </button>
+      }
     </span>
     <button type="button" class="entry-welcome__dismiss" (click)="welcomePanel.dismiss()"
       aria-label="Dismiss this welcome panel. Bring it back any time by clicking the status pill in the header."

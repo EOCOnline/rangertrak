@@ -27,7 +27,7 @@ import { TimePickerComponent } from '../shared/time-picker/time-picker.component
 import { DDToDDM } from '../shared/mapping/coordinate'
 import {
   FIELD_REPORT_SOURCES, FieldReportService, FieldReportStatusType, LocationType, LogService,
-  RangerService, RangerType, MissionService, MissionType, statusColorValue,
+  RangerService, RangerType, MissionService, MissionType, SampleDataService, statusColorValue,
   undefinedAddressFlag, undefinedLocation, WelcomePanelService
 } from '../shared/services/'
 //import { LocationComponent } from './location.component'
@@ -319,6 +319,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     private http: HttpClient,
     private zone: NgZone,
     public welcomePanel: WelcomePanelService,
+    private sampleDataService: SampleDataService,
     @Inject(DOCUMENT) private document: Document) {
 
     this.log.excessive(`======== constructor() ============`, this.id)
@@ -422,6 +423,32 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    * also Ang Dev with TS, pg 140ff;
    */
   //
+
+  /**
+   * Raised live 2026-08-30: "makes it REAL easy to do a demo/try it out." True only on a
+   * genuinely untouched install - all three: no rangers imported, no field reports (which
+   * covers Messages too, a message is a field report with generates213 set - there is no
+   * way to have a message without a report), and no mission name set yet. Any one of those
+   * being real means there is something a demo-data load could clobber, so the button
+   * disappears the moment any of them stops being true.
+   */
+  canLoadDemoData(): boolean {
+    return this.rangers.length === 0
+      && this.fieldReportService.getCurrentFieldReports().numReport === 0
+      && !this.settings?.mission?.trim()
+  }
+
+  /**
+   * No confirm() dialog, unlike every other place this same action is offered
+   * (mission-advanced-options.component.ts) - those guard a REPLACE of existing data;
+   * canLoadDemoData() above already guarantees there is nothing to replace here.
+   */
+  onLoadDemoData(): void {
+    this.sampleDataService.loadSampleMission()
+    this.log.warn('Loaded the sample mission (demo data) from the Entry welcome panel.', this.id)
+    window.location.reload()
+  }
+
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
 

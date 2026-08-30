@@ -54,6 +54,27 @@ $filledColor: var(--rt-surface-2);
   padding      : 0.1em 0.45em;
 }
 
+// Raised live 2026-08-30: only ever shown on a genuinely untouched install
+// (canLoadDemoData(), entry.component.ts) - a real call-to-action, so it gets the accent
+// treatment rather than .entry-welcome__dismiss's own quiet plain-text style.
+.entry-welcome__demo {
+  display      : inline-block;
+  margin-inline-start: 0.5em;
+  padding      : 0.15em 0.6em;
+  border       : 1px solid var(--rt-accent);
+  border-radius: var(--rt-radius);
+  background   : transparent;
+  color        : var(--rt-accent);
+  font         : inherit;
+  font-weight  : 600;
+  cursor       : pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--rt-surface);
+  }
+}
+
 .filled {
   background-color: $filledColor;
 }
