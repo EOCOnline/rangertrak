@@ -89,7 +89,11 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   // Terrain overlay, off by default (same default as Leaflet's own equivalent checkbox
   // below) - see addHillshadeLayer()'s own comment for the source and why it's a real
   // MapLibre layer rather than a second style.
-  public hillshadeVisible = signal(false)
+  // Raised live 2026-08-30: on by default, matching LmapComponent's own new default
+  // (contour base layer + hillshade). MapLibre's PMTiles style has no contour data to switch
+  // to (buildPmtilesStyle() carries only water/landuse/roads/buildings, no elevation source),
+  // so hillshade is the one piece of that request this engine can actually offer.
+  public hillshadeVisible = signal(true)
 
   // ADR D-49: Locations (Command Post, Staging Area, Ranger First Aid, ...). Plain
   // `maplibregl.Marker` DOM overlays, not a GeoJSON `symbol` layer like the field-report
@@ -279,9 +283,10 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
    * equivalent checkbox (mapLeaflet.component.ts) - kept as ONE real MapLibre layer added
    * on top of the vector basemap, not a second style, so toggling it is a plain
    * `setLayoutProperty` visibility flip rather than swapping the whole map's style (which
-   * would flash/reload the basemap and lose the reports source). Starts hidden
-   * (`visibility: 'none'`) so the default view is unchanged; `raster-opacity` matches
-   * Leaflet's own 50% so the vector roads/water/buildings stay legible underneath.
+   * would flash/reload the basemap and lose the reports source). Starts VISIBLE as of
+   * 2026-08-30 (`hillshadeVisible`'s own comment) - previously hidden by default;
+   * `raster-opacity` matches Leaflet's own 50% so the vector roads/water/buildings stay
+   * legible underneath.
    *
    * Fixed 2026-08-26 (live report, found via the Leaflet side - same URL bug here, not yet
    * separately reported for this engine): the URL was missing Esri's `Elevation/` folder
@@ -302,7 +307,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       id: 'hillshade',
       type: 'raster',
       source: 'hillshade-source',
-      layout: { visibility: 'none' },
+      layout: { visibility: this.hillshadeVisible() ? 'visible' : 'none' },
       paint: { 'raster-opacity': 0.5 },
     })
   }

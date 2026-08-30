@@ -374,7 +374,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     // TODO!
     //! REVIEW: Causes LOTS of "mapLeaflet:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous response by r…age channel closed before a response was received'}" May need to wait, or ?????
-    tiles.addTo(this.lMap)
+    // Raised live 2026-08-30: default base layer is OpenTopoMap (contours), not OSM - see
+    // openTopoTiles.addTo() below, which replaces this call. `tiles` (OSM) is still built
+    // and offered in the layer switcher, just no longer the one shown on first load.
 
     // E-85 phase 2: OpenTopoMap - free, no API key, same {s}/{z}/{x}/{y} scheme as the OSM
     // layer above, so it's the same tileLayerOffline treatment (auto-caches viewed tiles
@@ -390,6 +392,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       minZoom: 3,
       attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
     })
+    // Raised live 2026-08-30: contours are now the default view a scribe sees on first
+    // load, not an option they have to discover in the layer switcher.
+    openTopoTiles.addTo(this.lMap)
 
     // Terrain/hillshade overlay, raised in the same backlog row as this control: "also
     // wants a real layer-visibility toggle... once this or any other overlay exists." Esri's
@@ -419,6 +424,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         attribution: 'Hillshade: &copy; <a href="https://www.esri.com">Esri</a>',
       }
     )
+    // Raised live 2026-08-30: on by default alongside the new contour default above - a
+    // scribe still turns it off from the layer switcher same as any other overlay.
+    hillshadeOverlay.addTo(this.lMap)
 
     // E-85 phase 1/2: the base-layer switcher (Leaflet's own standard `L.control.layers`
     // widget). USGS/Esri sources surveyed in the roadmap's E-85 row are still not wired in
@@ -501,7 +509,11 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       this.lMap.fitBounds(savedTilesOverlay.getBounds())
     })
 
-    const saveTilesControl = savetiles(tiles, {
+    // Bound to openTopoTiles, not tiles (OSM) - it must start matched to whichever base
+    // layer actually loads by default (see openTopoTiles.addTo() above). Switching base
+    // layers later rebinds this automatically via the 'baselayerchange' listener below
+    // (F29-6) - that fix only fires on an actual switch, not on this initial construction.
+    const saveTilesControl = savetiles(openTopoTiles, {
       saveText: '💾 Save this area for offline use',
       rmText: '🗑️ Remove saved tiles',
       maxZoom: 19,
