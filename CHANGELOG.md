@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.89.0](https://github.com/EOCOnline/rangertrak/commit/HEAD) (2026-08-30)
+
+### Fixes
+
+* **help,guide:** Wave 4 content pass continued (F29-35) - Help's "Getting data off the device" button-reference table duplicated controls that live on Mission and Rangers; each button now documents itself in its own page's Guide drawer (Mission's new "Backup and advanced options" block, Rangers's existing "Loading a roster") and Help keeps only the comparison a per-page Guide can't make - which file to reach for and why. help-after-mission's cross-page wrap-up sequence (Radio Log, Rangers, Mission) was deliberately left as-is - it spans three routes, so no single page's Guide is the right home for it; recorded as a considered exception, not an oversight.
+
 ## [0.88.0](https://github.com/EOCOnline/rangertrak/commit/c86f2afcc4df6bd3f24693453642b61cc9c31908) (2026-08-30)
 
 ### Features

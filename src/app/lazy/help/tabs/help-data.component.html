@@ -26,33 +26,21 @@
   part of any public record.
 </p>
 
+<!-- F29-35 (2026-08-29): this was a button-by-button reference table for controls that live on
+     Mission and Rangers - each now documents its own button in its own page's Guide drawer
+     (Mission's "Backup and advanced options", Rangers's "Loading a roster"). Help keeps only
+     the one thing genuinely Help's job here: which file to reach for and why, a comparison the
+     per-page Guide isn't shaped to make. -->
 <h3>Getting data off the device</h3>
 
-<table class="reference">
-  <thead>
-    <tr>
-      <th>You want to</th>
-      <th>Use</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Back up, or move everything to another device</td>
-      <td><span class="ui">Export Mission</span> <span class="path">(Mission &rarr; Advanced Options)</span>
-        — settings, roster and reports in one file</td>
-    </tr>
-    <tr>
-      <td>Put your team's roster on a device</td>
-      <td><span class="ui">Import roster</span> <span class="path">(Rangers)</span> — replaces
-        only the roster, leaving reports and settings alone</td>
-    </tr>
-    <tr>
-      <td>Work with the data in Excel</td>
-      <td><span class="ui">Export</span> on Radio Log or Rangers — spreadsheet files, which
-        cannot be imported back in</td>
-    </tr>
-  </tbody>
-</table>
+<p>
+  <a routerLink="/mission">Mission's</a> <span class="ui">Export mission</span> is the one to
+  reach for by default — it round-trips everything (settings, roster and reports) back in on
+  another device, so it doubles as the actual backup. <a routerLink="/rangers">Rangers's</a>
+  <span class="ui">Export roster</span> moves just the roster, the same round-trip way.
+  <span class="ui">Export</span> on Radio Log or Rangers instead produces an Excel-friendly
+  spreadsheet — useful for working with the data, but one-way: it cannot be imported back in.
+</p>
 
 <p>
   Ranger photographs stay on the device they were added to. They are never uploaded. Name each

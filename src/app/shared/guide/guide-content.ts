@@ -269,6 +269,13 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           {
             heading: 'Readiness',
             text: 'The coloured dot in the page header tracks six setup checks. When it is not green, this page lists exactly which ones are failing and links to the field that fixes each.'
+          },
+          {
+            heading: 'Backup and advanced options',
+            bullets: [
+              'Export mission (Data safety card) downloads settings, rangers and field reports as one file — the way to back up a mission or move it to another device. Import mission, in the Danger zone below, round-trips it back in.',
+              'Load sample mission and Reset mission to defaults are also in the Danger zone — each replaces data already on this device and cannot be undone.'
+            ]
           }
         ]
       },
