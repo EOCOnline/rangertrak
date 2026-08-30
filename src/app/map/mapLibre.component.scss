@@ -17,7 +17,15 @@
   font-weight: bold;
 }
 
-.map-container,
+// Raised live 2026-08-30: #pmtiles-overview (floated) moved from a sibling of .map-container
+// to a child of it, right after .map-frame - same "immediately underneath the main map"
+// request as this file's own :host flow-root fix now applies one level deeper. flow-root
+// contains the float so .map-container's own height accounts for it.
+.map-container {
+  display: flow-root;
+  width  : 100%;
+}
+
 .map-frame {
   width: 100%;
 }

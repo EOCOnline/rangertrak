@@ -5,6 +5,11 @@
   <div class="map-frame">
     <div #mapContainer id="pmtiles-map"></div>
   </div>
+  <!-- Raised live 2026-08-30: same move as LmapComponent's own copy of this comment - "the
+       mini-map should ideally be immediately underneath the main map if spacing allows".
+       Was a later sibling of the whole .map-container, floating down near the field-report
+       toggle; now right after the frame so the lat/lng status wraps to its left instead. -->
+  <div #overviewContainer id="pmtiles-overview"></div>
   <div>
     Latitude: <span class="strong">{{mouseLatLng().lat.toFixed(5)}}</span> Longitude:
     <span class="strong">{{mouseLatLng().lng.toFixed(5)}}</span> Zoom:
@@ -12,7 +17,6 @@
     <div id="map-status">Click map to copy coordinates</div>
   </div>
 </div>
-<div #overviewContainer id="pmtiles-overview"></div>
 <br />
 
 Field reports to show: All ({{numAllRows()}})

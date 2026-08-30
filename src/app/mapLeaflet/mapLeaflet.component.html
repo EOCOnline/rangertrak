@@ -2,6 +2,13 @@
   <div class="mapLeaflet-frame">
     <div #mapContainer id="mapLeaflet-main" (click)="onMouseClick($event)"></div>
   </div>
+  <!-- Raised live 2026-08-30: "the mini-map should ideally be immediately underneath the
+       main map if spacing allows" - was a later sibling of the WHOLE .mapLeaflet-container
+       (lat/lng status, offline buttons, and all), so it floated down near the field-report
+       toggle instead. Moved to right after the frame itself, still just a float:right (see
+       mapLeaflet.component.scss) - the lat/lng status and offline buttons below now wrap to
+       its left instead of it landing further down the page. -->
+  <div #overviewContainer id="mapLeaflet-overview"></div>
   <div>
     Latitude: <span class="strong">{{mouseLatLng().lat.toFixed(5)}}</span> Longitude:
     <span class="strong">{{mouseLatLng().lng.toFixed(5)}}</span> Zoom:
@@ -17,7 +24,6 @@
        "Offline map tiles saved" row - see mission-readiness.component.ts's own comment. -->
   <div #offlineControlsHost id="readiness-offline-tiles" class="offline-controls"></div>
 </div>
-<div #overviewContainer id="mapLeaflet-overview"></div>
 <br />
 
 Field reports to show: All ({{numAllRows()}})
