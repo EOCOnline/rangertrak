@@ -121,6 +121,27 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           {
             heading: 'Notes and 213 messages are not the same thing',
             text: 'Notes is the general record of this report — always saved, and what appears on the Radio Log grid and in the ICS-309 communications log. A 213 message is a separate, addressed message that only some reports generate (see the Messages page), and is often reworded rather than copied from your notes.'
+          },
+          {
+            heading: 'Location formats',
+            text: 'Enter the location however the team read it out — everything converts to everything else, and whatever you enter, the rest fills in underneath as Derived values (click any of them to select and copy).',
+            bullets: [
+              'Decimal Degrees (DD) — 47.4476° −122.4626°',
+              'Degrees + Decimal Minutes (DDM) — 47° 26.8′ N',
+              'Degrees Minutes Seconds (DMS) — 47° 26′ 51″ N',
+              'MGRS — 10TFS 12345 67890',
+              'UTM — Zone 10 N, easting, northing',
+              'Plus Code, Maidenhead, or a street address — the single field below the coordinates',
+              'New to MGRS or UTM? Wikipedia\'s Military Grid Reference System article covers what they are and why SAR/wildland fire/military teams use them.'
+            ]
+          },
+          {
+            heading: 'Getting it wrong',
+            text: 'Submit anyway. It is better to have the report logged than to hold the radio while you fix it. Corrections happen on the Radio Log page: click a cell, type, and move on — grid edits save themselves. Editing a latitude or longitude moves that report on the map.'
+          },
+          {
+            heading: 'The map beside the form',
+            text: 'The small map confirms where the location you typed actually landed. It is a check, not a drawing surface — glance at it, and if the pin is in the water, re-read the coordinates back over the radio.'
           }
         ]
       },
@@ -306,9 +327,21 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           {
             heading: 'Working offline',
             bullets: [
+              'Map areas you have never viewed or saved are blank when the network goes — save the area while you still have a signal, not when you need it.',
               'Leaflet caches the tiles you have already viewed as you pan around, and its "Save this area" control can bulk-download a region ahead of time — use this if your mission is outside the pilot region below.',
               'The MapLibre + PMTiles engine needs no network at all, but only for the pilot region its bundled file already covers — there is currently no in-app way to download additional MapLibre coverage before a mission. If you need offline maps outside that pilot region, use Leaflet\'s "Save this area" instead.'
             ]
+          },
+          {
+            heading: 'Choosing an engine',
+            bullets: [
+              'Leaflet (shown by default) — best detail, anywhere in the world. Needs Internet for areas you have not saved.',
+              'MapLibre + PMTiles (the switch below the map) — map data ships inside the app, so it works with no connection at all, but detailed coverage is currently limited to the pilot region.'
+            ]
+          },
+          {
+            heading: 'Route trails',
+            text: 'Route trails join one ranger\'s reports oldest to newest, on both engines, so you can see which way a team has been moving — the label at the newest end is a snapshot from when the map was drawn, not a running clock.'
           }
         ]
       },

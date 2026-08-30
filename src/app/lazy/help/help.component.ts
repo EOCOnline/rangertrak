@@ -4,7 +4,6 @@ import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { MatTabsModule } from '@angular/material/tabs'
 
-import { SectionComponent } from '../../shared/section/section.component'
 import { PageComponent } from '../../shared/page/page.component'
 
 import { LogService, MissionService, MissionType } from '../../shared/services'
@@ -12,9 +11,7 @@ import { LogService, MissionService, MissionType } from '../../shared/services'
 import { HelpAboutComponent } from './tabs/help-about.component'
 import { HelpAfterMissionComponent } from './tabs/help-after-mission.component'
 import { HelpStartComponent } from './tabs/help-start.component'
-import { HelpEntryComponent } from './tabs/help-entry.component'
 import { HelpFeedbackComponent } from './tabs/help-feedback.component'
-import { HelpMapsComponent } from './tabs/help-maps.component'
 import { HelpDataComponent } from './tabs/help-data.component'
 import { HelpFaqComponent } from './tabs/help-faq.component'
 
@@ -28,12 +25,15 @@ import { HelpFaqComponent } from './tabs/help-faq.component'
  * per-ranger markers, base-layer switching, offline tile saving, the theme toggle, the
  * readiness dot) ended up documented nowhere at all - there was no obvious place to add
  * anything and no way to see what was already covered. Content now lives in sibling
- * components under ./tabs, one per tab - still eight as of 2026-08-29 (D-d, F29-32): "Mission
- * setup" merged into "Start here" as one onboarding checklist, and "After mission" split out
- * of "Your data" - a merge and a split that cancel out. "Log" (2026-08-27, so the Log page,
+ * components under ./tabs, one per tab. "Mission setup" merged into "Start here" as one
+ * onboarding checklist (D-d, F29-32, 2026-08-29), and "After mission" split out of "Your
+ * data" - a merge and a split that cancel out. "Log" (2026-08-27, so the Log page,
  * deliberately absent from the main nav, stayed easy to find) is now "Feedback" - it also
  * carries the feedback form, per the maintainer's own reasoning that reading/copying the log
- * is mostly a feedback-adjacent task.
+ * is mostly a feedback-adjacent task. "Entering reports" and "Maps" (2026-08-30, live
+ * request): moved into the Entry and Map pages' own Guide drawers instead - both were
+ * screen-specific operating instructions, which is what the Guide (not general Help) is for;
+ * see guide-content.ts.
  *
  * Content rule for anything added here, from the maintainer: keep it minimal, the UI should
  * be self-explanatory. These tabs deliberately cover only what a screen cannot say for
@@ -43,8 +43,8 @@ import { HelpFaqComponent } from './tabs/help-faq.component'
   selector: 'rangertrak-help',
   standalone: true,
   imports: [
-    CommonModule, PageComponent, SectionComponent, MatTabsModule,
-    HelpAboutComponent, HelpStartComponent, HelpEntryComponent, HelpMapsComponent,
+    CommonModule, PageComponent, MatTabsModule,
+    HelpAboutComponent, HelpStartComponent,
     HelpDataComponent, HelpAfterMissionComponent, HelpFeedbackComponent, HelpFaqComponent,
   ],
   templateUrl: './help.component.html',
@@ -59,7 +59,6 @@ export class HelpComponent implements OnDestroy {
   private missionSubscription!: Subscription
   private settings!: MissionType
   public version = ''
-  today = new Date()
 
   constructor(
     private log: LogService,

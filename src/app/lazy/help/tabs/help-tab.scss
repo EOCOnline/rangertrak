@@ -88,6 +88,15 @@ li {
   color                   : var(--rt-notice-ink);
 }
 
+// Licence paragraphs on the About tab.
+.indented {
+  margin-inline-start: 1rem;
+}
+
+.bold {
+  font-weight: bold;
+}
+
 // Q&A pairs on the FAQ tab.
 .faq-q {
   margin-block: 1.25rem 0.25rem;

@@ -65,27 +65,6 @@ filter: brightness(30%);
   font-weight : bold;
 }
 
-// Reference material below the tabs - licence, technologies, feedback. Separated by a rule
-// so it reads as an appendix rather than as a seventh section someone should read.
-.help-about {
-  margin-block-start: 1.5rem;
-  padding-block-start: 1rem;
-  border-block-start : 1px solid var(--rt-line);
-  max-width          : 68ch;
-}
-
-.help-about h2 {
-  margin-block: 0 0.5rem;
-}
-
-.indented {
-  margin-inline-start: 1rem;
-}
-
-.bold {
-  font-weight: bold
-}
-
 .imgCredit {
   text-align: right;
   font-size : x-small;

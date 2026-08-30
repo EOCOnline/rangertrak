@@ -36,13 +36,16 @@ describe('HelpComponent', () => {
   // checklist; FAQ moved up; "After mission" split out of "Your data"; "Log" renamed
   // "Feedback" and took over the feedback form that had briefly been on "About" - still
   // eight tabs (the merge and the split cancel out), just a different eight.
-  it('renders the eight documentation tabs, in the planned order', () => {
+  // 2026-08-30 (live request): "Entering reports" and "Maps" moved into the Entry/Map pages'
+  // own Guide drawers - they were screen-specific operating instructions, not general Help -
+  // leaving six.
+  it('renders the six documentation tabs, in the planned order', () => {
     const labels: string[] = Array.from(
       fixture.nativeElement.querySelectorAll('.help-tabs .mdc-tab__text-label') as NodeListOf<HTMLElement>
     ).map(el => el.textContent!.trim());
 
     expect(labels).toEqual([
-      'Start here', 'About', 'FAQ', 'Entering reports', 'Maps', 'Your data', 'After mission', 'Feedback'
+      'Start here', 'About', 'FAQ', 'Your data', 'After mission', 'Feedback'
     ]);
   });
 

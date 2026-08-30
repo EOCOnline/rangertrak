@@ -905,9 +905,13 @@ async function checkWelcomePanelDismissAndReopen() {
  * "Your data" (the merge and the split cancel out - still eight), and "Log" renamed
  * "Feedback" - it now also carries the feedback form, so the Log link moved with it, off
  * the About tab.
+ *
+ * 2026-08-30 (live request): "Entering reports" and "Maps" moved out entirely, into the
+ * Entry and Map pages' own Guide drawers - both were screen-specific operating instructions,
+ * which is what the Guide (not general Help) is for. Six tabs now.
  */
 async function checkHelpTabs() {
-  console.log('\nE-84: Help renders eight tabs and switching them changes the body')
+  console.log('\nE-84: Help renders six tabs and switching them changes the body')
   await goto('/help')
 
   const labels = await evaluate(`(() => {
@@ -916,8 +920,10 @@ async function checkHelpTabs() {
     return [...group.querySelectorAll('.mat-mdc-tab .mdc-tab__text-label')]
       .map(el => el.textContent.trim()).join('|');
   })()`)
-  check('eight tabs, in the planned order', labels,
-    'Start here|About|FAQ|Entering reports|Maps|Your data|After mission|Feedback')
+  // 2026-08-30: "Entering reports" and "Maps" moved into the Entry/Map pages' own Guide
+  // drawers (screen-specific operating instructions, not general Help) - see guide-content.ts.
+  check('six tabs, in the planned order', labels,
+    'Start here|About|FAQ|Your data|After mission|Feedback')
 
   const firstBody = await evaluate(`document.querySelector('.help-tabs rangertrak-help-start') ? 'start' : 'missing'`)
   check('the first tab shows the Start here body', firstBody, 'start')
