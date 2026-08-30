@@ -60,5 +60,14 @@ export async function fillIcs213Pdf(
     form.flatten()
   }
 
+  // The bundled template is FEMA's own 2-page distribution: page 1 is the actual form, page
+  // 2 is a sample/instructions page that ships with every official copy. A printed 213
+  // should be the filled form alone - remove pages after the first rather than trusting the
+  // template to stay exactly 2 pages forever (a future template swap that's already
+  // single-page would make index 1 out of range).
+  for (let i = pdf.getPageCount() - 1; i >= 1; i--) {
+    pdf.removePage(i)
+  }
+
   return pdf.save()
 }

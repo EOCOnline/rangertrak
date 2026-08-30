@@ -66,4 +66,15 @@ describe('fillIcs213Pdf', () => {
     const reloaded = await PDFDocument.load(filled)
     expect(reloaded.getForm().getTextField('7 Message').getText()).toBe(message)
   })
+
+  it('drops the template\'s sample/instructions page - only the filled form is printed', async () => {
+    expect((await PDFDocument.load(templateBytes)).getPageCount())
+      .withContext('the bundled template is expected to be 2 pages; this test is meaningless otherwise')
+      .toBe(2)
+
+    const filled = await fillIcs213Pdf(templateBytes, { '4 Subject': 'Page trim check' })
+
+    const reloaded = await PDFDocument.load(filled)
+    expect(reloaded.getPageCount()).toBe(1)
+  })
 })
