@@ -38,6 +38,16 @@
         <mat-hint>Printed by the server itself on startup - copy it from there.</mat-hint>
       </mat-form-field>
 
+      <!-- Catches the one mistake this codebase now knows is silently fatal - see
+           entersPlainHttp()'s own doc comment. -->
+      @if (entersPlainHttp()) {
+        <div class="warn mission-command-post__http-warning">
+          This starts with <code>http://</code> — it needs to be <code>https://</code> or
+          publishing will fail silently. Copy the address from the server's own startup
+          output, which always prints it correctly.
+        </div>
+      }
+
       <!-- Raised live 2026-08-31: "a URL to click" to confirm /view actually works, without
            hand-typing it into a second tab. Doubles as the one-time cert-acceptance step now
            that the server is self-signed HTTPS (see the warning above) - clicking this link

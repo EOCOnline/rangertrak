@@ -41,4 +41,17 @@ export class MissionCommandPostComponent {
     const base = (this.form.commandPostServerUrl().value() || '').trim().replace(/\/+$/, '')
     return base ? `${base}/view` : ''
   }
+
+  /**
+   * Raised live 2026-08-31, same session as the HTTPS fix: nothing here validates the
+   * address at all, so a `http://` entry - old muscle memory, a stale note, a copied-down
+   * screenshot from before this fix - is accepted silently and fails with the EXACT SAME
+   * symptom ("is the server running?") that caused the whole mixed-content investigation.
+   * A field-level check catches this one specific, easy-to-hit mistake before it costs
+   * another round of "why isn't this working" - not general URL validation, just the one
+   * thing this codebase now knows is silently fatal.
+   */
+  entersPlainHttp(): boolean {
+    return /^http:\/\//i.test((this.form.commandPostServerUrl().value() || '').trim())
+  }
 }
