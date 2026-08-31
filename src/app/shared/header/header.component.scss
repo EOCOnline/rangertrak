@@ -110,17 +110,24 @@
     text-align   : left;
     cursor       : default; // the pill itself is a click target; this panel own text is not
 
-    opacity       : 0;
-    visibility    : hidden;
-    pointer-events: none;
-    transition    : opacity 0.1s ease;
+    // ROOT-CAUSED 2026-08-30 (live phone-width e2e failure - the true cause, the earlier
+    // Leaflet zoom-proxy anomaly fixed the same day was a real but unrelated bug):
+    // opacity/visibility hides the PAINT of a position:absolute element, but does not
+    // remove it from LAYOUT - it still contributes its full box to its containing
+    // block's (.status-cluster, position:relative) scrollable overflow region regardless
+    // of being invisible. Nothing between .status-cluster and the document root clips
+    // that overflow, so this panel's up-to-360px width was inflating
+    // document.documentElement.scrollWidth on every page load, hidden or not - caught by
+    // tools/e2e.js's own poll-during-load diagnostic, which found it at the very first
+    // 100ms tick. display:none removes it from layout entirely while hidden, at the cost
+    // of the fade transition below (display can't be transitioned) - an instant show/hide
+    // on hover is an acceptable trade for not breaking every page's phone layout.
+    display: none;
   }
 
   .status-cluster:hover .rt-mission-info-panel,
   .status-cluster:focus-within .rt-mission-info-panel {
-    opacity       : 1;
-    visibility    : visible;
-    pointer-events: auto; // the readiness rows inside are real links - see the base rule above
+    display: block;
   }
 
   .rt-mission-info-panel__title {

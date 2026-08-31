@@ -745,7 +745,47 @@ async function checkEntryPhoneWidth() {
   // 390x844 = iPhone 12/13/14 class. mobile:true so the layout viewport behaves like a phone's.
   const PHONE_WIDTH = 390
   await send('Emulation.setDeviceMetricsOverride', { width: PHONE_WIDTH, height: 844, deviceScaleFactor: 3, mobile: true })
-  await goto('/')
+
+  // 2026-08-30: polls during load rather than measuring once after settling. Root-causing a
+  // real instance of this failure (a hidden position:absolute panel that still counted
+  // toward document scrollWidth despite opacity:0/visibility:hidden - CSS hides paint, not
+  // layout) showed the mobile layout viewport can widen from a purely TRANSIENT event and
+  // then never shrink back, even after whatever caused it self-corrects a moment later. A
+  // single post-settle snapshot can therefore report the width regression while finding zero
+  // currently-overflowing elements - true but useless for diagnosis. Polling catches the
+  // offending element while it still exists.
+  const findOffenders = () => `(() => {
+    const client = document.documentElement.clientWidth;
+    const all = [...document.querySelectorAll('*')];
+    const overflowing = all.filter(el => el.getBoundingClientRect().right > client + 1);
+    // Keep only elements with no overflowing DESCENDANT of their own - the leaves of the
+    // overflow tree, i.e. the actual culprits rather than every ancestor they also widen.
+    const leaves = overflowing.filter(el => !overflowing.some(other => other !== el && el.contains(other)));
+    leaves.sort((a, b) => b.getBoundingClientRect().right - a.getBoundingClientRect().right);
+    return leaves.slice(0, 5).map(el => ({
+      tag: el.tagName.toLowerCase(),
+      cls: typeof el.className === 'string' ? el.className : '',
+      id: el.id || '',
+      right: Math.round(el.getBoundingClientRect().right),
+    }));
+  })()`
+  consoleErrors.length = 0
+  await send('Page.navigate', { url: BASE + '/' })
+  let firstBadTick = null
+  for (let i = 0; i < 30 && !firstBadTick; i++) {
+    await sleep(100)
+    const offenders = await evaluate(findOffenders())
+    if (offenders.length > 0) {
+      firstBadTick = { ms: (i + 1) * 100, offenders }
+    }
+  }
+  if (firstBadTick) {
+    note(`first overflow at ~${firstBadTick.ms}ms into load:`)
+    for (const o of firstBadTick.offenders) {
+      note(`  <${o.tag}${o.id ? '#' + o.id : ''}${o.cls ? '.' + o.cls.split(' ').join('.') : ''}> right=${o.right}px`)
+    }
+  }
+
   const r = await evaluate(`(() => {
     const form = document.querySelector('.enter__form');
     return {
@@ -771,6 +811,12 @@ async function checkEntryPhoneWidth() {
   check('the layout viewport was not widened past the device width', r.inner <= r.client, true)
   if (r.formScroll > r.client || r.docScroll > r.client || r.inner > r.client) {
     note(`widths: form ${r.formScroll}px, document ${r.docScroll}px, layout viewport ${r.inner}px, device ${r.client}px`)
+    if (!firstBadTick) {
+      // The post-settle snapshot still has nothing to show for itself - see this
+      // function's own comment above for why that can happen (viewport already stuck wide,
+      // offending element already gone). Nothing more to add here in that case.
+      note('  (no longer-overflowing element found post-settle either - see the poll above, or re-run: this can be a one-shot transient)')
+    }
   }
   await send('Emulation.clearDeviceMetricsOverride')
 }
