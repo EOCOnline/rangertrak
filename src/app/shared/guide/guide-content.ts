@@ -163,6 +163,25 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           {
             heading: 'The map beside the form',
             text: 'The small map confirms where the location you typed actually landed — glance at it, and if the pin is in the water, re-read the coordinates back over the radio. It is also a drawing surface: click anywhere on it to set the location directly instead of typing coordinates.'
+          },
+          {
+            heading: 'Field mode — a ranger\'s own phone',
+            text: 'This turns a personal phone into a stripped-down device for filing your own reports — not a second command post. The welcome panel offers the choice once, on a genuinely empty device (before any rangers, reports, or mission name are set); there is no way to turn it back off from within the app once chosen.',
+            bullets: [
+              'Everything except this page and Help disappears from the menu — a field phone has no reason to see the roster, the map, or Mission Setup, and a typed-in address to one of those pages is blocked the same way.',
+              'Location starts from the phone\'s own GPS instead of the mission\'s configured default, if the phone allows it — a best-effort fill, never required, and never overwrites a position already typed by hand.',
+              'Whichever coordinate format (DD, DDM, MGRS…) you last used is what this device opens on next time, on any mission — every device, not just field mode, remembers this now.',
+              'Install the PWA from [rangertrak.org](https://rangertrak.org) BEFORE heading out, not after — loading it fresh from a command-post laptop\'s own address in the field gets no offline capability at all, since that address is not secure enough for a browser to allow it.'
+            ]
+          },
+          {
+            heading: 'Sending your reports (field mode)',
+            text: 'A small "Online"/"Offline" badge shows above the form at all times on a field-mode device — a coarse signal ("this device has some kind of network connection"), not a promise that a report will actually arrive anywhere. If a report is urgent or expects a reply and there is any doubt, read it over the radio instead of trusting the badge — that channel does not depend on anything RangerTrak does.',
+            bullets: [
+              'Send my reports, next to the badge, packages every report on this device into one file and hands it to whatever app you pick — Mail, Messages, AirDrop, a messaging app — the same "Share" sheet a photo or a link uses. Where it goes from there is up to the person you choose, not RangerTrak.',
+              'Nothing is ever lost by staying offline — every report saves to this device the instant it is submitted, exactly like normal. Sending is a separate, later step, never a requirement to file a report at all.',
+              'At the command post, the matching Load Report Packet button on the Radio Log page merges those reports in — see that page\'s own guide entry.'
+            ]
           }
         ]
       },
@@ -195,6 +214,17 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           {
             heading: 'Selection and the maps',
             text: 'Rows selected here can be isolated on either map engine, using the switch on the Map page.'
+          },
+          {
+            heading: 'Report Packet — reports from another device',
+            text: 'A separate pair of buttons from the CSV export above — this one is for merging reports IN from another device, most often a ranger\'s own field phone (see "Field mode" on the Entry page\'s own guide entry), not for reading data out.',
+            bullets: [
+              'Build Report Packet packages every report on THIS device into one small file, ready to hand to another device.',
+              'Load Report Packet reads one of those files back in and merges it — it only ever ADDS reports this device does not already have; nothing existing is ever replaced or overwritten.',
+              'Importing the exact same file twice is safe — the second time changes nothing, so there is no harm in re-sending one if you are not sure it landed.',
+              'If the file names a different mission than this device\'s current one, you are warned and asked to confirm before anything is merged in.',
+              'The file names real people and describes an active incident — treat it like a printed page from the log: keep it on a device you control, and delete it once its reports are safely merged in here.'
+            ]
           }
         ]
       },
