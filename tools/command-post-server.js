@@ -15,13 +15,21 @@
 // file risked the two drifting into each other by accident. Static-file serving below is
 // intentionally the same logic, not a shared module - see that file if this ever needs to be
 // reconciled with it.
-const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+// Small, server-tooling-only dependency (pure JS, no native deps, never touches the PWA
+// bundle) - same exception this doc's own scoping already accepted for a QR code. See
+// getOrCreateCert() below for why this server needs to generate a certificate at all.
+const selfsigned = require('selfsigned');
 
 const ROOT = path.join(__dirname, '..', 'dist', 'rangertrak', 'browser');
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
+// Never committed - see .gitignore's existing `/non-distributed` entry, reused here rather
+// than inventing a second "local, not for git" convention. A private key belongs here even
+// though it is self-signed and low-stakes: no reason to make a habit of committing one.
+const CERT_DIR = path.join(__dirname, '..', 'non-distributed', 'command-post-cert');
 
 // In-memory only, on purpose - see this file's own header comment. Never written to disk:
 // the mission may carry field-report notes and coordinates, and this process has no reason
@@ -152,7 +160,10 @@ function readJsonBody(req, maxBytes) {
   });
 }
 
-const server = http.createServer((req, res) => {
+// A plain function now, not `http.createServer(...)`'s inline callback - the server itself
+// is created in start() below, once the cert is ready, since https.createServer() needs the
+// key/cert up front and getOrCreateCert() is async.
+function requestHandler(req, res) {
   const urlPath = req.url.split('?')[0];
 
   if (urlPath === '/api/mission') {
@@ -199,16 +210,16 @@ const server = http.createServer((req, res) => {
   }
 
   serveStaticFile(req, res);
-});
+}
 
-// Prints every non-internal IPv4 address this machine has, not just one guess - a laptop at
-// a command post commonly has more than one active interface (WiFi + a wired uplink, or a
+// Every non-internal IPv4 address this machine has, not just one guess - a laptop at a
+// command post commonly has more than one active interface (WiFi + a wired uplink, or a
 // USB-tethered phone hotspot) and there is no reliable way to know which one the field
-// devices will actually be able to reach. No QR code in this v1 (the scoping doc's own §5
-// point 4 left this an open, non-blocking call) - copy-pasteable plain text needs no new
-// dependency and works identically whether an operator is reading this over SSH, a serial
-// console, or sitting at the laptop itself.
-function printLanUrls() {
+// devices will actually be able to reach. Also feeds the cert's own SAN list below - a
+// self-signed cert whose Subject Alternative Names don't include the address a device is
+// actually connecting to gets a HOSTNAME-MISMATCH warning on top of the expected
+// self-signed one, which is a strictly worse experience than one warning.
+function getLanAddresses() {
   const nets = os.networkInterfaces();
   const addresses = [];
   for (const name of Object.keys(nets)) {
@@ -218,7 +229,75 @@ function printLanUrls() {
       }
     }
   }
+  return addresses;
+}
 
+/**
+ * 2026-08-31 (live discussion, same day as Stage 1 shipped): `CommandPostPublishService`'s
+ * `fetch()` POST is blocked by mixed content on the real `https://rangertrak.org` deployment
+ * - a browser refuses an HTTPS page's own fetch()/XHR to a plain HTTP endpoint outright, a
+ * different mechanism than CORS (already handled, see setCorsHeaders()) and one this
+ * feature's original scoping never checked. Self-signed HTTPS fixes it: once a device visits
+ * this server's HTTPS URL directly and accepts the one-time "not private" warning (the same
+ * pattern router admin pages / Plex / Synology already use), the browser trusts this exact
+ * certificate for this exact host going forward, which satisfies mixed-content policy for
+ * every subsequent fetch() too - not just the one direct visit. See `E-87 Command Post
+ * Server.md`'s own dated banner for the full reasoning and what this does NOT fix
+ * (authentication - still just the WiFi password, unchanged from Stage 1).
+ *
+ * Cached to disk (not regenerated every run) so a routine restart does not force every
+ * already-trusted device to click through the warning again - but ONLY reused when its own
+ * recorded address list still covers every address this run actually discovered. A laptop
+ * commonly joins a DIFFERENT hotspot at the next incident, and an IP missing from the cert's
+ * SAN list produces a hostname-mismatch warning regardless of caching, so correctness for
+ * TODAY's network wins over reuse when the two conflict. IP-address SANs cannot be
+ * wildcarded (unlike DNS-name SANs), so "cover every possible LAN IP" is not an option -
+ * this is why the check exists at all, not just an optimization.
+ */
+async function getOrCreateCert(addresses) {
+  const keyPath = path.join(CERT_DIR, 'key.pem');
+  const certPath = path.join(CERT_DIR, 'cert.pem');
+  const metaPath = path.join(CERT_DIR, 'addresses.json');
+
+  if (fs.existsSync(keyPath) && fs.existsSync(certPath) && fs.existsSync(metaPath)) {
+    try {
+      const cachedAddresses = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+      const stillCovered = addresses.every((a) => cachedAddresses.includes(a));
+      if (stillCovered) {
+        return { key: fs.readFileSync(keyPath, 'utf8'), cert: fs.readFileSync(certPath, 'utf8') };
+      }
+      console.log('Network address changed since the last cached certificate - generating a new one (every device will need to accept it once more).');
+    } catch (e) {
+      console.log(`Cached certificate unreadable (${e.message}) - generating a new one.`);
+    }
+  }
+
+  const altNames = [
+    { type: 2, value: 'localhost' }, // type 2 = DNS name
+    { type: 7, ip: '127.0.0.1' },    // type 7 = IP address
+    ...addresses.map((ip) => ({ type: 7, ip })),
+  ];
+  const pems = await selfsigned.generate(
+    [{ name: 'commonName', value: 'RangerTrak Command Post' }],
+    {
+      days: 3650, keySize: 2048, algorithm: 'sha256',
+      extensions: [
+        { name: 'basicConstraints', cA: true },
+        { name: 'keyUsage', keyCertSign: true, digitalSignature: true, keyEncipherment: true },
+        { name: 'subjectAltName', altNames },
+      ],
+    }
+  );
+
+  fs.mkdirSync(CERT_DIR, { recursive: true });
+  fs.writeFileSync(keyPath, pems.private);
+  fs.writeFileSync(certPath, pems.cert);
+  fs.writeFileSync(metaPath, JSON.stringify(addresses));
+
+  return { key: pems.private, cert: pems.cert };
+}
+
+function printLanUrls(addresses) {
   console.log('');
   console.log('RangerTrak Command Post Server');
   console.log('==============================');
@@ -230,14 +309,28 @@ function printLanUrls() {
     console.log('  (no non-internal network interface found - check your WiFi/hotspot connection)');
   }
   for (const addr of addresses) {
-    console.log(`  http://${addr}:${PORT}/view`);
+    console.log(`  https://${addr}:${PORT}/view`);
   }
-  console.log(`  http://localhost:${PORT}/view   (this machine only)`);
+  console.log(`  https://localhost:${PORT}/view   (this machine only)`);
+  console.log('');
+  console.log('FIRST VISIT ON EACH DEVICE: the browser will warn "Your connection is not');
+  console.log('private" - that is expected for a private server with no public certificate');
+  console.log('authority, the same warning router admin pages show. Click Advanced, then');
+  console.log('Proceed. Needed ONCE per device; the browser remembers it after that.');
   console.log('');
   console.log('In RangerTrak\'s own Mission Setup, turn on "Publish to Command Post Server" and');
   console.log(`set the server address to one of the URLs above (without /view), e.g.:`);
-  console.log(`  http://${addresses[0] || 'localhost'}:${PORT}`);
+  console.log(`  https://${addresses[0] || 'localhost'}:${PORT}`);
+  console.log('(Visit that address directly in THIS device\'s own browser first, and accept the');
+  console.log('warning, before turning the toggle on - publishing fails silently otherwise.)');
   console.log('');
 }
 
-server.listen(PORT, () => printLanUrls());
+async function start() {
+  const addresses = getLanAddresses();
+  const { key, cert } = await getOrCreateCert(addresses);
+  const server = https.createServer({ key, cert }, requestHandler);
+  server.listen(PORT, () => printLanUrls(addresses));
+}
+
+start();

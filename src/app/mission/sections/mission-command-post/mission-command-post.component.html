@@ -12,6 +12,15 @@
       server isn't running, this silently does nothing; your own copy of the mission is never
       affected either way.
     </p>
+    <div class="warn">
+      The server address starts with <code>https://</code>, not <code>http://</code> - the
+      server generates its own certificate, so the FIRST time you (and anyone viewing) visit
+      that address, the browser will warn "Your connection is not private." That's expected
+      for a private server, the same warning most home routers show. Click Advanced, then
+      Proceed - needed once per device, not every time. <strong>Visit the address directly in
+      this browser and accept that warning BEFORE turning the toggle on below</strong> -
+      otherwise publishing fails silently, with no error shown here.
+    </div>
 
     <!-- Same non-[formField] pattern mission-maps-section's own checkbox uses - Signal
          Forms' formField directive cannot act as the value accessor for a Material
@@ -25,19 +34,21 @@
       <mat-form-field class="mission-command-post__url" floatLabel="always">
         <mat-label>Server address</mat-label>
         <input matInput type="text" [formField]="form.commandPostServerUrl"
-          placeholder="http://192.168.1.5:8080" />
+          placeholder="https://192.168.1.5:8080" />
         <mat-hint>Printed by the server itself on startup - copy it from there.</mat-hint>
       </mat-form-field>
 
       <!-- Raised live 2026-08-31: "a URL to click" to confirm /view actually works, without
-           hand-typing it into a second tab. A plain link, not a live reachability check - see
-           viewUrl()'s own doc comment for why an active ping from this HTTPS page to the
-           server's plain-HTTP address would be blocked as mixed content regardless of whether
-           the server is actually up. -->
+           hand-typing it into a second tab. Doubles as the one-time cert-acceptance step now
+           that the server is self-signed HTTPS (see the warning above) - clicking this link
+           IS how you visit the address directly and get the "not private" prompt to accept.
+           Still a plain link, not a live reachability check - a fetch()-based ping would need
+           the SAME one-time acceptance first anyway, so it could never tell "not accepted yet"
+           apart from "actually down." -->
       @if (viewUrl()) {
         <p class="mission-command-post__view-link">
           <a [href]="viewUrl()" target="_blank" rel="noopener noreferrer">Open {{ viewUrl() }}</a>
-          to confirm it's reachable from this device.
+          to confirm it's reachable from this device (and accept the certificate, first time).
         </p>
       }
     }

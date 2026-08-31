@@ -28,13 +28,14 @@ export class MissionCommandPostComponent {
 
   /**
    * Raised live 2026-08-31: "a URL to click" alongside the address field, so the operator can
-   * confirm the /view page actually works without hand-typing it into a second tab. A plain
-   * `<a>` (see the template), not a `fetch()`-based reachability check - the latter would hit
-   * mixed content: this app is served over HTTPS, the command-post server is deliberately
-   * plain HTTP (`command-post-publish.service.ts`'s own "WiFi password is the boundary"
-   * design), and browsers block an HTTPS page's own `fetch()`/XHR to an HTTP endpoint
-   * outright. A top-level navigation via a link is not subject to that restriction, which is
-   * exactly why this is a link and not a live status ping.
+   * confirm the /view page actually works without hand-typing it into a second tab. Doubles
+   * as the one-time certificate-acceptance step now that the server is self-signed HTTPS (see
+   * `command-post-server.js`'s own `getOrCreateCert()` comment for why): clicking this link IS
+   * the direct visit that shows the browser's "not private" prompt, which must be accepted
+   * once before `CommandPostPublishService`'s own `fetch()` can succeed. Still deliberately a
+   * plain `<a>`, not a live reachability ping - a fetch()-based check would need that SAME
+   * one-time acceptance first, so it could never distinguish "not accepted yet" from "actually
+   * down," and would be misleading either way until a device has clicked through once.
    */
   viewUrl(): string {
     const base = (this.form.commandPostServerUrl().value() || '').trim().replace(/\/+$/, '')
