@@ -75,6 +75,14 @@ export const APP_ROUTES: Routes = [
     path: 'log',
     loadComponent: () => import('./log/log.component').then(m => m.LogComponent)
   },
+  // E-109 Mission Zip v1 (2026-08-31, ADR D-48): a pre-mission prep tool, deliberately its
+  // own route rather than folded into Rangers' own roster import/export - see
+  // prep.component.ts's own doc comment. No main-nav entry (same choice the Log route
+  // already made) - linked from Rangers' roster-management controls instead.
+  {
+    path: 'prep',
+    loadComponent: () => import('./prep/prep.component').then(m => m.PrepComponent)
+  },
 
   // LAZY child routes (via dynamic import)
   // 2026-08-22: was 'about' - the nav item and page heading were renamed "About" ->

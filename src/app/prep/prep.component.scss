@@ -1,0 +1,27 @@
+.prep__card {
+  max-width: 640px;
+  margin-bottom: var(--rt-gap);
+}
+
+.prep__preview {
+  margin-top: var(--rt-gap);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rt-line);
+  border-radius: var(--rt-radius-lg);
+  background: var(--rt-surface-2);
+}
+
+.prep__preview h3 {
+  margin: 0 0 0.25rem;
+}
+
+.prep__preview-meta {
+  color: var(--rt-ink-2);
+  margin: 0 0 0.75rem;
+}
+
+.prep__preview-actions {
+  display: flex;
+  gap: var(--rt-gap);
+  flex-wrap: wrap;
+}

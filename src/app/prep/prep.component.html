@@ -1,0 +1,60 @@
+<rangertrak-page [title]="title" [description]="pageDescr">
+
+  <mat-card class="prep__card">
+    <mat-card-header>
+      <mat-card-title>Build a Mission Zip</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        Packages THIS device's current roster, ranger photos, and mission settings into one
+        downloadable <code>.zip</code>. Deliberately does not include field reports - a
+        Mission Zip is a pre-mission template, not a mid-mission backup (use Mission Setup's
+        own "Export mission" for that).
+      </p>
+      <button matButton="filled" type="button" (click)="onBtnBuildZip()" [disabled]="building()">
+        <mat-icon>archive</mat-icon>
+        {{ building() ? 'Building…' : 'Build Mission Zip' }}
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="prep__card">
+    <mat-card-header>
+      <mat-card-title>Load a Mission Zip</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        Replaces this device's roster, photos, and mission settings with the contents of a
+        Mission Zip someone handed you. Field reports already on this device are never
+        touched - a Mission Zip has none of its own to bring in.
+      </p>
+
+      <button matButton="outlined" type="button" (click)="zipFileInput.click()">
+        <mat-icon>upload</mat-icon>
+        Choose Mission Zip file…
+      </button>
+      <input #zipFileInput type="file" accept="application/zip,.zip" (change)="onZipFileSelected($event)" hidden />
+
+      @if (pending(); as p) {
+        <div class="prep__preview">
+          <h3>{{ p.manifest.settings.mission || '(unnamed mission)' }}</h3>
+          <p class="prep__preview-meta">
+            {{ p.manifest.rangers.length }} ranger{{ p.manifest.rangers.length === 1 ? '' : 's' }},
+            {{ p.photos.length }} photo{{ p.photos.length === 1 ? '' : 's' }}
+            &mdash; built {{ p.manifest.exportedAt | date:'medium' }}
+            @if (p.manifest.appVersion) { with app v{{ p.manifest.appVersion }} }
+          </p>
+          <div class="prep__preview-actions">
+            <button matButton="filled" type="button" (click)="onBtnApplyPending()" [disabled]="applying()">
+              {{ applying() ? 'Loading…' : 'Load this Mission Zip' }}
+            </button>
+            <button matButton="outlined" type="button" (click)="onCancelPending()" [disabled]="applying()">
+              Cancel
+            </button>
+          </div>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+</rangertrak-page>

@@ -73,6 +73,27 @@ export class RangerPhotoService {
   count(): number { return this.urls.size }
 
   /**
+   * Every stored photo, as its raw Blob keyed by the same filename-matchable stem
+   * `photoUrl()`/`importFiles()` use (a ranger's `id` if set, else `callsign`, uppercased).
+   * E-109 Mission Zip v1 (2026-08-31): the only consumer today - bundling this device's
+   * photos into a downloadable zip alongside the roster/settings. Fetches each already-
+   * created object URL rather than re-reading IndexedDB, since `this.urls` is already the
+   * in-memory source of truth `photoUrl()` itself trusts.
+   */
+  async allPhotoBlobs(): Promise<{ stem: string; blob: Blob }[]> {
+    await this.ready
+    const out: { stem: string; blob: Blob }[] = []
+    for (const [stem, url] of this.urls) {
+      try {
+        out.push({ stem, blob: await (await fetch(url)).blob() })
+      } catch (e: any) {
+        this.log.warn(`allPhotoBlobs(): could not read stored photo "${stem}": ${e?.message ?? e}`, this.id)
+      }
+    }
+    return out
+  }
+
+  /**
    * Stores photos picked from a folder. Matching is by FILENAME STEM, checked against every
    * ranger's `id` first and `callsign` second (D-42 phase 6) - `build-roster-zip.js` still
    * names files after `callsign`, and older bundles built by it must keep matching.
