@@ -208,7 +208,6 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
         this.log.excessive(`Received new Settings via subscription: ${JSON.stringify(newMission)}`, this.id)
         this.settings = newMission
         this.applyMissionToForm(newMission)
-        this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Mission Subscription got:' + e, this.id),
       complete: () => this.log.info('Mission Subscription complete', this.id)

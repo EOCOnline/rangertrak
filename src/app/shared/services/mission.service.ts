@@ -340,13 +340,4 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     return this.settingsReplay$.asObservable()
   }
 
-  private localStorageVoyeur() {
-    let key
-    for (var i = 0; i < localStorage.length; i++) {
-      key = localStorage.key(i)
-      if (key != null) {
-        this.log.excessive(`item ${i} = ${JSON.parse(key)} `, this.id)
-      }
-    }
-  }
 }
