@@ -1,17 +1,5 @@
 import { Observable, Observer, of, ReplaySubject, throwError } from 'rxjs'
 
-/**
- * xlsx and csvImport are imported *dynamically*, inside the two methods that use them,
- * rather than at the top of this file.
- *
- * RangerService is providedIn:'root' and is injected by the Entry page, so it lands in
- * the eager initial bundle. A static `import * as XLSX from 'xlsx'` here therefore pulled
- * the entire SheetJS library (~800KB) into the initial download for every user - to
- * support two buttons on the Rangers page that most users never press. `import type` is
- * erased at compile time and costs nothing at runtime.
- */
-import type * as XLSXType from 'xlsx'
-
 import { formatDate } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
@@ -21,11 +9,6 @@ import { LogService, RangerType, UnknownRanger } from './'
 // ADR D-42/D-43: identity + versioned storage for the roster. Kept as a direct import (not
 // via the barrel) to avoid a cycle - the barrel re-exports this service.
 import { migrateRangers, normalizeRangerIds, RANGER_SCHEMA_VERSION } from './ranger-migration'
-
-/* xlsx.js (C) 2013-present SheetJS -- https://sheetjs.com */
-// https://github.com/SheetJS/SheetJS.github.io
-// D:\Projects\ImportExcel\sheetjs-master\demos\angular2\src\app\sheetjs.component.ts
-type AOA = any[][]  // array of arrays
 
 // TODO: Update server with new/deleted Rangers:  https://angular.io/tutorial/toh-pt6#heroes-and-http
 
@@ -200,89 +183,13 @@ export class RangerService implements OnInit {
   // install comes from loadHardcodedRangers() below (station callsigns, not people), and
   // a real roster arrives via Import Mission.
 
-  //See pg. 279...
-  //import * as data from filename;
-  //let greeting = data.greeting;
-  /*   import {default as AAA} from "VashonCallSigns";
-        AAA.targetKey
-        // this requires `"resolveJsonModule": true` in tsconfig.json
-
-        import {default as yyy} from './Rangers.3Feb22.json'
-        import { HttpClient } from '@angular/common/http';
-        yyy.primaryMain
-
-        ngOnInit(): void {
-            this.myService.getResponseData().then((value) => {
-                //SUCCESS
-                this.log.verbose(value, this.id);
-                this.detailsdata = value;
-
-            }, (error) => {
-                //FAILURE
-                this.log.verbose(error, this.id);
-            })
-        }
-      <p><b>sales amount:</b> {{ detailsdata?.sales_amount }}</p>
-      <p><b>collection amount:</b> {{ detailsdata?.collection_amount }}</p>
-      <p><b>carts amount:</b> {{ detailsdata?.carts_amount }}</p>
-    */
-
   //--------------------------------------------------------------------------
-  // https://ag-grid.com/javascript-data-grid/excel-import/#example-excel-import"
-  // https://github.com/SheetJS/SheetJS/tree/master/demos/angular2/
-  LoadRangersFromExcel(eventTarget: any) {  // HTMLInputElement event:target
-
-    // TODO: look at: https://www.npmjs.com/package/fs-browsers
-    // TODO: https://h2qutc.github.io/angular-material-components/fileinput
-    type AOR = RangerType[]  // array of Rangers
-
-    // wire up file reader
-    const target: DataTransfer = <DataTransfer>(eventTarget);
-
-    if (target.files.length !== 1) throw new Error('Cannot use multiple files');
-    this.log.verbose(`LoadRangersFromExcel(): About to read contents of ${target.files[0].name}`, this.id)
-    const reader: FileReader = new FileReader();
-    reader.onload = async (e: any) => {
-
-      // Loaded on demand - see the import-type note at the top of this file.
-      const XLSX = await import('xlsx')
-
-      // read workbook
-      const ab: ArrayBuffer = e.target.result;
-      const wb: XLSXType.WorkBook = XLSX.read(ab);
-
-      // grab first sheet
-      const wsname: string = wb.SheetNames[0];
-      const ws: XLSXType.WorkSheet = wb.Sheets[wsname];
-
-      //! debugger
-
-      let myJson = JSON.stringify(XLSX.utils.sheet_to_json(ws, { header: 1 }))
-
-      this.log.verbose(`myJson = ${myJson}`, this.id)
-      let myJson2 = JSON.parse(myJson)
-      this.log.excessive(`myJson2 = ${myJson2}`, this.id)
-      this.log.excessive(`1 Got ${this.rangers.length} rangers from Excel file.`, this.id)
-
-      // save data
-      this.rangers = <AOR>(myJson2)
-      this.log.excessive(`2 Got ${this.rangers.length} rangers from Excel file...`, this.id)
-
-      //this.rangers = JSON.parse(myJson)
-    };
-    this.log.excessive(`3 Got ${this.rangers.length} rangers from Excel file.`, this.id)
-
-    //this.DisplayRangers_unused(`Excel import from ${target.files[0].name}`)
-    this.log.excessive(`4 Got ${this.rangers.length} rangers from Excel file.`, this.id)
-
-    reader.readAsArrayBuffer(target.files[0]);
-
-    this.log.excessive(`5 Got ${this.rangers.length} rangers from Excel file.`, this.id)
-    this.SortRangersByCallsign()
-
-    // this.UpdateLocalStorage
-    return this.rangers
-  }
+  // REMOVED (2026-08-31, log-noise audit): LoadRangersFromExcel(). Same shape as the
+  // LoadRangersFromJSON() removal documented just above - nothing called it, its only
+  // callers (the Rangers page's two Excel-import buttons) were removed with the other
+  // non-working import experiments, and a real roster arrives via Import roster/Import
+  // Mission instead. What remained was five numbered `log.excessive("N Got...")` trace
+  // lines left over from once debugging it live, on a method nothing could reach anymore.
 
   /**
    * Empties the roster and *records* that it is deliberately empty.
@@ -494,20 +401,12 @@ export class RangerService implements OnInit {
   }
 
 
-  //-------------------  UNUSED -----------------------------
-  private displayRangers_unused(msg: string) {
-    let len = 10
-    if (this.rangers.length < len) len = this.rangers.length
-    this.log.excessive(`${msg}: (1st ${len} rows:)`, this.id)
-    for (let i = 0; i < len; i++) {
-      this.log.excessive(`${i} as $$: ${JSON.stringify(this.rangers[i])}`, this.id)
-      //this.log.verbose(`${i} as $$: ${JSON.stringify(this.rangers[i])}`, this.id)
-    }
-  }
-
   public async loadRangersFromExcel2() {  // still called by rangers Component from a button
     //debugger
-    // Loaded on demand - csvImport pulls in xlsx. See the note at the top of this file.
+    // Loaded on demand: RangerService is providedIn:'root' and injected by the Entry page,
+    // so it lands in the eager initial bundle - a static import here would pull csvImport's
+    // own xlsx dependency (~800KB) into every user's initial download for one button on the
+    // Rangers page most users never press.
     const { csvImport } = await import('../../rangers/csvImport')
     let fnc = new csvImport(document)
     fnc.importExcel2()
@@ -596,29 +495,6 @@ export class RangerService implements OnInit {
       if (this.rangers[i].callsign === callsign) return i;
     }
     return -1
-  }
-
-  SortRangersByCallsign_unused() {
-    this.log.verbose(`SortRangersByCallsign: ${this.rangers.length} Rangers in array`, this.id)
-
-    //debugger
-    //return this.rangers
-
-    if (this.rangers.length == 0) {
-      return
-    }
-
-    //let sorted4 = this.rangers
-
-    this.rangers.sort((a, b) => {
-      if (b.callsign > a.callsign) return -1
-      if (b.callsign < a.callsign) return 1
-      return 0
-    })
-    //  let sorted = this.rangers.sort((first, second) => first.callsign > second.callsign ? 1 : -1)
-
-    this.log.excessive("SortRangersByCallsign...DONE --- BUT ARE THEY REVERSED?!", this.id)
-    return this.rangers
   }
 
   //--------------------------------------------------------------------------
