@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, signal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 
 import { LogService, MissionType } from '../../../shared/services/'
@@ -23,10 +23,32 @@ import { MATERIAL_IMPORTS } from '../../../material-imports'
   styleUrls: ['./mission-command-post.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
-export class MissionCommandPostComponent {
+export class MissionCommandPostComponent implements OnDestroy {
   @Input({ required: true }) form!: FieldTree<MissionType>
 
-  constructor(private log: LogService) { }
+  constructor(private log: LogService) {
+    this.phoneMediaQuery.addEventListener('change', this.onPhoneMediaChange)
+  }
+
+  /**
+   * Asked directly, 2026-08-31: "does the mission section explain it won't work, just on a
+   * laptop running an OS - if running on a smartphone?" Before this it only ever said so in
+   * generic prose (the note above, "on a command-post laptop... a phone or tablet can publish
+   * ... but cannot run the server itself"), true for every reader but not TARGETED at someone
+   * actually reading it on a phone right now. Same breakpoint/pattern `radio-log.component.ts`'s
+   * own `isPhone` already established (`(max-width: 575px)`, matching `_breakpoints.scss`'s
+   * `phone` mixin) - reused rather than a second detection mechanism - drives an extra,
+   * specific callout in the template for that case, on top of the general explanation, which
+   * stays because it's also what a LAPTOP user reads when wondering whether a teammate's phone
+   * could run this instead.
+   */
+  private phoneMediaQuery = window.matchMedia('(max-width: 575px)')
+  isPhone = signal(this.phoneMediaQuery.matches)
+  private onPhoneMediaChange = (e: MediaQueryListEvent) => this.isPhone.set(e.matches)
+
+  ngOnDestroy(): void {
+    this.phoneMediaQuery.removeEventListener('change', this.onPhoneMediaChange)
+  }
 
   /**
    * Raised live 2026-08-31: "does the entry field explain it & maybe display it so it can be

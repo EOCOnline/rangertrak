@@ -4,6 +4,13 @@
     <mat-card-subtitle>Let nearby devices read the live comms log over this laptop's WiFi.</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
+    @if (isPhone()) {
+      <div class="warn mission-command-post__phone-note">
+        You're on a phone-sized screen right now - this device can <strong>publish</strong>
+        reports to a Command Post Server (the toggle below), but it cannot <strong>run</strong>
+        one. That needs a laptop; see why just below.
+      </div>
+    }
     <p class="mission__note">
       Run <code>npm run command-post</code> (or the packaged equivalent) on a command-post
       <strong>laptop</strong> - a phone or tablet can publish reports TO this (below), but
