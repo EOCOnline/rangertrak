@@ -56,6 +56,13 @@ export function statusColorValue(stored: string): string {
  */
 export function statusInkValue(stored: string): string {
   if (isStatusKey(stored)) return 'var(--rt-status-ink)'
+  // Raised live 2026-08-27: a freshly-added status row (color: '') read as dark text on a
+  // dark background in dark mode. `statusColorValue('')` passes an empty string through as
+  // the background, i.e. "no color painted, use the grid's own default cell background" -
+  // there is nothing here to contrast against, so this is NOT the "pick black or white for a
+  // custom color" case below. `var(--rt-ink)` is the app's own normal, scheme-aware text
+  // color - the same one the cell would show with no style override at all.
+  if (!stored.trim()) return 'var(--rt-ink)'
   const rgb = parseColor(stored)
   if (!rgb) return '#111111'
   return contrastRatio(rgb, [255, 255, 255]) >= contrastRatio(rgb, [17, 17, 17]) ? '#FFFFFF' : '#111111'

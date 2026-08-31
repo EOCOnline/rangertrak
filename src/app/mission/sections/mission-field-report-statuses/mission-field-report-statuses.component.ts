@@ -94,7 +94,12 @@ export class MissionFieldReportStatusesComponent implements OnChanges {
       headerName: "Color", field: "color",
       tooltipField: "one of the built-in accessible colors, or your own CSS color",
       cellStyle: (params: { value: string; }) => {
-        this.refreshStatusGrid()
+        // Raised live 2026-08-27: this called refreshStatusGrid() on every invocation - but
+        // cellStyle is itself invoked BY refreshCells()/normal rendering, so this fired once
+        // per Color cell on every render pass (11 times in a row on page load, one per
+        // status row - exactly the "no this.gridApi yet" log noise reported before the grid
+        // API is even wired up). cellStyle must stay a pure read of `params.value`; it has no
+        // reason to trigger a grid refresh at all.
         const stored = String(params.value ?? '')
         return {
           backgroundColor: statusColorValue(stored),
