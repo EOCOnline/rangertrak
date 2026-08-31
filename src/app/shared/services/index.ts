@@ -1,5 +1,6 @@
 export { BackupService, MissionExport, MISSION_EXPORT_SCHEMA_VERSION } from "./backup.service"
 export { RangerPhotoService } from "./ranger-photo.service"
+export { CustomPmtilesService, StoredPmtilesFile } from "./custom-pmtiles.service"
 export { RangerService } from "./ranger.service"
 export { MissionLocationService } from "./mission-location.service"
 export { RadioLogService } from "./radio-log.service"

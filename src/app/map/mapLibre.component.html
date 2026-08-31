@@ -1,5 +1,12 @@
-<div>Offline-capable map (MapLibre + PMTiles). Detailed coverage is limited to the
-  bundled pilot region today; panning further out shows background only.</div>
+<div>Offline-capable map (MapLibre + PMTiles).
+  @if (customPmtiles.active(); as custom) {
+    Using the custom map file <strong>{{ custom.name }}</strong> loaded on this device.
+  } @else {
+    Detailed coverage is limited to the bundled pilot region today; panning further out
+    shows background only. Load your own coverage below if you have a <code>.pmtiles</code>
+    file for your area.
+  }
+</div>
 
 <div class="map-container">
   <div class="map-frame">
@@ -28,6 +35,24 @@ Field reports to show: All ({{numAllRows()}})
   <mat-slide-toggle [checked]="hillshadeVisible()" (change)="onToggleHillshade($event)">
     Show terrain relief (hillshade)
   </mat-slide-toggle>
+</div>
+
+<!-- Raised in the roadmap's own "New backlog items, 2026-08-27": PMTiles has no per-tile
+     "save this area" equivalent to Leaflet's leaflet.offline (it's one archive covering a
+     fixed region), so a scribe with their own coverage loads the whole file here instead. -->
+<div class="map-custom-pmtiles">
+  <button matButton="outlined" type="button" (click)="customPmtilesFileInput.click()">
+    <mat-icon>upload_file</mat-icon>
+    {{ customPmtiles.active() ? 'Load a different .pmtiles file…' : 'Load a custom .pmtiles file…' }}
+  </button>
+  <input #customPmtilesFileInput type="file" accept=".pmtiles" (change)="onCustomPmtilesFileSelected($event)" hidden />
+
+  @if (customPmtiles.active()) {
+    <button matButton="outlined" type="button" (click)="onBtnClearCustomPmtiles()">
+      <mat-icon>restore</mat-icon>
+      Use bundled map instead
+    </button>
+  }
 </div>
 
 <br />

@@ -66,6 +66,14 @@ mat-slide-toggle {
   margin: 0.5rem 0;
 }
 
+.map-custom-pmtiles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--rt-gap);
+  margin: 0.5rem 0;
+}
+
 // ADR D-49: the Location marker element is a plain `document.createElement('div')`
 // (mapLibre.component.ts's refreshLocationMarkers()), not part of an Angular template - it
 // never gets this component's view-encapsulation attribute, so a plain (non-::ng-deep) rule
@@ -77,4 +85,14 @@ mat-slide-toggle {
   width : 24px;
   height: 24px;
   cursor: pointer;
+}
+
+// E-11: same explicit-sizing requirement as .rt-location-marker just above, for the same
+// reason - MapLibre computes the marker's anchor offset from the element's own box, and an
+// unstyled block <div> would otherwise stretch to its overlay container's full width. Sized
+// to match evidenceMarkerSvg()'s own 22x26 viewBox (ranger-icon.ts), not a square icon like
+// the location markers.
+:host ::ng-deep .rt-evidence-marker {
+  width : 22px;
+  height: 26px;
 }

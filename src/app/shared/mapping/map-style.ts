@@ -1,5 +1,5 @@
 import { addProtocol, setWorkerUrl, type StyleSpecification } from 'maplibre-gl'
-import { Protocol } from 'pmtiles'
+import { FileSource, PMTiles, Protocol } from 'pmtiles'
 
 import { DEFAULT_PMTILES_URL } from './pmtiles-config'
 
@@ -25,6 +25,11 @@ export { DEFAULT_PMTILES_URL }
 const MAPLIBRE_WORKER_URL = 'assets/maplibre/maplibre-gl-worker.mjs'
 
 let maplibreInitialized = false
+// Module-scoped, not local to registerPmtilesProtocol() below: registerCustomPmtilesSource()
+// needs to add() to the SAME Protocol instance MapLibre was pointed at, not a second one -
+// two Protocol instances would each keep their own `tiles` map, and only the one actually
+// wired via addProtocol() ever gets asked to resolve a `pmtiles://` URL.
+let pmtilesProtocol: Protocol | undefined
 
 /**
  * One-time global MapLibre setup: points it at the worker bundle we ship, and registers
@@ -36,9 +41,35 @@ export function registerPmtilesProtocol(): void {
     return
   }
   setWorkerUrl(MAPLIBRE_WORKER_URL)
-  const protocol = new Protocol()
-  addProtocol('pmtiles', protocol.tile)
+  pmtilesProtocol = new Protocol()
+  addProtocol('pmtiles', pmtilesProtocol.tile)
   maplibreInitialized = true
+}
+
+/**
+ * Registers a scribe-supplied `.pmtiles` File as a usable `pmtiles://` source, for
+ * CustomPmtilesService (shared/services/custom-pmtiles.service.ts) - the "let a scribe
+ * supply their own .pmtiles file" half of the offline-coverage backlog item, since PMTiles'
+ * one-archive-per-region shape has no per-tile "save what I'm looking at" equivalent to
+ * Leaflet's `leaflet.offline`.
+ *
+ * `pmtiles-js`'s `FileSource` reads directly from the browser `File` object via
+ * `file.slice()` - no fetch, no service worker, no network involved at all, which is exactly
+ * what makes this buildable without any of the bundled-tileset's own coverage/regeneration
+ * problems. `Protocol.add()` keys the registration on `source.getKey()`, which for a
+ * `FileSource` is the file's own `name` - callers pass that same name back into
+ * `buildPmtilesStyle()` as its `pmtilesUrl` argument so `pmtiles://<name>` resolves here
+ * instead of attempting an HTTP fetch.
+ *
+ * Must be called after `registerPmtilesProtocol()` has run at least once (any map
+ * component's constructor already guarantees this before building a style).
+ */
+export function registerCustomPmtilesSource(file: File): string {
+  if (!pmtilesProtocol) {
+    registerPmtilesProtocol()
+  }
+  pmtilesProtocol!.add(new PMTiles(new FileSource(file)))
+  return file.name
 }
 
 /**

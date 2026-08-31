@@ -12,7 +12,9 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle'
 
-import { buildPmtilesStyle, DEFAULT_PMTILES_URL, registerPmtilesProtocol } from '../shared/mapping/map-style'
+import {
+  buildPmtilesStyle, DEFAULT_PMTILES_URL, registerCustomPmtilesSource, registerPmtilesProtocol
+} from '../shared/mapping/map-style'
 import {
   radioLogStatusColor, locationCategoryColor, resolveCssColorForCanvas
 } from '../shared/mapping/report-marker-status'
@@ -25,14 +27,14 @@ import {
 // Leaflet" purity concern, not a real download. Reusing the SAME function as the Leaflet
 // map's markers/trails (rather than a second color scheme) is the actual point - ranger-
 // icon.ts's own doc comment on why this exists at all.
-import { rangerColorFor } from '../shared/mapping/ranger-icon'
+import { rangerColorFor, evidenceMarkerSvg } from '../shared/mapping/ranger-icon'
 // ADR D-49: same Leaflet-import acceptance as rangerColorFor above - locationMarkerSvg()
 // itself touches no Leaflet API (it returns a plain SVG string), but its file also exports
 // the Leaflet-typed locationIconFor(), so importing it here pulls that module in regardless.
 import { locationMarkerSvg } from '../shared/mapping/location-icon'
 import {
   RadioLogType, RadioLogService, RadioLogEntryType, LogService, MissionLocationService,
-  MissionLocationType, MissionService, MissionType
+  MissionLocationType, MissionService, MissionType, CustomPmtilesService
 } from '../shared/services'
 import { Utility, formatReportTime } from '../shared'
 import { LocationDialogComponent } from './location-dialog/location-dialog.component'
@@ -110,6 +112,13 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   private locations: MissionLocationType[] = []
   private locationsSubscription!: Subscription
 
+  // E-11 (2026-08-26): evidenceLocation was captured on Entry and shown only on its own
+  // mini-map - the main Leaflet map (mapLeaflet.component.ts) already draws it, this engine
+  // did not. Same plain-Marker-array approach as the Location markers just above: an
+  // evidence flag is a rare, non-clustered overlay, not a natural fit for the reports
+  // GeoJSON source's circle/cluster layers.
+  private evidenceMarkers: Marker[] = []
+
   // Armed by the "Add Location" button (template) - the next plain map click places a
   // location there instead of copying coordinates (onMapClick, below), then disarms itself.
   // Mirrors LmapComponent's own placingLocation - see its comment for why one-shot.
@@ -121,6 +130,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     private locationService: MissionLocationService,
     private dialog: MatDialog,
     private log: LogService,
+    public customPmtiles: CustomPmtilesService,
     @Inject(DOCUMENT) private document: Document
   ) {
     registerPmtilesProtocol()
@@ -147,6 +157,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
         this.radioLog = newReports
         this.numAllRows.set(newReports.numReport)
         this.refreshMarkers()
+        this.refreshEvidenceMarkers()
       },
       error: (e) => this.log.error('MapLibreComponent field reports subscription error: ' + e, 'MapLibreComponent')
     })
@@ -160,9 +171,20 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    // Fire-and-forget: nothing in Angular's lifecycle needs to block on this, but
+    // resolvePmtilesUrl() below needs CustomPmtilesService's IndexedDB read to have
+    // finished FIRST, or a fresh page load (including the very reload this feature's own
+    // "load a file" flow triggers) would build the map against the bundled default even
+    // when a custom file is stored - the signal it reads just wouldn't be populated yet.
+    this.initMaps()
+  }
+
+  private async initMaps(): Promise<void> {
+    await this.customPmtiles.whenReady()
+
     this.map = new MaplibreMap({
       container: this.mapContainer.nativeElement,
-      style: buildPmtilesStyle(),
+      style: buildPmtilesStyle(this.resolvePmtilesUrl()),
       center: [this.settings.defLng, this.settings.defLat],
       zoom: this.settings.maplibre.defZoom
     })
@@ -180,6 +202,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addReportsSource()
       this.refreshMarkers()
       this.refreshLocationMarkers()
+      this.refreshEvidenceMarkers()
       this.fitToBounds()
       // Not called here directly - see warmBundledPmtilesCache()'s own doc comment for why
       // firing it inside this same handler reopens exactly the race it was written to close.
@@ -204,7 +227,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   private initOverviewMap(): void {
     this.overviewMap = new MaplibreMap({
       container: this.overviewContainer.nativeElement,
-      style: buildPmtilesStyle(),
+      style: buildPmtilesStyle(this.resolvePmtilesUrl()),
       center: [this.settings.defLng, this.settings.defLat],
       zoom: this.settings.maplibre.overviewMinZoom,
       interactive: false,
@@ -230,6 +253,52 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private clamp(num: number, min: number, max: number): number {
     return Math.min(Math.max(num, min), max)
+  }
+
+  /** The bundled vashon.pmtiles URL, unless a scribe has loaded their own coverage - see
+   *  CustomPmtilesService's own doc comment for why PMTiles (one archive per region, no
+   *  per-tile store) needs this rather than Leaflet's live "save this area" control. */
+  private resolvePmtilesUrl(): string {
+    const custom = this.customPmtiles.activeFile()
+    return custom ? registerCustomPmtilesSource(custom) : DEFAULT_PMTILES_URL
+  }
+
+  /**
+   * Loads a scribe-picked `.pmtiles` file and reloads the page - same "Reloading so every
+   * screen picks them up..." pattern Rangers' own roster/photo imports already use, rather
+   * than trying to live-swap an already-rendered MapLibre map's tile source (its GeoJSON
+   * reports source, cluster state, hillshade layer and every marker would all need
+   * re-adding in the right order; starting fresh from ngAfterViewInit() is far less
+   * error-prone than reproducing that sequence a second time in a live-swap path).
+   */
+  async onCustomPmtilesFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    input.value = '' // so re-picking the same file still fires a change event
+
+    if (!file) {
+      return
+    }
+
+    if (!confirm(
+      `Use "${file.name}" as the offline map instead of the bundled Vashon extract?\n\n`
+      + `This replaces the map on this device until you clear it. The file itself is not `
+      + `validated here - if it isn't a real PMTiles archive, the map will fail to render `
+      + `and you'll need to clear it to get the bundled map back.\n\n`
+      + `Reloading so every map view picks it up...`)) {
+      return
+    }
+
+    await this.customPmtiles.setFile(file)
+    window.location.reload()
+  }
+
+  async onBtnClearCustomPmtiles(): Promise<void> {
+    if (!confirm('Stop using the custom offline map and go back to the bundled Vashon extract?')) {
+      return
+    }
+    await this.customPmtiles.clear()
+    window.location.reload()
   }
 
   /**
@@ -522,6 +591,34 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
         .setLngLat([loc.lng, loc.lat])
         .addTo(this.map)
     })
+  }
+
+  /**
+   * E-11: draws the same purple-flag marker `mapLeaflet.component.ts`'s equivalent already
+   * does for every report carrying an `evidenceLocation` - a scribe who has seen it once on
+   * Entry (or the Leaflet engine) recognizes it instantly here too, rather than this engine
+   * inventing a second look for the same meaning. Rebuilt wholesale on every radio-log
+   * update, same as refreshLocationMarkers() - evidence points are rare enough per mission
+   * that a full rebuild costs nothing worth optimizing away.
+   */
+  private refreshEvidenceMarkers(): void {
+    if (!this.map) {
+      return
+    }
+    this.evidenceMarkers.forEach(m => m.remove())
+    this.evidenceMarkers = (this.radioLog?.logEntries ?? [])
+      .filter((r): r is RadioLogEntryType & { evidenceLocation: NonNullable<RadioLogEntryType['evidenceLocation']> } =>
+        !!r.evidenceLocation)
+      .map(r => {
+        const loc = r.evidenceLocation
+        const el = document.createElement('div')
+        el.className = 'rt-evidence-marker'
+        el.innerHTML = evidenceMarkerSvg()
+        el.title = `Evidence/clue from ${r.callsign} at ${formatReportTime(r.date)}`
+        return new Marker({ element: el, anchor: 'bottom' })
+          .setLngLat([loc.lng, loc.lat])
+          .addTo(this.map)
+      })
   }
 
   /** Opens the add/edit dialog. `coords` for a fresh placement; `existing` to edit/delete one already on the map. */
