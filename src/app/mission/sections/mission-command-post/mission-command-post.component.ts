@@ -25,4 +25,19 @@ import { MATERIAL_IMPORTS } from '../../../material-imports'
 })
 export class MissionCommandPostComponent {
   @Input({ required: true }) form!: FieldTree<MissionType>
+
+  /**
+   * Raised live 2026-08-31: "a URL to click" alongside the address field, so the operator can
+   * confirm the /view page actually works without hand-typing it into a second tab. A plain
+   * `<a>` (see the template), not a `fetch()`-based reachability check - the latter would hit
+   * mixed content: this app is served over HTTPS, the command-post server is deliberately
+   * plain HTTP (`command-post-publish.service.ts`'s own "WiFi password is the boundary"
+   * design), and browsers block an HTTPS page's own `fetch()`/XHR to an HTTP endpoint
+   * outright. A top-level navigation via a link is not subject to that restriction, which is
+   * exactly why this is a link and not a live status ping.
+   */
+  viewUrl(): string {
+    const base = (this.form.commandPostServerUrl().value() || '').trim().replace(/\/+$/, '')
+    return base ? `${base}/view` : ''
+  }
 }

@@ -28,6 +28,18 @@
           placeholder="http://192.168.1.5:8080" />
         <mat-hint>Printed by the server itself on startup - copy it from there.</mat-hint>
       </mat-form-field>
+
+      <!-- Raised live 2026-08-31: "a URL to click" to confirm /view actually works, without
+           hand-typing it into a second tab. A plain link, not a live reachability check - see
+           viewUrl()'s own doc comment for why an active ping from this HTTPS page to the
+           server's plain-HTTP address would be blocked as mixed content regardless of whether
+           the server is actually up. -->
+      @if (viewUrl()) {
+        <p class="mission-command-post__view-link">
+          <a [href]="viewUrl()" target="_blank" rel="noopener noreferrer">Open {{ viewUrl() }}</a>
+          to confirm it's reachable from this device.
+        </p>
+      }
     }
   </mat-card-content>
 </mat-card>
