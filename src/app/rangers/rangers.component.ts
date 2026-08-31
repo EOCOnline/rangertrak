@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs'
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
-import { RouterLink } from '@angular/router'
+import { Router, RouterLink } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular';
 import { GuideService } from '../shared/guide/guide.service';
 import { PageComponent } from '../shared/page/page.component';
@@ -269,6 +269,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     // The confidentiality bar's "What this means" opens the Guide drawer's Privacy tab -
     // see openPrivacyDetails().
     private guide: GuideService,
+    private router: Router,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.log.info(`======== Constructor() ============`, this.id)
@@ -452,6 +453,21 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     const base = (p: string) => p.split(/[/\\]/).pop() || ''
     const rosterKey = Object.keys(entries).find(k => base(k).toLowerCase() === 'roster.json')
     if (!rosterKey) {
+      // Finishing checklist gap #6 (2026-08-31): a scribe handed a Mission Zip naturally
+      // reaches for the button they already know. Telling them only "no roster.json" is
+      // technically true and actively unhelpful when the file is a real, loadable Mission
+      // Zip that just needs a different page - so recognise it and point there instead of
+      // just rejecting it as "not a bundle."
+      const isMissionZip = Object.keys(entries).some(k => base(k).toLowerCase() === 'mission-zip.json')
+      if (isMissionZip) {
+        if (confirm(
+          `"${file.name}" is a Mission Zip, not a roster bundle - it also brings mission `
+          + `settings and locations, which "Import roster" cannot apply.\n\n`
+          + `Open the Mission Zip page to load it instead?`)) {
+          this.router.navigateByUrl('/prep')
+        }
+        return
+      }
       alert(`"${file.name}" does not contain a roster.json.\n\n`
         + `Expected a zip holding roster.json and a photos/ folder.`)
       return
