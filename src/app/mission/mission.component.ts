@@ -28,6 +28,7 @@ import { MissionFieldReportStatusesComponent } from './sections/mission-field-re
 import { MissionLocationTypesComponent } from './sections/mission-location-types/mission-location-types.component'
 import { MissionLocationsListComponent } from './sections/mission-locations-list/mission-locations-list.component'
 import { MissionRecipients213Component } from './sections/mission-recipients213/mission-recipients213.component'
+import { MissionCommandPostComponent } from './sections/mission-command-post/mission-command-post.component'
 import { MissionAdvancedOptionsComponent } from './sections/mission-advanced-options/mission-advanced-options.component'
 
 // Placeholder used only until the real settings arrive via the constructor's synchronous
@@ -47,6 +48,7 @@ const blankMission: MissionType = {
   leaflet: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   imageDirectory: '', defRadioLogStatus: 0, radioLogStatuses: [],
   recipientOptions213: [], idFieldLabel: '', locationTypes: [],
+  commandPostEnabled: false, commandPostServerUrl: '',
 }
 
 @Component({
@@ -65,6 +67,7 @@ const blankMission: MissionType = {
     MissionLocationTypesComponent,
     MissionLocationsListComponent,
     MissionRecipients213Component,
+    MissionCommandPostComponent,
     MissionAdvancedOptionsComponent,
     InstallUpdateComponent,
   ],

@@ -1,0 +1,18 @@
+:host {
+  display: contents;
+}
+
+.mission__note {
+  margin     : 0.25rem 0 0.75rem;
+  font-size  : var(--rt-type-body-sm-size);
+  line-height: var(--rt-type-body-sm-line);
+  color      : var(--rt-ink-2);
+  max-width  : 60ch;
+}
+
+.mission-command-post__url {
+  display  : block;
+  margin-top: 0.75rem;
+  max-width: 28rem;
+  width    : 100%;
+}

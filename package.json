@@ -11,6 +11,7 @@
     "test": "ng test",
     "test:worker": "node --test worker/index.test.mjs",
     "server": "node tools/serve-dist.js",
+    "command-post": "node tools/command-post-server.js",
     "e2e": "node tools/e2e.js",
     "e2e:full": "node tools/e2e.js --full",
     "e2e:prod": "node tools/e2e.js --base=https://rangertrak.org --read-only --full",

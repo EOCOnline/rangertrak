@@ -315,6 +315,10 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       recipientOptions213: [...DEFAULT_RECIPIENT_OPTIONS_213],
       idFieldLabel: 'ID',
       locationTypes: [...DEFAULT_LOCATION_TYPES],
+      // E-87 Stage 1: off, blank, by default - a fresh install never publishes anywhere
+      // until a mission explicitly opts in and names a server.
+      commandPostEnabled: false,
+      commandPostServerUrl: '',
     }
   }
 

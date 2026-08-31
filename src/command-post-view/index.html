@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RangerTrak — Command Post View</title>
+<!--
+  E-87 Stage 1 (2026-08-31). Deliberately a hand-written static page, NOT an Angular route -
+  see `E-87 Command Post Server.md` §2.3/§5 for why: this is served from a LAN IP, a THIRD
+  origin distinct from both the real app and localhost, which means no service worker (not a
+  secure context) and its own separate localStorage a scribe must never mistake for their own
+  working copy. Routing this through the real Angular app would drag in the whole PWA bundle
+  (including a service-worker registration that cannot work here anyway) for a page that only
+  ever needs to render a JSON payload as a table. Plain HTML/CSS/vanilla JS, no build step, no
+  CDN (the whole point is working on a LAN with no guaranteed upstream Internet - see
+  artifact-capabilities-style reasoning in the scoping doc), no framework.
+
+  Read-only. No write-back, no auth beyond the WiFi/hotspot's own password (see
+  command-post-publish.service.ts's own header comment on why no join code exists yet in v1).
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --ink: light-dark(#1a1a1a, #e8e8e8);
+    --ink-2: light-dark(#555, #aaa);
+    --ground: light-dark(#f7f7f5, #16181b);
+    --surface: light-dark(#ffffff, #1e2127);
+    --line: light-dark(#d8d8d4, #33363c);
+    --accent: light-dark(#0b5fa8, #6fb3f2);
+    --warn: light-dark(#b3261e, #ff6b5e);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 1rem;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--ground);
+    color: var(--ink);
+  }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--line);
+  }
+  h1 { font-size: 1.3rem; margin: 0; }
+  .meta { color: var(--ink-2); font-size: 0.9rem; }
+  .badge {
+    display: inline-block;
+    padding: 0.15em 0.6em;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .badge--live { background: light-dark(#e3f2e3, #1c3a24); color: light-dark(#1a6b1a, #6fd97f); }
+  .badge--stale { background: light-dark(#fff3cd, #4a3a12); color: light-dark(#8a6100, #f2c94c); }
+  .badge--none { background: light-dark(#fde3e1, #4a1d1a); color: var(--warn); }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .controls input[type="search"] {
+    flex: 1 1 200px;
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 1rem;
+  }
+  .controls button {
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .controls button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  caption { text-align: left; color: var(--ink-2); margin-bottom: 0.4rem; font-size: 0.85rem; }
+  thead th {
+    position: sticky; top: 0;
+    background: var(--ground);
+    text-align: left;
+    padding: 0.5rem 0.6rem;
+    border-bottom: 2px solid var(--line);
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  tbody tr:hover { background: light-dark(#eef3f8, #23272e); }
+  .callsign { font-weight: 600; white-space: nowrap; }
+  .status-pill {
+    display: inline-block;
+    padding: 0.1em 0.5em;
+    border-radius: 4px;
+    background: light-dark(#e8e8e8, #2a2d33);
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+  .time { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+  .empty { text-align: center; color: var(--ink-2); padding: 2rem 1rem; }
+
+  /* Overflow-safe on a phone: this page gets no CSS breakpoint testing the way the real app
+     does (E-102 audit, 2026-08-31), so the table just scrolls sideways rather than trying to
+     reflow columns - simplest thing that can't silently widen the page the way this app's own
+     Entry page overflow bug did. */
+  .table-scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>RangerTrak — Command Post View</h1>
+  <span id="missionMeta" class="meta">Waiting for the mission to publish…</span>
+  <span id="statusBadge" class="badge badge--none">no data yet</span>
+</header>
+
+<div class="controls">
+  <input id="filterInput" type="search" placeholder="Filter by callsign, status, or message…" autocomplete="off">
+  <button id="sortToggle" type="button" aria-pressed="true">Newest first</button>
+</div>
+
+<div class="table-scroll">
+  <table>
+    <caption>Read-only. Filter and sort here affect only this screen - every viewer has its own independent view of the same log.</caption>
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Callsign</th>
+        <th>Status</th>
+        <th>Source</th>
+        <th>Message</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+<p id="emptyState" class="empty" hidden>No reports match.</p>
+
+<script>
+(function () {
+  'use strict';
+
+  // Same-origin only - this page is served BY the command post server itself
+  // (tools/command-post-server.js), never loaded from anywhere else, so a relative path is
+  // both correct and the only thing that could ever work (see the file header on why this
+  // page can't be the real Angular app, and therefore can't share its origin either).
+  var POLL_MS = 15000;
+  var newestFirst = true;
+  var filterText = '';
+  var latest = null;
+
+  var rowsEl = document.getElementById('rows');
+  var emptyEl = document.getElementById('emptyState');
+  var metaEl = document.getElementById('missionMeta');
+  var badgeEl = document.getElementById('statusBadge');
+  var filterEl = document.getElementById('filterInput');
+  var sortBtn = document.getElementById('sortToggle');
+
+  filterEl.addEventListener('input', function () {
+    filterText = filterEl.value.trim().toLowerCase();
+    render();
+  });
+
+  sortBtn.addEventListener('click', function () {
+    newestFirst = !newestFirst;
+    sortBtn.textContent = newestFirst ? 'Newest first' : 'Oldest first';
+    sortBtn.setAttribute('aria-pressed', String(newestFirst));
+    render();
+  });
+
+  function esc(s) {
+    var d = document.createElement('div');
+    d.textContent = s == null ? '' : String(s);
+    return d.innerHTML;
+  }
+
+  function fmtTime(iso) {
+    try {
+      // 24-hour clock throughout RangerTrak's own UI - matched here for consistency,
+      // not a browser-locale default.
+      return new Date(iso).toLocaleString([], {
+        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false
+      });
+    } catch (e) { return iso; }
+  }
+
+  function render() {
+    if (!latest) {
+      rowsEl.innerHTML = '';
+      emptyEl.hidden = false;
+      emptyEl.textContent = 'No mission has published to this server yet.';
+      return;
+    }
+
+    metaEl.textContent = (latest.mission || '(unnamed mission)')
+      + (latest.opPeriod ? ' — ' + latest.opPeriod : '');
+
+    var reports = (latest.reports || []).slice();
+    if (filterText) {
+      reports = reports.filter(function (r) {
+        return (r.callsign || '').toLowerCase().indexOf(filterText) !== -1
+          || (r.status || '').toLowerCase().indexOf(filterText) !== -1
+          || (r.notes || '').toLowerCase().indexOf(filterText) !== -1;
+      });
+    }
+    reports.sort(function (a, b) {
+      var d = new Date(a.date) - new Date(b.date);
+      return newestFirst ? -d : d;
+    });
+
+    if (!reports.length) {
+      rowsEl.innerHTML = '';
+      emptyEl.hidden = false;
+      emptyEl.textContent = filterText ? 'No reports match that filter.' : 'No reports yet this mission.';
+      return;
+    }
+    emptyEl.hidden = true;
+
+    rowsEl.innerHTML = reports.map(function (r) {
+      return '<tr>'
+        + '<td class="time">' + esc(fmtTime(r.date)) + '</td>'
+        + '<td class="callsign">' + esc(r.callsign || '(no callsign)') + '</td>'
+        + '<td>' + (r.status ? '<span class="status-pill">' + esc(r.status) + '</span>' : '') + '</td>'
+        + '<td>' + esc(r.source) + '</td>'
+        + '<td>' + esc(r.notes) + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  function setBadge(state, text) {
+    badgeEl.className = 'badge badge--' + state;
+    badgeEl.textContent = text;
+  }
+
+  function poll() {
+    fetch('/api/mission', { cache: 'no-store' })
+      .then(function (res) {
+        if (res.status === 404) {
+          latest = null;
+          setBadge('none', 'no data yet');
+          render();
+          return;
+        }
+        if (!res.ok) { throw new Error('HTTP ' + res.status); }
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data) { return; }
+        latest = data;
+        var ageMs = Date.now() - new Date(data.publishedAt).getTime();
+        setBadge(ageMs < 60000 ? 'live' : 'stale',
+          ageMs < 60000 ? 'live' : ('last update ' + Math.round(ageMs / 60000) + 'm ago'));
+        render();
+      })
+      .catch(function (e) {
+        setBadge('none', 'server unreachable');
+        console.warn('Command Post view: could not reach /api/mission -', e);
+      });
+  }
+
+  poll();
+  setInterval(poll, POLL_MS);
+})();
+</script>
+
+</body>
+</html>

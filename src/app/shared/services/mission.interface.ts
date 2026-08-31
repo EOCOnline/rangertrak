@@ -103,4 +103,15 @@ export type MissionType = {
   // `backfillMissingFields` should manufacture a value for. Same "truly optional, no
   // migration needed" treatment `RadioLogEntryType.printedAt`/`revisedAt` already use.
   lastPrintedAt?: Date,
+
+  // E-87 Stage 1 (2026-08-31): the opt-in "publish to a Command Post Server" setting the
+  // roadmap's own scoping doc calls for (`E-87 Command Post Server.md`, §3 Stage 1 -
+  // "one opt-in setting plus a POST-on-change"). Additive-only, same reasoning as
+  // idFieldLabel/locationTypes above - no MISSION_SCHEMA_VERSION bump needed,
+  // backfillMissingFields supplies the defaults (disabled, blank URL) to any returning user.
+  // The roster is deliberately never part of what gets published here (see
+  // command-post-publish.service.ts) - these two fields only gate WHETHER/WHERE the
+  // redacted radio-log-only payload goes, they don't change what's in it.
+  commandPostEnabled: boolean,
+  commandPostServerUrl: string,
 }

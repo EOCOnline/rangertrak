@@ -3,7 +3,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { MatSnackBarModule } from '@angular/material/snack-bar'
 
-import { LogService, StoragePersistenceService, UpdateService } from './shared/services'
+import { CommandPostPublishService, LogService, StoragePersistenceService, UpdateService } from './shared/services'
 import { HeaderComponent } from './shared/header/header.component'
 import { NavbarComponent } from './shared/navbar/navbar.component'
 import { FooterComponent } from './shared/footer/footer.component'
@@ -47,7 +47,12 @@ export class AppComponent implements OnInit {
   constructor(
     private log: LogService,
     private updateService: UpdateService,
-    private storagePersistence: StoragePersistenceService) {
+    private storagePersistence: StoragePersistenceService,
+    // E-87 Stage 1: never called directly - injected here purely to force this
+    // providedIn:'root' service to construct at app startup, same reason
+    // storagePersistence is listed above. Its own constructor wires the subscriptions
+    // that watch for commandPostEnabled and publish on every radio-log change.
+    private commandPostPublish: CommandPostPublishService) {
   }
 
 
