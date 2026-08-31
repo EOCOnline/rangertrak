@@ -72,14 +72,13 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
   @Input() set locationUpdated(newLocation: LocationType) {
     // Normal data flow from the parent Entry form, not a fault - see the equivalent
     // comment in mission.service.ts about keeping the Log page's errors meaningful.
-    this.log.excessive((`LMini-Map location Setter called! ${JSON.stringify(newLocation)}`), this.id)
+    // Fires on EVERY coordinate/address edit on Entry's hot path (log-noise audit,
+    // 2026-08-31) - the two trace lines this setter and addMarker() below used to log on
+    // every single one were removed for the same reason location.component.ts's own
+    // per-keystroke DD/DDM/DMS/MGRS/UTM traces were: no ongoing debugging value, real cost
+    // in ring-buffer space that could instead hold actual field activity.
 
     if (newLocation && (newLocation.lat != undefined)) {
-      if (newLocation.address == undefinedAddressFlag) {
-        this.log.verbose((`Entry form has no address yet:  ${undefinedAddressFlag}`), this.id)
-      } else {
-        this.log.verbose((`Received new location from entry form: ${JSON.stringify(newLocation)}`), this.id)
-      }
       // All we need to display is lat & long: address is superfluious, just used for the title
       this._location = newLocation
 
@@ -562,63 +561,6 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
 
   // ------------------------------------  Markers  ---------------------------------------
 
-  // TODO: Just rename MoveExistingMarker(), or AddNewMarker()?
-  // Act on new location from parent (i.e., the entry form)
-  // Based on Mediator pattern: listing 8.8 in TS dev w/ TS, pg 188
-  public onNewLocation_UNUSED(newLocation: LocationType) {
-    this.log.verbose(`onNewLocation received in ${JSON.stringify(newLocation)}`, this.id)
-
-    if (!newLocation) {
-      this.log.error(`Bad location passed in to onNewLocation(): ${JSON.stringify(newLocation)}`, this.id)
-    } else {
-      this.location = {
-        lat: newLocation.lat,
-        lng: newLocation.lng,
-        address: newLocation.address,  //! might be undefinedAddressFlag!
-        derivedFromAddress: newLocation.derivedFromAddress
-      }
-      // TODO: Consider displaying previous points too - not just the new one?
-      let newMarker = L.marker([this.location.lat, this.location.lng], { title: this.location.address })
-      //this.addMarker(this.location.lat, this.location.lng, this.location.address)
-      //this.addCircle(this.location.lat, this.location.lng, this.location.address)
-
-      //! resize map to fit?
-      this.lMap.setView([this.location.lat, this.location.lng])
-
-      /*
-            let ptNE = L.point(this.location.lat + 0.01, this.location.lng + 0.01)
-            let ptSW = L.point(this.location.lat - 0.01, this.location.lng - 0.01)
-            let bnd = this.lMap.getBounds()
-            this.log.error(`Bounds=${JSON.stringify(bnd)}`)
-            bnd.extend.
-            .extend(ptNE)
-
-            // https://gis.stackexchange.com/questions/301286/how-to-fit-bounds-after-adding-multiple-markers
-            // You could use a featuregroup, it's like a layergroup but better.
-
-            var myFGMarker = L.FeatureGroup;
-            marker = L.marker(lat_lng);
-            myFGMarker.addLayer(marker);
-            myFGMarker.addTo(map);
-            map.fitBounds(myFGMarker.getBounds());
-
-            // You can instantiate a LatLngBounds object and then extend() it with the coordinates of the companies.After adding the markers you can call map.fitBounds(<LatLngBounds>).
-
-            //function addCompanies() {
-            var bounds = L.latLngBounds() // Instantiate LatLngBounds object
-            //for (let c of companies) {
-            let lat_lng = [this.location.lat, this.location.lng]
-            var marker = L.marker(lat_lng).addTo(this.lMap);
-            marker.bindPopup(`<b>${this.location.address}</b>`)
-            bounds.extend(lat_lng)      // Extend LatLngBounds with coordinates
-            //  }
-            this.lMap.fitBounds(bounds)
-            //  }
-      */
-    }
-  }
-
-
   override displayMarkers() {
     super.displayMarkers()
 
@@ -686,8 +628,6 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
    * @returns
    */
   override addMarker(lat: number, lng: number, title: string = '') {
-    this.log.excessive(`addMarker at ${lat}. ${lng}, ${title}`, this.id)
-
     if (!lat || !lng || !this.lMap) {
       this.log.error(`addMarker(): bad lat: ${lat} or lng: ${lng} or mapLeaflet: ${this.lMap}`, this.id)
       return
