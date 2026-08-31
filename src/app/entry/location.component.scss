@@ -323,9 +323,27 @@ $filledColor: var(--rt-surface-2);
   margin-right    : 12px;
 }
 
+// Root-caused 2026-08-31, after several prior sessions fixed OTHER contributors to the
+// Entry phone-viewport overflow and confirmed ~35px still remained unexplained: Material's
+// own MDC floating-label is `white-space: nowrap` and never wraps - at the phone breakpoint
+// this field's placeholder ("Street address, +Code, or Maidenhead grid locator") measures
+// ~379px against ~290px of available width. The label clips itself visually (its own
+// `overflow: hidden`), so nothing looks broken on screen - but that clipping only affects
+// PAINT, not the CSS scrollable-overflow calculation: the label's full unwrapped
+// `scrollWidth` still propagates up through every ancestor with no containment of its own
+// (`.mdc-notched-outline` -> `.enter__section` -> `form.enter__form` -> `html`), which is
+// what actually drags `document.documentElement.scrollWidth` - and therefore the whole
+// mobile layout viewport - wider than the device. Exact same mechanism already fixed for the
+// mini-map's Leaflet zoom-proxy `transform` (mini-mapLeaflet.component.scss), just triggered
+// by long text here instead of a transform. `contain: layout` stops the label's clipped-off
+// text from counting toward this element's contribution to ancestor overflow, verified live
+// (before: docScroll/innerWidth 425px against a 390px device; after: 390px, with the label
+// still rendering identically - `contain: layout` changes nothing visual, only what
+// propagates upward for overflow purposes).
 .enter__Where-Address {
   width    : 100%;
   max-width: 420px;
+  contain  : layout;
 }
 
 // Raised live 2026-08-30: only "Street address" needs the network (Nominatim geocoding);
