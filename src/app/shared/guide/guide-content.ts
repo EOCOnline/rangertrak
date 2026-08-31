@@ -137,7 +137,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
               'Click the map to move the pin, which fills the coordinates in for you.',
               'Alt+click the map to mark evidence or a clue at a different location instead, once that section is showing.',
               'Every format here assumes WGS84 / modern GPS. A position read off an older paper topo quad may use NAD27 instead, which can be 100–200 m off in the western US.',
-              'Not seeing a format you expected? Each one can be switched off for the mission, under Mission → Location Defaults — a team that only ever speaks MGRS can hide the rest. The Show all coordinate systems toggle brings them all back for the current session only, without changing the mission\'s own setting.'
+              'Every format (DD, DDM, DMS, MGRS, UTM) is always one tap away here, regardless of mission settings — a call in an unexpected format is never blocked. Mission → Location Defaults only picks which one this screen opens on by default; a team that mostly works in MGRS can set that as the default while every other format stays reachable.'
             ]
           },
           {
