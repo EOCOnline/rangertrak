@@ -1,6 +1,7 @@
 import { unzipSync, zipSync, Zippable } from 'fflate'
 
 import { MissionType } from '../services/mission.interface'
+import { MissionLocationType } from '../services/mission-location.interface'
 import { RangerType } from '../services/ranger.interface'
 
 /**
@@ -16,11 +17,21 @@ import { RangerType } from '../services/ranger.interface'
  * types themselves - not sharing one schema with a nullable `fieldReports` field, which would
  * make "is this a backup or a template?" a runtime guess instead of the file's own shape.
  *
- * v1 scope, per the roadmap's D-a deferral note: rangers + photos + settings only. Teams and
- * Facilities are not yet a real entity (D-a, still gated on real-world input) - this format
- * gets a `schemaVersion` specifically so a v2 payload (once Teams/Facilities exist) can be
- * told apart from a v1 one on read, the same discipline `MISSION_EXPORT_SCHEMA_VERSION`
- * already established for `MissionExport`.
+ * v1 scope, per the roadmap's D-a deferral note: rangers + photos + settings + locations.
+ * `locations` joined the payload 2026-08-31 (finishing checklist gap #1) once ADR D-49 shipped
+ * Locations as the Facilities half of D-45 and the maintainer said live that a Mission Zip
+ * should carry them - "no need to wait for Teams to include Locations." It is optional on the
+ * type and always written, the same additive pattern `MissionExport.locations?` already
+ * established, so `MISSION_ZIP_SCHEMA_VERSION` did not need to move for it. Teams alone is
+ * still excluded - not yet a real entity (D-a, still gated on real-world input) - this format
+ * keeps its `schemaVersion` so a v2 payload (once Teams exists) can be told apart from a v1 one
+ * on read, the same discipline `MISSION_EXPORT_SCHEMA_VERSION` already established.
+ *
+ * The bundled `settings` deliberately travels with whatever agency-supplied keys it already
+ * holds (`googleGeocodingApiKey`, `commandPostServerUrl`) rather than stripping them - decided
+ * 2026-08-31: a Mission Zip is an explicit, operator-initiated device-provisioning action, the
+ * same category D-35 already sanctions for `MissionExport`, and the whole point is a receiving
+ * device that works without someone re-typing a key.
  *
  * Photo matching reuses `RangerPhotoService`'s own filename-stem convention (a ranger's `id`
  * if set, else `callsign`, uppercased) - not reinvented here. "A wrong photo is worse than no
@@ -38,6 +49,11 @@ export type MissionZipManifest = {
   appVersion: string
   settings: MissionType
   rangers: RangerType[]
+  /** Optional on the type for the same reason `MissionExport.locations?` is (ADR D-49): a
+   *  pre-2026-08-31 Mission Zip lacks it, and extractMissionZip()'s caller defaults a missing
+   *  one to `[]` rather than rejecting the zip. Always written by buildMissionZipBytes()'s own
+   *  caller going forward. */
+  locations?: MissionLocationType[]
 }
 
 export type MissionZipPhoto = { filename: string; bytes: Uint8Array }
@@ -59,6 +75,7 @@ export async function buildMissionZipBytes(
 ): Promise<Uint8Array> {
   const files: Zippable = {
     [MANIFEST_ENTRY]: new TextEncoder().encode(JSON.stringify(manifest, null, 2)),
+    'README.txt': new TextEncoder().encode(readmeText(manifest, photos.length)),
   }
 
   for (const { stem, blob } of photos) {
@@ -106,6 +123,22 @@ export function extractMissionZip(bytes: Uint8Array): { manifest: MissionZipMani
     .map(k => ({ filename: basename(k), bytes: entries[k] }))
 
   return { manifest, photos }
+}
+
+/**
+ * A confidentiality notice inside the archive itself, same wording (adapted) and same reason
+ * as `roster-build/2-make-drive-bundle.js`'s own `README.txt` - a Mission Zip built in-app got
+ * no equivalent warning until this (finishing checklist gap #12), even though it contains the
+ * same real names, phone numbers and photographs.
+ */
+function readmeText(manifest: MissionZipManifest, photoCount: number): string {
+  return `RangerTrak Mission Zip\n`
+    + `Built ${manifest.exportedAt.slice(0, 10)} by app v${manifest.appVersion}\n\n`
+    + `mission-zip.json   ${manifest.rangers.length} rangers, ${manifest.locations?.length ?? 0} locations, mission settings\n`
+    + `photos/            ${photoCount} photograph${photoCount === 1 ? '' : 's'}\n\n`
+    + `HOW TO LOAD: open RangerTrak's Mission Zip page (/prep) and choose this file.\n\n`
+    + `CONFIDENTIAL: real names, phone numbers and photographs of volunteers.\n`
+    + `Do not email it, do not put it in source control, wipe the drive after the mission.\n`
 }
 
 function extensionFor(mimeType: string): string {

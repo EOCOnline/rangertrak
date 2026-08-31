@@ -10,7 +10,8 @@ import {
 } from '../shared/export/mission-zip'
 import { migrateMission } from '../shared/services/mission-migration'
 import { normalizeRangerIds } from '../shared/services/ranger-migration'
-import { LogService, MissionService, RangerService } from '../shared/services'
+import { normalizeLocationUids } from '../shared/services/mission-location-migration'
+import { LogService, MissionLocationService, MissionService, RangerService } from '../shared/services'
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 
 /**
@@ -55,6 +56,7 @@ export class PrepComponent {
   constructor(
     private rangerService: RangerService,
     private missionService: MissionService,
+    private locationService: MissionLocationService,
     private photos: RangerPhotoService,
     private log: LogService,
     @Inject(DOCUMENT) private document: Document,
@@ -75,12 +77,14 @@ export class PrepComponent {
       // default-exporting module."
       const appVersion = JSON.parse(JSON.stringify(packageJson)).version
 
+      const locations = this.locationService.getCurrentLocations()
       const manifest: MissionZipManifest = {
         schemaVersion: MISSION_ZIP_SCHEMA_VERSION,
         exportedAt: new Date().toISOString(),
         appVersion,
         settings: this.missionService.settings,
         rangers,
+        locations,
       }
 
       const bytes = await buildMissionZipBytes(manifest, photoBlobs)
@@ -95,7 +99,7 @@ export class PrepComponent {
       a.click()
       URL.revokeObjectURL(url)
 
-      this.log.info(`Built Mission Zip: ${filename} (${rangers.length} rangers, ${photoBlobs.length} photos).`, this.id)
+      this.log.info(`Built Mission Zip: ${filename} (${rangers.length} rangers, ${locations.length} locations, ${photoBlobs.length} photos).`, this.id)
     } catch (e: any) {
       this.log.error(`Failed to build Mission Zip: ${e?.message ?? e}`, this.id)
       alert(`Could not build the Mission Zip.\n\n${e?.message ?? e}`)
@@ -134,6 +138,12 @@ export class PrepComponent {
    * matched via `RangerPhotoService.importFiles()`'s own id-then-callsign stem matching
    * against the INCOMING roster, not carried over blind - a photo that matched the exporting
    * device's roster is not guaranteed to still match after migration/normalization.
+   *
+   * Existing photos are cleared before the new ones are stored (finishing checklist gap #8,
+   * decided 2026-08-31): applying a Mission Zip replaces the roster wholesale, so a leftover
+   * photo keyed by a reused id/callsign would otherwise silently show the WRONG person's face
+   * for the new roster - exactly the failure roster-build's "a wrong photo is worse than no
+   * photo" rule exists to prevent.
    */
   async onBtnApplyPending(): Promise<void> {
     const p = this.pending()
@@ -142,12 +152,21 @@ export class PrepComponent {
     }
 
     const currentRangers = this.rangerService.rangers.length
+    // Same non-fatal-problems check importRosterBundle() (rangers.component.ts) runs before
+    // its own confirm() - checked on the INCOMING roster, before normalizeRangerIds() below,
+    // same as that path (gap #7).
+    const warnings = this.rangerService.rosterWarnings(p.manifest.rangers)
+    warnings.forEach(w => this.log.warn(`Mission Zip import warning: ${w}`, this.id))
+
     if (!confirm(
       `Load "${p.manifest.settings.mission || 'this mission'}" from this Mission Zip?\n\n`
       + `  ${p.manifest.rangers.length} rangers\n`
+      + `  ${p.manifest.locations?.length ?? 0} locations\n`
       + `  ${p.photos.length} photos\n\n`
-      + `This REPLACES the current roster of ${currentRangers} and every mission setting on `
-      + `this device. There are no field reports in a Mission Zip (it is a pre-mission `
+      + (warnings.length ? `Note:\n  - ${warnings.join('\n  - ')}\n\n` : '')
+      + `This REPLACES the current roster of ${currentRangers}, mission settings, locations, `
+      + `and EVERY ranger photo currently stored on this device (even ones this zip has no `
+      + `replacement for). There are no field reports in a Mission Zip (it is a pre-mission `
       + `template), so nothing already logged is touched.`)) {
       this.log.verbose('onBtnApplyPending: user cancelled.', this.id)
       return
@@ -161,25 +180,38 @@ export class PrepComponent {
       const rangers = normalizeRangerIds(p.manifest.rangers).rangers
       this.rangerService.replaceAllRangers(rangers)
 
+      this.locationService.replaceAllLocations(normalizeLocationUids(p.manifest.locations ?? []))
+
+      // Cleared before importFiles() stores the new ones - see this method's own doc comment.
+      await this.photos.clear()
       const files = p.photos.map(photo =>
         new File([photo.bytes as BlobPart], photo.filename, { type: this.mimeFor(photo.filename) }))
       const { stored, unmatched } = await this.photos.importFiles(files, rangers)
 
-      this.log.warn(`Applied Mission Zip: ${rangers.length} rangers, ${stored.length} photos matched.`, this.id)
+      this.log.warn(`Applied Mission Zip: ${rangers.length} rangers, ${p.manifest.locations?.length ?? 0} locations, ${stored.length} photos matched.`, this.id)
 
-      const lines = [`Loaded ${rangers.length} rangers and ${stored.length} photos.`]
+      const lines = [`Loaded ${rangers.length} rangers, ${p.manifest.locations?.length ?? 0} locations, and ${stored.length} photos.`]
       if (unmatched.length) {
         lines.push('', `${unmatched.length} photo${unmatched.length === 1 ? '' : 's'} did not match a ranger and were skipped.`)
       }
       lines.push('', 'Reloading so every screen picks them up...')
       alert(lines.join('\n'))
-      window.location.reload()
+      this.reloadPage()
     } catch (e: any) {
       this.log.error(`Failed to apply Mission Zip: ${e?.message ?? e}`, this.id)
       alert(`Could not apply this Mission Zip.\n\n${e?.message ?? e}`)
     } finally {
       this.applying.set(false)
     }
+  }
+
+  // Same wrapper rangers.component.ts's own reloadPage() is, for the same reason: a plain
+  // `window.location.reload()` call is not spyable in Chrome (its `reload` method is
+  // non-configurable), so a real test would either throw on spyOn() or actually reload the
+  // Karma page mid-suite. Naming it after the sibling component's identical method, not
+  // inventing a new convention.
+  reloadPage(): void {
+    window.location.reload()
   }
 
   /** Same extension-to-MIME mapping rangers.component.ts's own importRosterBundle() uses. */

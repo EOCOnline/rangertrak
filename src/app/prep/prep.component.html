@@ -6,11 +6,16 @@
     </mat-card-header>
     <mat-card-content>
       <p>
-        Packages THIS device's current roster, ranger photos, and mission settings into one
-        downloadable <code>.zip</code>. Deliberately does not include field reports - a
-        Mission Zip is a pre-mission template, not a mid-mission backup (use Mission Setup's
+        Packages THIS device's current roster, locations, ranger photos, and mission settings
+        into one downloadable <code>.zip</code>. Deliberately does not include field reports -
+        a Mission Zip is a pre-mission template, not a mid-mission backup (use Mission Setup's
         own "Export mission" for that).
       </p>
+      <div class="warn">
+        Confidential: a Mission Zip contains real names, phone numbers and photographs of
+        volunteers. Do not email it, do not put it in source control, and wipe the drive it's
+        on after the mission.
+      </div>
       <button matButton="filled" type="button" (click)="onBtnBuildZip()" [disabled]="building()">
         <mat-icon>archive</mat-icon>
         {{ building() ? 'Building…' : 'Build Mission Zip' }}
@@ -24,9 +29,10 @@
     </mat-card-header>
     <mat-card-content>
       <p>
-        Replaces this device's roster, photos, and mission settings with the contents of a
-        Mission Zip someone handed you. Field reports already on this device are never
-        touched - a Mission Zip has none of its own to bring in.
+        Replaces this device's roster, locations, mission settings, and EVERY ranger photo
+        (not just the ones this zip has a replacement for) with the contents of a Mission Zip
+        someone handed you. Field reports already on this device are never touched - a Mission
+        Zip has none of its own to bring in.
       </p>
 
       <button matButton="outlined" type="button" (click)="zipFileInput.click()">
@@ -40,6 +46,7 @@
           <h3>{{ p.manifest.settings.mission || '(unnamed mission)' }}</h3>
           <p class="prep__preview-meta">
             {{ p.manifest.rangers.length }} ranger{{ p.manifest.rangers.length === 1 ? '' : 's' }},
+            {{ p.manifest.locations?.length ?? 0 }} location{{ (p.manifest.locations?.length ?? 0) === 1 ? '' : 's' }},
             {{ p.photos.length }} photo{{ p.photos.length === 1 ? '' : 's' }}
             &mdash; built {{ p.manifest.exportedAt | date:'medium' }}
             @if (p.manifest.appVersion) { with app v{{ p.manifest.appVersion }} }
