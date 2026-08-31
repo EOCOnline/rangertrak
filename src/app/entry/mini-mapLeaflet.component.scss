@@ -24,6 +24,28 @@
   margin-right    : 16px;
   border-radius   : 5px;
   border          : 2px solid black;
+  // ROOT-CAUSED 2026-08-30 (live phone-width failure, tools/e2e.js's own overflow-culprit
+  // diagnostic): Leaflet's internal .leaflet-proxy.leaflet-zoom-animated helper (created
+  // for CSS3 zoom transitions) was found carrying a matrix(16384,...) transform - a 2^14
+  // scale, consistent with Leaflet computing a zoom-delta scale from an uninitialized
+  // _zoom (0) baseline against this mini-map's real ~14-15 default zoom, most likely from
+  // a zoom-related call firing before the map's first real setView().
+  //
+  // overflow:hidden was tried first, stacked on THREE nested ancestors including
+  // Leaflet's own .leaflet-container (which already carries it) - confirmed via the same
+  // diagnostic that all three actually applied, and
+  // document.documentElement.scrollWidth was STILL inflated by this proxy regardless.
+  // That is a real browser behaviour, not a guess: an element with an extreme enough
+  // transform can apparently still contribute to an ancestor's scrollable-overflow
+  // measurement even when every intermediate ancestor clips with overflow:hidden.
+  // CSS containment is a stronger, purpose-built guarantee instead - it explicitly walls
+  // off a subtree's layout, which the spec defines to include its contribution to
+  // ancestor overflow, regardless of what a transformed descendant does inside it. size
+  // containment is safe to add too: this frame's own dimensions are fixed by the
+  // width/height above, never driven by its content. overflow:hidden is kept alongside
+  // it, belt and suspenders, even though containment alone resolved this.
+  contain         : layout size;
+  overflow        : hidden;
 
   // 2026-08-21: matches .minimap-placeholder's own tablet-down update in
   // entry.component.scss - see its comment for why 10.5vw (30% of the desktop float width)
@@ -35,7 +57,8 @@
 
 .mapLeaflet-frame {
   //height: 20vh; //100%;
-  width: 100%;
+  width   : 100%;
+  overflow: hidden; // see .mapLeaflet-container's own comment just above
 }
 
 #entry-minimap {

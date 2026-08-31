@@ -229,7 +229,22 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     // Set intial map position, though AddMarker rescales/centers map as needed
     this.lMap = L.map(this.mapContainer.nativeElement, {
       center: [this.settings ? this.settings.defLat : 0, this.settings ? this.settings.defLng : 0],
-      zoom: this.settings ? this.settings.leaflet.defZoom : 15
+      zoom: this.settings ? this.settings.leaflet.defZoom : 15,
+      // ROOT-CAUSED 2026-08-30 (live phone-width e2e failure): Leaflet's CSS3 zoom-animation
+      // machinery creates a .leaflet-proxy helper element and drives it with a transform
+      // scale computed as 2^(toZoom - fromZoom). Something here triggers that BEFORE the
+      // map's internal _zoom is ever set (this mini-map mounts behind an @defer, in a
+      // container Angular hasn't necessarily laid out yet), so fromZoom reads as 0 against
+      // a real zoom around 14-15 - a 2^14 scale, confirmed live via tools/e2e.js's own
+      // overflow-culprit diagnostic (matrix(16384,...)). That proxy's transform inflated
+      // document.documentElement.scrollWidth on a phone viewport, and neither
+      // overflow:hidden nor CSS containment (contain: layout) on any ancestor (both tried,
+      // see .mapLeaflet-container's own comment in mini-mapLeaflet.component.scss) stopped
+      // it - a genuine browser gap, not a spec-following ancestor's fault to fix. Disabling
+      // the animation entirely removes the whole code path (and the proxy element) rather
+      // than trying to contain its output - a small preview map has no real need for the
+      // zoom transition's visual polish anyway.
+      zoomAnimation: false
     }) // Default view set at map creation
 
     if (!this.lMap) {
