@@ -84,16 +84,7 @@ export class FieldReportService {
       next: (newMission) => {
         this.settings = newMission
         this.log.excessive('Received new Settings via subscription.', this.id)
-
-        // this.fieldReports is undefined until the load below completes on the very
-        // first emission; the version check only makes sense once it exists.
-        if (!this.fieldReports) { return }
-
-        if (this.fieldReports.version == this.settings.version) {
-          this.log.excessive('Application version matches version used to store Field Reports.', this.id)
-        } else {
-          this.log.error(`Application version ${this.settings.version} does NOT match version used to store Field Reports: ${this.fieldReports.version}. No upgrade logic implemented yet...`, this.id)
-        }
+        this.checkFieldReportsVersion()
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
       complete: () => this.log.info('Settings Subscription complete', this.id)
@@ -109,6 +100,33 @@ export class FieldReportService {
     this.updateFieldReportsAndPublish()
   }
 
+
+  /**
+   * Compares the app version stamped on the stored field reports against the currently
+   * running app version.
+   *
+   * Investigated 2026-08-31 (roadmap backlog item, "latent gap: the check never actually
+   * fires on startup"): true, but NOT fixed here on purpose. `version` is the raw app
+   * version string (`package.json`), which changes on every single deploy - since "no
+   * upgrade logic implemented yet" (this function's own log line already says so), a
+   * mismatch is the NORMAL state after any release, for every returning user, not a real
+   * anomaly. Making this run on the guaranteed-to-mismatch startup path would turn a silent
+   * no-op into a `log.error` on nearly every session - worse than today's gap, not better.
+   * Left wired only from the settings subscription's `next` (a live mid-session settings
+   * change, comparatively rare) until this compares against something meaningful - a real
+   * schema/data version (`FIELD_REPORT_SCHEMA_VERSION`-shaped), not the app's own release
+   * string. Extracted to its own method only for readability; behavior is unchanged from
+   * before this pass.
+   */
+  private checkFieldReportsVersion(): void {
+    if (!this.fieldReports || !this.settings) { return }
+
+    if (this.fieldReports.version == this.settings.version) {
+      this.log.excessive('Application version matches version used to store Field Reports.', this.id)
+    } else {
+      this.log.error(`Application version ${this.settings.version} does NOT match version used to store Field Reports: ${this.fieldReports.version}. No upgrade logic implemented yet...`, this.id)
+    }
+  }
 
   /**
    * Load any existing FieldReports from browser's Local Storage
