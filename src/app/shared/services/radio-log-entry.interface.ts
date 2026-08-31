@@ -141,6 +141,18 @@ export type RadioLogEntryType = {
   // field, or the scribe left it blank - both legitimate) renders blank; never substitute the
   // current session's operator for a missing one.
   operator?: string,
+  /**
+   * E-114 Phase 0 (2026-08-31): set ONLY on an entry that arrived via
+   * RadioLogService.mergeIncomingEntries() (a Report Packet from a different device), never
+   * on one created normally by addRadioLogEntry(). Stores the dedup key
+   * (`<ranger identity>:<original id on the sending device>`) that identified it at merge
+   * time, so importing the same packet again is recognized and skipped - a sending device's
+   * own `id` is NOT trustworthy across devices on its own (two devices both start at 0; see
+   * the roadmap's E-114 identity-prerequisite write-up), so this is not just `id` renamed.
+   * Optional/additive - no schema bump needed, same pattern `operator`/`source`/
+   * `MissionExport.locations?` already established.
+   */
+  sourceUid?: string,
   // F29-47 (2026-08-29): the ICS-213's "4 Subject" line, declared in ICS213_FIELDS since
   // E-31/E-41 phase 3 but never actually filled - it printed blank on every 213 generated.
   // A genuinely separate scribe-entered field (not derived from message213), placed last

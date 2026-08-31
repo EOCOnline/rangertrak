@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { RadioLogService } from './radio-log.service';
 import { RadioLogType, RadioLogEntryType } from './radio-log-entry.interface';
+import { RangerService } from './ranger.service';
 
 /**
  * Characterization tests: pin RadioLogService's current localStorage-backed
@@ -172,6 +173,101 @@ describe('RadioLogService', () => {
       service.getRadioLogObserver().subscribe(r => latest = r);
       expect(latest.logEntries).toEqual([]);
       expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    });
+
+    it('E-114: does NOT reset maxId, so a new report never reuses a cleared report\'s display number', () => {
+      const service = TestBed.inject(RadioLogService);
+      service.addRadioLogEntry(makeReport());
+      const before = service.addRadioLogEntry(makeReport());
+
+      service.deleteAllRadioLogEntries();
+      const after = service.addRadioLogEntry(makeReport());
+
+      expect(after.id).toBeGreaterThan(before.id);
+    });
+  });
+
+  describe('mergeIncomingEntries (E-114 Phase 0)', () => {
+    // A minimal RangerType, matching UnknownRanger's shape - only the fields this suite reads.
+    const ranger = (over: Partial<{ uid: string, id: string, callsign: string }>) => ({
+      uid: 'uid-1', id: 'REW-1', callsign: 'R1', fullName: '', phone: '', image: '',
+      team: '', role: '', note: '', ...over,
+    });
+
+    const incoming = (over: Partial<RadioLogEntryType> = {}): RadioLogEntryType => ({
+      id: 0, callsign: 'REMOTE1',
+      location: { lat: 47.4, lng: -122.4, address: '', derivedFromAddress: false },
+      date: new Date(), status: 'Normal', notes: 'from a remote device',
+      ...over,
+    });
+
+    it('assigns each accepted entry a fresh id from this device\'s own maxId, not the sender\'s', () => {
+      const service = TestBed.inject(RadioLogService);
+      service.addRadioLogEntry(makeReport()); // local report already at id 0
+
+      const { added, skipped } = service.mergeIncomingEntries([incoming({ id: 0 })], 'REW-9');
+
+      expect(added).toBe(1);
+      expect(skipped).toBe(0);
+      const merged = service.getCurrentRadioLog().logEntries.find(e => e.callsign === 'REMOTE1');
+      // The sender's own id was 0 too (a fresh device) - this device did NOT reuse it.
+      expect(merged?.id).not.toBe(0);
+    });
+
+    it('importing the exact same entries twice is a no-op the second time', () => {
+      const service = TestBed.inject(RadioLogService);
+      const batch = [incoming({ id: 0 }), incoming({ id: 1, callsign: 'REMOTE2' })];
+
+      const first = service.mergeIncomingEntries(batch, 'REW-9');
+      const second = service.mergeIncomingEntries(batch, 'REW-9');
+
+      expect(first).toEqual({ added: 2, skipped: 0 });
+      expect(second).toEqual({ added: 0, skipped: 2 });
+      expect(service.getCurrentRadioLog().logEntries.length).toBe(2);
+    });
+
+    it('resolves the reporter credential to a real rangerUid when it matches the roster', () => {
+      const service = TestBed.inject(RadioLogService);
+      const rangers = TestBed.inject(RangerService);
+      rangers.rangers = [ranger({ uid: 'uid-42', id: 'REW-42', callsign: 'K7VMI' })];
+
+      service.mergeIncomingEntries([incoming({ id: 0 })], 'rew-42'); // lower-case, as typed
+
+      const merged = service.getCurrentRadioLog().logEntries[0];
+      expect(merged.rangerUid).toBe('uid-42');
+    });
+
+    it('keeps callsign with no rangerUid when the credential matches nobody on the roster - not an error', () => {
+      const service = TestBed.inject(RadioLogService);
+      const rangers = TestBed.inject(RangerService);
+      rangers.rangers = [ranger({ uid: 'uid-1', id: 'REW-1' })];
+
+      service.mergeIncomingEntries([incoming({ id: 0, callsign: 'WALKON' })], 'REW-999');
+
+      const merged = service.getCurrentRadioLog().logEntries[0];
+      expect(merged.rangerUid).toBeUndefined();
+      expect(merged.callsign).toBe('WALKON');
+    });
+
+    it('trusts an incoming entry\'s own rangerUid as-is when the sending device already had one (a provisioned device)', () => {
+      const service = TestBed.inject(RadioLogService);
+      const rangers = TestBed.inject(RangerService);
+      rangers.rangers = []; // this device's own roster need not even have the ranger
+
+      service.mergeIncomingEntries([incoming({ id: 0, rangerUid: 'uid-from-sender' })]);
+
+      const merged = service.getCurrentRadioLog().logEntries[0];
+      expect(merged.rangerUid).toBe('uid-from-sender');
+    });
+
+    it('recalculates numReport and bounds so the existing invariant check never fires on a merge', () => {
+      const service = TestBed.inject(RadioLogService);
+
+      service.mergeIncomingEntries([incoming({ id: 0, location: { lat: 48.0, lng: -121.0, address: '', derivedFromAddress: false } })]);
+
+      const log = service.getCurrentRadioLog();
+      expect(log.numReport).toBe(log.logEntries.length);
+      expect(log.bounds.north).toBeGreaterThanOrEqual(48.0);
     });
   });
 

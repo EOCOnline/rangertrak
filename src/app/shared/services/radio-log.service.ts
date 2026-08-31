@@ -12,6 +12,14 @@ import {
 // ADR D-42: versioned storage seam for radio log entries. Direct import, not via the barrel,
 // to avoid a cycle - the barrel re-exports this service.
 import { migrateRadioLog } from './radio-log-migration'
+// Direct path, not the barrel: a SERVICE used as a DI token through shared/services/index.ts
+// is unresolvable to the compiler ("no suitable injection token") - the same reason
+// rangers.component.ts imports RangerPhotoService directly instead of via './'.
+import { RangerService } from './ranger.service'
+// E-114 Phase 0: resolving a self-typed credential (a zero-provisioning lite device has no
+// roster of its own) against THIS device's roster reuses the exact comparison
+// normalizeRangerIds() already applies everywhere else - not a second matching rule.
+import { normalizeRangerId } from './ranger-migration'
 
 //import {  } from './ranger.interface'
 
@@ -60,6 +68,7 @@ export class RadioLogService {
   //! REVIEW: Field & Ranger Services BOTH call constructors twice!!
   constructor(
     private missionService: MissionService,
+    private rangerService: RangerService,
     private log: LogService,
     private httpClient: HttpClient,
     @Optional() @SkipSelf() existingService: RadioLogService,
@@ -260,6 +269,70 @@ export class RadioLogService {
   }
 
   /**
+   * E-114 Phase 0: merges reports that ORIGINATED on a different device (arriving via a
+   * Report Packet - E-114 §2) into this device's own log, without colliding on `id` - a
+   * per-device sequential `id` is never trustworthy across devices (two devices' first
+   * reports both produce `id 0`; see the roadmap's own identity-prerequisite write-up).
+   *
+   * Every ACCEPTED entry gets a brand-new `id` from THIS device's own `maxId`, exactly the
+   * way `addRadioLogEntry()` already stamps one on a locally-typed report - a merged entry
+   * never carries the sending device's `id` forward. Its ORIGINAL id only matters as half of
+   * the dedup key (`sourceUid`, see `RadioLogEntryType`'s own doc comment) so importing the
+   * same packet twice changes nothing.
+   *
+   * `reporterCredential` is the ranger's own agency-issued id, self-typed once on a
+   * zero-provisioning lite device (E-114 §1a) - used to resolve a real `rangerUid` against
+   * THIS device's roster. An entry that already carries its own `rangerUid` (a device
+   * provisioned with a real roster) is trusted as-is and never needs it. No match (a
+   * volunteer not yet in the roster) is not an error - `callsign` is kept and `rangerUid`
+   * stays empty, the same "callsign matches no current ranger" case this app already
+   * tolerates on a normal roster mismatch.
+   */
+  public mergeIncomingEntries(
+    incoming: readonly RadioLogEntryType[],
+    reporterCredential?: string,
+  ): { added: number, skipped: number } {
+    const resolvedCredentialId = normalizeRangerId(reporterCredential)
+    const resolvedUid = resolvedCredentialId
+      ? this.rangerService.rangers.find(r => normalizeRangerId(r.id) === resolvedCredentialId)?.uid
+      : undefined
+
+    const seen = new Set(
+      this.radioLog.logEntries.map(e => e.sourceUid).filter((v): v is string => !!v))
+
+    let added = 0
+    let skipped = 0
+
+    for (const entry of incoming) {
+      const identity = entry.rangerUid || resolvedCredentialId || 'unknown'
+      const sourceUid = `${identity}:${entry.id}`
+
+      if (seen.has(sourceUid)) {
+        skipped++
+        continue
+      }
+
+      this.radioLog.logEntries.push({
+        ...entry,
+        id: this.radioLog.maxId++,
+        rangerUid: entry.rangerUid || resolvedUid,
+        sourceUid,
+      })
+      seen.add(sourceUid)
+      added++
+    }
+
+    if (added) {
+      this.radioLog.numReport = this.radioLog.logEntries.length
+      this.recalcRadioLogBounds(this.radioLog)
+      this.updateRadioLogAndPublish()
+    }
+
+    this.log.warn(`mergeIncomingEntries: ${added} added, ${skipped} already present.`, this.id)
+    return { added, skipped }
+  }
+
+  /**
    * Persist edits made in place to existing entries - the Radio Log grid
    * binds directly to logEntries, so AG Grid's cell editing mutates these
    * very objects; all that was missing was writing them back out. Bounds are
@@ -298,7 +371,11 @@ export class RadioLogService {
     // TODO: reset header properties too?!
     this.radioLog.logEntries = []
     localStorage.removeItem(this.storageLocalName)
-    this.radioLog.maxId = 0 // REVIEW: is this desired???
+    // E-114 (2026-08-31): maxId is deliberately NOT reset any more (was `= 0` here, flagged
+    // with its own "is this desired???"). Resetting let a brand-new, unrelated report reuse
+    // an old display number after a clear-all - confusing on its own, worse once a printed/
+    // cited 213 could reference "entry 3" meaning two different reports at different times.
+    // Left monotonic per device instead - decided in the roadmap's E-114 write-up.
   }
 
 
