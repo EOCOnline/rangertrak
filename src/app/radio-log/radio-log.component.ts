@@ -2,6 +2,8 @@ import { GridOptions, SelectionChangedEvent } from 'ag-grid-community'
 // , TeamService
 import { Observable, subscribeOn, Subscription } from 'rxjs'
 
+import * as packageJson from '../../../package.json'
+
 import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef, ChangeDetectionStrategy, signal } from '@angular/core';
 
@@ -18,6 +20,9 @@ import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 // app.routes.ts); going through the barrel would drag MapLibre into THIS chunk for no reason.
 import { rangerColorFor } from '../shared/mapping/ranger-icon'
 import { buildIcs309Log, Ics309Log } from '../shared/export/ics309-log'
+import {
+  buildReportPacket, parseReportPacket, reportPacketFilename, REPORT_PACKET_SCHEMA_VERSION
+} from '../shared/export/report-packet'
 import {
   RadioLogService, RadioLogStatusType, RadioLogType, RadioLogEntryType, LogService,
   RangerService, MissionService, MissionType, statusColorValue, statusInkValue
@@ -619,6 +624,101 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     this.gridApi.exportDataAsExcel({
       exportedRows: this.allRows() ? 'all' : 'filteredAndSorted',
     })
+  }
+
+  /**
+   * E-114 Phase 1: builds a Report Packet of every field report currently on this device and
+   * hands it off via the OS share sheet (Web Share API) where supported, falling back to a
+   * plain download everywhere else - same fallback shape D-34 already established for the
+   * File System Access API. `operator` is left blank: this page (unlike Entry) has no "who is
+   * at the keyboard" concept of its own to draw one from, the same call `onBtnPrint309()`'s
+   * own `preparedBy` already makes for the identical reason - inventing one would be worse
+   * than leaving it for the receiving end to fill in from context.
+   */
+  async onBtnBuildReportPacket(): Promise<void> {
+    const entries = this.radioLogService.getCurrentRadioLog().logEntries
+    if (!entries.length) {
+      alert('There are no field reports on this device to package.')
+      return
+    }
+
+    // REVIEW: same JSON.parse(JSON.stringify(...)) workaround backup.service.ts/
+    // mission-zip.ts already use for "Should not import the named export ... from
+    // default-exporting module."
+    const appVersion = JSON.parse(JSON.stringify(packageJson)).version
+
+    const packet = buildReportPacket({
+      entries,
+      settings: this.settings,
+      operator: '',
+      appVersion,
+    })
+    const text = JSON.stringify(packet, null, 2)
+    const filename = reportPacketFilename(packet.mission, packet.exportedAt)
+    const file = new File([text], filename, { type: 'text/plain' })
+
+    if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: 'RangerTrak Report Packet' })
+        this.log.info(`Shared Report Packet: ${filename} (${entries.length} reports).`, this.id)
+        return
+      } catch (e: any) {
+        // AbortError = the operator cancelled the share sheet - not a failure, just fall
+        // through to the plain download so they still have a way to get the file.
+        this.log.warn(`Report Packet share cancelled or failed, falling back to download: ${e?.message ?? e}`, this.id)
+      }
+    }
+
+    const blob = new Blob([text], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = this.document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
+    this.log.info(`Downloaded Report Packet: ${filename} (${entries.length} reports).`, this.id)
+  }
+
+  /** Reads a picked Report Packet file and hands it to `mergeIncomingEntries()` (E-114 Phase
+   *  0). No confirm() dialog needed - a merge only ADDS new entries and never touches an
+   *  existing one, unlike every other import on this page's own Danger Zone. */
+  async onReportPacketFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    input.value = '' // so re-picking the same file still fires a change event
+    if (!file) {
+      return
+    }
+
+    try {
+      const text = await file.text()
+      const packet = parseReportPacket(text)
+      if (packet.schemaVersion > REPORT_PACKET_SCHEMA_VERSION) {
+        alert(`"${file.name}" was built by a newer version of RangerTrak (schema v${packet.schemaVersion}). Update this device before importing it.`)
+        return
+      }
+
+      const currentMission = this.settings?.mission?.trim()
+      if (currentMission && packet.mission && packet.mission.trim() !== currentMission) {
+        if (!confirm(
+          `This Report Packet says "${packet.mission}", but this device's current mission `
+          + `is "${currentMission}".\n\nImport its ${packet.entries.length} report`
+          + `${packet.entries.length === 1 ? '' : 's'} anyway?`)) {
+          this.log.verbose('onReportPacketFileSelected: user cancelled on mission mismatch.', this.id)
+          return
+        }
+      }
+
+      const { added, skipped } = this.radioLogService.mergeIncomingEntries(packet.entries, packet.operator)
+      const lines = [`Merged ${added} new report${added === 1 ? '' : 's'} from "${file.name}".`]
+      if (skipped) {
+        lines.push(`${skipped} already present on this device were skipped.`)
+      }
+      alert(lines.join('\n'))
+    } catch (e: any) {
+      this.log.error(`Could not read "${file.name}" as a Report Packet: ${e?.message ?? e}`, this.id)
+      alert(`Could not read "${file.name}".\n\n${e?.message ?? e}`)
+    }
   }
 
   /**
