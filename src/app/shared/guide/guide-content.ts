@@ -97,7 +97,7 @@ const YOUR_DATA: GuideTab = {
   blocks: [
     {
       heading: 'Where it lives',
-      text: 'Everything RangerTrak knows is stored in this browser, on this device. There is no server, no account and no login, and nothing you type is sent anywhere.'
+      text: 'Everything RangerTrak knows is stored in this browser, on this device. There is no server, no account and no login, and nothing you type is sent anywhere — unless you turn on Command Post Server publishing yourself (Mission Setup), which is off by default. See "Command Post Server" on the Mission page for exactly what that sends and to whom.'
     },
     {
       heading: 'What that means',
@@ -317,6 +317,18 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             bullets: [
               'Export mission (Data safety card) downloads settings, rangers and field reports as one file — the way to back up a mission or move it to another device. Import mission, in the Danger zone below, round-trips it back in.',
               'Load sample mission and Reset mission to defaults are also in the Danger zone — each replaces data already on this device and cannot be undone.'
+            ]
+          },
+          {
+            heading: 'Command Post Server (optional)',
+            text: 'Lets other people on the SAME WiFi or hotspot read the live comms log from their own phone, tablet or laptop — a read-only view, on a separate small server, not a way to edit this mission from another device. Off by default; this device\'s own copy is exactly the same either way, whether it\'s on or off.',
+            bullets: [
+              '1. Someone runs the server — on a laptop at the command post, not a phone (phones can\'t run it, only supply the WiFi). It prints its own address on startup, e.g. http://192.168.1.5:8080 — that\'s the "whose WiFi" part: it\'s always the command-post laptop\'s own network, and the address is whatever that laptop\'s network gives it, not something you choose.',
+              '2. On THIS device (the one actually filing reports), paste that exact address into "Server address" below and turn the toggle on. Reports start publishing there automatically from then on, every time one is filed or edited.',
+              '3. Give viewers the SAME address with /view added — e.g. http://192.168.1.5:8080/view — and make sure they\'re joined to the SAME WiFi/hotspot as the command-post laptop. They\'ll see a live, auto-refreshing table (time, callsign, status, message), each with their own filter and sort, independent of everyone else looking at it.',
+              'The roster never goes with it — only report content. Full names, phone numbers and photos stay on this device; a viewer only ever sees a callsign, same as anyone standing at the map.',
+              'If the server isn\'t reachable (not running yet, wrong address, or you\'re off that WiFi), publishing just fails quietly in the background — this device keeps working exactly as normal either way.',
+              'There is no password on the view page itself in this version — anyone who can join the command post\'s WiFi can see it, the same as they already could reach anything else on that network. Treat the WiFi/hotspot password as the real access control.'
             ]
           }
         ]
