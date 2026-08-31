@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.90.1](https://github.com/EOCOnline/rangertrak/compare/v0.90.0...v0.90.1) (2026-08-31)
+
+
+### Features
+
+* **radio-log:** E-114 Phase 0 - merge reports that originated on another device ([007f9ab](https://github.com/EOCOnline/rangertrak/commit/007f9ab6cc5150575212a8072de1961fb77144e2))
+* **radio-log:** E-114 Phase 1 - Report Packet build/load, hand off via Web Share ([5312df0](https://github.com/EOCOnline/rangertrak/commit/5312df0b58a56becce8d659a6eb85289a74418f2))
+* **time-picker:** show the day of week, embedded in the field's own border ([fa44a71](https://github.com/EOCOnline/rangertrak/commit/fa44a71ed2f2d9c8948b4df8f77861a7674cbdc7))
+
+
+### Bug Fixes
+
+* **command-post:** serve HTTPS with a self-signed cert - publishing was blocked by mixed content ([83988b4](https://github.com/EOCOnline/rangertrak/commit/83988b4577b99d4276700a831b666526f13761cd))
+* **guide:** Command Post steps described the wrong order; add a clickable /view link ([6ff13e9](https://github.com/EOCOnline/rangertrak/commit/6ff13e9f16054b70142c1ae59409de504fb4ed73))
+* **header:** the readiness dot didn't join the unified info panel on touch ([96e4cef](https://github.com/EOCOnline/rangertrak/commit/96e4cefc4a986cbceaaa28f03c5d0c3735b3cb35))
+* **map:** offline-controls buttons dropped below the overview map's float ([0ce432f](https://github.com/EOCOnline/rangertrak/commit/0ce432fd33700e4ca0c6f588311439f281f21085))
+* **mission:** "Reset mission to defaults" reset storage but not the visible form ([024153d](https://github.com/EOCOnline/rangertrak/commit/024153dd64e4142e5b8f7f0b64c7f63a1630ea7d))
+* **time-picker:** stale value on arrow-key step, and no date rollover at midnight ([2d5a0b6](https://github.com/EOCOnline/rangertrak/commit/2d5a0b6cda1b7ea069e05620be22cafbf7ebd2ab))
+
 ## [0.90.0](https://github.com/EOCOnline/rangertrak/compare/v0.89.3...v0.90.0) (2026-08-31)
 
 
