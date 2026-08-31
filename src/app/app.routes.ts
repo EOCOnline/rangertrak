@@ -2,6 +2,7 @@ import { Routes } from '@angular/router'
 
 import { EntryComponent } from './entry/entry.component'
 import { unsavedChangesGuard } from './shared/guards/unsaved-changes.guard'
+import { fieldModeGuard } from './shared/guards/field-mode.guard'
 
 // https://angular.io/guide/router
 // https://angular.io/api/router/Resolve#usage-notes - Processing order: BaseGuard, ChildGuard, BaseDataResolver, ChildDataResolver
@@ -36,15 +37,21 @@ export const APP_ROUTES: Routes = [
   // 2026-08-27: was 'reports' - renamed to match the page's new "Radio Log" nav label/title
   // (same "URL matches nav label" convention 'settings'->'mission' and 'about'->'help'
   // already followed). Redirect below covers old bookmarks.
+  // E-114 §1a (2026-08-31): every route below except Home ('') and Help is a command-post/
+  // scribe concern, hidden from field-mode devices - navbar.component.html hides the link,
+  // fieldModeGuard (shared/guards/field-mode.guard.ts) closes the typed-URL/bookmark/pinned-
+  // shortcut gap that hiding a link alone leaves open.
   {
     path: 'radio-log',
-    loadComponent: () => import('./radio-log/radio-log.component').then(m => m.RadioLogComponent)
+    loadComponent: () => import('./radio-log/radio-log.component').then(m => m.RadioLogComponent),
+    canActivate: [fieldModeGuard],
   },
   // New 2026-08-27: ICS-213 messages (field reports with generates213 set), list + detail
   // view rather than a second grid - see the roadmap's ICS-309/213 scoping note.
   {
     path: 'messages',
-    loadComponent: () => import('./messages/messages.component').then(m => m.MessagesComponent)
+    loadComponent: () => import('./messages/messages.component').then(m => m.MessagesComponent),
+    canActivate: [fieldModeGuard],
   },
   // E-64: one route for both engines - MapPageComponent is a thin shell that mounts
   // Leaflet by default and dynamically imports MapLibre only if the on-page switch is
@@ -53,11 +60,13 @@ export const APP_ROUTES: Routes = [
   // installs pointing at it are a discounted, power-user-only edge case).
   {
     path: 'map',
-    loadComponent: () => import('./map/map-page/map-page.component').then(m => m.MapPageComponent)
+    loadComponent: () => import('./map/map-page/map-page.component').then(m => m.MapPageComponent),
+    canActivate: [fieldModeGuard],
   },
   {
     path: 'rangers',
-    loadComponent: () => import('./rangers/rangers.component').then(m => m.RangersComponent)
+    loadComponent: () => import('./rangers/rangers.component').then(m => m.RangersComponent),
+    canActivate: [fieldModeGuard],
   },
   // 2026-08-22: was 'settings' - every URL now matches its nav label ("Mission"), not
   // the older, more generic route name. Kept as a redirect below rather than a hard
@@ -70,10 +79,12 @@ export const APP_ROUTES: Routes = [
     // component to implement HasUnsavedChanges, so any future manual-Save page adopts this
     // the same way, not by rebuilding the guard.
     canDeactivate: [unsavedChangesGuard],
+    canActivate: [fieldModeGuard],
   },
   {
     path: 'log',
-    loadComponent: () => import('./log/log.component').then(m => m.LogComponent)
+    loadComponent: () => import('./log/log.component').then(m => m.LogComponent),
+    canActivate: [fieldModeGuard],
   },
   // E-109 Mission Zip v1 (2026-08-31, ADR D-48): a pre-mission prep tool, deliberately its
   // own route rather than folded into Rangers' own roster import/export - see
@@ -81,7 +92,8 @@ export const APP_ROUTES: Routes = [
   // already made) - linked from Rangers' roster-management controls instead.
   {
     path: 'prep',
-    loadComponent: () => import('./prep/prep.component').then(m => m.PrepComponent)
+    loadComponent: () => import('./prep/prep.component').then(m => m.PrepComponent),
+    canActivate: [fieldModeGuard],
   },
 
   // LAZY child routes (via dynamic import)

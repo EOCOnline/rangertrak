@@ -28,7 +28,7 @@ import { DDToDDM } from '../shared/mapping/coordinate'
 import {
   RADIO_LOG_ENTRY_SOURCES, RadioLogService, RadioLogStatusType, LocationType, LogService,
   RangerService, RangerType, MissionService, MissionType, SampleDataService, statusColorValue,
-  undefinedAddressFlag, undefinedLocation, WelcomePanelService
+  undefinedAddressFlag, undefinedLocation, WelcomePanelService, FieldModeService
 } from '../shared/services/'
 //import { LocationComponent } from './location.component'
 
@@ -319,6 +319,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     private http: HttpClient,
     private zone: NgZone,
     public welcomePanel: WelcomePanelService,
+    public fieldMode: FieldModeService,
     private sampleDataService: SampleDataService,
     @Inject(DOCUMENT) private document: Document) {
 
@@ -442,6 +443,21 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     window.location.reload()
   }
 
+  /**
+   * E-114 §1a first-run prompt: the one place a device declares itself a ranger's own field
+   * phone rather than a command-post/scribe device. Same `canLoadDemoData()` gate as the demo
+   * data button above - this device has nothing to lose by re-scoping itself down, and once
+   * any real data exists the question stops making sense to ask (a scribe laptop mid-mission
+   * doesn't suddenly become someone's field phone). Reloads for the same reason
+   * `onLoadDemoData()` does - nav/route gating below reads `fieldMode.enabled()` at
+   * construction time in a few places, and a reload is simpler and more reliable than chasing
+   * every one of them with a signal effect.
+   */
+  onEnableFieldMode(): void {
+    this.fieldMode.enable()
+    window.location.reload()
+  }
+
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
 
@@ -486,7 +502,74 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.log.excessive(` ngOnInit completed`, this.id)
     }
+
+    this.tryGpsAutoFill()
+
+    window.addEventListener('online', this.onOnline)
+    window.addEventListener('offline', this.onOffline)
   }
+
+  /**
+   * E-114 §1a (2026-08-31): "location just defaults to phone's GPS" - the maintainer's own
+   * design for the zero-provisioning field-mode device. Field mode ONLY: a command-post/
+   * scribe laptop's own position is usually not the incident location at all (it's staged
+   * nearby, sometimes miles away), so silently overwriting the mission's configured default
+   * there would be wrong far more often than right - see the missionSubscription's own
+   * defLat/defLng fallback in the constructor above, which stays correct for that device
+   * type.
+   *
+   * A best-effort upgrade, never a blocking requirement - a denied permission, an
+   * unavailable API, or a slow/failed fix just leaves the existing mission-default location
+   * in place, exactly as before this method existed. Only ever attempted once per page load,
+   * not on every resetAll() - a ranger's own phone doesn't usually teleport between
+   * consecutive reports, and resetAll() already deliberately carries `locationParent`
+   * forward for exactly that reason (see its own comment).
+   *
+   * `before` guards the one real race: `getCurrentPosition()` can take several seconds, long
+   * enough for a ranger to have already started typing/pasting a location by hand before the
+   * fix resolves. `onNewLocationEvent()` always assigns a NEW object to `locationParent`
+   * (never mutates in place), so an identity check is enough to detect "something else set
+   * this in the meantime" and skip the now-stale GPS fix rather than clobber a real edit.
+   */
+  private tryGpsAutoFill(): void {
+    if (!this.fieldMode.enabled()) return
+    if (typeof navigator === 'undefined' || !navigator.geolocation) return
+
+    const before = this.locationParent
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        if (this.locationParent !== before) {
+          this.log.info('Field mode GPS fix arrived after the location was already changed - not overwriting it.', this.id)
+          return
+        }
+        this.log.info(`Field mode GPS auto-fill: ${position.coords.latitude}, ${position.coords.longitude}`, this.id)
+        this.onNewLocationEvent({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          address: undefinedAddressFlag,
+          derivedFromAddress: false,
+        })
+      },
+      (err) => {
+        this.log.warn(`Field mode GPS auto-fill unavailable (${err.message}) - keeping the mission default location.`, this.id)
+      },
+      { timeout: 10000, maximumAge: 60000 }
+    )
+  }
+
+  /**
+   * E-114 §2b (2026-08-31): "flag immediately if the connection is unavailable" - shown only
+   * on a field-mode device (see the template), since a command-post laptop's own online/
+   * offline state has never mattered to Entry (this app is offline-first by design for
+   * everyone, per the welcome panel's own text). Same plain `navigator.onLine`/online/
+   * offline idiom `location.component.ts`'s own `isOnline` already established, reused
+   * rather than a new shared service - deliberately narrow for now: informational only, not
+   * wired to block submission or to the actual hand-off transport yet (§2's queued-transport
+   * design is still open - see Private Roadmap.md's own open questions).
+   */
+  isOnline = signal(navigator.onLine)
+  private readonly onOnline = () => this.isOnline.set(true)
+  private readonly onOffline = () => this.isOnline.set(false)
 
 
   /**
@@ -843,5 +926,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rangersSubscription?.unsubscribe()
     this.missionSubscription?.unsubscribe()
     //this.timeSubscription?.unsubscribe()
+    window.removeEventListener('online', this.onOnline)
+    window.removeEventListener('offline', this.onOffline)
   }
 }

@@ -17,6 +17,7 @@ export { MissionReadinessService, ReadinessLevel } from "./mission-readiness.ser
 export { ThemeService, ThemeMode } from "./theme.service"
 export { SkinService, Skin, SKINS } from "./skin.service"
 export { WelcomePanelService } from "./welcome-panel.service"
+export { FieldModeService } from "./field-mode.service"
 
 export {
   RadioLogEntryType, RadioLogType, RadioLogStatusType, RadioLogEntrySource,

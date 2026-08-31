@@ -22,11 +22,37 @@
         Load Demo Data
       </button>
       }
+      <!-- E-114 §1a (2026-08-31): the one first-run prompt that turns this device into a
+           ranger's own field phone (Entry + Help only, everything else hidden) instead of a
+           normal command-post/scribe device. Same canLoadDemoData() gate as the demo-data
+           button - once real data exists the question stops making sense to ask - plus
+           !fieldMode.enabled() so it can't fire twice. Deliberately a second, separate
+           question rather than folded into the demo-data choice: loading sample data and
+           declaring this device someone's field phone are unrelated decisions. -->
+      @if (canLoadDemoData() && !fieldMode.enabled()) {
+      <span class="entry-welcome__field-mode">
+        Is this a ranger's own field phone, not a command post?
+        <button type="button" class="entry-welcome__demo" (click)="onEnableFieldMode()">
+          This is my field phone
+        </button>
+      </span>
+      }
     </span>
     <button type="button" class="entry-welcome__dismiss" (click)="welcomePanel.dismiss()"
       aria-label="Dismiss this welcome panel. Bring it back any time by clicking the status pill in the header."
       title="Dismiss. Bring it back any time by clicking the status pill in the header.">×</button>
   </aside>
+  }
+
+  <!-- E-114 §2b (2026-08-31): "flag immediately if the connection is unavailable" - field
+       mode only (isOnline's own comment in entry.component.ts explains why), and outside the
+       welcome panel above so it stays visible after that panel is dismissed - a ranger needs
+       to see this on every visit, not just the first. Above the form, not inside it, so it's
+       visible before any field is touched. -->
+  @if (fieldMode.enabled()) {
+  <p class="entry-connectivity" [class.entry-connectivity--offline]="!isOnline()">
+    {{ isOnline() ? 'Online' : 'Offline' }}
+  </p>
   }
 
   <form [formGroup]="entryControlsForm" (ngSubmit)="onFormSubmit()" class="enter__form">
