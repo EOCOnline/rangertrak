@@ -37,9 +37,14 @@
   <a routerLink="/mission">Mission's</a> <span class="ui">Export mission</span> is the one to
   reach for by default — it round-trips everything (settings, roster and reports) back in on
   another device, so it doubles as the actual backup. <a routerLink="/rangers">Rangers's</a>
-  <span class="ui">Export roster</span> moves just the roster, the same round-trip way.
-  <span class="ui">Export</span> on Radio Log or Rangers instead produces an Excel-friendly
-  spreadsheet — useful for working with the data, but one-way: it cannot be imported back in.
+  <span class="ui">Export roster</span> moves just the roster, the same round-trip way. The
+  <a routerLink="/prep">Mission Zip</a> page is different from both: it packages roster,
+  photos, locations and settings — but never field reports — for setting up a NEW device
+  before a mission starts, which neither Export mission nor Export roster does (Export roster
+  never includes photos; Export mission is a mid/post-mission backup that assumes reports
+  already exist). <span class="ui">Export</span> on Radio Log or Rangers instead produces an
+  Excel-friendly spreadsheet — useful for working with the data, but one-way: it cannot be
+  imported back in.
 </p>
 
 <p>

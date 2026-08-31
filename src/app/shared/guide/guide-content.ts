@@ -256,7 +256,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           },
           {
             heading: 'Moving a whole mission',
-            text: 'To move the roster, settings and field reports together, use Export/Import Mission on the Mission Setup page. Import/Export roster here moves only the roster.'
+            text: 'To move the roster, settings and field reports together, use Export/Import Mission on the Mission Setup page. Import/Export roster here moves only the roster. To hand a coordinator a starting point for a NEW device before a mission begins - roster, photos, locations and settings together, no field reports - use the Mission Zip page instead.'
           },
           {
             heading: 'Tactical call signs',
@@ -375,6 +375,34 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           {
             heading: 'Route trails',
             text: 'Route trails join one ranger\'s reports oldest to newest, on both engines, so you can see which way a team has been moving — the label at the newest end is a snapshot from when the map was drawn, not a running clock.'
+          }
+        ]
+      },
+      YOUR_DATA
+    ]
+  },
+
+  '/prep': {
+    screen: 'Mission Zip',
+    tabs: [
+      {
+        label: 'This page',
+        blocks: [
+          {
+            heading: 'What a Mission Zip is - and is not',
+            text: 'A pre-mission TEMPLATE for setting up a new device: this device\'s current roster, locations, ranger photos, and mission settings, bundled into one file. It has no field reports, because a template is built before a mission has any. That makes it a different artifact from Mission Setup\'s "Export mission," which IS a mid/post-mission backup and always includes field reports - build a Mission Zip to hand a coordinator a starting point, export a mission to back up or move a mission already in progress.'
+          },
+          {
+            heading: 'Loading one replaces almost everything',
+            bullets: [
+              'The current roster, mission settings, and locations are all replaced.',
+              'EVERY ranger photo already on this device is cleared first, not just the ones this zip has a replacement for - a leftover photo under a reused id could otherwise silently show the wrong face.',
+              'Field reports already on this device are never touched.'
+            ]
+          },
+          {
+            heading: 'Photos are downscaled, not originals',
+            text: 'Stored photos are shrunk to a small size on import (they only ever render at 40-60px), so a Mission Zip is a deployment artifact, not a photo archive. It does not replace the full-size roster/photo bundle a coordinator may build outside the app.'
           }
         ]
       },
