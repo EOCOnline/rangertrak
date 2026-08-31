@@ -458,6 +458,53 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     window.location.reload()
   }
 
+  /**
+   * E-114 Phase 1 (2026-08-31): the field-mode "send my reports" action - builds a Report
+   * Packet of every report on THIS device and hands it off via the OS share sheet (Web
+   * Share API) where supported, falling back to a plain download everywhere else. Identical
+   * mechanics to RadioLogComponent's own `onBtnBuildReportPacket()`, which a field-mode
+   * device cannot reach at all (its route is hidden by `fieldModeGuard` - the full Radio Log
+   * grid is command-post furniture a single self-reporting ranger's phone has no use for).
+   * The packet ASSEMBLY itself lives in `RadioLogService.buildReportPacketText()` so the two
+   * buttons can never drift apart on what actually goes in the file - see that method's own
+   * doc comment.
+   *
+   * `operator` is this device's own operatorModel (D-44) - unlike RadioLogComponent's blank
+   * placeholder (that page has no "who is at the keyboard" concept), Entry always knows who
+   * that is for a field-mode device, since it is the same credential the ranger already
+   * self-typed once to resolve their identity for merge purposes (E-114 §1a).
+   */
+  async onBtnSendMyReports(): Promise<void> {
+    const built = this.radioLogService.buildReportPacketText(this.operatorModel().operator.trim())
+    if (!built) {
+      alert('There are no reports on this device to send yet.')
+      return
+    }
+    const { text, filename, count } = built
+    const file = new File([text], filename, { type: 'text/plain' })
+
+    if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: 'RangerTrak Report Packet' })
+        this.log.info(`Shared Report Packet: ${filename} (${count} reports).`, this.id)
+        return
+      } catch (e: any) {
+        // AbortError = the ranger cancelled the share sheet - not a failure, just fall
+        // through to the plain download so they still have a way to get the file.
+        this.log.warn(`Report Packet share cancelled or failed, falling back to download: ${e?.message ?? e}`, this.id)
+      }
+    }
+
+    const blob = new Blob([text], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = this.document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
+    this.log.info(`Downloaded Report Packet: ${filename} (${count} reports).`, this.id)
+  }
+
   ngOnInit(): void {
     this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
 

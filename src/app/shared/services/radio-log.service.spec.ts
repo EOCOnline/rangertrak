@@ -271,6 +271,28 @@ describe('RadioLogService', () => {
     });
   });
 
+  describe('buildReportPacketText (E-114 Phase 1)', () => {
+    it('returns null when there is nothing on this device to send', () => {
+      const service = TestBed.inject(RadioLogService);
+      expect(service.buildReportPacketText('')).toBeNull();
+    });
+
+    it('builds a packet whose text round-trips back to this device\'s own entries', () => {
+      const service = TestBed.inject(RadioLogService);
+      service.addRadioLogEntry(makeReport());
+
+      const built = service.buildReportPacketText('REW-1');
+
+      expect(built).not.toBeNull();
+      const parsed = JSON.parse(built!.text);
+      expect(parsed.operator).toBe('REW-1');
+      expect(parsed.entries.length).toBe(1);
+      expect(parsed.entries[0].callsign).toBe('TEST1');
+      expect(built!.count).toBe(1);
+      expect(built!.filename).toMatch(/\.txt$/);
+    });
+  });
+
   describe('recalcRadioLogBounds (bounds calc)', () => {
     // recalcRadioLogBounds() is now the ONLY path that computes bounds - the
     // second path (Leaflet's LatLngBounds.extend() inside addRadioLogEntry(),

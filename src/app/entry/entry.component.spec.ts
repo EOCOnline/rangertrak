@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { GEOCODING_PROVIDER, NominatimGeocoder } from '../shared';
-import { FieldModeService } from '../shared/services';
+import { FieldModeService, RadioLogService } from '../shared/services';
 import { EntryComponent } from './entry.component';
 
 describe('EntryComponent', () => {
@@ -72,6 +72,41 @@ describe('EntryComponent', () => {
     it('hides the connectivity indicator on a normal device', () => {
       const el: HTMLElement = fixture.nativeElement.querySelector('.entry-connectivity');
       expect(el).toBeFalsy();
+    });
+  });
+
+  // E-114 Phase 1 (2026-08-31): "send my reports" is the one place a field-mode device can
+  // reach the identical hand-off RadioLogComponent's own button offers - its route is hidden
+  // from field mode (fieldModeGuard). Packet assembly itself is exercised by
+  // RadioLogService.buildReportPacketText()'s own spec - these just confirm this button
+  // delegates to it and reacts correctly to both outcomes.
+  describe('onBtnSendMyReports', () => {
+    it('alerts rather than sharing/downloading when there is nothing to send', async () => {
+      const radioLog = TestBed.inject(RadioLogService);
+      spyOn(radioLog, 'buildReportPacketText').and.returnValue(null);
+      const alertSpy = spyOn(window, 'alert');
+
+      await component.onBtnSendMyReports();
+
+      expect(alertSpy).toHaveBeenCalled();
+    });
+
+    it('falls back to a download when Web Share is unavailable', async () => {
+      const radioLog = TestBed.inject(RadioLogService);
+      spyOn(radioLog, 'buildReportPacketText').and.returnValue({
+        text: '{"entries":[]}', filename: 'rangertrak-report-packet-test.txt', count: 1,
+      });
+      // Forced false regardless of whether this particular Chrome build actually implements
+      // Web Share (headless environments vary) - deterministic either way, and exercises the
+      // same "unavailable" branch a real desktop Chrome without the API would take.
+      if (typeof navigator.canShare === 'function') {
+        spyOn(navigator, 'canShare').and.returnValue(false);
+      }
+      const clickSpy = spyOn(HTMLAnchorElement.prototype, 'click');
+
+      await component.onBtnSendMyReports();
+
+      expect(clickSpy).toHaveBeenCalled();
     });
   });
 });

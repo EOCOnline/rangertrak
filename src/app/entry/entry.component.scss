@@ -101,6 +101,20 @@ $filledColor: var(--rt-surface-2);
   }
 }
 
+// E-114 Phase 1: same plain-text-button treatment as .entry-welcome__demo's sibling controls,
+// sized down to sit inline inside the small connectivity badge rather than compete with it.
+.entry-connectivity__send {
+  margin-inline-start: 0.6em;
+  padding      : 0 0.5em;
+  border       : 1px solid currentColor;
+  border-radius: var(--rt-radius);
+  background   : transparent;
+  color        : inherit;
+  font         : inherit;
+  font-size    : 0.9em;
+  cursor       : pointer;
+}
+
 .filled {
   background-color: $filledColor;
 }

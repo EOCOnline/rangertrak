@@ -20,6 +20,10 @@ import { RangerService } from './ranger.service'
 // roster of its own) against THIS device's roster reuses the exact comparison
 // normalizeRangerIds() already applies everywhere else - not a second matching rule.
 import { normalizeRangerId } from './ranger-migration'
+// E-114 Phase 1: buildReportPacketText() below - see its own doc comment for why the packet
+// assembly is centralized here rather than duplicated in every caller.
+import { buildReportPacket, reportPacketFilename } from '../export/report-packet'
+import * as packageJson from '../../../../package.json'
 
 //import {  } from './ranger.interface'
 
@@ -330,6 +334,41 @@ export class RadioLogService {
 
     this.log.warn(`mergeIncomingEntries: ${added} added, ${skipped} already present.`, this.id)
     return { added, skipped }
+  }
+
+  /**
+   * E-114 Phase 1 (2026-08-31): the Report Packet payload for THIS device's current radio
+   * log, factored out of RadioLogComponent's own original `onBtnBuildReportPacket()` so
+   * EntryComponent can offer an identical "send my reports" action - EntryComponent is the
+   * one screen a field-mode/lite device actually has access to (RadioLogComponent's own
+   * route is hidden from it, see `fieldModeGuard`), so it needs its own way to hand off the
+   * reports it filed. Only the DOM/share mechanics (Web Share vs. plain download) differ by
+   * caller and stay local to each - see either component's own button handler.
+   *
+   * Returns null when there is nothing to send - both callers show the identical "no reports
+   * yet" message either way, so this stays a decision this method makes once.
+   */
+  public buildReportPacketText(operator: string): { text: string; filename: string; count: number } | null {
+    const entries = this.getCurrentRadioLog().logEntries
+    if (!entries.length) {
+      return null
+    }
+
+    // Same JSON.parse(JSON.stringify(...)) workaround backup.service.ts/mission-zip.ts
+    // already use for "Should not import the named export ... from default-exporting module."
+    const appVersion = JSON.parse(JSON.stringify(packageJson)).version
+
+    const packet = buildReportPacket({
+      entries,
+      settings: this.settings,
+      operator,
+      appVersion,
+    })
+    return {
+      text: JSON.stringify(packet, null, 2),
+      filename: reportPacketFilename(packet.mission, packet.exportedAt),
+      count: entries.length,
+    }
   }
 
   /**

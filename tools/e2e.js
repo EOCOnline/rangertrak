@@ -1857,6 +1857,61 @@ async function checkMissionRoundTrip(downloads) {
 }
 
 /**
+ * E-114 Phase 1 (2026-08-31): the Report Packet round trip, DoD's own stated property -
+ * "importing the same packet twice changes nothing." A single browser session covers this
+ * without simulating a second device: build a packet of this device's own current log
+ * (Radio Log's "Build Report Packet"), then import that SAME downloaded file back into this
+ * SAME device TWICE. The FIRST import is expected to genuinely add the entry - a device's
+ * own original entries carry no `sourceUid` (that field is only ever stamped on an entry that
+ * arrives BY merge - see `RadioLogEntryType`'s own doc comment), so re-importing your own
+ * freshly-built packet the first time is indistinguishable, on this device, from a second
+ * device's packet arriving for the first time. It is the SECOND import of the identical file
+ * that exercises the real idempotency guarantee - the newly-merged copy now carries a
+ * `sourceUid`, so `mergeIncomingEntries()` recognizes and skips it.
+ */
+async function checkReportPacketRoundTrip(downloads) {
+  console.log('\nReport Packet (E-114 Phase 1): build -> re-import twice, second import is a no-op')
+  await goto('/')
+  await evaluate(`localStorage.removeItem('radioLog')`)
+  await goto('/')
+
+  await evaluate(`(async () => {
+    const ta = document.querySelector('textarea[placeholder="Enter Any Notes"]');
+    if (ta) {
+      Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set.call(ta, 'E2E-PACKET');
+      ta.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    await new Promise(r => setTimeout(r, 300));
+    document.querySelector('.enter__Submit-button').click();
+    await new Promise(r => setTimeout(r, 1200));
+  })()`)
+
+  await navigateInApp('Radio Log', 3500)
+  await evaluate(`[...document.querySelectorAll('button')].find(b => /Build Report Packet/i.test(b.textContent))?.click()`)
+
+  // Same polling reasoning as checkMissionRoundTrip above - download timing, not app timing.
+  let files = []
+  for (let i = 0; i < 40 && files.length === 0; i++) {
+    await sleep(250)
+    files = fs.readdirSync(downloads).filter(f => /report-packet/.test(f) && f.endsWith('.txt') && !f.endsWith('.crdownload'))
+  }
+  if (!check('Build Report Packet produced a file', files.length > 0, true)) return
+  const packetFile = path.join(downloads, files[0])
+
+  // Only one <input type="file"> exists on this route (the roster/mission import inputs are
+  // elsewhere) - see radio-log.component.html's own Report Packet action bar.
+  await setFileInput('input[type="file"]', packetFile)
+  await sleep(1500)
+  const afterFirstImport = await evaluate(`(() => (JSON.parse(localStorage.getItem('radioLog')||'{}').logEntries||[]).length)()`)
+  check('the packet\'s entry is merged in on the first import', afterFirstImport, 2)
+
+  await setFileInput('input[type="file"]', packetFile)
+  await sleep(1500)
+  const afterSecondImport = await evaluate(`(() => (JSON.parse(localStorage.getItem('radioLog')||'{}').logEntries||[]).length)()`)
+  check('importing the exact same packet a second time changes nothing', afterSecondImport, afterFirstImport)
+}
+
+/**
  * F29-11 (2026-08-30): the sample mission's roster/report content was substantially rewritten
  * (an ICS role spread, walking-distance park clusters, real ICS-213 messages) - this check
  * verifies the new counts land correctly, not just that the button still exists. Also a real
@@ -2045,9 +2100,10 @@ async function main() {
       await checkMissionWithPersistedSettings()
       if (FULL) {
         await checkMissionRoundTrip(downloads)
+        await checkReportPacketRoundTrip(downloads)
         await checkSampleMissionLoads()
       } else {
-        note('fast run: skipping checkMissionRoundTrip, checkSampleMissionLoads (pass --full to include)')
+        note('fast run: skipping checkMissionRoundTrip, checkReportPacketRoundTrip, checkSampleMissionLoads (pass --full to include)')
       }
       await goto('/'); await evaluate(`localStorage.clear()`)
     }

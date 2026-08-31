@@ -2,8 +2,6 @@ import { GridOptions, SelectionChangedEvent } from 'ag-grid-community'
 // , TeamService
 import { Observable, subscribeOn, Subscription } from 'rxjs'
 
-import * as packageJson from '../../../package.json'
-
 import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef, ChangeDetectionStrategy, signal } from '@angular/core';
 
@@ -20,9 +18,7 @@ import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 // app.routes.ts); going through the barrel would drag MapLibre into THIS chunk for no reason.
 import { rangerColorFor } from '../shared/mapping/ranger-icon'
 import { buildIcs309Log, Ics309Log } from '../shared/export/ics309-log'
-import {
-  buildReportPacket, parseReportPacket, reportPacketFilename, REPORT_PACKET_SCHEMA_VERSION
-} from '../shared/export/report-packet'
+import { parseReportPacket, REPORT_PACKET_SCHEMA_VERSION } from '../shared/export/report-packet'
 import {
   RadioLogService, RadioLogStatusType, RadioLogType, RadioLogEntryType, LogService,
   RangerService, MissionService, MissionType, statusColorValue, statusInkValue
@@ -636,31 +632,22 @@ export class RadioLogComponent implements OnInit, OnDestroy {
    * than leaving it for the receiving end to fill in from context.
    */
   async onBtnBuildReportPacket(): Promise<void> {
-    const entries = this.radioLogService.getCurrentRadioLog().logEntries
-    if (!entries.length) {
+    // Packet assembly itself now lives in RadioLogService.buildReportPacketText() - see its
+    // own doc comment for why (EntryComponent needs the identical payload for its own
+    // field-mode "send my reports" button, and two copies of this were a divergence risk
+    // not worth taking for the sake of avoiding one service method).
+    const built = this.radioLogService.buildReportPacketText('')
+    if (!built) {
       alert('There are no field reports on this device to package.')
       return
     }
-
-    // REVIEW: same JSON.parse(JSON.stringify(...)) workaround backup.service.ts/
-    // mission-zip.ts already use for "Should not import the named export ... from
-    // default-exporting module."
-    const appVersion = JSON.parse(JSON.stringify(packageJson)).version
-
-    const packet = buildReportPacket({
-      entries,
-      settings: this.settings,
-      operator: '',
-      appVersion,
-    })
-    const text = JSON.stringify(packet, null, 2)
-    const filename = reportPacketFilename(packet.mission, packet.exportedAt)
+    const { text, filename, count } = built
     const file = new File([text], filename, { type: 'text/plain' })
 
     if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
       try {
         await navigator.share({ files: [file], title: 'RangerTrak Report Packet' })
-        this.log.info(`Shared Report Packet: ${filename} (${entries.length} reports).`, this.id)
+        this.log.info(`Shared Report Packet: ${filename} (${count} reports).`, this.id)
         return
       } catch (e: any) {
         // AbortError = the operator cancelled the share sheet - not a failure, just fall
@@ -676,7 +663,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     a.download = filename
     a.click()
     URL.revokeObjectURL(url)
-    this.log.info(`Downloaded Report Packet: ${filename} (${entries.length} reports).`, this.id)
+    this.log.info(`Downloaded Report Packet: ${filename} (${count} reports).`, this.id)
   }
 
   /** Reads a picked Report Packet file and hands it to `mergeIncomingEntries()` (E-114 Phase
