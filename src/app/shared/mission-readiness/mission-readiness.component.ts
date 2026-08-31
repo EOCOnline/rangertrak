@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
+import { Component, EventEmitter, OnInit, Output, ChangeDetectionStrategy } from '@angular/core'
 import { RouterLink } from '@angular/router'
 
 import { MissionReadinessService } from '../services'
@@ -32,6 +32,36 @@ export class MissionReadinessComponent implements OnInit {
     // every page view - this component is instantiated fresh per page (PageComponent ->
     // HeaderComponent -> here), so this is effectively "refresh on navigation".
     this.readiness.refresh()
+  }
+
+  /**
+   * Bug found live 2026-08-31 (maintainer, testing 0.90): on a touch device the dot's own
+   * `routerLink="/mission"` hard-navigated away instead of joining the pill's unified
+   * tap-to-toggle behavior, so the dot alone still acted like the OLD separate popup this
+   * whole pass (see this file's own header comment) was supposed to have retired everywhere.
+   * Root cause: HeaderComponent.onStatusClusterClick() deliberately ignores a click that
+   * lands on `.readiness-dot` ("its own routerLink already handles those") - correct on
+   * desktop (hover already reveals the panel; the click-through is a bonus shortcut), wrong
+   * on touch (there is no hover there, so ignoring the dot's tap left it as the one element
+   * in the pill that navigates instead of toggling).
+   *
+   * Fix: `isTouchOnly()` below drives the template's `[routerLink]` binding to `null` on
+   * touch - `null` is RouterLink's own documented way to render an inert (non-navigating)
+   * anchor, which is more reliable than trying to race `event.preventDefault()` against
+   * RouterLink's own click handling (it does not consult `defaultPrevented`, so calling it
+   * from a second listener on the same click cannot be trusted to stop the navigation).
+   * `dotActivated` lets HeaderComponent fold the dot into its existing
+   * `panelOpenOnTouch` toggle instead, so touch behaves identically everywhere in the pill.
+   */
+  @Output() readonly dotActivated = new EventEmitter<void>()
+  readonly isTouchOnly = () => matchMedia('(hover: none)').matches
+
+  onDotClick(): void {
+    if (this.isTouchOnly()) {
+      this.dotActivated.emit()
+    }
+    // Non-touch: nothing to do here - [routerLink]="/mission" (bound in the template) already
+    // navigates on its own, unaffected, exactly as before this fix.
   }
 
   // Plain-text form, kept for the accessible name (aria-label) - a screen reader has no

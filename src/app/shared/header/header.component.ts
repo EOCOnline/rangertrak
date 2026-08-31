@@ -172,7 +172,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
    * so rather than scoping this to Entry-only, clicking it from anywhere navigates to Entry
    * AND reopens the panel - a simpler, equally discoverable behavior than disabling the
    * click on every other route. Ignores clicks that landed on the readiness dot specifically
-   * (its own `routerLink="/mission"` already handles those) so the two don't both fire.
+   * (its own `[routerLink]` already handles those) so the two don't both fire - still needed
+   * even now that the dot is inert-on-touch (2026-08-31 fix), because it emits its own
+   * `(dotActivated)` for that case (bound in the template, same `panelOpenOnTouch` toggle) -
+   * without this exclusion, a touch tap on the dot would double-toggle (this handler once,
+   * `dotActivated` once), netting no visible change.
    */
   /**
    * ADR D-32/F29-21, ported from MissionReadinessComponent (2026-08-30): that component is

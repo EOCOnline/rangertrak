@@ -6,7 +6,11 @@
      component's own items/tooltip getters below), so this is just the dot + its accessible
      name; `title` is enough to explain it in isolation via keyboard/AT if the dot itself
      receives focus outside the pill's own hover panel. -->
-<a class="readiness-dot" routerLink="/mission" [class.readiness-dot--red]="readiness.level() === 'red'"
+<!-- [routerLink]="null" on a touch device deliberately renders an inert (non-navigating)
+     anchor - see onDotClick()'s own doc comment for why the touch case cannot just call
+     preventDefault() instead. -->
+<a class="readiness-dot" [routerLink]="isTouchOnly() ? null : '/mission'" (click)="onDotClick()"
+  [class.readiness-dot--red]="readiness.level() === 'red'"
   [class.readiness-dot--amber]="readiness.level() === 'amber'"
   [class.readiness-dot--green]="readiness.level() === 'green'"
   [attr.title]="tooltip" [attr.aria-label]="tooltip + '. Go to Mission to resolve issues.'" role="img"></a>

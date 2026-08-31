@@ -18,7 +18,7 @@
     <div class="status-cluster" [class.rt-panel-open-touch]="panelOpenOnTouch()"
     (click)="onStatusClusterClick($event)"
     title="Click to go to Field Entry and reopen the welcome panel">
-    <rangertrak-mission-readiness></rangertrak-mission-readiness>
+    <rangertrak-mission-readiness (dotActivated)="panelOpenOnTouch.set(!panelOpenOnTouch())"></rangertrak-mission-readiness>
     <span class="status-divider"></span>
     <span class="opPeriod">{{opPeriod()}} <span class="status-divider status-divider--inline"></span> {{timeElapsed$ | async}} &
       {{timeLeft$ | async}}</span>
