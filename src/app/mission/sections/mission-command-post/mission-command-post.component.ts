@@ -42,7 +42,23 @@ export class MissionCommandPostComponent {
    */
   copiedField = signal<'address' | 'view' | null>(null)
 
+  /**
+   * Asked directly, 2026-08-31: should the copy buttons go disabled/inactive with a note on
+   * browsers where they cannot work, smartphones included? Checked rather than assumed: a
+   * BLANKET phone check would be wrong (modern mobile Safari/Chrome support
+   * `navigator.clipboard.writeText()` fine) - the real, narrower condition is whether the API
+   * itself exists at all, which is also the gap `copyToClipboard()` had before this: calling
+   * `.writeText()` when `navigator.clipboard` is undefined throws SYNCHRONOUSLY, before any
+   * Promise exists to `.catch()` - an uncaught error, not the graceful failure the `.catch()`
+   * below only handles the (much more common) case of - permission refused, not API absent.
+   */
+  clipboardAvailable = typeof navigator !== 'undefined'
+    && typeof navigator.clipboard?.writeText === 'function'
+
   copyToClipboard(field: 'address' | 'view', value: string): void {
+    if (!this.clipboardAvailable) {
+      return // button is disabled in this state - see the template - but guard here too
+    }
     navigator.clipboard.writeText(value)
       .then(() => {
         this.copiedField.set(field)

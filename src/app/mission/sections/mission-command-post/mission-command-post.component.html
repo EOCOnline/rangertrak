@@ -6,8 +6,11 @@
   <mat-card-content>
     <p class="mission__note">
       Run <code>npm run command-post</code> (or the packaged equivalent) on a command-post
-      laptop, then turn this on and point it at that laptop's address. Teams on the same
-      WiFi/hotspot can then open <code>/view</code> on that address to see a read-only,
+      <strong>laptop</strong> - a phone or tablet can publish reports TO this (below), but
+      cannot run the server itself. There's nowhere on iOS/Android for it to listen for
+      connections the way a laptop's OS lets it; this is a deliberate limit, not a gap this
+      app works around. Then turn this on and point it at that laptop's address. Teams on the
+      same WiFi/hotspot can then open <code>/view</code> on that address to see a read-only,
       auto-refreshing comms log - no roster, no photos, and nothing is written back. If the
       server isn't running, this silently does nothing; your own copy of the mission is never
       affected either way.
@@ -40,10 +43,12 @@
              besides the server's own console (which scrolls away, or gets closed). Copies
              whatever is CURRENTLY in the field, not a separately-tracked value, so it is
              always what this device would actually try to publish to. -->
-        <button matSuffix mat-icon-button type="button"
+        <button matSuffix mat-icon-button type="button" [disabled]="!clipboardAvailable"
           (click)="copyToClipboard('address', form.commandPostServerUrl().value())"
-          [attr.aria-label]="'Copy server address: ' + form.commandPostServerUrl().value()"
-          title="Copy to clipboard">
+          [attr.aria-label]="clipboardAvailable
+            ? 'Copy server address: ' + form.commandPostServerUrl().value()
+            : 'Copy to clipboard is not available in this browser'"
+          [title]="clipboardAvailable ? 'Copy to clipboard' : 'Not available in this browser - select and copy the text instead'">
           <mat-icon>{{ copiedField() === 'address' ? 'check' : 'content_copy' }}</mat-icon>
         </button>
         <mat-hint>Printed by the server itself on startup, and copied to ITS clipboard
@@ -74,12 +79,17 @@
           <!-- The link above OPENS it here; this copies the text so it can be handed to
                someone else (a text message, a radio call spelling it out, a sticky note) to
                give to a viewer's OWN device - two different needs, both worth one click. -->
-          <button type="button" class="mission-command-post__copy-view"
-            (click)="copyToClipboard('view', viewUrl())"
-            [attr.aria-label]="'Copy viewer link: ' + viewUrl()" title="Copy to clipboard">
-            {{ copiedField() === 'view' ? 'copied' : 'copy the link' }}
-          </button>
-          to give to a viewer.
+          @if (clipboardAvailable) {
+            <button type="button" class="mission-command-post__copy-view"
+              (click)="copyToClipboard('view', viewUrl())"
+              [attr.aria-label]="'Copy viewer link: ' + viewUrl()" title="Copy to clipboard">
+              {{ copiedField() === 'view' ? 'copied' : 'copy the link' }}
+            </button>
+            to give to a viewer.
+          } @else {
+            or select and copy the link above to give to a viewer (copy button not available
+            in this browser).
+          }
         </p>
       }
     }
