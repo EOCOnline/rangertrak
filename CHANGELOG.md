@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.90.2](https://github.com/EOCOnline/rangertrak/compare/v0.90.1...v0.90.2) (2026-08-31)
+
+
+### Features
+
+* **command-post:** double-click launchers, and copy the server address to the clipboard ([ecfdd32](https://github.com/EOCOnline/rangertrak/commit/ecfdd320abaf82266d2a87bd7939916dc150b9a0))
+* **entry:** E-114 §1a - field-mode device foundation, GPS auto-fill, remembered coordinate format ([f37c887](https://github.com/EOCOnline/rangertrak/commit/f37c88710f83ff8f2d7b071690897b2fa6bb4916))
+* **entry:** E-114 Phase 1 - give field-mode devices their own Report Packet hand-off ([6d767c5](https://github.com/EOCOnline/rangertrak/commit/6d767c59fb361b4b3c45f5b35f2802604780e5cc))
+* **mission:** a targeted phone-specific note, not just general prose ([c86b576](https://github.com/EOCOnline/rangertrak/commit/c86b5760f0539fc0ab68c2992f7ae740ebcc3307))
+* **mission:** let the Command Post address/viewer link be copied back out later ([89df0da](https://github.com/EOCOnline/rangertrak/commit/89df0da9f4f23ae891f8f3eb277001face205b91))
+* **radio-log:** mark merged-in reports, validate incoming timestamps/locations ([fbc8bb4](https://github.com/EOCOnline/rangertrak/commit/fbc8bb41183636c81aba80d9e8e4faea1c60889d))
+
+
+### Bug Fixes
+
+* **maps,rangers:** mini-map size containment, Leaflet control clear, roster export selection ([877f928](https://github.com/EOCOnline/rangertrak/commit/877f92840a91d25e38b180b15bf4c03986a4fa87))
+* **mission-readiness:** stop CI's headless Chrome from failing the readiness-dot href test ([a11b5a1](https://github.com/EOCOnline/rangertrak/commit/a11b5a119be3277241be91522e18c5f7c8b0ecaa))
+* **mission:** disable copy buttons with a note when clipboard isn't available; explain the phone limit ([d172bbc](https://github.com/EOCOnline/rangertrak/commit/d172bbc074bfaaa958387d2a304395913d3a8264))
+* **mission:** show a visible alert on copy failure; simplify the section's text ([a007faf](https://github.com/EOCOnline/rangertrak/commit/a007faf983cdc4cc088c3ef35ba06f12bef383d7))
+* **mission:** warn inline if the Command Post server address still starts with http:// ([eb12b1d](https://github.com/EOCOnline/rangertrak/commit/eb12b1d6c7e68d049594833f5c37c4106dd4de6e))
+
 ### [0.90.1](https://github.com/EOCOnline/rangertrak/compare/v0.90.0...v0.90.1) (2026-08-31)
 
 
