@@ -279,10 +279,6 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             ]
           },
           {
-            heading: 'Starting from the built-in station list',
-            text: 'Add station callsigns appends the 18 built-in Vashon station signs (command post, ACS, CERT and MERT teams) to whatever is already there. They are stations, not people — and it ADDS rather than replaces, so pressing it twice gives you duplicates. That is why it sits in the Danger zone.'
-          },
-          {
             heading: 'Emptying the roster',
             text: 'Delete all rangers empties it and it stays empty, including after a reload.'
           },

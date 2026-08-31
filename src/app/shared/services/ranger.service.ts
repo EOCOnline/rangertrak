@@ -65,12 +65,16 @@ export class RangerService implements OnInit {
     // station callsigns here, unconditionally, for every new user everywhere - "Rangers
     // should start blank. That should indicate a new mission!" A blank roster is now itself
     // the first-run signal (see isRealRosterLoaded() below, simplified now that there's no
-    // untouched-default state to distinguish from "real"). The 18 stations are still
-    // available, purely opt-in, via the Rangers page's own "Add station callsigns" button
-    // (Advanced section - loadHardcodedRangers(), unchanged) for teams that actually want
-    // that specific starter set.
+    // untouched-default state to distinguish from "real").
+    //
+    // Removed 2026-08-31: the Rangers page's own "Add station callsigns" Danger-zone button
+    // that offered these 18 as an opt-in starter set - it only ever appended (never deduped),
+    // so a second press or a press on top of a real roster produced duplicate callsigns, and
+    // it offered nothing "Load sample data" (SampleDataService) doesn't already do better: a
+    // full, replace-not-append demo roster with real field reports. loadHardcodedRangers()
+    // itself stays - ranger.service.spec.ts uses it as a quick way to seed a test roster.
     if (this.rangers.length === 0) {
-      this.log.verbose(`First run on this browser (or roster was emptied): starting blank. Load a real roster via Import roster/Import Mission, or Rangers > Advanced > Add station callsigns for the Vashon starter set.`, this.id)
+      this.log.verbose(`First run on this browser (or roster was emptied): starting blank. Load a real roster via Import roster or Import Mission.`, this.id)
     }
 
     this.updateLocalStorageAndPublish()
@@ -179,9 +183,8 @@ export class RangerService implements OnInit {
   // defect as the secrets.json import (PRIVATE-Roadmap.md Section 9e).
   //
   // Nothing called the method - its only caller was the Rangers page's JSON import
-  // button, removed with the other non-working import experiments. Seed data for a fresh
-  // install comes from loadHardcodedRangers() below (station callsigns, not people), and
-  // a real roster arrives via Import Mission.
+  // button, removed with the other non-working import experiments. A fresh install starts
+  // blank; a real roster arrives via Import roster or Import Mission.
 
   //--------------------------------------------------------------------------
   // REMOVED (2026-08-31, log-noise audit): LoadRangersFromExcel(). Same shape as the

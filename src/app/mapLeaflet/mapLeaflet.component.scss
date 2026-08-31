@@ -172,6 +172,16 @@ mat-slide-toggle {
 // system.
 :host ::ng-deep .savetiles.leaflet-bar {
   float     : none;
+  // Root cause of the buttons dropping below #mapLeaflet-overview's float no matter how much
+  // room was left beside it (live report, 2026-08-31, 4th attempt at this): this container
+  // keeps Leaflet's own `leaflet-control` class (stamped unconditionally by Control.addTo()),
+  // and leaflet.css's `.leaflet-control { float: left; clear: both; }` was only ever
+  // half-overridden here - `float: none` was set, but `clear: both` was never touched.
+  // `clear` forces an element below EVERY earlier float in the same block formatting context
+  // regardless of available width, so the three previous fixes (float:none here, then
+  // width-capping mat-slide-toggle and .offline-controls to fit beside the float) were all
+  // solving a width problem that was never the actual blocker.
+  clear     : none;
   box-shadow: none;
   border    : none;
   background: transparent;

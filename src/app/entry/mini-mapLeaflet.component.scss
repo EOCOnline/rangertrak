@@ -40,11 +40,20 @@
   // measurement even when every intermediate ancestor clips with overflow:hidden.
   // CSS containment is a stronger, purpose-built guarantee instead - it explicitly walls
   // off a subtree's layout, which the spec defines to include its contribution to
-  // ancestor overflow, regardless of what a transformed descendant does inside it. size
-  // containment is safe to add too: this frame's own dimensions are fixed by the
-  // width/height above, never driven by its content. overflow:hidden is kept alongside
-  // it, belt and suspenders, even though containment alone resolved this.
-  contain         : layout size;
+  // ancestor overflow, regardless of what a transformed descendant does inside it.
+  // overflow:hidden is kept alongside it, belt and suspenders, even though containment
+  // alone resolved this.
+  //
+  // CORRECTED 2026-08-31 (live bug: mini-map rendered as a bare ~5px border, no map inside):
+  // the `size` keyword this comment used to add here ("safe to add too: this frame's own
+  // dimensions are fixed by the width/height above") was wrong - only `width` is declared
+  // above, never a `height`. Under size containment an element with no explicit height is
+  // measured AS IF IT HAD NO CONTENT, so it resolved to 0, leaving only this container's own
+  // 2px+2px border visible. `layout` alone (not `size`) is what this comment already credits
+  // with solving the original scrollWidth/zoom-transform bug, so it's kept; `size` is dropped
+  // and height goes back to auto, sized from this container's real content (header + map +
+  // footer) same as before size containment was ever added.
+  contain         : layout;
   overflow        : hidden;
 
   // 2026-08-21: matches .minimap-placeholder's own tablet-down update in

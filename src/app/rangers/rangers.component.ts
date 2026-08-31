@@ -574,13 +574,29 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reloadPage()
   }
 
-  /** Downloads just the roster as JSON - the file the importer below expects. */
+  /**
+   * Downloads the roster as JSON - the file the importer below expects.
+   *
+   * Raised live 2026-08-31: with a partial grid selection active, this always exported the
+   * WHOLE roster regardless - easy to miss for anyone who selected a handful of rows to check
+   * something, then hit Export expecting just those. A full selection (or none at all) exports
+   * everything with no prompt, same as before; only a genuine partial selection asks which one
+   * is wanted, since that's the one case "export everything" might not be what was intended.
+   */
   onBtnExportRangersJson() {
-    const rangers = this.rangerService.rangers
-    if (!rangers.length) {
+    const all = this.rangerService.rangers
+    if (!all.length) {
       alert('There are no rangers to export.')
       return
     }
+
+    const selected: RangerType[] = this.gridApi?.getSelectedRows?.() ?? []
+    const exportSelected = selected.length > 0 && selected.length < all.length
+      && confirm(
+        `${selected.length} of ${all.length} rangers are selected.\n\n`
+        + `OK: export just the ${selected.length} selected.\n`
+        + `Cancel: export all ${all.length}.`)
+    const rangers = exportSelected ? selected : all
 
     const json = JSON.stringify({ rangers }, null, 2)
     const blob = new Blob([json], { type: 'application/json' })
@@ -589,11 +605,11 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const a = this.document.createElement('a')
     a.href = url
-    a.download = `rangertrak-roster-${stamp}.json`
+    a.download = `rangertrak-roster-${stamp}${exportSelected ? '-selected' : ''}.json`
     a.click()
     URL.revokeObjectURL(url)
 
-    this.log.info(`Exported ${rangers.length} rangers as JSON.`, this.id)
+    this.log.info(`Exported ${rangers.length} rangers as JSON${exportSelected ? ' (selection)' : ''}.`, this.id)
   }
 
   /**
@@ -754,19 +770,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       //this.alerts.OpenSnackBar(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`, `Nota Bene`, 4000)
       alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
     }
-  }
-
-  //--------------------------------------------------------------------------
-
-  loadVashonRangers() {
-    this.rangerService.loadHardcodedRangers()
-    // TODO: Refresh the page, or why not showing???? - until page goes thoiugh another init cycle?!
-
-    this.log.verbose("loadVashonRangers calling ngInit...", this.id)
-    this.ngOnInit()
-
-    this.log.verbose("loadVashonRangers calling window.location.reload...", this.id)
-    this.reloadPage()
   }
 
   //--------------------------------------------------------------------------
