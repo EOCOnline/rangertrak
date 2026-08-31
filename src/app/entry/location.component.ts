@@ -487,7 +487,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    */
   onDdChg() {
     const { latI, latF, lngI, lngF } = this.ddModel()
-    this.log.verbose(`new DD values: ${latI}.${latF}°, ${lngI}.${lngF}°`, this.id)
 
     const enteredLocation = {
       lat: parseFloat(`${latI}.${latF}`),
@@ -500,13 +499,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   onDdmChg() {
     const { latDdmD, latDdmM, latDdmQ, lngDdmD, lngDdmM, lngDdmQ } = this.ddmModel()
-    this.log.excessive(`DDM value changed:  ${latDdmD}° ${latDdmM}' ${latDdmQ}, ${lngDdmD}° ${lngDdmM}' ${lngDdmQ}`, this.id)
 
     const latLng = {
       lat: DDMToDD(<string>latDdmQ, latDdmD, latDdmM)!,
       lng: DDMToDD(<string>lngDdmQ, lngDdmD, lngDdmM)!
     }
-    this.log.verbose(`DDM converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
 
     const enteredLocation = {
       lat: latLng.lat,
@@ -520,13 +517,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   onDmsChg() {
     const { latD, latM, latS, latQ, lngD, lngM, lngS, lngQ } = this.dmsModel()
-    this.log.verbose(`DMS value changed:  ${latD}° ${latM}' ${latS}" ${latQ}, ${lngD}° ${lngM}' ${lngS}" ${lngQ}`, this.id)
 
     const latLng = {
       lat: DMSToDD(latQ, latD, latM, latS)!,
       lng: DMSToDD(lngQ, lngD, lngM, lngS)!
     }
-    this.log.verbose(`DMS converted to DD: ${latLng.lat}° ${latLng.lng}°`, this.id)
 
     const enteredLocation = {
       lat: latLng.lat,
@@ -539,14 +534,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   onMgrsChg() {
     const { gridRef, easting, northing } = this.mgrsModel()
-    this.log.verbose(`MGRS value changed: ${gridRef} ${easting} ${northing}`, this.id)
 
     const converted = MGRSToDD(gridRef, easting, northing)
     if (!converted) {
       this.log.warn(`onMgrsChg: MGRSToDD rejected "${gridRef}" ${easting} ${northing}`, this.id)
       return
     }
-    this.log.verbose(`MGRS converted to DD: ${converted.lat}° ${converted.lng}°`, this.id)
 
     const enteredLocation = {
       lat: converted.lat,
@@ -559,14 +552,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   onUtmChg() {
     const { zone, hemisphere, easting, northing } = this.utmModel()
-    this.log.verbose(`UTM value changed: ${zone}${hemisphere} ${easting} ${northing}`, this.id)
 
     const converted = UTMToDD(zone, hemisphere, easting, northing)
     if (!converted) {
       this.log.warn(`onUtmChg: UTMToDD rejected ${zone}${hemisphere} ${easting} ${northing}`, this.id)
       return
     }
-    this.log.verbose(`UTM converted to DD: ${converted.lat}° ${converted.lng}°`, this.id)
 
     const enteredLocation = {
       lat: converted.lat,
