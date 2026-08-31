@@ -322,9 +322,24 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
     this.missionModel.update(m => ({ ...m, recipientOptions213: newList }))
   }
 
+  /**
+   * Bug reported live 2026-08-31: clicking this "blinked" (the button's own ripple) but
+   * nothing visibly changed. Root cause: `MissionService.ResetDefaults()` genuinely does
+   * reset and persist settings (confirmed - `updateMission(initMission())`, same as every
+   * other settings write) - but this component's OWN form state (`missionModel`, what the
+   * template's `[formField]`s actually bind to) is a separate signal that was never resynced,
+   * unlike `onCancel()`'s analogous `applyMissionToForm(this.settings)`. The settings this
+   * button claims to reset ("return every setting above to its default value") were reset in
+   * storage the whole time; the page just kept showing stale form values on top of them.
+   * Reloading is the same fix already relied on elsewhere for this exact gap - see
+   * `initMission()`'s own comment: a prior version string bug from this same button was
+   * "fixed" only by whatever next reloaded the page, which is the real signal this needed
+   * one all along rather than a smaller per-field resync.
+   */
   onBtnResetDefaults() {
     this.log.verbose(`onBtnResetDefaults: Reset Mission.`, this.id)
-    this.settings = this.missionService.ResetDefaults() // need to refresh page?!
+    this.settings = this.missionService.ResetDefaults()
+    this.reloadPage()
   }
 
   reloadPage() {
