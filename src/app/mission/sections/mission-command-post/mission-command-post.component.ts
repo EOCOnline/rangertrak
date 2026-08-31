@@ -77,6 +77,16 @@ export class MissionCommandPostComponent implements OnDestroy {
   clipboardAvailable = typeof navigator !== 'undefined'
     && typeof navigator.clipboard?.writeText === 'function'
 
+  /**
+   * Reported live 2026-08-31, v0.90: "copy didn't seem to work." The real bug, found by
+   * re-reading this rather than guessing at a browser quirk: a failed `writeText()` only ever
+   * logged to the Log page - nowhere a user testing a button would think to look. Silent
+   * failure and silent success looked identical from the button itself. `clipboardAvailable`
+   * only confirms the API EXISTS; the write can still be refused at call time (a permissions
+   * policy, an unfocused document, a one-off browser quirk), and now that case is visible -
+   * same `alert()` convention this app already uses for every other user-facing failure
+   * (mission-zip.ts, report-packet.ts, prep.component.ts).
+   */
   copyToClipboard(field: 'address' | 'view', value: string): void {
     if (!this.clipboardAvailable) {
       return // button is disabled in this state - see the template - but guard here too
@@ -88,6 +98,7 @@ export class MissionCommandPostComponent implements OnDestroy {
       })
       .catch(err => {
         this.log.error(`Command Post ${field} NOT copied to clipboard, error: ${err}`, 'Mission Command Post')
+        alert(`Could not copy to the clipboard. Select the text and copy it manually.\n\n${value}`)
       })
   }
 

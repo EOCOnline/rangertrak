@@ -4,32 +4,25 @@
     <mat-card-subtitle>Let nearby devices read the live comms log over this laptop's WiFi.</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
+    <!-- Simplified 2026-08-31 ("that server section explanation is long and technical.
+         simplify it & move anything long to the guide") - the detailed walkthrough (why a
+         phone can't host, the router-warning analogy, step-by-step setup) already lives in
+         full in the Guide drawer (guide-content.ts's own "Command Post Server" entry) and is
+         not duplicated here - this stays just long enough to act on, not to explain. -->
     @if (isPhone()) {
       <div class="warn mission-command-post__phone-note">
-        You're on a phone-sized screen right now - this device can <strong>publish</strong>
-        reports to a Command Post Server (the toggle below), but it cannot <strong>run</strong>
-        one. That needs a laptop; see why just below.
+        This device can publish to a Command Post Server, but can't run one - that needs a
+        laptop.
       </div>
     }
     <p class="mission__note">
-      Run <code>npm run command-post</code> (or the packaged equivalent) on a command-post
-      <strong>laptop</strong> - a phone or tablet can publish reports TO this (below), but
-      cannot run the server itself. There's nowhere on iOS/Android for it to listen for
-      connections the way a laptop's OS lets it; this is a deliberate limit, not a gap this
-      app works around. Then turn this on and point it at that laptop's address. Teams on the
-      same WiFi/hotspot can then open <code>/view</code> on that address to see a read-only,
-      auto-refreshing comms log - no roster, no photos, and nothing is written back. If the
-      server isn't running, this silently does nothing; your own copy of the mission is never
-      affected either way.
+      Needs a laptop running the server - see the Guide for setup. Off by default; your own
+      copy of the mission is unaffected either way.
     </p>
     <div class="warn">
-      The server address starts with <code>https://</code>, not <code>http://</code> - the
-      server generates its own certificate, so the FIRST time you (and anyone viewing) visit
-      that address, the browser will warn "Your connection is not private." That's expected
-      for a private server, the same warning most home routers show. Click Advanced, then
-      Proceed - needed once per device, not every time. <strong>Visit the address directly in
-      this browser and accept that warning BEFORE turning the toggle on below</strong> -
-      otherwise publishing fails silently, with no error shown here.
+      Uses <code>https://</code>. The first time each device visits that address, the browser
+      will warn it's not private - click through it once per device, <strong>before</strong>
+      turning this on (Guide has why).
     </div>
 
     <!-- Same non-[formField] pattern mission-maps-section's own checkbox uses - Signal
@@ -82,20 +75,15 @@
       @if (viewUrl()) {
         <p class="mission-command-post__view-link">
           <a [href]="viewUrl()" target="_blank" rel="noopener noreferrer">Open {{ viewUrl() }}</a>
-          to confirm it's reachable from this device (and accept the certificate, first time) -
-          <!-- The link above OPENS it here; this copies the text so it can be handed to
-               someone else (a text message, a radio call spelling it out, a sticky note) to
-               give to a viewer's OWN device - two different needs, both worth one click. -->
+          to confirm it's reachable (and accept the certificate, first time)
           @if (clipboardAvailable) {
+            - or
             <button type="button" class="mission-command-post__copy-view"
               (click)="copyToClipboard('view', viewUrl())"
               [attr.aria-label]="'Copy viewer link: ' + viewUrl()" title="Copy to clipboard">
               {{ copiedField() === 'view' ? 'copied' : 'copy the link' }}
             </button>
             to give to a viewer.
-          } @else {
-            or select and copy the link above to give to a viewer (copy button not available
-            in this browser).
           }
         </p>
       }
