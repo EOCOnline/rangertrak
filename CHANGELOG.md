@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.89.3](https://github.com/EOCOnline/rangertrak/compare/v0.89.2...v0.89.3) (2026-08-31)
+
+
+### Bug Fixes
+
+* **entry:** stop the mini-map's Leaflet zoom-proxy computing an absurd transform ([70300c9](https://github.com/EOCOnline/rangertrak/commit/70300c9a3050e422e8a67b4454c7177f4fee1e86))
+* **header:** make the mission-info panel reachable on touch devices ([9cfde23](https://github.com/EOCOnline/rangertrak/commit/9cfde23816e8cc5fbb3e8771f8d97987f7213518))
+* **header:** the mission-info hover panel inflated scrollWidth even while hidden ([2e1c4d6](https://github.com/EOCOnline/rangertrak/commit/2e1c4d6284d400e57423ff7000dfa9afbcf8de21))
+
 ### [0.89.2](https://github.com/EOCOnline/rangertrak/compare/v0.89.1...v0.89.2) (2026-08-30)
 
 
