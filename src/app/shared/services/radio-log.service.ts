@@ -295,7 +295,7 @@ export class RadioLogService {
   public mergeIncomingEntries(
     incoming: readonly RadioLogEntryType[],
     reporterCredential?: string,
-  ): { added: number, skipped: number } {
+  ): { added: number, skipped: number, rejected: number } {
     const resolvedCredentialId = normalizeRangerId(reporterCredential)
     const resolvedUid = resolvedCredentialId
       ? this.rangerService.rangers.find(r => normalizeRangerId(r.id) === resolvedCredentialId)?.uid
@@ -306,8 +306,16 @@ export class RadioLogService {
 
     let added = 0
     let skipped = 0
+    let rejected = 0
 
     for (const entry of incoming) {
+      const reason = this.invalidIncomingEntryReason(entry)
+      if (reason) {
+        this.log.warn(`mergeIncomingEntries: rejected an entry (${reason}): ${JSON.stringify(entry)}`, this.id)
+        rejected++
+        continue
+      }
+
       const identity = entry.rangerUid || resolvedCredentialId || 'unknown'
       const sourceUid = `${identity}:${entry.id}`
 
@@ -332,8 +340,47 @@ export class RadioLogService {
       this.updateRadioLogAndPublish()
     }
 
-    this.log.warn(`mergeIncomingEntries: ${added} added, ${skipped} already present.`, this.id)
-    return { added, skipped }
+    this.log.warn(`mergeIncomingEntries: ${added} added, ${skipped} already present, ${rejected} rejected.`, this.id)
+    return { added, skipped, rejected }
+  }
+
+  /**
+   * E-114 Phase 1 (2026-08-31, maintainer's own live ask - "validation of incoming reports,
+   * mainly proper timestamps, etc."). A Report Packet is trusted physical custody (D-40/D-35 -
+   * the same model Mission Zip already ships under), not an untrusted upload, but it is still a
+   * hand-carried FILE - one a text editor, a bad copy/paste, or a stale hand-edit can corrupt
+   * before it ever reaches `mergeIncomingEntries()` above. Checks only the fields this app
+   * actually recomputes FROM, algorithmically, on every merge - a bad `date` or `location`
+   * doesn't just display wrong, it poisons `recalcRadioLogBounds()`'s min/max math (a single
+   * `NaN` coordinate breaks every future bounds comparison against it) and this device's own
+   * chronological ordering. Returns a short reason string for the log, or null when the entry
+   * is fine. Deliberately per-entry, not whole-packet: one corrupted row in an otherwise-good
+   * file should not cost every other genuine report in it (same "skip and count, never reject
+   * outright" tolerance `mergeIncomingEntries()` already applies to a duplicate).
+   */
+  private invalidIncomingEntryReason(entry: RadioLogEntryType): string | null {
+    if (typeof entry.id !== 'number' || !Number.isFinite(entry.id)) {
+      return 'id is not a number'
+    }
+    if (typeof entry.callsign !== 'string' || typeof entry.status !== 'string') {
+      return 'callsign or status is not text'
+    }
+    if (isNaN(new Date(entry.date).getTime())) {
+      return `not a valid timestamp: ${JSON.stringify(entry.date)}`
+    }
+    if (!this.isValidCoordinate(entry.location)) {
+      return 'location is missing or out of range'
+    }
+    if (entry.evidenceLocation && !this.isValidCoordinate(entry.evidenceLocation)) {
+      return 'evidenceLocation is out of range'
+    }
+    return null
+  }
+
+  private isValidCoordinate(location: { lat: number, lng: number } | null | undefined): boolean {
+    return !!location
+      && Number.isFinite(location.lat) && location.lat >= -90 && location.lat <= 90
+      && Number.isFinite(location.lng) && location.lng >= -180 && location.lng <= 180
   }
 
   /**

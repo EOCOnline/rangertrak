@@ -221,6 +221,8 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             bullets: [
               'Build Report Packet packages every report on THIS device into one small file, ready to hand to another device.',
               'Load Report Packet reads one of those files back in and merges it — it only ever ADDS reports this device does not already have; nothing existing is ever replaced or overwritten.',
+              'A merged-in report is marked with a small 📦 in its own column (or next to the callsign on a phone) — a quick way to tell it apart from one typed directly on this device.',
+              'A report that can\'t be read — a bad timestamp or an out-of-range position, usually a sign the file was hand-edited or corrupted — is skipped on its own and you\'re told how many, rather than the whole file being refused.',
               'Importing the exact same file twice is safe — the second time changes nothing, so there is no harm in re-sending one if you are not sure it landed.',
               'If the file names a different mission than this device\'s current one, you are warned and asked to confirm before anything is merged in.',
               'The file names real people and describes an active incident — treat it like a printed page from the log: keep it on a device you control, and delete it once its reports are safely merged in here.'

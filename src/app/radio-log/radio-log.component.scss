@@ -36,6 +36,12 @@
   white-space  : nowrap;
 }
 
+// E-114 open question 5: same marker as the grid's own Origin column - see
+// originCellRenderer's comment in radio-log.component.ts for why this isn't the Source field.
+.radio-log-cards__origin {
+  flex-shrink: 0;
+}
+
 .radio-log-cards__row {
   color        : var(--rt-ink-2);
   margin-bottom: 0.2em;

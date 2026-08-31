@@ -129,6 +129,10 @@
           <article class="radio-log-cards__card" role="listitem">
             <header class="radio-log-cards__header">
               <span class="radio-log-cards__callsign">{{ report.callsign }}</span>
+              @if (report.sourceUid) {
+                <span class="radio-log-cards__origin"
+                  title="Merged in from a Report Packet - not typed on this device">📦</span>
+              }
               <span class="radio-log-cards__status" [style.background-color]="statusFill(report.status)"
                 [style.color]="statusInk(report.status)">{{ report.status }}</span>
             </header>

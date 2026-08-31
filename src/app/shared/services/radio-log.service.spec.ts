@@ -221,8 +221,8 @@ describe('RadioLogService', () => {
       const first = service.mergeIncomingEntries(batch, 'REW-9');
       const second = service.mergeIncomingEntries(batch, 'REW-9');
 
-      expect(first).toEqual({ added: 2, skipped: 0 });
-      expect(second).toEqual({ added: 0, skipped: 2 });
+      expect(first).toEqual({ added: 2, skipped: 0, rejected: 0 });
+      expect(second).toEqual({ added: 0, skipped: 2, rejected: 0 });
       expect(service.getCurrentRadioLog().logEntries.length).toBe(2);
     });
 
@@ -268,6 +268,70 @@ describe('RadioLogService', () => {
       const log = service.getCurrentRadioLog();
       expect(log.numReport).toBe(log.logEntries.length);
       expect(log.bounds.north).toBeGreaterThanOrEqual(48.0);
+    });
+
+    it('a merged entry is stamped with sourceUid, the one thing the Origin marker checks for', () => {
+      const service = TestBed.inject(RadioLogService);
+
+      service.mergeIncomingEntries([incoming({ id: 0 })], 'REW-9');
+
+      const merged = service.getCurrentRadioLog().logEntries[0];
+      expect(merged.sourceUid).toBeTruthy();
+    });
+
+    // E-114 Phase 1, maintainer's own live ask (2026-08-31): "validation of incoming reports,
+    // mainly proper timestamps, etc." - a corrupted date or location doesn't just display
+    // wrong, it poisons recalcRadioLogBounds()'s min/max math for every report after it.
+    describe('rejects a malformed entry rather than merging it', () => {
+      it('an unparseable date', () => {
+        const service = TestBed.inject(RadioLogService);
+
+        const result = service.mergeIncomingEntries([incoming({ id: 0, date: 'not a date' as any })]);
+
+        expect(result).toEqual({ added: 0, skipped: 0, rejected: 1 });
+        expect(service.getCurrentRadioLog().logEntries.length).toBe(0);
+      });
+
+      it('a latitude out of range', () => {
+        const service = TestBed.inject(RadioLogService);
+
+        const result = service.mergeIncomingEntries([
+          incoming({ id: 0, location: { lat: 200, lng: -122.4, address: '', derivedFromAddress: false } })
+        ]);
+
+        expect(result).toEqual({ added: 0, skipped: 0, rejected: 1 });
+      });
+
+      it('a NaN coordinate', () => {
+        const service = TestBed.inject(RadioLogService);
+
+        const result = service.mergeIncomingEntries([
+          incoming({ id: 0, location: { lat: NaN, lng: -122.4, address: '', derivedFromAddress: false } })
+        ]);
+
+        expect(result).toEqual({ added: 0, skipped: 0, rejected: 1 });
+      });
+
+      it('a non-numeric id', () => {
+        const service = TestBed.inject(RadioLogService);
+
+        const result = service.mergeIncomingEntries([incoming({ id: 'zero' as any })]);
+
+        expect(result).toEqual({ added: 0, skipped: 0, rejected: 1 });
+      });
+
+      it('one bad entry does not cost the good entries in the same packet', () => {
+        const service = TestBed.inject(RadioLogService);
+        const batch = [
+          incoming({ id: 0, date: 'garbage' as any }),
+          incoming({ id: 1, callsign: 'GOOD-ONE' }),
+        ];
+
+        const result = service.mergeIncomingEntries(batch);
+
+        expect(result).toEqual({ added: 1, skipped: 0, rejected: 1 });
+        expect(service.getCurrentRadioLog().logEntries[0].callsign).toBe('GOOD-ONE');
+      });
     });
   });
 

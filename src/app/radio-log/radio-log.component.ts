@@ -144,6 +144,21 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   private buildColumnDefs(): any[] {
     return [
       { headerName: "#", field: "id", headerTooltip: 'This report\'s line number in the radio log', maxWidth: 90, editable: false },
+      // E-114 open question 5 (2026-08-31, decided: "yes, imported rows can have that
+      // reflected"). Deliberately NOT the existing "Source" column below - that already means
+      // the communications medium the report itself arrived over (Voice/Phone/Packet/APRS/
+      // Email - RADIO_LOG_ENTRY_SOURCES literally has its own unrelated 'Packet' meaning ham
+      // packet radio), a different axis entirely from "did this ROW arrive on THIS device via
+      // a merge." No new field needed either: `sourceUid` is already stamped ONLY on a merged
+      // entry (see RadioLogEntryType's own doc comment), so its mere presence already answers
+      // the question - this column just surfaces it. Same "icon or blank" shape as the
+      // Evidence column's own evidenceCellRenderer below.
+      {
+        headerName: "Origin", field: "sourceUid", maxWidth: 70, editable: false,
+        cellRenderer: this.originCellRenderer,
+        tooltipValueGetter: (params: { data: RadioLogEntryType }) =>
+          params.data.sourceUid ? 'Merged in from a Report Packet - not typed on this device' : undefined,
+      },
       // F29-44 (partial, 2026-08-29): headerName was `idFieldLabel || 'Callsign'` while field
       // stayed hardcoded "callsign" - a mission that renames its id field (e.g. to "REW")
       // rendered a column headed "REW" full of callsign data. Header now names what the
@@ -395,6 +410,14 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     const loc = params.data.evidenceLocation
     if (!loc) return ''
     return `<span aria-hidden title="Evidence/clue at ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}">🚩</span>`
+  }
+
+  /** E-114 open question 5: a compact marker for a row that arrived via a Report Packet
+   *  merge, blank for a report typed directly on this device. See the Origin column's own
+   *  comment in buildColumnDefs() for why this isn't the existing Source column. */
+  originCellRenderer = (params: { data: RadioLogEntryType }) => {
+    if (!params.data.sourceUid) return ''
+    return `<span aria-hidden title="Merged in from a Report Packet - not typed on this device">📦</span>`
   }
 
   /**
@@ -696,10 +719,13 @@ export class RadioLogComponent implements OnInit, OnDestroy {
         }
       }
 
-      const { added, skipped } = this.radioLogService.mergeIncomingEntries(packet.entries, packet.operator)
+      const { added, skipped, rejected } = this.radioLogService.mergeIncomingEntries(packet.entries, packet.operator)
       const lines = [`Merged ${added} new report${added === 1 ? '' : 's'} from "${file.name}".`]
       if (skipped) {
         lines.push(`${skipped} already present on this device were skipped.`)
+      }
+      if (rejected) {
+        lines.push(`${rejected} report${rejected === 1 ? '' : 's'} could not be read (bad timestamp or location) and were NOT imported - see the Log page for which.`)
       }
       alert(lines.join('\n'))
     } catch (e: any) {
