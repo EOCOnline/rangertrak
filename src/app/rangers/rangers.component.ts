@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs'
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
+import { RouterLink } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular';
 import { GuideService } from '../shared/guide/guide.service';
 import { PageComponent } from '../shared/page/page.component';
@@ -16,6 +17,7 @@ import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import { ExpandableSectionComponent } from '../shared/expandable-section/expandable-section.component'
+import { formatReportTime } from '../shared/mapping/report-time'
 import {
   FieldReportService, FieldReportType, LogService, RangerService, RangerType,
   MissionService, MissionType
@@ -30,7 +32,7 @@ import { CustomTooltip } from './customTooltip'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, RouterLink, ...MATERIAL_IMPORTS],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
@@ -46,6 +48,19 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // template binding - this app is zoneless, so a plain field written there has no
   // guaranteed path back into change detection. Signals close that gap (Sprint G).
   public rangers = signal<RangerType[]>([])
+
+  private fieldReportsSubscription!: Subscription
+  // "Not checked in" column: the most recent field report date per ranger, keyed
+  // `rangerUid || callsign` - same join key drawTrails()/displayMarkers() use (ADR D-42
+  // phase 5). Read by lastContactCellRenderer/lastContactValueGetter below, not a signal -
+  // ag-grid's cellRenderer/valueGetter are plain functions re-invoked on refreshCells(),
+  // so this only needs to be current when the grid actually redraws, not push its own
+  // change detection. Deliberately recomputed only when field reports change (grid refresh
+  // triggered below), not on a setInterval - same "computed once when this method runs, not
+  // a live-updating clock" choice mapLeaflet.component.ts's drawTrails() elapsed-time
+  // readout already made, for the same reason: it goes stale until the next redraw rather
+  // than ticking on its own.
+  private lastContactByKey = new Map<string, Date>()
 
   // Material-M3 pass, 2026-08-26: the CSV export controls' state, replacing two
   // getElementById reads - see getSeperatorValue()/onBtnExportToExcel() below for what each
@@ -174,6 +189,45 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     return `<span aria-hidden> ${params.data.id}</span>`
   }
 
+  /** Same grouping key drawTrails()/displayMarkers() use (ADR D-42 phase 5): `rangerUid`
+   * when set, `callsign` as the fallback for reports filed before D-42 or against a
+   * callsign matching no current roster row. Only the newest report per key survives. */
+  private static buildLastContactByKey(reports: FieldReportType[]): Map<string, Date> {
+    const byKey = new Map<string, Date>()
+    reports.forEach(r => {
+      const key = r.rangerUid || r.callsign
+      if (!key) return
+      const date = new Date(r.date)
+      const existing = byKey.get(key)
+      if (!existing || date > existing) byKey.set(key, date)
+    })
+    return byKey
+  }
+
+  private lastContactFor(ranger: RangerType): Date | null {
+    return this.lastContactByKey.get(ranger.uid || ranger.callsign) ?? null
+  }
+
+  /** Sortable underlying value for the "Last Contact" column - epoch ms, or null for a
+   * ranger with no field report on file yet ("not checked in"). */
+  lastContactValueGetter = (params: { data: RangerType }) => {
+    return this.lastContactFor(params.data)?.getTime() ?? null
+  }
+
+  // Same #c0392b "not attributable yet" red idCellRenderer uses below, for the same reason:
+  // this is the other half of "can this ranger's activity be tracked at all right now."
+  lastContactCellRenderer = (params: { data: RangerType }) => {
+    const last = this.lastContactFor(params.data)
+    if (!last) {
+      return `<span aria-hidden title="No field report received yet from this ranger." `
+        + `style="color:#c0392b;font-weight:700">`
+        + `<i class="material-icons" aria-hidden="true" `
+        + `style="font-size:18px;width:18px;height:18px;vertical-align:text-bottom;">phone_disabled</i>`
+        + ` not checked in</span>`
+    }
+    return `<span aria-hidden title="Last report received: ${last.toLocaleString()}">${formatReportTime(last)}</span>`
+  }
+
   // Raised live, 2026-08-27: what to CALL a ranger's unique id varies by agency/region
   // (settings.idFieldLabel, MissionType) - WA uses REW, other agencies use something else
   // entirely. This is a method, not a static array, so it can rebuild with a new
@@ -192,6 +246,11 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       { headerName: "Full Name", field: "fullName", tooltipField: "FCC Licensee Name", minWidth: 150, maxWidth: 300 },
       { headerName: "Phone", field: "phone", singleClickEdit: true, maxWidth: 170 },
       { headerName: "Role", field: "role", maxWidth: 200 },
+      {
+        headerName: "Last Contact", colId: "lastContact",
+        valueGetter: this.lastContactValueGetter, cellRenderer: this.lastContactCellRenderer,
+        editable: false, minWidth: 150, maxWidth: 220,
+      },
       // The only flex column - takes whatever the content-sized columns leave over.
       { headerName: "Notes", field: "note", flex: 1, minWidth: 150 },
     ]
@@ -204,6 +263,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     private log: LogService,
     private rangerService: RangerService,
     private missionService: MissionService,
+    private fieldReportService: FieldReportService,
     private photos: RangerPhotoService,
     private _snackBar: MatSnackBar,
     // The confidentiality bar's "What this means" opens the Guide drawer's Privacy tab -
@@ -246,6 +306,16 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
       complete: () => this.log.info('Rangers Subscription complete', this.id)
+    })
+
+    this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
+      next: (reports) => {
+        this.lastContactByKey = RangersComponent.buildLastContactByKey(reports.fieldReportArray)
+        this.refreshGrid()
+        this.log.verbose('Received new Field Reports via subscription.', this.id)
+      },
+      error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
+      complete: () => this.log.info('Field Reports Subscription complete', this.id)
     })
 
     this.log.verbose(`ngInit: ${this.rangers().length} Rangers retrieved from Local Storage`, this.id)
@@ -728,5 +798,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.rangersSubscription?.unsubscribe()
     this.missionSubscription?.unsubscribe()
+    this.fieldReportsSubscription?.unsubscribe()
   }
 }

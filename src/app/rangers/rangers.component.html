@@ -120,6 +120,16 @@
         </button>
         <input #importPhotoFiles id="importPhotoFiles" type="file" accept="image/*" multiple
           (change)="onPhotoFilesSelected($event)" hidden />
+
+        <!-- E-109 Mission Zip v1 (2026-08-31): a pre-mission prep tool that packages
+             roster + photos + mission settings together - a separate page (see its own doc
+             comment for why), linked from here since it's the natural next stop from roster
+             management. -->
+        <a matButton="outlined" routerLink="/prep"
+          title="Package this roster, its photos, and mission settings into one file for another device - or load one someone handed you">
+          <mat-icon>archive</mat-icon>
+          Mission Zip
+        </a>
       </div>
     </div>
 
