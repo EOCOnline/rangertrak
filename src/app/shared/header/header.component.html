@@ -15,7 +15,8 @@
          only ever used here, inside this unified pill). Plain CSS :hover/:focus-within reveal
          (.rt-mission-info-panel below), same proven pattern as that old per-dot tooltip used -
          no JS hover-tracking, no MatMenu open/close timing to get right. -->
-    <div class="status-cluster" (click)="onStatusClusterClick($event)"
+    <div class="status-cluster" [class.rt-panel-open-touch]="panelOpenOnTouch()"
+    (click)="onStatusClusterClick($event)"
     title="Click to go to Field Entry and reopen the welcome panel">
     <rangertrak-mission-readiness></rangertrak-mission-readiness>
     <span class="status-divider"></span>

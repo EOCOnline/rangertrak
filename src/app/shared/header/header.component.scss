@@ -126,7 +126,10 @@
   }
 
   .status-cluster:hover .rt-mission-info-panel,
-  .status-cluster:focus-within .rt-mission-info-panel {
+  .status-cluster:focus-within .rt-mission-info-panel,
+  // Touch devices (header.component.ts's isTouchOnly()) have no hover state, so a tap
+  // toggles this class instead of navigating - see onStatusClusterClick()'s own comment.
+  .status-cluster.rt-panel-open-touch .rt-mission-info-panel {
     display: block;
   }
 

@@ -193,8 +193,29 @@ export class HeaderComponent implements OnInit, OnDestroy {
     ]
   }
 
+  // Raised live 2026-08-30: "do phone users need unique directions for navigation and
+  // clicking?" - a real question, prompted by the hover-reveal panel just added above. A
+  // touch device has no true hover state, and a plain click-handler element with a hover-
+  // revealed child is exactly the pattern that makes iOS Safari treat a first tap as hover-
+  // only (no click fires) - so the SAME tap that should show mission info would also, on
+  // other browsers, immediately navigate away before the panel could ever be seen.
+  //
+  // matchMedia('(hover: none)') identifies touch input specifically (not narrow SCREENS -
+  // a touch laptop with a mouse still reports hover:hover), so this only changes behaviour
+  // where hovering to preview the panel was never possible in the first place. On such a
+  // device, tapping the pill toggles the panel instead of navigating - a real nav link to
+  // Entry already exists for the primary way to get there, so trading away this pill's
+  // navigation shortcut (never the only path) for actually being able to see mission
+  // status on a phone is the right trade.
+  panelOpenOnTouch = signal(false)
+  private readonly isTouchOnly = () => matchMedia('(hover: none)').matches
+
   onStatusClusterClick(event: MouseEvent) {
     if ((event.target as HTMLElement).closest('.readiness-dot')) return
+    if (this.isTouchOnly()) {
+      this.panelOpenOnTouch.set(!this.panelOpenOnTouch())
+      return
+    }
     this.welcomePanel.show()
     this.router.navigateByUrl('/')
   }
