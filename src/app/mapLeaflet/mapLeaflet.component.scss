@@ -208,8 +208,20 @@ mat-slide-toggle {
 // out of Leaflet's floating corner-control system into normal page flow - see
 // #offlineControlsHost in the template / initMainMap(). Bare breathing room now that it's
 // not sitting inside Leaflet's own cornered .leaflet-bar spacing.
+//
+// Reported live from a screenshot, 2026-08-31: these buttons rendered well below
+// #mapLeaflet-overview's float instead of wrapping into the narrow column beside it, leaving
+// a tall blank gap the float's own height. `float: none` (below, on `.savetiles.leaflet-bar`)
+// only stops THIS block from floating itself - it says nothing about how wide a non-float
+// block sizes itself next to one, and with no explicit width this one was sizing to its full
+// unconstrained content width (two whole-sentence buttons), too wide to fit beside a 175px
+// float, so the browser dropped the whole block below it instead. Same fix, same reasoning,
+// as the `mat-slide-toggle` rule right below this one, which hit the identical problem one
+// element sooner: cap the width to what is actually available beside the float so it narrows
+// into that column instead of falling out of it.
 .offline-controls {
   margin-top: 0.5em;
+  max-width  : calc(100% - 175px - 0.5rem);
 }
 
 // Roadmap "Offline map area" item: saved/estimated size text, appended by
