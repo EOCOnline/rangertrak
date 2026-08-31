@@ -47,9 +47,39 @@ describe('MissionReadinessComponent', () => {
     expect(component.tooltip.toLowerCase()).not.toContain('disabled');
   });
 
-  it('links to Mission, where every tracked signal is resolved', () => {
-    const dot: HTMLAnchorElement = fixture.nativeElement.querySelector('.readiness-dot');
+  // 2026-08-31: CI's headless Chrome (Linux) reports `matchMedia('(hover: none)')` as
+  // matched by default - no real pointer device in that container - while a local headless
+  // Chrome (Windows) reports the opposite, so this test passed locally and failed on every
+  // push (5 in a row) until caught here. isTouchOnly() is stubbed explicitly in both tests
+  // below so the assertion no longer depends on what the CI/local environment's own ambient
+  // hover capability happens to be - see onDotClick()'s own doc comment for why the dot's
+  // href needs to differ by touch capability at all.
+  it('links to Mission on a non-touch device, where every tracked signal is resolved', () => {
+    // A fresh, not-yet-checked fixture - the shared beforeEach above already ran
+    // detectChanges() once against the real (unstubbed) isTouchOnly(), so spying afterwards
+    // and re-checking would trip NG0100 (ExpressionChangedAfterItHasBeenCheckedError) the
+    // moment the stub disagrees with whatever that first check already rendered.
+    const freshFixture = TestBed.createComponent(MissionReadinessComponent);
+    spyOn(freshFixture.componentInstance, 'isTouchOnly').and.returnValue(false);
+    freshFixture.detectChanges();
+
+    const dot: HTMLAnchorElement = freshFixture.nativeElement.querySelector('.readiness-dot');
     expect(dot.getAttribute('href')).toBe('/mission');
+  });
+
+  it('renders an inert (non-navigating) dot on a touch-only device, and emits dotActivated on click instead', () => {
+    const freshFixture = TestBed.createComponent(MissionReadinessComponent);
+    const freshComponent = freshFixture.componentInstance;
+    spyOn(freshComponent, 'isTouchOnly').and.returnValue(true);
+    freshFixture.detectChanges();
+
+    const dot: HTMLAnchorElement = freshFixture.nativeElement.querySelector('.readiness-dot');
+    expect(dot.getAttribute('href')).toBeNull();
+
+    const spy = jasmine.createSpy('dotActivated');
+    freshComponent.dotActivated.subscribe(spy);
+    dot.click();
+    expect(spy).toHaveBeenCalled();
   });
 
   // F29-21's row-links-to-specific-section test moved to header.component.spec.ts
