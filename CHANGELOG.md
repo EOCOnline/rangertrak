@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.90.0](https://github.com/EOCOnline/rangertrak/compare/v0.89.3...v0.90.0) (2026-08-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **radio-log:** rename FieldReport*/field-report* to RadioLog*/radio-log*, including persisted keys
+
+### Features
+
+* **command-post:** E-87 Stage 1 - serve the live comms log to nearby devices ([21ff76c](https://github.com/EOCOnline/rangertrak/commit/21ff76c615dee12fd6615b1b875458b0becf15fd))
+* **map:** let a scribe load their own .pmtiles file for MapLibre offline coverage ([3fd4eda](https://github.com/EOCOnline/rangertrak/commit/3fd4edadca845c23942b0ef17877acac4600efcc))
+* **prep:** finish E-109 v1 - Locations in the payload, stale-photo clearing, roster warnings ([6d755e2](https://github.com/EOCOnline/rangertrak/commit/6d755e230d55a37ed01b87ca93e2c573c21769d5))
+* **prep:** Mission Zip v1 - package roster, photos, and settings into one file ([97372e5](https://github.com/EOCOnline/rangertrak/commit/97372e57ad675815911ab7aa48a8c01e5332ac14))
+* **radio-log:** generate and print an ICS-309 comms log; collapse the danger zone ([1fccc6d](https://github.com/EOCOnline/rangertrak/commit/1fccc6d6478fcd4e1b02597111bc400fd3815a86))
+* **rangers:** add a "Last Contact" column, link to the new Mission Zip page ([3bfd702](https://github.com/EOCOnline/rangertrak/commit/3bfd702da7e822ae85309d0c655ac4750cf08f80))
+
+
+### Bug Fixes
+
+* **entry:** stop a dead handler from logging a false ERROR on every report ([a993789](https://github.com/EOCOnline/rangertrak/commit/a99378912d41096c9380f1f47eda861d36c9174f))
+* **entry:** stop an MDC floating-label's clipped text from widening the phone layout viewport ([279fa39](https://github.com/EOCOnline/rangertrak/commit/279fa39aa16907a7e9e675d4c5668dbf30dd50bb))
+* **map:** E-11 - draw the evidence/clue marker on the MapLibre engine too ([fa7a85e](https://github.com/EOCOnline/rangertrak/commit/fa7a85e98519b68d6299e3087927dfe2eef73d9b))
+* **map:** relabel the stale "Field Report panel" toggle text to match the Radio Log rename ([3731e3a](https://github.com/EOCOnline/rangertrak/commit/3731e3ac4e11bceef4160688b8ce36577b759320))
+* **mission:** dark-mode status-row text and log noise in the Field Report Statuses grid ([291617b](https://github.com/EOCOnline/rangertrak/commit/291617b68ae82ce2f2cd898f0663ef14ecf1203d)), closes [#111111](https://github.com/EOCOnline/rangertrak/issues/111111) [#111111](https://github.com/EOCOnline/rangertrak/issues/111111)
+* **rangers:** recognize a Mission Zip handed to Import roster, point at /prep ([e69b828](https://github.com/EOCOnline/rangertrak/commit/e69b82844124312bf7c204812b4a25849bd7c209)), closes [#6](https://github.com/EOCOnline/rangertrak/issues/6)
+
+
+* **radio-log:** rename FieldReport*/field-report* to RadioLog*/radio-log*, including persisted keys ([d8f2e2d](https://github.com/EOCOnline/rangertrak/commit/d8f2e2d3687e18a69d4b22dd4420ae89631e4878))
+
 ### [0.89.3](https://github.com/EOCOnline/rangertrak/compare/v0.89.2...v0.89.3) (2026-08-31)
 
 
