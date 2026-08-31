@@ -7,6 +7,7 @@ import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransfor
 
 import { AgGridAngular } from 'ag-grid-angular';
 import { PageComponent } from '../shared/page/page.component';
+import { ExpandableSectionComponent } from '../shared/expandable-section/expandable-section.component';
 import { MATERIAL_IMPORTS } from '../material-imports';
 
 import { Utility } from '../shared'
@@ -16,6 +17,7 @@ import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 // MapLibre style helpers, and this route is already its own lazy chunk (loadComponent in
 // app.routes.ts); going through the barrel would drag MapLibre into THIS chunk for no reason.
 import { rangerColorFor } from '../shared/mapping/ranger-icon'
+import { buildIcs309Log, Ics309Log } from '../shared/export/ics309-log'
 import {
   FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
   RangerService, MissionService, MissionType, statusColorValue, statusInkValue
@@ -36,6 +38,7 @@ export class myUnusedPipe implements PipeTransform {
     CommonModule,
     AgGridAngular,
     PageComponent,
+    ExpandableSectionComponent,
     ...MATERIAL_IMPORTS
   ],
   templateUrl: './field-reports.component.html',
@@ -97,6 +100,19 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     { value: 'tab', label: 'tab' },
     { value: '|', label: 'bar (|)' },
   ]
+
+  // E-31/E-41 phase 3, piece 3 (2026-08-31): "Print 309" scope picker, exactly the three
+  // options the roadmap's own scoping settled on ("all those since the last print, or ???" -
+  // recommended and adopted: filtered/visible, selected, or since the last print).
+  public printScope = signal<'visible' | 'selected' | 'sincePrint'>('visible')
+  readonly printScopeOptions: { value: 'visible' | 'selected' | 'sincePrint'; label: string }[] = [
+    { value: 'visible', label: 'Filtered & sorted rows shown now' },
+    { value: 'selected', label: 'Selected rows' },
+    { value: 'sincePrint', label: 'Since the last print' },
+  ]
+  // Read by the print-only block in the template (field-reports.component.html) - null
+  // until "Print 309 Log" is clicked, so nothing renders under `@media print` before then.
+  public ics309Log = signal<Ics309Log | null>(null)
   // NOT initialized here with `= this.buildColumnDefs('ID')` the way rangers.component.ts's
   // own columnDefs field is - that only works there because its cellRenderer fields are
   // declared BEFORE columnDefs (class field initializers run top-to-bottom at construction
@@ -600,6 +616,89 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     this.gridApi.exportDataAsExcel({
       exportedRows: this.allRows() ? 'all' : 'filteredAndSorted',
     })
+  }
+
+  /**
+   * The generated ICS-309 log renderer, piece 2/4 of the E-31/E-41 export plan
+   * (`buildIcs309Log()`, shared/export/ics309-log.ts - shipped 0.57.0, never wired to any UI
+   * until now). One print-CSS layout serves both "print to PDF" and "print to a physical
+   * printer" - a PDF is just what a browser's print dialog produces against a virtual PDF
+   * printer, so this needs no second code path (unlike the 213, which fills a real PDF
+   * template - the 309 has no usable fillable template to fill, per that module's own doc
+   * comment).
+   *
+   * `preparedBy` is left blank, same principle `fillIcs213Pdf()`'s own doc comment already
+   * states for its Reply block: this app has no "who is generating this specific log
+   * printout" concept anywhere yet (`ics309-log.ts`'s own header comment says as much), and
+   * inventing a value would be worse than leaving it blank for the recipient to hand-fill.
+   */
+  onBtnPrint309() {
+    const reports = this.reportsForPrintScope()
+    if (!reports.length) {
+      alert(this.printScope() === 'sincePrint' && !this.settings?.lastPrintedAt
+        ? 'No reports to print - nothing has been filed yet.'
+        : 'No reports match that scope - nothing to print.')
+      return
+    }
+
+    const log = buildIcs309Log(reports, {
+      mission: this.settings.mission,
+      opPeriod: this.settings.opPeriod,
+      opPeriodStart: this.settings.opPeriodStart,
+      opPeriodEnd: this.settings.opPeriodEnd,
+    })
+    this.ics309Log.set(log)
+    this.log.info(`Printing ICS-309 log: ${reports.length} row(s), scope "${this.printScope()}".`, this.id)
+
+    // A tick to let the print-only block (bound to the signal just set) actually render
+    // before the browser's print dialog captures the page - `window.print()` right after a
+    // signal write isn't guaranteed to see the updated DOM. Same reasoning as elsewhere in
+    // this app that defers a native browser action by one tick after a state change.
+    setTimeout(() => {
+      window.print()
+      // First print of THIS batch only marks the log, same "first print only" precedent
+      // messages.component.ts's printAsIcs213() already established for printedAt - a
+      // reprint of the same or an overlapping scope shouldn't keep pushing the "since last
+      // print" boundary forward past reports this print run already covered.
+      this.missionService.updateMission({ ...this.settings, lastPrintedAt: new Date() })
+    }, 0)
+  }
+
+  /** The reports for whichever scope is currently picked - see printScopeOptions above. */
+  private reportsForPrintScope(): FieldReportType[] {
+    const scope = this.printScope()
+
+    if (scope === 'sincePrint') {
+      const since = this.settings?.lastPrintedAt ? new Date(this.settings.lastPrintedAt).getTime() : 0
+      return this.fieldReportArray().filter(r => new Date(r.date).getTime() > since)
+    }
+
+    // 'visible' and 'selected' both read through the grid, which doesn't exist on a phone
+    // (Sprint F: "the grid is never constructed on a phone, not just hidden") - the print
+    // row itself is gated behind `@if (!isPhone())` in the template for the same reason, so
+    // reaching here on a phone would be a template bug, not a real case to design around.
+    if (!this.gridApi) {
+      this.log.warn(`reportsForPrintScope(): no gridApi for scope "${scope}"; printing every report instead.`, this.id)
+      return this.fieldReportArray()
+    }
+
+    if (scope === 'selected') {
+      return this.gridApi.getSelectedRows()
+    }
+
+    const rows: FieldReportType[] = []
+    this.gridApi.forEachNodeAfterFilterAndSort((node: { data: FieldReportType }) => rows.push(node.data))
+    return rows
+  }
+
+  /** 24-hour clock throughout this app (see report-time.ts) - not the locale-default DatePipe. */
+  formatLogTime(date: Date | string): string {
+    return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+  }
+
+  formatLogDateTime(date: Date | string): string {
+    const d = new Date(date)
+    return `${d.toLocaleDateString()} ${this.formatLogTime(d)}`
   }
 
   onBtnClearFieldReports() {

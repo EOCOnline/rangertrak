@@ -82,15 +82,6 @@
   background   : color-mix(in srgb, var(--rt-readiness-red) 8%, var(--rt-surface));
 }
 
-.rt-danger-zone__heading {
-  @include type.type-title;
-  display    : flex;
-  align-items: center;
-  gap        : 0.5em;
-  margin     : 0 0 0.25em;
-  color      : var(--rt-readiness-red);
-}
-
 .rt-danger-zone__note {
   @include type.type-body-sm;
   margin: 0 0 1em;

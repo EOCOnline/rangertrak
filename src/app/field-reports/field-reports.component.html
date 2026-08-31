@@ -68,6 +68,29 @@
           </button>
         </div>
       </div>
+
+      <!-- E-31/E-41 phase 3, piece 3 (2026-08-31): "Print 309" - a printable ICS-309 comms
+           log, scoped to whichever rows the picker names. Own row, not folded into the CSV
+           bar above: this produces a formal paper/PDF record, not a spreadsheet, and the
+           two shouldn't be visually conflated. -->
+      <div class="rt-action-bar">
+        <span class="rt-action-bar__status">Print ICS-309 log</span>
+        <div class="rt-action-bar__buttons">
+          <mat-form-field class="reports__control reports__control--print-scope">
+            <mat-label>Scope</mat-label>
+            <mat-select [value]="printScope()" (selectionChange)="printScope.set($event.value)">
+              @for (opt of printScopeOptions; track opt.value) {
+                <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <button matButton="filled" type="button" (click)="onBtnPrint309()">
+            <mat-icon>print</mat-icon>
+            Print 309 Log
+          </button>
+        </div>
+      </div>
     }
 
     @if (isPhone()) {
@@ -110,27 +133,73 @@
          summary="Advanced"> styled identically to the "Tips" block that used to sit right
          above it - so an unrecoverable wipe of every field report looked exactly like
          reading material. Fenced now, same `.rt-danger-zone` treatment Mission's own
-         destructive controls got. -->
-    <div class="rt-danger-zone">
-      <h2 class="rt-danger-zone__heading">
+         destructive controls got.
+         F29-18 (2026-08-30): collapsed behind ExpandableSectionComponent so a stray click
+         can't land on a destructive button, same treatment as Rangers' and Mission's own
+         danger zones - see that component's own doc comment for why this is a deliberate,
+         named exception to the 2026-08-25 "no collapsible sections" removal. -->
+    <rangertrak-expandable-section class="rt-danger-zone-trigger">
+      <span rtSummary class="rt-danger-zone__summary">
         <mat-icon aria-hidden="true">warning</mat-icon>
         Danger zone
-      </h2>
-      <p class="rt-danger-zone__note">
-        Clearing reports is how you start a fresh operational period. It cannot be undone &mdash;
-        export first from Mission Setup if you need to keep this mission.
-      </p>
-      <div class="rt-danger-zone__actions">
-        <button matButton="outlined" type="button" class="reports__danger-button"
-          (click)="onBtnClearFieldReports()">
-          Delete all field reports
-        </button>
+      </span>
+      <div class="rt-danger-zone">
+        <p class="rt-danger-zone__note">
+          Clearing reports is how you start a fresh operational period. It cannot be undone &mdash;
+          export first from Mission Setup if you need to keep this mission.
+        </p>
+        <div class="rt-danger-zone__actions">
+          <button matButton="outlined" type="button" class="reports__danger-button"
+            (click)="onBtnClearFieldReports()">
+            Delete all field reports
+          </button>
+        </div>
       </div>
-    </div>
+    </rangertrak-expandable-section>
   </div>
 
 
   <br />
 
+  <!-- E-31/E-41 phase 3, piece 3: the printed ICS-309 log itself. Hidden on screen
+       (field-reports.component.scss), shown only under `@media print`, in place of #reportsgrid
+       (also hidden there) - a scribe printing the comms log wants the log, not a paper copy of
+       the interactive grid chrome. Populated by onBtnPrint309() just before window.print(). -->
+  @if (ics309Log(); as log) {
+    <div class="ics309-print">
+      <h1>ICS-309 Communications Log</h1>
+      @if (log.header.incidentName) {
+        <p>{{ log.header.incidentName }}</p>
+      }
+      @if (log.header.operationalPeriod) {
+        <p>Operational Period: {{ log.header.operationalPeriod }}</p>
+      }
+      <p>Prepared: {{ formatLogDateTime(log.header.datePrepared) }}
+        @if (log.header.preparedBy) { by {{ log.header.preparedBy }} }
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>From</th>
+            <th>Source</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of log.rows; track $index) {
+            <tr>
+              <td>{{ formatLogTime(row.time) }}</td>
+              <td>{{ row.from }}</td>
+              <td>{{ row.source }}</td>
+              <td>{{ row.message }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4">No reports in this range.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 
 </rangertrak-page>

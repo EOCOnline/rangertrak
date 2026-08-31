@@ -79,6 +79,61 @@
   width: 11rem;
 }
 
+.reports__control--print-scope {
+  width: 15rem;
+}
+
+// E-31/E-41 phase 3, piece 3 (2026-08-31): the printable ICS-309 log itself - invisible on
+// screen, and the only thing shown on paper. `#reportsgrid` (grid + action bars + danger
+// zone) is the reverse: normal on screen, hidden under print - printing the interactive grid
+// chrome (filters, pagination, a Delete-all button) is not what a "print the comms log" ask
+// means. Same technique the Map page's own `.map-print-header` uses (display:none, flipped
+// under @media print), just inverted which side is which since this print output REPLACES
+// the page rather than annotating it.
+.ics309-print {
+  display: none;
+}
+
+@media print {
+  #reportsgrid {
+    display: none;
+  }
+
+  .ics309-print {
+    display: block;
+
+    h1 {
+      margin   : 0 0 0.25rem;
+      font-size: 1.4rem;
+    }
+
+    p {
+      margin: 0.15rem 0;
+      color : #000; // fixed black, not an --rt-ink token: light-dark() has no meaning on
+                     // paper, same reasoning map-page.component.scss's own print header uses.
+    }
+
+    table {
+      width          : 100%;
+      margin-top     : 0.5rem;
+      border-collapse: collapse;
+      font-size      : 0.85rem;
+    }
+
+    th,
+    td {
+      border : 1px solid #000;
+      padding: 0.25rem 0.4rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eee;
+    }
+  }
+}
+
 // The selection count's own trailing note - secondary to the number itself, and only
 // rendered when something is actually selected.
 .reports__selected-note {
@@ -91,6 +146,26 @@
   --mat-button-outlined-label-text-color: var(--rt-readiness-red);
   --mat-button-outlined-outline-color   : var(--rt-readiness-red);
   color                                 : var(--rt-readiness-red);
+}
+
+// F29-18 (2026-08-30): the danger zone now opens from a collapsed ExpandableSectionComponent
+// instead of sitting permanently visible - this styles its (projected) summary to read as a
+// warning the same way the old always-visible `.rt-danger-zone__heading` did. Same treatment
+// as Rangers' own danger zone.
+.rt-danger-zone__summary {
+  display    : flex;
+  align-items: center;
+  gap        : 0.5em;
+  color      : var(--rt-readiness-red);
+  font-weight: bold;
+}
+
+// The red-tinted box itself still applies once expanded - only its own heading moved out.
+.rt-danger-zone-trigger .rt-danger-zone {
+  margin-top: 0;
+  border    : none;
+  background: none;
+  padding   : 0;
 }
 
 .cell-fail {

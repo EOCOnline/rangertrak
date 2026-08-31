@@ -95,4 +95,12 @@ export type MissionType = {
   // reasoning as recipientOptions213/idFieldLabel above - no MISSION_SCHEMA_VERSION bump
   // needed, backfillMissingFields supplies DEFAULT_LOCATION_TYPES to any returning user.
   locationTypes: LocationCategoryType[],
+
+  // E-31/E-41 phase 3, piece 3 (2026-08-31): backs the Radio Log page's "since the last
+  // print" scope option for printing an ICS-309 log (see `shared/export/ics309-log.ts`).
+  // Genuinely optional, no default - `undefined` means "never printed on this device," a
+  // legitimate and common state (a fresh mission, or one never printed from), not something
+  // `backfillMissingFields` should manufacture a value for. Same "truly optional, no
+  // migration needed" treatment `FieldReportType.printedAt`/`revisedAt` already use.
+  lastPrintedAt?: Date,
 }
