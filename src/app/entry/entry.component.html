@@ -208,7 +208,7 @@
         <legend class="enter__field-label">Status</legend>
         <mat-chip-listbox class="enter__Status" formControlName="status" aria-label="Status"
           [tabIndex]="statusTabIndex">
-          <mat-chip-option *ngFor="let stat of settings.fieldReportStatuses" [value]="stat.status"
+          <mat-chip-option *ngFor="let stat of settings.radioLogStatuses" [value]="stat.status"
             [class.enter__status-selected]="entryControlsForm.value.status === stat.status"
             [style.--rt-status-current]="statusColor(stat.color)">
             <span class="rt-status-chip__dot" [style.background]="statusColor(stat.color)" aria-hidden="true"></span>
@@ -267,7 +267,7 @@
       <!-- E-41 phase 1: "the 213 stays opt-in per entry" - data collection only, no
            export/reporting logic yet (that's phases 2-3). Asking only what the maintainer
            named as the 213's initial-version requirement, not a full ICS-213 form - see the
-           field's own doc comment in field-report.interface.ts for the "not confirmed
+           field's own doc comment in radio-log-entry.interface.ts for the "not confirmed
            against the real form" caveat this carries forward. -->
       <div class="enter__213">
         <!-- Material-M3 pass: manual WritableSignal binding, not [formField] - same

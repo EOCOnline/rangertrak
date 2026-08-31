@@ -1,4 +1,4 @@
-import { FieldReportStatusType, LocationCategoryType, statusColorValue } from '../services'
+import { RadioLogStatusType, LocationCategoryType, statusColorValue } from '../services'
 
 /**
  * Resolves a field report's configured status color for use as a marker "shadow" (a
@@ -8,24 +8,24 @@ import { FieldReportStatusType, LocationCategoryType, statusColorValue } from '.
  * halo and the Mission page's own status color swatch are always the same color, never a
  * second palette to keep in sync.
  */
-export function fieldReportStatusColor(
+export function radioLogStatusColor(
   status: string,
-  fieldReportStatuses: FieldReportStatusType[]
+  radioLogStatuses: RadioLogStatusType[]
 ): string | undefined {
-  const entry = fieldReportStatuses.find(s => s.status === status)
+  const entry = radioLogStatuses.find(s => s.status === status)
   return entry ? statusColorValue(entry.color) : undefined
 }
 
 /**
  * ADR D-49: resolves a Location's configured category color against the mission's own
- * `locationTypes` list - same indirection as fieldReportStatusColor() above, for the same
+ * `locationTypes` list - same indirection as radioLogStatusColor() above, for the same
  * reason (a mission can rename/recolor "Command Post" without this lookup changing). Unlike
  * that function, `LocationCategoryType.color` is always a literal hex (mission-migration.ts's
  * own comment on DEFAULT_LOCATION_TYPES explains why it deliberately skips the
  * `--rt-status-*` semantic-token indirection `statusColorValue()` resolves) - so no
  * `statusColorValue()` call is needed here, and the fallback is a neutral grey for a
  * category name the mission's list no longer has (renamed/deleted after the location was
- * placed), same "never silently invisible" reasoning as fieldReportStatusColor's callers.
+ * placed), same "never silently invisible" reasoning as radioLogStatusColor's callers.
  */
 export function locationCategoryColor(
   type: string,

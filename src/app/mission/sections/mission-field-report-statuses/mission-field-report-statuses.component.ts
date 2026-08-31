@@ -9,7 +9,7 @@ import {
 import { ensureAgGridRegistered } from '../../../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../../../shared/ag-grid-theme'
 import {
-  FieldReportService, FieldReportStatusType, LogService, statusColorMeetsAA, statusColorValue,
+  RadioLogService, RadioLogStatusType, LogService, statusColorMeetsAA, statusColorValue,
   statusInkValue
 } from '../../../shared/services/'
 import { ColorEditor } from '../../color-editor.component'
@@ -18,15 +18,15 @@ import { ColorEditor } from '../../color-editor.component'
  * The Field Report status/color ag-Grid editor. Sprint C split out of the 429-line
  * mission.component template - see mission.component.ts for the rest.
  *
- * `rowData` is the same array reference the parent's `settings.fieldReportStatuses` (and
- * the `fieldReportStatuses` form control) point at - grid edits mutate it in place, exactly
+ * `rowData` is the same array reference the parent's `settings.radioLogStatuses` (and
+ * the `radioLogStatuses` form control) point at - grid edits mutate it in place, exactly
  * as the monolithic component did. `ngOnChanges` re-syncs the local reference when the
  * parent reassigns it wholesale (import / reset), mirroring what the parent's settings
  * subscription already does.
  *
  * E-73: the Status column used to be always-editable next to a static warning paragraph
  * ("don't edit status names if they've already been used") - a rule stated in prose, never
- * enforced. `isStatusInUse()` checks `FieldReportService`'s current in-memory reports
+ * enforced. `isStatusInUse()` checks `RadioLogService`'s current in-memory reports
  * directly rather than tracking separate "used" state, since `FieldReportType.status` is
  * already the exact status name string - no new persistence needed. Read fresh on every
  * edit attempt (AG Grid calls `editable` per cell, right before it would start editing),
@@ -43,7 +43,7 @@ import { ColorEditor } from '../../color-editor.component'
 export class MissionFieldReportStatusesComponent implements OnChanges {
   private id = 'Mission Field Report Statuses Component'
 
-  @Input({ required: true }) rowData: FieldReportStatusType[] = []
+  @Input({ required: true }) rowData: RadioLogStatusType[] = []
 
   private gridApi: any
   private gridColumnApi: any
@@ -68,7 +68,7 @@ export class MissionFieldReportStatusesComponent implements OnChanges {
   columnDefs = [
     {
       headerName: "Status", field: "status", flex: 50,
-      editable: (params: { data: FieldReportStatusType }) => !this.isStatusInUse(params.data.status),
+      editable: (params: { data: RadioLogStatusType }) => !this.isStatusInUse(params.data.status),
       cellStyle: (params: { value: string; }) => {
         // Same fill+ink resolution as the Field Reports grid - see field-reports.component.ts.
         const stat = this.rowData.find(el => el.status == params.value)
@@ -118,13 +118,13 @@ export class MissionFieldReportStatusesComponent implements OnChanges {
     }
   ]
 
-  constructor(private log: LogService, private fieldReportService: FieldReportService) {
+  constructor(private log: LogService, private radioLogService: RadioLogService) {
     ensureAgGridRegistered()
   }
 
   /** E-73: true if any field report in the current mission carries this exact status name. */
   isStatusInUse(status: string): boolean {
-    return this.fieldReportService.getCurrentFieldReports().fieldReportArray
+    return this.radioLogService.getCurrentRadioLog().logEntries
       .some(report => report.status === status)
   }
 

@@ -11,7 +11,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatNativeDateModule } from '@angular/material/core'
 
 import {
-  FieldReportService, FieldReportStatusType, LocationType, LogService, RangerService, RangerType,
+  RadioLogService, RadioLogStatusType, LocationType, LogService, RangerService, RangerType,
   MissionService, MissionType
 } from '../services/'
 

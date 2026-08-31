@@ -1,4 +1,4 @@
-import { FieldReportType } from '../services/field-report.interface'
+import { RadioLogEntryType } from '../services/radio-log-entry.interface'
 
 /**
  * Shapes field reports into an ICS-309 (Communications Log) structure - the DATA, not a
@@ -33,7 +33,7 @@ export interface Ics309LogHeader {
   datePrepared: Date
   // F29-48 (2026-08-29, D-44): the real ICS-309 form's "Prepared by: Name / Position /
   // Signature" footer - whoever is generating THIS log printout, not any one report's own
-  // operator (FieldReportType.operator, a separate per-row concept this module doesn't
+  // operator (RadioLogEntryType.operator, a separate per-row concept this module doesn't
   // surface - see the roadmap for why). Optional/blank same as datePrepared has no "unknown"
   // sentinel: this module has no UI wired to it yet (E-31/E-41 phase 3 status), so there is
   // nowhere for a caller to source this from today beyond passing it through.
@@ -69,7 +69,7 @@ export interface Ics309MissionInfo {
  * and formats whatever it's handed, it does not itself decide which reports belong in a log.
  */
 export function buildIcs309Log(
-  reports: readonly FieldReportType[],
+  reports: readonly RadioLogEntryType[],
   mission: Ics309MissionInfo,
   now: Date = new Date(),
   preparedBy: string = '',
@@ -97,12 +97,12 @@ export function buildIcs309Log(
 /**
  * `[Status] notes` - status is always shown, not just when it differs from some hardcoded
  * "Normal" default. Status text is a fully operator-configurable string
- * (`MissionType.fieldReportStatuses`), so special-casing a literal `'Normal'` here would be
+ * (`MissionType.radioLogStatuses`), so special-casing a literal `'Normal'` here would be
  * exactly the naive-string-match trap this project has already been bitten by once
  * ([[settings-marker-field-trap]]) - it would silently stop bracketing the moment someone
  * renamed their default status.
  */
-function formatMessage(report: FieldReportType): string {
+function formatMessage(report: RadioLogEntryType): string {
   const status = report.status?.trim()
   const notes = report.notes?.trim() ?? ''
   return status ? `[${status}] ${notes}`.trim() : notes

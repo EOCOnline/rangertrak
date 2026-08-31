@@ -14,7 +14,7 @@ import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/sl
 
 import { buildPmtilesStyle, DEFAULT_PMTILES_URL, registerPmtilesProtocol } from '../shared/mapping/map-style'
 import {
-  fieldReportStatusColor, locationCategoryColor, resolveCssColorForCanvas
+  radioLogStatusColor, locationCategoryColor, resolveCssColorForCanvas
 } from '../shared/mapping/report-marker-status'
 // F29-7/8 (2026-08-29): rangerColorFor's own file imports Leaflet (for rangerIconFor's return
 // type - a real, if type-only-adjacent, module import), which E-64 otherwise keeps out of
@@ -31,7 +31,7 @@ import { rangerColorFor } from '../shared/mapping/ranger-icon'
 // the Leaflet-typed locationIconFor(), so importing it here pulls that module in regardless.
 import { locationMarkerSvg } from '../shared/mapping/location-icon'
 import {
-  FieldReportsType, FieldReportService, FieldReportType, LogService, MissionLocationService,
+  RadioLogType, RadioLogService, RadioLogEntryType, LogService, MissionLocationService,
   MissionLocationType, MissionService, MissionType
 } from '../shared/services'
 import { Utility, formatReportTime } from '../shared'
@@ -69,11 +69,11 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   private map!: MaplibreMap
   private overviewMap: MaplibreMap | undefined
   private settings!: MissionType
-  private fieldReports: FieldReportsType | undefined
+  private radioLog: RadioLogType | undefined
   private showingSelectedOnly = false
 
   private missionSubscription!: Subscription
-  private fieldReportsSubscription!: Subscription
+  private radioLogSubscription!: Subscription
 
   // Mutated from MapLibre's own event listeners / an RxJS subscribe callback, not
   // Angular template bindings - this app is zoneless, so a plain field written there
@@ -117,7 +117,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private missionService: MissionService,
-    private fieldReportService: FieldReportService,
+    private radioLogService: RadioLogService,
     private locationService: MissionLocationService,
     private dialog: MatDialog,
     private log: LogService,
@@ -142,9 +142,9 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       error: (e) => this.log.error(`MapLibreComponent locations subscription error: ${e}`, 'MapLibreComponent')
     })
 
-    this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
+    this.radioLogSubscription = this.radioLogService.getRadioLogObserver().subscribe({
       next: (newReports) => {
-        this.fieldReports = newReports
+        this.radioLog = newReports
         this.numAllRows.set(newReports.numReport)
         this.refreshMarkers()
       },
@@ -153,8 +153,8 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.fieldReports = this.fieldReportService.getCurrentFieldReports()
-    this.numAllRows.set(this.fieldReports.numReport)
+    this.radioLog = this.radioLogService.getCurrentRadioLog()
+    this.numAllRows.set(this.radioLog.numReport)
     this.zoomDisplay.set(this.settings.maplibre.defZoom)
     this.mouseLatLng.set({ lat: this.settings.defLat, lng: this.settings.defLng })
   }
@@ -383,14 +383,14 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private buildGeoJson(): FeatureCollection<Point, { title: string, statusColor: string, rangerColor: string }> {
     const reportsToShow = this.showingSelectedOnly
-      ? this.fieldReportService.getSelectedFieldReports().fieldReportArray
-      : (this.fieldReports?.fieldReportArray ?? [])
+      ? this.radioLogService.getSelectedRadioLogEntries().logEntries
+      : (this.radioLog?.logEntries ?? [])
 
     return {
       type: 'FeatureCollection',
       features: reportsToShow
-        .filter((r: FieldReportType) => r.location?.lat && r.location?.lng)
-        .map((r: FieldReportType) => {
+        .filter((r: RadioLogEntryType) => r.location?.lat && r.location?.lng)
+        .map((r: RadioLogEntryType) => {
           // Raised live 2026-08-26: a status "shadow" ring around each point, same color
           // lookup as the Leaflet markers (report-marker-status.ts). MapLibre's paint
           // expressions run in its own WebGL renderer, not the DOM/CSSOM, so a semantic
@@ -399,7 +399,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
           // through unchanged either way. Falls back to a neutral grey (not the ring's own
           // default absence) so an unknown/blank status is visibly "unset," not silently
           // invisible in a paint expression that expects a string every time.
-          const rawColor = fieldReportStatusColor(r.status, this.settings.fieldReportStatuses)
+          const rawColor = radioLogStatusColor(r.status, this.settings.radioLogStatuses)
           return {
             type: 'Feature' as const,
             geometry: { type: 'Point' as const, coordinates: [r.location.lng, r.location.lat] },
@@ -425,18 +425,18 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private fitToBounds(): void {
-    if (!this.fieldReports || this.fieldReports.numReport === 0) {
+    if (!this.radioLog || this.radioLog.numReport === 0) {
       return
     }
-    const b = this.fieldReports.bounds
+    const b = this.radioLog.bounds
     // MapLibre wants [[west, south], [east, north]] as [lng, lat] pairs
     this.map.fitBounds([[b.west, b.south], [b.east, b.north]], { padding: 40 })
   }
 
-  onSwitchSelectedFieldReports(): void {
+  onSwitchSelectedRadioLog(): void {
     this.showingSelectedOnly = !this.showingSelectedOnly
     if (this.showingSelectedOnly) {
-      this.numSelectedRows.set(this.fieldReportService.getSelectedFieldReports().fieldReportArray.length)
+      this.numSelectedRows.set(this.radioLogService.getSelectedRadioLogEntries().logEntries.length)
     }
     this.refreshMarkers()
   }
@@ -543,7 +543,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.missionSubscription?.unsubscribe()
-    this.fieldReportsSubscription?.unsubscribe()
+    this.radioLogSubscription?.unsubscribe()
     this.locationsSubscription?.unsubscribe()
     this.locationMarkers.forEach(m => m.remove())
     this.overviewMap?.remove()

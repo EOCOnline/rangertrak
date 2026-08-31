@@ -2,7 +2,7 @@ export { BackupService, MissionExport, MISSION_EXPORT_SCHEMA_VERSION } from "./b
 export { RangerPhotoService } from "./ranger-photo.service"
 export { RangerService } from "./ranger.service"
 export { MissionLocationService } from "./mission-location.service"
-export { FieldReportService } from "./field-report.service"
+export { RadioLogService } from "./radio-log.service"
 export { LogService } from "./log.service"
 export { GlobalErrorHandler } from "./global-error-handler"
 export { MissionService } from "./mission.service"
@@ -17,16 +17,16 @@ export { SkinService, Skin, SKINS } from "./skin.service"
 export { WelcomePanelService } from "./welcome-panel.service"
 
 export {
-  FieldReportType, FieldReportsType, FieldReportStatusType, FieldReportSource,
-  FIELD_REPORT_SOURCES, BoundsType
-} from "./field-report.interface"
+  RadioLogEntryType, RadioLogType, RadioLogStatusType, RadioLogEntrySource,
+  RADIO_LOG_ENTRY_SOURCES, BoundsType
+} from "./radio-log-entry.interface"
 export { LocationType, undefinedAddressFlag, undefinedLocation } from "./location.interface"
 export { LogLevel, LogLevelNames, LogType, LogHeadings } from "./log.interface"
 export { RangerType, UnknownRanger } from "./ranger.interface"
 export { MissionType } from "./mission.interface"
 export { LocationCategoryType, MissionLocationType } from "./mission-location.interface"
 export {
-  MISSION_SCHEMA_VERSION, DEFAULT_FIELD_REPORT_STATUSES, DEFAULT_RECIPIENT_OPTIONS_213,
+  MISSION_SCHEMA_VERSION, DEFAULT_RADIO_LOG_STATUSES, DEFAULT_RECIPIENT_OPTIONS_213,
   DEFAULT_LOCATION_TYPES, migrateMission
 } from "./mission-migration"
 export {

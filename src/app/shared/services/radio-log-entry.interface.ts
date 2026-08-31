@@ -1,5 +1,14 @@
 import { LocationType } from './location.interface'
 
+// 2026-08-31: renamed from field-report.interface.ts / FieldReportType / FieldReportsType /
+// FieldReportStatusType / FieldReportSource / fieldReportArray, a naming holdover from before
+// the page itself was renamed Reports -> Radio Log (0.75.0's ICS-309/213 restructuring) -
+// "Field Report" had become an inconsistent second name for the same thing the rest of the
+// app calls a Radio Log entry. Includes the persisted-shape property name (`logEntries`,
+// below) and the localStorage key (`radio-log.service.ts`'s `storageLocalName`) this time,
+// not just type names - the app has no real users yet ([[no-real-users-yet-rename-freely]]),
+// so there is no stored data or exported mission file anywhere to orphan.
+
 // E-41 phase 1 (2026-08-26): was a dead, commented-out field (`// source: FieldReportSource`
 // below) until the maintainer confirmed it directly - "Yes, we should include a field
 // acknowledging source type." Every entry gathers this now, not just ones flagged for a 213.
@@ -14,13 +23,13 @@ import { LocationType } from './location.interface'
 // by reading that file before choosing this, not guessed.
 // F29-43 (2026-08-29): 'Phone' added - 'Voice' stays first (array order is UI order, and
 // radio-over-voice is the hot-path common case).
-export const FIELD_REPORT_SOURCES = ['Voice', 'Phone', 'Packet', 'APRS', 'Email'] as const
-export type FieldReportSource = typeof FIELD_REPORT_SOURCES[number]
+export const RADIO_LOG_ENTRY_SOURCES = ['Voice', 'Phone', 'Packet', 'APRS', 'Email'] as const
+export type RadioLogEntrySource = typeof RADIO_LOG_ENTRY_SOURCES[number]
 
 /**
  * A plain, serializable bounding box.
  *
- * Deliberately NOT a Leaflet `LatLngBounds`: FieldReportsType is round-tripped
+ * Deliberately NOT a Leaflet `LatLngBounds`: RadioLogType is round-tripped
  * through localStorage as JSON, and a class instance comes back as a bare object
  * with no methods, so every `.getEast()` on a reloaded value threw. Map engines
  * (Leaflet, MapLibre) each take their own bounds shape - convert at the point of
@@ -36,16 +45,16 @@ export type BoundsType = {
 /**
  * A packet of all (or selected/filtered) field data for the op period except Rangers or Settings
  */
-export type FieldReportsType = {
-  // Persisted-shape version, owned by field-report-migration.ts
-  // (FIELD_REPORT_SCHEMA_VERSION). Distinct from `version` below, which is the APP version
+export type RadioLogType = {
+  // Persisted-shape version, owned by radio-log-migration.ts
+  // (RADIO_LOG_SCHEMA_VERSION). Distinct from `version` below, which is the APP version
   // string stamped for information and never compared.
   //
-  // Optional during the migration and stamped by `migrateFieldReports()` on load - the same
+  // Optional during the migration and stamped by `migrateRadioLog()` on load - the same
   // additive approach RangerType.id uses, so nothing that constructs this type today has to
   // change in the same pass that introduces the seam.
   //
-  // WARNING before removing `version` below: the load path in field-report.service.ts tests
+  // WARNING before removing `version` below: the load path in radio-log.service.ts tests
   // validity with `indexOf("version") <= 0`, a naive SUBSTRING search over the raw JSON.
   // Dropping that literal string resets every returning user's reports to defaults - the same
   // trap as [[settings-marker-field-trap]]. `schemaVersion` happens to contain the substring,
@@ -58,7 +67,7 @@ export type FieldReportsType = {
   numReport: number,
   maxId: number,
   filter: string, // All reports or not? Guard to ensure a subset never gets writen to localstorage?
-  fieldReportArray: FieldReportType[]
+  logEntries: RadioLogEntryType[]
 }
 
 /**
@@ -71,7 +80,7 @@ export type FieldReportsType = {
  * other three) - "the 213 stays opt-in per entry... the scribe should be able to click a
  * 'Yes, generate an ICS-213' [button/flag] from this message." All optional rather than a
  * schema-version bump: existing stored reports simply lack them (`undefined`), which is a
- * safe, already-correct answer for a plain `JSON.parse()` (field-report.service.ts has no
+ * safe, already-correct answer for a plain `JSON.parse()` (radio-log.service.ts has no
  * migration path today, unlike MissionType) - nothing reads these fields yet, so there is
  * nothing for their absence to break. `message213`/`replyRequested213`/`recipients213` are
  * a best-effort answer to "whatever the 213's initial version requires" - now confirmed
@@ -86,9 +95,9 @@ export type FieldReportsType = {
  * collects free text today (the checkbox UI is E-103, not yet built); `mergedFormValue()`
  * splits the typed string into this array at the form/storage boundary.
  */
-export type FieldReportType = {
+export type RadioLogEntryType = {
   // NOTE the two different identifiers below, deliberately named apart:
-  //   `id`        - THIS REPORT's own sequential number (from FieldReportsType.maxId).
+  //   `id`        - THIS REPORT's own sequential number (from RadioLogType.maxId).
   //   `rangerUid` - WHO filed it: a foreign key into RangerType.uid (ADR D-42).
   // An earlier reading of D-42 would have called the second one `id` too, which would have
   // collided head-on with this pre-existing field.
@@ -117,7 +126,7 @@ export type FieldReportType = {
   date: Date,
   status: string,
   notes: string,
-  source?: FieldReportSource,
+  source?: RadioLogEntrySource,
   generates213?: boolean,
   replyRequested213?: boolean,
   message213?: string,
@@ -168,7 +177,7 @@ export type FieldReportType = {
  * Field Reports can be tagged with a status. These can have color & associated icons & can be edited by the user.
  * ? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
  */
-export type FieldReportStatusType = {
+export type RadioLogStatusType = {
   status: string,
   color: string,
   icon: string

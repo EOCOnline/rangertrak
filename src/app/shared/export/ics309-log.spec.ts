@@ -1,4 +1,4 @@
-import { FieldReportType } from '../services/field-report.interface'
+import { RadioLogEntryType } from '../services/radio-log-entry.interface'
 
 import { buildIcs309Log, Ics309MissionInfo } from './ics309-log'
 
@@ -10,7 +10,7 @@ describe('buildIcs309Log', () => {
     opPeriodEnd: new Date('2026-08-26T21:00:00'),
   }
 
-  const report = (over: Partial<FieldReportType>): FieldReportType => ({
+  const report = (over: Partial<RadioLogEntryType>): RadioLogEntryType => ({
     id: 0,
     callsign: 'ACS1',
     location: { lat: 0, lng: 0, address: '', derivedFromAddress: false },

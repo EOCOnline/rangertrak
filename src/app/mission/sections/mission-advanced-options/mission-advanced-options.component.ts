@@ -89,7 +89,7 @@ export class MissionAdvancedOptionsComponent {
       .then(payload => {
         const summary = `Mission "${payload.settings.mission || '(unnamed)'}" exported `
           + `${payload.exportedAt}, with ${payload.rangers.length} rangers and `
-          + `${payload.fieldReports.fieldReportArray.length} field reports.`
+          + `${payload.radioLog.logEntries.length} field reports.`
 
         if (!confirm(`Import this mission?\n\n${summary}\n\n`
           + `This REPLACES all current settings, rangers, and field reports on this device. `

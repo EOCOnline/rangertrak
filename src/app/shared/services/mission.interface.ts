@@ -1,4 +1,4 @@
-import { FieldReportStatusType } from './field-report.interface'
+import { RadioLogStatusType } from './radio-log-entry.interface'
 import { LocationCategoryType } from './mission-location.interface'
 
 /**
@@ -66,8 +66,8 @@ export type MissionType = {
   },
 
   imageDirectory: string,
-  defFieldReportStatus: number,
-  fieldReportStatuses: FieldReportStatusType[],
+  defRadioLogStatus: number,
+  radioLogStatuses: RadioLogStatusType[],
   // fieldReportKeywords: string[],  // Future...could also just search notes field
 
   // E-103 (2026-08-26 scoping): per-mission definable checklist of routine ICS-213
@@ -90,8 +90,8 @@ export type MissionType = {
   idFieldLabel: string,
 
   // ADR D-49 (2026-08-30): mission-editable categories for the Locations feature (Command
-  // Post, Staging Area, Ranger First Aid, ...) - same indirection fieldReportStatuses already
-  // uses for FieldReportType.status, not a second mechanism. Additive-only field, same
+  // Post, Staging Area, Ranger First Aid, ...) - same indirection radioLogStatuses already
+  // uses for RadioLogEntryType.status, not a second mechanism. Additive-only field, same
   // reasoning as recipientOptions213/idFieldLabel above - no MISSION_SCHEMA_VERSION bump
   // needed, backfillMissingFields supplies DEFAULT_LOCATION_TYPES to any returning user.
   locationTypes: LocationCategoryType[],
@@ -101,6 +101,6 @@ export type MissionType = {
   // Genuinely optional, no default - `undefined` means "never printed on this device," a
   // legitimate and common state (a fresh mission, or one never printed from), not something
   // `backfillMissingFields` should manufacture a value for. Same "truly optional, no
-  // migration needed" treatment `FieldReportType.printedAt`/`revisedAt` already use.
+  // migration needed" treatment `RadioLogEntryType.printedAt`/`revisedAt` already use.
   lastPrintedAt?: Date,
 }

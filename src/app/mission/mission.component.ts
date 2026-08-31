@@ -14,7 +14,7 @@ import { RouterLink } from '@angular/router'
 
 import { PageComponent } from '../shared/page/page.component'
 import {
-  FieldReportStatusType, LocationCategoryType, LogService, MissionReadinessService,
+  RadioLogStatusType, LocationCategoryType, LogService, MissionReadinessService,
   MISSION_SCHEMA_VERSION, MissionService, MissionType
 } from '../shared/services/'
 import { InstallUpdateComponent } from '../shared/install-update/install-update.component'
@@ -45,7 +45,7 @@ const blankMission: MissionType = {
   showDD: true, showDDM: true, showDMS: true, showMGRS: true, showUTM: true, showMaidenhead: true,
   maplibre: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
   leaflet: { defZoom: 15, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
-  imageDirectory: '', defFieldReportStatus: 0, fieldReportStatuses: [],
+  imageDirectory: '', defRadioLogStatus: 0, radioLogStatuses: [],
   recipientOptions213: [], idFieldLabel: '', locationTypes: [],
 }
 
@@ -128,10 +128,10 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
    * instead, next to the model reset that already happens there. Snapshotting it only in
    * ngOnInit meant that after Import Mission the grid still showed the *previous*
    * mission's statuses, and saving from that stale grid wrote them back over the imported
-   * ones. Same array reference as missionModel().fieldReportStatuses - grid mutations are
+   * ones. Same array reference as missionModel().radioLogStatuses - grid mutations are
    * visible on submit without any explicit sync.
    */
-  rowData = signal<FieldReportStatusType[]>([])
+  rowData = signal<RadioLogStatusType[]>([])
 
   /**
    * ADR D-49: same "re-seeded from the settings subscription, same array reference as
@@ -228,7 +228,7 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
    * after Cancel discarded the very edits it's supposed to be watching for. */
   private applyMissionToForm(newMission: MissionType): void {
     this.settingsForm().reset(newMission)
-    this.rowData.set(newMission.fieldReportStatuses)
+    this.rowData.set(newMission.radioLogStatuses)
     this.locationTypesRowData.set(newMission.locationTypes)
     this.recipientOptions213.set(newMission.recipientOptions213)
     this.opPeriodStart.set(newMission.opPeriodStart)

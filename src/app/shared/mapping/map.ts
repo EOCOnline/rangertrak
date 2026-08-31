@@ -13,7 +13,7 @@ import {
 } from '@angular/core'
 
 import {
-  FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LocationType,
+  RadioLogService, RadioLogStatusType, RadioLogType, RadioLogEntryType, LocationType,
   LogService, MissionService, MissionType
 } from '../services'
 
@@ -47,7 +47,7 @@ import { Map } from './map.interface'
  * Parameters that specify map:
  * - Leaflet or Google
  * - Overview Map : boolean
- * - Display fieldReports : boolean
+ * - Display radioLog : boolean
  * - Various Settings: Def_Lat/Lng/Zoom/etc.
  */
 @Component({ changeDetection: ChangeDetectionStrategy.Eager,
@@ -72,15 +72,15 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   public zoom = signal(10) // actual zoom level of main map
 
   protected displayReports = false // Guard for the following
-  protected fieldReportsSubscription!: Subscription
-  protected fieldReports: FieldReportsType | undefined
-  protected fieldReportArray: FieldReportType[] = []  // just the individual reports array portion of fieldReports
-  // The displayedFieldReportArray can either be all (fieldReports) or selectedReports!
-  protected displayedFieldReportArray: FieldReportType[] = []
+  protected radioLogSubscription!: Subscription
+  protected radioLog: RadioLogType | undefined
+  protected logEntries: RadioLogEntryType[] = []  // just the individual reports array portion of radioLog
+  // The displayedRadioLogEntries can either be all (radioLog) or selectedReports!
+  protected displayedRadioLogEntries: RadioLogEntryType[] = []
   // protected markers: clusters?
 
   protected hasSelectedReports = false // Guard for the following
-  protected selectedReports: FieldReportsType | undefined = undefined
+  protected selectedReports: RadioLogType | undefined = undefined
   // Which set the map is showing. Plain component state, deliberately: this used
   // to be read off an MDCSwitch instance built by hand from a querySelector, and
   // the switch's own click handler raced Angular's - so the map read the state
@@ -96,7 +96,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   //protected iconBase = "./../../../assets/icons/"
 
   constructor(protected missionService: MissionService,
-    protected fieldReportService: FieldReportService,
+    protected radioLogService: RadioLogService,
     protected httpClient: HttpClient,
     protected log: LogService,
     @Inject(DOCUMENT) protected document: Document) {
@@ -113,10 +113,10 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       complete: () => this.log.info('(Abstract) Settings Subscription complete', this.id)
     })
 
-    this.fieldReportsSubscription =
-      this.fieldReportService.getFieldReportsObserver().subscribe({
+    this.radioLogSubscription =
+      this.radioLogService.getRadioLogObserver().subscribe({
         next: (newReport) => {
-          this.gotNewFieldReports(newReport)
+          this.gotNewRadioLog(newReport)
         },
         error: (e) => this.log.error('(Abstract) Field Reports Subscription got:' + e, this.id),
         complete: () => this.log.info('(Abstract) Field Reports Subscription complete', this.id)
@@ -155,8 +155,8 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     this.center = { lat: this.settings ? this.settings.defLat : 0, lng: this.settings ? this.settings.defLng : 0 }
     this.mouseLatLng.set(this.center)
 
-    if (!this.fieldReports) { //! or displayedFieldReportArray
-      this.log.error(`(Abstract) initMainMap(): fieldReports not yet initialized while initializing abstract Map!`, this.id)
+    if (!this.radioLog) { //! or displayedRadioLogEntries
+      this.log.error(`(Abstract) initMainMap(): radioLog not yet initialized while initializing abstract Map!`, this.id)
       return
     }
   }
@@ -245,7 +245,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   // see also: https://tomik23.github.io/leaflet-examples/#10.matching-all-markers-to-the-map-view
 
   // this.map?.setCenter(latlng) // REVIEW: this and/or next line. (Bounds should be private though!)
-  //this.map?.fitBounds(this.fieldReportService.bounds.extend({ lat: this.settings.defLat, lng: this.settings.defLng })) // zooms to max!
+  //this.map?.fitBounds(this.radioLogService.bounds.extend({ lat: this.settings.defLat, lng: this.settings.defLng })) // zooms to max!
 
   //   this.map.setZoom(17) // no effect
   // }
@@ -279,46 +279,46 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    * which is why the Entry page's mini-map complained on every load. It touches
    * no DOM now; the template binds to numAllRows/numSelectedRows directly.
    */
-  updateFieldReports() {
-    this.log.excessive(`updateFieldReports()`, this.id)
+  updateRadioLog() {
+    this.log.excessive(`updateRadioLog()`, this.id)
 
-    this.numAllRows.set(this.fieldReports?.numReport ?? 0)
+    this.numAllRows.set(this.radioLog?.numReport ?? 0)
 
     if (!this.hasSelectedReports) {
       // Normal for maps without an all/selected control (e.g. the Entry mini-map).
       return
     }
 
-    this.selectedReports = this.fieldReportService.getSelectedFieldReports()
-    this.numSelectedRows.set(this.selectedReports?.fieldReportArray.length ?? 0)
+    this.selectedReports = this.radioLogService.getSelectedRadioLogEntries()
+    this.numSelectedRows.set(this.selectedReports?.logEntries.length ?? 0)
 
-    this.displayedFieldReportArray = this.showingSelectedOnly
-      ? (this.selectedReports?.fieldReportArray ?? [])
-      : (this.fieldReports?.fieldReportArray ?? [])
+    this.displayedRadioLogEntries = this.showingSelectedOnly
+      ? (this.selectedReports?.logEntries ?? [])
+      : (this.radioLog?.logEntries ?? [])
   }
 
 
 
   /*
   What gets displayed: alternates between all & selected rows, based on the switch
-  private override selectedReports: FieldReportsType | null = null
-  public override displayedFieldReportArray: FieldReportType[] = []
+  private override selectedReports: RadioLogType | null = null
+  public override displayedRadioLogEntries: RadioLogEntryType[] = []
   !this is just a subcomponent of the above: use the above if possible...  OH NO: this actually flipps back & forth between all & selected field reports, based on the switch...
   following doesn't need a subscription as user selections are auto-saved & available,
   if they switch to this page
   REVIEW: UNLESS the switch was already on "selected rows" and isn't reswitched!!!: so just check/reset in ngOnInit?!
   */
 
-  gotNewFieldReports(newReports: FieldReportsType) {
-    this.log.verbose(`(Abstract) gotNewFieldReports(): New collection of ${newReports.numReport} Field Reports observed.`, this.id)
+  gotNewRadioLog(newReports: RadioLogType) {
+    this.log.verbose(`(Abstract) gotNewRadioLog(): New collection of ${newReports.numReport} Field Reports observed.`, this.id)
 
     this.numAllRows.set(newReports.numReport)
-    this.fieldReports = newReports
-    this.fieldReportArray = newReports.fieldReportArray
-    console.assert(this.numAllRows() == this.fieldReportArray.length)
-    // Keeps displayedFieldReportArray and the row counts in step with the new
+    this.radioLog = newReports
+    this.logEntries = newReports.logEntries
+    console.assert(this.numAllRows() == this.logEntries.length)
+    // Keeps displayedRadioLogEntries and the row counts in step with the new
     // reports while honoring the current all/selected choice.
-    this.updateFieldReports()
+    this.updateRadioLog()
     if (this.map) {
       this.refreshMap()
     }
@@ -335,16 +335,16 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    * event, so the component owns the state and there is no second source of
    * truth to disagree with.
    */
-  onSwitchSelectedFieldReports() {
-    if (!this.fieldReports) {
-      this.log.error(`(Abstract) onSwitchSelectedFieldReports(): Field Reports not yet set`, this.id)
+  onSwitchSelectedRadioLog() {
+    if (!this.radioLog) {
+      this.log.error(`(Abstract) onSwitchSelectedRadioLog(): Field Reports not yet set`, this.id)
       return
     }
 
     this.showingSelectedOnly = !this.showingSelectedOnly
-    this.updateFieldReports()
+    this.updateRadioLog()
 
-    this.log.verbose(`(Abstract) onSwitchSelectedFieldReports(): displaying ${this.displayedFieldReportArray.length} ${this.showingSelectedOnly ? 'SELECTED' : 'ALL'} field reports`, this.id)
+    this.log.verbose(`(Abstract) onSwitchSelectedRadioLog(): displaying ${this.displayedRadioLogEntries.length} ${this.showingSelectedOnly ? 'SELECTED' : 'ALL'} field reports`, this.id)
 
     this.refreshMap()
   }
@@ -363,12 +363,12 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       this.log.error(`(Abstract) displayMarkers() BUT displayReports is false!`, this.id)
     }
 
-    if (!this.displayedFieldReportArray) {
+    if (!this.displayedRadioLogEntries) {
       this.log.error(`(Abstract) displayMarkers() BUT No Field Reports received yet!`, this.id)
       return
     }
 
-    //! this.addMarker(this.fieldReports[i].location.lat, this.fieldReports[i].location.lng, this.fieldReports[i].status)
+    //! this.addMarker(this.radioLog[i].location.lat, this.radioLog[i].location.lng, this.radioLog[i].status)
   }
 
   // Deletes all markers in the array by removing references to them
@@ -383,7 +383,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     // this.locationSubscription?.unsubscribe()
-    this.fieldReportsSubscription?.unsubscribe()
+    this.radioLogSubscription?.unsubscribe()
     this.missionSubscription?.unsubscribe()
   }
 }

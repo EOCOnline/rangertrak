@@ -80,7 +80,7 @@ const UNASSIGNED_MARKER = `<circle cx="10" cy="10" r="8" fill="#ffffff" stroke="
  * `statusColor` (raised live, 2026-08-26): an optional halo drawn BEHIND the ranger's own
  * shape, so a report's configured status (Normal/Need Rest/Urgent/...) reads at a glance on
  * the map without opening the popup - the same color the Mission page's status editor and
- * the Entry/Reports status controls already use (`fieldReportStatusColor()`, this module's
+ * the Entry/Reports status controls already use (`radioLogStatusColor()`, this module's
  * sibling file), not a second palette. A real SVG circle behind the shape rather than a CSS
  * `filter: drop-shadow(...)` - Leaflet's `divIcon` container is sized exactly to `iconSize`
  * (no guaranteed overflow room for a blurred filter to bleed into without clipping), where
@@ -127,7 +127,7 @@ export function rangerIconFor(key: string, statusColor?: string): L.DivIcon {
  * Originally defined only inline in `mini-mapLeaflet.component.ts` (Entry's own preview map,
  * 2026-08-26). E-11 (2026-08-26, "shown nowhere except Entry's own mini-map" gap): extracted
  * here so the main map (`mapLeaflet.component.ts`) draws the IDENTICAL marker for a
- * `FieldReportType.evidenceLocation` rather than inventing a second look for the same
+ * `RadioLogEntryType.evidenceLocation` rather than inventing a second look for the same
  * meaning - a scribe who has seen it once on Entry should recognize it instantly on the
  * mission overview too.
  */

@@ -9,7 +9,7 @@ import { MATERIAL_IMPORTS } from '../material-imports'
 import { formatReportTime } from '../shared'
 import { fillIcs213Pdf } from '../shared/export/ics213-pdf'
 import {
-  FieldReportService, FieldReportType, LogService, MissionService, MissionType
+  RadioLogService, RadioLogEntryType, LogService, MissionService, MissionType
 } from '../shared/services'
 
 /**
@@ -17,14 +17,14 @@ import {
  * (`generates213`), scoped 2026-08-27 as part of the ICS-309/213 IA restructuring (see the
  * roadmap's own scoping note for the full reasoning).
  *
- * Deliberately NOT a second AG Grid clone of Radio Log/field-reports.component.ts: a message
+ * Deliberately NOT a second AG Grid clone of Radio Log/radio-log.component.ts: a message
  * is opt-in per report, so this list is expected to stay short, and the useful unit here is
  * one whole message read at a time, not a row scanned across columns. List + expanded-detail
  * instead, with a "Print as ICS-213" button wired directly to `fillIcs213Pdf()` (`0.57.0`,
  * E-31/E-41 phase 3) - built the same day as the log-shaping half of that work, but never
  * wired to any UI until now.
  *
- * `FieldReportType` has no Approved-by-Name field today, so that one of the form's eight
+ * `RadioLogEntryType` has no Approved-by-Name field today, so that one of the form's eight
  * fillable fields is left blank on the printed PDF rather than invented - `fillIcs213Pdf()`'s
  * own doc comment already states this principle for the Reply block, and it applies just as
  * much to data nobody has actually collected. Subject is filled (report.subject213).
@@ -49,7 +49,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
   title = 'Messages — ICS-213s'
   pageDescr = 'ICS-213 general messages generated from field reports.'
 
-  messages = signal<FieldReportType[]>([])
+  messages = signal<RadioLogEntryType[]>([])
   selectedId = signal<number | null>(null)
   printing = signal(false)
 
@@ -68,10 +68,10 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
   private settings: MissionType | undefined
   private missionSubscription!: Subscription
-  private fieldReportsSubscription!: Subscription
+  private radioLogSubscription!: Subscription
 
   constructor(
-    private fieldReportService: FieldReportService,
+    private radioLogService: RadioLogService,
     private missionService: MissionService,
     private log: LogService,
   ) { }
@@ -82,9 +82,9 @@ export class MessagesComponent implements OnInit, OnDestroy {
       error: (e) => this.log.error('Mission subscription got: ' + e, this.id),
     })
 
-    this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
+    this.radioLogSubscription = this.radioLogService.getRadioLogObserver().subscribe({
       next: (reports) => {
-        const filtered = (reports.fieldReportArray ?? [])
+        const filtered = (reports.logEntries ?? [])
           .filter(r => r.generates213)
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         this.messages.set(filtered)
@@ -93,7 +93,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
         if (!filtered.some(r => r.id === this.selectedId())) {
           this.selectedId.set(filtered[0]?.id ?? null)
         }
-        this.log.verbose(`Received ${filtered.length} ICS-213 message(s) of ${reports.fieldReportArray?.length ?? 0} reports.`, this.id)
+        this.log.verbose(`Received ${filtered.length} ICS-213 message(s) of ${reports.logEntries?.length ?? 0} reports.`, this.id)
       },
       error: (e) => this.log.error('Field reports subscription got: ' + e, this.id),
     })
@@ -101,14 +101,14 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.missionSubscription?.unsubscribe()
-    this.fieldReportsSubscription?.unsubscribe()
+    this.radioLogSubscription?.unsubscribe()
   }
 
-  get selected(): FieldReportType | undefined {
+  get selected(): RadioLogEntryType | undefined {
     return this.messages().find(r => r.id === this.selectedId())
   }
 
-  select(report: FieldReportType): void {
+  select(report: RadioLogEntryType): void {
     this.selectedId.set(report.id)
     this.editing.set(false)
   }
@@ -160,7 +160,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
     report.replyRequested213 = this.editReplyRequested()
     report.revisedAt = new Date()
 
-    this.fieldReportService.saveEditedFieldReports()
+    this.radioLogService.saveEditedRadioLog()
     this.log.info(`Edited ICS-213 message on report ${report.id}`, this.id)
     this.editing.set(false)
   }
@@ -211,11 +211,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
       a.click()
       URL.revokeObjectURL(url)
 
-      // First print only - see printedAt's own doc comment (field-report.interface.ts) for
+      // First print only - see printedAt's own doc comment (radio-log-entry.interface.ts) for
       // why a reprint doesn't move it.
       if (!report.printedAt) {
         report.printedAt = new Date()
-        this.fieldReportService.saveEditedFieldReports()
+        this.radioLogService.saveEditedRadioLog()
       }
       this.log.info(`Printed ICS-213 for report ${report.id}`, this.id)
     } catch (e) {

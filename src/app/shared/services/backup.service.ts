@@ -2,19 +2,19 @@ import { Injectable } from '@angular/core'
 
 import * as packageJson from '../../../../package.json'
 import {
-  FieldReportsType, FieldReportService, LogService, RangerService, RangerType, MissionService,
+  RadioLogType, RadioLogService, LogService, RangerService, RangerType, MissionService,
   MissionType, MissionLocationService, MissionLocationType
 } from './'
 import { migrateMission } from './mission-migration'
 import { normalizeRangerIds } from './ranger-migration'
-import { migrateFieldReports } from './field-report-migration'
+import { migrateRadioLog } from './radio-log-migration'
 import { normalizeLocationUids } from './mission-location-migration'
 
 /**
  * A full mission backup: everything needed to restore the app to its
  * current state on another device/browser, or after clearing storage.
- * `fieldReports.bounds` is intentionally omitted - it's derived data
- * (recalculated by FieldReportService.recalcFieldBounds() on every load),
+ * `radioLog.bounds` is intentionally omitted - it's derived data
+ * (recalculated by RadioLogService.recalcRadioLogBounds() on every load),
  * not source-of-truth data, so there is nothing to usefully export there.
  *
  * `locations` (ADR D-49, 2026-08-30): optional on the TYPE, but always WRITTEN by
@@ -28,7 +28,7 @@ export type MissionExport = {
   appVersion: string,
   settings: MissionType,
   rangers: RangerType[],
-  fieldReports: Omit<FieldReportsType, 'bounds'>,
+  radioLog: Omit<RadioLogType, 'bounds'>,
   locations?: MissionLocationType[],
 }
 
@@ -47,7 +47,7 @@ export class BackupService {
   constructor(
     private missionService: MissionService,
     private rangerService: RangerService,
-    private fieldReportService: FieldReportService,
+    private radioLogService: RadioLogService,
     private locationService: MissionLocationService,
     private log: LogService,
   ) { }
@@ -57,7 +57,7 @@ export class BackupService {
    * exportMission() so the actual export contents are easy to test.
    */
   buildExportPayload(): MissionExport {
-    const currentFieldReports = this.fieldReportService.getCurrentFieldReports()
+    const currentFieldReports = this.radioLogService.getCurrentRadioLog()
     const { bounds: _omitted, ...fieldReportsSansBounds } = currentFieldReports
 
     // REVIEW: Workaround for "Error: Should not import the named export ... from
@@ -70,7 +70,7 @@ export class BackupService {
       appVersion,
       settings: this.missionService.settings,
       rangers: this.rangerService.rangers,
-      fieldReports: fieldReportsSansBounds,
+      radioLog: fieldReportsSansBounds,
       locations: this.locationService.getCurrentLocations(),
     }
   }
@@ -104,9 +104,9 @@ export class BackupService {
   importMission(payload: MissionExport): void {
     this.validatePayload(payload)
 
-    // Settings first: FieldReportService.recalcFieldBounds() (called inside
-    // replaceAllFieldReports()) requires settings to already be current, and
-    // the settings->FieldReportService subscription is synchronous (both are
+    // Settings first: RadioLogService.recalcRadioLogBounds() (called inside
+    // replaceAllRadioLog()) requires settings to already be current, and
+    // the settings->RadioLogService subscription is synchronous (both are
     // signal+ReplaySubject-backed - see mission.service.ts), so this
     // ordering is safe.
     // Migrated, not applied raw: an export can be arbitrarily old (this is the restore-after-
@@ -119,8 +119,8 @@ export class BackupService {
     // canonical id. Without this, importing a mission would put un-keyed rangers straight
     // into the store, bypassing RangerService's own load-path migration.
     this.rangerService.replaceAllRangers(normalizeRangerIds(payload.rangers).rangers)
-    this.fieldReportService.replaceAllFieldReports(
-      migrateFieldReports(payload.fieldReports) ?? payload.fieldReports)
+    this.radioLogService.replaceAllRadioLog(
+      migrateRadioLog(payload.radioLog) ?? payload.radioLog)
     // Missing on a pre-D-49 export (2026-08-30) - defaults to an empty list rather than
     // rejecting the import, same tolerance every other additive field in this app gets.
     this.locationService.replaceAllLocations(normalizeLocationUids(payload.locations ?? []))
@@ -154,7 +154,7 @@ export class BackupService {
     if (!payload || typeof payload !== 'object') {
       throw new Error('Import file is not a valid mission export (not an object).')
     }
-    for (const key of ['schemaVersion', 'settings', 'rangers', 'fieldReports']) {
+    for (const key of ['schemaVersion', 'settings', 'rangers', 'radioLog']) {
       if (!(key in payload)) {
         throw new Error(`Import file is not a valid mission export (missing "${key}").`)
       }
@@ -162,8 +162,8 @@ export class BackupService {
     if (!Array.isArray(payload.rangers)) {
       throw new Error('Import file is not a valid mission export ("rangers" is not an array).')
     }
-    if (!Array.isArray(payload.fieldReports?.fieldReportArray)) {
-      throw new Error('Import file is not a valid mission export ("fieldReports.fieldReportArray" is not an array).')
+    if (!Array.isArray(payload.radioLog?.logEntries)) {
+      throw new Error('Import file is not a valid mission export ("radioLog.logEntries" is not an array).')
     }
   }
 }

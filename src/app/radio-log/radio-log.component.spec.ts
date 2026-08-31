@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
-import { FieldReportsComponent } from './field-reports.component';
+import { RadioLogComponent } from './radio-log.component';
 
-describe('FieldReportsComponent', () => {
-  let component: FieldReportsComponent;
-  let fixture: ComponentFixture<FieldReportsComponent>;
+describe('RadioLogComponent', () => {
+  let component: RadioLogComponent;
+  let fixture: ComponentFixture<RadioLogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ FieldReportsComponent ],
+      imports: [ RadioLogComponent ],
       // HeaderComponent renders MissionReadinessComponent, whose readiness dot is now a
       // routerLink to /settings - needs a Router in every test that mounts the shared
       // page chrome, not just specs that touch routing directly.
@@ -19,7 +19,7 @@ describe('FieldReportsComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FieldReportsComponent);
+    fixture = TestBed.createComponent(RadioLogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

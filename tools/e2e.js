@@ -606,7 +606,7 @@ async function checkEntryAutofocusAndReset() {
 async function checkEvidenceLocation() {
   console.log('\nEvidence/clue location: range-and-bearing computes a marker and survives to storage (2026-08-26)')
   await goto('/')
-  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await evaluate(`localStorage.removeItem('radioLog')`)
   await goto('/')
   await sleep(1500) // let the mini-map + default position settle
 
@@ -655,8 +655,8 @@ async function checkEvidenceLocation() {
   })()`)
 
   const stored = await evaluate(`(() => {
-    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
-    const report = (r.fieldReportArray || []).find(f => f.callsign === 'E2E-EVID');
+    const r = JSON.parse(localStorage.getItem('radioLog') || '{}');
+    const report = (r.logEntries || []).find(f => f.callsign === 'E2E-EVID');
     return report?.evidenceLocation ?? null;
   })()`)
   check('the submitted report stored a real evidenceLocation', !!stored && typeof stored.lat === 'number', true)
@@ -678,7 +678,7 @@ async function checkEvidenceLocation() {
 async function checkMessagesPage() {
   console.log('\nMessages: a generates213 report shows up, in full, with a working Print as ICS-213 button')
   await goto('/')
-  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await evaluate(`localStorage.removeItem('radioLog')`)
   await goto('/')
   await sleep(1200)
 
@@ -710,8 +710,8 @@ async function checkMessagesPage() {
   })()`)
 
   const stored = await evaluate(`(() => {
-    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
-    const report = (r.fieldReportArray || []).find(f => f.callsign === 'E2E-MSG');
+    const r = JSON.parse(localStorage.getItem('radioLog') || '{}');
+    const report = (r.logEntries || []).find(f => f.callsign === 'E2E-MSG');
     return report ?? null;
   })()`)
   check('the submitted report has generates213 set', stored?.generates213, true)
@@ -1144,7 +1144,7 @@ async function checkFieldReportsPhoneLayout() {
   await goto('/radio-log')
   const phone = await evaluate(`(() => ({
     grid: !!document.querySelector('#reportsgrid ag-grid-angular .ag-root-wrapper'),
-    cards: !!document.querySelector('.field-reports-cards'),
+    cards: !!document.querySelector('.radio-log-cards'),
   }))()`)
   check('phone width: no ag-grid root is constructed', phone.grid, false)
   check('phone width: the card list renders instead', phone.cards, true)
@@ -1155,7 +1155,7 @@ async function checkFieldReportsPhoneLayout() {
   await goto('/radio-log')
   const tablet = await evaluate(`(() => ({
     grid: !!document.querySelector('#reportsgrid ag-grid-angular .ag-root-wrapper'),
-    cards: !!document.querySelector('.field-reports-cards'),
+    cards: !!document.querySelector('.radio-log-cards'),
   }))()`)
   check('tablet-up: the grid renders', tablet.grid, true)
   check('tablet-up: no card list is present', tablet.cards, false)
@@ -1255,8 +1255,8 @@ async function checkCallsignIsSaved() {
     await new Promise(r => setTimeout(r, 1200));   // past the 700ms autocomplete debounce
     document.querySelector('.enter__Submit-button').click();
     await new Promise(r => setTimeout(r, 1200));
-    const reports = JSON.parse(localStorage.getItem('fieldReports') || '{}');
-    const list = reports.fieldReportArray || [];
+    const reports = JSON.parse(localStorage.getItem('radioLog') || '{}');
+    const list = reports.logEntries || [];
     const last = list[list.length - 1] || {};
     // ADR D-42/D-43: the report should also carry rangerUid, resolved from the typed
     // callsign, and it must equal that ranger's uid in the roster.
@@ -1284,7 +1284,7 @@ async function checkCallsignIsSaved() {
 async function checkReportsSurviveNavigation() {
   console.log('\nBUG-2 (open): reports entered on Entry must be visible on the Reports page')
   await goto('/')
-  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await evaluate(`localStorage.removeItem('radioLog')`)
   await goto('/')
 
   for (const note of ['E2E-FIRST', 'E2E-SECOND']) {
@@ -1301,8 +1301,8 @@ async function checkReportsSurviveNavigation() {
   }
 
   const stored = await evaluate(`(() => {
-    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
-    return (r.fieldReportArray || []).length;
+    const r = JSON.parse(localStorage.getItem('radioLog') || '{}');
+    return (r.logEntries || []).length;
   })()`)
   check('both reports reached storage', stored, 2)
 
@@ -1331,7 +1331,7 @@ async function checkReportsSurviveNavigation() {
 async function checkTeamTrailsRender() {
   console.log('\nE-80: a route trail renders for a callsign with multiple check-ins')
   await goto('/')
-  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await evaluate(`localStorage.removeItem('radioLog')`)
   await goto('/')
 
   // Two distinct positions near the default Vashon EOC location, submitted under the same
@@ -1365,8 +1365,8 @@ async function checkTeamTrailsRender() {
   }
 
   const stored = await evaluate(`(() => {
-    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
-    return (r.fieldReportArray || []).filter(f => f.callsign === 'E2E-TRAIL').length;
+    const r = JSON.parse(localStorage.getItem('radioLog') || '{}');
+    return (r.logEntries || []).filter(f => f.callsign === 'E2E-TRAIL').length;
   })()`)
   check('both E2E-TRAIL reports reached storage', stored, 2)
 
@@ -1402,7 +1402,7 @@ async function checkTeamTrailsRender() {
 async function checkRangerMarkersAreDistinct() {
   console.log('\nE-86: two different callsigns get visibly distinct map markers')
   await goto('/')
-  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await evaluate(`localStorage.removeItem('radioLog')`)
   await goto('/')
 
   for (const { callsign, lat, lng } of [
@@ -1435,8 +1435,8 @@ async function checkRangerMarkersAreDistinct() {
   }
 
   const stored = await evaluate(`(() => {
-    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
-    return (r.fieldReportArray || []).filter(f => f.callsign === 'E2E-MARKER-A' || f.callsign === 'E2E-MARKER-B').length;
+    const r = JSON.parse(localStorage.getItem('radioLog') || '{}');
+    return (r.logEntries || []).filter(f => f.callsign === 'E2E-MARKER-A' || f.callsign === 'E2E-MARKER-B').length;
   })()`)
   check('both E2E-MARKER reports reached storage', stored, 2)
 
@@ -1483,7 +1483,7 @@ async function checkNoCallsignRangersGetDistinctIdentity() {
     cur.schemaVersion = cur.schemaVersion ?? 1;
     localStorage.setItem('rangers', JSON.stringify(cur));
   })()`)
-  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await evaluate(`localStorage.removeItem('radioLog')`)
   await goto('/')
 
   // Two check-ins each, close together within a ranger (so a real trail has something to
@@ -1524,8 +1524,8 @@ async function checkNoCallsignRangersGetDistinctIdentity() {
   }
 
   const stored = await evaluate(`(() => {
-    const r = JSON.parse(localStorage.getItem('fieldReports') || '{}');
-    const list = r.fieldReportArray || [];
+    const r = JSON.parse(localStorage.getItem('radioLog') || '{}');
+    const list = r.logEntries || [];
     return {
       countA: list.filter(f => f.rangerUid === ${JSON.stringify(uidA)}).length,
       countB: list.filter(f => f.rangerUid === ${JSON.stringify(uidB)}).length,
@@ -1555,7 +1555,7 @@ async function checkNoCallsignRangersGetDistinctIdentity() {
   // individual '.rt-ranger-marker' svgs regardless of whether the identity fix works. One
   // report per ranger, at the same separation checkRangerMarkersAreDistinct() uses, removes
   // that confound.
-  await evaluate(`localStorage.removeItem('fieldReports')`)
+  await evaluate(`localStorage.removeItem('radioLog')`)
   await goto('/')
   for (const { name, lat, lng } of [
     { name: nameA, lat: 47.60, lng: -122.30 },
@@ -1638,7 +1638,7 @@ async function checkStatusColorMigration() {
   await evaluate(`(() => {
     const s = JSON.parse(localStorage.getItem('appSettings'));
     delete s.schemaVersion;
-    s.fieldReportStatuses = [
+    s.radioLogStatuses = [
       { status: 'Normal', color: 'LightYellow', icon: 'a.png' },
       { status: 'Location Report', color: 'Aquamarine', icon: 'b.png' },
       { status: 'Evidence Report', color: 'DarkGoldenrod', icon: 'c.png' },
@@ -1647,7 +1647,7 @@ async function checkStatusColorMigration() {
       { status: 'Incident Check-out', color: 'DimGray', icon: 'f.png' },
       { status: 'Urgent', color: '#FF00FF', icon: 'g.png' },
     ];
-    s.defFieldReportStatus = 3;
+    s.defRadioLogStatus = 3;
     localStorage.setItem('appSettings', JSON.stringify(s));
   })()`)
 
@@ -1656,8 +1656,8 @@ async function checkStatusColorMigration() {
     const s = JSON.parse(localStorage.getItem('appSettings'));
     return {
       schemaVersion: s.schemaVersion,
-      colors: s.fieldReportStatuses.map(x => x.color),
-      defaultStatus: s.fieldReportStatuses[s.defFieldReportStatus].status,
+      colors: s.radioLogStatuses.map(x => x.color),
+      defaultStatus: s.radioLogStatuses[s.defRadioLogStatus].status,
     };
   })()`)
   // Not pinned to a literal: SETTINGS_SCHEMA_VERSION moves as migration steps are added
@@ -1667,8 +1667,8 @@ async function checkStatusColorMigration() {
   check('legacy default colours become semantic keys', migrated.colors.slice(0, 6),
     ['normal', 'location-report', 'evidence-report', 'need-rest-food', 'incident-check-in', 'incident-check-out'])
   check('a user-customised colour survives migration', migrated.colors[6], '#FF00FF')
-  // defFieldReportStatus is an index, so a reordering migration would silently repoint it.
-  check('defFieldReportStatus still points at the same status', migrated.defaultStatus, 'Need Rest/Food')
+  // defRadioLogStatus is an index, so a reordering migration would silently repoint it.
+  check('defRadioLogStatus still points at the same status', migrated.defaultStatus, 'Need Rest/Food')
 
   // The whole point of the exercise: the Entry radios must now paint from the token layer.
   await goto('/')
@@ -1887,7 +1887,7 @@ async function checkSampleMissionLoads() {
 
   const seeded = await evaluate(`(() => {
     const rangers = (JSON.parse(localStorage.getItem('rangers')||'{"rangers":[]}').rangers||[]);
-    const reports = (JSON.parse(localStorage.getItem('fieldReports')||'{"fieldReportArray":[]}').fieldReportArray||[]);
+    const reports = (JSON.parse(localStorage.getItem('radioLog')||'{"logEntries":[]}').logEntries||[]);
     return {
       rangerCount: rangers.length,
       reportCount: reports.length,

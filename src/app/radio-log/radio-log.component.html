@@ -3,7 +3,7 @@
   <div id="reportsgrid">
     @if (!isPhone()) {
       <ag-grid-angular #reportsGrid rowAnimation style="width: 100%; height: 60vh;" (gridReady)="onGridReady($event)"
-        [gridOptions]="gridOptions" [rowData]="fieldReportArray()" [columnDefs]="columnDefs"
+        [gridOptions]="gridOptions" [rowData]="radioLogEntries()" [columnDefs]="columnDefs"
         [tooltipShowDelay]="500">
         <!--
 [defaultColDef]="defaultColDef"
@@ -24,7 +24,7 @@
            only controls that act on the grid above it.
 
            The two <select>s are `<mat-select>` and the checkbox is `<mat-checkbox>`, which
-           is why field-reports.component.ts no longer reads any of them back out of the DOM
+           is why radio-log.component.ts no longer reads any of them back out of the DOM
            - see the comments on getParamValue()/onBtnExport() there for what each of those
            three reads would have done post-conversion (one throws, one silently exports the
            wrong rows). -->
@@ -97,30 +97,30 @@
       <!-- Phone carve-out (Sprint F): a completed comms log read on a phone away from
            the command post, per Private Roadmap.md's Field Reports/ICS-309 carve-out.
            Read-only - corrections still happen on a wider screen where the grid runs. -->
-      <div class="field-reports-cards" role="list">
-        @for (report of fieldReportArray(); track report.id) {
-          <article class="field-reports-cards__card" role="listitem">
-            <header class="field-reports-cards__header">
-              <span class="field-reports-cards__callsign">{{ report.callsign }}</span>
-              <span class="field-reports-cards__status" [style.background-color]="statusFill(report.status)"
+      <div class="radio-log-cards" role="list">
+        @for (report of radioLogEntries(); track report.id) {
+          <article class="radio-log-cards__card" role="listitem">
+            <header class="radio-log-cards__header">
+              <span class="radio-log-cards__callsign">{{ report.callsign }}</span>
+              <span class="radio-log-cards__status" [style.background-color]="statusFill(report.status)"
                 [style.color]="statusInk(report.status)">{{ report.status }}</span>
             </header>
-            <div class="field-reports-cards__row">
-              <span class="field-reports-cards__reported">{{ myDateGetter({ data: report }) }}</span>
-              <span class="field-reports-cards__elapsed">{{ myMinuteGetter({ data: report }) }}</span>
+            <div class="radio-log-cards__row">
+              <span class="radio-log-cards__reported">{{ myDateGetter({ data: report }) }}</span>
+              <span class="radio-log-cards__elapsed">{{ myMinuteGetter({ data: report }) }}</span>
             </div>
-            <div class="field-reports-cards__row">{{ report.location.address }}</div>
-            <div class="field-reports-cards__row field-reports-cards__coords">
+            <div class="radio-log-cards__row">{{ report.location.address }}</div>
+            <div class="radio-log-cards__row radio-log-cards__coords">
               {{ report.location.lat | number:'1.0-4' }}, {{ report.location.lng | number:'1.0-4' }}
             </div>
             @if (report.evidenceLocation) {
-              <div class="field-reports-cards__row field-reports-cards__coords"
+              <div class="radio-log-cards__row radio-log-cards__coords"
                 title="Evidence/clue location">
                 🚩 {{ report.evidenceLocation.lat | number:'1.0-4' }}, {{ report.evidenceLocation.lng | number:'1.0-4' }}
               </div>
             }
             @if (report.notes) {
-              <div class="field-reports-cards__notes">{{ report.notes }}</div>
+              <div class="radio-log-cards__notes">{{ report.notes }}</div>
             }
           </article>
         } @empty {
@@ -150,7 +150,7 @@
         </p>
         <div class="rt-danger-zone__actions">
           <button matButton="outlined" type="button" class="reports__danger-button"
-            (click)="onBtnClearFieldReports()">
+            (click)="onBtnClearRadioLog()">
             Delete all field reports
           </button>
         </div>
@@ -162,7 +162,7 @@
   <br />
 
   <!-- E-31/E-41 phase 3, piece 3: the printed ICS-309 log itself. Hidden on screen
-       (field-reports.component.scss), shown only under `@media print`, in place of #reportsgrid
+       (radio-log.component.scss), shown only under `@media print`, in place of #reportsgrid
        (also hidden there) - a scribe printing the comms log wants the log, not a paper copy of
        the interactive grid chrome. Populated by onBtnPrint309() just before window.print(). -->
   @if (ics309Log(); as log) {

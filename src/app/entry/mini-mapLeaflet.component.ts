@@ -2,7 +2,7 @@
 // reads the global `L` at module-evaluation time ("L is not defined" otherwise). This bare
 // side-effect import guarantees that, and sorts ahead of the plugin alphabetically so
 // import-sort cannot undo it. It used to work only by accident, via the eager
-// `import L from 'leaflet'` that FieldReportService no longer has.
+// `import L from 'leaflet'` that RadioLogService no longer has.
 import 'leaflet'
 import 'leaflet.markercluster'
 import { tileLayerOffline } from 'leaflet.offline' // https://github.com/allartk/leaflet.offline
@@ -27,7 +27,7 @@ import { evidenceIconFor, rangerIconFor } from '../shared/mapping/ranger-icon'
 import { formatReportTime } from '../shared/mapping/report-time'
 import { Utility } from '../shared/utility'
 import {
-  FieldReportService, LocationType, LogService, MissionService, undefinedAddressFlag,
+  RadioLogService, LocationType, LogService, MissionService, undefinedAddressFlag,
   undefinedLocation
 } from '../shared/services'
 
@@ -174,13 +174,13 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
 
   constructor(
     missionService: MissionService,
-    fieldReportService: FieldReportService,
+    radioLogService: RadioLogService,
     httpClient: HttpClient,
     log: LogService,
     @Inject(DOCUMENT) protected override document: Document
   ) {
     super(missionService,
-      fieldReportService,
+      radioLogService,
       httpClient,
       log,
       document)
@@ -253,7 +253,7 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     }
 
     this.initMainMap()
-    this.updateFieldReports()
+    this.updateRadioLog()
 
     // We probably got (& stored) an initial location before the map existed, so place it now.
     // Tested against _location, not AbstractMap's `location`: the setter above writes
@@ -290,8 +290,8 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
       return
     }
 
-    if (this.displayReports && !this.fieldReports) { //! or displayedFieldReportArray
-      this.log.error(`fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
+    if (this.displayReports && !this.radioLog) { //! or displayedRadioLogEntries
+      this.log.error(`radioLog not yet initialized while initializing the Leaflet Map!`, this.id)
       return
     }
 
@@ -350,15 +350,15 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     tiles.addTo(this.lMap)
     hillshadeOverlay.addTo(this.lMap)
     // !debugger
-    if (this.displayReports && this.fieldReports) {
-      // ! REVIEW: need to see which way switch is set and maybe set: displayedFieldReportArray 1st....
+    if (this.displayReports && this.radioLog) {
+      // ! REVIEW: need to see which way switch is set and maybe set: displayedRadioLogEntries 1st....
       // maybe do this further down?!
       this.displayMarkers()
-      const b = this.fieldReports.bounds
+      const b = this.radioLog.bounds
       // bounds is stored as a plain, serializable BoundsType - Leaflet takes [SW, NE]
       this.lMap.fitBounds(L.latLngBounds([b.south, b.west], [b.north, b.east]))
     } else {
-      this.log.error(`initMainMap() did not have displayReports or fieldReports!`, this.id)
+      this.log.error(`initMainMap() did not have displayReports or radioLog!`, this.id)
     }
 
     L.DomUtil.addClass(this.lMap.getContainer(), 'crosshair-cursor-enabled')  //  Enable crosshairs
@@ -623,13 +623,13 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     super.displayMarkers()
 
     // REVIEW: wipes out any manually dropped markers. Could save 'em, but no request for that...
-    //! This needs to be rerun & ONLY display selected rows/markers: i.e., to use  displayedFieldReportArray
-    if (!this.displayedFieldReportArray) {
+    //! This needs to be rerun & ONLY display selected rows/markers: i.e., to use  displayedRadioLogEntries
+    if (!this.displayedRadioLogEntries) {
       this.log.error(`displayMarkers did not find field reports to display`, this.id)
       //return
     }
-    this.log.verbose(`displayMarkers: all ${this.displayedFieldReportArray.length} of 'em`, this.id)
-    this.displayedFieldReportArray.forEach(i => {
+    this.log.verbose(`displayMarkers: all ${this.displayedRadioLogEntries.length} of 'em`, this.id)
+    this.displayedRadioLogEntries.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${formatReportTime(i.date)} with ${i.status}`
         //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
@@ -655,7 +655,7 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
   }
 
   // override displayAllMarkers() {
-  // this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
+  // this.addMarker(this.radioLog[i].lat, this.radioLog[i].lng, this.radioLog[i].status)
   // }
 
 

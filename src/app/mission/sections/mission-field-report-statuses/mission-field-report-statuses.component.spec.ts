@@ -2,12 +2,12 @@ import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MissionFieldReportStatusesComponent } from './mission-field-report-statuses.component';
-import { FieldReportService } from '../../../shared/services/';
+import { RadioLogService } from '../../../shared/services/';
 
 describe('MissionFieldReportStatusesComponent', () => {
   let component: MissionFieldReportStatusesComponent;
   let fixture: ComponentFixture<MissionFieldReportStatusesComponent>;
-  let fieldReportService: FieldReportService;
+  let radioLogService: RadioLogService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -20,7 +20,7 @@ describe('MissionFieldReportStatusesComponent', () => {
     fixture = TestBed.createComponent(MissionFieldReportStatusesComponent);
     component = fixture.componentInstance;
     component.rowData = [{ status: 'Normal', color: 'normal', icon: '' }];
-    fieldReportService = TestBed.inject(FieldReportService);
+    radioLogService = TestBed.inject(RadioLogService);
     fixture.detectChanges();
   });
 
@@ -30,18 +30,18 @@ describe('MissionFieldReportStatusesComponent', () => {
 
   describe('isStatusInUse (E-73)', () => {
     it('is false when no field report carries the status', () => {
-      fieldReportService.replaceAllFieldReports({
+      radioLogService.replaceAllRadioLog({
         version: '1', date: new Date(), event: '', numReport: 0, maxId: 0, filter: '',
-        fieldReportArray: [],
+        logEntries: [],
       });
 
       expect(component.isStatusInUse('Normal')).toBe(false);
     });
 
     it('is true when a field report carries the exact status name', () => {
-      fieldReportService.replaceAllFieldReports({
+      radioLogService.replaceAllRadioLog({
         version: '1', date: new Date(), event: '', numReport: 1, maxId: 1, filter: '',
-        fieldReportArray: [{
+        logEntries: [{
           id: 1, callsign: 'E2E-AA1', location: { lat: 47.4, lng: -122.4 } as any,
           date: new Date(), status: 'Normal', notes: '',
         }],
@@ -54,9 +54,9 @@ describe('MissionFieldReportStatusesComponent', () => {
 
   describe('Status column gating (E-73)', () => {
     it('is not editable for a status already in use', () => {
-      fieldReportService.replaceAllFieldReports({
+      radioLogService.replaceAllRadioLog({
         version: '1', date: new Date(), event: '', numReport: 1, maxId: 1, filter: '',
-        fieldReportArray: [{
+        logEntries: [{
           id: 1, callsign: 'E2E-AA1', location: { lat: 47.4, lng: -122.4 } as any,
           date: new Date(), status: 'Normal', notes: '',
         }],
@@ -67,9 +67,9 @@ describe('MissionFieldReportStatusesComponent', () => {
     });
 
     it('stays editable for a status not yet used', () => {
-      fieldReportService.replaceAllFieldReports({
+      radioLogService.replaceAllRadioLog({
         version: '1', date: new Date(), event: '', numReport: 0, maxId: 0, filter: '',
-        fieldReportArray: [],
+        logEntries: [],
       });
 
       const statusCol = component.columnDefs.find(c => c.field === 'status') as any;

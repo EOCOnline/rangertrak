@@ -38,7 +38,7 @@ export const APP_ROUTES: Routes = [
   // already followed). Redirect below covers old bookmarks.
   {
     path: 'radio-log',
-    loadComponent: () => import('./field-reports/field-reports.component').then(m => m.FieldReportsComponent)
+    loadComponent: () => import('./radio-log/radio-log.component').then(m => m.RadioLogComponent)
   },
   // New 2026-08-27: ICS-213 messages (field reports with generates213 set), list + detail
   // view rather than a second grid - see the roadmap's ICS-309/213 scoping note.

@@ -6,7 +6,7 @@
 // reads the global `L` at module-evaluation time ("L is not defined" otherwise). This bare
 // side-effect import guarantees that, and sorts ahead of the plugin alphabetically so
 // import-sort cannot undo it. It used to work only by accident, via the eager
-// `import L from 'leaflet'` that FieldReportService no longer has.
+// `import L from 'leaflet'` that RadioLogService no longer has.
 import 'leaflet'
 import 'leaflet.markercluster'
 import {
@@ -30,12 +30,12 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 import {
-  AbstractMap, Utility, rangerIconFor, rangerColorFor, evidenceIconFor, fieldReportStatusColor,
+  AbstractMap, Utility, rangerIconFor, rangerColorFor, evidenceIconFor, radioLogStatusColor,
   locationCategoryColor, locationIconFor, formatReportTime
 } from '../shared'
 import { DDToUTM, UTMToDD } from '../shared/mapping/coordinate'
 import {
-  FieldReportService, FieldReportType, LocationType, LogService, MissionLocationService,
+  RadioLogService, RadioLogEntryType, LocationType, LogService, MissionLocationService,
   MissionLocationType, RangerService, MissionService
 } from '../shared/services'
 import { LocationDialogComponent } from '../map/location-dialog/location-dialog.component'
@@ -170,7 +170,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
   constructor(
     missionService: MissionService,
-    fieldReportService: FieldReportService,
+    radioLogService: RadioLogService,
     httpClient: HttpClient,
     log: LogService,
     private rangerService: RangerService,
@@ -179,7 +179,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     @Inject(DOCUMENT) protected override document: Document
   ) {
     super(missionService,
-      fieldReportService,
+      radioLogService,
       httpClient,
       log,
       document)
@@ -242,16 +242,16 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       )
     }
 
-    if (this.displayReports && this.fieldReports) {
-      // updateFieldReports() first: it is what fills displayedFieldReportArray for
+    if (this.displayReports && this.radioLog) {
+      // updateRadioLog() first: it is what fills displayedRadioLogEntries for
       // the current all/selected choice, and displayMarkers() draws from that.
-      this.updateFieldReports()
+      this.updateRadioLog()
       this.displayMarkers()
       // Re-enabled: bounds used to be a Leaflet LatLngBounds that arrived from
       // localStorage as a plain object, so this threw "Bounds are not valid" and was
       // commented out - leaving markers off-screen on open. It is now a plain
       // BoundsType, converted to Leaflet's [SW, NE] form right here.
-      const b = this.fieldReports.bounds
+      const b = this.radioLog.bounds
       this.lMap.fitBounds(L.latLngBounds([b.south, b.west], [b.north, b.east]))
     }
 
@@ -312,8 +312,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       return
     }
 
-    if (this.displayReports && !this.fieldReports) { //! or displayedFieldReportArray
-      this.log.error(`initMainMap():fieldReports not yet initialized while initializing the Leaflet Map!`, this.id)
+    if (this.displayReports && !this.radioLog) { //! or displayedRadioLogEntries
+      this.log.error(`initMainMap():radioLog not yet initialized while initializing the Leaflet Map!`, this.id)
       return
     }
 
@@ -563,10 +563,10 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       // L.svgOverlay(svgElement, svgElementBounds).addTo(this.lMap);
   */
 
-    if (!this.fieldReports) {
-      this.log.error(`initMainMap(): this.fieldReports is null/undefined!`, this.id)
+    if (!this.radioLog) {
+      this.log.error(`initMainMap(): this.radioLog is null/undefined!`, this.id)
     } else {
-      const b = this.fieldReports.bounds
+      const b = this.radioLog.bounds
       this.log.info(`initMainMap() E: ${b.east};  N: ${b.north};  W: ${b.west};  S: ${b.south};  `, this.id)
     }
 
@@ -934,19 +934,19 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
 
     // REVIEW: wipes out any manually dropped markers. Could save 'em, but no request for that...
-    if (!this.displayedFieldReportArray) {
+    if (!this.displayedRadioLogEntries) {
       this.log.error(`displayAllMarkers did not find field reports to display`, this.id)
       return
     }
 
     // Redraw from scratch. Without this, toggling all/selected or receiving new
     // reports piled fresh markers on top of the old ones - and the line removed
-    // just above reassigned displayedFieldReportArray to *all* reports, so the
+    // just above reassigned displayedRadioLogEntries to *all* reports, so the
     // selected-only view could never be honored no matter what the switch said.
     this.clearMarkers()
 
-    this.log.verbose(`displayMarkers: ${this.displayedFieldReportArray.length} of 'em`, this.id)
-    this.displayedFieldReportArray.forEach(i => {
+    this.log.verbose(`displayMarkers: ${this.displayedRadioLogEntries.length} of 'em`, this.id)
+    this.displayedRadioLogEntries.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${formatReportTime(i.date)} with ${i.status}`
         //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
@@ -954,7 +954,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         // E-86 (narrowed): a distinct shape+color per ranger callsign, team ignored for now.
         // Raised live 2026-08-26: the status halo behind it, colored per the Mission page's
         // own configured status colors - same lookup the Entry/Reports status controls use.
-        const statusColor = fieldReportStatusColor(i.status, this.settings.fieldReportStatuses)
+        const statusColor = radioLogStatusColor(i.status, this.settings.radioLogStatuses)
         // D-42 phase 5: rangerUid (unique per ranger, set even with a blank callsign) takes
         // priority over callsign - see ranger-icon.ts's header comment for why.
         let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), {
@@ -1121,7 +1121,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
   /**
    * E-80 phase 1: static per-callsign route trails, colored by the callsign's current
-   * team. Drawn from the same displayedFieldReportArray markers use, so the all/selected
+   * team. Drawn from the same displayedRadioLogEntries markers use, so the all/selected
    * switch and new-report redraws are honored automatically (both call displayMarkers(),
    * which calls this after clearMarkers() has emptied myTrailsLayer).
    *
@@ -1142,8 +1142,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // (the surrogate key, unique per ranger, set even with a blank callsign) takes priority;
     // `callsign` remains the fallback for reports with no `rangerUid` - same key each marker
     // uses (see displayMarkers(), above), so a ranger's trail and marker group identically.
-    const byRanger = new Map<string, FieldReportType[]>()
-    this.displayedFieldReportArray.forEach(r => {
+    const byRanger = new Map<string, RadioLogEntryType[]>()
+    this.displayedRadioLogEntries.forEach(r => {
       if (!r.location.lat || !r.location.lng) return // same guard displayMarkers() uses
       const key = r.rangerUid || r.callsign
       const group = byRanger.get(key)
@@ -1197,9 +1197,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     })
   }
 
-  override onSwitchSelectedFieldReports() {
-    super.onSwitchSelectedFieldReports()
-    this.log.excessive(`onSwitchSelectedFieldReports()`, this.id)
+  override onSwitchSelectedRadioLog() {
+    super.onSwitchSelectedRadioLog()
+    this.log.excessive(`onSwitchSelectedRadioLog()`, this.id)
 
   }
 
@@ -1209,7 +1209,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   // }
 
   // override displayAllMarkers() {
-  //   // this.addMarker(this.fieldReports[i].lat, this.fieldReports[i].lng, this.fieldReports[i].status)
+  //   // this.addMarker(this.radioLog[i].lat, this.radioLog[i].lng, this.radioLog[i].status)
   // }
 
 

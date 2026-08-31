@@ -18,7 +18,7 @@ import { RangerType } from './ranger.interface'
  * field. (An earlier draft of this file carried a `backfillReportRangerIds()` that resolved
  * each stored report's ranger from its callsign - removed on that direction, since the data
  * it rescued does not exist. If a future build DOES need it, it belongs as a numbered
- * migration step in `field-report-migration.ts`, not as permanent defensive code.)
+ * migration step in `radio-log-migration.ts`, not as permanent defensive code.)
  *
  * Everything here is PURE - no injection, no logging, no storage access - so it is
  * unit-testable without a browser and safe to call from both entry points (RangerService's

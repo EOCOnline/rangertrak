@@ -26,7 +26,7 @@ describe('MissionService', () => {
 
       expect(service.settings.defLat).toBe(47.4472);
       expect(service.settings.defLng).toBe(-122.4627);
-      expect(service.settings.fieldReportStatuses.length).toBe(7);
+      expect(service.settings.radioLogStatuses.length).toBe(7);
     });
 
     it('stamps settings.version from package.json rather than the hardcoded default', () => {
@@ -53,8 +53,8 @@ describe('MissionService', () => {
         defLat: 1.111, defLng: 2.222, allowManualPinDrops: false,
         leaflet: { defZoom: 1, markerScheme: '', overviewDifference: 1, overviewMinZoom: 1, overviewMaxZoom: 1 },
         maplibre: { defZoom: 1, markerScheme: '', overviewDifference: 1, overviewMinZoom: 1, overviewMaxZoom: 1 },
-        imageDirectory: './assets/imgs/', defFieldReportStatus: 0,
-        fieldReportStatuses: []
+        imageDirectory: './assets/imgs/', defRadioLogStatus: 0,
+        radioLogStatuses: []
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(custom));
 

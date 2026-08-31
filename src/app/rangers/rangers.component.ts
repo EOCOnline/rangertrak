@@ -19,7 +19,7 @@ import { AlertsComponent } from '../shared/alerts/alerts.component'
 import { ExpandableSectionComponent } from '../shared/expandable-section/expandable-section.component'
 import { formatReportTime } from '../shared/mapping/report-time'
 import {
-  FieldReportService, FieldReportType, LogService, RangerService, RangerType,
+  RadioLogService, RadioLogEntryType, LogService, RangerService, RangerType,
   MissionService, MissionType
 } from '../shared/services'
 // Direct path, not the barrel: importing a service used as a DI token through
@@ -49,7 +49,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // guaranteed path back into change detection. Signals close that gap (Sprint G).
   public rangers = signal<RangerType[]>([])
 
-  private fieldReportsSubscription!: Subscription
+  private radioLogSubscription!: Subscription
   // "Not checked in" column: the most recent field report date per ranger, keyed
   // `rangerUid || callsign` - same join key drawTrails()/displayMarkers() use (ADR D-42
   // phase 5). Read by lastContactCellRenderer/lastContactValueGetter below, not a signal -
@@ -192,7 +192,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Same grouping key drawTrails()/displayMarkers() use (ADR D-42 phase 5): `rangerUid`
    * when set, `callsign` as the fallback for reports filed before D-42 or against a
    * callsign matching no current roster row. Only the newest report per key survives. */
-  private static buildLastContactByKey(reports: FieldReportType[]): Map<string, Date> {
+  private static buildLastContactByKey(reports: RadioLogEntryType[]): Map<string, Date> {
     const byKey = new Map<string, Date>()
     reports.forEach(r => {
       const key = r.rangerUid || r.callsign
@@ -263,7 +263,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     private log: LogService,
     private rangerService: RangerService,
     private missionService: MissionService,
-    private fieldReportService: FieldReportService,
+    private radioLogService: RadioLogService,
     private photos: RangerPhotoService,
     private _snackBar: MatSnackBar,
     // The confidentiality bar's "What this means" opens the Guide drawer's Privacy tab -
@@ -308,9 +308,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       complete: () => this.log.info('Rangers Subscription complete', this.id)
     })
 
-    this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
+    this.radioLogSubscription = this.radioLogService.getRadioLogObserver().subscribe({
       next: (reports) => {
-        this.lastContactByKey = RangersComponent.buildLastContactByKey(reports.fieldReportArray)
+        this.lastContactByKey = RangersComponent.buildLastContactByKey(reports.logEntries)
         this.refreshGrid()
         this.log.verbose('Received new Field Reports via subscription.', this.id)
       },
@@ -798,6 +798,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.rangersSubscription?.unsubscribe()
     this.missionSubscription?.unsubscribe()
-    this.fieldReportsSubscription?.unsubscribe()
+    this.radioLogSubscription?.unsubscribe()
   }
 }

@@ -21,7 +21,7 @@ export { AbstractMap } from "./mapping/map"
 export { rangerIconFor, rangerColorFor, evidenceIconFor } from "./mapping/ranger-icon"
 export { locationIconFor, locationMarkerSvg } from "./mapping/location-icon"
 export { hashString } from "./mapping/hash-color"
-export { fieldReportStatusColor, locationCategoryColor, resolveCssColorForCanvas } from "./mapping/report-marker-status"
+export { radioLogStatusColor, locationCategoryColor, resolveCssColorForCanvas } from "./mapping/report-marker-status"
 export { formatReportTime } from "./mapping/report-time"
 
 // !BUG: Can't find @What3Words/API - need to install it?!

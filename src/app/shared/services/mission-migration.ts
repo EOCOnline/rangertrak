@@ -1,4 +1,4 @@
-import { FieldReportStatusType } from './field-report.interface'
+import { RadioLogStatusType } from './radio-log-entry.interface'
 import { LocationCategoryType } from './mission-location.interface'
 import { MissionType } from './mission.interface'
 import { StatusKey } from './status-color'
@@ -50,7 +50,7 @@ const V0_STATUS_DEFAULTS: ReadonlyArray<{ status: string; color: string; key: St
 ]
 
 /** The v1 (current) factory defaults, for initMission() - accessible from a fresh install. */
-export const DEFAULT_FIELD_REPORT_STATUSES: ReadonlyArray<FieldReportStatusType> = [
+export const DEFAULT_RADIO_LOG_STATUSES: ReadonlyArray<RadioLogStatusType> = [
   { status: 'Normal', color: 'normal', icon: 'check_FILL0_wght400_GRAD0_opsz48.png' },
   { status: 'Location Report', color: 'location-report', icon: 'where_to_vote_FILL0_wght400_GRAD0_opsz48.png' },
   { status: 'Evidence Report', color: 'evidence-report', icon: 'add_photo_alternate_FILL0_wght400_GRAD0_opsz48.png' },
@@ -64,7 +64,7 @@ export const DEFAULT_FIELD_REPORT_STATUSES: ReadonlyArray<FieldReportStatusType>
  * E-103 starter list, for initMission() - the maintainer's own suggested routine ICS
  * positions, editable per-mission via Settings > Field Report Recipients. Additive-only field
  * (see MissionType.recipientOptions213's own comment) - backfillMissingFields hands this to
- * any returning user whose stored settings predate the field, same as DEFAULT_FIELD_REPORT_STATUSES.
+ * any returning user whose stored settings predate the field, same as DEFAULT_RADIO_LOG_STATUSES.
  */
 // Raised live, 2026-08-27: shortened from the previous 10-entry list (Incident Commander,
 // Ops Section, Planning Section, Situation Awareness, Logistics Section, Finance/Admin
@@ -77,10 +77,10 @@ export const DEFAULT_RECIPIENT_OPTIONS_213: ReadonlyArray<string> = [
 
 /**
  * ADR D-49 starter list, for initMission() - the Locations feature's default categories.
- * Colors are literal hex, not the semantic `--rt-status-*` keys fieldReportStatuses uses:
+ * Colors are literal hex, not the semantic `--rt-status-*` keys radioLogStatuses uses:
  * those tokens are specifically for field-report status and adding a second consumer would
  * mean touching `_status.scss`/`_tokens.scss`/STATUS_KEYS for an unrelated feature. Editable
- * per-mission via `MissionType.locationTypes`, same as fieldReportStatuses.
+ * per-mission via `MissionType.locationTypes`, same as radioLogStatuses.
  */
 export const DEFAULT_LOCATION_TYPES: ReadonlyArray<LocationCategoryType> = [
   { type: 'Command Post', color: '#1565C0' },
@@ -111,7 +111,7 @@ export function migrateMission(raw: MissionType, defaults?: MissionType): Missio
 
   if (version < MISSION_SCHEMA_VERSION) {
     if (version < 1) {
-      settings = { ...settings, fieldReportStatuses: toSemanticStatusColors(settings.fieldReportStatuses) }
+      settings = { ...settings, radioLogStatuses: toSemanticStatusColors(settings.radioLogStatuses) }
     }
     if (version < 3) {
       settings = renameGoogleToMaplibre(settings)
@@ -214,14 +214,14 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 }
 
 /**
- * v0 -> v1. Array ORDER is preserved exactly: `defFieldReportStatus` is an index into this
+ * v0 -> v1. Array ORDER is preserved exactly: `defRadioLogStatus` is an index into this
  * array, and sample-data.service.ts documents the same index-dependence, so reordering here
  * would silently repoint the default status and every generated sample report.
  */
 function toSemanticStatusColors(
-  statuses: readonly FieldReportStatusType[] | undefined
-): FieldReportStatusType[] {
-  if (!Array.isArray(statuses)) return [...DEFAULT_FIELD_REPORT_STATUSES]
+  statuses: readonly RadioLogStatusType[] | undefined
+): RadioLogStatusType[] {
+  if (!Array.isArray(statuses)) return [...DEFAULT_RADIO_LOG_STATUSES]
 
   return statuses.map(entry => {
     const match = V0_STATUS_DEFAULTS.find(

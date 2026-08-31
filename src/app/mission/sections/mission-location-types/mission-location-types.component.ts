@@ -13,8 +13,8 @@ import { ColorEditor } from '../../color-editor.component'
 
 /**
  * ADR D-49: the mission-editable Location category list (Command Post, Staging Area, Ranger
- * First Aid, EOC, Fire Station, Dock, ...) - the same indirection FieldReportType.status
- * already has against `fieldReportStatuses`, reusing the identical grid pattern
+ * First Aid, EOC, Fire Station, Dock, ...) - the same indirection RadioLogEntryType.status
+ * already has against `radioLogStatuses`, reusing the identical grid pattern
  * (MissionFieldReportStatusesComponent) rather than inventing a second list-editor widget.
  *
  * `rowData` is the same array reference as `settings.locationTypes` (mission.component.ts's

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 
 import {
-  FieldReportService, FieldReportsType, FieldReportType, LogService, RangerService, RangerType,
+  RadioLogService, RadioLogType, RadioLogEntryType, LogService, RangerService, RangerType,
   MissionService
 } from './'
 
@@ -14,7 +14,7 @@ import {
  * makes it impossible to show the product to anyone, or to eyeball a UI change,
  * without first hand-entering reports one at a time.
  *
- * This used to differ from FieldReportService.generateFakeData() on purpose - that one
+ * This used to differ from RadioLogService.generateFakeData() on purpose - that one
  * scattered random points within ~0.001 degrees of the default coordinate with joke
  * notes, useful for load-testing the grid but useless for a demo since every marker
  * landed in one indistinguishable clump. It was removed 2026-08-25 as a dead control
@@ -78,7 +78,7 @@ export class SampleDataService {
   constructor(
     private missionService: MissionService,
     private rangerService: RangerService,
-    private fieldReportService: FieldReportService,
+    private radioLogService: RadioLogService,
     private log: LogService,
   ) { }
 
@@ -89,7 +89,7 @@ export class SampleDataService {
    * never empty and would make this always false.
    */
   public isVirginInstance(): boolean {
-    return this.fieldReportService.getCurrentFieldReports().fieldReportArray.length === 0
+    return this.radioLogService.getCurrentRadioLog().logEntries.length === 0
   }
 
   /**
@@ -102,10 +102,10 @@ export class SampleDataService {
    */
   public loadSampleMission(): void {
     const rangers = this.buildSampleRangers()
-    const fieldReports = this.buildSampleFieldReports(rangers)
+    const sampleRadioLog = this.buildSampleRadioLog(rangers)
 
     // Settings first, then rangers, then reports - the same ordering (and for the same
-    // reason) as BackupService.importMission(): replaceAllFieldReports() recalculates
+    // reason) as BackupService.importMission(): replaceAllRadioLog() recalculates
     // bounds and needs current settings already in place.
     this.missionService.updateMission({
       ...this.missionService.settings,
@@ -114,9 +114,9 @@ export class SampleDataService {
       eventNotes: SampleDataService.SAMPLE_EVENT_NOTES,
     })
     this.rangerService.replaceAllRangers(rangers)
-    this.fieldReportService.replaceAllFieldReports(fieldReports)
+    this.radioLogService.replaceAllRadioLog(sampleRadioLog)
 
-    this.log.warn(`Loaded sample mission: ${rangers.length} rangers, ${fieldReports.numReport} field reports. This is DEMO data.`, this.id)
+    this.log.warn(`Loaded sample mission: ${rangers.length} rangers, ${sampleRadioLog.numReport} field reports. This is DEMO data.`, this.id)
   }
 
   // ---------------------------------------------------------------------------
@@ -124,7 +124,7 @@ export class SampleDataService {
   /**
    * A demonstration roster: an Incident Commander, three Section Chiefs, a PIO and Command
    * Post net control staying at one fixed post, plus six field-team rangers split between
-   * two walking-search clusters (see buildSampleFieldReports()). Twelve total, matching the
+   * two walking-search clusters (see buildSampleRadioLog()). Twelve total, matching the
    * "12 units" the Advanced Options sample-mission note already describes.
    *
    * Every name here is deliberately, obviously invented - this is demo data and should read
@@ -163,10 +163,10 @@ export class SampleDataService {
   /**
    * Field reports and messages for the sample mission.
    *
-   * `bounds` is deliberately absent: FieldReportService.replaceAllFieldReports()
+   * `bounds` is deliberately absent: RadioLogService.replaceAllRadioLog()
    * recalculates it from the report coordinates, exactly as it does for a real import.
    */
-  public buildSampleFieldReports(rangers: RangerType[]): Omit<FieldReportsType, 'bounds'> {
+  public buildSampleRadioLog(rangers: RangerType[]): Omit<RadioLogType, 'bounds'> {
     const statuses = this.statusNames()
     const now = Date.now()
 
@@ -192,7 +192,7 @@ export class SampleDataService {
       address: string
       statusIndex: number
       notes: string
-      source?: FieldReportType['source']
+      source?: RadioLogEntryType['source']
       operator?: string
       generates213?: boolean
       replyRequested213?: boolean
@@ -201,7 +201,7 @@ export class SampleDataService {
       recipients213?: string[]
     }
 
-    // Status indices point into the default fieldReportStatuses list:
+    // Status indices point into the default radioLogStatuses list:
     // 0 Normal, 1 Location Report, 2 Evidence Report, 3 Need Rest/Food,
     // 4 Incident Check-in, 5 Incident Check-out, 6 Urgent.
     const rows: Row[] = [
@@ -261,7 +261,7 @@ export class SampleDataService {
     ]
 
     const known = new Set(rangers.map(r => r.callsign))
-    const fieldReportArray: FieldReportType[] = []
+    const logEntries: RadioLogEntryType[] = []
 
     rows.forEach((row, index) => {
       if (!known.has(row.callsign)) {
@@ -270,8 +270,8 @@ export class SampleDataService {
         this.log.error(`Sample report ${index} references unknown callsign "${row.callsign}" - skipped.`, this.id)
         return
       }
-      fieldReportArray.push({
-        id: fieldReportArray.length,
+      logEntries.push({
+        id: logEntries.length,
         callsign: row.callsign,
         location: { lat: row.lat, lng: row.lng, address: row.address, derivedFromAddress: false },
         date: new Date(now - row.minutesAgo * 60 * 1000),
@@ -291,10 +291,10 @@ export class SampleDataService {
       version: this.missionService.settings.version,
       date: new Date(),
       event: SampleDataService.SAMPLE_EVENT_NAME,
-      numReport: fieldReportArray.length,
-      maxId: fieldReportArray.length,
+      numReport: logEntries.length,
+      maxId: logEntries.length,
       filter: '',
-      fieldReportArray,
+      logEntries,
     }
   }
 
@@ -305,7 +305,7 @@ export class SampleDataService {
    * anyone who had renamed them.
    */
   private statusNames(): string[] {
-    const configured = this.missionService.settings?.fieldReportStatuses
+    const configured = this.missionService.settings?.radioLogStatuses
     if (!configured?.length) {
       this.log.error(`No field report statuses configured; sample reports will have an empty status.`, this.id)
       return ['']

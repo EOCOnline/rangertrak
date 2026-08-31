@@ -3,9 +3,9 @@ import { Observable, ReplaySubject } from 'rxjs'
 import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 
 import * as packageJson from '../../../../package.json'
-import { FieldReportStatusType, LogService, MissionType } from './'
+import { RadioLogStatusType, LogService, MissionType } from './'
 import {
-  DEFAULT_FIELD_REPORT_STATUSES, DEFAULT_LOCATION_TYPES, DEFAULT_RECIPIENT_OPTIONS_213,
+  DEFAULT_RADIO_LOG_STATUSES, DEFAULT_LOCATION_TYPES, DEFAULT_RECIPIENT_OPTIONS_213,
   MISSION_SCHEMA_VERSION, migrateMission
 } from './mission-migration'
 
@@ -297,7 +297,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       },
 
       imageDirectory: "./assets/imgs/",    //! WARNING: Hardcoded & potential SECURITY risk.
-      defFieldReportStatus: 0, // which of the following array entries to use as the default value
+      defRadioLogStatus: 0, // which of the following array entries to use as the default value
       //? FUTURE: Consider replacing "Color" with "CSS_Style" to allow more options?
       //? FUTURE: Consider adding contrasting 'shadow color' for nice display on entry form
       // https://en.wikipedia.org/wiki/Web_colors#Extended_colors
@@ -310,7 +310,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       // painted as TEXT on the Entry status radios and measured as low as 1.07:1 - a fresh
       // install shipped inaccessible, not just upgraded ones. See mission-migration.ts,
       // which maps the old values forward for existing users.
-      fieldReportStatuses: [...DEFAULT_FIELD_REPORT_STATUSES],
+      radioLogStatuses: [...DEFAULT_RADIO_LOG_STATUSES],
       // fieldReportKeywords: [''],  // Future...could also just search notes field
       recipientOptions213: [...DEFAULT_RECIPIENT_OPTIONS_213],
       idFieldLabel: 'ID',

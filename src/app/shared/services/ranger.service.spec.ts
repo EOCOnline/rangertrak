@@ -77,7 +77,7 @@ describe('RangerService', () => {
       const service = TestBed.inject(RangerService);
       expect(service.parseRosterJson(JSON.stringify({ rangers: [one] })).length).toBe(1);
       expect(service.parseRosterJson(JSON.stringify({
-        schemaVersion: 1, settings: {}, fieldReports: { fieldReportArray: [] }, rangers: [one]
+        schemaVersion: 1, settings: {}, radioLog: { logEntries: [] }, rangers: [one]
       })).length).toBe(1);
     });
 

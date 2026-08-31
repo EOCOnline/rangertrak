@@ -19,7 +19,7 @@ import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 import { rangerColorFor } from '../shared/mapping/ranger-icon'
 import { buildIcs309Log, Ics309Log } from '../shared/export/ics309-log'
 import {
-  FieldReportService, FieldReportStatusType, FieldReportsType, FieldReportType, LogService,
+  RadioLogService, RadioLogStatusType, RadioLogType, RadioLogEntryType, LogService,
   RangerService, MissionService, MissionType, statusColorValue, statusInkValue
 } from '../shared/services'
 
@@ -31,8 +31,15 @@ export class myUnusedPipe implements PipeTransform {
 }
 
 
+// 2026-08-31: renamed from field-reports.component.ts / FieldReportsComponent - this file
+// (and radio-log.service.ts/radio-log-entry.interface.ts alongside it) used to keep the
+// original "Field Report" name deliberately, on the theory that renaming everywhere would be
+// "pure churn" once only the page's own display label changed (0.75.0's ICS-309/213
+// restructuring, Reports -> Radio Log). Revisited and reversed: the class/file/service names
+// had become the exact stale-second-name problem the rest of that restructuring existed to
+// fix.
 @Component({
-  selector: 'rangertrak-field-reports',
+  selector: 'rangertrak-radio-log',
   standalone: true,
   imports: [
     CommonModule,
@@ -41,21 +48,17 @@ export class myUnusedPipe implements PipeTransform {
     ExpandableSectionComponent,
     ...MATERIAL_IMPORTS
   ],
-  templateUrl: './field-reports.component.html',
+  templateUrl: './radio-log.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['./field-reports.component.scss']
+  styleUrls: ['./radio-log.component.scss']
 })
-export class FieldReportsComponent implements OnInit, OnDestroy {
+export class RadioLogComponent implements OnInit, OnDestroy {
 
-  private id = 'Field Report'
-  // 2026-08-27: was "Field Reports" - renamed "Radio Log" (nav/route followed, see
-  // app.routes.ts and navbar.component.html). The class/file/id above keep their original
-  // name deliberately - this is still the same field-report grid, only the page's own
-  // user-facing name changed, not renaming that everywhere would be pure churn.
+  private id = 'Radio Log'
   title = 'Radio Log — ICS-309'
   pageDescr = `Every field report, in one grid - who, where, when, and what they said.`
 
-  private fieldReportsSubscription!: Subscription
+  private radioLogSubscription!: Subscription
 
   /**
    * Read through to the service rather than snapshotting in ngOnInit, which is what this
@@ -64,15 +67,15 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
    * left this grid coloring rows by the *previous* mission's status list. Read at
    * cell-render time, so a getter is enough; MissionService.settings reads a signal.
    */
-  private get fieldReportStatuses(): FieldReportStatusType[] {
-    return this.missionService.settings?.fieldReportStatuses ?? []
+  private get radioLogStatuses(): RadioLogStatusType[] {
+    return this.missionService.settings?.radioLogStatuses ?? []
   }
-  // Mutated inside gotNewFieldReports(), reached from the fieldReportsSubscription's
+  // Mutated inside gotNewRadioLog(), reached from the radioLogSubscription's
   // subscribe() callback, not an Angular template binding - this app is zoneless, so a
   // plain field written there has no guaranteed path back into change detection.
   // Signals close that gap (Sprint G).
-  public fieldReportArray = signal<FieldReportType[]>([])
-  private fieldReports: FieldReportsType | undefined
+  public radioLogEntries = signal<RadioLogEntryType[]>([])
+  private radioLog: RadioLogType | undefined
 
   private missionSubscription!: Subscription
   private settings!: MissionType
@@ -110,7 +113,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     { value: 'selected', label: 'Selected rows' },
     { value: 'sincePrint', label: 'Since the last print' },
   ]
-  // Read by the print-only block in the template (field-reports.component.html) - null
+  // Read by the print-only block in the template (radio-log.component.html) - null
   // until "Print 309 Log" is clicked, so nothing renders under `@media print` before then.
   public ics309Log = signal<Ics309Log | null>(null)
   // NOT initialized here with `= this.buildColumnDefs('ID')` the way rangers.component.ts's
@@ -125,7 +128,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   /**
    * Raised live, 2026-08-27, four fixes at once:
    *  - `id` (this report's own sequential number, NOT a ranger identifier - see
-   *    FieldReportType's own comment on the two) was headed "ID", easily confused with the
+   *    RadioLogEntryType's own comment on the two) was headed "ID", easily confused with the
    *    ranger-identifier column two over. Renamed to "#", what it actually is: this row's
    *    line number in the radio log.
    *  - CallSign's text now colors by ranger identity via `rangerColorFor` - the exact same
@@ -147,7 +150,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       // half) is a separate, still-open decision - see the handoff doc.
       {
         headerName: 'Callsign', field: "callsign", tooltipField: "team", maxWidth: 160,
-        cellStyle: (params: { data: FieldReportType }) => {
+        cellStyle: (params: { data: RadioLogEntryType }) => {
           const key = params.data.rangerUid || params.data.callsign
           return key ? { color: rangerColorFor(key), 'font-weight': 600 } : null
         }
@@ -169,13 +172,13 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
         // so without this an edit wrote a phantom top-level `lat` that nothing reads
         // and the displayed coordinate snapped back on the next refresh.
         headerName: "Lat", field: "lat", singleClickEdit: true, cellClass: 'number-cell', maxWidth: 130,
-        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lat * 10000) / 10000.0 },
-        valueSetter: (params: { data: FieldReportType, newValue: any }) => this.setCoordinate(params.data, 'lat', params.newValue)
+        valueGetter: (params: { data: RadioLogEntryType }) => { return Math.round(params.data.location.lat * 10000) / 10000.0 },
+        valueSetter: (params: { data: RadioLogEntryType, newValue: any }) => this.setCoordinate(params.data, 'lat', params.newValue)
       },
       {
         headerName: "Lng", field: "lng", singleClickEdit: true, cellClass: 'number-cell', maxWidth: 130,
-        valueGetter: (params: { data: FieldReportType }) => { return Math.round(params.data.location.lng * 10000) / 10000.0 },
-        valueSetter: (params: { data: FieldReportType, newValue: any }) => this.setCoordinate(params.data, 'lng', params.newValue)
+        valueGetter: (params: { data: RadioLogEntryType }) => { return Math.round(params.data.location.lng * 10000) / 10000.0 },
+        valueSetter: (params: { data: RadioLogEntryType, newValue: any }) => this.setCoordinate(params.data, 'lng', params.newValue)
       },
       { headerName: "Reported", headerTooltip: 'Report date', valueGetter: this.myDateGetter, maxWidth: 170, editable: false },
       { headerName: "Elapsed", headerTooltip: 'Hrs:Min:Sec since report', valueGetter: this.myMinuteGetter, maxWidth: 130, editable: false },
@@ -186,7 +189,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
           // --rt-status-*, custom color passes through), and an explicit ink color is set
           // alongside it. Previously only background-color was set, so the label inherited
           // whatever text color was in scope - which is unreadable on roughly half the palette.
-          const stat = this.fieldReportStatuses.find(el => el.status == params.value)
+          const stat = this.radioLogStatuses.find(el => el.status == params.value)
           const stored = stat ? stat.color : '#A3A3A3'
           return { 'background-color': statusColorValue(stored), 'color': statusInkValue(stored) }
         }
@@ -216,7 +219,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       {
         headerName: "Evidence", field: "evidenceLocation", maxWidth: 110, editable: false,
         cellRenderer: this.evidenceCellRenderer,
-        tooltipValueGetter: (params: { data: FieldReportType }) => {
+        tooltipValueGetter: (params: { data: RadioLogEntryType }) => {
           const loc = params.data.evidenceLocation
           return loc ? `Evidence/clue at ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}` : undefined
         },
@@ -302,7 +305,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   private rowData: any[] = []
 
   constructor(
-    private fieldReportService: FieldReportService,
+    private radioLogService: RadioLogService,
     private log: LogService,
     // private teamService: TeamService,
     // private rangerService: RangerService,
@@ -348,10 +351,10 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
       this.columnDefs = this.buildColumnDefs()
     }
 
-    this.fieldReportsSubscription = this.fieldReportService.getFieldReportsObserver().subscribe({
+    this.radioLogSubscription = this.radioLogService.getRadioLogObserver().subscribe({
       next: (newReport) => {
         console.log(newReport)
-        this.gotNewFieldReports(newReport)
+        this.gotNewRadioLog(newReport)
       },
       error: (e) => this.log.error('Field Reports Subscription got:' + e, this.id),
       complete: () => this.log.info('Field Reports Subscription complete', this.id)
@@ -376,18 +379,18 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   // it adds a column to a grid that is already wide, so it is a product decision rather
   // than a revival of this.
 
-  statusCellRenderer = (params: { data: FieldReportType }) => {
+  statusCellRenderer = (params: { data: RadioLogEntryType }) => {
     let title = `Status: ${params.data.status}`
     return `<span aria-hidden title="${title}"> ${params.data.status}</span>`
   }
 
-  notesCellRenderer = (params: { data: FieldReportType }) => {
+  notesCellRenderer = (params: { data: RadioLogEntryType }) => {
     let title = `Note: ${params.data.notes}`
     return `<span aria-hidden title="${title}"> ${params.data.notes}</span>`
   }
 
   /** E-11: a compact flag icon when this report has an evidence/clue location, blank otherwise. */
-  evidenceCellRenderer = (params: { data: FieldReportType }) => {
+  evidenceCellRenderer = (params: { data: RadioLogEntryType }) => {
     const loc = params.data.evidenceLocation
     if (!loc) return ''
     return `<span aria-hidden title="Evidence/clue at ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}">🚩</span>`
@@ -398,19 +401,19 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
    * above) - one source of truth for status color, reused by the phone card view.
    */
   statusFill(status: string): string {
-    const stat = this.fieldReportStatuses.find(el => el.status == status)
+    const stat = this.radioLogStatuses.find(el => el.status == status)
     return statusColorValue(stat ? stat.color : '#A3A3A3')
   }
 
   statusInk(status: string): string {
-    const stat = this.fieldReportStatuses.find(el => el.status == status)
+    const stat = this.radioLogStatuses.find(el => el.status == status)
     return statusInkValue(stat ? stat.color : '#A3A3A3')
   }
 
   //--------------------------------------------------------------------------
 
   //https://blog.ag-grid.com/conditional-formatting-for-cells-in-ag-grid/
-  /* cellClassRules = (params: { data: FieldReportType }) => {
+  /* cellClassRules = (params: { data: RadioLogEntryType }) => {
     if (params.data.status == 'Urgent') {
       return "cell-pass" // see stylesheet for this
     }
@@ -467,9 +470,9 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   onRowSelection(event: SelectionChangedEvent) {
     let selectedNodes = this.gridApi.getSelectedNodes()
     this.selectedRows.set(selectedNodes.length)
-    let selectedData = selectedNodes.map((node: { data: FieldReportType; }) => node.data)
+    let selectedData = selectedNodes.map((node: { data: RadioLogEntryType; }) => node.data)
     this.log.verbose(`Selected Row Data obtained ${selectedNodes.length} selected rows`, this.id)
-    this.fieldReportService.setSelectedFieldReports(selectedData)
+    this.radioLogService.setSelectedRadioLogEntries(selectedData)
   }
 
   //onFirstDataRendered(params: any) {
@@ -493,21 +496,21 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   }
 
 
-  gotNewFieldReports(newReports: FieldReportsType) {
+  gotNewRadioLog(newReports: RadioLogType) {
     this.log.verbose(`New collection of ${newReports.numReport} Field Reports observed.`, this.id)
 
-    this.fieldReports = newReports
-    this.fieldReportArray.set(newReports.fieldReportArray)
+    this.radioLog = newReports
+    this.radioLogEntries.set(newReports.logEntries)
     this.refreshGrid()
     //this.reloadPage()  // TODO: needed? - creates endless loop!
   }
 
   /**
-   * Given a fieldReport, finds the date, and returns it as 'Sun Jan-01 23:00:00'
+   * Given a report, finds the date, and returns it as 'Sun Jan-01 23:00:00'
    * @param params
    * @returns
    */
-  myDateGetter = (params: { data: FieldReportType }) => {
+  myDateGetter = (params: { data: RadioLogEntryType }) => {
     const weekday = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
     let dt = 'unknown date'
     let d: Date = params.data.date
@@ -533,7 +536,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     return dt
   }
 
-  myMinuteGetter = (params: { data: FieldReportType }) => {
+  myMinuteGetter = (params: { data: RadioLogEntryType }) => {
     let dt = new Date(params.data.date).getTime()
     let milliseconds = Date.now() - dt
     let seconds: string = (Math.round(milliseconds / 1000) % 60).toString().padStart(2, '0')
@@ -544,7 +547,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   }
 
   //! BUG: JUST ROUNDS THE lat, not whatever is passed in!!!!!
-  // rounder = (params: { data: FieldReportType }) => {
+  // rounder = (params: { data: RadioLogEntryType }) => {
   //   let val = Math.round(params. data.lat * 10000) / 10000.0
   //   return val
   // }
@@ -553,13 +556,13 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     return d instanceof Date //&& !isNaN(d);
   }
 
-  // filteredReports:FieldReportType[] = this.fieldReportService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000)) //FUTURE:
+  // filteredReports:RadioLogEntryType[] = this.radioLogService.filterFieldReportsByDate(Date(-12*60*60*1000), Date(5*60*1000)) //FUTURE:
   // onBtnSetSelectedRowData() {
   //   let selectedNodes = this.gridApi.getSelectedNodes();
-  //   let selectedData = selectedNodes.map((node: { data: FieldReportType; }) => node.data);
+  //   let selectedData = selectedNodes.map((node: { data: RadioLogEntryType; }) => node.data);
   //   this.selectedRows = selectedNodes.length
   //   this.log.excessive(`onBtnGetSelectedRowData obtained ${ selectedNodes.length } selected rows: \n${ JSON.stringify(selectedData) } `, this.id)
-  //   this.fieldReportService.setSelectedFieldReports(selectedData)
+  //   this.radioLogService.setSelectedRadioLogEntries(selectedData)
   // }
 
 
@@ -598,7 +601,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   }
 
   onBtnExport() {
-    // TODO: Does this handle new FieldReports properly?
+    // TODO: Does this handle new radio log entries properly?
     // https://www.ag-grid.com/javascript-data-grid/excel-export-styles/#styling-headers
 
     // const params = this.getParams();
@@ -665,12 +668,12 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   }
 
   /** The reports for whichever scope is currently picked - see printScopeOptions above. */
-  private reportsForPrintScope(): FieldReportType[] {
+  private reportsForPrintScope(): RadioLogEntryType[] {
     const scope = this.printScope()
 
     if (scope === 'sincePrint') {
       const since = this.settings?.lastPrintedAt ? new Date(this.settings.lastPrintedAt).getTime() : 0
-      return this.fieldReportArray().filter(r => new Date(r.date).getTime() > since)
+      return this.radioLogEntries().filter(r => new Date(r.date).getTime() > since)
     }
 
     // 'visible' and 'selected' both read through the grid, which doesn't exist on a phone
@@ -679,15 +682,15 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     // reaching here on a phone would be a template bug, not a real case to design around.
     if (!this.gridApi) {
       this.log.warn(`reportsForPrintScope(): no gridApi for scope "${scope}"; printing every report instead.`, this.id)
-      return this.fieldReportArray()
+      return this.radioLogEntries()
     }
 
     if (scope === 'selected') {
       return this.gridApi.getSelectedRows()
     }
 
-    const rows: FieldReportType[] = []
-    this.gridApi.forEachNodeAfterFilterAndSort((node: { data: FieldReportType }) => rows.push(node.data))
+    const rows: RadioLogEntryType[] = []
+    this.gridApi.forEachNodeAfterFilterAndSort((node: { data: RadioLogEntryType }) => rows.push(node.data))
     return rows
   }
 
@@ -701,10 +704,10 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     return `${d.toLocaleDateString()} ${this.formatLogTime(d)}`
   }
 
-  onBtnClearFieldReports() {
+  onBtnClearRadioLog() {
     if (Utility.getConfirmation('REALLY delete all FieldReports in LocalStorage?')) {
       this.log.info("Removing all field reports from local storage...", this.id)
-      this.fieldReportService.deleteAllFieldReports()
+      this.radioLogService.deleteAllRadioLogEntries()
       this.refreshGrid()
       this.reloadPage()
     }
@@ -718,7 +721,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
    */
   private onCellEdited() {
     this.log.verbose(`Field report edited in grid; saving.`, this.id)
-    this.fieldReportService.saveEditedFieldReports()
+    this.radioLogService.saveEditedRadioLog()
   }
 
   /**
@@ -726,7 +729,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
    * Rejects anything non-numeric or out of range rather than storing NaN, which
    * would put the report - and the map bounds derived from it - nowhere.
    */
-  private setCoordinate(report: FieldReportType, axis: 'lat' | 'lng', newValue: any): boolean {
+  private setCoordinate(report: RadioLogEntryType, axis: 'lat' | 'lng', newValue: any): boolean {
     const parsed = Number(newValue)
     const limit = axis === 'lat' ? 90 : 180
 
@@ -741,7 +744,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
     return true
   }
 
-  onBtnImportFieldReportsFromJSON_unused() {
+  onBtnImportRadioLogFromJSON_unused() {
     alert(`onBtnImportFieldReports is unimplemented`)
 
     // TODO: look at: https://www.npmjs.com/package/fs-browsers
@@ -827,7 +830,7 @@ export class FieldReportsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.fieldReportsSubscription?.unsubscribe()
+    this.radioLogSubscription?.unsubscribe()
     this.missionSubscription?.unsubscribe()
     this.phoneMediaQuery.removeEventListener('change', this.onPhoneMediaChange)
   }

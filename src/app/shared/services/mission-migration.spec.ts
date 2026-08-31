@@ -1,6 +1,6 @@
 import { MissionType } from './mission.interface'
 import {
-  DEFAULT_FIELD_REPORT_STATUSES, MISSION_SCHEMA_VERSION, migrateMission
+  DEFAULT_RADIO_LOG_STATUSES, MISSION_SCHEMA_VERSION, migrateMission
 } from './mission-migration'
 import { statusColorMeetsAA, statusColorValue, statusInkValue } from './status-color'
 
@@ -23,8 +23,8 @@ describe('migrateMission', () => {
       allowManualPinDrops: false, googleGeocodingApiKey: '',
       google: { defZoom: 17, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
       leaflet: { defZoom: 17, markerScheme: '', overviewDifference: 5, overviewMinZoom: 5, overviewMaxZoom: 16 },
-      imageDirectory: './assets/imgs/', defFieldReportStatus: 0,
-      fieldReportStatuses: [
+      imageDirectory: './assets/imgs/', defRadioLogStatus: 0,
+      radioLogStatuses: [
         { status: 'Normal', color: 'LightYellow', icon: 'a.png' },
         { status: 'Location Report', color: 'Aquamarine', icon: 'b.png' },
         { status: 'Evidence Report', color: 'DarkGoldenrod', icon: 'c.png' },
@@ -43,36 +43,36 @@ describe('migrateMission', () => {
 
   it('converts every legacy default color to its semantic key', () => {
     const out = migrateMission(v0Settings())
-    expect(out.fieldReportStatuses.map(s => s.color)).toEqual([
+    expect(out.radioLogStatuses.map(s => s.color)).toEqual([
       'normal', 'location-report', 'evidence-report', 'need-rest-food',
       'incident-check-in', 'incident-check-out', 'urgent',
     ])
   })
 
-  it('preserves status order, because defFieldReportStatus is an index into it', () => {
+  it('preserves status order, because defRadioLogStatus is an index into it', () => {
     const before = v0Settings()
     const out = migrateMission(before)
-    expect(out.fieldReportStatuses.map(s => s.status))
-      .toEqual(before.fieldReportStatuses.map(s => s.status))
+    expect(out.radioLogStatuses.map(s => s.status))
+      .toEqual(before.radioLogStatuses.map(s => s.status))
     // The default status must still be the one it was before the migration ran.
-    expect(out.fieldReportStatuses[out.defFieldReportStatus].status).toBe('Normal')
+    expect(out.radioLogStatuses[out.defRadioLogStatus].status).toBe('Normal')
   })
 
   it('leaves a color the user deliberately customized alone', () => {
     const input = v0Settings()
-    input.fieldReportStatuses[6].color = '#FF00FF' // user recolored Urgent
+    input.radioLogStatuses[6].color = '#FF00FF' // user recolored Urgent
     const out = migrateMission(input)
-    expect(out.fieldReportStatuses[6].color).toBe('#FF00FF')
+    expect(out.radioLogStatuses[6].color).toBe('#FF00FF')
     // ...while its untouched neighbors still migrate.
-    expect(out.fieldReportStatuses[5].color).toBe('incident-check-out')
+    expect(out.radioLogStatuses[5].color).toBe('incident-check-out')
   })
 
   it('does not rewrite a status wearing another status\'s old default color', () => {
     // Matching on color alone would turn this into 'normal' and silently change its meaning.
     const input = v0Settings()
-    input.fieldReportStatuses[6].color = 'LightYellow' // Urgent, but yellow, on purpose
+    input.radioLogStatuses[6].color = 'LightYellow' // Urgent, but yellow, on purpose
     const out = migrateMission(input)
-    expect(out.fieldReportStatuses[6].color).toBe('LightYellow')
+    expect(out.radioLogStatuses[6].color).toBe('LightYellow')
   })
 
   it('is idempotent - migrating twice changes nothing further', () => {
@@ -84,7 +84,7 @@ describe('migrateMission', () => {
   it('does not mutate its argument', () => {
     const input = v0Settings()
     migrateMission(input)
-    expect(input.fieldReportStatuses[0].color).toBe('LightYellow')
+    expect(input.radioLogStatuses[0].color).toBe('LightYellow')
     expect((input as { schemaVersion?: number }).schemaVersion).toBeUndefined()
   })
 
@@ -92,13 +92,13 @@ describe('migrateMission', () => {
     const future = { ...v0Settings(), schemaVersion: MISSION_SCHEMA_VERSION + 99 }
     const out = migrateMission(future)
     expect(out.schemaVersion).toBe(MISSION_SCHEMA_VERSION + 99)
-    expect(out.fieldReportStatuses[0].color).toBe('LightYellow') // untouched, not "migrated"
+    expect(out.radioLogStatuses[0].color).toBe('LightYellow') // untouched, not "migrated"
   })
 
   it('falls back to the shipped defaults when statuses are missing entirely', () => {
-    const broken = { ...v0Settings(), fieldReportStatuses: undefined } as unknown as MissionType
+    const broken = { ...v0Settings(), radioLogStatuses: undefined } as unknown as MissionType
     const out = migrateMission(broken)
-    expect(out.fieldReportStatuses).toEqual([...DEFAULT_FIELD_REPORT_STATUSES])
+    expect(out.radioLogStatuses).toEqual([...DEFAULT_RADIO_LOG_STATUSES])
   })
 
   // BUG-3 (2026-08-19): settings saved before googleGeocodingApiKey existed had no such key,
@@ -231,7 +231,7 @@ describe('migrateMission', () => {
 
 describe('status colors', () => {
   it('resolves the shipped defaults to token references, not raw colors', () => {
-    for (const s of DEFAULT_FIELD_REPORT_STATUSES) {
+    for (const s of DEFAULT_RADIO_LOG_STATUSES) {
       expect(statusColorValue(s.color)).toBe(`var(--rt-status-${s.color})`)
       expect(statusInkValue(s.color)).toBe('var(--rt-status-ink)')
     }
@@ -257,7 +257,7 @@ describe('status colors', () => {
   })
 
   it('treats every built-in key as accessible without measuring', () => {
-    for (const s of DEFAULT_FIELD_REPORT_STATUSES) {
+    for (const s of DEFAULT_RADIO_LOG_STATUSES) {
       expect(statusColorMeetsAA(s.color)).toBe(true)
     }
   })

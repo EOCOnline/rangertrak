@@ -26,7 +26,7 @@ import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
 import { DDToDDM } from '../shared/mapping/coordinate'
 import {
-  FIELD_REPORT_SOURCES, FieldReportService, FieldReportStatusType, LocationType, LogService,
+  RADIO_LOG_ENTRY_SOURCES, RadioLogService, RadioLogStatusType, LocationType, LogService,
   RangerService, RangerType, MissionService, MissionType, SampleDataService, statusColorValue,
   undefinedAddressFlag, undefinedLocation, WelcomePanelService
 } from '../shared/services/'
@@ -59,9 +59,9 @@ import { MiniMapLeafletComponent } from './mini-mapLeaflet.component'
   styleUrls: ['./entry.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   // BUG-2 (2026-08-19): this used to be
-  //   providers: [RangerService, FieldReportService, MissionService]
+  //   providers: [RangerService, RadioLogService, MissionService]
   // All three are @Injectable({providedIn:'root'}). Re-declaring them here gave Entry its
-  // OWN instances, so submitted reports went into a private FieldReportService while the
+  // OWN instances, so submitted reports went into a private RadioLogService while the
   // Reports page read the root one - which still held its startup-empty list. The page
   // looked empty until a full reload made every instance re-read localStorage.
   //, TeamService
@@ -139,7 +139,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // E-103: the per-mission definable recipients213 checkbox list is a runtime-variable-length
   // group, not a fixed set of fields - it gets ONE reserved tab stop for the whole group, the
   // same convention Status's mat-radio-group uses above for its own per-mission configurable
-  // list (settings.fieldReportStatuses). Individual checkboxes render with no explicit
+  // list (settings.radioLogStatuses). Individual checkboxes render with no explicit
   // tabindex, so they're naturally focusable (browser default) without disturbing this app's
   // "contiguous explicit tabindex 1..N" invariant (tools/e2e.js's checkEntryTabOrder) the way
   // a per-option slot count tied to settings data - unknowable at compile time - would.
@@ -163,9 +163,9 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   submitTabIndex = this.resetTabIndex + 1
 
   // E-41 phase 1: source options for the template's @for - the values themselves are
-  // already the labels wanted (FIELD_REPORT_SOURCES), a plain readonly re-export so the
+  // already the labels wanted (RADIO_LOG_ENTRY_SOURCES), a plain readonly re-export so the
   // template doesn't need to import the const directly.
-  readonly sourceOptions = FIELD_REPORT_SOURCES
+  readonly sourceOptions = RADIO_LOG_ENTRY_SOURCES
 
   private id = 'Entry Form'
   title = 'Field Report Entry'
@@ -279,7 +279,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // A plain signal outside entryModel/entryForm, same reasoning as showEvidenceLocation above -
   // the option list's length varies per mission, so it can't be a static Signal Forms field.
   // recipients213 itself (in entryModel) stays free text for anything NOT on the checklist;
-  // mergedFormValue() combines both into the FieldReportType.recipients213 list at submission.
+  // mergedFormValue() combines both into the RadioLogEntryType.recipients213 list at submission.
   selectedRecipients213 = signal<Set<string>>(new Set())
 
   toggleRecipient213(option: string, checked: boolean) {
@@ -312,7 +312,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private rangerService: RangerService,
     private photos: RangerPhotoService,
-    private fieldReportService: FieldReportService,
+    private radioLogService: RadioLogService,
     private log: LogService,
     private missionService: MissionService,
     private _snackBar: MatSnackBar,
@@ -434,7 +434,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   canLoadDemoData(): boolean {
     return this.rangers.length === 0
-      && this.fieldReportService.getCurrentFieldReports().numReport === 0
+      && this.radioLogService.getCurrentRadioLog().numReport === 0
       && !this.settings?.mission?.trim()
   }
 
@@ -611,7 +611,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // operatorModel is deliberately NOT reset here - see its own declaration above.
     this.callsignCtrl.setValue('')
     this.entryControlsForm.setValue({
-      status: this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status
+      status: this.settings.radioLogStatuses[this.settings.defRadioLogStatus].status
     })
   }
 
@@ -647,7 +647,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       // bearing is how a scribe retracts "never mind, not a real clue," and a submitted
       // report shouldn't carry a marker its own scribe just told the form to forget.
       evidenceLocation: this.showEvidenceLocation() ? this.evidenceLocation : null,
-      // E-103: FieldReportType.recipients213 combines the per-mission checklist's checked
+      // E-103: RadioLogEntryType.recipients213 combines the per-mission checklist's checked
       // options with anything typed into the "Additional" free text - a Set dedupes the rare
       // case a scribe both checks a box AND types the same name again, the same "one
       // meaningful data boundary" reasoning as rangerUid/callsign above.
@@ -740,7 +740,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.callsignCtrl.reset('')
     this.entryControlsForm.reset({
-      status: this.settings.fieldReportStatuses[this.settings.defFieldReportStatus].status
+      status: this.settings.radioLogStatuses[this.settings.defRadioLogStatus].status
     })
     // EvidenceLocationComponent resets its own distance/unit/bearing fields when
     // formGeneration bumps below (same pattern LocationComponent's derived-block already
@@ -826,7 +826,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let formDataJSON = JSON.stringify(this.mergedFormValue())
 
-    let newReport = this.fieldReportService.addfieldReport(formDataJSON)
+    let newReport = this.radioLogService.addRadioLogEntry(formDataJSON)
     this.log.info(`Report id # ${newReport.id} has been added with: ${formDataJSON} `, this.id)
 
     if (this.submitInfo) {

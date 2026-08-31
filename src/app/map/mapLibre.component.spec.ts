@@ -32,6 +32,6 @@ describe('MapLibreComponent', () => {
   });
 
   it('toggles selected-reports display without throwing', () => {
-    expect(() => component.onSwitchSelectedFieldReports()).not.toThrow();
+    expect(() => component.onSwitchSelectedRadioLog()).not.toThrow();
   });
 });

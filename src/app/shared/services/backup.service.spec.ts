@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 
 import { BackupService, MissionExport } from './backup.service';
-import { FieldReportService } from './field-report.service';
+import { RadioLogService } from './radio-log.service';
 import { RangerService } from './ranger.service';
 import { MissionService } from './mission.service';
 
@@ -11,7 +11,7 @@ import { MissionService } from './mission.service';
  * "export -> clear storage -> import reproduces the mission exactly."
  */
 describe('BackupService', () => {
-  const KEYS = ['appSettings', 'rangers', 'fieldReports'];
+  const KEYS = ['appSettings', 'rangers', 'radioLog'];
 
   function configure() {
     TestBed.configureTestingModule({ providers: [provideHttpClient()] });
@@ -30,7 +30,7 @@ describe('BackupService', () => {
     it('bundles current settings, rangers, and field reports with a schema version', () => {
       const settings = TestBed.inject(MissionService);
       const rangers = TestBed.inject(RangerService);
-      const fieldReports = TestBed.inject(FieldReportService);
+      const radioLogService = TestBed.inject(RadioLogService);
       const backup = TestBed.inject(BackupService);
 
       settings.updateMission({ ...settings.settings, mission: 'Export Test Mission' });
@@ -38,7 +38,7 @@ describe('BackupService', () => {
         callsign: 'EXP1', fullName: 'Export Ranger', phone: '',
         image: '', rew: '', team: '', role: '', note: ''
       }));
-      fieldReports.addfieldReport(JSON.stringify({
+      radioLogService.addRadioLogEntry(JSON.stringify({
         callsign: 'EXP1',
         location: { lat: 47.4, lng: -122.4, derivedFromAddress: false },
         date: new Date(), status: 'Normal', notes: 'export test report'
@@ -49,8 +49,8 @@ describe('BackupService', () => {
       expect(payload.schemaVersion).toBe(1);
       expect(payload.settings.mission).toBe('Export Test Mission');
       expect(payload.rangers.some(r => r.callsign === 'EXP1')).toBeTrue();
-      expect(payload.fieldReports.fieldReportArray.some(r => r.notes === 'export test report')).toBeTrue();
-      expect((payload.fieldReports as any).bounds).toBeUndefined();
+      expect(payload.radioLog.logEntries.some(r => r.notes === 'export test report')).toBeTrue();
+      expect((payload.radioLog as any).bounds).toBeUndefined();
       expect(payload.exportedAt).toBeTruthy();
     });
   });
@@ -60,7 +60,7 @@ describe('BackupService', () => {
       // 1. Build up real mission state.
       const settings = TestBed.inject(MissionService);
       const rangers = TestBed.inject(RangerService);
-      const fieldReports = TestBed.inject(FieldReportService);
+      const radioLogService = TestBed.inject(RadioLogService);
       const backup = TestBed.inject(BackupService);
 
       settings.updateMission({ ...settings.settings, mission: 'Roundtrip Mission', event: 'Test Event' });
@@ -69,8 +69,8 @@ describe('BackupService', () => {
         callsign: 'RT1', fullName: 'Roundtrip Ranger', phone: '',
         image: '', rew: '', team: '', role: '', note: ''
       }));
-      fieldReports.deleteAllFieldReports();
-      fieldReports.addfieldReport(JSON.stringify({
+      radioLogService.deleteAllRadioLogEntries();
+      radioLogService.addRadioLogEntry(JSON.stringify({
         callsign: 'RT1',
         location: { lat: 47.41, lng: -122.41, derivedFromAddress: false },
         date: new Date(), status: 'Urgent', notes: 'roundtrip report'
@@ -89,7 +89,7 @@ describe('BackupService', () => {
 
       const freshSettings = TestBed.inject(MissionService);
       const freshRangers = TestBed.inject(RangerService);
-      const freshFieldReports = TestBed.inject(FieldReportService);
+      const freshRadioLogService = TestBed.inject(RadioLogService);
       const freshBackup = TestBed.inject(BackupService);
 
       // Confirm the "disaster" actually happened: fresh instances do NOT
@@ -105,9 +105,9 @@ describe('BackupService', () => {
       expect(freshSettings.settings.event).toBe('Test Event');
       expect(freshRangers.rangers.length).toBe(1);
       expect(freshRangers.rangers[0].callsign).toBe('RT1');
-      expect(freshFieldReports.getCurrentFieldReports().fieldReportArray.length).toBe(1);
-      expect(freshFieldReports.getCurrentFieldReports().fieldReportArray[0].notes).toBe('roundtrip report');
-      expect(freshFieldReports.getCurrentFieldReports().fieldReportArray[0].status).toBe('Urgent');
+      expect(freshRadioLogService.getCurrentRadioLog().logEntries.length).toBe(1);
+      expect(freshRadioLogService.getCurrentRadioLog().logEntries[0].notes).toBe('roundtrip report');
+      expect(freshRadioLogService.getCurrentRadioLog().logEntries[0].status).toBe('Urgent');
 
       // Also persisted to localStorage, not just in-memory.
       // ADR D-42/D-43 Phase 2: the roster is stored as a versioned
@@ -119,10 +119,10 @@ describe('BackupService', () => {
     });
 
     it('recalculates real map bounds after import rather than restoring stale/absent bounds', () => {
-      const fieldReports = TestBed.inject(FieldReportService);
+      const radioLogService = TestBed.inject(RadioLogService);
       const backup = TestBed.inject(BackupService);
 
-      fieldReports.addfieldReport(JSON.stringify({
+      radioLogService.addRadioLogEntry(JSON.stringify({
         callsign: 'B1',
         location: { lat: 48.0, lng: -121.0, derivedFromAddress: false },
         date: new Date(), status: 'Normal', notes: ''
@@ -131,7 +131,7 @@ describe('BackupService', () => {
 
       backup.importMission(exported);
 
-      const bounds = fieldReports.getCurrentFieldReports().bounds;
+      const bounds = radioLogService.getCurrentRadioLog().bounds;
       expect(bounds.south).toBeLessThanOrEqual(48.0);
       expect(bounds.north).toBeGreaterThanOrEqual(48.0);
       expect(bounds.west).toBeLessThanOrEqual(-121.0);
@@ -167,7 +167,7 @@ describe('BackupService', () => {
 
     it('rejects a file where rangers is not an array', async () => {
       const backup = TestBed.inject(BackupService);
-      const bad = { schemaVersion: 1, settings: {}, rangers: 'not-an-array', fieldReports: { fieldReportArray: [] } };
+      const bad = { schemaVersion: 1, settings: {}, rangers: 'not-an-array', radioLog: { logEntries: [] } };
       const file = new File([JSON.stringify(bad)], 'bad-rangers.json', { type: 'application/json' });
 
       await expectAsync(backup.readFileAsMissionExport(file)).toBeRejected();

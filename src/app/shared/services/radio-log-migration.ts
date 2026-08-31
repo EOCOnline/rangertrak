@@ -1,7 +1,11 @@
-import { FieldReportsType } from './field-report.interface'
+import { RadioLogType } from './radio-log-entry.interface'
 
 /**
- * Versioned, forward-only migration for the persisted field-report store.
+ * Versioned, forward-only migration for the persisted radio log store.
+ *
+ * 2026-08-31: renamed from field-report-migration.ts / migrateRadioLog() /
+ * FIELD_REPORT_SCHEMA_VERSION, a naming holdover from before the page itself was renamed
+ * Reports -> Radio Log (0.75.0).
  *
  * Mirrors `mission-migration.ts` and `ranger-migration.ts` - same shape, same conventions,
  * same purity rules. Field reports had **no migration machinery at all** before this: the
@@ -14,9 +18,9 @@ import { FieldReportsType } from './field-report.interface'
  * transform behind it yet because there is no legacy data to transform. When a future change
  * does need one, it becomes a numbered `if (version < N)` block below and the version bumps.
  *
- * ## The `"version"` substring trap - read before touching FieldReportsType
+ * ## The `"version"` substring trap - read before touching RadioLogType
  *
- * `field-report.service.ts`'s load path decides whether stored data is valid with
+ * `radio-log.service.ts`'s load path decides whether stored data is valid with
  * `localStorageFieldReports.indexOf("version") <= 0` - a naive SUBSTRING search over the raw
  * JSON text. Anything that removes the literal string `version` from the serialized object
  * makes every returning user's reports read as "corrupted" and silently reset to defaults.
@@ -32,19 +36,19 @@ import { FieldReportsType } from './field-report.interface'
 /**
  * Bump when a migration step is added below, and add the matching `if (version < N)` block.
  *
- * 0 - (implicit) the unversioned `FieldReportsType` wrapper written before 2026-08-26. Note
+ * 0 - (implicit) the unversioned `RadioLogType` wrapper written before 2026-08-26. Note
  *     its own `version` field is the APP version string (e.g. "0.54.1"), stamped for
  *     information and never compared - it is not, and never was, a schema version.
  * 1 - the same wrapper carrying an explicit numeric `schemaVersion`.
  */
-export const FIELD_REPORT_SCHEMA_VERSION = 1
+export const RADIO_LOG_SCHEMA_VERSION = 1
 
 /**
- * Brings a persisted field-report store up to FIELD_REPORT_SCHEMA_VERSION.
+ * Brings a persisted radio log store up to RADIO_LOG_SCHEMA_VERSION.
  *
  * Returns `null` when the input is not a usable store, rather than inventing one: building a
  * fresh empty store needs `MissionService` (for the app version and event name) and that
- * default-construction logic already lives in `FieldReportService.initEmptyFieldReports()`.
+ * default-construction logic already lives in `RadioLogService.initEmptyRadioLog()`.
  * Duplicating it here would be a second source of truth for what "empty" means. A `null`
  * return means "call your own initializer".
  *
@@ -52,27 +56,27 @@ export const FIELD_REPORT_SCHEMA_VERSION = 1
  * understands is passed through untouched rather than mangled - same reasoning as
  * `migrateMission()`.
  */
-export function migrateFieldReports(raw: unknown): FieldReportsType | null {
+export function migrateRadioLog(raw: unknown): RadioLogType | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     return null
   }
 
-  const incoming = raw as FieldReportsType & { schemaVersion?: unknown }
+  const incoming = raw as RadioLogType & { schemaVersion?: unknown }
 
-  // Not a field-report store at all - the array is the one field nothing else here can stand
-  // in for.
-  if (!Array.isArray(incoming.fieldReportArray)) {
+  // Not a radio log store at all - the array is the one field nothing else here can stand
+  // in for. Property NOT renamed - see RadioLogType.logEntries's own comment.
+  if (!Array.isArray(incoming.logEntries)) {
     return null
   }
 
   const version = typeof incoming.schemaVersion === 'number' ? incoming.schemaVersion : 0
 
   // Newer than we understand - hand it back as-is rather than "migrating" it backwards.
-  if (version > FIELD_REPORT_SCHEMA_VERSION) {
+  if (version > RADIO_LOG_SCHEMA_VERSION) {
     return { ...incoming }
   }
 
   // v0 -> v1 is a pure stamp: there is no legacy report data in the field to transform, which
   // is precisely why this seam is cheap to add right now. Future steps go here.
-  return { ...incoming, schemaVersion: FIELD_REPORT_SCHEMA_VERSION }
+  return { ...incoming, schemaVersion: RADIO_LOG_SCHEMA_VERSION }
 }
