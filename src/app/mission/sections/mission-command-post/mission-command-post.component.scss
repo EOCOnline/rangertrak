@@ -17,6 +17,20 @@
   width    : 100%;
 }
 
+// Plain-text inline button, same "reads as data/an action, not a boxed control" treatment
+// location.component.ts's own click-to-copy rows use - a full mat-button here would compete
+// visually with the sentence it sits inside.
+.mission-command-post__copy-view {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--rt-accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 // Same visual language as Help/Rangers/prep's own .warn callout (D-35-adjacent notices) -
 // see prep.component.scss for the identical rule, reused here rather than made global.
 .warn {

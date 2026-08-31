@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 
-import { MissionType } from '../../../shared/services/'
+import { LogService, MissionType } from '../../../shared/services/'
 import { MATERIAL_IMPORTS } from '../../../material-imports'
 
 /**
@@ -25,6 +25,33 @@ import { MATERIAL_IMPORTS } from '../../../material-imports'
 })
 export class MissionCommandPostComponent {
   @Input({ required: true }) form!: FieldTree<MissionType>
+
+  constructor(private log: LogService) { }
+
+  /**
+   * Raised live 2026-08-31: "does the entry field explain it & maybe display it so it can be
+   * copy/pasted elsewhere in the future?" - the server address only ever lived in the
+   * console's own scrollback and whatever got typed into the field once; nothing let the
+   * operator grab it back out of RangerTrak itself later (hours in, to tell a new viewer, with
+   * the terminal window long since scrolled past or closed). Same `navigator.clipboard.
+   * writeText()` idiom `location.component.ts`'s `copyCoordinate()` already established for
+   * exactly this "click a read-only value to copy it" need, reused rather than invented fresh
+   * - including its `.catch()`, since clipboard access can be refused (insecure context, a
+   * permissions policy) and a silent failure would leave the operator believing a copy
+   * happened when it didn't.
+   */
+  copiedField = signal<'address' | 'view' | null>(null)
+
+  copyToClipboard(field: 'address' | 'view', value: string): void {
+    navigator.clipboard.writeText(value)
+      .then(() => {
+        this.copiedField.set(field)
+        this.log.excessive(`Command Post ${field} "${value}" copied to clipboard`, 'Mission Command Post')
+      })
+      .catch(err => {
+        this.log.error(`Command Post ${field} NOT copied to clipboard, error: ${err}`, 'Mission Command Post')
+      })
+  }
 
   /**
    * Raised live 2026-08-31: "a URL to click" alongside the address field, so the operator can
