@@ -265,7 +265,29 @@ export class TimePickerComponent implements OnInit, OnChanges {
   /** A real key press directly on a focused segment - same rollover math, same result. */
   onSegmentKeyStep(event: Event, segment: TimeSegment, delta: number) {
     event.preventDefault() // native number-input stepping doesn't roll into sibling segments
+    this.flushTypedValue(event.target as HTMLInputElement, segment)
     this.stepSegment(segment, delta)
+  }
+
+  /**
+   * Bug reported live 2026-08-31: "setting hour to 23 then pressing +1 hour goes to 10, not
+   * 0 or 24" - reproduced by typing a new hour, then pressing an arrow key WITHOUT tabbing
+   * away first. Typing only ever updates the DOM (onSegmentTyping's own comment: deliberately
+   * not the model, "so it can't fight the scribe mid-keystroke") - the typed value commits to
+   * `timeModel` only on `(change)`, i.e. blur or Enter. An arrow key does neither: the input
+   * stays focused, so stepSegment() below was reading `timeModel`'s STALE pre-edit value
+   * instead of what the scribe could actually see on screen - typing "23" then pressing
+   * ArrowUp stepped from whatever hour was committed BEFORE typing (9, say - giving the
+   * reported 10), not from 23. Reads the live value straight off the input that fired the key
+   * event and folds it into the model first, so a step always starts from what is displayed.
+   */
+  private flushTypedValue(input: HTMLInputElement, segment: TimeSegment): void {
+    const n = parseInt(input.value, 10)
+    if (isNaN(n)) return
+    const clamped = segment === 'hour' ? Math.min(23, Math.max(0, n)) : Math.min(59, Math.max(0, n))
+    const hh = (segment === 'hour' ? clamped : this.hour24()).toString().padStart(2, '0')
+    const mm = (segment === 'minute' ? clamped : this.minute24()).toString().padStart(2, '0')
+    this.timeModel.update(s => ({ ...s, timeOfDay: `${hh}:${mm}` }))
   }
 
   private stepSegment(segment: TimeSegment, delta: number) {
@@ -273,17 +295,26 @@ export class TimePickerComponent implements OnInit, OnChanges {
   }
 
   /**
-   * E-50: wraps within a single day rather than rolling the date over, matching what the
-   * native control's own up/down arrows used to do. Shared by both segments - stepping by
-   * 60 minutes (hour) or 1 minute (minute).
+   * Bug reported live 2026-08-31 ("reversing through midnight bolloxes things"): this used
+   * to wrap `timeOfDay` within a single day and leave `time` (the DATE half of the model)
+   * untouched - correct for the display string, wrong for the actual moment in time. Stepping
+   * from 23:30 to 00:30 (or back the other way) needs the CALENDAR DAY to move too; silently
+   * not moving it meant the picker's own emitted Date stayed on the same day while showing a
+   * time that, combined with that day, was not the moment the scribe actually stepped to.
+   * `dayDelta` is however many full days the step crossed - normally 0, but ±1 (or more, for
+   * a large jump) whenever the wrap above actually fires.
    */
   private adjustTotalMinutes(deltaMinutes: number) {
-    const { timeOfDay } = this.timeModel()
+    const { time, timeOfDay } = this.timeModel()
     const [hours, minutes] = timeOfDay.split(':').map(Number)
-    const total = (((hours * 60 + minutes + deltaMinutes) % 1440) + 1440) % 1440
+    const totalRaw = hours * 60 + minutes + deltaMinutes
+    const dayDelta = Math.floor(totalRaw / 1440)
+    const total = ((totalRaw % 1440) + 1440) % 1440
     const newHours = Math.floor(total / 60).toString().padStart(2, '0')
     const newMinutes = (total % 60).toString().padStart(2, '0')
-    this.timeModel.update(s => ({ ...s, timeOfDay: `${newHours}:${newMinutes}` }))
+    const newDate = new Date(time)
+    newDate.setDate(newDate.getDate() + dayDelta)
+    this.timeModel.update(s => ({ ...s, time: newDate, timeOfDay: `${newHours}:${newMinutes}` }))
     this.onNewTime()
   }
 
