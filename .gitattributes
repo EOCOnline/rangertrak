@@ -1,0 +1,5 @@
+# A .command file is a shell script macOS runs by double-click - if checked out with CRLF
+# line endings (this repo's default on Windows), the shebang becomes "#!/bin/bash\r", which
+# macOS/Linux treat as an invalid interpreter path and refuse to run. Force LF regardless of
+# the platform doing the checkout, the same way a real .sh script would need.
+*.command text eol=lf

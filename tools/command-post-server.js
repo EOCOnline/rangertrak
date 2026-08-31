@@ -19,6 +19,7 @@ const https = require('https');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { execSync, spawnSync } = require('child_process');
 // Small, server-tooling-only dependency (pure JS, no native deps, never touches the PWA
 // bundle) - same exception this doc's own scoping already accepted for a QR code. See
 // getOrCreateCert() below for why this server needs to generate a certificate at all.
@@ -297,7 +298,40 @@ async function getOrCreateCert(addresses) {
   return { key: pems.private, cert: pems.cert };
 }
 
+/**
+ * Raised live 2026-08-31: "does the user still have to get the server address and plug it
+ * into our server field - manually?" - yes, still, but this closes the copy-it-out half:
+ * whoever is AT THIS LAPTOP can paste the primary address straight into Mission Setup's
+ * "Server address" field instead of retyping it from the console. Does not help a coordinator
+ * setting up a DIFFERENT device (a scribe's own phone/laptop) - that address still has to be
+ * read off this console and typed there by hand; there is no discovery mechanism (mDNS or
+ * similar) for the PWA to find this server on its own, and browsers have no API for that
+ * regardless. Best-effort and silent on failure - a clipboard miss should never be treated as
+ * the server itself failing to start.
+ */
+function copyToClipboard(text) {
+  try {
+    if (process.platform === 'win32') {
+      execSync('clip', { input: text });
+    } else if (process.platform === 'darwin') {
+      execSync('pbcopy', { input: text });
+    } else {
+      // Linux: no single guaranteed-installed clipboard tool: try the two most common,
+      // don't treat either's absence as an error.
+      const xclip = spawnSync('xclip', ['-selection', 'clipboard'], { input: text });
+      if (xclip.error) {
+        spawnSync('xsel', ['--clipboard', '--input'], { input: text });
+      }
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function printLanUrls(addresses) {
+  const primaryUrl = `https://${addresses[0] || 'localhost'}:${PORT}`;
+
   console.log('');
   console.log('RangerTrak Command Post Server');
   console.log('==============================');
@@ -320,9 +354,16 @@ function printLanUrls(addresses) {
   console.log('');
   console.log('In RangerTrak\'s own Mission Setup, turn on "Publish to Command Post Server" and');
   console.log(`set the server address to one of the URLs above (without /view), e.g.:`);
-  console.log(`  https://${addresses[0] || 'localhost'}:${PORT}`);
+  console.log(`  ${primaryUrl}`);
   console.log('(Visit that address directly in THIS device\'s own browser first, and accept the');
   console.log('warning, before turning the toggle on - publishing fails silently otherwise.)');
+
+  if (copyToClipboard(primaryUrl)) {
+    console.log('');
+    console.log(`Copied to the clipboard on THIS computer: ${primaryUrl}`);
+    console.log('(Other devices still need to read it off this screen - there is no way for');
+    console.log('their browsers to discover it automatically.)');
+  }
   console.log('');
 }
 
