@@ -364,18 +364,11 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     //! https://material.angular.io/components/autocomplete/examples#autocomplete-overview has this in constructor!
     // also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
     this.initFilteredRangers()
-    this.log.verbose(`constructor: got new callsign: [does endless loop: ] { JSON.stringify(this.filteredRangers) } `, this.id)
-
-    // OLD:  map(ranger => (ranger ? this._filterRangers(ranger) : this.rangers.slice())),
-    // NEW: map(callsign => (callsign ? this._filterRangers(callsign) : this.rangers.slice())),
 
     // NOTE: workaround for onChange not working...
     // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
     this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
   }
-
-  // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
-  //this.callsignCtrl.valueChanges.pipe(debounceTime(700)).subscribe(newCall => this.callsignChanged(newCall))
 
   // https://angular.io/guide/practical-observable-usage#type-ahead-suggestions
 
@@ -577,8 +570,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private _filterRangers(value: string): RangerType[] {
-    this.log.excessive(`_filterRangers  value changed: ${value} `, this.id)
-
     const filterValue = value.toLowerCase()
     if (!filterValue) {
       return this.rangers.slice()
@@ -792,16 +783,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     } else {
       this.log.warn(`EntryForm CallsignChanged did not find enter__Callsign-image or enter__Callsign-upshot`, this.id)
-    }
-  }
-
-  callsignCtrlChanged() { // NOTE: NEVER CALLED (my error, maybe does now..)!!!, so use workaround above...
-    this.log.error(`callsignCtrlChanged() called!!!`, this.id)
-    return
-    let callSign: string = (this.document.getElementById("enter__Callsign-input") as HTMLInputElement).value
-    if (callSign) {
-      this.log.excessive(`CallsignCtrlChanged() call = ${callSign} `)
-      this.callsignChanged(callSign)
     }
   }
 
