@@ -128,6 +128,24 @@ describe('TimePickerComponent', () => {
     expect(hourInput.value).toBe('00'); // 23 + 1 -> 00 (next day), NOT 9 + 1 -> 10
   });
 
+  it('feature added 2026-08-31: dayOfWeek reflects the current date and updates when it changes', () => {
+    component.initialDate = new Date('2026-08-25T09:00:00'); // a Tuesday
+    component.ngOnChanges({
+      initialDate: { firstChange: false, currentValue: component.initialDate, previousValue: null, isFirstChange: () => false }
+    });
+    fixture.detectChanges();
+
+    expect(component.dayOfWeek()).toBe('Tues');
+
+    component.initialDate = new Date('2026-08-28T09:00:00'); // a Friday
+    component.ngOnChanges({
+      initialDate: { firstChange: false, currentValue: component.initialDate, previousValue: null, isFirstChange: () => false }
+    });
+    fixture.detectChanges();
+
+    expect(component.dayOfWeek()).toBe('Fri');
+  });
+
   it('does not reapply on the first change - ngOnInit already handled it', () => {
     const initial = component.initialDate;
     spyOn<any>(component, 'applyInitialDate');

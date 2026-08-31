@@ -1,6 +1,13 @@
 <!-- Simplified datetime picker using native Angular Material -->
 <div class="rt-datetime">
   <mat-form-field class="rt-datetime__field" appearance="outline" subscriptSizing="dynamic">
+    <!-- Raised live 2026-08-31: "display the day of the week for confirmation" - a scribe
+         reading a date off a form (or misreading one) has no quick way to sanity-check it
+         against what day it actually is. `appearance="outline"` embeds a <mat-label> in the
+         border itself once the field has a value (which this one always does - see
+         dayOfWeek()'s own comment), so this doubles as the "upper border" placement asked
+         for with no custom positioning CSS needed - Material already does it. -->
+    <mat-label>{{ dayOfWeek() }}</mat-label>
     <input matInput [matDatepicker]="picker" [formField]="timeForm.time" [attr.aria-label]="datePickerLabel"
       class="timepicker__When-input" data-lpignore="true" [attr.tabindex]="dateTabIndex ?? null"
       (dateChange)="onNewTime()" />

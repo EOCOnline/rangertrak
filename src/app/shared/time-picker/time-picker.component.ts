@@ -195,6 +195,20 @@ export class TimePickerComponent implements OnInit, OnChanges {
   }
 
   /**
+   * Raised live 2026-08-31: "display the day of the week for confirmation" - short form
+   * ("Tues", "Fri") per the maintainer's own example, so it fits the outline field's border
+   * notch without crowding the date/time segments beside it. Derived straight from the
+   * model's own `time`, same as `combinedTime()` below, so it updates immediately as the
+   * date picker or (via `time`'s own day-rollover, see `adjustTotalMinutes()`) the segment
+   * steppers change it - never a second source of truth to keep in sync.
+   */
+  private static readonly WEEKDAY_SHORT = ['Sun', 'Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat']
+  dayOfWeek = computed<string>(() => {
+    const { time } = this.timeModel()
+    return time ? TimePickerComponent.WEEKDAY_SHORT[time.getDay()] : ''
+  })
+
+  /**
    * Pure derivation of the combined date+time from the model - replaces the old
    * FormGroup.valueChanges subscription. Read, not subscribed to: onNewTime() below
    * still fires emission explicitly, matching the original event-driven-only behavior
