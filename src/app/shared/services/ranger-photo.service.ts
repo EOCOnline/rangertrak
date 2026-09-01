@@ -75,7 +75,7 @@ export class RangerPhotoService {
   /**
    * Every stored photo, as its raw Blob keyed by the same filename-matchable stem
    * `photoUrl()`/`importFiles()` use (a ranger's `id` if set, else `callsign`, uppercased).
-   * E-109 Mission Zip v1 (2026-08-31): the only consumer today - bundling this device's
+   * E-109 Setup files v2 (2026-08-31): the only consumer today - bundling this device's
    * photos into a downloadable zip alongside the roster/settings. Fetches each already-
    * created object URL rather than re-reading IndexedDB, since `this.urls` is already the
    * in-memory source of truth `photoUrl()` itself trusts.
@@ -154,12 +154,25 @@ export class RangerPhotoService {
     })
   }
 
+  /**
+   * Resolves on `transaction.oncomplete`, not `req.onsuccess`. The request event fires when
+   * the individual read/write is queued and answered, which for a `readwrite` transaction is
+   * BEFORE the browser has actually committed the write to disk - a caller that reloads the
+   * page right after `await`ing this can tear down a transaction that never committed, and
+   * the write is silently lost. Waiting for the transaction to complete costs nothing for the
+   * `readonly` callers (`loadAll()`), so one code path covers both.
+   */
   private tx<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>): Promise<T> {
     return new Promise((resolve, reject) => {
       if (!this.db) { reject(new Error('photo store not open')); return }
-      const req = fn(this.db.transaction(STORE, mode).objectStore(STORE))
-      req.onsuccess = () => resolve(req.result)
+      const transaction = this.db.transaction(STORE, mode)
+      const req = fn(transaction.objectStore(STORE))
+      let result: T
+      req.onsuccess = () => { result = req.result }
       req.onerror = () => reject(req.error)
+      transaction.oncomplete = () => resolve(result)
+      transaction.onabort = () => reject(transaction.error ?? req.error ?? new Error('photo store transaction aborted'))
+      transaction.onerror = () => reject(transaction.error ?? req.error ?? new Error('photo store transaction error'))
     })
   }
 
