@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.90.4](https://github.com/EOCOnline/rangertrak/compare/v0.90.3...v0.90.4) (2026-09-01)
+
+
+### Features
+
+* **rangers:** give the empty roster a real way forward ([0b6a96d](https://github.com/EOCOnline/rangertrak/commit/0b6a96d57f1fc12a8af33b5daba20953a4358cbe))
+
+
+### Bug Fixes
+
+* **map:** draw the earth layer so land isn't the same grey as the background ([08e769d](https://github.com/EOCOnline/rangertrak/commit/08e769d23b351e9e8daf6a98596aa35987c48f7c)), closes [#e0e0e0](https://github.com/EOCOnline/rangertrak/issues/e0e0e0)
+
 ### [0.90.3](https://github.com/EOCOnline/rangertrak/compare/v0.90.2...v0.90.3) (2026-09-01)
 
 
