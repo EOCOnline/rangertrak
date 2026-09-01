@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.90.3](https://github.com/EOCOnline/rangertrak/compare/v0.90.2...v0.90.3) (2026-09-01)
+
+
+### Features
+
+* **prep,rangers:** E-109 v2 - Setup files merge instead of replacing ([f83d536](https://github.com/EOCOnline/rangertrak/commit/f83d536e6511360bcf4addf53141f3810745ce9e))
+
+
+### Bug Fixes
+
+* **photos:** commit IndexedDB writes before a caller can reload them away ([71bd817](https://github.com/EOCOnline/rangertrak/commit/71bd817e18acebc0470ce9d11f9c3235b4d3e1e5))
+
 ### [0.90.2](https://github.com/EOCOnline/rangertrak/compare/v0.90.1...v0.90.2) (2026-08-31)
 
 
