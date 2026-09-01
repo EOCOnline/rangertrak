@@ -186,7 +186,16 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       container: this.mapContainer.nativeElement,
       style: buildPmtilesStyle(this.resolvePmtilesUrl()),
       center: [this.settings.defLng, this.settings.defLat],
-      zoom: this.settings.maplibre.defZoom
+      zoom: this.settings.maplibre.defZoom,
+      // Root-caused live 2026-09-01 (DevTools Network tab): a fast continuous zoom-out left
+      // whole tiles permanently gray - not a PMTiles archive coverage gap, MapLibre itself
+      // canceling its own tile fetches. This option defaults to true and cancels in-flight
+      // requests for "farther" zoom levels on every animation frame of a zoom gesture; an
+      // eased zoom fires many such frames, so a tile requested late in the gesture (an
+      // adjacent tile only revealed at the settled zoom) is as likely to get cancelled as one
+      // from a truly stale zoom level, and nothing re-requests it afterward. Off here so a
+      // late-requested tile is allowed to finish loading instead of racing the next frame.
+      cancelPendingTileRequestsWhileZooming: false
     })
 
     // Without a listener MapLibre swallows source/tile failures into a console warning at
@@ -234,7 +243,10 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       // The main map above carries the attribution, which is what OSM's terms require of
       // the page. A second copy inside a 175px decorative thumbnail only wrapped to three
       // lines and spilled out the bottom - see 25a item 6.
-      attributionControl: false
+      attributionControl: false,
+      // Same fix as the main map's constructor above, same symptom on this instance too -
+      // see that option's own comment for the root cause.
+      cancelPendingTileRequestsWhileZooming: false
     })
 
     // 'moveend', not 'move' - root-caused live 2026-09-01, a maintainer report that the
