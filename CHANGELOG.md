@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.91.1](https://github.com/EOCOnline/rangertrak/compare/v0.91.0...v0.91.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **perf:** gate route preloading on window 'load', not just requestIdleCallback ([99e0b12](https://github.com/EOCOnline/rangertrak/commit/99e0b12318e225915b8c6b61ff1b71f3ffbcfac9))
+
 ## [0.91.0](https://github.com/EOCOnline/rangertrak/compare/v0.90.9...v0.91.0) (2026-09-01)
 
 
