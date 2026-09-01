@@ -60,11 +60,6 @@ const iconDefault = L.icon({
   tooltipAnchor: [16, -28],
   shadowSize: [41, 41]
 })
-const markerIcon = L.icon({
-  iconSize: [20, 25],
-  iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png'
-})
 L.Marker.prototype.options.icon = iconDefault;
 
 // Offline-area sizing (roadmap: "Offline map area: saved-file sizes, anticipated MB").
