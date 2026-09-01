@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.91.0](https://github.com/EOCOnline/rangertrak/compare/v0.90.9...v0.91.0) (2026-09-01)
+
+
+### Bug Fixes
+
+* **csp:** allow fonts.gstatic.com under connect-src too ([8d9f408](https://github.com/EOCOnline/rangertrak/commit/8d9f4081e488a60c9c351c4f525d37729c716774))
+* **map:** stop MapLibre canceling adjacent tiles mid zoom-out gesture ([712b6d1](https://github.com/EOCOnline/rangertrak/commit/712b6d1c56b59a5d7b776d4e0ed6a568eaac887d))
+* **perf:** defer route preloading to browser idle instead of firing on boot ([51ff52b](https://github.com/EOCOnline/rangertrak/commit/51ff52b8bb9bc75aefe0a98d51b29401be8200b4))
+
 ### [0.90.9](https://github.com/EOCOnline/rangertrak/compare/v0.90.8...v0.90.9) (2026-09-01)
 
 
