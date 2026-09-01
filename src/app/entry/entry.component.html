@@ -80,10 +80,18 @@
         (evidenceLocationClicked)="onEvidenceMapClick($event)">LMAP
         HERE</mini-mapLeaflet>
       } @placeholder {
-      <div class="minimap-placeholder">Map still loading&hellip;</div>
+      <div class="minimap-placeholder">
+        <h2 class="minimap-placeholder__head">Current Location</h2>
+        <div class="minimap-placeholder__frame">Map still loading&hellip;</div>
+        <div class="minimap-placeholder__footer">&nbsp;</div>
+      </div>
       } @error {
       <div class="minimap-placeholder minimap-placeholder--error">
-        Map could not be loaded. Coordinates can still be entered by hand below.
+        <h2 class="minimap-placeholder__head">Current Location</h2>
+        <div class="minimap-placeholder__frame">
+          Map could not be loaded. Coordinates can still be entered by hand below.
+        </div>
+        <div class="minimap-placeholder__footer">&nbsp;</div>
       </div>
       }
 

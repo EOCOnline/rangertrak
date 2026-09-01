@@ -120,49 +120,89 @@ $filledColor: var(--rt-surface-2);
 }
 
 // Stand-in shown while the deferred mini-map (@defer in entry.component.html) loads.
-// Deliberately mirrors .mapLeaflet-container/#map in mini-mapLeaflet.component.scss - same float,
-// width, height, border, and (below) the same tablet-down order/size overrides - so the
-// form below keeps its position and nothing shifts when the real map swaps in.
+// PageSpeed 2026-09-01: the single-box version of this rule only mirrored
+// mini-mapLeaflet.component.scss's #entry-minimap (the inner map div), not the real
+// mapLeaflet-container's head+frame+footer stack - so the real component swapped in
+// strictly taller and dragged everything below it down, reading as Lighthouse's
+// second, always-present CLS cluster (fieldset.enter__field-fieldset et al. shifting
+// together - see roadmap's Sept 1 session, item 5). Now three stacked rows mirroring
+// mini-mapLeaflet.component.html's own head/frame/footer structure, each row reusing
+// that file's own declarations (padding/margin/display, not invented pixel heights) so
+// this stays correct if that component's sizing ever changes instead of drifting out of
+// sync the way the single-box version silently had.
 .minimap-placeholder {
-  display         : flex;
-  align-items     : center;
-  justify-content : center;
   float           : right;
-  // Capped 2026-08-26: 35vw/35vh are relative to the WHOLE viewport, not .enter__form's own
+  // Capped 2026-08-26: 35vw is relative to the WHOLE viewport, not .enter__form's own
   // (now capped, see .enter__form's max-width) width - on a genuinely wide monitor the map
-  // kept growing past what the now-narrower text column could reasonably sit beside, so far
-  // taller than Who's own content that Where appeared to float in empty space beneath it.
+  // kept growing past what the now-narrower text column could reasonably sit beside.
   // min() lets it keep scaling down on smaller screens exactly as before, just not up
   // without bound on large ones.
   width           : min(35vw, 500px);
-  height          : min(35vh, 450px);
   margin-left     : 16px;
   margin-right    : 16px;
   background-color: $filledColor;
   border          : 2px solid black;
   border-radius   : 5px;
+  // Same reasoning as .mapLeaflet-container's own `contain: layout` - walls this subtree
+  // off from ancestor layout the same way, height stays auto from the three rows below.
+  contain         : layout;
+
+  // Maintainer, 2026-08-21: at tablet-down the map is no longer floating beside Who/Where
+  // text - .enter__top-group switches to a flex column above, so the map is alone in its
+  // own full-width row with nothing to make space for. Sized to the row it actually has
+  // now instead of a fraction of the old floating width.
+  @include bp.tablet-down {
+    order: 10;
+    width: 60vw;
+  }
+}
+
+// Mirrors .Entry__MapLeaflet-head (mini-mapLeaflet.component.scss) - same padding/margin/
+// display, and at desktop no font-size override either component sets, so both pick up
+// the same global Material h2 default. Only tablet-down needs an explicit mirror since
+// that's the one breakpoint where the real component overrides the default.
+.minimap-placeholder__head {
+  padding   : 0 5px;
+  margin    : auto;
+  display   : flow-root;
+  color     : var(--rt-ink-3);
+  font-style: italic;
+
+  @include bp.tablet-down {
+    @include type.type-label;
+    font-weight: 600;
+  }
+}
+
+// Mirrors .mapLeaflet-frame + #entry-minimap together - the frame itself has no set
+// height in the real component (it's #entry-minimap's height that drives it), so this
+// applies that same height directly to the one placeholder row standing in for both.
+.minimap-placeholder__frame {
+  display         : flex;
+  align-items     : center;
+  justify-content : center;
+  height          : min(35vh, 450px);
   color           : var(--rt-ink-3);
   font-style      : italic;
   text-align      : center;
   padding         : 0 1em;
 
-  // Maintainer, 2026-08-21: at tablet-down the map is no longer floating beside Who/Where
-  // text (that's what the original 30%-of-35vw/35vh math was sized for) - .enter__top-group
-  // switches to a flex column above, so the map is alone in its own full-width row with
-  // nothing to make space for. 10.5vw/vh read as "uselessly narrow" on a screen with plenty
-  // of room to spare. Sized to the row it actually has now instead of a fraction of the old
-  // floating width.
   @include bp.tablet-down {
-    order : 10;
-    width : 60vw;
     height: 30vh;
   }
 }
 
-.minimap-placeholder--error {
-  border-color: var(--rt-readiness-red);
-  color       : var(--rt-readiness-red);
-  font-style  : normal;
+.minimap-placeholder--error .minimap-placeholder__frame {
+  color     : var(--rt-readiness-red);
+  font-style: normal;
+}
+
+// Mirrors .Entry__MapLeaflet-footer's padding - content is a non-breaking space rather
+// than real coordinates (there's nothing to report yet while the map is still loading),
+// but it still needs a line box of real text to match the real footer's rendered height.
+.minimap-placeholder__footer {
+  padding   : 5px;
+  visibility: hidden;
 }
 
 // Maintainer, 2026-08-20: "the map should go just under the where section as the screen
