@@ -187,14 +187,22 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       style: buildPmtilesStyle(this.resolvePmtilesUrl()),
       center: [this.settings.defLng, this.settings.defLat],
       zoom: this.settings.maplibre.defZoom,
-      // Root-caused live 2026-09-01 (DevTools Network tab): a fast continuous zoom-out left
-      // whole tiles permanently gray - not a PMTiles archive coverage gap, MapLibre itself
-      // canceling its own tile fetches. This option defaults to true and cancels in-flight
-      // requests for "farther" zoom levels on every animation frame of a zoom gesture; an
-      // eased zoom fires many such frames, so a tile requested late in the gesture (an
-      // adjacent tile only revealed at the settled zoom) is as likely to get cancelled as one
-      // from a truly stale zoom level, and nothing re-requests it afterward. Off here so a
-      // late-requested tile is allowed to finish loading instead of racing the next frame.
+      // NOT the fix for the "adjacent tiles stay gray after a fast zoom-out" bug - kept only
+      // for its own real, narrower effect (see below). A live report (2026-09-01) plus a
+      // DevTools Network tab showing a pile of (canceled) vashon.pmtiles fetches first looked
+      // like this option's doing, but reading maplibre-gl's own source (not the minified
+      // bundle's behavior guessed at) shows it only controls whether a coarser, already-
+      // loaded PARENT tile is retained as a placeholder while the ideal tile is still loading
+      // (TileManager._updateRetainedTiles) - it has no effect on whether the ideal tile's own
+      // fetch gets aborted. Confirmed empirically after setting this false: a CDP script that
+      // hooked window.fetch before the app loaded and drove a fast zoom-out against the live
+      // deployed site (rangertrak.org) still showed aborted vashon.pmtiles range-fetches with
+      // ZERO later re-fetch of the same byte range, even 12s after the gesture settled - so
+      // tiles are genuinely, permanently abandoned, not just repainted late. Root cause still
+      // open - see PRIVATE-Roadmap.md's Sept 1 session notes for the CDP diagnostic script and
+      // raw fetch log. Left `false` anyway since it's a real, harmless behavior in its own
+      // right (retains a blurrier placeholder tile longer instead of flashing to background
+      // color while its replacement loads) - just don't credit it with fixing this bug.
       cancelPendingTileRequestsWhileZooming: false
     })
 
