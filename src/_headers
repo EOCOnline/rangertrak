@@ -49,6 +49,14 @@
 # Nominatim/Fonts, and nothing legitimately needs to embed this app's assets
 # cross-origin.
 #
+# connect-src also carries fonts.gstatic.com (2026-09-01) - not because the font fetch
+# itself needs it (font-src already covers that, and a live CDP script confirmed the actual
+# byte fetch is a single, normal, parser-initiated request that succeeds without it), but
+# because Chrome checks a font-display:swap font's internal load-tracking against connect-src
+# rather than font-src - a Blink quirk, not an app bug. Same reasoning as opentopomap needing
+# both img-src and connect-src below (leaflet.offline's fetch()-based caching), just for a
+# different underlying mechanism.
+#
 # Cross-Origin-Embedder-Policy is deliberately Report-Only, NOT enforcing,
 # same reasoning as the CSP above and for a concretely checked reason: COEP's
 # strict `require-corp` mode would very likely break the map tiles outright -
@@ -81,7 +89,7 @@
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
   Cross-Origin-Embedder-Policy-Report-Only: credentialless
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://*.tile.opentopomap.org https://server.arcgisonline.com; connect-src 'self' https://nominatim.openstreetmap.org https://maps.googleapis.com https://api.what3words.com https://*.tile.openstreetmap.org https://*.tile.opentopomap.org; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://*.tile.opentopomap.org https://server.arcgisonline.com; connect-src 'self' https://nominatim.openstreetmap.org https://maps.googleapis.com https://api.what3words.com https://*.tile.openstreetmap.org https://*.tile.opentopomap.org https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
 
 # Only the files that MUST NOT be cached are listed below. Everything else keeps
 # Cloudflare's default ETag revalidation, which is already correct for the
