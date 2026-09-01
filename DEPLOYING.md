@@ -63,6 +63,17 @@ Without this secret the endpoint fails closed (503) rather than erroring loudly 
 in-app feedback form treats that the same as "unreachable" and falls back to a direct
 GitHub issue link, so a missing secret degrades gracefully instead of breaking the page.
 
+**This endpoint has one cross-origin caller.** The front-door site at `rangertrak.com`
+(separate private repo, separate Worker) posts its feedback page here rather than carrying
+a second copy of the issue-filing code and a second PAT. `FEEDBACK_ALLOWED_ORIGINS` in
+`worker/index.js` is that allowlist — apex only, since `www.rangertrak.com` is redirect-only
+and a browser's `Origin` is therefore only ever the apex. It is an allowlist and not `*`
+deliberately: a wildcard would let any site on the Internet file issues under this PAT, and
+would be invisible from the browser. `worker/index.test.mjs` pins the behaviour in both
+directions, including that a same-origin in-app POST gets no CORS headers at all. Note that
+CORS constrains browsers, not clients — the real limits here are the length caps and the
+fail-closed token check, not the origin.
+
 ## How a deploy happens
 
 Pushing to `main` runs [.github/workflows/deploy.yml](.github/workflows/deploy.yml):
@@ -241,9 +252,19 @@ app to merge the two stores after the fact.
 
 ### rangertrak.com → redirect to .org
 
-`.com` is parked, redirecting to `.org` until it becomes the commercial tier. It is a
+> **SUPERSEDED 2026-08-31, but still live in production.** `.com` has been decided (E-101 /
+> ADR D-41) to host the static front-door site, which lives in its own private repo,
+> `EOCOnline/RangerTrak.com`, and deploys to its own `rangertrak-site` Worker. Everything
+> described below is still exactly what is serving today and is documented here so the
+> cutover is reversible — but **the apex Page Rule must be deleted, not left in place**, when
+> that site goes live. A Worker Custom Domain binds ahead of Page Rules, so a forgotten rule
+> would sit dormant and silently restore this redirect the moment the custom domain is
+> detached. That is the `www.rangertrak.org` failure again, in a new hostname. The cutover
+> runbook is that repo's README; step 6 of it is deleting this section.
+
+`.com` was parked, redirecting to `.org` until it became a site of its own. It is a
 **Redirect Rule**, not a Worker, so it costs nothing at runtime and is deleted in one
-click when `.com` becomes a real application.
+click.
 
 Four proxied placeholder records were added 2026-08-14 so the hostname resolves to
 Cloudflare's edge and the rule has traffic to act on:
@@ -283,7 +304,10 @@ curl -sL -o /dev/null -w "%{http_code} after %{num_redirects} hop(s) -> %{url_ef
 # expect: 200 after 1 hop(s) -> https://rangertrak.org/
 ```
 
-Both verified passing on 2026-08-15.
+Both verified passing on 2026-08-15, and re-verified still live 2026-08-31 — the apex,
+`www`, and every path all 301 to the `.org` root. Once the front-door site is cut over, the
+first of those two curl checks becomes the *failure* signal rather than the success one; see
+`tools/check-site.js` in the site repo, which asserts the apex answers 200 and not a 3xx.
 
 ## Smoke test after a deploy
 

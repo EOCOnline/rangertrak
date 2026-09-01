@@ -108,6 +108,63 @@ async function handleFeedback(request, env) {
   return jsonResponse({ url: issue.html_url }, 201)
 }
 
+/**
+ * CORS for the public marketing site (E-101 / ADR D-41).
+ *
+ * rangertrak.com serves the static front-door site from its own Worker, but its feedback
+ * page posts to THIS endpoint - the same one the in-app form uses, so there is one code
+ * path filing issues, not two. A browser will not make that cross-origin POST without a
+ * preflight and a matching Access-Control-Allow-Origin, so without this the .com page
+ * silently falls through to its GitHub-link fallback forever.
+ *
+ * Apex only, deliberately. www.rangertrak.com is redirect-only (DEPLOYING.md), so a page
+ * is only ever served from the apex and the browser's Origin is only ever the apex.
+ *
+ * This does not widen the abuse surface: CORS restrains browsers, not clients. Any
+ * non-browser caller could already POST here from anywhere, which is why the real limits
+ * on this endpoint are the length caps and the fail-closed token check above, not origin.
+ */
+const FEEDBACK_ALLOWED_ORIGINS = new Set([
+  'https://rangertrak.com'
+])
+
+function feedbackCorsOrigin(request) {
+  const origin = request.headers.get('Origin')
+  return origin && FEEDBACK_ALLOWED_ORIGINS.has(origin) ? origin : null
+}
+
+/** Preflight. Content-Type: application/json is not CORS-safelisted, so this always fires. */
+function handleFeedbackPreflight(request) {
+  const origin = feedbackCorsOrigin(request)
+  if (!origin) {
+    return new Response(null, { status: 403 })
+  }
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Max-Age': '86400',
+      // Same URL answers differently per Origin; without this a cache could serve one
+      // origin's headers to another.
+      'Vary': 'Origin'
+    }
+  })
+}
+
+/** Copies an allowed Origin's CORS headers onto an already-built response. */
+function withFeedbackCors(response, request) {
+  const origin = feedbackCorsOrigin(request)
+  if (!origin) {
+    return response
+  }
+  const withCors = new Response(response.body, response)
+  withCors.headers.set('Access-Control-Allow-Origin', origin)
+  withCors.headers.set('Vary', 'Origin')
+  return withCors
+}
+
 function jsonResponse(data, status) {
   return new Response(JSON.stringify(data), {
     status,
@@ -120,7 +177,10 @@ export default {
     const url = new URL(request.url)
 
     if (url.pathname === '/api/feedback') {
-      return handleFeedback(request, env)
+      if (request.method === 'OPTIONS') {
+        return handleFeedbackPreflight(request)
+      }
+      return withFeedbackCors(await handleFeedback(request, env), request)
     }
 
     if (!url.pathname.endsWith('.pmtiles')) {

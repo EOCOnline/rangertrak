@@ -101,3 +101,58 @@ test('.pmtiles requests still pass through the existing Range shim, unaffected b
   assert.equal(res.status, 206)
   assert.equal(res.headers.get('Content-Range'), 'bytes 1-3/5')
 })
+
+// --- CORS for the rangertrak.com front-door site (E-101 / ADR D-41) -------------------
+// The .com site's feedback page posts to this same endpoint cross-origin. These lock in
+// that the allowlist is an allowlist: a wildcard here would be invisible in the browser
+// but would let any site file issues under the maintainer's token.
+
+const DOT_COM = 'https://rangertrak.com'
+
+function preflight(origin) {
+  return new Request('https://rangertrak.org/api/feedback', {
+    method: 'OPTIONS',
+    headers: origin
+      ? { 'Origin': origin, 'Access-Control-Request-Method': 'POST' }
+      : { 'Access-Control-Request-Method': 'POST' },
+  })
+}
+
+test('preflight from rangertrak.com is allowed, and echoes only that origin', async () => {
+  const res = await worker.fetch(preflight(DOT_COM), { GITHUB_FEEDBACK_TOKEN: 'x' })
+  assert.equal(res.status, 204)
+  assert.equal(res.headers.get('Access-Control-Allow-Origin'), DOT_COM)
+  assert.match(res.headers.get('Access-Control-Allow-Methods'), /POST/)
+  assert.match(res.headers.get('Access-Control-Allow-Headers'), /Content-Type/)
+  assert.equal(res.headers.get('Vary'), 'Origin')
+})
+
+test('preflight from an unlisted origin is refused, with no CORS headers', async () => {
+  const res = await worker.fetch(preflight('https://evil.example'), { GITHUB_FEEDBACK_TOKEN: 'x' })
+  assert.equal(res.status, 403)
+  assert.equal(res.headers.get('Access-Control-Allow-Origin'), null)
+})
+
+test('preflight is never answered with a wildcard', async () => {
+  const res = await worker.fetch(preflight(DOT_COM), { GITHUB_FEEDBACK_TOKEN: 'x' })
+  assert.notEqual(res.headers.get('Access-Control-Allow-Origin'), '*')
+})
+
+test('a real POST from rangertrak.com carries the CORS header through', async () => {
+  // 400 (empty message) is enough: the header must ride on error responses too, or the
+  // browser hides the status and the page cannot tell "rejected" from "unreachable".
+  const withOrigin = new Request('https://rangertrak.org/api/feedback', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Origin': DOT_COM },
+    body: JSON.stringify({ message: '   ' }),
+  })
+  const res = await worker.fetch(withOrigin, { GITHUB_FEEDBACK_TOKEN: 'x' })
+  assert.equal(res.status, 400)
+  assert.equal(res.headers.get('Access-Control-Allow-Origin'), DOT_COM)
+})
+
+test('the in-app same-origin POST is unchanged - no Origin, no CORS headers', async () => {
+  const res = await worker.fetch(req({ message: '   ' }), { GITHUB_FEEDBACK_TOKEN: 'x' })
+  assert.equal(res.status, 400)
+  assert.equal(res.headers.get('Access-Control-Allow-Origin'), null)
+})
