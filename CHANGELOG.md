@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.90.8](https://github.com/EOCOnline/rangertrak/compare/v0.90.7...v0.90.8) (2026-09-01)
+
+
+### Bug Fixes
+
+* **csp:** close the observed script-src/img-src violations from real DevTools evidence ([4bd3285](https://github.com/EOCOnline/rangertrak/commit/4bd32855bbbe8e730db44b4cfac887321ec96e67))
+
 ### [0.90.7](https://github.com/EOCOnline/rangertrak/compare/v0.90.6...v0.90.7) (2026-09-01)
 
 
