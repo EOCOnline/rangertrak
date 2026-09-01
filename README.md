@@ -136,4 +136,4 @@ under those terms.)*
 > "*(We) all agreed that this is a WOW program with high value added to SAR. I really hope
 > you continue to refine it!*"
 
-— Michael Meyer, KB7MTM, [Vashon ACS](https://vashonbeprepared.org/en-us/Partners/ACS)
+— Michael Meyer, KB7MTM, [Vashon ACS](https://vashonbeprepared.org/partnerorganization/acs/)
