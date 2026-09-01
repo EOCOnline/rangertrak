@@ -303,47 +303,46 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Mission Readiness's "bundled MapLibre asset warmed" signal (mission-readiness.service.ts)
-   * does a plain, read-only `caches.match(DEFAULT_PMTILES_URL)` - but this map's own tile
-   * source (pmtiles-js, via registerPmtilesProtocol) only ever fetches that file with Range
-   * headers, which Angular's service worker deliberately never intercepts or caches (its
-   * documented limitation: caching a partial-content response under a full-file URL would
-   * wrongly serve a byte range to a later full-file request). One plain, non-Range fetch
-   * here - cached under this app's own name, not ngsw's internal one - is enough: the
-   * readiness check's `caches.match()` searches every cache in this origin, so the two never
-   * needed to share one, only the URL key.
+   * does a plain, read-only `caches.match(DEFAULT_PMTILES_URL)` - a deliberately separate,
+   * hand-managed cache entry, not ngsw's internal one. The readiness check's `caches.match()`
+   * searches every cache in this origin, so the two never needed to share one, only the URL
+   * key.
    *
-   * ROOT-CAUSED 2026-08-27, moved out of the constructor to here (called from `'load'`, so
-   * it only runs after the map's own critical basemap fetches have already resolved): a live
-   * report found the basemap rendering blank - `pmtiles-js`'s Range-fetch of this same URL
-   * was getting back a plain 200 response with the FULL file's Content-Length instead of a
-   * 206 partial one, which its own `FetchSource.getBytes()` treats as fatal ("Server
-   * returned no content-length header or content-length exceeding request"). Confirmed via
-   * `tools/serve-dist.js`'s own Range logic being correct in isolation (206 + proper
-   * Content-Range/Content-Length when `req.headers.range` is present) - so the request that
-   * arrived at the server without triggering that branch must have lost its Range header,
-   * which points at browser-level request coalescing: this plain fetch and pmtiles-js's own
-   * Range fetch, both firing within milliseconds of each other at the *same URL*, are exactly
-   * the shape of request a browser may de-duplicate/merge, handing the Range caller back
-   * whatever the plain request received.
+   * ROOT-CAUSED 2026-08-27, RE-ROOT-CAUSED 2026-08-30, ACTUALLY ROOT-CAUSED 2026-09-01 (live
+   * report, this time with DevTools Network evidence): both `vashon.pmtiles` requests came
+   * back `200` (not pmtiles-js's expected `206`), Size column reading `(ServiceWorker)` - the
+   * request was answered by Angular's service worker, not the network. This THIRD time, that
+   * was checked against ngsw-worker.js's actual source rather than assumed: its `onFetch` gate
+   * (driver.ts) has no Range-header check anywhere - it bypasses only for `ngsw-bypass`, its
+   * own state path, safe mode, mixed content, and invalid `only-if-cached`. There never was a
+   * "documented limitation" that skips Range requests, despite what the previous two passes
+   * on this comment claimed; that was a misdiagnosis this whole time. `vashon.pmtiles` was
+   * simply inside `ngsw-config.json`'s `/assets/**` glob like every other bundled asset, so
+   * ngsw claimed the URL, cached whatever it first got back for it, and served that same
+   * response - Range header or not - to every later request. **Fixed at the source**:
+   * `ngsw-config.json` now excludes `/assets/maps/**` from the "assets" group entirely, so
+   * this URL reaches the network - and this app's own Worker, already verified to answer
+   * Range requests correctly - like any other Range-fetched resource should.
    *
-   * RE-ROOT-CAUSED 2026-08-30 (live report: main map stayed grey background + hillshade only,
-   * while the overview thumbnail - same style, same URL, just no warming call - rendered the
-   * real basemap correctly at the identical location): sequencing this call to fire from
-   * inside the `'load'` handler was *not* enough, because that handler's own `fitToBounds()`
-   * call (just above) changes the viewport, which itself kicks off a fresh round of Range
-   * fetches for whatever tiles the new bounds need - fired at the exact point `'load'` had
-   * already fired, i.e. exactly when this function used to run. So the plain warming fetch
-   * was racing THOSE fetches instead, the same failure mode moved one step later rather than
-   * closed. Deferred to the map's `'idle'` event (fired once no source has outstanding
-   * requests) instead of calling this synchronously in the `'load'` handler - by then every
-   * Range fetch fitToBounds() triggered has already resolved, so there is nothing left for
-   * this plain fetch to race.
+   * The two "RE-ROOT-CAUSED" theories below are superseded, not deleted, because both prior
+   * passes did real, valid work narrowing down symptoms even though neither reached the
+   * actual cause - the sequencing and coalescing risks they found and fixed are still real
+   * risks in their own right, independent of the ngsw bug that was the actual reason the map
+   * stayed blank:
    *
-   * `cache: 'no-store'` kept as defense in depth for a *repeat* mount (navigate away from
+   * 2026-08-27: suspected browser-level request coalescing between this plain warming fetch
+   * and pmtiles-js's own concurrent Range fetch at the same URL - moved this call to run only
+   * after `'load'`, so it wouldn't race the map's own critical basemap fetches.
+   *
+   * 2026-08-30: `'load'`'s own `fitToBounds()` call (just above) turned out to kick off a
+   * fresh round of Range fetches at the exact moment this function used to run, moving the
+   * suspected race one step later rather than closing it - deferred further, to the map's
+   * `'idle'` event, so every fetch `fitToBounds()` triggers has already resolved first.
+   *
+   * `cache: 'no-store'` stays as defense in depth for a *repeat* mount (navigate away from
    * `/map` and back, or flip engines twice): without it, this fetch's own response could sit
-   * in the browser's ambient HTTP cache and be there to interfere with a LATER instance's
-   * pmtiles-js Range fetch, even though this instance's own race is already closed by the
-   * sequencing above.
+   * in the browser's ambient HTTP cache and interfere with a later instance's pmtiles-js Range
+   * fetch - now a network-level, not ngsw-level, concern, but a real one either way.
    */
   private warmBundledPmtilesCache(): void {
     fetch(DEFAULT_PMTILES_URL, { cache: 'no-store' })
