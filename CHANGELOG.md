@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.90.9](https://github.com/EOCOnline/rangertrak/compare/v0.90.8...v0.90.9) (2026-09-01)
+
+
+### Bug Fixes
+
+* **map:** sync the MapLibre overview on 'moveend', not every 'move' frame ([d747298](https://github.com/EOCOnline/rangertrak/commit/d7472984de6d89fb74c883f15c71de346f297cb7))
+
 ### [0.90.8](https://github.com/EOCOnline/rangertrak/compare/v0.90.7...v0.90.8) (2026-09-01)
 
 
