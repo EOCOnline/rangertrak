@@ -3,6 +3,13 @@ import { PreloadingStrategy, Route } from '@angular/router'
 import { Observable } from 'rxjs'
 
 /**
+ * CURRENTLY UNUSED (2026-09-01) - `app.config.ts` now uses `NoPreloading` instead, as a
+ * control experiment after BOTH strategies below were shipped and verified live to not fix
+ * the problem they were built for. Kept in the tree (not deleted) for the full evidence
+ * trail and in case a future, differently-designed preload strategy wants to reuse the
+ * `afterWindowLoad()` gate below. See `app.config.ts`'s own comment for why `NoPreloading`
+ * was tried next instead of a third timing guess.
+ *
  * Preloads every lazy route, same end state as Angular's own `PreloadAllModules` - but only
  * once the page has actually settled, instead of immediately after the first navigation.
  *
@@ -45,8 +52,21 @@ import { Observable } from 'rxjs'
  * not for everything the page happens to also be doing. Adaptive by construction: a fast
  * connection reaches `load` quickly and starts preloading sooner; a slow one defers longer -
  * unlike a fixed `setTimeout` guess, which would either be too short for a slow connection or
- * needlessly late for a fast one. NOT YET VERIFIED against a third live PageSpeed run - next
- * step for whoever picks this up next.
+ * needlessly late for a fast one.
+ *
+ * VERIFIED LIVE, ALSO DID NOT WORK. Shipped as `0.91.1`. The fetches DID start reasonably
+ * promptly this time (~1.6-2s, matching when `load` plausibly fired) - but the network
+ * dependency tree and long-tasks list from that same report show the actual EXECUTION of
+ * those fetched chunks (the long tasks) didn't happen until 4.8-5.5s, landing squarely in the
+ * FCP(4.6s)-to-LCP(6.0s) gap despite the bytes having arrived over 2 seconds earlier. TBT
+ * roughly doubled (~540ms vs. the ~200-230ms baseline) and CLS/Performance score did not
+ * improve. Conclusion: on this throttled device the main thread doesn't get a genuinely free
+ * tick until right around FCP, because that's also the moment the browser itself finally gets
+ * to paint - so `requestIdleCallback`, however it's gated beforehand, ends up firing preload
+ * work at exactly the moment the LCP element still needs to finish rendering, not before it.
+ * No "wait until idle" heuristic can dodge that. `app.config.ts` now uses `NoPreloading`
+ * instead, as a control experiment rather than a third timing guess - see that file's own
+ * comment.
  */
 @Injectable({ providedIn: 'root' })
 export class IdlePreloadingStrategy implements PreloadingStrategy {

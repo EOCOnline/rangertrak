@@ -17,15 +17,19 @@ import { fieldModeGuard } from './shared/guards/field-mode.guard'
  * the route that actually uses them: AG Grid + xlsx with Reports/Rangers/Settings/Log,
  * Leaflet with `/map`.
  *
- * Note this trades *initial* download, not total: app.config.ts registers
- * withPreloading(IdlePreloadingStrategy) (see that file's own doc comment - was
- * PreloadAllModules until 2026-09-01, moved off the critical path after a live PageSpeed
- * run caught it competing with Entry's own first paint), so these chunks still get fetched
- * and warmed once the browser is idle. Offline completeness never actually depended on
- * this - ngsw-config.json's "app" asset group prefetches every `/*.js` file unconditionally
- * on service-worker install, independent of the router entirely. The real reason to keep
- * preloading at all is snappy in-mission navigation (Map -> Radio Log -> Rangers with no
- * JS-parse stall), not offline coverage.
+ * Note this trades *initial* download, not total - or did, until 2026-09-01: app.config.ts
+ * now registers withPreloading(NoPreloading), a control experiment after PreloadAllModules
+ * AND a `requestIdleCallback`/`window.load`-gated replacement (idle-preloading-strategy.ts,
+ * still in the tree, unused) were BOTH shipped and independently verified live to not fix a
+ * real PageSpeed CLS/LCP regression this caused. See app.config.ts's own comment for the
+ * full reasoning - the short version is that on a throttled device, no "wait until idle"
+ * heuristic can dodge landing preload work in the same window the LCP element still needs.
+ * Offline completeness never actually depended on router-level preloading regardless -
+ * ngsw-config.json's "app" asset group prefetches every `/*.js` file unconditionally on
+ * service-worker install, independent of the router entirely. What IS lost with
+ * `NoPreloading`: snappy in-mission navigation (Map -> Radio Log -> Rangers used to warm
+ * instantly; now each is a real JS-parse stall on first visit) - an accepted, known
+ * regression while this is being sorted out, not an oversight.
  *
  * E-64 exception: MapLibre is NOT preloaded with `/map`, even though Leaflet is. It sits
  * behind a plain `import()` call inside MapPageComponent's engine-switch handler rather

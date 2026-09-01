@@ -1,7 +1,7 @@
 import { ApplicationConfig, ErrorHandler, isDevMode, provideZonelessChangeDetection } from '@angular/core'
 import { provideAnimations } from '@angular/platform-browser/animations'
 import {
-  provideRouter, withInMemoryScrolling, withPreloading
+  NoPreloading, provideRouter, withInMemoryScrolling, withPreloading
 } from '@angular/router'
 import { provideHttpClient } from '@angular/common/http'
 import { provideServiceWorker } from '@angular/service-worker'
@@ -21,7 +21,6 @@ import {
 import { GoogleGeocoder } from './shared/mapping/google-geocoder'
 import { NominatimGeocoder } from './shared/mapping/nominatim-geocoder'
 import { GlobalErrorHandler, MissionService } from './shared/services'
-import { IdlePreloadingStrategy } from './shared/idle-preloading-strategy'
 
 // Standalone replacement for AppModule's NgModule imports/providers.
 // AgGridModule is NOT here: every component that actually uses it already
@@ -44,12 +43,24 @@ export const appConfig: ApplicationConfig = {
     // opting into the scrolling feature would be an odd half-measure.
     provideRouter(
       APP_ROUTES,
-      // Was withPreloading(PreloadAllModules) - root-caused live 2026-09-01 via a real
-      // PageSpeed run: every lazy route's chunk (Messages, Rangers, Mission, Log, Prep, Map)
-      // was mid-download/mid-execution in Entry's OWN critical path, none of which Entry
-      // needs. See idle-preloading-strategy.ts's own doc comment for the full Lighthouse
-      // evidence and why plain NoPreloading would have thrown away a real benefit too.
-      withPreloading(IdlePreloadingStrategy),
+      // CONTROL EXPERIMENT, 2026-09-01 - was withPreloading(PreloadAllModules), then
+      // withPreloading(IdlePreloadingStrategy) (still in the tree, unused - see its own doc
+      // comment for the full history of both). Two separate timing-based preload strategies
+      // were shipped and independently VERIFIED LIVE to not fix Entry's CLS/LCP regression -
+      // neither moved the Performance score or CLS at all, and the second one made TBT worse.
+      // Read live-captured evidence explains why: on this throttled device, the main thread
+      // doesn't get a genuinely free tick until right around FCP, because that's also the
+      // moment the browser itself finally gets to paint - so ANY "wait until idle" heuristic
+      // ends up firing preload work at exactly the same moment the LCP element still needs to
+      // finish rendering, not before it. No idle-detection heuristic can dodge that; only NOT
+      // COMPETING at all can. This removes router-level preloading as a variable entirely, to
+      // test whether it's really the dominant contributor before trying a third timing guess -
+      // ngsw-config.json's "app" asset group still prefetches every *.js file unconditionally
+      // on service-worker install, so offline completeness is unaffected either way. NOT YET
+      // VERIFIED against a live PageSpeed run - next step once deployed. If this doesn't move
+      // the numbers either, stop guessing at fixes here and pull a real DevTools
+      // Performance-panel trace before touching this again - see idle-preloading-strategy.ts.
+      withPreloading(NoPreloading),
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
     provideServiceWorker('ngsw-worker.js', {
