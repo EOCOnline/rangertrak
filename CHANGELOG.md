@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.90.7](https://github.com/EOCOnline/rangertrak/compare/v0.90.6...v0.90.7) (2026-09-01)
+
+
+### Bug Fixes
+
+* **sw:** stop the service worker from swallowing PMTiles Range requests ([2927139](https://github.com/EOCOnline/rangertrak/commit/292713970e62e1d0b4af32ce55f3aace8e214921))
+
 ### [0.90.6](https://github.com/EOCOnline/rangertrak/compare/v0.90.5...v0.90.6) (2026-09-01)
 
 
