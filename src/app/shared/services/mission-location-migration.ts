@@ -70,6 +70,61 @@ export function normalizeLocationUids(locations: readonly MissionLocationType[])
   })
 }
 
+export type LocationMergeResult = {
+  /** The merged list, existing rows first in their ORIGINAL order (an overwrite updates a row
+   *  in place, it never moves it), incoming-only rows appended after. */
+  locations: MissionLocationType[]
+  added: string[]
+  overwritten: string[]
+}
+
+/**
+ * Merges an incoming Locations list (e.g. from a Setup file) into the list already on this
+ * device, additively - E-109 Setup files v2 (2026-08-31), mirrors `mergeRangers()` deliberately.
+ *
+ * Match key: trimmed `name`, EXACT (not case-insensitive) match - "Command Post" and "command
+ * post" are treated as two different locations rather than merged, since a location has no
+ * stronger identifier the way a ranger's `id` is (no real-world credential to fall back on).
+ * `incoming` is run through `normalizeLocationUids()` first.
+ *
+ * On overwrite, keeps the EXISTING row's `uid` and replaces every other field with the
+ * incoming record's values, updated in place (order preserved, same reasoning as
+ * `mergeRangers()`). On no match, appended with incoming's own (already-minted) `uid`.
+ *
+ * Pure - no injection, no logging, no storage access. The caller hands the result to
+ * `MissionLocationService.replaceAllLocations()`.
+ */
+export function mergeLocations(existing: readonly MissionLocationType[], incoming: readonly MissionLocationType[]): LocationMergeResult {
+  const normalizedIncoming = normalizeLocationUids(incoming)
+
+  const locations = existing.map(l => ({ ...l }))
+  const byName = new Map<string, number>()
+  locations.forEach((l, i) => {
+    const key = l.name.trim()
+    if (key) byName.set(key, i)
+  })
+
+  const added: string[] = []
+  const overwritten: string[] = []
+
+  for (const inc of normalizedIncoming) {
+    const key = inc.name.trim()
+    const matchIndex = key ? byName.get(key) : undefined
+
+    if (matchIndex !== undefined) {
+      const uid = locations[matchIndex].uid
+      locations[matchIndex] = { ...inc, uid }
+      overwritten.push(key)
+    } else {
+      locations.push({ ...inc })
+      added.push(key)
+      if (key) byName.set(key, locations.length - 1)
+    }
+  }
+
+  return { locations, added, overwritten }
+}
+
 /**
  * Brings a persisted Locations list up to LOCATION_SCHEMA_VERSION.
  *

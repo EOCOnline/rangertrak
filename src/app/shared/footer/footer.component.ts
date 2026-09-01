@@ -24,7 +24,7 @@ export class FooterComponent {
   /**
    * Read through to the service rather than snapshotting into a field in
    * ngOnInit, which is what this used to do. MissionService.settings reads a
-   * signal, so the template picks up later emissions - Import Mission, Load
+   * signal, so the template picks up later emissions - Restore mission, Load
    * Sample Mission and Reset Settings all republish settings, and the old
    * snapshot left the footer showing the previous mission's version forever.
    */

@@ -32,7 +32,7 @@
       <mat-icon aria-hidden="true">check_circle</mat-icon>
       Persistent storage is granted. This browser should not clear RangerTrak&rsquo;s data
       without your explicit action &mdash; except iOS/iPadOS, which does not reliably honor
-      this. Export your mission regularly as a precaution regardless of this setting.
+      this. Back up your mission regularly as a precaution regardless of this setting.
     </p>
     } @else if (storagePersistence.persisted() === false) {
     <p class="mission__status mission__status--warn">
@@ -46,11 +46,15 @@
     } @else {
     <p class="mission__status">
       <mat-icon aria-hidden="true">info</mat-icon>
-      This browser doesn&rsquo;t support requesting persistent storage. Export your mission
+      This browser doesn&rsquo;t support requesting persistent storage. Back up your mission
       regularly as a precaution.
     </p>
     }
 
+    <!-- Style A ("Mission Backup"/"Mission Restore") - a `backup`/`restore` icon pair,
+         distinct from Style B's shared `layers` icon (Rangers, /prep) so the two families
+         never look alike. No behavior change from the old "Export/Import mission" - see this
+         component's own doc comment. -->
     <h3 class="mission__subhead">Mission backup</h3>
     <p class="mission__note">
       Backs up this device&rsquo;s entire mission &mdash; settings, rangers and field reports
@@ -64,8 +68,8 @@
     </p>
     <button matButton="outlined" type="button" (click)="onBtnExportMission()"
       title="Download the current mission as a JSON file">
-      <mat-icon>download</mat-icon>
-      Export mission
+      <mat-icon>backup</mat-icon>
+      Back up mission
     </button>
   </mat-card-content>
 </mat-card>
@@ -82,7 +86,7 @@
   <div class="rt-danger-zone">
     <p class="rt-danger-zone__note">
       Each of these replaces or discards data already on this device, and cannot be undone.
-      Export your mission first if you need to keep it.
+      Back up your mission first if you need to keep it.
     </p>
 
     <div class="rt-danger-zone__actions">
@@ -100,8 +104,9 @@
            matButton> here silently did nothing, same bug found on Rangers. -->
       <button matButton="outlined" type="button" class="mission__danger-button"
         (click)="importMissionFile.click()"
-        title="Restore a mission from a previously exported JSON file - replaces everything currently on this device">
-        Import mission &mdash; replaces everything
+        title="Restore a mission from a previously backed-up JSON file - replaces everything currently on this device">
+        <mat-icon>restore</mat-icon>
+        Restore mission &mdash; replaces everything
       </button>
       <input #importMissionFile id="importMissionFile" type="file" accept="application/json,.json"
         (change)="onImportFileSelected($event)" class="mission__file-input" />

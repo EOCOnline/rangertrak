@@ -7,7 +7,7 @@ import { StatusKey } from './status-color'
  * Versioned, forward-only migration for the persisted settings object.
  *
  * Settings are stored in localStorage and also travel inside a mission export, so an object
- * written by an older build can arrive at any time - on load, or through Import Mission
+ * written by an older build can arrive at any time - on load, or through Restore mission
  * months later. Before Sprint E there was no mechanism for this at all: `settings.version`
  * was stamped from package.json on every load and never compared, so a stale object was
  * simply used as-is.

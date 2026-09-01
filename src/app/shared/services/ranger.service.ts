@@ -74,7 +74,7 @@ export class RangerService implements OnInit {
     // full, replace-not-append demo roster with real field reports. loadHardcodedRangers()
     // itself stays - ranger.service.spec.ts uses it as a quick way to seed a test roster.
     if (this.rangers.length === 0) {
-      this.log.verbose(`First run on this browser (or roster was emptied): starting blank. Load a real roster via Import roster or Import Mission.`, this.id)
+      this.log.verbose(`First run on this browser (or roster was emptied): starting blank. Load a real roster via Import roster or Restore mission.`, this.id)
     }
 
     this.updateLocalStorageAndPublish()
@@ -184,14 +184,14 @@ export class RangerService implements OnInit {
   //
   // Nothing called the method - its only caller was the Rangers page's JSON import
   // button, removed with the other non-working import experiments. A fresh install starts
-  // blank; a real roster arrives via Import roster or Import Mission.
+  // blank; a real roster arrives via Import roster or Restore mission.
 
   //--------------------------------------------------------------------------
   // REMOVED (2026-08-31, log-noise audit): LoadRangersFromExcel(). Same shape as the
   // LoadRangersFromJSON() removal documented just above - nothing called it, its only
   // callers (the Rangers page's two Excel-import buttons) were removed with the other
-  // non-working import experiments, and a real roster arrives via Import roster/Import
-  // Mission instead. What remained was five numbered `log.excessive("N Got...")` trace
+  // non-working import experiments, and a real roster arrives via Import roster/Restore
+  // mission instead. What remained was five numbered `log.excessive("N Got...")` trace
   // lines left over from once debugging it live, on a method nothing could reach anymore.
 
   /**
@@ -545,7 +545,7 @@ export class RangerService implements OnInit {
     // home addresses than a gitignored data file (see PRIVATE-Roadmap.md Section 9f).
     //
     // Deleted 2026-08-14. The live seed above is stations only. Real rosters arrive via
-    // Import Mission; the fictional demo roster lives in SampleDataService.
+    // Restore mission; the fictional demo roster lives in SampleDataService.
     //this.log.verbose(`Next: update LocalStorage: ${this.localStorageRangerName}`, this.id)
     this.SortRangersByCallsign()
     this.updateLocalStorageAndPublish();

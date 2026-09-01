@@ -347,7 +347,7 @@ export class RadioLogService {
   /**
    * E-114 Phase 1 (2026-08-31, maintainer's own live ask - "validation of incoming reports,
    * mainly proper timestamps, etc."). A Report Packet is trusted physical custody (D-40/D-35 -
-   * the same model Mission Zip already ships under), not an untrusted upload, but it is still a
+   * the same model Setup files already ship under), not an untrusted upload, but it is still a
    * hand-carried FILE - one a text editor, a bad copy/paste, or a stale hand-edit can corrupt
    * before it ever reaches `mergeIncomingEntries()` above. Checks only the fields this app
    * actually recomputes FROM, algorithmically, on every merge - a bad `date` or `location`

@@ -1,6 +1,6 @@
 import { RangerType } from './ranger.interface';
 import {
-  isRangerId, migrateRangers, newRangerUid, normalizeRangerId, normalizeRangerIds,
+  isRangerId, mergeRangers, migrateRangers, newRangerUid, normalizeRangerId, normalizeRangerIds,
   RANGER_SCHEMA_VERSION
 } from './ranger-migration';
 
@@ -260,6 +260,127 @@ describe('ranger-migration (ADR D-42)', () => {
         expect(result.schemaVersion).toBe(RANGER_SCHEMA_VERSION);
         expect(result.rangers).toEqual([]);
       }
+    });
+  });
+
+  /**
+   * E-109 Setup files v2 (2026-08-31). mergeRangers() is the additive counterpart to
+   * replaceAllRangers() - a Setup file that only carries SOME rangers must not discard the
+   * rest of the roster already on the device.
+   */
+  describe('mergeRangers', () => {
+    it('appends rows that match nothing already on the device', () => {
+      const existing = [ranger('A1', { id: 'REW-1', uid: 'u-a1' })];
+      const incoming = [ranger('B1', { id: 'REW-2' })];
+
+      const result = mergeRangers(existing, incoming);
+
+      expect(result.rangers.length).toBe(2);
+      expect(result.rangers[0]).toEqual(existing[0]);
+      expect(result.rangers[1].callsign).toBe('B1');
+      expect(result.added).toEqual([{ callsign: 'B1', id: 'REW-2' }]);
+      expect(result.overwritten).toEqual([]);
+      expect(result.ambiguous).toEqual([]);
+    });
+
+    it('overwrites a matching id in place, keeping the EXISTING uid and the array order', () => {
+      const existing = [
+        ranger('A1', { id: 'REW-1', uid: 'u-a1', fullName: 'Old Name' }),
+        ranger('B1', { id: 'REW-2', uid: 'u-b1' }),
+      ];
+      const incoming = [ranger('A1-renamed', { id: 'REW-1', fullName: 'New Name' })];
+
+      const result = mergeRangers(existing, incoming);
+
+      expect(result.rangers.length).toBe(2);
+      // Order preserved - the overwritten row stays at index 0, not moved to the end.
+      expect(result.rangers[0].callsign).toBe('A1-renamed');
+      expect(result.rangers[0].fullName).toBe('New Name');
+      expect(result.rangers[0].uid).withContext('existing uid kept - field reports join on it').toBe('u-a1');
+      expect(result.rangers[1].callsign).toBe('B1');
+      expect(result.overwritten).toEqual([{ callsign: 'A1-renamed', id: 'REW-1' }]);
+      expect(result.added).toEqual([]);
+    });
+
+    it('falls back to a callsign match when the incoming row has no usable id', () => {
+      const existing = [ranger('A1', { uid: 'u-a1' })]; // no id - hasn't checked in yet
+      const incoming = [ranger('A1', { id: 'REW-9' })]; // now has a credential
+
+      const result = mergeRangers(existing, incoming);
+
+      expect(result.rangers.length).toBe(1);
+      expect(result.rangers[0].id).toBe('REW-9');
+      expect(result.rangers[0].uid).toBe('u-a1');
+      expect(result.overwritten).toEqual([{ callsign: 'A1', id: 'REW-9' }]);
+    });
+
+    it('matches callsign case-insensitively (same convention rosterWarnings() dedupe uses)', () => {
+      const existing = [ranger('a1', { uid: 'u-a1' })];
+      const incoming = [ranger('A1', { fullName: 'Updated' })];
+
+      const result = mergeRangers(existing, incoming);
+
+      expect(result.rangers.length).toBe(1);
+      expect(result.rangers[0].fullName).toBe('Updated');
+      expect(result.overwritten.length).toBe(1);
+    });
+
+    it('handles a mixed batch: some added, some overwritten, in one call', () => {
+      const existing = [
+        ranger('A1', { id: 'REW-1', uid: 'u-a1' }),
+        ranger('B1', { id: 'REW-2', uid: 'u-b1' }),
+      ];
+      const incoming = [
+        ranger('A1', { id: 'REW-1', fullName: 'A1 Updated' }), // overwrite
+        ranger('C1', { id: 'REW-3' }),                          // add
+      ];
+
+      const result = mergeRangers(existing, incoming);
+
+      expect(result.rangers.length).toBe(3);
+      expect(result.added.map(a => a.callsign)).toEqual(['C1']);
+      expect(result.overwritten.map(o => o.callsign)).toEqual(['A1']);
+    });
+
+    it('open call 3: id matches one existing ranger, callsign matches a DIFFERENT one - id wins, flagged as ambiguous', () => {
+      const existing = [
+        ranger('OLD-CALL', { id: 'REW-1', uid: 'u-a' }),   // matches incoming id
+        ranger('NEW-CALL', { id: 'REW-9', uid: 'u-b' }),   // matches incoming callsign
+      ];
+      const incoming = [ranger('NEW-CALL', { id: 'REW-1', fullName: 'Whoever This Is' })];
+
+      const result = mergeRangers(existing, incoming);
+
+      // id wins: the ranger identified by REW-1 (index 0) is the one overwritten...
+      expect(result.rangers[0].fullName).toBe('Whoever This Is');
+      expect(result.rangers[0].uid).toBe('u-a');
+      // ...the one whose callsign merely happened to collide is untouched.
+      expect(result.rangers[1].id).toBe('REW-9');
+      expect(result.rangers[1].uid).toBe('u-b');
+      expect(result.rangers.length).toBe(2);
+      expect(result.overwritten).toEqual([{ callsign: 'NEW-CALL', id: 'REW-1' }]);
+      expect(result.ambiguous).toEqual([{ callsign: 'NEW-CALL', id: 'REW-1' }]);
+    });
+
+    it('does not mutate either input array', () => {
+      const existing = [ranger('A1', { id: 'REW-1', uid: 'u-a1' })];
+      const incoming = [ranger('A1', { id: 'REW-1', fullName: 'Changed' })];
+      const existingSnapshot = JSON.stringify(existing);
+      const incomingSnapshot = JSON.stringify(incoming);
+
+      mergeRangers(existing, incoming);
+
+      expect(JSON.stringify(existing)).toBe(existingSnapshot);
+      expect(JSON.stringify(incoming)).toBe(incomingSnapshot);
+    });
+
+    it('handles an empty incoming list (nothing to merge) without throwing', () => {
+      const existing = [ranger('A1', { id: 'REW-1', uid: 'u-a1' })];
+      const result = mergeRangers(existing, []);
+
+      expect(result.rangers).toEqual(existing);
+      expect(result.added).toEqual([]);
+      expect(result.overwritten).toEqual([]);
     });
   });
 });

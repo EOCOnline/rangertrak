@@ -8,8 +8,8 @@ import {
 } from '../../../shared/services/'
 
 /**
- * Data safety (Storage Protection, mission export) and the page's Danger Zone (reset
- * settings, import mission, load sample data - all of which replace data already on the
+ * Data safety (Storage Protection, Mission Backup) and the page's Danger Zone (reset
+ * settings, Mission Restore, load sample data - all of which replace data already on the
  * device).
  *
  * Material-M3 pass 2026-08-25 split those two apart: they were one undifferentiated
@@ -55,24 +55,24 @@ export class MissionAdvancedOptionsComponent {
    * single JSON file. See PRIVATE-Roadmap.md Section 8/R3.
    */
   onBtnExportMission() {
-    // The export bundles the full ranger roster, so it carries the same personal data as
+    // The backup bundles the full ranger roster, so it carries the same personal data as
     // the Rangers page warns about - in an unencrypted file this app can no longer
     // protect once written.
-    if (!confirm(`Export this mission to a file?\n\n`
+    if (!confirm(`Back up this mission to a file?\n\n`
       + `The file includes the full ranger roster - legal names, personal `
       + `phone numbers and call signs - and is NOT encrypted.\n\n`
       + `Store it somewhere appropriate, share it only with people who need it for this `
       + `mission, and delete it when the mission is over.`)) {
-      this.log.verbose('onBtnExportMission: user cancelled export.', this.id)
+      this.log.verbose('onBtnExportMission: user cancelled backup.', this.id)
       return
     }
 
-    this.log.verbose('onBtnExportMission: Exporting mission.', this.id)
+    this.log.verbose('onBtnExportMission: Backing up mission.', this.id)
     this.backupService.exportMission()
   }
 
   /**
-   * Handles a file picked via the "Import Mission" <input type="file">.
+   * Handles a file picked via the "Restore mission" <input type="file">.
    * Destructive - replaces current settings/rangers/field reports entirely -
    * so this confirms with the user before applying.
    */
@@ -87,25 +87,25 @@ export class MissionAdvancedOptionsComponent {
 
     this.backupService.readFileAsMissionExport(file)
       .then(payload => {
-        const summary = `Mission "${payload.settings.mission || '(unnamed)'}" exported `
+        const summary = `Mission "${payload.settings.mission || '(unnamed)'}" backed up `
           + `${payload.exportedAt}, with ${payload.rangers.length} rangers and `
           + `${payload.radioLog.logEntries.length} field reports.`
 
-        if (!confirm(`Import this mission?\n\n${summary}\n\n`
+        if (!confirm(`Restore this mission?\n\n${summary}\n\n`
           + `This REPLACES all current settings, rangers, and field reports on this device. `
-          + `This cannot be undone - export the current mission first if you want to keep it.`)) {
-          this.log.verbose('onImportFileSelected: user cancelled import.', this.id)
+          + `This cannot be undone - back up the current mission first if you want to keep it.`)) {
+          this.log.verbose('onImportFileSelected: user cancelled restore.', this.id)
           return
         }
 
         this.backupService.importMission(payload)
-        this.log.warn(`Imported mission from ${file.name}.`, this.id)
-        alert('Mission imported. Reloading to refresh every screen with the new data...')
+        this.log.warn(`Restored mission from ${file.name}.`, this.id)
+        alert('Mission restored. Reloading to refresh every screen with the new data...')
         window.location.reload()
       })
       .catch(error => {
-        this.log.error(`onImportFileSelected: failed to import ${file.name}: ${error.message}`, this.id)
-        alert(`Could not import "${file.name}": ${error.message}`)
+        this.log.error(`onImportFileSelected: failed to restore ${file.name}: ${error.message}`, this.id)
+        alert(`Could not restore "${file.name}": ${error.message}`)
       })
   }
 
@@ -117,7 +117,7 @@ export class MissionAdvancedOptionsComponent {
     if (!confirm(`Load the sample mission?\n\n`
       + `This REPLACES all rangers and field reports currently on this device with `
       + `demonstration data, and renames the mission to make that obvious.\n\n`
-      + `This cannot be undone - export the current mission first if you want to keep it.`)) {
+      + `This cannot be undone - back up the current mission first if you want to keep it.`)) {
       this.log.verbose('onBtnLoadSampleData: user cancelled.', this.id)
       return
     }

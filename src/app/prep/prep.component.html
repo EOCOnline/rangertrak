@@ -1,64 +1,122 @@
 <rangertrak-page [title]="title" [description]="pageDescr">
 
+  <!-- Style B ("Setup files") - shares one icon family (layers) with Rangers' own
+       Import/Export roster buttons and the link that brought someone here, so all of them
+       read as one matched pair-of-pairs, distinct from Mission Setup's "Mission Backup"
+       controls (a separate icon family) - see the terminology note in this component's own
+       doc comment for why the two must never look alike. -->
   <mat-card class="prep__card">
     <mat-card-header>
-      <mat-card-title>Build a Mission Zip</mat-card-title>
+      <mat-card-title>Export setup files</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <p>
-        Packages THIS device's current roster, locations, ranger photos, and mission settings
-        into one downloadable <code>.zip</code>. Deliberately does not include field reports -
-        a Mission Zip is a pre-mission template, not a mid-mission backup (use Mission Setup's
-        own "Export mission" for that).
+        Packages whichever categories are checked below - THIS device's current roster (with
+        ranger photos), locations, and/or mission settings - into one downloadable
+        <code>.zip</code>. Uncheck a category to build a narrower file, e.g. a Rangers-only
+        file for one team. Deliberately never includes field reports - a setup file is a
+        pre-mission provisioning artifact, not a mid/post-mission backup (use Mission Setup's
+        own "Back up mission" for that).
       </p>
-      <div class="warn">
-        Confidential: a Mission Zip contains real names, phone numbers and photographs of
-        volunteers. Do not email it, do not put it in source control, and wipe the drive it's
-        on after the mission.
+
+      <div class="prep__categories">
+        <mat-checkbox [checked]="exportRangers()" (change)="exportRangers.set($event.checked)">
+          Rangers (with photos)
+        </mat-checkbox>
+        <mat-checkbox [checked]="exportLocations()" (change)="exportLocations.set($event.checked)">
+          Locations
+        </mat-checkbox>
+        <mat-checkbox [checked]="exportSettings()" (change)="exportSettings.set($event.checked)">
+          Mission settings
+        </mat-checkbox>
       </div>
-      <button matButton="filled" type="button" (click)="onBtnBuildZip()" [disabled]="building()">
-        <mat-icon>archive</mat-icon>
-        {{ building() ? 'Building…' : 'Build Mission Zip' }}
+
+      <div class="warn">
+        Confidential: a setup file carrying Rangers contains real names, phone numbers and
+        photographs of volunteers. Do not email it, do not put it in source control, and wipe
+        the drive it's on after the mission.
+      </div>
+      <button matButton="filled" type="button" (click)="onBtnExportSetupFiles()" [disabled]="building()">
+        <mat-icon>layers</mat-icon>
+        {{ building() ? 'Building…' : 'Export setup files' }}
       </button>
     </mat-card-content>
   </mat-card>
 
   <mat-card class="prep__card">
     <mat-card-header>
-      <mat-card-title>Load a Mission Zip</mat-card-title>
+      <mat-card-title>Import setup files</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <p>
-        Replaces this device's roster, locations, mission settings, and EVERY ranger photo
-        (not just the ones this zip has a replacement for) with the contents of a Mission Zip
-        someone handed you. Field reports already on this device are never touched - a Mission
-        Zip has none of its own to bring in.
+        Loads one or more setup files someone handed you. Each file's rangers and locations
+        <strong>merge</strong> into what is already on this device - a row that matches an
+        existing one (by id, or by name for a location) is updated in place, everything else
+        already here is kept. Mission settings, when a file carries them, are applied wholesale.
+        Field reports already on this device are never touched - a setup file has none of its
+        own to bring in.
+      </p>
+      <p>
+        Picking several files at once applies them in FILENAME order - name them
+        <code>01-rangers-teamA…</code>, <code>02-locations…</code> to control which one wins
+        when two files touch the same row.
       </p>
 
-      <button matButton="outlined" type="button" (click)="zipFileInput.click()">
-        <mat-icon>upload</mat-icon>
-        Choose Mission Zip file…
+      <button matButton="outlined" type="button" (click)="setupFileInput.click()">
+        <mat-icon>layers</mat-icon>
+        Choose setup file(s)…
       </button>
-      <input #zipFileInput type="file" accept="application/zip,.zip" (change)="onZipFileSelected($event)" hidden />
+      <input #setupFileInput type="file" accept="application/zip,.zip" multiple
+        (change)="onSetupFilesSelected($event)" hidden />
 
-      @if (pending(); as p) {
-        <div class="prep__preview">
-          <h3>{{ p.manifest.settings.mission || '(unnamed mission)' }}</h3>
-          <p class="prep__preview-meta">
-            {{ p.manifest.rangers.length }} ranger{{ p.manifest.rangers.length === 1 ? '' : 's' }},
-            {{ p.manifest.locations?.length ?? 0 }} location{{ (p.manifest.locations?.length ?? 0) === 1 ? '' : 's' }},
-            {{ p.photos.length }} photo{{ p.photos.length === 1 ? '' : 's' }}
-            &mdash; built {{ p.manifest.exportedAt | date:'medium' }}
-            @if (p.manifest.appVersion) { with app v{{ p.manifest.appVersion }} }
-          </p>
-          <div class="prep__preview-actions">
-            <button matButton="filled" type="button" (click)="onBtnApplyPending()" [disabled]="applying()">
-              {{ applying() ? 'Loading…' : 'Load this Mission Zip' }}
+      @if (pendingQueue().length; as queueLength) {
+        <div class="prep__queue">
+          <h3>{{ queueLength }} file{{ queueLength === 1 ? '' : 's' }} queued, in this order</h3>
+          @for (f of pendingQueue(); track f.filename) {
+            <div class="prep__queue-item">
+              <span class="prep__queue-item-name">{{ f.filename }}</span>
+              <span class="prep__queue-item-meta">
+                @if (f.manifest.rangers) { {{ f.manifest.rangers.length }} ranger{{ f.manifest.rangers.length === 1 ? '' : 's' }} }
+                @if (f.manifest.locations) { &middot; {{ f.manifest.locations.length }} location{{ f.manifest.locations.length === 1 ? '' : 's' }} }
+                @if (f.manifest.settings) { &middot; settings }
+                @if (f.photos.length) { &middot; {{ f.photos.length }} photo{{ f.photos.length === 1 ? '' : 's' }} }
+              </span>
+              <button matButton="outlined" type="button" (click)="onRemoveQueuedFile(f.filename)" [disabled]="applying()">
+                Remove
+              </button>
+            </div>
+          }
+          <div class="prep__queue-actions">
+            <button matButton="filled" type="button" (click)="onBtnApplyQueue()" [disabled]="applying()">
+              {{ applying() ? 'Applying…' : 'Apply ' + queueLength + ' setup file' + (queueLength === 1 ? '' : 's') }}
             </button>
-            <button matButton="outlined" type="button" (click)="onCancelPending()" [disabled]="applying()">
-              Cancel
+            <button matButton="outlined" type="button" (click)="onClearQueue()" [disabled]="applying()">
+              Clear queue
             </button>
           </div>
+        </div>
+      }
+
+      @if (sessionLog().length) {
+        <div class="prep__log">
+          <h3>Applied this session</h3>
+          @for (entry of sessionLog(); track entry.filename + entry.summary) {
+            <div class="prep__log-item">
+              <strong>{{ entry.filename }}</strong>
+              <span>{{ entry.summary }}</span>
+            </div>
+          }
+          <!-- R-2 (review notes): deliberately no auto-reload after applying - Rangers/Map/
+               Entry read their data at init and don't observe these services reactively, so a
+               reload IS eventually needed, but firing it automatically would destroy this log
+               the instant it's written, before anyone could read what actually happened. -->
+          <p class="prep__log-note">
+            Rangers, Map and Entry need a reload to pick these changes up - this log would be
+            lost if that happened automatically, so it waits for you.
+          </p>
+          <button matButton="outlined" type="button" (click)="reloadPage()">
+            Reload now
+          </button>
         </div>
       }
     </mat-card-content>

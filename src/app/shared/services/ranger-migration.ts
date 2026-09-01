@@ -277,6 +277,91 @@ export function normalizeRangerIds(rangers: readonly RangerType[]): RangerIdAudi
  * meaningful state in its own right since 0.55.0 ("Rangers should start blank. That should
  * indicate a new mission!"), so that is a correct answer rather than a papered-over failure.
  */
+/** One row named in a merge summary - never a bare count (capability, not policy: show the
+ *  human what happened, let them judge it). */
+export type RangerMergeNote = { callsign: string; id: string }
+
+export type RangerMergeResult = {
+  /** The merged roster, existing rows first in their ORIGINAL order (an overwrite updates a
+   *  row in place, it never moves it), incoming-only rows appended after. */
+  rangers: RangerType[]
+  added: RangerMergeNote[]
+  overwritten: RangerMergeNote[]
+  /** An incoming row whose `id` matched one existing ranger while its `callsign` matched a
+   *  DIFFERENT existing ranger - id wins (see this function's own doc comment), but a
+   *  collision like this is worth a line of its own, not just a console warning. */
+  ambiguous: RangerMergeNote[]
+}
+
+/**
+ * Merges an incoming roster (e.g. from a Setup file) into the roster already on this device,
+ * additively - E-109 Setup files v2 (2026-08-31). Unlike `replaceAllRangers()`, nothing already
+ * present is discarded unless an incoming row actually matches it.
+ *
+ * Match key: normalized `id` first, `callsign` (case-insensitive, trimmed) as the fallback -
+ * `incoming` is run through `normalizeRangerIds()` first so ids/uids are canonical before any
+ * matching happens. A row with neither a usable `id` nor `callsign` match is appended as new.
+ *
+ * **Ambiguous match**: if an incoming row's `id` matches existing ranger A while its `callsign`
+ * matches a DIFFERENT existing ranger B, `id` wins (A is overwritten, B is untouched) - real id
+ * credentials are the stronger signal, callsigns are the more casually reused of the two - but
+ * the collision is reported in `ambiguous` so a human can look at it, not silently resolved.
+ *
+ * **On overwrite**: keeps the EXISTING row's `uid` (field reports already join on it - keeping
+ * the incoming file's own freshly-minted uid would orphan them) and replaces every other field
+ * with the incoming record's values. The existing array's order is preserved - an overwritten
+ * row is updated in place, never moved to the end, so a coordinator's grid does not reshuffle
+ * under them file after file.
+ *
+ * **On no match**: appended with incoming's own (already-minted) `uid`.
+ *
+ * Pure - no injection, no logging, no storage access - same convention every function in this
+ * file follows. The caller hands the result to `RangerService.replaceAllRangers()`.
+ */
+export function mergeRangers(existing: readonly RangerType[], incoming: readonly RangerType[]): RangerMergeResult {
+  const normalizedIncoming = normalizeRangerIds(incoming).rangers
+
+  const rangers = existing.map(r => ({ ...r }))
+  const byId = new Map<string, number>()
+  const byCallsign = new Map<string, number>()
+  rangers.forEach((r, i) => {
+    if (r.id) byId.set(r.id, i)
+    if (r.callsign.trim()) byCallsign.set(r.callsign.trim().toUpperCase(), i)
+  })
+
+  const added: RangerMergeNote[] = []
+  const overwritten: RangerMergeNote[] = []
+  const ambiguous: RangerMergeNote[] = []
+
+  for (const inc of normalizedIncoming) {
+    const note: RangerMergeNote = { callsign: inc.callsign, id: inc.id ?? '' }
+    const idMatch = inc.id ? byId.get(inc.id) : undefined
+    const callsignMatch = inc.callsign.trim() ? byCallsign.get(inc.callsign.trim().toUpperCase()) : undefined
+
+    let matchIndex = idMatch
+    if (idMatch !== undefined && callsignMatch !== undefined && idMatch !== callsignMatch) {
+      ambiguous.push(note)
+    } else if (matchIndex === undefined) {
+      matchIndex = callsignMatch
+    }
+
+    if (matchIndex !== undefined) {
+      const uid = rangers[matchIndex].uid
+      rangers[matchIndex] = { ...inc, uid }
+      overwritten.push(note)
+      if (inc.id) byId.set(inc.id, matchIndex)
+      if (inc.callsign.trim()) byCallsign.set(inc.callsign.trim().toUpperCase(), matchIndex)
+    } else {
+      rangers.push({ ...inc })
+      added.push(note)
+      if (inc.id) byId.set(inc.id, rangers.length - 1)
+      if (inc.callsign.trim()) byCallsign.set(inc.callsign.trim().toUpperCase(), rangers.length - 1)
+    }
+  }
+
+  return { rangers, added, overwritten, ambiguous }
+}
+
 export function migrateRangers(raw: unknown): StoredRangers {
   // Version 0: a bare array, which is exactly what localStorage holds today.
   if (Array.isArray(raw)) {

@@ -146,7 +146,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
         if (localStorageMission != null && localStorageMission.indexOf("defLat") > 0) {
           // Migrate BEFORE publishing: subscribers (and the Settings form) must never see a
           // pre-migration shape. See mission-migration.ts. The other entry point that can
-          // introduce foreign settings is Import Mission - backup.service.ts migrates there too.
+          // introduce foreign settings is Restore mission - backup.service.ts migrates there too.
           // initMission() supplies the backfill source, so a stored object written before a
           // field existed gains it rather than breaking the Settings page (BUG-3).
           this.setMission(migrateMission(JSON.parse(localStorageMission), this.initMission()))

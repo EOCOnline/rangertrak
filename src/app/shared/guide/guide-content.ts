@@ -272,7 +272,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           {
             heading: 'Loading a roster',
             bullets: [
-              'Import roster replaces the whole roster from a JSON file (or a zip holding roster.json and a photos/ folder) and leaves field reports and settings alone. Each entry needs a UNIQUE ID — a callsign is optional.',
+              'Import roster replaces the whole roster from a JSON file, or MERGES rangers in from a setup file (a .zip built on the Setup files page). Field reports and settings are left alone either way. Each entry needs a UNIQUE ID — a callsign is optional.',
               'Export roster writes that file back out. Do it before importing if you want to keep the roster you already have.',
               'JSON round-trips: it can be imported back in. Export CSV is for Excel and cannot.',
               'Photos are kept on this device only, never uploaded and never in the repo. Name each file after the ranger\'s id or callsign - any common image format works (JPG, PNG, GIF, WEBP, etc.).'
@@ -284,7 +284,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           },
           {
             heading: 'Moving a whole mission',
-            text: 'To move the roster, settings and field reports together, use Export/Import Mission on the Mission Setup page. Import/Export roster here moves only the roster. To hand a coordinator a starting point for a NEW device before a mission begins - roster, photos, locations and settings together, no field reports - use the Mission Zip page instead.'
+            text: 'To move the roster, settings and field reports together, use Back up mission/Restore mission on the Mission Setup page. Import/Export roster here moves only the roster. To hand a coordinator a starting point for a NEW device before a mission begins - any combination of roster, photos, locations and settings, no field reports - use the Setup files page instead.'
           },
           {
             heading: 'Tactical call signs',
@@ -343,7 +343,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           {
             heading: 'Backup and advanced options',
             bullets: [
-              'Export mission (Data safety card) downloads settings, rangers and field reports as one file — the way to back up a mission or move it to another device. Import mission, in the Danger zone below, round-trips it back in.',
+              'Back up mission (Data safety card) downloads settings, rangers and field reports as one file — the way to back up a mission or move it to another device. Restore mission, in the Danger zone below, round-trips it back in.',
               'Load sample mission and Reset mission to defaults are also in the Danger zone — each replaces data already on this device and cannot be undone.'
             ]
           },
@@ -412,26 +412,28 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
   },
 
   '/prep': {
-    screen: 'Mission Zip',
+    screen: 'Setup files',
     tabs: [
       {
         label: 'This page',
         blocks: [
           {
-            heading: 'What a Mission Zip is - and is not',
-            text: 'A pre-mission TEMPLATE for setting up a new device: this device\'s current roster, locations, ranger photos, and mission settings, bundled into one file. It has no field reports, because a template is built before a mission has any. That makes it a different artifact from Mission Setup\'s "Export mission," which IS a mid/post-mission backup and always includes field reports - build a Mission Zip to hand a coordinator a starting point, export a mission to back up or move a mission already in progress.'
+            heading: 'What a setup file is - and is not',
+            text: 'A pre-mission PROVISIONING file for setting up a device: any combination of this device\'s current roster (with ranger photos), locations, and mission settings, bundled into one file - check only the categories you want to hand off. It has no field reports, because it is built before a mission has any. That makes it a different artifact from Mission Setup\'s "Back up mission," which IS a mid/post-mission backup and always includes field reports - export setup files to hand a coordinator a starting point, back up a mission to protect or move one already in progress.'
           },
           {
-            heading: 'Loading one replaces almost everything',
+            heading: 'Loading merges, it does not replace',
             bullets: [
-              'The current roster, mission settings, and locations are all replaced.',
-              'EVERY ranger photo already on this device is cleared first, not just the ones this zip has a replacement for - a leftover photo under a reused id could otherwise silently show the wrong face.',
-              'Field reports already on this device are never touched.'
+              'Rangers and locations in a loaded file MERGE into what is already on this device - a row that matches an existing one is updated, everything else already here is kept.',
+              'Mission settings, when a file carries them, are applied wholesale, the same as always.',
+              'No photo already stored on this device is cleared first - one only changes if a loaded file replaces it.',
+              'Field reports already on this device are never touched.',
+              'Pick several files at once to apply them together, in filename order, after one confirmation.'
             ]
           },
           {
             heading: 'Photos are downscaled, not originals',
-            text: 'Stored photos are shrunk to a small size on import (they only ever render at 40-60px), so a Mission Zip is a deployment artifact, not a photo archive. It does not replace the full-size roster/photo bundle a coordinator may build outside the app.'
+            text: 'Stored photos are shrunk to a small size on import (they only ever render at 40-60px), so a setup file is a deployment artifact, not a photo archive. It does not replace the full-size roster/photo bundle a coordinator may build outside the app.'
           }
         ]
       },

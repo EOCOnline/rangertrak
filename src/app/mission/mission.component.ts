@@ -129,7 +129,7 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
    * elsewhere this cannot be a getter - the user edits these rows and the grid's
    * `addStatus()` pushes to them - so it is re-seeded from the settings subscription
    * instead, next to the model reset that already happens there. Snapshotting it only in
-   * ngOnInit meant that after Import Mission the grid still showed the *previous*
+   * ngOnInit meant that after Restore mission the grid still showed the *previous*
    * mission's statuses, and saving from that stale grid wrote them back over the imported
    * ones. Same array reference as missionModel().radioLogStatuses - grid mutations are
    * visible on submit without any explicit sync.
@@ -145,7 +145,7 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
 
   /**
    * E-103: the working list behind the recipients-checklist editor, same "re-seeded from the
-   * settings subscription" reasoning as rowData above (Import Mission / Reset Defaults must
+   * settings subscription" reasoning as rowData above (Restore mission / Reset Defaults must
    * replace this list, not leave a stale one from the previous mission showing).
    */
   recipientOptions213 = signal<string[]>([])

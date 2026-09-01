@@ -147,9 +147,9 @@ Both engines live on the one **Map** page now, switched with the toggle above th
   while connected is what makes it available later with no Internet.
 
 **7. Take a backup.**
-On **Settings**, press **Export Mission**. This writes a single file containing your
+On **Settings**, press **Back up mission**. This writes a single file containing your
 settings, roster, and any reports. Keep it somewhere safe — a USB stick, another device.
-If the browser data is ever lost, **Import Mission** restores everything.
+If the browser data is ever lost, **Restore mission** restores everything.
 
 > ⚠️ That export file contains personal information about your people — names, home
 > addresses, phone numbers, and call signs — and it is **not encrypted**. Treat it like any
@@ -217,8 +217,8 @@ for detail.
 can show just the selected reports instead of everything. Useful for a single team or a
 single incident.
 
-**Handing over.** Press **Export Mission** on **Settings** and give the file to the
-incoming operator, who imports it on their device.
+**Handing over.** Press **Back up mission** on **Settings** and give the file to the
+incoming operator, who restores it on their device.
 
 ---
 
@@ -265,8 +265,8 @@ Your options, best first:
    load the app. Then immediately follow the setup steps above.
 2. **Use a device that already has it.** Any device with a warm or hot start is more
    valuable right now than a faster device without one.
-3. **Restore from a backup file.** If someone has an exported mission file, open
-   RangerTrak on a device that *can* load it and use **Import Mission**.
+3. **Restore from a backup file.** If someone has a backed-up mission file, open
+   RangerTrak on a device that *can* load it and use **Restore mission**.
 
 Once you are running, **capture data first and tidy later**. Coordinates and call signs
 work offline; address lookup does not. A report with coordinates and a call sign is

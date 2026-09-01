@@ -169,7 +169,7 @@ actually defends against here is narrow, and worth being honest about:
 
 ### Suggested staging
 
-- **Phase 1 — encrypted exports.** Optional passphrase on Export Mission, roster export,
+- **Phase 1 — encrypted exports.** Optional passphrase on Back up mission, roster export,
   and log export. Self-contained, needs no storage refactor, and targets the data that
   actually leaves the device. Highest value per unit of work; do this first.
 - **Phase 2 — encrypted at rest**, tied to the IndexedDB migration so the async change is

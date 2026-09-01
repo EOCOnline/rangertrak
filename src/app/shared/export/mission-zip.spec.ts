@@ -37,6 +37,36 @@ describe('mission-zip', () => {
       expect(read).toEqual(built)
       expect(photos).toEqual([])
     })
+
+    // v2 (2026-08-31): a category-bearing Setup file is now a normal shape, not just the
+    // always-both-present v1 case above - these pin that each category can travel alone.
+    it('round-trips a rangers-only manifest (no settings, no locations)', async () => {
+      const { settings, locations, ...rangersOnly } = manifest()
+      const built = rangersOnly as MissionZipManifest
+
+      const bytes = await buildMissionZipBytes(built, [])
+      const { manifest: read } = extractMissionZip(bytes)
+
+      expect(read).toEqual(built)
+      expect(read.settings).toBeUndefined()
+      expect(read.locations).toBeUndefined()
+      expect(read.rangers?.length).toBe(1)
+    })
+
+    it('round-trips a locations-only manifest (no settings, no rangers)', async () => {
+      const { settings, rangers, ...locationsOnly } = manifest({
+        locations: [{ name: 'Staging Area', type: 'Staging Area', lat: 47.5, lng: -122.5 }],
+      })
+      const built = locationsOnly as MissionZipManifest
+
+      const bytes = await buildMissionZipBytes(built, [])
+      const { manifest: read } = extractMissionZip(bytes)
+
+      expect(read).toEqual(built)
+      expect(read.settings).toBeUndefined()
+      expect(read.rangers).toBeUndefined()
+      expect(read.locations?.length).toBe(1)
+    })
   })
 
   describe('archive tolerance', () => {
@@ -47,7 +77,7 @@ describe('mission-zip', () => {
         'Vashon-2026/photos/REW-1.jpg': new TextEncoder().encode('img'),
       })
       const { manifest: read, photos } = extractMissionZip(bytes)
-      expect(read.settings.mission).toBe('Zip Test Mission')
+      expect(read.settings?.mission).toBe('Zip Test Mission')
       expect(photos[0].filename).toBe('REW-1.jpg')
     })
 
@@ -55,7 +85,7 @@ describe('mission-zip', () => {
       const { zipSync } = await import('fflate')
       const bytes = zipSync({ 'Vashon-2026\\mission-zip.json': new TextEncoder().encode(JSON.stringify(manifest())) })
       const { manifest: read } = extractMissionZip(bytes)
-      expect(read.settings.mission).toBe('Zip Test Mission')
+      expect(read.settings?.mission).toBe('Zip Test Mission')
     })
   })
 
@@ -66,22 +96,27 @@ describe('mission-zip', () => {
 
     it('rejects a zip with no mission-zip.json', async () => {
       // A roster bundle zip (roster.json, no mission-zip.json) must not be mistaken for a
-      // Mission Zip - that confusion is exactly what rangers.component.ts's own Mission-Zip
-      // detection (finishing checklist gap #6) depends on NOT happening in reverse.
+      // Setup file - that confusion is exactly what rangers.component.ts's own mergeRangers()
+      // path (E-109 Setup files) depends on NOT happening in reverse.
       const { zipSync } = await import('fflate')
       const bytes = zipSync({ 'roster.json': new TextEncoder().encode('[]') })
-      expect(() => extractMissionZip(bytes)).toThrowError(/is not a Mission Zip/)
+      expect(() => extractMissionZip(bytes)).toThrowError(/is not a Setup file/)
     })
 
-    it('rejects a manifest missing rangers', async () => {
+    // v2: a manifest with settings/rangers both omitted used to be impossible (both were
+    // required); now it is a genuinely empty manifest - nothing to apply - which is the one
+    // shape that must still be rejected. A manifest carrying only ONE category (the old
+    // fixture here, `{schemaVersion, settings: {}}`) is now perfectly valid, so that fixture
+    // moved to the round-trip describe block above instead of staying a rejection case.
+    it('rejects a manifest with no categories at all', async () => {
       const { zipSync } = await import('fflate')
-      const bad = { schemaVersion: 1, settings: {} }
+      const bad = { schemaVersion: MISSION_ZIP_SCHEMA_VERSION, exportedAt: '2026-08-31T00:00:00.000Z', appVersion: '0.90.0' }
       const bytes = zipSync({ 'mission-zip.json': new TextEncoder().encode(JSON.stringify(bad)) })
-      expect(() => extractMissionZip(bytes)).toThrowError(/not a valid Mission Zip manifest/)
+      expect(() => extractMissionZip(bytes)).toThrowError(/not a valid Setup file manifest/)
     })
 
-    it('does not mistake a MissionExport JSON for a Mission Zip manifest shape', async () => {
-      // MissionExport has `radioLog` where a Mission Zip has none - the two schemas are
+    it('does not mistake a MissionExport JSON for a Setup file manifest shape', async () => {
+      // MissionExport has `radioLog` where a Setup file has none - the two schemas are
       // deliberately never unified (see mission-zip.ts's own header comment), but a
       // MissionExport still happens to satisfy extractMissionZip()'s loose shape check
       // (it has settings + rangers too). That is expected and fine: the file EXTENSION
@@ -95,7 +130,7 @@ describe('mission-zip', () => {
       }
       const bytes = zipSync({ 'mission-zip.json': new TextEncoder().encode(JSON.stringify(missionExportShaped)) })
       const { manifest: read } = extractMissionZip(bytes)
-      expect(read.settings.mission).toBe('Not A Zip')
+      expect(read.settings?.mission).toBe('Not A Zip')
     })
   })
 
@@ -106,6 +141,15 @@ describe('mission-zip', () => {
       const entries = unzipSync(bytes)
       const readme = new TextDecoder().decode(entries['README.txt'])
       expect(readme).toContain('CONFIDENTIAL')
+    })
+
+    it('does not throw when every category is absent', async () => {
+      const { settings, rangers, locations, ...bare } = manifest()
+      const bytes = await buildMissionZipBytes(bare as MissionZipManifest, [])
+      const { unzipSync } = await import('fflate')
+      const entries = unzipSync(bytes)
+      const readme = new TextDecoder().decode(entries['README.txt'])
+      expect(readme).toContain('no categories')
     })
   })
 })

@@ -14,7 +14,16 @@
   color: var(--rt-notice-ink);
 }
 
-.prep__preview {
+// Export side: which categories to include (E-109 Setup files v2).
+.prep__categories {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-block: 0.75rem;
+}
+
+// Import side: the picked-and-validated queue, applied as one batch.
+.prep__queue {
   margin-top: var(--rt-gap);
   padding: 0.75rem 1rem;
   border: 1px solid var(--rt-line);
@@ -22,17 +31,56 @@
   background: var(--rt-surface-2);
 }
 
-.prep__preview h3 {
-  margin: 0 0 0.25rem;
+.prep__queue h3 {
+  margin: 0 0 0.5rem;
 }
 
-.prep__preview-meta {
+.prep__queue-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-block: 0.35rem;
+  border-block-end: 1px solid var(--rt-line);
+}
+
+.prep__queue-item-name {
+  font-weight: 600;
+}
+
+.prep__queue-item-meta {
   color: var(--rt-ink-2);
-  margin: 0 0 0.75rem;
+  flex: 1;
 }
 
-.prep__preview-actions {
+.prep__queue-actions {
   display: flex;
   gap: var(--rt-gap);
   flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+// The per-file session log - what actually happened, one card per applied file (R-2: no
+// auto-reload, so this survives long enough to be read).
+.prep__log {
+  margin-top: var(--rt-gap);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rt-line);
+  border-radius: var(--rt-radius-lg);
+  background: var(--rt-surface-2);
+}
+
+.prep__log h3 {
+  margin: 0 0 0.5rem;
+}
+
+.prep__log-item {
+  display: flex;
+  flex-direction: column;
+  padding-block: 0.35rem;
+  border-block-end: 1px solid var(--rt-line);
+}
+
+.prep__log-note {
+  color: var(--rt-ink-2);
+  margin-block: 0.75rem;
 }

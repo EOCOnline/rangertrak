@@ -10,7 +10,7 @@ import { RadioLogEntryType } from '../services/radio-log-entry.interface'
  * a messaging app, a thumb drive, or read back over voice and re-typed (in which case there is
  * no packet at all - see §2a, voice is the fallback that needs nothing built).
  *
- * Plain JSON, not a zip - deliberately, unlike Mission Zip. A radio log entry carries no
+ * Plain JSON, not a zip - deliberately, unlike a Setup file. A radio log entry carries no
  * binary payload (no photos), so there is nothing zipSync() would earn its keep packing, and
  * plain JSON is also pasteable as message-body text, which a zip is not - directly relevant to
  * a carrier with no attachment path (packet radio, an SMS body). `.txt`, not `.json`, is the

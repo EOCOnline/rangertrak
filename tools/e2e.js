@@ -29,7 +29,7 @@
  *   --read-only     skip anything that writes localStorage/IndexedDB. Use against
  *                   production unless you intend to clobber that browser profile's data.
  *   --full          also run the slow checks (map engine switch/nav, roster lifecycle,
- *                   field aliases, bundle zip, mission round trip) - together these account
+ *                   field aliases, setup-file merge, mission round trip) - together these account
  *                   for most of the suite's wall-clock time via sleep()s and IndexedDB
  *                   polling. Default (no --full) skips them for a fast day-to-day run;
  *                   run --full at least once before pushing.
@@ -221,18 +221,24 @@ function makeFixtures(dir) {
   fs.writeFileSync(aliasPath, JSON.stringify(
     [{ callsign: 'E2E-AA1', licensee: 'Aliased Name', icon: 'x.png', status: 'Licensed' }], null, 2))
 
-  // Bundle zip. Uses BACKSLASH separators deliberately: PowerShell's Compress-Archive
-  // writes them, they violate APPNOTE 4.4.17.1, and tolerating them is a fix this suite
-  // exists to defend (0.15.6).
+  // A Setup file (E-109 v2) carrying a rangers category - what /prep itself builds, and what
+  // Rangers' own "Import roster" now reads for a .zip (rangers.component.ts's
+  // importRosterFromZip(), retired the old bespoke roster.json+photos/ bundle shape
+  // 2026-08-31). Uses BACKSLASH separators deliberately: PowerShell's Compress-Archive writes
+  // them, they violate APPNOTE 4.4.17.1, and tolerating them is a fix this suite exists to
+  // defend (0.15.6) - extractMissionZip()'s own basename() already tolerates them.
   const { zipSync } = require('fflate')
-  const zipPath = path.join(dir, 'bundle.zip')
-  fs.writeFileSync(zipPath, Buffer.from(zipSync({
-    'roster.json': new Uint8Array(fs.readFileSync(rosterPath)),
+  const setupFileManifest = {
+    schemaVersion: 2, exportedAt: '2026-08-31T00:00:00.000Z', appVersion: '0.90.0', rangers,
+  }
+  const setupFilePath = path.join(dir, 'setup-rangers.zip')
+  fs.writeFileSync(setupFilePath, Buffer.from(zipSync({
+    'mission-zip.json': new Uint8Array(Buffer.from(JSON.stringify(setupFileManifest))),
     'photos\\E2E-AA1.png': new Uint8Array(PNG_1PX),
     'photos\\E2E-CC3.png': new Uint8Array(PNG_1PX),
   })))
 
-  return { rangers, rosterPath, aliasPath, zipPath }
+  return { rangers, rosterPath, aliasPath, setupFilePath }
 }
 
 // ── the checks ───────────────────────────────────────────────────────────────
@@ -423,10 +429,10 @@ async function checkFieldNameAliases(fx) {
   check('status maps to role', r.role, 'Licensed')
 }
 
-async function checkBundleZip(fx) {
-  console.log('\nBundle zip: roster + photos in one action, with BACKSLASH separators')
+async function checkSetupFileMerge(fx) {
+  console.log('\nSetup file (Rangers, E-109 v2): MERGES into the roster already on the device, with BACKSLASH photo paths')
   await goto('/rangers')
-  await setFileInput('#importRosterFile', fx.zipPath)
+  await setFileInput('#importRosterFile', fx.setupFilePath)
 
   // Poll for both photo keys rather than a flat sleep(7000): two IndexedDB photo writes
   // sometimes take longer than that under load. This check passed reliably earlier in this
@@ -443,18 +449,28 @@ async function checkBundleZip(fx) {
         k.onsuccess = () => res(k.result); k.onerror = () => res([]); };
       req.onerror = () => res([]);
     });
-    return { rangers: rangers.length, photoKeys: photos.sort() };
+    return {
+      rangers: rangers.length,
+      photoKeys: photos.sort(),
+      // E2E-AA1 is already on the device with fullName "Aliased Name", left there by the
+      // PRECEDING checkFieldNameAliases() run - this setup file also carries an E2E-AA1, with
+      // its ORIGINAL fullName "Fixture Alpha". Asserting this proves the matching row was
+      // actually OVERWRITTEN by the merge, not just coincidentally landing on the right total
+      // COUNT (review findings R-6 - that coincidence is exactly what a bare count would hide).
+      aa1Name: (rangers.find(r => r.callsign === 'E2E-AA1') || {}).fullName,
+    };
   })()`
 
-  let r = { rangers: 0, photoKeys: [] }
+  let r = { rangers: 0, photoKeys: [], aa1Name: undefined }
   for (let i = 0; i < 20 && r.photoKeys.length < 2; i++) {
     await sleep(500)
     r = await evaluate(readState)
   }
-  check('zip imports the roster', r.rangers, fx.rangers.length)
+  check('setup file MERGES rangers (existing + new), not a wholesale replace', r.rangers, fx.rangers.length)
+  check('...and the matching row was actually overwritten, not just coincidentally counted', r.aa1Name, 'Fixture Alpha')
   // The 0.15.6 regression: backslash paths made every photo "unmatched" while the roster
   // imported fine, and the dialog reported success.
-  check('zip stores photos despite backslash paths', r.photoKeys, ['E2E-AA1', 'E2E-CC3'])
+  check('setup file stores photos despite backslash paths', r.photoKeys, ['E2E-AA1', 'E2E-CC3'])
 }
 
 // ── Sprint D's keyboard-first pass and phone-width fix, retro-fitted with the checks its
@@ -1823,11 +1839,14 @@ async function checkMissionUnsavedChangesGuard() {
 }
 
 async function checkMissionRoundTrip(downloads) {
-  console.log('\nMission export -> wipe all storage -> import: the disaster path')
+  console.log('\nMission backup -> wipe all storage -> restore: the disaster path')
   await goto('/mission')
   await evaluate(`(() => { const s = JSON.parse(localStorage.getItem('appSettings')); s.mission = 'E2E-MISSION'; localStorage.setItem('appSettings', JSON.stringify(s)); })()`)
   await goto('/mission')
-  await evaluate(`[...document.querySelectorAll('button')].find(b => /Export Mission/i.test(b.textContent))?.click()`)
+  // "Export mission" was renamed "Back up mission" (E-109 Setup files / Style A terminology
+  // pass, 2026-08-31) - matched by regex here, same as every other button-text lookup in this
+  // file, so a future label tweak doesn't silently break this selector again.
+  await evaluate(`[...document.querySelectorAll('button')].find(b => /Back up mission/i.test(b.textContent))?.click()`)
 
   // Poll rather than sleep a fixed 3s: the download is disk+Chrome timing, and a flat wait
   // made this check fail intermittently on an otherwise-green run. Waiting for the condition
@@ -1838,7 +1857,7 @@ async function checkMissionRoundTrip(downloads) {
     await sleep(250)
     files = fs.readdirSync(downloads).filter(f => f.endsWith('.json') && !f.endsWith('.crdownload'))
   }
-  if (!check('Export Mission produced a file', files.length > 0, true)) return
+  if (!check('Back up mission produced a file', files.length > 0, true)) return
   const missionFile = path.join(downloads, files[0])
 
   await goto('/mission')
@@ -2065,9 +2084,9 @@ async function main() {
       if (FULL) {
         await checkRosterLifecycle(fx)
         await checkFieldNameAliases(fx)
-        await checkBundleZip(fx)
+        await checkSetupFileMerge(fx)
       } else {
-        note('fast run: skipping checkRosterLifecycle, checkFieldNameAliases, checkBundleZip (pass --full to include)')
+        note('fast run: skipping checkRosterLifecycle, checkFieldNameAliases, checkSetupFileMerge (pass --full to include)')
       }
       await checkEntryPhoto()
       await checkEntryAutofocusAndReset() // submits a real report, so read-write only

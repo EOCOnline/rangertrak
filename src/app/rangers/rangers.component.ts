@@ -1,12 +1,11 @@
 import { ColDef, GridOptions } from 'ag-grid-community'
-import { unzipSync } from 'fflate'
 //import { TooltipModule } from 'ng2-tooltip-directive'
 import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
-import { Router, RouterLink } from '@angular/router'
+import { RouterLink } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular';
 import { GuideService } from '../shared/guide/guide.service';
 import { PageComponent } from '../shared/page/page.component';
@@ -26,6 +25,8 @@ import {
 // shared/services/index.ts leaves it unresolvable to the compiler ("no suitable injection
 // token"), the same way the barrel broke `imports:` arrays during Sprint B.
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
+import { extractMissionZip, MissionZipManifest, MissionZipPhoto } from '../shared/export/mission-zip'
+import { mergeRangers } from '../shared/services/ranger-migration'
 import { CustomTooltip } from './customTooltip'
 
 
@@ -269,7 +270,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     // The confidentiality bar's "What this means" opens the Guide drawer's Privacy tab -
     // see openPrivacyDetails().
     private guide: GuideService,
-    private router: Router,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.log.info(`======== Constructor() ============`, this.id)
@@ -418,100 +418,79 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // Roster import / export (JSON)
   //
   // The roster is the one thing a team must bring with them, and until now the only way
-  // in was Import Mission - which also replaces settings and every field report. That is
+  // in was Restore mission - which also replaces settings and every field report. That is
   // the wrong tool for "here is our roster": it discards the work already on the device.
   // These two do the roster and nothing else.
 
   /**
-   * Imports a roster bundle zip: `roster.json` plus a `photos/` folder, which is what
-   * PRIVATE-captures/roster-build/2-make-drive-bundle.js produces.
+   * Imports rangers from a `.zip` handed to "Import roster" - a Setup file (E-109 v2, same
+   * shape `/prep` builds and reads: `mission-zip.json` plus an optional `photos/`), not this
+   * component's own bespoke `roster.json`+`photos/` shape any more. Retired 2026-08-31: three
+   * different zip shapes for "roster and photos" had drifted apart (see mission-zip.ts's own
+   * header comment on why), and this component already had to special-case detecting the OTHER
+   * shape and redirect to `/prep` - that redirect is gone now that this path can just read it
+   * directly.
    *
-   * Deliberately tolerant about the layout - entries are found by basename at any depth, so
-   * it does not matter whether the operator zipped the folder or its contents, which is the
-   * single most common way a hand-made zip differs from the expected one.
-   *
-   * Roster and photos are applied together, after one confirmation, because a half-applied
-   * bundle (photos for a roster that was not replaced) is confusing in a way neither half
-   * is on its own.
+   * Applies ONLY the rangers, matching this button's own long-standing scope ("roster and
+   * nothing else") - a settings or locations category the file might also carry is silently
+   * ignored, not prompted about (prompting about the ignored part would resurrect exactly the
+   * confusion the old redirect used to paper over). Rangers MERGE into what is already on this
+   * device (`mergeRangers()`), the same additive semantics `/prep` itself uses - the safer
+   * default even for an old-style Mission Zip that was built expecting a wholesale replace.
    */
-  private async importRosterBundle(file: File) {
-    let entries: Record<string, Uint8Array>
+  private async importRosterFromZip(file: File) {
+    let manifest: MissionZipManifest
+    let photos: MissionZipPhoto[]
     try {
-      const buf = new Uint8Array(await file.arrayBuffer())
-      entries = unzipSync(buf)
+      const bytes = new Uint8Array(await file.arrayBuffer())
+      ;({ manifest, photos } = extractMissionZip(bytes))
     } catch (error: any) {
-      this.log.error(`Could not read ${file.name} as a zip: ${error.message}`, this.id)
-      alert(`Could not read "${file.name}" as a zip file.\n\n${error.message}`)
+      this.log.error(`Could not read ${file.name} as a Setup file: ${error.message}`, this.id)
+      alert(`Could not read "${file.name}".\n\n${error.message}`)
       return
     }
 
-    // Split on BOTH separators. The zip spec (APPNOTE 4.4.17.1) requires forward slashes,
-    // but Windows PowerShell's Compress-Archive writes backslashes - "photos\K7VMI.jpg" -
-    // and that is exactly the tool a volunteer on Windows will reach for. Splitting on '/'
-    // alone turned every photo's name into "photos\K7VMI", which matched no callsign, so
-    // the roster imported and all 30 photos were silently reported as unmatched.
-    const base = (p: string) => p.split(/[/\\]/).pop() || ''
-    const rosterKey = Object.keys(entries).find(k => base(k).toLowerCase() === 'roster.json')
-    if (!rosterKey) {
-      // Finishing checklist gap #6 (2026-08-31): a scribe handed a Mission Zip naturally
-      // reaches for the button they already know. Telling them only "no roster.json" is
-      // technically true and actively unhelpful when the file is a real, loadable Mission
-      // Zip that just needs a different page - so recognise it and point there instead of
-      // just rejecting it as "not a bundle."
-      const isMissionZip = Object.keys(entries).some(k => base(k).toLowerCase() === 'mission-zip.json')
-      if (isMissionZip) {
-        if (confirm(
-          `"${file.name}" is a Mission Zip, not a roster bundle - it also brings mission `
-          + `settings and locations, which "Import roster" cannot apply.\n\n`
-          + `Open the Mission Zip page to load it instead?`)) {
-          this.router.navigateByUrl('/prep')
-        }
-        return
-      }
-      alert(`"${file.name}" does not contain a roster.json.\n\n`
-        + `Expected a zip holding roster.json and a photos/ folder.`)
+    if (!manifest.rangers) {
+      alert(`"${file.name}" does not carry a Rangers category - there is nothing here for `
+        + `Import roster to apply. If it carries locations or settings instead, use the `
+        + `Setup files page (/prep) to load those.`)
       return
     }
-
-    let incoming: RangerType[]
-    try {
-      incoming = this.rangerService.parseRosterJson(new TextDecoder().decode(entries[rosterKey]))
-    } catch (error: any) {
-      this.log.error(`Bundle ${file.name} has an unusable roster.json: ${error.message}`, this.id)
-      alert(`"${file.name}" contains a roster.json that could not be read.\n\n${error.message}`)
-      return
-    }
-
-    // Any image in the archive, at any depth. Being strict about a `photos/` folder only
-    // rejects bundles that are otherwise perfectly usable - and a zip of images with no
-    // roster is handled by the "no roster.json" check above.
-    const photoEntries = Object.keys(entries)
-      .filter(k => !/[/\\]$/.test(k) && /\.(jpe?g|png|gif|webp|svg)$/i.test(base(k)))
 
     const current = this.rangerService.rangers.length
-    const warnings = this.rangerService.rosterWarnings(incoming)
-    warnings.forEach(w => this.log.warn(`Bundle import warning (${file.name}): ${w}`, this.id))
+    const warnings = this.rangerService.rosterWarnings(manifest.rangers)
+    warnings.forEach(w => this.log.warn(`Setup file import warning (${file.name}): ${w}`, this.id))
+    const merge = mergeRangers(this.rangerService.rangers, manifest.rangers)
+
+    const otherCategories = [manifest.settings && 'mission settings', manifest.locations && 'locations']
+      .filter((c): c is string => !!c)
 
     if (!confirm(
-      `Import from "${file.name}"?\n\n`
-      + `  ${incoming.length} rangers\n`
-      + `  ${photoEntries.length} photos\n\n`
+      `Import rangers from "${file.name}"?\n\n`
+      + `  ${merge.added.length} new, ${merge.overwritten.length} updated\n\n`
       + (warnings.length ? `Note:\n  - ${warnings.join('\n  - ')}\n\n` : '')
-      + `This REPLACES the current roster of ${current}. Field reports and settings are not `
-      + `affected. Photos are stored on this device only.`)) {
-      this.log.verbose('importRosterBundle: user cancelled.', this.id)
+      + `This MERGES into the current roster of ${current} - a matching row is updated, `
+      + `everything else already here is kept. Field reports and settings are not affected.\n\n`
+      + (otherCategories.length
+        ? `This file also carries ${otherCategories.join(' and ')} - Import roster does not `
+        + `apply those; use the Setup files page (/prep) for the whole file.\n\n`
+        : '')
+      + `Photos are stored on this device only.`)) {
+      this.log.verbose('importRosterFromZip: user cancelled.', this.id)
       return
     }
 
-    this.rangerService.replaceAllRangers(incoming)
+    this.rangerService.replaceAllRangers(merge.rangers)
 
-    const files = photoEntries.map(k =>
-      new File([new Uint8Array(entries[k])], base(k), { type: this.mimeFor(base(k)) }))
-    const { stored, unmatched } = await this.photos.importFiles(files, incoming)
+    const files = photos.map(p =>
+      new File([p.bytes as BlobPart], p.filename, { type: this.mimeFor(p.filename) }))
+    const { stored, unmatched } = await this.photos.importFiles(files, merge.rangers)
 
-    this.log.warn(`Imported ${incoming.length} rangers and ${stored.length} photos from ${file.name}.`, this.id)
+    this.log.warn(`Imported from ${file.name}: ${merge.added.length} new rangers, `
+      + `${merge.overwritten.length} updated, ${stored.length} photos.`, this.id)
 
-    const lines = [`Imported ${incoming.length} rangers and ${stored.length} photos.`]
+    const lines = [`Imported from "${file.name}": ${merge.added.length} new rangers, `
+      + `${merge.overwritten.length} updated, ${stored.length} photos stored.`]
     if (unmatched.length) {
       lines.push('', `${unmatched.length} photo${unmatched.length === 1 ? '' : 's'} did not match a callsign and were skipped.`)
     }
@@ -615,7 +594,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Handles a file picked via "Import roster". Replaces the roster only; field reports
    * and settings are untouched, which is the whole point of it being separate from
-   * Import Mission.
+   * Restore mission.
    */
   onRosterFileSelected(event: Event) {
     const input = event.target as HTMLInputElement
@@ -626,12 +605,12 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
 
-    // A .zip is the thumb-drive bundle: roster AND photos in one action. The two-step
+    // A .zip is a Setup file (E-109 v2): roster AND photos in one action. The two-step
     // (import roster, then multi-select the photos) still works, but handing a volunteer
     // one file to pick is the difference between a setup that happens and one that does
     // not.
     if (/\.zip$/i.test(file.name) || file.type === 'application/zip') {
-      this.importRosterBundle(file)
+      this.importRosterFromZip(file)
       return
     }
 
@@ -682,7 +661,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // experiments - the JSON one read the file into a data URL and threw it away, the
   // Excel ones imported the wrong sheet or alerted "NOT IMPLEMENTED" - all shown in
   // the UI behind a "may not work" disclaimer. Importing a roster is what
-  // BackupService's Import Mission does, for real (Roadmap Section 18/E).
+  // BackupService's Restore mission does, for real (Roadmap Section 18/E).
 
   //--------------------------------------------------------------------------
   onBtnReloadPage() {

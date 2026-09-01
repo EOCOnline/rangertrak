@@ -97,7 +97,7 @@ export class SampleDataService {
    * mission/event so nobody mistakes demo data for real mission data.
    *
    * Destructive by design - the caller is responsible for confirming with the user.
-   * Everything it touches is covered by Export Mission, so a real mission can be
+   * Everything it touches is covered by Back up mission, so a real mission can be
    * saved off first and restored afterwards.
    */
   public loadSampleMission(): void {
