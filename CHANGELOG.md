@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.91.3](https://github.com/EOCOnline/rangertrak/compare/v0.91.2...v0.91.3) (2026-09-01)
+
+
+### Bug Fixes
+
+* **map:** stop permanently-abandoned PMTiles tile fetches, retry the rest ([f30b9e6](https://github.com/EOCOnline/rangertrak/commit/f30b9e646c59ab80709672517a246712a6825f86))
+* **perf:** size the deferred Entry mini-map placeholder like the real component ([1775901](https://github.com/EOCOnline/rangertrak/commit/1775901b6f96957fe1134c667c71b3427281e63b))
+
 ### [0.91.2](https://github.com/EOCOnline/rangertrak/compare/v0.91.1...v0.91.2) (2026-09-01)
 
 
