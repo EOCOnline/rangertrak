@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.90.6](https://github.com/EOCOnline/rangertrak/compare/v0.90.5...v0.90.6) (2026-09-01)
+
+
+### Features
+
+* **worker:** allow rangertrak.com to file feedback cross-origin ([f6ca89a](https://github.com/EOCOnline/rangertrak/commit/f6ca89a089cc3e3b77582ccd24a230fe26a90166))
+
+
+### Bug Fixes
+
+* **dates,mission:** restore Dates lost to JSON round-trips; forbid zero-length op periods ([c74f2c9](https://github.com/EOCOnline/rangertrak/commit/c74f2c90842c774c949ea4d4fdeb8e75b1eaae18))
+* **docs:** repoint the Vashon ACS link, the old URL 404s ([94ffdc9](https://github.com/EOCOnline/rangertrak/commit/94ffdc9d2f7306e442e920e1bdf7e30d44a00df2))
+* **maps:** cancel Leaflet's orphaned zoom-transition timer before teardown ([d683b28](https://github.com/EOCOnline/rangertrak/commit/d683b28a1fe5ab4422811c37712bfc0e930e951f))
+
 ### [0.90.5](https://github.com/EOCOnline/rangertrak/compare/v0.90.4...v0.90.5) (2026-09-01)
 
 
