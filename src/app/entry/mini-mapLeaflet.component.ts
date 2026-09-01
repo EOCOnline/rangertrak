@@ -8,6 +8,7 @@ import 'leaflet.markercluster'
 import { tileLayerOffline } from 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 //import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
+import { removeLeafletMap } from '../shared/mapping/leaflet-teardown'
 
 //import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { delay, throwError } from 'rxjs'
@@ -688,7 +689,9 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
   // so this is the same leak firing on every visit.
   override ngOnDestroy(): void {
     super.ngOnDestroy()
-    this.lMap?.remove()
+    // removeLeafletMap(), not .remove() - see that helper. Entry is the most-visited page,
+    // so this is the instance most likely to be destroyed mid-zoom.
+    removeLeafletMap(this.lMap)
   }
 }
 

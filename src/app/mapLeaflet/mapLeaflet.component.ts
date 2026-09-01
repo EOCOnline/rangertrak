@@ -14,6 +14,7 @@ import {
 } from 'leaflet.offline' // https://github.com/allartk/leaflet.offline
 //import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
+import { removeLeafletMap } from '../shared/mapping/leaflet-teardown'
 
 //import pc from 'picocolors' // https://github.com/alexeyraspopov/picocolors
 import { Subscription, throwError } from 'rxjs'
@@ -1501,7 +1502,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     if (this.refreshEstimatedAreaInfo) {
       this.lMap?.off('moveend zoomend', this.refreshEstimatedAreaInfo)
     }
-    this.lMap?.remove()
-    this.overviewMapLeaflet?.remove()
+    // removeLeafletMap(), not .remove() - see that helper for the zoom-animation timer
+    // that otherwise throws up to 250ms after this component is gone.
+    removeLeafletMap(this.lMap)
+    removeLeafletMap(this.overviewMapLeaflet)
   }
 }

@@ -5,6 +5,12 @@ import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MapPageComponent } from './map-page.component';
 import { MapLibreComponent } from '../mapLibre.component';
 
+// The 300ms sleeps that used to pad every mount/destroy here are gone as of 2026-08-31.
+// They were compensating for Leaflet's uncancelled 250ms zoom-transition timer throwing
+// after teardown - an uncaught async error that failed whichever spec was mid-flight, so
+// it showed up as an unrelated, intermittent, CI-only failure. Fixed at the root in
+// shared/mapping/leaflet-teardown.ts; if these sleeps ever look tempting again, that
+// helper has stopped being called somewhere.
 describe('MapPageComponent', () => {
   let component: MapPageComponent;
   let fixture: ComponentFixture<MapPageComponent>;
@@ -24,10 +30,6 @@ describe('MapPageComponent', () => {
     fixture = TestBed.createComponent(MapPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    // Let the default Leaflet instance's own zoom-in animation settle before any test tears
-    // it down - flipping engines (or destroying the fixture) while it's still in-flight can
-    // throw asynchronously from Leaflet's own internal transition-end handler.
-    await new Promise(resolve => setTimeout(resolve, 300));
   });
 
   afterEach(() => {
@@ -43,7 +45,6 @@ describe('MapPageComponent', () => {
     expect(component.engine()).toBe('leaflet');
     expect(fixture.nativeElement.querySelector('.mapLeaflet-container')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.map-container')).toBeFalsy();
-    await new Promise(resolve => setTimeout(resolve, 300)); // let Leaflet's zoom-in animation settle
   });
 
   // The entire reason MapPageComponent exists as a route-level shell rather than a
@@ -62,17 +63,12 @@ describe('MapPageComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.map-container')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.mapLeaflet-container')).toBeFalsy();
-    await new Promise(resolve => setTimeout(resolve, 300));
   });
 
   it('flipping back to Leaflet unmounts MapLibre and remounts Leaflet', async () => {
     const toMaplibre = { checked: true } as MatSlideToggleChange;
     await component.onEngineSwitchChanged(toMaplibre);
     fixture.detectChanges();
-    // Let Leaflet's own zoom-in animation settle before the next mount/destroy cycle -
-    // without this, a rapid flip-flip-destroy sequence can outlive a still-in-flight
-    // Leaflet-internal animation timer and throw asynchronously in afterAll.
-    await new Promise(resolve => setTimeout(resolve, 300));
 
     const toLeaflet = { checked: false } as MatSlideToggleChange;
     await component.onEngineSwitchChanged(toLeaflet);
@@ -81,7 +77,5 @@ describe('MapPageComponent', () => {
     expect(component.engine()).toBe('leaflet');
     expect(fixture.nativeElement.querySelector('.mapLeaflet-container')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.map-container')).toBeFalsy();
-
-    await new Promise(resolve => setTimeout(resolve, 300));
   });
 });
