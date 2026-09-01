@@ -237,7 +237,21 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       attributionControl: false
     })
 
-    this.map.on('move', () => {
+    // 'moveend', not 'move' - root-caused live 2026-09-01, a maintainer report that the
+    // overview stayed stuck on stale, tightly-bounded content at every zoom level tested
+    // (6, 5, 2, 0) while the main map correctly showed the bundled archive's real, much
+    // broader low-zoom coverage. 'move' fires on every frame of a pan/zoom gesture, so a
+    // continuous zoom-out was calling jumpTo() on the overview many times a second - each
+    // call is itself a camera change, so MapLibre cancelled the previous call's in-flight
+    // tile requests to chase the new one. A gesture faster than one tile round trip (~150-
+    // 450ms, measured) meant the overview never finished a single load; it just kept
+    // interrupting itself and showing whatever it rendered before the gesture began. This
+    // also accounts for the volume of (canceled) vashon.pmtiles requests observed live
+    // during ordinary map interaction - most of that churn was the overview racing itself.
+    // 'moveend' fires once, after the camera settles, which is what this decorative,
+    // non-interactive thumbnail actually needs: it does not have to track the main map
+    // frame-by-frame, only end up showing the same place once panning/zooming stops.
+    this.map.on('moveend', () => {
       if (!this.overviewMap) {
         return
       }
