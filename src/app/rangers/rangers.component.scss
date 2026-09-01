@@ -100,6 +100,44 @@ label {
   margin-top: 0.5rem;
 }
 
+// Real empty state for 0 rangers (fresh device, or right after Delete all rangers) - see
+// the template comment. Sits ABOVE the (still-rendered) empty grid, so it is the first
+// thing a first-time coordinator sees rather than something they'd have to scroll past
+// 60vh of blank grid to find.
+.rangers__empty-state {
+  display         : flex;
+  flex-direction  : column;
+  align-items     : center;
+  text-align      : center;
+  gap             : 0.75em;
+  padding         : 2em 1.5em;
+  margin-bottom   : 1em;
+  background      : var(--rt-surface);
+  border          : 1px dashed var(--rt-line-strong);
+  border-radius   : var(--rt-radius-lg);
+}
+
+.rangers__empty-state__icon {
+  font-size  : 2.5rem;
+  width      : 2.5rem;
+  height     : 2.5rem;
+  color      : var(--rt-ink-2);
+}
+
+.rangers__empty-state__text {
+  max-width: 32rem;
+  margin   : 0;
+  color    : var(--rt-ink-2);
+}
+
+.rangers__empty-state__actions {
+  display    : flex;
+  align-items: center;
+  flex-wrap  : wrap;
+  justify-content: center;
+  gap        : 0.6em;
+}
+
 // Confidentiality bar above the roster grid. This was a multi-paragraph block that pushed
 // the grid down the page on every visit; it is now one dismissable line, with the full
 // text in the "Privacy & data handling" details below.

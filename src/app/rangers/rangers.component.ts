@@ -19,7 +19,7 @@ import { ExpandableSectionComponent } from '../shared/expandable-section/expanda
 import { formatReportTime } from '../shared/mapping/report-time'
 import {
   RadioLogService, RadioLogEntryType, LogService, RangerService, RangerType,
-  MissionService, MissionType
+  MissionService, MissionType, SampleDataService
 } from '../shared/services'
 // Direct path, not the barrel: importing a service used as a DI token through
 // shared/services/index.ts leaves it unresolvable to the compiler ("no suitable injection
@@ -266,6 +266,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     private missionService: MissionService,
     private radioLogService: RadioLogService,
     private photos: RangerPhotoService,
+    private sampleDataService: SampleDataService,
     private _snackBar: MatSnackBar,
     // The confidentiality bar's "What this means" opens the Guide drawer's Privacy tab -
     // see openPrivacyDetails().
@@ -373,6 +374,29 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.log.verbose("Adding new ranger", this.id)
     this.rangerService.AddRanger()  // this calls updateLocalStorageAndPublish
     this.refreshGrid()
+    this.reloadPage()
+  }
+
+  /**
+   * "Load sample mission" from the empty-state block (see rangers.component.html) - the
+   * same destructive action Mission > Advanced options offers
+   * (mission-advanced-options.component.ts's onBtnLoadSampleData()), reached from here too
+   * since an empty roster is precisely the moment this is most useful. The actual data
+   * lives in SampleDataService; this only owns the confirm/reload wrapper, matching that
+   * component's own copy so the same action reads the same way from either entry point.
+   */
+  onBtnLoadSampleMission() {
+    if (!confirm(`Load the sample mission?\n\n`
+      + `This REPLACES all rangers and field reports currently on this device with `
+      + `demonstration data, and renames the mission to make that obvious.\n\n`
+      + `This cannot be undone - back up the current mission first if you want to keep it.`)) {
+      this.log.verbose('onBtnLoadSampleMission: user cancelled.', this.id)
+      return
+    }
+
+    this.sampleDataService.loadSampleMission()
+    this.log.warn('Loaded the sample mission (demo data).', this.id)
+    alert('Sample mission loaded. Reloading to refresh every screen with the new data...')
     this.reloadPage()
   }
 

@@ -46,6 +46,40 @@
   }
 
   <div id="rangersgrid">
+    <!-- Real empty state, not AG Grid's bare "No Rows To Show": a first-time coordinator
+         on a fresh device (or right after Delete all rangers) landed on a 60vh empty grid
+         with the only way forward buried in the action bar below it. This offers the three
+         genuine paths in - Add, Import, or Load sample mission - without moving or hiding
+         anything already there: the grid still renders underneath (correctly, at 0 rows),
+         and the action bar keeps every control people have already learned. -->
+    @if (rangers().length === 0) {
+    <div class="rangers__empty-state" role="status">
+      <mat-icon class="rangers__empty-state__icon" aria-hidden="true">emoji_people</mat-icon>
+      <p class="rangers__empty-state__text">
+        <strong>The roster is empty.</strong> Add rangers one at a time, import a roster
+        file, or load the sample mission to see the app populated with demonstration data.
+      </p>
+      <div class="rangers__empty-state__actions">
+        <button matButton="filled" type="button" (click)="onBtnAddRanger()"
+          title="Add a new Ranger, CERT or Team tactical sign - they are handled identically">
+          <mat-icon>add</mat-icon>
+          Add a ranger
+        </button>
+
+        <button matButton="outlined" type="button" (click)="importRosterFile.click()"
+          title="Replace the roster from a JSON file, or merge in the rangers from a setup file (a .zip built on the Setup files page)">
+          <mat-icon>layers</mat-icon>
+          Import roster
+        </button>
+
+        <button matButton="outlined" type="button" (click)="onBtnLoadSampleMission()"
+          title="Load a ready-made demonstration mission - roster, field reports and messages">
+          <mat-icon>science</mat-icon>
+          Load sample mission
+        </button>
+      </div>
+    </div>
+    }
     <ag-grid-angular #rangerGrid rowAnimation pagination paginationAutoPageSize style="width: 100%; height: 60vh;"
       (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" [rowData]="rangers()"
       [columnDefs]="columnDefs" [tooltipShowDelay]="500">
