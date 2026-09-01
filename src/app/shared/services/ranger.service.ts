@@ -175,8 +175,16 @@ export class RangerService implements OnInit {
   // REMOVED: LoadRangersFromJSON() and the `import * as rangers from
   // '../../../assets/data/Rangers.3Feb22.json'` it relied on.
   //
-  // That file is gitignored (.gitignore: /src/assets/data/ranger*.json) because it holds
-  // a real roster - 286 people with names, phone numbers and street addresses. A static
+  // That file no longer exists under src/ at all: it was moved out of the repo tree on
+  // 2026-08-31 to `rangertrak-InternalDocs/roster-build/Rangers.3Feb22.json` (verified
+  // byte-identical first), the same posture .gitignore's own note already applies to
+  // InternalDocs - real operator data is kept out of the working tree rather than relying
+  // on an ignore rule. It had been gitignored (.gitignore: /src/assets/data/ranger*.json),
+  // but only matched because Windows sets core.ignorecase=true - the pattern is lowercase
+  // `ranger*` and the file was `Rangers.3Feb22.json`, so on a case-sensitive filesystem it
+  // would not have been ignored at all.
+  //
+  // It holds a real roster - 286 people with names, phone numbers and street addresses. A static
   // import meant the bundler inlined all of it into the shipped JavaScript, so every
   // deployed build published that roster to anyone who loaded the site. It also made the
   // project unbuildable from a clean clone, which is why CI could not typecheck: the same
