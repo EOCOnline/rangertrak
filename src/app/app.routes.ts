@@ -18,16 +18,20 @@ import { fieldModeGuard } from './shared/guards/field-mode.guard'
  * Leaflet with `/map`.
  *
  * Note this trades *initial* download, not total: app.config.ts registers
- * withPreloading(PreloadAllModules), so these chunks are still fetched right after the app
- * becomes stable. That is deliberate for an offline-first PWA - everything still ends up
- * precached and available without a network - but it means the win here is time-to-first-
- * screen, not bytes over the wire across a whole session.
+ * withPreloading(IdlePreloadingStrategy) (see that file's own doc comment - was
+ * PreloadAllModules until 2026-09-01, moved off the critical path after a live PageSpeed
+ * run caught it competing with Entry's own first paint), so these chunks still get fetched
+ * and warmed once the browser is idle. Offline completeness never actually depended on
+ * this - ngsw-config.json's "app" asset group prefetches every `/*.js` file unconditionally
+ * on service-worker install, independent of the router entirely. The real reason to keep
+ * preloading at all is snappy in-mission navigation (Map -> Radio Log -> Rangers with no
+ * JS-parse stall), not offline coverage.
  *
  * E-64 exception: MapLibre is NOT preloaded with `/map`, even though Leaflet is. It sits
  * behind a plain `import()` call inside MapPageComponent's engine-switch handler rather
- * than a second `loadComponent` route, and PreloadAllModules only walks the Routes table
- * above - it has no way to see (or preload) a dynamic import buried inside a component
- * method. A visitor who never flips the switch never fetches it, full session or not.
+ * than a second `loadComponent` route, and any Routes-table preloading strategy only walks
+ * the table above - it has no way to see (or preload) a dynamic import buried inside a
+ * component method. A visitor who never flips the switch never fetches it, full session or not.
  */
 export const APP_ROUTES: Routes = [
   // EAGER: the landing page, so it must not be a separate round trip.

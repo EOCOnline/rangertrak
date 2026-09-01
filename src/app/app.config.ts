@@ -1,7 +1,7 @@
 import { ApplicationConfig, ErrorHandler, isDevMode, provideZonelessChangeDetection } from '@angular/core'
 import { provideAnimations } from '@angular/platform-browser/animations'
 import {
-  PreloadAllModules, provideRouter, withInMemoryScrolling, withPreloading
+  provideRouter, withInMemoryScrolling, withPreloading
 } from '@angular/router'
 import { provideHttpClient } from '@angular/common/http'
 import { provideServiceWorker } from '@angular/service-worker'
@@ -21,6 +21,7 @@ import {
 import { GoogleGeocoder } from './shared/mapping/google-geocoder'
 import { NominatimGeocoder } from './shared/mapping/nominatim-geocoder'
 import { GlobalErrorHandler, MissionService } from './shared/services'
+import { IdlePreloadingStrategy } from './shared/idle-preloading-strategy'
 
 // Standalone replacement for AppModule's NgModule imports/providers.
 // AgGridModule is NOT here: every component that actually uses it already
@@ -43,7 +44,12 @@ export const appConfig: ApplicationConfig = {
     // opting into the scrolling feature would be an odd half-measure.
     provideRouter(
       APP_ROUTES,
-      withPreloading(PreloadAllModules),
+      // Was withPreloading(PreloadAllModules) - root-caused live 2026-09-01 via a real
+      // PageSpeed run: every lazy route's chunk (Messages, Rangers, Mission, Log, Prep, Map)
+      // was mid-download/mid-execution in Entry's OWN critical path, none of which Entry
+      // needs. See idle-preloading-strategy.ts's own doc comment for the full Lighthouse
+      // evidence and why plain NoPreloading would have thrown away a real benefit too.
+      withPreloading(IdlePreloadingStrategy),
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
     provideServiceWorker('ngsw-worker.js', {
