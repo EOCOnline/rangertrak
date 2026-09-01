@@ -124,6 +124,30 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   // Mirrors LmapComponent's own placingLocation - see its comment for why one-shot.
   public placingLocation = signal(false)
 
+  // Safety net for the "adjacent tiles stay gray after a fast zoom-out" bug (root cause:
+  // see registerPmtilesProtocol()'s own doc comment in map-style.ts) - maplibre-gl's own
+  // TileManager._loadTile has no AbortError special case, so ANY rejected tile load parks
+  // permanently in `state: "errored"`; `reload()` explicitly skips errored tiles, and the
+  // only public lever that revives one is `map.refreshTiles(sourceId, tileIds)`. This stays
+  // even with the ResolvedValueCache fix in map-style.ts, since that only closes the
+  // specific poisoned-cache mechanism found this session - a genuinely dropped connection
+  // mid-tile-load is still possible and would hit this same dead end without it.
+  //
+  // Both this component's maps (the main map and initOverviewMap()'s thumbnail) share one
+  // `basemap` source id but are separate MapLibre `Map` instances with their own, separate
+  // tile managers - a tile erroring on one says nothing about whether the other even has
+  // it in view. Tracked and debounced per Map instance (keyed in the two Maps below, not
+  // as flat component fields) so each map's errored tiles get exactly ONE retry each,
+  // batched behind a short delay since a fast zoom-out errors a whole cluster of tiles in
+  // the same animation frame or two and refreshTiles() takes an array. One retry per tile
+  // per map instance - not per tile alone - so a tile that keeps failing (truly missing
+  // from the archive, sustained offline) surfaces as a permanent gray tile again rather
+  // than retrying forever; this is a bounded safety net, not a guarantee.
+  private readonly retriedTileKeysByMap = new Map<MaplibreMap, Set<string>>()
+  private readonly pendingTileRetriesByMap = new Map<MaplibreMap, { z: number, x: number, y: number }[]>()
+  private readonly retryDebounceTimersByMap = new Map<MaplibreMap, ReturnType<typeof setTimeout>>()
+  private static readonly retryDebounceMs = 300
+
   constructor(
     private missionService: MissionService,
     private radioLogService: RadioLogService,
@@ -212,6 +236,12 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     // this screen can have.
     this.map.on('error', (ev: any) => {
       this.log.error(`MapLibre error${ev?.sourceId ? ` (source "${ev.sourceId}")` : ''}: ${ev?.error?.message ?? JSON.stringify(ev)}`, 'MapLibreComponent')
+      // `ev.tile` is only present when this error came from a tile load rejecting (see
+      // this constructor's retriedTileKeysByMap comment above) - style/validation errors
+      // don't carry one, and this safety net has nothing to retry for those.
+      if (ev?.sourceId === 'basemap' && ev.tile?.tileID?.canonical) {
+        this.scheduleTileRetry(this.map, ev.tile.tileID.canonical)
+      }
     })
 
     this.map.on('load', () => {
@@ -255,6 +285,15 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       // Same fix as the main map's constructor above, same symptom on this instance too -
       // see that option's own comment for the root cause.
       cancelPendingTileRequestsWhileZooming: false
+    })
+
+    // Same tile-retry safety net as the main map's own 'error' listener above - a separate
+    // Map instance with its own tile manager, so it needs its own listener and its own
+    // per-map retry bookkeeping (see retriedTileKeysByMap's doc comment on why).
+    this.overviewMap.on('error', (ev: any) => {
+      if (ev?.sourceId === 'basemap' && ev.tile?.tileID?.canonical) {
+        this.scheduleTileRetry(this.overviewMap!, ev.tile.tileID.canonical)
+      }
     })
 
     // 'moveend', not 'move' - root-caused live 2026-09-01, a maintainer report that the
@@ -382,6 +421,41 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     fetch(DEFAULT_PMTILES_URL, { cache: 'no-store' })
       .then(res => res.ok ? caches.open('rangertrak-pmtiles-warm').then(c => c.put(DEFAULT_PMTILES_URL, res)) : undefined)
       .catch(err => this.log.warn(`Failed to warm bundled PMTiles cache entry: ${err}`, 'MapLibreComponent'))
+  }
+
+  /**
+   * Queues one errored basemap tile, on ONE specific map instance, for a single retry via
+   * that map's own `refreshTiles()` - see retriedTileKeysByMap's own doc comment
+   * (constructor) for why this exists and why it's tracked per-map. Debounced rather than
+   * firing per-tile: a fast zoom-out errors a whole cluster of tiles inside the same
+   * animation frame or two, and `refreshTiles()` takes an array, so one call per burst is
+   * both cheaper and less startling than a flurry of individual reloads.
+   */
+  private scheduleTileRetry(map: MaplibreMap, canonical: { z: number, x: number, y: number, key: string }): void {
+    let retriedKeys = this.retriedTileKeysByMap.get(map)
+    if (!retriedKeys) {
+      retriedKeys = new Set<string>()
+      this.retriedTileKeysByMap.set(map, retriedKeys)
+    }
+    if (retriedKeys.has(canonical.key)) {
+      return
+    }
+    retriedKeys.add(canonical.key)
+
+    const pending = this.pendingTileRetriesByMap.get(map) ?? []
+    pending.push({ z: canonical.z, x: canonical.x, y: canonical.y })
+    this.pendingTileRetriesByMap.set(map, pending)
+
+    clearTimeout(this.retryDebounceTimersByMap.get(map))
+    this.retryDebounceTimersByMap.set(map, setTimeout(() => {
+      const tileIds = this.pendingTileRetriesByMap.get(map) ?? []
+      this.pendingTileRetriesByMap.set(map, [])
+      if (!tileIds.length) {
+        return
+      }
+      this.log.info(`Retrying ${tileIds.length} basemap tile(s) that failed to load.`, 'MapLibreComponent')
+      map.refreshTiles('basemap', tileIds)
+    }, MapLibreComponent.retryDebounceMs))
   }
 
   /**
@@ -676,6 +750,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     this.radioLogSubscription?.unsubscribe()
     this.locationsSubscription?.unsubscribe()
     this.locationMarkers.forEach(m => m.remove())
+    this.retryDebounceTimersByMap.forEach(t => clearTimeout(t))
     this.overviewMap?.remove()
     this.map?.remove()
   }

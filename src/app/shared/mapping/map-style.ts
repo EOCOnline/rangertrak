@@ -1,5 +1,5 @@
 import { addProtocol, setWorkerUrl, type StyleSpecification } from 'maplibre-gl'
-import { FileSource, PMTiles, Protocol } from 'pmtiles'
+import { FetchSource, FileSource, PMTiles, Protocol, ResolvedValueCache } from 'pmtiles'
 
 import { DEFAULT_PMTILES_URL } from './pmtiles-config'
 
@@ -35,6 +35,38 @@ let pmtilesProtocol: Protocol | undefined
  * One-time global MapLibre setup: points it at the worker bundle we ship, and registers
  * the `pmtiles://` protocol handler. Idempotent - safe to call from every map
  * component's constructor, which is exactly how it is used.
+ *
+ * ROOT-CAUSED 2026-09-01 (read pmtiles@4.5.0's own source, not the minified bundle
+ * guessed at): `Protocol`'s default `PMTiles` instance uses `SharedPromiseCache`, whose
+ * `getDirectory()` never evicts its cache entry when the underlying fetch rejects - only
+ * a later `AbortController` listener does, and only for the specific ref that triggered
+ * the abort. A directory fetch that rejects any other way (a Range request answered `200`
+ * instead of `206`, a bad ETag, a non-2xx status) leaves a permanently-rejected promise
+ * cached under that byte range, so every later tile needing the SAME leaf directory
+ * rejects instantly with no network request at all - which is what a live CDP probe this
+ * same day showed (55 fetches, 7 aborted, 0 ever re-fetched, always a contiguous
+ * rectangular strip of tiles). Combined with maplibre-gl's own `TileManager._loadTile`
+ * (dist/maplibre-gl-dev.mjs), which has no `AbortError` special case and parks ANY
+ * rejected tile in `state: "errored"` forever, one poisoned directory entry reads as a
+ * permanently gray region of the map.
+ *
+ * Pre-registering the bundled archive here with `ResolvedValueCache` instead - "a cache
+ * ... where promises are never shared between requests" per pmtiles' own doc comment -
+ * sidesteps the poisoning entirely: a failed fetch is never cached as pending, so the
+ * next tile that needs it just tries again. Trade-off, real but small: unlike
+ * `SharedPromiseCache`, concurrent tiles needing the same still-loading directory don't
+ * share the in-flight request, so a cold map can issue a few duplicate header/directory
+ * fetches. Cheap (tens of KB) next to a permanently blank strip of the map. See the
+ * roadmap's Sept 1 (Opus) session write-up and its Sonnet handoff doc for the full
+ * source trail; `map.refreshTiles()` (mapLibre.component.ts) is the other half of this
+ * fix - a bounded retry for whatever this doesn't catch.
+ *
+ * The registration key must be the SAME string `buildPmtilesStyle()` embeds in
+ * `pmtiles://<url>` below (`DEFAULT_PMTILES_URL`, unresolved) - `Protocol.add()` keys on
+ * `source.getKey()`, which for `FetchSource` is the exact URL string passed to its
+ * constructor, and `Protocol.tile()` recovers that same string by slicing the style's
+ * `pmtiles://` URL apart. Resolving it to an absolute URL first would silently register
+ * a second, default-cached PMTiles instance instead of replacing this one.
  */
 export function registerPmtilesProtocol(): void {
   if (maplibreInitialized) {
@@ -42,6 +74,7 @@ export function registerPmtilesProtocol(): void {
   }
   setWorkerUrl(MAPLIBRE_WORKER_URL)
   pmtilesProtocol = new Protocol()
+  pmtilesProtocol.add(new PMTiles(new FetchSource(DEFAULT_PMTILES_URL), new ResolvedValueCache()))
   addProtocol('pmtiles', pmtilesProtocol.tile)
   maplibreInitialized = true
 }
@@ -68,7 +101,10 @@ export function registerCustomPmtilesSource(file: File): string {
   if (!pmtilesProtocol) {
     registerPmtilesProtocol()
   }
-  pmtilesProtocol!.add(new PMTiles(new FileSource(file)))
+  // Same ResolvedValueCache reasoning as registerPmtilesProtocol()'s own bundled-archive
+  // registration above - a scribe's own custom coverage deserves the same non-poisoning
+  // cache, not just the bundled default.
+  pmtilesProtocol!.add(new PMTiles(new FileSource(file), new ResolvedValueCache()))
   return file.name
 }
 
