@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.90.5](https://github.com/EOCOnline/rangertrak/compare/v0.90.4...v0.90.5) (2026-09-01)
+
+
+### Bug Fixes
+
+* **headers:** geolocation=(self) so field-mode GPS auto-fill can actually work ([eaa6a99](https://github.com/EOCOnline/rangertrak/commit/eaa6a995ad548960371c55cd025721ea26fca90b))
+
 ### [0.90.4](https://github.com/EOCOnline/rangertrak/compare/v0.90.3...v0.90.4) (2026-09-01)
 
 
