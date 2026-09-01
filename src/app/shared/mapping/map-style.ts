@@ -74,8 +74,13 @@ export function registerCustomPmtilesSource(file: File): string {
 
 /**
  * Builds a MapLibre style pointed at the bundled PMTiles basemap. No text-label glyphs
- * in v1 (see PRIVATE-Roadmap.md) - water/roads/buildings/landuse render with color/shape
- * distinction only.
+ * in v1 (see PRIVATE-Roadmap.md) - earth/water/roads/buildings/landuse render with
+ * color/shape distinction only.
+ *
+ * `earth` (the landmass polygon) is drawn first among the data layers, directly on top
+ * of the `bg` background layer and below everything else - without it, land is never
+ * filled and reads as the same grey as the background, which made a working map look
+ * "blank" even though tiles were loading and other layers were rendering correctly.
  */
 export function buildPmtilesStyle(pmtilesUrl: string = DEFAULT_PMTILES_URL): StyleSpecification {
   return {
@@ -89,6 +94,7 @@ export function buildPmtilesStyle(pmtilesUrl: string = DEFAULT_PMTILES_URL): Sty
     },
     layers: [
       { id: 'bg', type: 'background', paint: { 'background-color': '#e0e0e0' } },
+      { id: 'earth', type: 'fill', source: 'basemap', 'source-layer': 'earth', paint: { 'fill-color': '#f2e9d8' } },
       { id: 'water', type: 'fill', source: 'basemap', 'source-layer': 'water', paint: { 'fill-color': '#8ec6ec' } },
       { id: 'landuse', type: 'fill', source: 'basemap', 'source-layer': 'landuse', paint: { 'fill-color': '#c8e6c0' } },
       { id: 'roads', type: 'line', source: 'basemap', 'source-layer': 'roads', paint: { 'line-color': '#888', 'line-width': 1 } },
