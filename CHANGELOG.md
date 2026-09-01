@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.91.2](https://github.com/EOCOnline/rangertrak/compare/v0.91.1...v0.91.2) (2026-09-01)
+
+
+### Bug Fixes
+
+* **perf:** control experiment - drop router preloading entirely (NoPreloading) ([a84a0b4](https://github.com/EOCOnline/rangertrak/commit/a84a0b43281616308d6049d23645fc141997453e))
+
 ### [0.91.1](https://github.com/EOCOnline/rangertrak/compare/v0.91.0...v0.91.1) (2026-09-01)
 
 
