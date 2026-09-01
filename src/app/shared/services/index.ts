@@ -30,7 +30,7 @@ export { MissionType } from "./mission.interface"
 export { LocationCategoryType, MissionLocationType } from "./mission-location.interface"
 export {
   MISSION_SCHEMA_VERSION, DEFAULT_RADIO_LOG_STATUSES, DEFAULT_RECIPIENT_OPTIONS_213,
-  DEFAULT_LOCATION_TYPES, migrateMission
+  DEFAULT_LOCATION_TYPES, DEFAULT_OP_PERIOD_HOURS, migrateMission
 } from "./mission-migration"
 export {
   LOCATION_SCHEMA_VERSION, migrateLocations, normalizeLocationUids

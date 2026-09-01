@@ -1,3 +1,4 @@
+import { rehydrateDateFields } from './json-dates'
 import { RadioLogStatusType } from './radio-log-entry.interface'
 import { LocationCategoryType } from './mission-location.interface'
 import { MissionType } from './mission.interface'
@@ -29,6 +30,13 @@ import { StatusKey } from './status-color'
  *     during the E-84 audit's cleanup (E-89/E-90).
  */
 export const MISSION_SCHEMA_VERSION = 4
+
+/**
+ * Default length of an operational period, in hours. Used in two places that must agree:
+ * MissionService.initMission() seeds a new mission's end time with it, and MissionComponent
+ * re-derives the end from it when a new start time would leave the end in the past.
+ */
+export const DEFAULT_OP_PERIOD_HOURS = 12
 
 /**
  * The status colors as shipped before v1, paired with the semantic key each becomes.
@@ -135,8 +143,11 @@ export function migrateMission(raw: MissionType, defaults?: MissionType): Missio
   // regardless of the version comparison above, not gated behind `version < N`. It was
   // already documented as safe to call repeatedly (pure, additive-only, never overwrites a
   // real value) - the version gate around it was the bug, not the function itself.
-  return backfillMissingFields(settings, defaults)
+  return rehydrateDateFields(backfillMissingFields(settings, defaults), MISSION_DATE_FIELDS)
 }
+
+/** The MissionType fields declared `Date`. `lastPrintedAt` is optional; the rest always exist. */
+const MISSION_DATE_FIELDS = ['settingsDate', 'opPeriodStart', 'opPeriodEnd', 'lastPrintedAt'] as const
 
 /**
  * v1 -> v2. Adds any top-level key `MissionType` has that this stored object does not.

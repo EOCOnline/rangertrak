@@ -12,6 +12,7 @@ import {
 // ADR D-42: versioned storage seam for radio log entries. Direct import, not via the barrel,
 // to avoid a cycle - the barrel re-exports this service.
 import { migrateRadioLog } from './radio-log-migration'
+import { rehydrateDateFields } from './json-dates'
 // Direct path, not the barrel: a SERVICE used as a DI token through shared/services/index.ts
 // is unresolvable to the compiler ("no suitable injection token") - the same reason
 // rangers.component.ts imports RangerPhotoService directly instead of via './'.
@@ -257,7 +258,15 @@ export class RadioLogService {
   public addRadioLogEntry(formData: string) {
     this.log.info(`Got new radio log entry: ${JSON.stringify(formData)}`, 'RadioLogService')
 
-    let newReport: RadioLogEntryType = JSON.parse(formData) //"[object Object]" is not valid JSON
+    // EntryComponent hands this over as JSON.stringify(mergedFormValue()) - a deliberate
+    // deep clone - so `date` arrives here as an ISO STRING even though RadioLogEntryType
+    // declares it Date, and even though nothing has touched localStorage yet. Restoring it
+    // at this boundary is what makes a locally-typed report indistinguishable from a
+    // loaded one; without it, two reports typed in a single fresh session were enough to
+    // make buildIcs309Log() throw. See json-dates.ts.
+    let newReport: RadioLogEntryType = rehydrateDateFields(
+      JSON.parse(formData) as RadioLogEntryType, //"[object Object]" is not valid JSON
+      ['date', 'revisedAt', 'printedAt'])
     newReport.id = this.radioLog.maxId++
     this.radioLog.numReport++
     this.radioLog.logEntries.push(newReport)
@@ -324,12 +333,17 @@ export class RadioLogService {
         continue
       }
 
-      this.radioLog.logEntries.push({
+      // rehydrateDateFields, not a bare spread: a Report Packet is JSON, so `date`/
+      // `revisedAt`/`printedAt` arrive as ISO STRINGS despite being typed Date.
+      // invalidIncomingEntryReason() above already parses `date` to validate it, but
+      // validating is not converting - without this the string was stored as-is and later
+      // threw in buildIcs309Log()'s `a.date.getTime()`. See json-dates.ts.
+      this.radioLog.logEntries.push(rehydrateDateFields({
         ...entry,
         id: this.radioLog.maxId++,
         rangerUid: entry.rangerUid || resolvedUid,
         sourceUid,
-      })
+      }, ['date', 'revisedAt', 'printedAt']))
       seen.add(sourceUid)
       added++
     }

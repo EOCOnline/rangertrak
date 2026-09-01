@@ -6,7 +6,7 @@ import * as packageJson from '../../../../package.json'
 import { RadioLogStatusType, LogService, MissionType } from './'
 import {
   DEFAULT_RADIO_LOG_STATUSES, DEFAULT_LOCATION_TYPES, DEFAULT_RECIPIENT_OPTIONS_213,
-  MISSION_SCHEMA_VERSION, migrateMission
+  MISSION_SCHEMA_VERSION, DEFAULT_OP_PERIOD_HOURS, migrateMission
 } from './mission-migration'
 
 @Injectable({ providedIn: 'root' })
@@ -26,7 +26,8 @@ export class MissionService implements OnInit {
   // while preserving replay-on-subscribe semantics for late subscribers.
   private settingsSignal = signal<MissionType>(undefined as unknown as MissionType)
   private settingsReplay$ = new ReplaySubject<MissionType>(1)
-  private defOpPeriodLength = 12 // hours
+  /** Shared with MissionComponent's start-time handler - see DEFAULT_OP_PERIOD_HOURS. */
+  private defOpPeriodLength = DEFAULT_OP_PERIOD_HOURS // hours
 
   /** Synchronous read of current settings. Single source of truth is settingsSignal. */
   public get settings(): MissionType {

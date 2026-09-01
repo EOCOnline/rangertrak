@@ -1,5 +1,27 @@
 import { Subscription } from 'rxjs'
 
+/**
+ * Milliseconds for a value that is *typed* Date but may really be an ISO string from a JSON
+ * round-trip. Returns NaN only for genuinely unusable input, which callers compare with
+ * explicitly rather than relying on `<` between mismatched types (that silently yields false
+ * both ways - the 0.90.5 op-period clamp bug).
+ */
+function asTime(value: Date | string | number): number {
+  return value instanceof Date ? value.getTime() : new Date(value).getTime()
+}
+
+/**
+ * `from` plus `hours`, as a new Date - never mutating the caller's. Uses setHours() rather
+ * than adding milliseconds so it matches MissionService.initMission() exactly, and so a
+ * period spanning a DST change keeps the wall-clock length an operator would expect.
+ */
+function addHours(from: Date, hours: number): Date {
+  const result = new Date(asTime(from))
+  result.setHours(result.getHours() + hours)
+  return result
+}
+
+
 import { CommonModule, DOCUMENT } from '@angular/common'
 import {
   ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, computed, signal
@@ -15,7 +37,7 @@ import { RouterLink } from '@angular/router'
 import { PageComponent } from '../shared/page/page.component'
 import {
   RadioLogStatusType, LocationCategoryType, LogService, MissionReadinessService,
-  MISSION_SCHEMA_VERSION, MissionService, MissionType
+  MISSION_SCHEMA_VERSION, DEFAULT_OP_PERIOD_HOURS, MissionService, MissionType
 } from '../shared/services/'
 import { InstallUpdateComponent } from '../shared/install-update/install-update.component'
 import { HasUnsavedChanges } from '../shared/guards/unsaved-changes.guard'
@@ -276,9 +298,21 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
 
   /**
    * E-71. Maintainer, 2026-08-20: "the ending op period time should be the same or later,
-   * and set to the same if otherwise older." Enforced from both ends: moving the start past
-   * the current end pulls the end up to match (below); setting the end before the current
-   * start snaps it to the start (onNewTimeEventEnd). Relies on TimePickerComponent reacting
+   * and set to the same if otherwise older."
+   *
+   * SUPERSEDED 2026-08-31. The invariant is now strictly `end > start`, not "the same or
+   * later" - an operational period of zero length is not a legal state, so equality is a
+   * violation rather than the correction for one. Maintainer: "The clamp function should
+   * ensure there is no 0 length op period: use >, not just >=."
+   *
+   * One rule, enforced identically from both ends: whenever an edit would leave the end at
+   * or before the start, the end is re-derived as start + DEFAULT_OP_PERIOD_HOURS - the
+   * same 12 hours a brand-new mission is seeded with. Chosen over nudging the end to the
+   * smallest legal value above the start, which would satisfy the invariant while leaving a
+   * one-millisecond period that is just as useless and much harder to notice. The operator
+   * keeps the last word either way: "The user can always update it manually."
+   *
+   * Relies on TimePickerComponent reacting
    * to `[initialDate]` changing after its own init (its `ngOnChanges`) - without that, the
    * clamp would be correct in `missionModel`/`this.settings` but the end picker's own
    * displayed value would silently disagree until the page was reloaded.
@@ -293,8 +327,14 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
     this.opPeriodStart.set(newTime)
     this.missionModel.update(m => ({ ...m, opPeriodStart: newTime }))
 
-    if (this.opPeriodEnd() < newTime) {
-      this.onNewTimeEventEnd(newTime)
+    // .getTime(), never `<` on the raw signals. These are typed Date but have twice held
+    // ISO strings from a JSON round-trip, and `Date < string` coerces to NaN, which is
+    // false in BOTH directions - so the comparison does not fail loudly, it just stops
+    // clamping. See rehydrateDates() in mission-migration.ts for the 0.90.5 bug.
+    // <=, not <: an end EQUAL to the start is a zero-length period, which is a violation
+    // to be corrected, not an acceptable resting state.
+    if (asTime(this.opPeriodEnd()) <= asTime(newTime)) {
+      this.onNewTimeEventEnd(addHours(newTime, DEFAULT_OP_PERIOD_HOURS))
     }
   }
 
@@ -303,8 +343,16 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
       this.log.error(`this.settings is null at onNewTimeEventEnd`, this.id)
       return
     }
-    const clamped = newTime < this.opPeriodStart() ? this.opPeriodStart() : newTime
-    this.log.verbose(`Got new end OpPeriod time: ${newTime}${clamped !== newTime ? ` (clamped to start: ${clamped})` : ''}`, this.id)
+    // Same NaN trap as onNewTimeEventStart above - compare timestamps, not objects.
+    //
+    // This used to snap to `start` itself, which WAS the zero-length period the invariant
+    // now forbids: the correction was producing the illegal state. An end at or before the
+    // start is replaced with start + 12h, exactly as the start side does.
+    const start = this.opPeriodStart()
+    const clamped = asTime(newTime) <= asTime(start)
+      ? addHours(start, DEFAULT_OP_PERIOD_HOURS)
+      : newTime
+    this.log.verbose(`Got new end OpPeriod time: ${newTime}${clamped !== newTime ? ` (would not leave a positive-length period; re-derived to ${clamped})` : ''}`, this.id)
     this.settings.opPeriodEnd = clamped
     this.opPeriodEnd.set(clamped)
     this.missionModel.update(m => ({ ...m, opPeriodEnd: clamped }))

@@ -262,3 +262,76 @@ describe('status colors', () => {
     }
   })
 })
+
+/**
+ * The 0.90.5 operational-period clamp bug. Settings reach every consumer through
+ * migrateMission(), and every path into it is JSON.parse - so the four Date-typed fields
+ * arrive as ISO strings while TypeScript still believes they are Dates. Nothing threw; the
+ * clamp that stops an op period ending before it starts just silently stopped firing,
+ * because `Date < string` coerces to NaN and NaN comparisons are false in both directions.
+ *
+ * These tests deliberately go through JSON.parse(JSON.stringify(...)) rather than
+ * hand-writing string literals, so they exercise the actual round-trip that causes it.
+ */
+describe('migrateMission date rehydration', () => {
+
+  function roundTripped(overrides: Partial<MissionType> = {}): MissionType {
+    const live: MissionType = {
+      ...JSON.parse(JSON.stringify({})),
+      settingsName: '', settingsDate: new Date('2026-08-31T12:00:00.000Z'),
+      mission: 'M1', event: '', eventNotes: '', opPeriod: '',
+      opPeriodStart: new Date('2026-09-01T20:00:00.000Z'),
+      opPeriodEnd: new Date('2026-09-02T08:00:00.000Z'),
+      schemaVersion: MISSION_SCHEMA_VERSION,
+      ...overrides,
+    } as MissionType
+    // Exactly what localStorage / a backup file / a Prep import does to it.
+    return JSON.parse(JSON.stringify(live)) as MissionType
+  }
+
+  it('returns real Dates for fields a JSON round-trip turned into strings', () => {
+    const stored = roundTripped()
+    expect(typeof (stored.opPeriodStart as unknown)).toBe('string') // precondition
+
+    const migrated = migrateMission(stored)
+
+    expect(migrated.opPeriodStart instanceof Date).toBe(true)
+    expect(migrated.opPeriodEnd instanceof Date).toBe(true)
+    expect(migrated.settingsDate instanceof Date).toBe(true)
+  })
+
+  it('preserves the instant exactly, not just the type', () => {
+    const migrated = migrateMission(roundTripped())
+    expect(migrated.opPeriodStart.toISOString()).toBe('2026-09-01T20:00:00.000Z')
+    expect(migrated.opPeriodEnd.toISOString()).toBe('2026-09-02T08:00:00.000Z')
+  })
+
+  it('restores ordering comparisons, which is the actual bug', () => {
+    const migrated = migrateMission(roundTripped())
+    const earlierEnd = new Date('2026-09-01T08:00:00.000Z') // 12h BEFORE the start
+
+    // This is the exact expression MissionComponent's clamp evaluates. Before the fix it
+    // was Date < string -> NaN -> false, so the clamp never fired.
+    expect(earlierEnd < migrated.opPeriodStart).toBe(true)
+  })
+
+  it('leaves an already-Date value untouched', () => {
+    const live = roundTripped()
+    ;(live as unknown as Record<string, unknown>)['opPeriodStart'] = new Date('2026-09-01T20:00:00.000Z')
+    const migrated = migrateMission(live)
+    expect(migrated.opPeriodStart.toISOString()).toBe('2026-09-01T20:00:00.000Z')
+  })
+
+  it('leaves an unparseable value alone rather than inventing a plausible date', () => {
+    const live = roundTripped()
+    ;(live as unknown as Record<string, unknown>)['opPeriodEnd'] = 'not a date at all'
+    const migrated = migrateMission(live)
+    // Surfacing bad data beats quietly substituting new Date() into an op period.
+    expect(migrated.opPeriodEnd as unknown).toBe('not a date at all')
+  })
+
+  it('tolerates a missing optional date field', () => {
+    const migrated = migrateMission(roundTripped())
+    expect(migrated.lastPrintedAt).toBeUndefined()
+  })
+})

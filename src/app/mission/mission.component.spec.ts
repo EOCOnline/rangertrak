@@ -36,7 +36,7 @@ describe('MissionComponent', () => {
   });
 
   describe('Operational Period clamping (E-71)', () => {
-    it('pulls the end time up to match when the start moves past it', () => {
+    it('re-derives the end as start + 12h when the start moves past it', () => {
       // Establish a known baseline first - MissionService's real, un-mocked default
       // opPeriodStart is "now", so asserting against a hardcoded end time without first
       // pinning the start left this test dependent on wall-clock time at run time.
@@ -46,16 +46,70 @@ describe('MissionComponent', () => {
       const laterStart = new Date('2026-08-20T14:00:00');
       component.onNewTimeEventStart(laterStart);
 
-      expect(component.opPeriodEnd()).toEqual(laterStart);
+      // Revised 2026-08-31: was `toEqual(laterStart)` - a zero-length op period. Now the
+      // same 12 hours a new mission is seeded with, which the operator can then adjust.
+      expect(component.opPeriodEnd()).toEqual(new Date('2026-08-21T02:00:00'));
     });
 
-    it('snaps the end time to start when set earlier than start', () => {
+    it('rolls the re-derived end into the next day when start + 12h crosses midnight', () => {
+      component.onNewTimeEventStart(new Date('2026-08-20T09:00:00'));
+      component.onNewTimeEventEnd(new Date('2026-08-20T12:00:00'));
+
+      component.onNewTimeEventStart(new Date('2026-08-20T20:00:00'));
+
+      const end = component.opPeriodEnd();
+      expect(end.getDate()).toBe(21);
+      expect(end.getHours()).toBe(8);
+    });
+
+    it('never leaves a zero-length period when the start is moved onto the end exactly', () => {
+      component.onNewTimeEventStart(new Date('2026-08-20T09:00:00'));
+      component.onNewTimeEventEnd(new Date('2026-08-20T12:00:00'));
+
+      // Moving the start exactly ONTO the end is the `>` vs `>=` case from the other
+      // direction. Until 2026-08-31 the end stood and the period collapsed to zero length.
+      component.onNewTimeEventStart(new Date('2026-08-20T12:00:00'));
+
+      expect(component.opPeriodEnd()).toEqual(new Date('2026-08-21T00:00:00'));
+    });
+
+    it('leaves a positive-length period after any single edit, from either picker', () => {
+      // The invariant itself, asserted directly rather than via specific times - a future
+      // change to the re-derivation rule should keep this green.
+      const edits: Array<() => void> = [
+        () => component.onNewTimeEventStart(new Date('2026-08-20T09:00:00')),
+        () => component.onNewTimeEventEnd(new Date('2026-08-20T09:00:00')),   // equal
+        () => component.onNewTimeEventEnd(new Date('2026-08-19T09:00:00')),   // earlier
+        () => component.onNewTimeEventStart(new Date('2026-08-25T09:00:00')), // past the end
+        () => component.onNewTimeEventStart(new Date('2026-08-25T09:00:00')), // onto the end
+      ];
+
+      for (const edit of edits) {
+        edit();
+        expect(component.opPeriodEnd().getTime())
+          .toBeGreaterThan(component.opPeriodStart().getTime());
+      }
+    });
+
+    it('re-derives the end as start + 12h when it is set earlier than start', () => {
       const start = new Date('2026-08-20T10:00:00');
       component.onNewTimeEventStart(start);
 
       component.onNewTimeEventEnd(new Date('2026-08-20T08:00:00'));
 
-      expect(component.opPeriodEnd()).toEqual(start);
+      // Was `toEqual(start)` until 2026-08-31 - snapping to the start was itself the
+      // zero-length period the invariant now forbids.
+      expect(component.opPeriodEnd()).toEqual(new Date('2026-08-20T22:00:00'));
+    });
+
+    it('re-derives the end when it is set EXACTLY equal to the start', () => {
+      const start = new Date('2026-08-20T10:00:00');
+      component.onNewTimeEventStart(start);
+
+      component.onNewTimeEventEnd(new Date('2026-08-20T10:00:00'));
+
+      // The `>` vs `>=` case: equal is a violation, not an acceptable resting state.
+      expect(component.opPeriodEnd()).toEqual(new Date('2026-08-20T22:00:00'));
     });
 
     it('leaves the end time alone when it is already after the new start', () => {
@@ -105,7 +159,11 @@ describe('MissionComponent', () => {
       // have stepped from the still-committed 9 (giving 10, itself the reported symptom),
       // which is NOT past end, so the clamp below would never have fired at all.
       expect(startHour.value).toBe('15');
-      expect(component.opPeriodEnd().getHours()).toBe(15);
+      // 15:00 start, end was 12:00 and therefore in the past, so it is re-derived as
+      // 15:00 + 12h = 03:00 the NEXT day (was 15:00 before the 2026-08-31 revision).
+      const end = component.opPeriodEnd();
+      expect(end.getHours()).toBe(3);
+      expect(end.getDate()).toBe(21);
     });
   });
 });

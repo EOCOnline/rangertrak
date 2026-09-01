@@ -1,3 +1,4 @@
+import { rehydrateDateFields } from './json-dates'
 import { RadioLogType } from './radio-log-entry.interface'
 
 /**
@@ -72,11 +73,38 @@ export function migrateRadioLog(raw: unknown): RadioLogType | null {
   const version = typeof incoming.schemaVersion === 'number' ? incoming.schemaVersion : 0
 
   // Newer than we understand - hand it back as-is rather than "migrating" it backwards.
+  // Dates are still restored: that is deserialization, not migration, and a newer-schema
+  // log still has to render on this build without throwing.
   if (version > RADIO_LOG_SCHEMA_VERSION) {
-    return { ...incoming }
+    return restoreDates({ ...incoming })
   }
 
   // v0 -> v1 is a pure stamp: there is no legacy report data in the field to transform, which
   // is precisely why this seam is cheap to add right now. Future steps go here.
-  return { ...incoming, schemaVersion: RADIO_LOG_SCHEMA_VERSION }
+  return restoreDates({ ...incoming, schemaVersion: RADIO_LOG_SCHEMA_VERSION })
+}
+
+/** `RadioLogType`'s own Date-typed field. */
+const RADIO_LOG_DATE_FIELDS = ['date'] as const
+
+/** `RadioLogEntryType`'s Date-typed fields; `revisedAt`/`printedAt` are optional. */
+const RADIO_LOG_ENTRY_DATE_FIELDS = ['date', 'revisedAt', 'printedAt'] as const
+
+/**
+ * Restores the store's own `date` and every entry's timestamps after a JSON round-trip -
+ * see json-dates.ts for why this belongs at the boundary rather than in each consumer.
+ *
+ * Concretely (found 2026-08-31 on 0.90.5): without this, `buildIcs309Log()` sorts reports
+ * with `a.date.getTime() - b.date.getTime()` and throws `getTime is not a function` for any
+ * operator with two or more saved reports - i.e. printing the official communications log
+ * failed for every real mission, while passing for an empty one.
+ */
+function restoreDates(store: RadioLogType): RadioLogType {
+  const withStoreDate = rehydrateDateFields(store, RADIO_LOG_DATE_FIELDS)
+
+  return {
+    ...withStoreDate,
+    logEntries: withStoreDate.logEntries.map(
+      entry => rehydrateDateFields(entry, RADIO_LOG_ENTRY_DATE_FIELDS)),
+  }
 }
