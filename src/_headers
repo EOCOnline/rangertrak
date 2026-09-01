@@ -67,7 +67,17 @@
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
+  # geolocation=(self), not (): an empty allowlist disables the API for EVERY origin,
+  # including this one, so E-114 Phase 1a's field-mode GPS auto-fill
+  # (entry.component.ts tryGpsAutoFill()) could never get a fix on the deployed site - it
+  # failed silently to the mission default location, because the code's
+  # `!navigator.geolocation` guard passes (the object exists; the CALL is what's rejected)
+  # and the error callback only logs a warning. Invisible to tools/e2e.js, which runs
+  # against localhost where no header applies. Corrected 2026-08-31.
+  # The other four stay disabled: this app calls no camera, microphone, USB or payment
+  # API anywhere (photo import is a plain <input type="file">, which needs no grant), so
+  # they cost nothing and are kept as defence in depth.
+  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
   Cross-Origin-Embedder-Policy-Report-Only: credentialless

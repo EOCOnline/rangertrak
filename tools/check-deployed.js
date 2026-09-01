@@ -75,7 +75,10 @@ const EXPECTED_HEADERS = {
   'x-content-type-options': 'nosniff',
   'x-frame-options': 'DENY',
   'referrer-policy': 'strict-origin-when-cross-origin',
-  'permissions-policy': 'geolocation=(), camera=(), microphone=(), payment=(), usb=()',
+  // geolocation=(self) since 2026-08-31 - `()` disabled it for this origin too and
+  // silently broke field-mode GPS auto-fill. This assertion is exact on purpose: it is
+  // what would have caught that change going the wrong way. See src/_headers.
+  'permissions-policy': 'geolocation=(self), camera=(), microphone=(), payment=(), usb=()',
 };
 
 /** Returns a failure message, or null if every expected header matches exactly. */
