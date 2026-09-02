@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.91.4](https://github.com/EOCOnline/rangertrak/compare/v0.91.3...v0.91.4) (2026-09-02)
+
+
+### Bug Fixes
+
+* **perf:** stop the header status-pill from rendering empty then jumping wide ([0b7c631](https://github.com/EOCOnline/rangertrak/commit/0b7c63170cfb15baa0717873cea9734b8bdb194c))
+
 ### [0.91.3](https://github.com/EOCOnline/rangertrak/compare/v0.91.2...v0.91.3) (2026-09-01)
 
 
