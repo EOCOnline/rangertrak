@@ -1,6 +1,5 @@
-import { map, Observable, Subscription, timer } from 'rxjs'
+import { Subscription, timer } from 'rxjs'
 
-import { CommonModule } from '@angular/common'
 import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core'
 import { Router, RouterLink } from '@angular/router'
 import { MatButtonModule } from '@angular/material/button'
@@ -26,7 +25,7 @@ import { GuideService } from '../guide/guide.service'
 @Component({
   selector: 'pageHeader',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule, MissionReadinessComponent],
+  imports: [RouterLink, MatButtonModule, MatIconModule, MissionReadinessComponent],
   templateUrl: './header.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./header.component.scss']
@@ -71,11 +70,41 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public opPeriodStart = new Date()
 
-  // See also Ang Dev w/ TS pg 147, for combining observables...
-  public timeElapsed$!: Observable<string>;
-  public timeLeft$!: Observable<string>;
-  public timeCurrent: Observable<Date>
+  // ROOT-CAUSED 2026-09-01, replacing the old `timeElapsed$`/`timeLeft$`/`timeCurrent`
+  // Observables + `| async` template bindings: a live CDP trace showed the pill's clock
+  // and elapsed/left text both rendering completely EMPTY at first paint and popping in
+  // ~50ms later, even though both Observables already used `timer(0, 1000)` specifically
+  // to emit "immediately." The fix that shipped 2026-08-26 (interval(1000) -> timer(0,
+  // 1000)) closed a real, separate bug - the wait for a full 1000ms tick - but RxJS's
+  // `timer(0, ...)` still schedules its "immediate" first value via a macrotask
+  // (setTimeout(fn, 0) under the hood), not synchronously like a plain value would be -
+  // so a browser paint committed before that macrotask runs still sees nothing bound yet,
+  // no matter how early the Observable itself was created. These three signals are seeded
+  // SYNCHRONOUSLY (in this constructor for the clock, in onNewSettings() below for
+  // elapsed/left) with the correct current text before anything can ever paint, then kept
+  // current by a plain 1-second interval - the interval only ever refreshes an
+  // already-correct value, it's never depended on for the first one.
+  public clockDisplay = signal('')
+  public timeElapsedDisplay = signal('')
+  public timeLeftDisplay = signal('')
 
+  private clockSubscription?: Subscription
+  private timeDisplaySubscription?: Subscription
+
+  private static readonly MONTH_SHORT = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ]
+
+  /** Matches the format the old `date: 'MMM d, HH:mm:ss'` pipe produced - hand-formatted
+   *  rather than via Intl.DateTimeFormat, which has known hour12:false midnight quirks
+   *  ("24:00" instead of "00:00" in some engines) this app's own time-picker component
+   *  already avoids the same way (padStart, not Intl). */
+  private formatClock(d: Date): string {
+    const hh = d.getHours().toString().padStart(2, '0')
+    const mm = d.getMinutes().toString().padStart(2, '0')
+    const ss = d.getSeconds().toString().padStart(2, '0')
+    return `${HeaderComponent.MONTH_SHORT[d.getMonth()]} ${d.getDate()}, ${hh}:${mm}:${ss}`
+  }
 
   constructor(
     private clockService: ClockService,
@@ -85,11 +114,40 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private router: Router,
   ) {
     //======== Constructor() ============
-    this.timeCurrent = this.clockService.getCurrentTime()
+    this.clockDisplay.set(this.formatClock(new Date()))
+    this.clockSubscription = this.clockService.getCurrentTime()
+      .subscribe(d => this.clockDisplay.set(this.formatClock(d)))
 
     // consuming components should include their name, e.g.
     this.parentTitle = 'parent component`s title'
     this.pageDescription = 'parent component`s title'
+
+    // ROOT-CAUSED 2026-09-01 (live CDP layout-shift trace against deployed 0.91.3): the
+    // status-cluster pill (.header__right) was measured growing 186px -> 477px at t=627ms
+    // - well after first paint, not "before anything is ever painted" as this file's own
+    // ngOnInit() subscription was assumed to guarantee (see that comment). The 2026-08-26
+    // timer(0,1000) fix above solved the ONE-SECOND gap inside onNewSettings() itself, but
+    // did nothing for THIS outer gap: ngOnInit() genuinely doesn't run until well into the
+    // page's own boot sequence (confirmed via the app's own verbose logs - this component's
+    // "Received new Settings via subscription" landed after Entry's mini-map, location, and
+    // datetime-picker children had already constructed), so onNewSettings() simply hadn't
+    // run yet for that entire span, regardless of the ReplaySubject's synchronous-replay
+    // guarantee once subscribed.
+    //
+    // MissionService.settings (mission.service.ts) is a plain synchronous getter, backed by
+    // a signal MissionService's OWN constructor already populates (from localStorage or
+    // hardcoded defaults) long before this component is created - other consumers already
+    // depend on that guarantee (see that getter's own comment). Reading it here, synchronous
+    // in THIS constructor rather than waiting on ngOnInit's subscription, covers the
+    // overwhelmingly common case (a device that already has mission settings) with zero
+    // shift, while leaving ngOnInit's subscription in place for a genuine fresh install
+    // (where onNewSettings() correctly still fires only once real settings exist) and for
+    // any later change while this component stays mounted. Calling onNewSettings() twice
+    // with the same data (this seed, then the subscription's own synchronous replay) is
+    // harmless - it only ever derives signals from its argument, no other side effects.
+    if (this.missionService.settings) {
+      this.onNewSettings(this.missionService.settings)
+    }
   }
 
   ngOnInit(): void {
@@ -139,31 +197,33 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#calculating_elapsed_time
     //
     // E-44 audit follow-up, 2026-08-26: was interval(1000), which does NOT emit
-    // immediately - its first value only arrives a full second after construction, so
-    // .opPeriod rendered empty for that first second and then suddenly gained real duration
-    // text once these fired. Live DevTools trace caught this as the last remaining CLS
-    // contributor (0.1981) after the derived-location fix above: main/form.enter__form
-    // shifting down as one unit, consistent with the header's status-cluster row growing
-    // once this text populated late (potentially wrapping onto a second line) and pushing
-    // everything below it. timer(0, 1000) emits its first value on the same tick as
-    // subscription instead, so the real duration is there from first paint.
+    // immediately - its first value only arrives a full second after construction. That
+    // fix (interval(1000) -> timer(0, 1000)) is now superseded, not reverted: 2026-09-01
+    // root-caused that timer(0, 1000)'s own "immediate" emission is STILL a scheduled
+    // macrotask, not synchronous, so a paint committed before that macrotask runs (which a
+    // live CDP trace showed actually happening) still rendered `.opPeriod` empty. See
+    // timeElapsedDisplay's own doc comment above for the full mechanism. updateTimeDisplays()
+    // below is called once, synchronously, right here - not waiting on any timer tick for
+    // its first value - and a plain 1-second interval only ever refreshes it afterward.
     let msStartTime = new Date(this.settings.opPeriodStart).getTime()
-    this.timeElapsed$ = timer(0, 1000)
-      .pipe(map(() => {
-        let diff = Utility.timeDiff(msStartTime, new Date().getTime())
-        // Raised live 2026-08-30: "before period starts" was the single longest fragment in
-        // the pill's op-period readout - shortened per the maintainer's own suggested wording.
-        return (`${diff.string} ${(diff.negative ? ` until period` : ` elapsed`)}`)
-      }
-      ))
-
     let msEndTime = new Date(this.settings.opPeriodEnd).getTime()
-    this.timeLeft$ = timer(0, 1000)
-      .pipe(map(() => {
-        let diff = Utility.timeDiff(new Date().getTime(), msEndTime)
-        return (`${diff.string} ${(diff.negative ? ` since period ended` : ` left`)}`)
-      }
-      ))
+
+    const updateTimeDisplays = () => {
+      const elapsed = Utility.timeDiff(msStartTime, new Date().getTime())
+      // Raised live 2026-08-30: "before period starts" was the single longest fragment in
+      // the pill's op-period readout - shortened per the maintainer's own suggested wording.
+      this.timeElapsedDisplay.set(`${elapsed.string} ${elapsed.negative ? ' until period' : ' elapsed'}`)
+
+      const left = Utility.timeDiff(new Date().getTime(), msEndTime)
+      this.timeLeftDisplay.set(`${left.string} ${left.negative ? ' since period ended' : ' left'}`)
+    }
+    updateTimeDisplays()
+
+    // Re-seeding onNewSettings() (a genuine mission-settings change, or this constructor's
+    // own synchronous pre-seed followed by ngOnInit's subscription replaying the same data)
+    // must not stack a second interval on top of the first.
+    this.timeDisplaySubscription?.unsubscribe()
+    this.timeDisplaySubscription = timer(1000, 1000).subscribe(updateTimeDisplays)
   }
 
   /**
@@ -228,5 +288,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Note the parentheses: this read the property without calling it, so the header -
     // which every page instantiates - never actually released its settings subscription.
     this.missionSubscription?.unsubscribe()
+    this.clockSubscription?.unsubscribe()
+    this.timeDisplaySubscription?.unsubscribe()
   }
 }

@@ -20,10 +20,10 @@
     title="Click to go to Field Entry and reopen the welcome panel">
     <rangertrak-mission-readiness (dotActivated)="panelOpenOnTouch.set(!panelOpenOnTouch())"></rangertrak-mission-readiness>
     <span class="status-divider"></span>
-    <span class="opPeriod">{{opPeriod()}} <span class="status-divider status-divider--inline"></span> {{timeElapsed$ | async}} &
-      {{timeLeft$ | async}}</span>
+    <span class="opPeriod">{{opPeriod()}} <span class="status-divider status-divider--inline"></span> {{timeElapsedDisplay()}} &
+      {{timeLeftDisplay()}}</span>
     <span class="status-divider"></span>
-    <span class="clock">{{timeCurrent | async | date: 'MMM d, HH:mm:ss'}}</span>
+    <span class="clock">{{clockDisplay()}}</span>
 
     <div class="rt-mission-info-panel" role="tooltip" (click)="$event.stopPropagation()">
       @if (eventInfo()) {
