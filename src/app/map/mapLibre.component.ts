@@ -18,25 +18,30 @@ import {
 import {
   radioLogStatusColor, locationCategoryColor, resolveCssColorForCanvas
 } from '../shared/mapping/report-marker-status'
-// F29-7/8 (2026-08-29): rangerColorFor's own file imports Leaflet (for rangerIconFor's return
-// type - a real, if type-only-adjacent, module import), which E-64 otherwise keeps out of
-// MapLibre's lazy chunk on purpose. Accepted here anyway: Leaflet is ALWAYS the default
-// engine and mounts first on every /map visit (see checkMapEngineSwitch), so by the time a
-// visitor has switched engines and MapLibre's own chunk loads, Leaflet is already loaded
-// regardless - this costs nothing extra in practice, only a "this chunk technically imports
-// Leaflet" purity concern, not a real download. Reusing the SAME function as the Leaflet
-// map's markers/trails (rather than a second color scheme) is the actual point - ranger-
-// icon.ts's own doc comment on why this exists at all.
-import { rangerColorFor, evidenceMarkerSvg } from '../shared/mapping/ranger-icon'
-// ADR D-49: same Leaflet-import acceptance as rangerColorFor above - locationMarkerSvg()
-// itself touches no Leaflet API (it returns a plain SVG string), but its file also exports
-// the Leaflet-typed locationIconFor(), so importing it here pulls that module in regardless.
-import { locationMarkerSvg } from '../shared/mapping/location-icon'
+// F29-7/8 (2026-08-29), RESOLVED 2026-09-02: rangerColorFor() used to live in the same file
+// as the Leaflet-typed rangerIconFor(), so importing it here pulled `leaflet` into MapLibre's
+// lazy chunk regardless - accepted at the time since Leaflet is the default /map engine and
+// loads first anyway. A live PageSpeed "unused JavaScript" finding on ENTRY's own initial
+// bundle showed the real cost: `radio-log.component.ts` (no map at all) had the same problem,
+// and Entry's own deferred mini-map competes for the same shared chunk - neither is covered
+// by "Leaflet already loaded from /map." Split into ranger-marker.ts (pure, no Leaflet) so
+// this import no longer pulls Leaflet in at all. See ranger-marker.ts's header comment.
+import { rangerColorFor, evidenceMarkerSvg } from '../shared/mapping/ranger-marker'
+// ADR D-49, same 2026-09-02 resolution: locationMarkerSvg() moved to location-marker.ts
+// (pure, no Leaflet import) - previously it lived alongside the Leaflet-typed
+// locationIconFor() in location-icon.ts, which pulled `leaflet` in here too.
+import { locationMarkerSvg } from '../shared/mapping/location-marker'
 import {
   RadioLogType, RadioLogService, RadioLogEntryType, LogService, MissionLocationService,
   MissionLocationType, MissionService, MissionType, CustomPmtilesService
 } from '../shared/services'
-import { Utility, formatReportTime } from '../shared'
+// 2026-09-02: imported directly, not via the '../shared' barrel - that barrel also
+// re-exports ranger-icon.ts's Leaflet-typed functions (rangerIconFor/evidenceIconFor), and
+// since 'leaflet' has side effects, esbuild can't tree-shake it out of the barrel even
+// though this component uses none of those exports. Same reasoning as map-style.ts's own
+// exclusion from shared/mapping/index.ts, just applied to an import site instead.
+import { Utility } from '../shared/utility'
+import { formatReportTime } from '../shared/mapping/report-time'
 import { LocationDialogComponent } from './location-dialog/location-dialog.component'
 
 const REPORTS_SOURCE_ID = 'field-reports'

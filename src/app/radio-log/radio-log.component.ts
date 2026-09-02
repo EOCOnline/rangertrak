@@ -10,13 +10,16 @@ import { PageComponent } from '../shared/page/page.component';
 import { ExpandableSectionComponent } from '../shared/expandable-section/expandable-section.component';
 import { MATERIAL_IMPORTS } from '../material-imports';
 
-import { Utility } from '../shared'
+// 2026-09-02: also imported from its own file now, not the '../shared/' barrel - same
+// reason as rangerColorFor below (the barrel re-exports ranger-icon.ts's Leaflet-typed
+// functions too, and 'leaflet' has side effects esbuild can't tree-shake out of a barrel).
+import { Utility } from '../shared/utility'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 // Imported from its own file, not the '../shared/' barrel - that barrel also re-exports the
 // MapLibre style helpers, and this route is already its own lazy chunk (loadComponent in
 // app.routes.ts); going through the barrel would drag MapLibre into THIS chunk for no reason.
-import { rangerColorFor } from '../shared/mapping/ranger-icon'
+import { rangerColorFor } from '../shared/mapping/ranger-marker'
 import { buildIcs309Log, Ics309Log } from '../shared/export/ics309-log'
 import { parseReportPacket, REPORT_PACKET_SCHEMA_VERSION } from '../shared/export/report-packet'
 import {

@@ -188,20 +188,19 @@
 
 // E-53: was invisible - the navbar chrome is dark navy in both light and dark app
 // scheme under the Command skin (--rt-chrome / --rt-chrome-dark are both dark colors,
-// see styles/_chrome.scss), and this PNG is GitHub's near-black mark on a transparent
-// background, so it was rendering dark-on-dark. No light-colored asset exists to swap
-// to, so invert it - safe unconditionally, since the chrome bar never becomes light
-// under this skin regardless of scheme.
+// see styles/_chrome.scss), and the old asset (a PNG) was GitHub's near-black mark on a
+// transparent background, so it rendered dark-on-dark. 2026-09-02: replaced that PNG with
+// an inline `fill="currentColor"` SVG (PSI had also flagged it as low-resolution at this
+// device's pixel ratio - a raster asset can't fix that without shipping a bigger file),
+// which inherits `.main-nav`'s `--rt-chrome-ink` the same way every other icon in this
+// template already does - the invert(1) hack is gone, not relocated, since there's no
+// fixed-color raster left to invert.
 #gitLogo {
-  // PSI flagged this rendering at 32x29 against the source PNG's real 32x32 - only
-  // `height` was set here, so the HTML `width="32"` attribute stayed fixed while the
-  // em-based height shrank at this page's actual root font-size, stretching the mark
-  // slightly out of square. Setting both to the same 1.5em keeps it scaling with the
-  // toolbar (the original intent) without distorting the aspect ratio.
+  // Same 1.5em sizing the old PNG used, kept square via the SVG's own viewBox instead of
+  // the old PNG's fixed HTML width/height attributes (which is what stretched it before).
   width       : 1.5em;
   height      : 1.5em;
   margin-right: 2px;
-  filter      : invert(1);
 }
 
 // Same circular hover treatment as .theme-toggle, since the two sit side by side.
