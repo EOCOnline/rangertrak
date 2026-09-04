@@ -79,7 +79,7 @@
     "@angular-devkit/build-angular": "^22.1.6",
     "@angular/compiler-cli": "^22.1.4",
     "@types/google.maps": "^3.66.1",
-    "@types/jasmine": "^5.1.13",
+    "@types/jasmine": "^6.0.0",
     "@types/node": "^26.2.0",
     "@types/utm": "^1.1.4",
     "acorn": "^8.15.0",
