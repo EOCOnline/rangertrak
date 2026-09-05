@@ -1,17 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="No photo">
-  <!--
-    Fallback when a ranger has no photograph on this device (E-38 / D-35).
-
-    Deliberately generic: it identifies nobody, so unlike a real portrait it is an
-    application asset and ships in the repo. Neutral silhouette rather than the existing
-    male.png / female.png pair - "androgynous is fine for now", and a roster row should not
-    have to assert a gender to get a placeholder.
-
-    Mid-grey on a light-grey disc reads on both the light and dark skins without needing
-    two files, since an <img> cannot follow CSS custom properties.
-  -->
-  <circle cx="32" cy="32" r="32" fill="#C7CDD4" />
-  <circle cx="32" cy="24" r="11" fill="#7E8792" />
-  <path d="M32 38c-10.5 0-19 6.6-19 14.8V56c0 4.4 3.6 8 8 8h22c4.4 0 8-3.6 8-8v-3.2C51 44.6 42.5 38 32 38z"
-    fill="#7E8792" />
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" aria-label="No photo" role="img" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#C7CDD4"/><circle cx="32" cy="24" r="11" fill="#7E8792"/><path fill="#7E8792" d="M32 38c-10.5 0-19 6.6-19 14.8V56c0 4.4 3.6 8 8 8h22c4.4 0 8-3.6 8-8v-3.2C51 44.6 42.5 38 32 38z"/></svg>
