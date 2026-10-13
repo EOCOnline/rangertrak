@@ -23,7 +23,7 @@ import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 // app.routes.ts); going through the barrel would drag MapLibre into THIS chunk for no reason.
 import { rangerColorFor } from '../shared/mapping/ranger-marker'
 import { buildIcs309Log, Ics309Log } from '../shared/export/ics309-log'
-import { formatStation } from '../shared/export/station-label'
+import { formatStation } from '../domain/station-label'
 import { parseReportPacket, REPORT_PACKET_SCHEMA_VERSION } from '../shared/export/report-packet'
 import {
   RadioLogService, RadioLogStatusType, RadioLogType, RadioLogEntryType, LogService,

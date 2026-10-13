@@ -1,5 +1,5 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import { formatStation } from './station-label'
+import { formatStation } from '../../domain/station-label'
 // `import type` only - erased at compile time, so this doesn't pull radio-log-entry.interface.ts/
 // mission.interface.ts's own runtime code (there isn't any) into whichever chunk imports this
 // module. Kept as narrow Pick<>s below rather than the full types, so this file states exactly

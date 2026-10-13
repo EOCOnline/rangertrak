@@ -1,5 +1,5 @@
 import { RadioLogEntryType } from '../services/radio-log-entry.interface'
-import { formatStation } from './station-label'
+import { formatStation } from '../../domain/station-label'
 
 /**
  * Shapes radio log entries into an ICS-309 (Communications Log) structure - the DATA, not a
