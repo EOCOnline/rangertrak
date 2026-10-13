@@ -15,7 +15,7 @@ import { evidenceMarkerSvg, rangerColorFor, rangerShapeMarkup } from '../../shar
  * Nothing here is a typed-in legend. Every row is derived from the same functions and
  * settings the markers themselves use - rangerShapeMarkup()/rangerColorFor() for the ranger
  * symbols, radioLogStatusColor() for the status colours, locationMarkerSvg()/
- * locationCategoryColor() for the places, shared/overdue.ts's own constants for the
+ * locationCategoryColor() for the places, domain/overdue.ts's own constants for the
  * overdue bands - so a change to any of them changes the legend with no second edit. The
  * map engine passes in the entries it is DRAWING right now (so the All / Just-selected
  * switch is honoured), and its own name, because the two engines genuinely draw different

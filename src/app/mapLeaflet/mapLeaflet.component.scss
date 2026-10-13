@@ -103,7 +103,7 @@
 //
 // The bands are no longer fixed 10-minute steps. They run from "due" (one check-in
 // interval) to "fully overdue" (three), relative to the mission's own cadence - see
-// shared/overdue.ts. Band 0 has no rule on purpose: not due yet must not look like a
+// domain/overdue.ts. Band 0 has no rule on purpose: not due yet must not look like a
 // cleared warning.
 :host ::ng-deep {
   @for $i from 1 through 7 {

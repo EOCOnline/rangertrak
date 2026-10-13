@@ -127,7 +127,7 @@ export type MissionType = {
 
   // E-118 (2026-09-22): how often teams are expected to check in, in minutes. Drives the
   // overdue-escalation colour ramp on the map, the Rangers grid and the Radio Log - see
-  // `shared/overdue.ts` for the band maths and why the ramp is relative to this rather than
+  // `domain/overdue.ts` for the band maths and why the ramp is relative to this rather than
   // fixed wall-clock minutes (a team on a 15-minute cycle is overdue long before one on a
   // 2-hour cycle). `0` means "no fixed cycle": escalation is disabled and elapsed times show
   // as plain text, which is the honest display when nobody has set a cadence.

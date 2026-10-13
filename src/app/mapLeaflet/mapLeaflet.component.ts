@@ -2541,7 +2541,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       // isn't the live clock the original scoping excluded. Redone 2026-08-26: the label
       // is now the bare number (the popup already gives full detail on hover/tap).
       //
-      // E-118 (2026-09-22): the band maths moved to shared/overdue.ts and is now measured
+      // E-118 (2026-09-22): the band maths moved to domain/overdue.ts and is now measured
       // against the mission's own check-in interval rather than fixed 10-minute steps from
       // 20. The old inline version also disagreed with its own comment - it claimed red at
       // 90+ but the arithmetic reached the top band at 80.
