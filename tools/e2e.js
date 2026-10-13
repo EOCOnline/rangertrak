@@ -2884,7 +2884,16 @@ async function checkBackupFixturesRestore() {
 
 async function checkMissionRoundTrip(downloads) {
   console.log('\nMission backup -> wipe all storage -> restore: the disaster path')
+  // Seed our own roster rather than backing up whatever the previous check left: the backup
+  // group ends on an empty device, so when it ran first this round trip backed up nothing
+  // and then failed "restores the roster" (order-dependent, 2026-10-12).
   await goto('/mission')
+  await evaluate(`localStorage.clear()`)
+  await idbClearAll()
+  await idbSetRaw('rangers', JSON.stringify({ schemaVersion: 1, rangers: [{ callsign: 'RTE2E1', fullName: 'Round Trip Fixture' }] }))
+  await goto('/mission')
+  // Only a file this backup produces counts - not one an earlier check left in downloads.
+  const before = new Set(fs.readdirSync(downloads))
   await evaluate(`(() => { const s = JSON.parse(localStorage.getItem('appSettings')); s.mission = 'E2E-MISSION'; localStorage.setItem('appSettings', JSON.stringify(s)); })()`)
   await goto('/mission')
   // "Export mission" was renamed "Back up mission" (E-109 Setup files / Style A terminology
@@ -2899,7 +2908,7 @@ async function checkMissionRoundTrip(downloads) {
   let files = []
   for (let i = 0; i < 40 && files.length === 0; i++) {
     await sleep(250)
-    files = fs.readdirSync(downloads).filter(f => f.endsWith('.json') && !f.endsWith('.crdownload'))
+    files = fs.readdirSync(downloads).filter(f => !before.has(f) && f.endsWith('.json') && !f.endsWith('.crdownload'))
   }
   if (!check('Back up mission produced a file', files.length > 0, true)) return
   const missionFile = path.join(downloads, files[0])
@@ -2921,8 +2930,8 @@ async function checkMissionRoundTrip(downloads) {
     const s = JSON.parse(localStorage.getItem('appSettings')||'{}');
     return { mission: s.mission };
   })()`)
-  restored.rangers = (JSON.parse(rosterAfterImportRaw||'{"rangers":[]}').rangers||[]).length
-  check('mission import restores the roster after a wipe', restored.rangers > 0, true)
+  const restoredRangers = JSON.parse(rosterAfterImportRaw||'{"rangers":[]}').rangers||[]
+  check('mission import restores the roster after a wipe', restoredRangers.some(r => r.callsign === 'RTE2E1'), true)
   check('mission import restores the mission name', restored.mission, 'E2E-MISSION')
 }
 
