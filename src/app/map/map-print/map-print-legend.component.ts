@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { toSignal } from '@angular/core/rxjs-interop'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 
-import { OVERDUE_BAND_COUNT, OVERDUE_RED_MULTIPLE, DEFAULT_CHECK_IN_INTERVAL_MIN } from '../../shared/overdue'
+import { OVERDUE_BAND_COUNT, OVERDUE_RED_MULTIPLE, DEFAULT_CHECK_IN_INTERVAL_MIN } from '../../domain/overdue'
 import { MissionLocationService, MissionService, RadioLogEntryType } from '../../shared/services'
 import { locationMarkerSvg, resolveLocationIcon } from '../../shared/mapping/location-marker'
 import { radioLogStatusColor, locationCategoryColor } from '../../shared/mapping/report-marker-status'

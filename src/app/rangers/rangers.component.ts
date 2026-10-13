@@ -1,5 +1,5 @@
 import { ColDef, GridOptions } from 'ag-grid-community'
-import { DEFAULT_CHECK_IN_INTERVAL_MIN, elapsedMinutes, overdueBand } from '../shared/overdue'
+import { DEFAULT_CHECK_IN_INTERVAL_MIN, elapsedMinutes, overdueBand } from '../domain/overdue'
 import { isAiGeneratedPhoto, withAiBadge } from '../shared/ai-photo'
 import { bundledRangerImage } from '../shared/ranger-image'
 //import { TooltipModule } from 'ng2-tooltip-directive'

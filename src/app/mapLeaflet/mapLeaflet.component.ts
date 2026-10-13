@@ -8,7 +8,7 @@
 // import-sort cannot undo it. It used to work only by accident, via the eager
 // `import L from 'leaflet'` that RadioLogService no longer has.
 import 'leaflet'
-import { DEFAULT_CHECK_IN_INTERVAL_MIN, elapsedMinutes, overdueBand } from '../shared/overdue'
+import { DEFAULT_CHECK_IN_INTERVAL_MIN, elapsedMinutes, overdueBand } from '../domain/overdue'
 import 'leaflet.markercluster'
 import {
   downloadTile, getStorageInfo, getStoredTilesAsJson, getTileImageSource, getTilePoints, getTileUrl, hasTile, saveTile, savetiles,

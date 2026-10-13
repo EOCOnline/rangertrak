@@ -1,6 +1,6 @@
 import { RouterLink } from '@angular/router'
 import { GridOptions, SelectionChangedEvent } from 'ag-grid-community'
-import { DEFAULT_CHECK_IN_INTERVAL_MIN, elapsedMinutes, overdueBand } from '../shared/overdue'
+import { DEFAULT_CHECK_IN_INTERVAL_MIN, elapsedMinutes, overdueBand } from '../domain/overdue'
 // , TeamService
 import { Observable, subscribeOn, Subscription } from 'rxjs'
 

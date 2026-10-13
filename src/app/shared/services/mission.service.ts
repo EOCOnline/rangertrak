@@ -1,5 +1,5 @@
 import { Observable, ReplaySubject } from 'rxjs'
-import { DEFAULT_CHECK_IN_INTERVAL_MIN } from '../overdue'
+import { DEFAULT_CHECK_IN_INTERVAL_MIN } from '../../domain/overdue'
 
 import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 

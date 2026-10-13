@@ -1,5 +1,5 @@
 import { Subscription } from 'rxjs'
-import { DEFAULT_CHECK_IN_INTERVAL_MIN } from '../shared/overdue'
+import { DEFAULT_CHECK_IN_INTERVAL_MIN } from '../domain/overdue'
 import { clearActiveDemoScenario } from '../shared/mapping/demo-map'
 
 /**
