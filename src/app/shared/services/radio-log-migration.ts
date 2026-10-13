@@ -1,4 +1,4 @@
-import { rehydrateDateFields } from './json-dates'
+import { rehydrateDateFields } from '../../domain/json-dates'
 import { RadioLogType } from './radio-log-entry.interface'
 
 /**

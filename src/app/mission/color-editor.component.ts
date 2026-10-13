@@ -10,7 +10,7 @@ import { ThemePalette } from '@angular/material/core'
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { parseColor, statusColorValue } from '../shared/services/status-color'
+import { parseColor, statusColorValue } from '../domain/status-color'
 
 
 

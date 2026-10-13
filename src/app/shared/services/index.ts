@@ -44,7 +44,7 @@ export {
 export {
   STATUS_KEYS, StatusKey, isStatusKey, statusColorValue, statusInkValue, statusColorMeetsAA,
   contrastRatio, relativeLuminance, parseColor, Rgb
-} from "./status-color"
+} from "../../domain/status-color"
 
 
 //export { ShapeService } from "../unused/shape.service"

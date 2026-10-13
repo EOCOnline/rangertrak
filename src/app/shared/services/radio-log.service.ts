@@ -12,7 +12,7 @@ import {
 // ADR D-42: versioned storage seam for radio log entries. Direct import, not via the barrel,
 // to avoid a cycle - the barrel re-exports this service.
 import { migrateRadioLog, RADIO_LOG_ENTRY_DATE_FIELDS } from './radio-log-migration'
-import { rehydrateDateFields } from './json-dates'
+import { rehydrateDateFields } from '../../domain/json-dates'
 // Direct path, not the barrel: a SERVICE used as a DI token through shared/services/index.ts
 // is unresolvable to the compiler ("no suitable injection token") - the same reason
 // rangers.component.ts imports RangerPhotoService directly instead of via './'.

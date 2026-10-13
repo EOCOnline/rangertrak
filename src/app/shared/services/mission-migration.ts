@@ -1,8 +1,8 @@
-import { rehydrateDateFields } from './json-dates'
+import { rehydrateDateFields } from '../../domain/json-dates'
 import { RadioLogStatusType } from './radio-log-entry.interface'
 import { LocationCategoryType } from './mission-location.interface'
 import { MissionType } from './mission.interface'
-import { StatusKey } from './status-color'
+import { StatusKey } from '../../domain/status-color'
 
 /**
  * Versioned, forward-only migration for the persisted settings object.

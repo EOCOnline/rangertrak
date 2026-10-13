@@ -2,7 +2,7 @@ import { MissionType } from './mission.interface'
 import {
   DEFAULT_RADIO_LOG_STATUSES, MISSION_SCHEMA_VERSION, migrateMission
 } from './mission-migration'
-import { statusColorMeetsAA, statusColorValue, statusInkValue } from './status-color'
+import { statusColorMeetsAA, statusColorValue, statusInkValue } from '../../domain/status-color'
 
 /**
  * migrateMission() is deliberately pure, so these are plain function tests - no TestBed, no
