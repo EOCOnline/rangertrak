@@ -54,7 +54,7 @@ import { MapPrintLegendComponent } from '../map/map-print/map-print-legend.compo
 import { printMapSheet } from '../map/map-print/map-print-sheet'
 import {
   PrintPoint, PrintRect, choosePanelSpot, planFans, planBadges, padRect, BADGE_OVERLAP_PX,
-} from '../map/map-print/map-print-layout'
+} from '../domain/map-print-layout'
 
 
 // https://www.digitalocean.com/community/tutorials/angular-angular-and-leaflet
