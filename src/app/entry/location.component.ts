@@ -22,7 +22,7 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 import {
   DDMToDD, DDToDDM, DDToDMS, DDToMaidenhead, DDToMGRS, DDToUTM, DMSToDD, isMaidenhead,
   MaidenheadToDD, MGRSToDD, UTMToDD
-} from '../shared/mapping/coordinate'
+} from '../domain/coordinate'
 import { GEOCODING_PROVIDER, GeocodingProvider } from '../shared/mapping/geocoding-provider.interface'
 import { OpenLocationCode } from '../shared/mapping/open-location-code'
 

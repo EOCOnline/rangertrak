@@ -28,7 +28,7 @@ import { PageComponent } from '../shared/page/page.component'
 // Direct path, not the shared/services barrel - see the note in rangers.component.ts.
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
-import { DDToDDM } from '../shared/mapping/coordinate'
+import { DDToDDM } from '../domain/coordinate'
 import {
   RADIO_LOG_ENTRY_SOURCES, RadioLogService, RadioLogStatusType, RadioLogEntryType, LocationType,
   LogService, RangerService, RangerType, MissionService, MissionType, TacticalCallType, UsageStateService,

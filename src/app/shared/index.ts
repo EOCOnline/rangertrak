@@ -16,7 +16,7 @@ export { GeocodingProvider, GeocodeResult, GEOCODING_PROVIDER } from "./mapping/
 export { NominatimGeocoder } from "./mapping/nominatim-geocoder"
 export { GoogleGeocoder } from "./mapping/google-geocoder"
 // ./mapping/map-style is deliberately NOT re-exported - see the note in mapping/index.ts.
-export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType, destinationPoint } from "./mapping/coordinate"
+export { DDToDMS, DDToDDM, DMSToDD, DDMToDD, DirEnum, DirType, destinationPoint } from "../domain/coordinate"
 export { AbstractMap } from "./mapping/map"
 export { rangerIconFor, evidenceIconFor } from "./mapping/ranger-icon"
 export { rangerColorFor, evidenceMarkerSvg } from "./mapping/ranger-marker"

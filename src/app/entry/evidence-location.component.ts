@@ -6,7 +6,7 @@ import {
 import { form, FormField, max, min } from '@angular/forms/signals'
 
 import { MATERIAL_IMPORTS } from '../material-imports'
-import { bearingAndDistance, destinationPoint } from '../shared/mapping/coordinate'
+import { bearingAndDistance, destinationPoint } from '../domain/coordinate'
 import { LocationType, undefinedAddressFlag } from '../shared/services'
 
 /**

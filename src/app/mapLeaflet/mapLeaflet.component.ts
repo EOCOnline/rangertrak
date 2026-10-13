@@ -43,7 +43,7 @@ import { forward as mgrsForward } from 'mgrs'
 import {
   CoordinateFormat, DDToUTM, DDToUTMInZone, UTMToDD, bearingAndDistance, destinationPoint, edgeTickStep,
   formatEdgeTick, formatLatLng
-} from '../shared/mapping/coordinate'
+} from '../domain/coordinate'
 import {
   RadioLogService, RadioLogEntryType, LocationType, LogService, MissionLocationService,
   MissionLocationType, RangerService, MissionService

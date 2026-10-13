@@ -1,7 +1,6 @@
 //import { Injectable, OnInit } from '@angular/core';
 //import { JSONSchema, LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
 
-import { UpperCasePipe } from '@angular/common'
 
 // Sprint H: MGRS/UTM/Maidenhead - the coordinate systems SAR, wildland fire, and the
 // National Guard actually use over voice radio. See PRIVATE-Roadmap.md Sprint H.
