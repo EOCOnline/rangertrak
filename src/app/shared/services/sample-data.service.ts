@@ -4,8 +4,8 @@ import {
   RadioLogService, RadioLogType, RadioLogEntryType, LogService, RangerService, RangerType,
   MissionService, MissionLocationService, MissionLocationType
 } from './'
-import { DEFAULT_OP_PERIOD_HOURS } from './mission-migration'
-import { newRangerUid } from './ranger-migration'
+import { DEFAULT_OP_PERIOD_HOURS } from '../../domain/mission-migration'
+import { newRangerUid } from '../../domain/ranger-migration'
 import type { TacticalCallType } from './mission.interface'
 import { recordStore } from '../storage/record-store'
 import { setActiveDemoScenario } from '../mapping/demo-map'

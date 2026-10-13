@@ -1,4 +1,4 @@
-import { RangerType } from './ranger.interface'
+import type { RangerType } from '../shared/services/ranger.interface'
 
 /**
  * Versioned, forward-only migration for the persisted ranger roster, plus the ID assignment

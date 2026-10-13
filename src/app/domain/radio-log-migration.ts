@@ -1,5 +1,5 @@
-import { rehydrateDateFields } from '../../domain/json-dates'
-import { RadioLogType } from './radio-log-entry.interface'
+import { rehydrateDateFields } from './json-dates'
+import type { RadioLogType } from '../shared/services/radio-log-entry.interface'
 
 /**
  * Versioned, forward-only migration for the persisted radio log store.

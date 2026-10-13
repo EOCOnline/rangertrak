@@ -11,7 +11,7 @@ import {
 } from './'
 // ADR D-42: versioned storage seam for radio log entries. Direct import, not via the barrel,
 // to avoid a cycle - the barrel re-exports this service.
-import { migrateRadioLog, RADIO_LOG_ENTRY_DATE_FIELDS } from './radio-log-migration'
+import { migrateRadioLog, RADIO_LOG_ENTRY_DATE_FIELDS } from '../../domain/radio-log-migration'
 import { rehydrateDateFields } from '../../domain/json-dates'
 // Direct path, not the barrel: a SERVICE used as a DI token through shared/services/index.ts
 // is unresolvable to the compiler ("no suitable injection token") - the same reason
@@ -24,7 +24,7 @@ import { recordStore } from '../storage/record-store'
 // E-114 Phase 0: resolving a self-typed credential (a zero-provisioning lite device has no
 // roster of its own) against THIS device's roster reuses the exact comparison
 // normalizeRangerIds() already applies everywhere else - not a second matching rule.
-import { normalizeRangerId } from './ranger-migration'
+import { normalizeRangerId } from '../../domain/ranger-migration'
 // E-114 Phase 1: buildReportPacketText() below - see its own doc comment for why the packet
 // assembly is centralized here rather than duplicated in every caller.
 import { buildReportPacket, reportPacketFilename } from '../export/report-packet'

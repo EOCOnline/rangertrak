@@ -32,7 +32,7 @@ import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { RecordStore } from '../shared/storage/record-store'
 import { DevicePrefsService } from '../shared/services/device-prefs.service'
 import { extractMissionZip, MissionZipManifest, MissionZipPhoto } from '../shared/export/mission-zip'
-import { mergeRangers } from '../shared/services/ranger-migration'
+import { mergeRangers } from '../domain/ranger-migration'
 import { rosterChangesFile } from '../domain/roster-changes'
 import { CustomTooltip } from './customTooltip'
 

@@ -6,11 +6,11 @@ import {
   RadioLogType, RadioLogService, LogService, RangerService, RangerType, MissionService,
   MissionType, MissionLocationService, MissionLocationType, AarNoteService, AarNoteType, RangerPhotoService
 } from './'
-import { migrateMission } from './mission-migration'
-import { normalizeRangerIds } from './ranger-migration'
-import { migrateRadioLog } from './radio-log-migration'
-import { normalizeLocationUids } from './mission-location-migration'
-import { migrateAarNotes } from './aar-note-migration'
+import { migrateMission } from '../../domain/mission-migration'
+import { normalizeRangerIds } from '../../domain/ranger-migration'
+import { migrateRadioLog } from '../../domain/radio-log-migration'
+import { normalizeLocationUids } from '../../domain/mission-location-migration'
+import { migrateAarNotes } from '../../domain/aar-note-migration'
 import { recordStore } from '../storage/record-store'
 import { clearActiveDemoScenario } from '../mapping/demo-map'
 

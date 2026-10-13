@@ -1,4 +1,4 @@
-import { MissionLocationType } from './mission-location.interface'
+import type { MissionLocationType } from '../shared/services/mission-location.interface'
 
 /**
  * Versioned, forward-only migration for the persisted Locations list. Mirrors

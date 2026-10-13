@@ -9,7 +9,7 @@ import { RadioLogStatusType, LogService, MissionType } from './'
 import {
   DEFAULT_RADIO_LOG_STATUSES, DEFAULT_LOCATION_TYPES, DEFAULT_RECIPIENT_OPTIONS_213,
   MISSION_SCHEMA_VERSION, DEFAULT_OP_PERIOD_HOURS, BUNDLED_IMAGE_DIRECTORY, migrateMission
-} from './mission-migration'
+} from '../../domain/mission-migration'
 
 @Injectable({ providedIn: 'root' })
 export class MissionService implements OnInit {

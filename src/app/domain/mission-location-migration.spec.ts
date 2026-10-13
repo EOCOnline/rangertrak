@@ -1,4 +1,4 @@
-import { MissionLocationType } from './mission-location.interface';
+import { MissionLocationType } from '../shared/services/mission-location.interface';
 import { mergeLocations } from './mission-location-migration';
 
 /**

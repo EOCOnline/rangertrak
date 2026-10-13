@@ -8,9 +8,9 @@ import {
   buildMissionZipBytes, extractMissionZip, MissionZipManifest, MissionZipPhoto,
   MISSION_ZIP_SCHEMA_VERSION,
 } from '../shared/export/mission-zip'
-import { migrateMission } from '../shared/services/mission-migration'
-import { mergeRangers, RangerMergeResult } from '../shared/services/ranger-migration'
-import { mergeLocations, LocationMergeResult } from '../shared/services/mission-location-migration'
+import { migrateMission } from '../domain/mission-migration'
+import { mergeRangers, RangerMergeResult } from '../domain/ranger-migration'
+import { mergeLocations, LocationMergeResult } from '../domain/mission-location-migration'
 import { LogService, MissionLocationService, MissionService, RangerService, RangerType } from '../shared/services'
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 // E-122 Phase 2a: reloadPage() below awaits this before reloading - see

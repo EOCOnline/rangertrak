@@ -4,8 +4,8 @@ import { Injectable, Optional, SkipSelf, signal } from '@angular/core'
 
 import { LogService } from './log.service'
 import { AarNoteAbout, AarNoteType } from './aar-note.interface'
-import { AAR_NOTE_SCHEMA_VERSION, migrateAarNotes, normalizeAarNotes } from './aar-note-migration'
-import { newLocationUid } from './mission-location-migration'
+import { AAR_NOTE_SCHEMA_VERSION, migrateAarNotes, normalizeAarNotes } from '../../domain/aar-note-migration'
+import { newLocationUid } from '../../domain/mission-location-migration'
 import { recordStore } from '../storage/record-store'
 
 /**

@@ -1,4 +1,4 @@
-import { RangerType } from './ranger.interface';
+import { RangerType } from '../shared/services/ranger.interface';
 import {
   isRangerId, mergeRangers, migrateRangers, newRangerUid, normalizeRangerId, normalizeRangerIds,
   RANGER_SCHEMA_VERSION
