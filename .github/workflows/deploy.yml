@@ -46,6 +46,11 @@ jobs:
       - name: Lint (boundary rules gate)
         run: npm run lint:ts
 
+      # Every persisted key needs a row in ARCHITECTURE.md's "Data stored on the device" table,
+      # the rc.1 storage freeze's input (ADR D-55). Fails on a missing, unresolvable or stale key.
+      - name: Storage inventory is complete
+        run: npm run check:storage
+
       # The suite is expected to be all green (80 specs). Deploying past a red
       # suite to an emergency-response tool is not a trade worth making.
       - name: Unit tests

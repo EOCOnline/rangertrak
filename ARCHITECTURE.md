@@ -334,6 +334,11 @@ Every persisted key, as of 2026-10-01 (E-168a). This is the input to the rc.1 st
 passphrase (otherwise nothing here is encrypted). When IndexedDB is unavailable (private mode),
 the `rangertrak-records` keys fall back to `localStorage` under the same names for that session.
 
+Since 2026-10-13 `npm run check:storage` (`tools/check-storage-inventory.js`, run in CI) holds
+this table to the source: every storage key, IndexedDB database and Cache Storage name the code
+uses must appear here in backticks, a key the check cannot resolve to a string fails, and a row
+whose key has left the source fails. Add the row in the same commit as the key.
+
 | # | Store | Key | Owner | Backup | Encrypted | Migration |
 |---|-------|-----|-------|--------|-----------|-----------|
 | 1 | localStorage | `appSettings` | `mission.service.ts` | yes (`settings`; the geocoding key only in passphrase-protected backups) | no | `mission-migration.ts`, schema 5, plus backfill on every load |
