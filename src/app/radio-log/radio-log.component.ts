@@ -753,10 +753,14 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   }
 
   private getParams() {
-    let dt = new Date()
+    // Was `FieldReportsExport.2026 -10 -15_9:5.csv`: spaces, unpadded parts and a colon, which
+    // Windows can't have in a file name. Same shape as the roster export's name now.
+    const dt = new Date()
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const stamp = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`
     return {
       columnSeparator: this.getParamValue('columnSeparator'),
-      fileName: `FieldReportsExport.${dt.getFullYear()} -${dt.getMonth() + 1} -${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`,
+      fileName: `rangertrak-radio-log-${stamp}.csv`,
     }
   }
 
@@ -788,22 +792,22 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   }
 
   onBtnExport() {
-    // TODO: Does this handle new radio log entries properly?
-    // https://www.ag-grid.com/javascript-data-grid/excel-export-styles/#styling-headers
-
-    // const params = this.getParams();
-    // this.gridApi.exportDataAsCsv(params);
-
-    // ! Is this JUST for enterprise edition?! - test...
-    // https://www.ag-grid.com/javascript-data-grid/excel-export-rows/#export-all-unprocessed-rows
+    // Was exportDataAsExcel, which is ag-grid ENTERPRISE: this app registers only
+    // AllCommunityModule (shared/ag-grid-setup.ts), so the button logged a console error and
+    // wrote no file at all. CSV is Community, and the card's separator picker always meant CSV.
     // Order (John, 2026-10-15; D-58): "All rows" ticked -> every row; else the selected rows if
     // any; else what the grid shows (every row unfiltered, the filtered rows with a filter -
     // the chips above the grid make the filter visible). Reads signals, not the DOM.
-    this.gridApi.exportDataAsExcel({
+    const onlySelected = !this.allRows() && this.selectedRows() > 0
+    const params = this.getParams()
+    this.gridApi.exportDataAsCsv({
+      ...params,
+      fileName: onlySelected ? params.fileName.replace(/\.csv$/, '-selected.csv') : params.fileName,
       exportedRows: this.allRows() ? 'all' : 'filteredAndSorted',
-      onlySelected: !this.allRows() && this.selectedRows() > 0,
+      onlySelected,
     })
   }
+
 
   /**
    * E-114 Phase 1: builds a Report Packet of every radio log entry currently on this device and

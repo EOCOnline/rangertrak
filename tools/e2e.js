@@ -2051,6 +2051,22 @@ async function checkRadioLogFilterChips() {
       { colId: 'callsign', text: 'FC-A', chip: 'Callsign: FC-A', shown: 1 },
     ],
   })
+
+  // The scenario leaves 2 rows selected and "All rows" unticked. Export must write a file with
+  // just those 2. Until 2026-10-15 this button called exportDataAsExcel, which is ag-grid
+  // Enterprise: with only AllCommunityModule registered it wrote nothing at all, and no check
+  // noticed. Caught the same way as Export changes: wrap URL.createObjectURL.
+  await evaluate(`window.__rtDownloads = [];
+    const orig = URL.createObjectURL.bind(URL);
+    URL.createObjectURL = b => { b.text().then(t => window.__rtDownloads.push(t)); return orig(b) }`)
+  await evaluate(`[...document.querySelectorAll('mat-card')]
+    .find(c => c.querySelector('mat-card-title')?.textContent.trim() === 'Export radio log entries')
+    ?.querySelectorAll('button').forEach(b => { if (b.textContent.trim().endsWith('Export')) b.click() })`)
+  const csv = await pollUntil(() => evaluate(`window.__rtDownloads[0] || ''`), t => !!t)
+  const csvLines = String(csv).replace(/^﻿/, '').trim().split(/\r?\n/).filter(l => l)
+  check('Radio Log Export writes a file', csvLines.length > 0, true)
+  check('...holding only the 2 selected rows (plus a header)', csvLines.length - 1, 2)
+  check('...and they are the selected ones', /E2E-FC-A/.test(csv) && /E2E-FC-B/.test(csv) && !/E2E-FC-C/.test(csv), true)
   await send('Emulation.clearDeviceMetricsOverride')
   await idbRemoveRaw('radioLog')
 }
