@@ -14,6 +14,7 @@ import {
   statusInkValue
 } from '../../../shared/services/'
 import { ColorEditor } from '../../color-editor.component'
+import { isStatusFlagged } from '../../../domain/map-entry-filter'
 
 /**
  * The Radio Log entry status/color ag-Grid editor. Sprint C split out of the 429-line
@@ -124,6 +125,17 @@ export class MissionFieldReportStatusesComponent implements OnChanges {
       cellEditorPopup: true,
       editable: true,
       width: 300,
+    },
+    {
+      // E-190: shows the derived value (domain/map-entry-filter.ts); an edit writes an
+      // explicit boolean. No schema bump: an absent field already means "the default".
+      headerName: "Flag on map", colId: "flagOnMap", cellDataType: 'boolean', width: 130,
+      headerTooltip: 'Shown when the map is set to Needs attention',
+      valueGetter: (params: { data?: RadioLogStatusType }) => params.data ? isStatusFlagged(params.data) : false,
+      valueSetter: (params: { data: RadioLogStatusType, newValue: unknown }) => {
+        params.data.flagOnMap = !!params.newValue
+        return true
+      },
     }
   ]
 

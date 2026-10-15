@@ -218,5 +218,13 @@ export type RadioLogEntryType = {
 export type RadioLogStatusType = {
   status: string,
   color: string,
-  icon: string
+  icon: string,
+  /**
+   * E-190: whether the map's "Needs attention" choice shows entries with this status.
+   * Optional and additive. When UNDEFINED the default is derived from the colour key (see
+   * domain/map-entry-filter.ts isStatusFlagged): flagged for urgent, need-rest-food,
+   * evidence-report and any custom colour; not flagged for normal, location-report and the
+   * incident check-in/out keys. So no migration or backfill; only an explicit change is stored.
+   */
+  flagOnMap?: boolean
 }
