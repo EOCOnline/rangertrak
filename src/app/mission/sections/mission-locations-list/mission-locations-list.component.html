@@ -17,19 +17,22 @@
         <tr>
           <th>Name</th>
           <th>Category</th>
-          <th>Coordinates</th>
+          <th class="rt-locations-list__coords">Coordinates</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         @for (loc of locations(); track loc.uid) {
         <tr>
-          <td>{{ loc.name }}</td>
+          <td>
+            {{ loc.name }}
+            <span class="rt-locations-list__coords-inline">{{ loc.lat.toFixed(5) }}, {{ loc.lng.toFixed(5) }}</span>
+          </td>
           <td>
             <span class="rt-locations-list__marker" [innerHTML]="markerFor(loc.type)"></span>
             {{ loc.type }}
           </td>
-          <td>{{ loc.lat.toFixed(5) }}, {{ loc.lng.toFixed(5) }}</td>
+          <td class="rt-locations-list__coords">{{ loc.lat.toFixed(5) }}, {{ loc.lng.toFixed(5) }}</td>
           <td class="rt-locations-list__actions">
             <button matButton type="button" (click)="onEdit(loc)">Edit</button>
             <button matButton type="button" (click)="onDelete(loc)">Delete</button>

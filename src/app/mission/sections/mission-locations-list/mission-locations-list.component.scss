@@ -1,3 +1,5 @@
+@use "../../../../styles/breakpoints" as bp;
+
 // A grid item of Mission's two-column .mission__grid, like the other section cards: the
 // card itself, not this host element, is what the grid lays out.
 :host {
@@ -41,4 +43,37 @@
 .rt-locations-list__actions {
   white-space: nowrap;
   text-align : right;
+}
+
+// 2026-10-15: at 360 px the four columns ran to ~476 px and the whole Mission page scrolled
+// sideways. On a phone the coordinates move under the name, and Edit/Delete stack.
+.rt-locations-list__coords-inline {
+  display: none;
+}
+
+@include bp.phone {
+  .rt-locations-list {
+    th, td {
+      padding: 0.35em 0.4em;
+    }
+  }
+
+  .rt-locations-list__coords {
+    display: none;
+  }
+
+  .rt-locations-list__coords-inline {
+    display  : block;
+    color    : var(--rt-ink-2);
+    font-size: 0.85em;
+  }
+
+  .rt-locations-list__actions {
+    white-space: normal;
+
+    button {
+      display    : block;
+      margin-left: auto;
+    }
+  }
 }
