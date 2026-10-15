@@ -1,0 +1,10 @@
+Status,Last Name,First Name,Member #,Program,Call,Cell,Email,Home Address,Last Training
+Active,Winterbourne,Hazel,DM-0001,EOC,WZ0HAZ,(555) 010-0101,hazel.w@example.org,12 Mossgate Ln,2026-03-14
+Active,Fogbank,Ollie,DM-0002,Radio Club,KZ0OF,555.010.0102,ollie@example.org,4 Lantern Hill Rd,2025-11-02
+Active,Underbrush,Gus,DM-0004,CERT,,555-010-0104,,88 Cedar Hollow Way,2026-05-20
+Active,Woodsy,Wanda,DM-0005,CERT,,555-010-0105,wanda.woodsy@example.org,,2026-05-20
+Exited,Pinecrest,Carl,DM-0006,CERT,,555-010-0106,carl.p@example.org,9 Ridgeback Ct,2023-09-09
+Active,Skipper,Sunny,DM-0009,MRC,WZ0CHP,,sunny@example.org,31 Driftwood Ave,2026-01-11
+Active,Ivybridge,Ivy,,CERT,WZ0IVY,555-010-0111,,,
+Active,Dandelion,Dan,DM-0012,Radio Club,WZ0DAN,555-010-0112,dan.d@example.org,7 Fernhollow Sq,2025-08-30
+Active,Thistlewood,Tess,DM-0014,CERT,WZ0TES,555-010-0114,tess@example.org,15 Bramble Rd,2026-04-04

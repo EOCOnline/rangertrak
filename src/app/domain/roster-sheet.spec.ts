@@ -1,7 +1,7 @@
 import { RangerType } from '../shared/services/ranger.interface'
 import { mergeRangers } from './ranger-migration'
 import {
-  applyMapping, guessMapping, headerSetKey, normalizeHeader, parseImportMappings, recallMapping,
+  applyMapping, EXITED_STATUSES, exitedStatusLabel, guessMapping, headerSetKey, normalizeHeader, parseImportMappings, recallMapping,
   rememberMapping, rosterToRows, rowsToCsv, ColumnTarget,
 } from './roster-sheet'
 
@@ -207,5 +207,58 @@ describe('roster-sheet (E-187, ADR D-58)', () => {
       expect(rows[3][rows[0].length - 1]).toBe('u3')
       expect(guessMapping(rows[0]).unrecognised).toEqual([])
     })
+  })
+})
+
+/** testing/roster-county-export-example.csv (made-up Fernhollow people), inline. */
+const COUNTY: string[][] = [
+  ['Status', 'Last Name', 'First Name', 'Member #', 'Program', 'Call', 'Cell', 'Email', 'Home Address', 'Last Training'],
+  ['Active', 'Winterbourne', 'Hazel', 'DM-0001', 'EOC', 'WZ0HAZ', '(555) 010-0101', 'hazel.w@example.org', '12 Mossgate Ln', '2026-03-14'],
+  ['Active', 'Fogbank', 'Ollie', 'DM-0002', 'Radio Club', 'KZ0OF', '555.010.0102', 'ollie@example.org', '4 Lantern Hill Rd', '2025-11-02'],
+  ['Active', 'Underbrush', 'Gus', 'DM-0004', 'CERT', '', '555-010-0104', '', '88 Cedar Hollow Way', '2026-05-20'],
+  ['Active', 'Woodsy', 'Wanda', 'DM-0005', 'CERT', '', '555-010-0105', 'wanda.woodsy@example.org', '', '2026-05-20'],
+  ['Exited', 'Pinecrest', 'Carl', 'DM-0006', 'CERT', '', '555-010-0106', 'carl.p@example.org', '9 Ridgeback Ct', '2023-09-09'],
+  ['Active', 'Skipper', 'Sunny', 'DM-0009', 'MRC', 'WZ0CHP', '', 'sunny@example.org', '31 Driftwood Ave', '2026-01-11'],
+  ['Active', 'Ivybridge', 'Ivy', '', 'CERT', 'WZ0IVY', '555-010-0111', '', '', ''],
+  ['Active', 'Dandelion', 'Dan', 'DM-0012', 'Radio Club', 'WZ0DAN', '555-010-0112', 'dan.d@example.org', '7 Fernhollow Sq', '2025-08-30'],
+  ['Active', 'Thistlewood', 'Tess', 'DM-0014', 'CERT', 'WZ0TES', '555-010-0114', 'tess@example.org', '15 Bramble Rd', '2026-04-04'],
+]
+
+describe('roster-sheet: exited statuses', () => {
+  it('names every status it skips, in one label', () => {
+    expect(exitedStatusLabel()).toBe('Exited, Inactive, Retired, Resigned, Terminated, Former, Removed or Left')
+    for (const s of EXITED_STATUSES) expect(exitedStatusLabel()).toContain(s)
+  })
+
+  it('skips each listed status (and "Exit") but not an active one', () => {
+    const skip = (status: string) => applyMapping([['Status', 'Call Sign'], [status, 'K1']], guessMapping(['Status', 'Call Sign']), { skipExited: true }).skipped
+    for (const s of [...EXITED_STATUSES, 'Exit', 'inactive']) expect(skip(s)).withContext(s).toBe(1)
+    expect(skip('Active')).toBe(0)
+  })
+})
+
+describe('roster-sheet: a county-style export', () => {
+  it('maps Member #, names, Program (as team), Call and Cell; keeps address and e-mail out', () => {
+    const m = guessMapping(COUNTY[0])
+    expect(m.targets).toEqual([
+      'ignore', 'lastName', 'firstName', 'id', 'team', 'callsign', 'phone',
+      'ignoreNotStored', 'ignoreNotStored', 'ignore',
+    ])
+    expect(m.statusColumn).toBe(0)
+  })
+
+  it('adds 8 rangers and skips the Exited one', () => {
+    const { rangers, skipped } = applyMapping(COUNTY, guessMapping(COUNTY[0]), { skipExited: true })
+    expect(rangers.length).toBe(8)
+    expect(skipped).toBe(1)
+    expect(rangers.some(r => r.fullName.includes('Pinecrest'))).toBeFalse()
+    expect(rangers[0].fullName).toBe('Hazel Winterbourne')
+    expect(rangers[0].team).toBe('EOC')
+  })
+
+  it('reads Program, Unit, Section, Division and Squad as the team', () => {
+    for (const h of ['Program', 'Unit', 'Section', 'Division', 'Squad', 'Group', 'Affiliation', 'Agency']) {
+      expect(map([h])).withContext(h).toEqual(['team'])
+    }
   })
 })

@@ -32,7 +32,7 @@ There are two ways to start:
 - **One row per person.** Each Ranger ID should belong to one person.
 - **Extra columns are fine.** RangerTrak ignores the ones it doesn't use.
 - **First and last name in separate columns is fine.** RangerTrak joins them.
-- **A Status column is fine.** If it has one, RangerTrak offers to skip the rows marked Exited.
+- **A Status column is fine.** If it has one, RangerTrak offers to skip the rows marked Exited, Inactive, Retired, Resigned, Terminated, Former, Removed or Left.
 - **RangerTrak doesn't store addresses or e-mail addresses.** You can leave them in your
   spreadsheet; they won't be imported, and the preview tells you which columns it left out.
 - **If your group calls the ID something else** ("REW#", "Member #"), you can rename the label
@@ -130,7 +130,7 @@ saying whether each person was added, edited or removed.
 
 A photo beside each name helps the scribe confirm who is calling in. Name each photo file after
 the person's **Ranger ID**, or their call sign if they have no ID: for example `DM-0001.jpg` or
-`WZ0HAZ.png`. Then use **Import photos** and pick them all at once. Photos stay on this device.
+`WZ0HAZ.png`. Then use **Import photos** and pick them all at once. Photos stay on this device. **Export photos** saves the photos of the rows the roster export would take (see **All rows** beside it) as a .zip named the same way, which you can import again on another device.
 
 ## 6. Check it worked
 

@@ -55,7 +55,7 @@ const ALIASES: Record<'id' | 'callsign' | 'fullName' | 'firstName' | 'lastName' 
   lastName: ['lastname', 'last', 'surname', 'familyname'],
   phone: ['phone', 'cell', 'cellphone', 'mobile', 'mobilephone'],
   homePhone: ['homephone'],
-  team: ['team', 'group', 'organization', 'organizationname', 'affiliation', 'agency'],
+  team: ['team', 'group', 'organization', 'organizationname', 'affiliation', 'agency', 'program', 'unit', 'section', 'division', 'squad'],
   role: ['role', 'position', 'assignment'],
   note: ['notes', 'note', 'comments', 'comment', 'qualifications'],
   uid: ['uid'],
@@ -169,7 +169,17 @@ export type ApplyMappingResult = {
   warnings: string[]
 }
 
-const EXITED = /^(exited|exit|inactive|resigned|terminated|former|removed|retired|left)\b/i
+/** Every Status value the import's "skip" option treats as "has left". The dialog's label is built from this list. */
+export const EXITED_STATUSES = ['Exited', 'Inactive', 'Retired', 'Resigned', 'Terminated', 'Former', 'Removed', 'Left'] as const
+
+/** "Exited, Inactive, ... Removed or Left" - the statuses the skip option names. */
+export function exitedStatusLabel(): string {
+  const all = [...EXITED_STATUSES]
+  return `${all.slice(0, -1).join(', ')} or ${all[all.length - 1]}`
+}
+
+// 'exit' stays a prefix match so "Exit" matches too.
+const EXITED = new RegExp(`^(exit|${EXITED_STATUSES.map(s => s.toLowerCase()).join('|')})\\b`, 'i')
 
 /**
  * Turns the data rows (everything after the header row) into rangers using a column mapping.

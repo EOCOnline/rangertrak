@@ -47,7 +47,7 @@
 
       @if (statusColumn() !== null) {
         <mat-checkbox class="rid__status" [checked]="skipExited()" (change)="skipExited.set($event.checked)">
-          Skip rows whose {{ headers()[statusColumn()!] }} is Exited
+          Skip rows whose {{ headers()[statusColumn()!] }} is {{ exitedLabel }}
         </mat-checkbox>
       }
 
