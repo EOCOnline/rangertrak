@@ -76,12 +76,28 @@ export class SummaryComponent implements OnDestroy {
     const b = new Date(s?.opPeriodEnd).getTime()
     return Number.isFinite(a) && Number.isFinite(b) && a > 0 && b > a
   })
-  readonly choice = signal<WindowChoice>(this.hasOpPeriod() ? 'op' : 'whole')
+  /**
+   * Opens on the op period only when it holds at least one entry. A new mission always gets op
+   * period dates (stamped at creation, see mission.service.ts initMission), so "both dates set"
+   * alone would open a demo or an older log on an empty summary.
+   */
+  readonly choice = signal<WindowChoice>(this.opPeriodHasEntries() ? 'op' : 'whole')
   readonly customFrom = signal(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()))
   readonly customTo = signal(new Date())
   readonly customBackwards = computed(() => this.customTo().getTime() < this.customFrom().getTime())
   /** Bumped by Refresh and by Print/Export, so "generated at" is the moment they were asked for. */
   private tick = signal(0)
+
+  private opPeriodHasEntries(): boolean {
+    if (!this.hasOpPeriod()) return false
+    const s = this.settings()
+    const from = new Date(s.opPeriodStart).getTime()
+    const to = new Date(s.opPeriodEnd).getTime()
+    return this.entries().some(e => {
+      const t = new Date(e.date).getTime()
+      return t >= from && t <= to
+    })
+  }
 
   readonly opPeriodName = computed(() => this.settings()?.opPeriod?.trim() ?? '')
   readonly opPeriodToggleLabel = computed(() =>
