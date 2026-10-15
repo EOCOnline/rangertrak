@@ -505,6 +505,14 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             text: 'Under the layers box, Locations, Radio log entries and Ranger paths can each be switched off, and Show under the map can thin the entries to the Latest per ranger or only those that Need attention (the statuses flagged on the Mission page). Route trails still show a ranger\'s whole trail when Ranger paths is on; Show thins the markers only. A strip on the top edge of the map lists whatever is hidden, each with an x, and Show everything brings it all back. Nothing is remembered: the map starts with everything shown each time. A printed map says "Filtered:" with the same list in its title box when anything is hidden.'
           },
           {
+            // 2026-10-15, E-187 phase B (ADR D-58): places in and out, in the Import, export & print panel.
+            heading: 'Putting places on the map, and handing them on',
+            bullets: [
+              'Import, export & print, near the bottom of this page, puts places on the map from an Excel or CSV sheet, a Google My Maps export (KML or KMZ) or a GeoJSON file. You see what would change first, nothing is deleted, and rows without a latitude and longitude are skipped.',
+              'Export places hands on the categories you tick, as a spreadsheet, a CSV or a named Setup file.'
+            ]
+          },
+          {
             heading: 'Route trails',
             text: 'Route trails join one ranger\'s reports oldest to newest on the Leaflet map (the MapLibre map does not draw them), so you can see which way a team has been moving: thin and faint is older, thick and bright is newest, and the newest leg slowly flows toward the latest position. The label at the newest end is a snapshot from when the map was drawn, not a running clock.'
           }

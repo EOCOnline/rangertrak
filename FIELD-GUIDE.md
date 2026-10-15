@@ -162,6 +162,7 @@ On the **Rangers** page, enter your people or import them from a spreadsheet (**
 print** → **Import a list…**). Adding, importing and deleting save themselves, and so do edits
 typed into the grid — there is no Save button to remember. Starting from an Excel or Google
 Sheets list, or building one up from several lists? See [LOADING-YOUR-ROSTER.md](LOADING-YOUR-ROSTER.md).
+Places for the map (shelters, staging areas, a Google My Maps export)? See [LOADING-PLACES.md](LOADING-PLACES.md).
 
 **4. Set up the mission.**
 On the **Mission** page, fill in the mission and event names, the operating period start

@@ -337,8 +337,29 @@ the initial bundle (CSV encoding and delimiter sniffing live there too). The mer
 `mergeRangers()` in `ranger-migration.ts`, now with the blank-cell rule (an empty incoming field
 keeps the value on the device) and a preview shape (`changedFields`, `unchanged`); the import
 preview runs it without saving. The "Import, export & print" panel is `shared/io-panel/`, a
-page-agnostic shell that the Rangers page fills with cards (Map joins in phase B); its colour is the
+page-agnostic shell that the Rangers page fills with cards (the Map page does the same, below); its colour is the
 `--rt-io` token pair, applied by `.rt-io-card` / `.rt-io-zone` in `styles/_patterns.scss`.
+
+2026-10-15 (E-187 Layers, ADR D-58, phase B): `places-file.ts` is the places side, written the same
+way: `guessPlaceMapping` / `applyPlaceMapping` for sheets (including Google My Maps' CSV, whose `WKT`
+column is `POINT (lng lat)`), `parseGeoJsonPlaces`, `parseKmlPlaces` (the XML parser is passed in, so
+the file stays DOM-free; the category is the nearest enclosing `Folder`, which is how My Maps writes
+its layers), `planPlacesImport` (spell categories as the mission does, merge, report new categories;
+a new place with no category goes to "Other", not the first category, because the range rings centre
+on a Command Post), `placesToRows` and `selectPlaces` (by category, then by view). The merge is
+`mergeLocations()` in `mission-location-migration.ts`, now with the same blank-cell rule and
+`changes` / `unchanged` as `mergeRangers()`; coordinates equal to 5 decimals count as unchanged, so
+the app's own export re-imports as all Unchanged. The UI is `map/places-io/` (the two cards inside
+`shared/io-panel/`, mounted at the bottom of the Map page) and `map/places-import-dialog/` (mapping
+step, then preview; modelled on the Rangers dialog, with no Replace). "Only places in the current map
+view" reads `MapEngineService.viewBounds`, a signal the Leaflet component keeps current and clears
+when it goes away (offered on Leaflet only, D-56). A KMZ is unzipped with `fflate` in the component.
+
+Setup files are manifest **v3**: an optional `layer` block (`name`, `asOf`, `source?`, `contains`,
+`sensitivity`: `pii` whenever rangers are in the file, else `none`), written by Prep (a blank name
+writes no block) and by the Map's Export places. Readers accept v1, v2 and v3 and never reject on the
+version number, so an older build opens a v3 file and ignores `layer`. An import that finds a name
+shows it in its preview and summary.
 
 ## Data stored on the device
 
@@ -379,7 +400,7 @@ whose key has left the source fails. Add the row in the same commit as the key.
 | 20 | IndexedDB `rangertrak-custom-pmtiles` / `files` | `active` | `custom-pmtiles.service.ts` | no | no | none |
 | 21 | IndexedDB `leaflet.offline` / `tileStore` | map tiles | the `leaflet.offline` library | no | no | library's own |
 | 22 | Cache Storage `rangertrak-pmtiles-warm` | map file URLs | `shared/mapping/demo-map.ts`, service worker | no | no | pruned by `pruneWarmCache()` |
-| 23 | localStorage | `rt-import-mappings` (E-187, 2026-10-15: which spreadsheet column became which roster field, per set of column headings; at most 20, oldest dropped; heading names only, never cell values) | `device-prefs.service.ts` (pure logic in `domain/roster-sheet.ts`) | no | no | none; new key, read defensively (bad JSON reads as none) |
+| 23 | localStorage | `rt-import-mappings` (E-187, 2026-10-15: which spreadsheet column became which roster field, per set of column headings; at most 20, oldest dropped; heading names only, never cell values; phase B: places sheets share the key under a `places:` prefix on the heading set, with their own column words) | `device-prefs.service.ts` (pure logic in `domain/roster-sheet.ts`) | no | no | none; new key, read defensively (bad JSON reads as none) |
 
 Notes for the storage freeze:
 
