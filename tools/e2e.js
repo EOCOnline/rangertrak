@@ -490,7 +490,7 @@ function makeFixtures(dir) {
 
 // ── the checks ───────────────────────────────────────────────────────────────
 
-const ROUTES = ['/', '/map', '/radio-log', '/messages', '/rangers', '/mission', '/help', '/log', '/prep', '/after-action']
+const ROUTES = ['/', '/map', '/radio-log', '/messages', '/rangers', '/mission', '/help', '/log', '/prep', '/after-action', '/summary']
 
 async function checkRoutesRender() {
   console.log('\nEvery route renders, with no console errors')
@@ -2953,6 +2953,135 @@ async function checkEntryUsesNewMissionDefault() {
 }
 
 /**
+ * E-189: the Mission summary page. Seeds a small radio log (6 entries over two days, 2 of them
+ * Urgent, one from an unstaffed tactical call) and 3 AAR notes (two sharing an area in different
+ * case, one about the app), then reads the real page: the stamp names the mission, "Whole log"
+ * totals match the stored log, the chart draws bars with height (and the attention share), the
+ * tables and AAR groups are right, Export writes a CSV, the AAR notes and Radio Log buttons reach
+ * the page (the AAR one even with no notes), an empty log still shows the notes, and nothing
+ * scrolls sideways at 360px.
+ */
+async function checkMissionSummary() {
+  console.log('\nE-189: Mission summary - stamp, totals, chart bars, tables, notes, CSV, entry points, phone width')
+  await goto('/')
+  const saved = await evaluate(`localStorage.getItem('appSettings')`)
+  await evaluate(`(() => { const s = JSON.parse(localStorage.getItem('appSettings') || '{}'); s.mission = 'E2E-SUMMARY'; s.event = ''; localStorage.setItem('appSettings', JSON.stringify(s)); })()`)
+
+  const mk = (id, callsign, status, iso, extra = {}) => ({
+    id, callsign, status, notes: `note ${id}`, source: 'Voice', operator: id % 2 ? 'Pat' : '',
+    date: iso, location: { lat: 47.4, lng: -122.4, address: '' }, ...extra,
+  })
+  const entries = [
+    mk(1, 'E2E-SUM-A', 'Normal', '2026-10-08T14:00:00.000Z'),
+    mk(2, 'E2E-SUM-A', 'Urgent', '2026-10-08T14:30:00.000Z'),
+    mk(3, 'E2E-SUM-B', 'Normal', '2026-10-08T17:10:00.000Z'),
+    mk(4, 'E2E-SUM-A', 'Normal', '2026-10-09T09:00:00.000Z'),
+    mk(5, 'E2E-SUM-B', 'Urgent', '2026-10-09T09:20:00.000Z'),
+    mk(6, '', 'Normal', '2026-10-09T10:00:00.000Z', { tacticalCall: 'E2E Medical' }),
+  ]
+  const note = (uid, text, area, about, iso) => ({ uid, createdAt: iso, text, page: 'Entry', about, ...(area ? { area } : {}) })
+  const seedNotes = () => idbSetRaw('aarNotes', JSON.stringify({
+    schemaVersion: 1,
+    notes: [
+      note('e2e-n1', 'Relay out of range', 'Communications', 'incident', '2026-10-08T15:00:00.000Z'),
+      note('e2e-n2', 'Handhelds died', 'communications', 'incident', '2026-10-09T09:30:00.000Z'),
+      note('e2e-n3', 'MGRS field slow', '', 'app', '2026-10-09T09:40:00.000Z'),
+    ],
+  }))
+  const seedLog = () => idbSetRaw('radioLog', JSON.stringify({
+    schemaVersion: 1, version: '0.0.0', date: new Date().toISOString(), event: 'e2e', bounds: {},
+    numReport: entries.length, maxId: entries.length, filter: 'All', logEntries: entries,
+  }))
+  await seedLog()
+  await seedNotes()
+
+  const clickToggle = async label => {
+    await evaluate(`[...document.querySelectorAll('[data-testid="summary-window"] button')].find(b => b.textContent.trim() === ${JSON.stringify(label)})?.click()`)
+    await sleep(700)
+  }
+  await send('Emulation.setDeviceMetricsOverride', { width: 1400, height: 900, deviceScaleFactor: 1, mobile: false })
+  await goto('/summary')
+  check('/summary renders inside the page shell', await evaluate(`!!document.querySelector('rangertrak-page .main [data-testid="summary-stamp"]')`), true)
+  check('the page title is Mission summary', await evaluate(`document.title`), 'Mission summary - RangerTrak')
+  check('the stamp names the mission', await evaluate(`document.querySelector('[data-testid="summary-mission"]')?.textContent.trim()`), 'E2E-SUMMARY')
+  check('the stamp says when it was generated', await evaluate(`/\\d{4}/.test(document.querySelector('[data-testid="summary-generated"]')?.textContent || '')`), true)
+  await clickToggle('Whole log')
+
+  const stored = JSON.parse((await idbGetRaw('radioLog')) || '{}').logEntries || []
+  check('"Whole log" total equals the stored radio log entry count',
+    await evaluate(`Number(document.querySelector('[data-testid="summary-total-entries"]')?.textContent)`), stored.length)
+  check('the stored log holds the 6 seeded entries', stored.length, 6)
+  const bars = await evaluate(`[...document.querySelectorAll('[data-testid="summary-bar"]')].map(r => r.getBoundingClientRect().height)`)
+  check('the time chart draws bars with height', bars.length > 0 && bars.every(h => h > 0), true)
+  check('...and the attention share is drawn on the two Urgent hours',
+    await evaluate(`[...document.querySelectorAll('[data-testid="summary-bar-attention"]')].filter(r => r.getBoundingClientRect().height > 0).length`), 2)
+  check('the chart has a text equivalent that gives the total',
+    await evaluate(`/6 messages in all/.test(document.querySelector('[data-testid="summary-time-chart"]')?.getAttribute('aria-label') || '')`), true)
+  check('the team chart draws one bar ("No team / not on roster")',
+    await evaluate(`document.querySelectorAll('[data-testid="summary-team-bar"]').length`), 1)
+  check('by station: two call signs and one tactical call are three rows',
+    await evaluate(`document.querySelectorAll('[data-testid="summary-by-station"] tbody tr').length`), 3)
+  check('needs attention lists the two Urgent entries',
+    await evaluate(`document.querySelectorAll('[data-testid="summary-attention"] tbody tr').length`), 2)
+  check('AAR notes: "Communications" and "communications" are one group',
+    await evaluate(`[...document.querySelectorAll('.rt-summary__area')].map(h => h.textContent.trim())`), ['Communications'])
+  check('...and the note about RangerTrak is counted, not listed',
+    await evaluate(`/1 note about RangerTrak is on the AAR notes page/.test(document.body.innerText)`), true)
+
+  await clickToggle('Custom')
+  check('Custom shows From and To pickers', await evaluate(`document.querySelectorAll('[data-testid="summary-custom"] rangertrak-time-picker').length`), 2)
+  await clickToggle('Whole log')
+
+  // Export writes one CSV with the sections.
+  await evaluate(`window.__rtDownloads = [];
+    const orig = URL.createObjectURL.bind(URL);
+    URL.createObjectURL = b => { b.text().then(t => window.__rtDownloads.push(t)); return orig(b) }`)
+  await evaluate(`document.querySelector('[data-testid="summary-export"]')?.click()`)
+  const csv = String(await pollUntil(() => evaluate(`window.__rtDownloads[0] || ''`), t => !!t))
+  check('Export writes a CSV with the stamp and every section',
+    ['"Stamp"', '"Totals"', '"By station"', '"Needs attention"', '"AAR notes"', 'E2E-SUMMARY'].every(t => csv.includes(t)), true)
+
+  // The ways in.
+  await goto('/after-action')
+  await evaluate(`document.querySelector('[data-testid="aar-summary-link"]')?.click()`)
+  await sleep(1500)
+  check('the AAR notes page has a Current summary button that opens /summary', await evaluate(`location.pathname`), '/summary')
+  await idbRemoveRaw('aarNotes')
+  await goto('/after-action')
+  check('...and it is there even when there are no notes',
+    await evaluate(`!!document.querySelector('[data-testid="aar-empty"]') && !!document.querySelector('[data-testid="aar-summary-link"]')`), true)
+  await goto('/radio-log')
+  await evaluate(`document.querySelector('[data-testid="radio-log-summary-link"]')?.click()`)
+  await sleep(1500)
+  check('the Radio Log page has a Current summary button that opens /summary', await evaluate(`location.pathname`), '/summary')
+
+  // An empty log says so, and still shows the notes.
+  await seedNotes()
+  await idbRemoveRaw('radioLog')
+  await goto('/summary')
+  await clickToggle('Whole log')
+  check('an empty log says "No radio log entries in this period"',
+    await evaluate(`/No radio log entries in this period/.test(document.querySelector('[data-testid="summary-empty"]')?.textContent || '')`), true)
+  check('...and still shows the AAR notes', await evaluate(`document.querySelectorAll('.rt-summary__notes li').length`), 2)
+
+  // Phone width: nothing scrolls sideways.
+  await seedLog()
+  await send('Emulation.setDeviceMetricsOverride', { width: 360, height: 800, deviceScaleFactor: 2, mobile: true })
+  await goto('/summary')
+  await clickToggle('Whole log')
+  const r = await evaluate(`({ device: document.documentElement.clientWidth, doc: Math.ceil(document.documentElement.scrollWidth), inner: window.innerWidth })`)
+  const fits = r.inner <= r.device && r.doc <= r.device + 1
+  check('360px: the summary does not scroll sideways', fits, true)
+  if (!fits) note(`device ${r.device}px, layout viewport ${r.inner}px, document ${r.doc}px`)
+  check('360px: the chart still draws bars', await evaluate(`[...document.querySelectorAll('[data-testid="summary-bar"]')].some(r => r.getBoundingClientRect().height > 0)`), true)
+
+  await send('Emulation.clearDeviceMetricsOverride')
+  await idbRemoveRaw('radioLog')
+  await idbRemoveRaw('aarNotes')
+  if (saved) await evaluate(`localStorage.setItem('appSettings', ${JSON.stringify(saved)})`)
+}
+
+/**
  * E-126, the 1.0.0-rc.1 gate: every release's fixture backup (tools/backup-fixtures/, made
  * by tools/make-backup-fixture.js on the day that release was tagged) must still restore into
  * THIS build, plain and encrypted, through the real Restore control. Each value in the
@@ -3646,6 +3775,7 @@ async function main() {
       if (want('entry')) await checkUsageModes() // E-168; wipes storage, so before checkRosterLifecycle creates the E2E-AA1 ranger
       if (want('roster')) await checkRangersFilterChips(fx)
       if (want('radiolog')) await checkRadioLogFilterChips()
+      if (want('radiolog')) await checkMissionSummary() // E-189
       if (FULL) {
         if (want('roster') || want('entry')) await checkRosterLifecycle(fx) // entry's checks use its E2E-AA1 ranger
         if (want('roster')) await checkGridHeaderTooltipsOpaque()
