@@ -29,8 +29,15 @@ import { formatStation } from '../domain/station-label'
 import { parseReportPacket, REPORT_PACKET_SCHEMA_VERSION } from '../shared/export/report-packet'
 import {
   RadioLogService, RadioLogStatusType, RadioLogType, RadioLogEntryType, LogService,
-  RangerService, MissionService, MissionType, statusColorValue, statusInkValue
+  RangerService, MissionService, MissionType, statusColorValue, statusInkValue,
+  MissionLocationService, FieldModeService, RangerPhotoService
 } from '../shared/services'
+import { MatDialog } from '@angular/material/dialog'
+import * as packageJson from '../../../package.json'
+import { describeRangerMerge } from '../domain/ranger-migration'
+import { describeLocationMerge } from '../domain/location-merge'
+import { buildHandoverFile } from '../shared/export/handover-file'
+import type { HandoverDialogResult } from './handover-dialog/handover-dialog.component'
 // E-122 Phase 2a: reloadPage() below awaits this before reloading - see its own doc comment.
 import { RecordStore } from '../shared/storage/record-store'
 import { showFirstPrintTip } from '../shared/export/print-tip'
@@ -436,6 +443,10 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     private rangerService: RangerService,
     private missionService: MissionService,
     private recordStore: RecordStore,
+    private locationService: MissionLocationService,
+    private photoService: RangerPhotoService,
+    private dialog: MatDialog,
+    public fieldMode: FieldModeService,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.log.info(` Construction`, this.id)
@@ -851,6 +862,128 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     a.click()
     URL.revokeObjectURL(url)
     this.log.info(`Downloaded Report Packet: ${filename} (${count} reports).`, this.id)
+  }
+
+  // ── E-188 scribe hand-over (ADR D-59) ────────────────────────────────────────────────────
+  /** Optional passphrase for the hand-over file; blank writes it unencrypted, as Back up does. */
+  handoverPass = signal('')
+  handoverPassAgain = signal('')
+  handoverBusy = signal(false)
+  /** What the last merge did, named (never a bare count). Shown under the card. */
+  handoverSummary = signal('')
+  handoverError = signal('')
+
+  /** Builds and downloads the hand-over file: the whole roster (with photos), all places and ALL entries. */
+  async onBtnBuildHandover(): Promise<void> {
+    this.handoverError.set('')
+    const passphrase = this.handoverPass()
+    if (passphrase !== this.handoverPassAgain()) {
+      this.handoverError.set('The two passphrases are different. Type the same one in both boxes, or leave both blank.')
+      return
+    }
+    const entries = this.radioLogService.getCurrentRadioLog().logEntries
+    if (!entries.length) {
+      this.handoverError.set('There are no radio log entries on this device to hand over.')
+      return
+    }
+
+    this.handoverBusy.set(true)
+    try {
+      const settings = this.missionService.settings
+      const file = await buildHandoverFile({
+        mission: settings.mission, event: settings.event, opPeriod: settings.opPeriod,
+        appVersion: JSON.parse(JSON.stringify(packageJson)).version,
+        rangers: this.rangerService.rangers,
+        locations: this.locationService.getCurrentLocations(),
+        entries,
+        photos: await this.photoService.allPhotoBlobs(),
+        passphrase,
+      })
+      const blob = new Blob([file.bytes as BlobPart], { type: file.mime })
+      const url = URL.createObjectURL(blob)
+      const a = this.document.createElement('a')
+      a.href = url
+      a.download = file.filename
+      a.click()
+      URL.revokeObjectURL(url)
+      this.log.info(`Built hand-over file: ${file.filename} (${entries.length} entries, `
+        + `${this.rangerService.rangers.length} people)${file.encrypted ? ' (encrypted)' : ' (NOT encrypted)'}.`, this.id)
+      this.handoverSummary.set(`Saved ${file.filename}: ${entries.length} radio log entries and `
+        + `${this.rangerService.rangers.length} people${file.encrypted ? ', locked with your passphrase' : ', NOT locked'}.`)
+    } catch (e: any) {
+      this.log.error(`Could not build the hand-over file: ${e?.message ?? e}`, this.id)
+      this.handoverError.set(`Could not build the file. ${e?.message ?? e}`)
+    } finally {
+      this.handoverBusy.set(false)
+    }
+  }
+
+  /** Reads a picked hand-over file, previews it in a dialog, and on confirm merges people, places, then entries. */
+  async onHandoverFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    input.value = '' // so re-picking the same file still fires a change event
+    if (!file) {
+      return
+    }
+    this.handoverError.set('')
+
+    try {
+      const bytes = new Uint8Array(await file.arrayBuffer())
+      const { HandoverDialogComponent } = await import('./handover-dialog/handover-dialog.component')
+      const ref = this.dialog.open(HandoverDialogComponent, {
+        width: '56rem', maxWidth: '95vw', data: { fileName: file.name, bytes },
+      })
+      const result: HandoverDialogResult | undefined = await new Promise(resolve => ref.afterClosed().subscribe(r => resolve(r)))
+      if (!result) {
+        this.log.verbose('onHandoverFileSelected: cancelled.', this.id)
+        return
+      }
+      await this.applyHandover(file.name, result)
+    } catch (e: any) {
+      this.log.error(`Could not merge "${file.name}": ${e?.message ?? e}`, this.id)
+      this.handoverError.set(`Could not merge "${file.name}". ${e?.message ?? e}`)
+    }
+  }
+
+  /** People first, then places and photos, then the entries (remapped to the uids the people merge kept). */
+  private async applyHandover(fileName: string, result: HandoverDialogResult): Promise<void> {
+    const parts: string[] = []
+    if (result.rangerMerge) {
+      this.rangerService.replaceAllRangers(result.rangerMerge.rangers)
+      this.rangerService.recordMergeImport(fileName, result.rangerMerge)
+      parts.push(describeRangerMerge(result.rangerMerge))
+    }
+    if (result.locationMerge) {
+      this.locationService.replaceAllLocations(result.locationMerge.locations)
+      parts.push(describeLocationMerge(result.locationMerge))
+    }
+    if (result.photos.length) {
+      const mimeFor = (name: string) => {
+        const ext = (name.match(/\.([a-z0-9]+)$/i)?.[1] || '').toLowerCase()
+        return ext === 'png' ? 'image/png' : ext === 'gif' ? 'image/gif' : ext === 'webp' ? 'image/webp' : 'image/jpeg'
+      }
+      const photoFiles = result.photos.map(p => new File([p.bytes as BlobPart], p.filename, { type: mimeFor(p.filename) }))
+      const { stored, unmatched } = await this.photoService.importFiles(photoFiles, this.rangerService.rangers)
+      parts.push(`${stored.length} photo${stored.length === 1 ? '' : 's'} stored`
+        + (unmatched.length ? `, ${unmatched.length} unmatched` : ''))
+    }
+
+    const entries = this.radioLogService.mergeHandoverEntries(
+      result.manifest.entries ?? [], result.rangerMerge?.uidRemap ?? {})
+    const bits = [`${entries.added} added`]
+    if (entries.updated) {
+      bits.push(`${entries.updated} updated (${entries.updatedNotes.map(n => `#${n.id} ${n.callsign}`).join(', ')})`)
+    }
+    bits.push(`${entries.unchanged} already here`)
+    if (entries.rejected) {
+      bits.push(`${entries.rejected} could not be read (${entries.rejectedNotes.map(n => n.callsign || '?').join(', ')})`)
+    }
+    parts.push(`radio log entries: ${bits.join('; ')}`)
+
+    const summary = `Merged "${fileName}": ${parts.join('. ')}.`
+    this.log.warn(summary, this.id)
+    this.handoverSummary.set(summary)
   }
 
   /** Reads a picked Report Packet file and hands it to `mergeIncomingEntries()` (E-114 Phase

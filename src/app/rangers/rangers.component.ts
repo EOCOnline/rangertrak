@@ -38,7 +38,7 @@ import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 // E-122 Phase 2a: reloadPage() below awaits this before reloading - see its own doc comment.
 import { RecordStore } from '../shared/storage/record-store'
 import { DevicePrefsService } from '../shared/services/device-prefs.service'
-import { extractMissionZip, layerName, MissionZipManifest, MissionZipPhoto } from '../shared/export/mission-zip'
+import { entryCountOf, extractMissionZip, layerName, MissionZipManifest, MissionZipPhoto } from '../shared/export/mission-zip'
 import { describeRangerMerge, normalizeRangerIds } from '../domain/ranger-migration'
 import { rosterToRows, rowsToCsv } from '../domain/roster-sheet'
 import type { RosterImportDialogResult } from './roster-import-dialog/roster-import-dialog.component'
@@ -627,6 +627,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       ...(named ? [`From "${named}".`] : []),
       ...(otherCategories.length
         ? [`This file also carries ${otherCategories.join(' and ')}. Import a list does not apply those; use the Setup files page for the whole file.`]
+        : []),
+      ...(entryCountOf(manifest)
+        ? [`This file also holds ${entryCountOf(manifest)} radio log entr${entryCountOf(manifest) === 1 ? 'y' : 'ies'}; merge them from Radio Log → Hand over to another scribe.`]
         : []),
       ...(photos.length ? [`${photos.length} photo${photos.length === 1 ? '' : 's'} will be stored on this device.`] : []),
     ]

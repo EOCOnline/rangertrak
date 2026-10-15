@@ -182,6 +182,67 @@
             </div>
           </mat-card-content>
         </mat-card>
+
+        <!-- E-188 (2026-10-15, ADR D-59): hand the whole mission to another scribe whose device
+             already has entries of its own. Beside Report Packet because it is the same kind of
+             act (merge IN, never replace), but it carries the roster and places too, and it
+             matches entries on a permanent id so a round trip never duplicates. Hidden in field
+             mode (this page's route is too, via fieldModeGuard). -->
+        @if (!fieldMode.enabled()) {
+        <mat-card appearance="outlined" class="rt-mission-card rt-io-card" data-testid="handover-card">
+          <mat-card-header>
+            <mat-card-title>Hand over to another scribe</mat-card-title>
+            <mat-card-subtitle>People, places and every entry, in one file</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="handover__note">
+              Use this when another scribe, or the next shift, already has entries of their own on
+              their device. Their entries stay; yours are added, and a correction you made to an
+              entry comes across. Starting on a blank device instead? Use Restore on the Mission page.
+            </p>
+            <p class="handover__note">
+              The file holds people's names and phone numbers. Add a passphrase to lock it, or leave
+              it blank and the file is not locked. A forgotten passphrase cannot be recovered.
+            </p>
+            <div class="rt-action-bar__buttons">
+              <mat-form-field subscriptSizing="dynamic">
+                <mat-label>Passphrase (optional)</mat-label>
+                <input matInput type="password" autocomplete="new-password" name="handover-pass"
+                  data-testid="handover-pass" [value]="handoverPass()"
+                  (input)="handoverPass.set($any($event.target).value)" />
+              </mat-form-field>
+              @if (handoverPass()) {
+                <mat-form-field subscriptSizing="dynamic">
+                  <mat-label>Type it again</mat-label>
+                  <input matInput type="password" autocomplete="new-password" name="handover-pass-again"
+                    data-testid="handover-pass-again" [value]="handoverPassAgain()"
+                    (input)="handoverPassAgain.set($any($event.target).value)" />
+                </mat-form-field>
+              }
+              <button matButton="outlined" type="button" data-testid="handover-build"
+                [disabled]="handoverBusy()" (click)="onBtnBuildHandover()"
+                title="Save one file with the roster, places and every radio log entry on THIS device">
+                <mat-icon>archive</mat-icon>
+                Hand over
+              </button>
+              <button matButton="outlined" type="button" data-testid="handover-merge"
+                (click)="handoverFileInput.click()"
+                title="Merge in a file another scribe handed you - shows a preview first and never replaces anything">
+                <mat-icon>upload</mat-icon>
+                Merge in
+              </button>
+              <input #handoverFileInput type="file" accept=".zip,.json,application/zip,application/json"
+                data-testid="handover-file" (change)="onHandoverFileSelected($event)" hidden />
+            </div>
+            @if (handoverError()) {
+              <p class="handover__note" role="alert" data-testid="handover-error">{{ handoverError() }}</p>
+            }
+            @if (handoverSummary()) {
+              <p class="handover__note" role="status" data-testid="handover-summary">{{ handoverSummary() }}</p>
+            }
+          </mat-card-content>
+        </mat-card>
+        }
       </div>
     }
 

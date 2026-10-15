@@ -1,0 +1,133 @@
+@if (step() === 'passphrase') {
+  <h2 mat-dialog-title>This file is locked</h2>
+  <mat-dialog-content>
+    <p class="rid__lead">
+      <strong>{{ data.fileName }}</strong> is protected with a passphrase. Type it to open the file.
+    </p>
+    <mat-form-field class="rid__sheet">
+      <mat-label>Passphrase</mat-label>
+      <input matInput type="password" autocomplete="off" name="handover-passphrase"
+        [value]="passphrase()" (input)="passphrase.set($any($event.target).value)"
+        (keydown.enter)="open()" />
+    </mat-form-field>
+    @if (passphraseError()) {
+      <p class="rid__warn" role="alert">{{ passphraseError() }}</p>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button matButton type="button" (click)="cancel()">Cancel</button>
+    <button matButton="filled" type="button" cdkFocusInitial [disabled]="busy() || !passphrase()" (click)="open()">
+      Open file
+    </button>
+  </mat-dialog-actions>
+} @else if (step() === 'error') {
+  <h2 mat-dialog-title>Could not read this file</h2>
+  <mat-dialog-content>
+    <p class="rid__warn" role="alert">{{ errorText() }}</p>
+    <p class="rid__note">Nothing on this device was changed.</p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button matButton type="button" cdkFocusInitial (click)="cancel()">Close</button>
+  </mat-dialog-actions>
+} @else {
+  <h2 mat-dialog-title>Merge in &ldquo;{{ data.fileName }}&rdquo;</h2>
+  <mat-dialog-content>
+    @if (!manifest()) {
+      <p class="rid__note" role="status">Reading the file&hellip;</p>
+    } @else {
+      @if (fromName()) {
+        <p class="rid__lead">From <strong>{{ fromName() }}</strong></p>
+      }
+
+      @if (mismatches().length) {
+        <p class="rid__warn" role="alert" data-testid="handover-mismatch">
+          This file may be from a different mission: {{ mismatches().join('; ') }}.
+          You can still merge it in.
+        </p>
+      }
+
+      @if (!hasEntries) {
+        <p class="rid__warn" role="alert">
+          This file holds no radio log entries. Open it from Setup files, Rangers or the Map page instead.
+        </p>
+      }
+
+      @if (rangerMerge(); as m) {
+        <h3 class="rid__h">People</h3>
+        <p class="rid__counts" role="status">
+          <span><strong>Added {{ m.added.length }}</strong></span>
+          <span><strong>Updated {{ m.overwritten.length }}</strong></span>
+          <span><strong>Unchanged {{ m.unchanged.length }}</strong></span>
+        </p>
+        @if (m.overwritten.length) {
+          <ul class="rid__list">
+            @for (r of updatedPeople(); track $index) {
+              <li><strong>{{ r.callsign || r.id || '(unidentified)' }}</strong>: {{ r.changedFields?.join(', ') }}</li>
+            }
+          </ul>
+          @if (updatedPeopleHidden() > 0) {
+            <p class="rid__more">...and {{ updatedPeopleHidden() }} more.</p>
+          }
+          <p class="rid__note">A blank cell in the file never erases what is already here.</p>
+        }
+        @if (m.ambiguous.length) {
+          <p class="rid__warn">
+            The ID matched one person and the call sign matched another, so the ID won:
+            {{ m.ambiguous.length }} row{{ m.ambiguous.length === 1 ? '' : 's' }}.
+          </p>
+        }
+      }
+
+      @if (locationMerge(); as l) {
+        <h3 class="rid__h">Places</h3>
+        <p class="rid__counts" role="status">
+          <span><strong>Added {{ l.added.length }}</strong></span>
+          <span><strong>Updated {{ l.overwritten.length }}</strong></span>
+          <span><strong>Unchanged {{ l.unchanged.length }}</strong></span>
+        </p>
+        @if (l.overwritten.length) {
+          <ul class="rid__list">
+            @for (c of updatedPlaces(); track $index) {
+              <li><strong>{{ c.name }}</strong>: {{ c.changedFields.join(', ') }}</li>
+            }
+          </ul>
+        }
+      }
+
+      @if (entryMerge(); as e) {
+        <h3 class="rid__h">Radio log entries</h3>
+        <p class="rid__counts" role="status" data-testid="handover-entry-counts">
+          <span><strong>Added {{ e.added }}</strong></span>
+          <span><strong>Updated {{ e.updated }}</strong></span>
+          <span><strong>Unchanged {{ e.unchanged }}</strong></span>
+          <span><strong>Could not read {{ e.rejected }}</strong></span>
+        </p>
+        @if (e.updated) {
+          <p class="rid__note">Updated because the file has a later correction of an entry already here:</p>
+          <ul class="rid__list">
+            @for (n of updatedEntries(); track $index) {
+              <li>#{{ n.id }} {{ n.callsign }}</li>
+            }
+          </ul>
+        }
+        @if (e.rejected) {
+          <p class="rid__warn">These entries have a bad time or place and will not be merged:</p>
+          <ul class="rid__list">
+            @for (n of rejectedEntries(); track $index) {
+              <li>{{ n.callsign || '(no call sign)' }}: {{ n.reason }}</li>
+            }
+          </ul>
+        }
+      }
+    }
+    <p class="rid__safe">
+      Merging adds what is new and updates what the file corrects. Nothing here is replaced or removed.
+    </p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button matButton type="button" (click)="cancel()">Cancel</button>
+    <button matButton="filled" type="button" cdkFocusInitial [disabled]="!manifest() || !hasEntries" (click)="merge()">
+      Merge in
+    </button>
+  </mat-dialog-actions>
+}

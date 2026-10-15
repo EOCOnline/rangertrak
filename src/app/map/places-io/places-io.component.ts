@@ -172,7 +172,7 @@ export class PlacesIoComponent {
 
   /** A Setup file: its places go through the same preview; people and settings are left for the Setup files page. */
   private async readSetupFile(file: File): Promise<ReadPlaces> {
-    const { extractMissionZip, layerName } = await import('../../shared/export/mission-zip')
+    const { extractMissionZip, layerName, entryCountOf } = await import('../../shared/export/mission-zip')
     const { manifest } = extractMissionZip(new Uint8Array(await file.arrayBuffer()))
     if (!manifest.locations) {
       throw new Error('This Setup file does not carry any places, so there is nothing here to put on the map. '
@@ -186,9 +186,14 @@ export class PlacesIoComponent {
       skipped: 0,
       warnings: [],
       layerName: layerName(manifest) || undefined,
-      notes: others.length
-        ? [`This file also carries ${others.join(' and ')}. Importing places does not apply those; use the Setup files page for the whole file.`]
-        : [],
+      notes: [
+        ...(others.length
+          ? [`This file also carries ${others.join(' and ')}. Importing places does not apply those; use the Setup files page for the whole file.`]
+          : []),
+        ...(entryCountOf(manifest)
+          ? [`This file also holds ${entryCountOf(manifest)} radio log entr${entryCountOf(manifest) === 1 ? 'y' : 'ies'}; merge them from Radio Log → Hand over to another scribe.`]
+          : []),
+      ],
     }
   }
 

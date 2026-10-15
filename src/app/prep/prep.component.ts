@@ -5,7 +5,7 @@ import * as packageJson from '../../../package.json'
 import { PageComponent } from '../shared/page/page.component'
 import { MATERIAL_IMPORTS } from '../material-imports'
 import {
-  buildMissionZipBytes, extractMissionZip, layerFor, layerName, MissionZipManifest, MissionZipPhoto,
+  buildMissionZipBytes, entryCountOf, extractMissionZip, layerFor, layerName, MissionZipManifest, MissionZipPhoto,
   MISSION_ZIP_SCHEMA_VERSION,
 } from '../shared/export/mission-zip'
 import { migrateMission } from '../domain/mission-migration'
@@ -247,8 +247,8 @@ export class PrepComponent {
       + `No photo already stored on this device is cleared first - one only changes if a `
       + `file here replaces it.\n\n`
       + `Across all files: up to ${rangersTotal} ranger row(s), ${locationsTotal} location `
-      + `row(s), ${photosTotal} photo(s). There are no radio log entries in a Setup file, so `
-      + `nothing already logged is touched.`)) {
+      + `row(s), ${photosTotal} photo(s). A Setup file never changes the radio log: if one holds radio log `
+      + `entries (a hand-over), they are left for Radio Log → Hand over to another scribe.`)) {
       this.log.verbose('onBtnApplyQueue: user cancelled.', this.id)
       return
     }
@@ -319,6 +319,11 @@ export class PrepComponent {
       const { stored, unmatched } = await this.photos.importFiles(photoFiles, rosterForPhotoMatch)
       parts.push(`${stored.length} photo${stored.length === 1 ? '' : 's'} stored`
         + (unmatched.length ? `, ${unmatched.length} unmatched` : ''))
+    }
+
+    const entryCount = entryCountOf(manifest)
+    if (entryCount) {
+      parts.push(`this file also holds ${entryCount} radio log entr${entryCount === 1 ? 'y' : 'ies'}; merge them from Radio Log → Hand over to another scribe`)
     }
 
     const prefix = named ? `From "${named}": ` : ''
