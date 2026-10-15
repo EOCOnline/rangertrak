@@ -96,6 +96,15 @@ export type RadioLogType = {
  * splits the typed string into this array at the form/storage boundary.
  */
 export type RadioLogEntryType = {
+  /**
+   * Permanent identity of this entry (a UUID), ADR D-59 / E-188. Stamped once at creation and
+   * never changed or reused. Unlike `id` (a per-device display number that a merge renumbers),
+   * the `uid` travels with the entry between devices, so a hand-over can recognise an entry it
+   * has seen before: no duplicates on a round trip, and an edit is matched, not dropped.
+   * Optional in the type only for old data and old Report Packets; `migrateRadioLog()` gives
+   * every stored entry one on load, so after load it is always set.
+   */
+  uid?: string,
   // NOTE the two different identifiers below, deliberately named apart:
   //   `id`        - THIS REPORT's own sequential number (from RadioLogType.maxId).
   //   `rangerUid` - WHO filed it: a foreign key into RangerType.uid (ADR D-42).

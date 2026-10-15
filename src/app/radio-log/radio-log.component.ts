@@ -214,7 +214,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
         headerTooltip: 'Shows a mark if this entry was merged in from another device\'s Report Packet. Blank if it was typed on this device. It cannot be edited.',
         cellRenderer: this.originCellRenderer,
         tooltipValueGetter: (params: { data: RadioLogEntryType }) =>
-          params.data.sourceUid ? 'Merged in from a Report Packet - not typed on this device' : undefined,
+          params.data.sourceUid ? 'Merged in from another device - not typed on this device' : undefined,
       },
       // E-165 (2026-09-30): the tactical call the From station used, immediately before the FCC
       // Callsign column. Read-only for this pass - an edit here would need the operator's
@@ -546,7 +546,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
    *  comment in buildColumnDefs() for why this isn't the existing Source column. */
   originCellRenderer = (params: { data: RadioLogEntryType }) => {
     if (!params.data.sourceUid) return ''
-    return `<span aria-hidden title="Merged in from a Report Packet - not typed on this device">📦</span>`
+    return `<span aria-hidden title="Merged in from another device - not typed on this device">📦</span>`
   }
 
   /**

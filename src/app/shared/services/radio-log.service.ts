@@ -13,6 +13,7 @@ import {
 // to avoid a cycle - the barrel re-exports this service.
 import { migrateRadioLog, RADIO_LOG_ENTRY_DATE_FIELDS } from '../../domain/radio-log-migration'
 import { rehydrateDateFields } from '../../domain/json-dates'
+import { newUid } from '../../domain/uid'
 // Direct path, not the barrel: a SERVICE used as a DI token through shared/services/index.ts
 // is unresolvable to the compiler ("no suitable injection token") - the same reason
 // rangers.component.ts imports RangerPhotoService directly instead of via './'.
@@ -271,6 +272,8 @@ export class RadioLogService {
       JSON.parse(formData) as RadioLogEntryType, //"[object Object]" is not valid JSON
       [...RADIO_LOG_ENTRY_DATE_FIELDS])
     newReport.id = this.radioLog.maxId++
+    // D-59: permanent identity, so a hand-over can match this entry on another device.
+    newReport.uid = newUid()
     // 2026-10-02, John (E-07 replay groundwork): when the entry was actually typed in, stamped
     // here and never edited. `date` is when the traffic happened, which the scribe may set back;
     // the gap between the two is what lets a replay flag an entry that was logged late.

@@ -196,7 +196,7 @@
               <span class="radio-log-cards__callsign">{{ stationFrom(report) }}</span>
               @if (report.sourceUid) {
                 <span class="radio-log-cards__origin"
-                  title="Merged in from a Report Packet - not typed on this device">📦</span>
+                  title="Merged in from another device - not typed on this device">📦</span>
               }
               <span class="radio-log-cards__status" [style.background-color]="statusFill(report.status)"
                 [style.color]="statusInk(report.status)">{{ report.status }}</span>

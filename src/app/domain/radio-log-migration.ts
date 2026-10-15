@@ -1,4 +1,5 @@
 import { rehydrateDateFields } from './json-dates'
+import { newUid } from './uid'
 import type { RadioLogType } from '../shared/services/radio-log-entry.interface'
 
 /**
@@ -41,8 +42,9 @@ import type { RadioLogType } from '../shared/services/radio-log-entry.interface'
  *     its own `version` field is the APP version string (e.g. "0.54.1"), stamped for
  *     information and never compared - it is not, and never was, a schema version.
  * 1 - the same wrapper carrying an explicit numeric `schemaVersion`.
+ * 2 - every entry carries a permanent `uid` (ADR D-59, E-188); entries without one get one.
  */
-export const RADIO_LOG_SCHEMA_VERSION = 1
+export const RADIO_LOG_SCHEMA_VERSION = 2
 
 /**
  * Brings a persisted radio log store up to RADIO_LOG_SCHEMA_VERSION.
@@ -79,9 +81,15 @@ export function migrateRadioLog(raw: unknown): RadioLogType | null {
     return restoreDates({ ...incoming })
   }
 
-  // v0 -> v1 is a pure stamp: there is no legacy report data in the field to transform, which
-  // is precisely why this seam is cheap to add right now. Future steps go here.
-  return restoreDates({ ...incoming, schemaVersion: RADIO_LOG_SCHEMA_VERSION })
+  // v0 -> v1 is a pure stamp: there is no legacy report data in the field to transform.
+  let logEntries = incoming.logEntries
+
+  // v1 -> v2 (D-59): give every entry a permanent uid. Entries that already have one keep it.
+  if (version < 2) {
+    logEntries = logEntries.map(entry => entry.uid ? entry : { ...entry, uid: newUid() })
+  }
+
+  return restoreDates({ ...incoming, logEntries, schemaVersion: RADIO_LOG_SCHEMA_VERSION })
 }
 
 /** `RadioLogType`'s own Date-typed field. */

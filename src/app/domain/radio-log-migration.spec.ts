@@ -9,6 +9,24 @@ import { RADIO_LOG_SCHEMA_VERSION, migrateRadioLog } from './radio-log-migration
  */
 describe('radio-log-migration', () => {
 
+  it('gives every entry without a uid one (D-59) and keeps an existing uid', () => {
+    const entry = (id: number, uid?: string) => ({
+      id, uid, callsign: 'A', status: 'Normal', notes: '',
+      location: { lat: 0, lng: 0, address: '', derivedFromAddress: false },
+      date: new Date(),
+    });
+    const result = migrateRadioLog(store({
+      schemaVersion: 1, logEntries: [entry(0), entry(1, 'keep-me'), entry(2)] as never
+    }))!;
+
+    expect(result.logEntries[1].uid).toBe('keep-me');
+    expect(result.logEntries[0].uid).toBeTruthy();
+    expect(result.logEntries[2].uid).toBeTruthy();
+    expect(result.logEntries[0].uid).not.toBe(result.logEntries[2].uid);
+    // A second run keeps what the first minted.
+    expect(migrateRadioLog(result)!.logEntries.map(e => e.uid)).toEqual(result.logEntries.map(e => e.uid));
+  });
+
   function store(extra: Partial<RadioLogType> = {}): RadioLogType {
     return {
       version: '0.55.0', date: new Date(), event: '',
