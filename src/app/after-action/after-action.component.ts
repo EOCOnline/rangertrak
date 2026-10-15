@@ -1,22 +1,18 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Router } from '@angular/router'
+import { Router, RouterLink } from '@angular/router'
 
 import { PageComponent } from '../shared/page/page.component'
 import { MATERIAL_IMPORTS } from '../material-imports'
 import {
-  AAR_NOTE_ABOUT_LABELS, AarNoteAbout, AarNoteService, AarNoteType, LogService, MissionService
+  AAR_NOTE_ABOUT_LABELS, AarNoteAbout, AarNoteService, AarNoteType, FieldModeService, LogService, MissionService
 } from '../shared/services'
 import { showFirstPrintTip } from '../shared/export/print-tip'
 import { armPrintTitle } from '../shared/export/print-title'
+import { csvCell, downloadCsv } from '../shared/export/csv'
 
 type Filter = 'all' | AarNoteAbout
-
-/** Quotes one CSV cell (RFC 4180): wrap in quotes, double any quote inside. */
-function csvCell(value: string | undefined): string {
-  return `"${(value ?? '').replace(/"/g, '""')}"`
-}
 
 /**
  * E-116: review the After Action notes captured from the header's "AAR note" button - the
@@ -31,7 +27,7 @@ function csvCell(value: string | undefined): string {
 @Component({
   selector: 'rangertrak-after-action',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormsModule, RouterLink, PageComponent, ...MATERIAL_IMPORTS],
   templateUrl: './after-action.component.html',
   styleUrls: ['./after-action.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -62,6 +58,8 @@ export class AfterActionComponent {
     private mission: MissionService,
     private router: Router,
     private log: LogService,
+    /** E-189: the summary page is a command-post page, so a field-mode phone gets no button to it. */
+    public fieldMode: FieldModeService,
   ) { }
 
   formatTime(iso: string): string {
@@ -113,15 +111,8 @@ export class AfterActionComponent {
     ].map(csvCell).join(','))
     const csv = [header.map(csvCell).join(','), ...rows].join('\r\n')
 
-    // BOM so Excel opens accented names as UTF-8.
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
     const label = (this.missionName() || 'mission').replace(/[^a-z0-9_-]+/gi, '_')
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `rangertrak-after-action-${label}-${new Date().toISOString().slice(0, 10)}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
+    downloadCsv(csv, `rangertrak-after-action-${label}-${new Date().toISOString().slice(0, 10)}.csv`)
   }
 
   /** Opens Help > Feedback with the RangerTrak notes filled in. Nothing is sent from here. */

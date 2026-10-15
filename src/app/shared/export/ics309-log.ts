@@ -129,11 +129,12 @@ function formatMessage(report: RadioLogEntryType): string {
   return status ? `[${status}] ${notes}`.trim() : notes
 }
 
-function hasOperationalPeriod(mission: Ics309MissionInfo): boolean {
+/** E-189: also used by the Mission summary stamp, so the op period reads the same everywhere. */
+export function hasOperationalPeriod(mission: Ics309MissionInfo): boolean {
   return !!(mission.opPeriod || mission.opPeriodStart || mission.opPeriodEnd)
 }
 
-function formatOperationalPeriod(mission: Ics309MissionInfo): string {
+export function formatOperationalPeriod(mission: Ics309MissionInfo): string {
   if (!hasOperationalPeriod(mission)) return ''
   const label = mission.opPeriod ? `${mission.opPeriod}: ` : ''
   // hour12: false - 24-hour clock throughout the app, and ICS-309's own convention.
