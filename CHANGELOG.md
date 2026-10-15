@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### Unreleased
+
+
+### Features
+
+* **summary:** Mission summary page (E-189): messages per hour, traffic by team, station, operator, status and source, the entries that need attention and the AAR notes grouped by area, for this op period, the whole log or a custom period, with Print and Export CSV. Reached from "Current summary" on the AAR notes and Radio Log pages; read-only, nothing stored.
+
 ### [0.99.36-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.35-alpha...v0.99.36-alpha) (2026-10-15)
 
 

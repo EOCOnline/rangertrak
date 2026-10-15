@@ -295,6 +295,10 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             text: 'Print gives an improvement-plan table of the incident notes: observation, area, recommendation, owner and time. Export downloads every note as a spreadsheet (CSV).'
           },
           {
+            heading: 'Current summary',
+            text: 'Current summary shows where the mission stands: messages per hour, traffic by team, station and operator, the entries that need attention, and these notes grouped by area. Run it whenever you like. It only reads the radio log, so it never stops logging. Print or Export it for the after-action review: the paper is the record of that moment, stamped with the period it covers and when it was made. Nothing is saved on the device.'
+          },
+          {
             heading: 'Notes about RangerTrak',
             text: 'Review and send opens Help > Feedback with those notes filled in. Nothing is sent until you press Submit there, and it becomes a public GitHub issue, so take out names and places first.'
           }
