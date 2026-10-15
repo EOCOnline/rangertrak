@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.34-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.33-alpha...v0.99.34-alpha) (2026-10-15)
+
+
+### Features
+
+* **grids:** E-190 active-filter chips on Rangers and Radio Log ([346cc3f](https://github.com/SteadyEOC/RangerTrak/commit/346cc3f10332d4d2ee39c51cf91833f0fbdc3cdb))
+* **rangers:** export ranger photos as a zip ([3cca468](https://github.com/SteadyEOC/RangerTrak/commit/3cca468e42e8b874c3a61b2a01c8eba56890852f))
+
+
+### Bug Fixes
+
+* **import:** guess Program/Unit/Section as Team; county-style test sheet; skip option names every status ([7317791](https://github.com/SteadyEOC/RangerTrak/commit/731779158bc0ae036121a4d066c37cef787fc558))
+* **radio-log:** Export writes a CSV file; it wrote nothing before ([22b4470](https://github.com/SteadyEOC/RangerTrak/commit/22b44701b4fb57b2ac85ce5aa9b0f55f2e8c9618))
+* **rangers:** import preview uses the column labels ([eacc54d](https://github.com/SteadyEOC/RangerTrak/commit/eacc54dc31088193e93086919c7878010d9ce1b2))
+
 ### [0.99.33-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.32-alpha...v0.99.33-alpha) (2026-10-15)
 
 
