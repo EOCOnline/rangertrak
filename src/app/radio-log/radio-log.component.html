@@ -7,6 +7,11 @@
          line say it. -->
     <div class="rt-action-bar__buttons radio-log__add-row">
       <a matButton="filled" routerLink="/">Add entry</a>
+      <!-- E-189: the Mission summary, one tap from the log it reads. It never changes the log. -->
+      <a matButton="outlined" routerLink="/summary" data-testid="radio-log-summary-link"
+        title="Traffic, teams and notes for the mission so far, with a printout for the after-action review">
+        <mat-icon>insights</mat-icon> Current summary
+      </a>
     </div>
     @if (radioLogEntries().length === 0) {
       <p class="radio-log__empty">No radio log entries yet. Add one on the <a routerLink="/">Entry page</a>, or load a demo mission from the Mission page.</p>

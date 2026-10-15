@@ -6,15 +6,26 @@
       <strong>AAR note</strong> at the top of any page. It takes one line, and you stay where you were.
       The notes collect here for the after-action review.
     </p>
-    } @else {
+    }
+
     <div class="rt-aar__toolbar">
+      @if (notes.notes().length > 0) {
       <mat-button-toggle-group [value]="filter()" (change)="filter.set($event.value)" aria-label="Show notes about">
         <mat-button-toggle value="all">All ({{ notes.notes().length }})</mat-button-toggle>
         <mat-button-toggle value="incident">{{ aboutLabels.incident }} ({{ incidentNotes().length }})</mat-button-toggle>
         <mat-button-toggle value="app">{{ aboutLabels.app }} ({{ appNotes().length }})</mat-button-toggle>
       </mat-button-toggle-group>
+      }
 
       <span class="rt-aar__spacer"></span>
+      <!-- E-189: shown even with no notes - the summary is useful before any note exists. -->
+      @if (!fieldMode.enabled()) {
+      <a matButton="outlined" routerLink="/summary" data-testid="aar-summary-link"
+        title="Traffic, teams and notes for the mission so far. It only reads the log; logging carries on as normal">
+        <mat-icon>insights</mat-icon> Current summary
+      </a>
+      }
+      @if (notes.notes().length > 0) {
       <button matButton="outlined" type="button" (click)="onPrint()" [disabled]="incidentNotes().length === 0"
         title="Print the notes about this incident as an improvement-plan table. Opens your browser's print dialog; choose your printer there">
         <mat-icon>print</mat-icon> Print
@@ -23,8 +34,10 @@
         title="Download every note as a spreadsheet (CSV)">
         <mat-icon>download</mat-icon> Export
       </button>
+      }
     </div>
 
+    @if (notes.notes().length > 0) {
     <ul class="rt-aar__list" data-testid="aar-list">
       @for (n of shown(); track n.uid) {
       <li>

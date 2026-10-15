@@ -1,0 +1,293 @@
+<rangertrak-page [title]="title" [description]="pageDescr">
+  <div class="rt-summary">
+    <!-- Screen only: choosing the period and the actions. -->
+    <div class="rt-summary__toolbar rt-summary__noprint">
+      <mat-button-toggle-group [value]="choice()" (change)="onChoice($event.value)" aria-label="Period to summarise"
+        data-testid="summary-window">
+        <mat-button-toggle value="op" [disabled]="!hasOpPeriod()"
+          [title]="hasOpPeriod() ? 'Only the operational period set on the Mission page' : 'Set an operational period on the Mission page to use this'">
+          {{ opPeriodToggleLabel() }}
+        </mat-button-toggle>
+        <mat-button-toggle value="whole">Whole log</mat-button-toggle>
+        <mat-button-toggle value="custom">Custom</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <span class="rt-summary__spacer"></span>
+      <button matButton="outlined" type="button" (click)="refresh()"
+        title="Recalculate now. The page also updates by itself as entries come in">
+        <mat-icon>refresh</mat-icon> Refresh
+      </button>
+      <button matButton="outlined" type="button" (click)="onPrint()" data-testid="summary-print"
+        title="Print this summary. Opens your browser's print dialog; choose your printer there">
+        <mat-icon>print</mat-icon> Print
+      </button>
+      <button matButton="outlined" type="button" (click)="onExportCsv()" data-testid="summary-export"
+        title="Download this summary as a spreadsheet (CSV)">
+        <mat-icon>download</mat-icon> Export
+      </button>
+    </div>
+
+    @if (!hasOpPeriod()) {
+    <p class="rt-summary__hint rt-summary__noprint">
+      No operational period is set, so only the whole log or a custom period can be summarised. Set one on the
+      <a routerLink="/mission">Mission page</a>.
+    </p>
+    }
+
+    @if (choice() === 'custom') {
+    <div class="rt-summary__custom rt-summary__noprint" data-testid="summary-custom">
+      <rangertrak-time-picker [initialDate]="customFrom()" datePickerLabel="From" (newTimeEvent)="onCustomFrom($event)">
+      </rangertrak-time-picker>
+      <rangertrak-time-picker [initialDate]="customTo()" datePickerLabel="To" (newTimeEvent)="onCustomTo($event)">
+      </rangertrak-time-picker>
+      @if (customBackwards()) {
+      <p class="rt-summary__hint" role="alert">The end is before the start, so nothing is shown. Move one of them.</p>
+      }
+    </div>
+    }
+
+    <!-- The stamp: on screen and on paper, so a printout says what it is and when it is from. -->
+    <mat-card appearance="outlined" class="rt-summary__stamp" data-testid="summary-stamp">
+      <div class="rt-summary__stamp-title">
+        <h2 class="rt-summary__mission" data-testid="summary-mission">{{ missionName() || '(mission not named)' }}</h2>
+        @if (isExercise()) {
+        <span class="rt-summary__exercise" data-testid="summary-exercise">EXERCISE</span>
+        }
+      </div>
+      <dl class="rt-summary__stamp-list">
+        @if (opPeriodLabel()) {
+        <div><dt>Operational period</dt><dd>{{ opPeriodLabel() }}</dd></div>
+        }
+        <div>
+          <dt>Period summarised</dt>
+          <dd data-testid="summary-window-label">{{ windowLabel() }}
+            @if (summary().window.soFar) {<strong> (so far: this period has not ended yet)</strong>}</dd>
+        </div>
+        <div>
+          <dt>Generated</dt>
+          <dd data-testid="summary-generated">{{ fmt(summary().generatedAt) }}@if (generatedBy()) { by {{ generatedBy() }}}</dd>
+        </div>
+      </dl>
+    </mat-card>
+
+    @if (summary().totals.entries === 0) {
+    <p class="rt-summary__empty" data-testid="summary-empty">No radio log entries in this period.</p>
+    } @else {
+    <section class="rt-summary__section" aria-labelledby="rt-sum-totals">
+      <h2 id="rt-sum-totals">Totals</h2>
+      <ul class="rt-summary__figures" data-testid="summary-totals">
+        <li><span class="rt-summary__num" data-testid="summary-total-entries">{{ summary().totals.entries }}</span>
+          <span class="rt-summary__cap">radio log entries</span></li>
+        <li><span class="rt-summary__num">{{ summary().totals.stations }}</span>
+          <span class="rt-summary__cap">stations heard</span></li>
+        <li><span class="rt-summary__num">{{ summary().totals.attention }}</span>
+          <span class="rt-summary__cap">needing attention</span></li>
+        <li><span class="rt-summary__num">{{ summary().totals.revised }}</span>
+          <span class="rt-summary__cap">edited after logging</span></li>
+        <li><span class="rt-summary__num">{{ summary().totals.late }}</span>
+          <span class="rt-summary__cap" title="Logged more than 15 minutes after they happened">logged late</span></li>
+        <li class="rt-summary__fig--wide"><span class="rt-summary__num rt-summary__num--small">{{ fmt(summary().totals.first) }}</span>
+          <span class="rt-summary__cap">first entry</span></li>
+        <li class="rt-summary__fig--wide"><span class="rt-summary__num rt-summary__num--small">{{ fmt(summary().totals.last) }}</span>
+          <span class="rt-summary__cap">last entry</span></li>
+      </ul>
+    </section>
+
+    <div #chartBox class="rt-summary__charts">
+      <section class="rt-summary__section" aria-labelledby="rt-sum-time">
+        <h2 id="rt-sum-time">{{ bucketTitle() }}</h2>
+        <svg class="rt-summary__chart" [attr.viewBox]="'0 0 ' + timeChart().width + ' ' + timeChart().height"
+          [attr.width]="timeChart().width" [attr.height]="timeChart().height" role="img"
+          [attr.aria-label]="timeChartAria()" data-testid="summary-time-chart">
+          <defs>
+            <pattern id="rt-sum-hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="5" height="5" fill="#fff" />
+              <rect width="2.5" height="5" fill="#000" />
+            </pattern>
+          </defs>
+          <line class="rt-summary__axis" [attr.x1]="timeChart().left" [attr.x2]="timeChart().right"
+            [attr.y1]="timeChart().base" [attr.y2]="timeChart().base" />
+          <line class="rt-summary__grid" [attr.x1]="timeChart().left" [attr.x2]="timeChart().right"
+            [attr.y1]="timeChart().top" [attr.y2]="timeChart().top" />
+          <text class="rt-summary__tick" [attr.x]="timeChart().left - 6" [attr.y]="timeChart().top + 4"
+            text-anchor="end">{{ timeChart().max }}</text>
+          <text class="rt-summary__tick" [attr.x]="timeChart().left - 6" [attr.y]="timeChart().base + 4"
+            text-anchor="end">0</text>
+          @for (b of timeChart().bars; track $index) {
+          @if (b.hTotal > 0) {
+          <rect class="rt-summary__bar" data-testid="summary-bar" [attr.x]="b.x" [attr.y]="b.yTotal"
+            [attr.width]="b.w" [attr.height]="b.hTotal"><title>{{ b.tip }}</title></rect>
+          }
+          @if (b.hAttn > 0) {
+          <rect class="rt-summary__bar rt-summary__bar--attn" data-testid="summary-bar-attention" [attr.x]="b.x"
+            [attr.y]="b.yAttn" [attr.width]="b.w" [attr.height]="b.hAttn"><title>{{ b.tip }}</title></rect>
+          }
+          @if (b.label; as l) {
+          <text class="rt-summary__tick" [attr.x]="l.x" [attr.y]="timeChart().base + 14" text-anchor="middle">{{ l.time }}</text>
+          @if (l.day) {
+          <text class="rt-summary__tick rt-summary__tick--day" [attr.x]="l.x" [attr.y]="timeChart().base + 27"
+            text-anchor="middle">{{ l.day }}</text>
+          }
+          }
+          }
+        </svg>
+        <p class="rt-summary__legend">
+          <span><i class="rt-summary__swatch rt-summary__swatch--bar"></i> Messages</span>
+          <span><i class="rt-summary__swatch rt-summary__swatch--attn"></i> Needing attention (part of the bar)</span>
+        </p>
+        <details class="rt-summary__numbers rt-summary__noprint">
+          <summary>Show the numbers</summary>
+          <div class="rt-summary__scroll">
+            <table class="rt-summary__table">
+              <thead><tr><th>Starting</th><th class="num">Messages</th><th class="num">Needing attention</th></tr></thead>
+              <tbody>
+                @for (b of summary().buckets.items; track $index) {
+                <tr><td>{{ fmt(b.start) }}</td><td class="num">{{ b.count }}</td><td class="num">{{ b.attentionCount }}</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <section class="rt-summary__section" aria-labelledby="rt-sum-team">
+        <h2 id="rt-sum-team">Traffic by team</h2>
+        <svg class="rt-summary__chart" [attr.viewBox]="'0 0 ' + teamChart().width + ' ' + teamChart().height"
+          [attr.width]="teamChart().width" [attr.height]="teamChart().height" role="img"
+          [attr.aria-label]="teamChartAria()" data-testid="summary-team-chart">
+          @for (b of teamChart().bars; track $index) {
+          <text class="rt-summary__tick rt-summary__tick--label" x="0" [attr.y]="b.y + b.h / 2 + 4">{{ b.label }}<title>{{ b.full }}</title></text>
+          <rect class="rt-summary__bar rt-summary__bar--team" data-testid="summary-team-bar" [attr.x]="b.barLeft"
+            [attr.y]="b.y" [attr.width]="b.w" [attr.height]="b.h"><title>{{ b.full }}: {{ b.count }}</title></rect>
+          <text class="rt-summary__tick rt-summary__tick--count" [attr.x]="b.barLeft + b.w + 5"
+            [attr.y]="b.y + b.h / 2 + 4">{{ b.count }}</text>
+          }
+        </svg>
+        <details class="rt-summary__numbers rt-summary__noprint">
+          <summary>Show the numbers</summary>
+          <div class="rt-summary__scroll">
+            <table class="rt-summary__table">
+              <thead><tr><th>Team</th><th class="num">Messages</th></tr></thead>
+              <tbody>
+                @for (r of summary().byTeam; track r.label) {
+                <tr><td>{{ r.label }}</td><td class="num">{{ r.count }}</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+    </div>
+
+    <section class="rt-summary__section" aria-labelledby="rt-sum-station">
+      <h2 id="rt-sum-station">By station</h2>
+      <div class="rt-summary__scroll">
+        <table class="rt-summary__table" data-testid="summary-by-station">
+          <thead><tr><th>Station</th><th class="num">Messages</th><th>Last heard</th></tr></thead>
+          <tbody>
+            @for (r of summary().byStation; track r.station) {
+            <tr><td>{{ r.station }}</td><td class="num">{{ r.count }}</td><td>{{ fmt(r.lastHeard) }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="rt-summary__pair">
+      <section class="rt-summary__section" aria-labelledby="rt-sum-operator">
+        <h2 id="rt-sum-operator">By operator (who logged it)</h2>
+        <div class="rt-summary__scroll">
+          <table class="rt-summary__table">
+            <thead><tr><th>Operator</th><th class="num">Messages</th></tr></thead>
+            <tbody>
+              @for (r of summary().byOperator; track r.label) {
+              <tr><td>{{ r.label }}</td><td class="num">{{ r.count }}</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="rt-summary__section" aria-labelledby="rt-sum-status">
+        <h2 id="rt-sum-status">By status</h2>
+        <div class="rt-summary__scroll">
+          <table class="rt-summary__table">
+            <thead><tr><th>Status</th><th class="num">Messages</th></tr></thead>
+            <tbody>
+              @for (r of summary().byStatus; track r.status) {
+              <tr>
+                <td><i class="rt-summary__status-swatch" [style.background-color]="statusFill(r.color)"></i>{{ r.status }}</td>
+                <td class="num">{{ r.count }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="rt-summary__section" aria-labelledby="rt-sum-source">
+        <h2 id="rt-sum-source">By source</h2>
+        <div class="rt-summary__scroll">
+          <table class="rt-summary__table">
+            <thead><tr><th>Source</th><th class="num">Messages</th></tr></thead>
+            <tbody>
+              @for (r of summary().bySource; track r.label) {
+              <tr><td>{{ r.label }}</td><td class="num">{{ r.count }}</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <section class="rt-summary__section" aria-labelledby="rt-sum-attention">
+      <h2 id="rt-sum-attention">Needs attention</h2>
+      @if (summary().attention.length === 0) {
+      <p data-testid="summary-attention-none">None in this period.</p>
+      } @else {
+      <div class="rt-summary__scroll">
+        <table class="rt-summary__table" data-testid="summary-attention">
+          <thead><tr><th>Time</th><th>Station</th><th>Status</th><th>Notes</th></tr></thead>
+          <tbody>
+            @for (e of summary().attention; track e.id) {
+            <tr>
+              <td class="nowrap">{{ fmt(e.date) }}</td>
+              <td>{{ station(e) }}</td>
+              <td><i class="rt-summary__status-swatch" [style.background-color]="statusFillFor(e.status)"></i>{{ e.status }}</td>
+              <td>{{ e.notes }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+    </section>
+    }
+
+    <section class="rt-summary__section" aria-labelledby="rt-sum-aar">
+      <h2 id="rt-sum-aar">AAR notes</h2>
+      @if (summary().aar.groups.length === 0) {
+      <p data-testid="summary-aar-none">No notes about this incident in this period.</p>
+      }
+      @for (g of summary().aar.groups; track g.area) {
+      <h3 class="rt-summary__area">{{ g.area }}</h3>
+      <ul class="rt-summary__notes">
+        @for (n of g.notes; track n.uid) {
+        <li>
+          <p class="rt-summary__note-text">{{ n.text }}</p>
+          @if (n.recommendation) {<p class="rt-summary__note-line"><strong>Recommendation:</strong> {{ n.recommendation }}</p>}
+          @if (n.owner) {<p class="rt-summary__note-line"><strong>Owner:</strong> {{ n.owner }}</p>}
+          <p class="rt-summary__note-meta">Noted {{ fmt(n.createdAt) }}</p>
+        </li>
+        }
+      </ul>
+      }
+      @if (summary().aar.appCount > 0) {
+      <p>{{ summary().aar.appCount }} {{ summary().aar.appCount === 1 ? 'note about RangerTrak is' : 'notes about RangerTrak are' }}
+        on the AAR notes page.</p>
+      }
+      <p class="rt-summary__noprint"><a matButton="outlined" routerLink="/after-action" data-testid="summary-aar-link">
+        <mat-icon>edit_note</mat-icon> Edit the AAR notes</a></p>
+    </section>
+  </div>
+</rangertrak-page>
