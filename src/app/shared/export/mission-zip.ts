@@ -2,6 +2,7 @@ import { unzipSync, zipSync, Zippable } from 'fflate'
 
 import { MissionType } from '../services/mission.interface'
 import { MissionLocationType } from '../services/mission-location.interface'
+import { RadioLogEntryType } from '../services/radio-log-entry.interface'
 import { RangerType } from '../services/ranger.interface'
 
 /**
@@ -61,6 +62,13 @@ import { RangerType } from '../services/ranger.interface'
  * rangers are in the file (CLAUDE.md rule 5), else `none`: a places-only file needs no
  * confirm at export.
  *
+ * **E-188 (2026-10-15, ADR D-59): an optional `entries` category and `layer.kind: "handover"`.**
+ * A hand-over file carries the whole roster, all places and ALL radio log entries, so another
+ * scribe whose device already has entries of its own can merge them in (Radio Log -> Hand over
+ * to another scribe). Same rule as every category: presence of the key means "apply." The other
+ * Setup-file openers (/prep, Rangers, Map) apply only their own part and tell the person the
+ * entries merge from Radio Log. No schema bump: it is an additive key a reader can see.
+ *
  * Photo matching reuses `RangerPhotoService`'s own filename-stem convention (a ranger's `id`
  * if set, else `callsign`, uppercased) - not reinvented here. "A wrong photo is worse than no
  * photo" (roster-build's own stated rule) - this module never guesses a match; it just
@@ -77,8 +85,10 @@ export type MissionZipLayer = {
   /** yyyy-mm-dd the contents were current. */
   asOf: string
   source?: string
-  contains: ('people' | 'places' | 'settings')[]
+  contains: ('people' | 'places' | 'settings' | 'entries')[]
   sensitivity: 'pii' | 'none'
+  /** E-188: "handover" marks a file written by Radio Log -> Hand over to another scribe. */
+  kind?: 'handover'
 }
 
 export type MissionZipManifest = {
@@ -98,18 +108,29 @@ export type MissionZipManifest = {
   locations?: MissionLocationType[]
   /** v3: optional. A v1/v2 file, or one written with no name, has none. */
   layer?: MissionZipLayer
+  /** E-188 (D-59): every radio log entry on the sending device. Dates arrive as ISO strings
+   *  (rehydrate before use). Only a hand-over file writes it. */
+  entries?: RadioLogEntryType[]
+  /** E-188: the sending device's mission / event / op period, ADVISORY only (a mismatch warns, never blocks). */
+  context?: { mission: string, event: string, opPeriod: string }
 }
 
 /** The `layer.contains` and `layer.sensitivity` a manifest's categories make (rangers mean personal information). */
 export function layerFor(
-  manifest: Pick<MissionZipManifest, 'rangers' | 'locations' | 'settings'>, name: string, asOf: string,
+  manifest: Pick<MissionZipManifest, 'rangers' | 'locations' | 'settings' | 'entries'>,
+  name: string, asOf: string, kind?: 'handover',
 ): MissionZipLayer {
   const contains: MissionZipLayer['contains'] = [
     ...(manifest.rangers ? ['people' as const] : []),
     ...(manifest.locations ? ['places' as const] : []),
     ...(manifest.settings ? ['settings' as const] : []),
+    ...(manifest.entries ? ['entries' as const] : []),
   ]
-  return { name, asOf, contains, sensitivity: manifest.rangers ? 'pii' : 'none' }
+  // Entries can name people and describe an incident, so they count as personal information too.
+  return {
+    name, asOf, contains, sensitivity: manifest.rangers || manifest.entries ? 'pii' : 'none',
+    ...(kind ? { kind } : {}),
+  }
 }
 
 /** The name a reader should show for a file, or '' when it has none ("From 'X': ..."). */
@@ -183,13 +204,15 @@ export function extractMissionZip(bytes: Uint8Array): { manifest: MissionZipMani
   const hasSettings = manifest && typeof manifest === 'object' && manifest.settings !== undefined
   const hasRangers = manifest && typeof manifest === 'object' && manifest.rangers !== undefined
   const hasLocations = manifest && typeof manifest === 'object' && manifest.locations !== undefined
+  const hasEntries = manifest && typeof manifest === 'object' && manifest.entries !== undefined
   const settingsOk = !hasSettings || (typeof manifest.settings === 'object' && manifest.settings !== null)
   const rangersOk = !hasRangers || Array.isArray(manifest.rangers)
   const locationsOk = !hasLocations || Array.isArray(manifest.locations)
+  const entriesOk = !hasEntries || Array.isArray(manifest.entries)
 
   if (!manifest || typeof manifest !== 'object'
-    || !settingsOk || !rangersOk || !locationsOk
-    || (!hasSettings && !hasRangers && !hasLocations)) {
+    || !settingsOk || !rangersOk || !locationsOk || !entriesOk
+    || (!hasSettings && !hasRangers && !hasLocations && !hasEntries)) {
     throw new Error(`"${MANIFEST_ENTRY}" in this zip is not a valid Setup file manifest.`)
   }
 
@@ -214,12 +237,14 @@ function readmeText(manifest: MissionZipManifest, photoCount: number): string {
   if (manifest.rangers) parts.push(`${manifest.rangers.length} ranger${manifest.rangers.length === 1 ? '' : 's'}`)
   if (manifest.locations) parts.push(`${manifest.locations.length} location${manifest.locations.length === 1 ? '' : 's'}`)
   if (manifest.settings) parts.push('mission settings')
+  if (manifest.entries) parts.push(`${manifest.entries.length} radio log entr${manifest.entries.length === 1 ? 'y' : 'ies'}`)
   const contents = parts.length ? parts.join(', ') : 'no categories'
 
   const name = layerName(manifest)
   // A named file that carries no rangers is the only kind that may say "no personal information".
-  const notice = manifest.rangers || !manifest.layer
-    ? 'CONFIDENTIAL: real names, phone numbers and photographs of volunteers.\n'
+  const notice = manifest.rangers || manifest.entries || !manifest.layer
+    ? 'CONFIDENTIAL: real names, phone numbers and photographs of volunteers'
+      + (manifest.entries ? ', and the radio log of an active incident' : '') + '.\n'
       + 'Do not email it, do not put it in source control, wipe the drive after the mission.\n'
     : manifest.settings
       ? 'Mission settings can include an agency key: share this only with people who need it.\n'
@@ -230,7 +255,9 @@ function readmeText(manifest: MissionZipManifest, photoCount: number): string {
     + `Built ${manifest.exportedAt.slice(0, 10)} by app v${manifest.appVersion}\n\n`
     + `mission-zip.json   ${contents}\n`
     + `photos/            ${photoCount} photograph${photoCount === 1 ? '' : 's'}\n\n`
-    + `HOW TO LOAD: open RangerTrak's Setup files page (/prep) and choose this file.\n`
+    + (manifest.layer?.kind === 'handover'
+      ? `HOW TO LOAD: open RangerTrak's Radio Log page, choose "Hand over to another scribe", then "Merge in".\n`
+      : `HOW TO LOAD: open RangerTrak's Setup files page (/prep) and choose this file.\n`)
     + `A list of places can also be loaded from the Map page's Import, export & print panel.\n\n`
     + notice
 }
@@ -240,4 +267,16 @@ function extensionFor(mimeType: string): string {
   if (mimeType === 'image/webp') return '.webp'
   if (mimeType === 'image/gif') return '.gif'
   return '.jpg'
+}
+
+/** E-188: the name of a hand-over file, like the other Setup files plus "handover" and the time. */
+export function handoverFilename(mission: string, exportedAt: string, encrypted: boolean): string {
+  const label = (mission || 'mission').replace(/[^a-z0-9_-]+/gi, '_')
+  const stamp = exportedAt.slice(0, 16).replace(/[-:]/g, '').replace('T', '-')   // 20261015-1432
+  return `rangertrak-setup-handover-${label}-${stamp}.${encrypted ? 'rtenc.json' : 'zip'}`
+}
+
+/** How many radio log entries a Setup file carries, or 0 (for the "this file also holds N" notice). */
+export function entryCountOf(manifest: Pick<MissionZipManifest, 'entries'>): number {
+  return Array.isArray(manifest.entries) ? manifest.entries.length : 0
 }

@@ -1,0 +1,120 @@
+import { decryptBytes, DecryptionFailedError, encryptBytes } from '../crypto/encrypted-file';
+import { RadioLogEntryType } from '../services/radio-log-entry.interface';
+import { RangerType, UnknownRanger } from '../services/ranger.interface';
+import { buildHandoverFile, openHandoverFile, readEnvelope } from './handover-file';
+import {
+  buildMissionZipBytes, entryCountOf, extractMissionZip, handoverFilename, layerFor,
+  MISSION_ZIP_SCHEMA_VERSION, MissionZipManifest,
+} from './mission-zip';
+
+/** E-188 (ADR D-59): the hand-over file, plain and encrypted. */
+describe('handover file', () => {
+  const ranger = (over: Partial<RangerType>): RangerType => ({ ...UnknownRanger, ...over });
+  const entry = (over: Partial<RadioLogEntryType> = {}): RadioLogEntryType => ({
+    id: 0, uid: 'e-1', callsign: 'K7AAA',
+    location: { lat: 47.4, lng: -122.4, address: '', derivedFromAddress: false },
+    date: new Date('2026-10-15T10:00:00Z'), status: 'Normal', notes: 'n', ...over,
+  });
+
+  const input = (over = {}) => ({
+    mission: 'Fern Hollow', event: 'Drill', opPeriod: '2', appVersion: '0.99.38',
+    rangers: [ranger({ callsign: 'K7AAA', id: 'REW-1', uid: 'u1' })],
+    locations: [],
+    entries: [entry(), entry({ id: 1, uid: 'e-2', revisedAt: new Date('2026-10-15T11:00:00Z') })],
+    photos: [{ stem: 'REW-1', blob: new Blob(['jpeg'], { type: 'image/jpeg' }) }],
+    now: new Date('2026-10-15T14:32:10Z'),
+    ...over,
+  });
+
+  describe('mission-zip with entries', () => {
+    it('round-trips an entries category and counts it', async () => {
+      const built: MissionZipManifest = {
+        schemaVersion: MISSION_ZIP_SCHEMA_VERSION, exportedAt: '2026-10-15T00:00:00.000Z', appVersion: '1',
+        entries: [entry()],
+      };
+
+      const { manifest } = extractMissionZip(await buildMissionZipBytes(built, []));
+
+      expect(entryCountOf(manifest)).toBe(1);
+      expect(manifest.entries?.[0].uid).toBe('e-1');
+      // Dates come back as strings, which is why the merge rehydrates them.
+      expect(typeof (manifest.entries?.[0].date as unknown)).toBe('string');
+    });
+
+    it('accepts a file whose only category is entries, and rejects entries that are not an array', async () => {
+      const ok = { schemaVersion: 3, exportedAt: '2026-10-15T00:00:00.000Z', appVersion: '1', entries: [] };
+      expect(extractMissionZip(await buildMissionZipBytes(ok, [])).manifest.entries).toEqual([]);
+
+      const bad = { ...ok, entries: 'nope' } as unknown as MissionZipManifest;
+      const bytes = await buildMissionZipBytes(bad, []);
+      expect(() => extractMissionZip(bytes)).toThrow();
+    });
+
+    it('layerFor lists entries, marks the layer personal information and records the kind', () => {
+      const layer = layerFor({ entries: [] }, 'x', '2026-10-15', 'handover');
+
+      expect(layer.contains).toEqual(['entries']);
+      expect(layer.sensitivity).toBe('pii');
+      expect(layer.kind).toBe('handover');
+    });
+
+    it('names the file like the other Setup files, plus handover and the time', () => {
+      expect(handoverFilename('Fern Hollow!', '2026-10-15T14:32:10.000Z', false))
+        .toBe('rangertrak-setup-handover-Fern_Hollow_-20261015-1432.zip');
+      expect(handoverFilename('', '2026-10-15T14:32:10.000Z', true))
+        .toBe('rangertrak-setup-handover-mission-20261015-1432.rtenc.json');
+    });
+  });
+
+  describe('plain hand-over', () => {
+    it('carries people, entries, photos and the advisory context, but no settings', async () => {
+      const file = await buildHandoverFile(input());
+
+      expect(file.encrypted).toBe(false);
+      expect(file.filename).toContain('handover');
+      expect(readEnvelope(file.bytes)).toBeNull();
+
+      const { manifest, photos } = await openHandoverFile(file.bytes);
+      expect(manifest.layer?.kind).toBe('handover');
+      expect(manifest.settings).toBeUndefined();
+      expect(manifest.rangers?.length).toBe(1);
+      expect(manifest.entries?.length).toBe(2);
+      expect(manifest.context).toEqual({ mission: 'Fern Hollow', event: 'Drill', opPeriod: '2' });
+      expect(photos.length).toBe(1);
+    });
+
+    it('a blank passphrase writes plaintext', async () => {
+      expect((await buildHandoverFile(input({ passphrase: '' }))).encrypted).toBe(false);
+    });
+  });
+
+  describe('encrypted hand-over (the backup\'s envelope around the zip)', () => {
+    it('round-trips with the right passphrase', async () => {
+      const file = await buildHandoverFile(input({ passphrase: 'correct horse' }));
+
+      expect(file.encrypted).toBe(true);
+      expect(file.filename).toContain('.rtenc.json');
+      expect(readEnvelope(file.bytes)).not.toBeNull();
+      // Nothing readable leaks into the envelope.
+      expect(new TextDecoder().decode(file.bytes)).not.toContain('K7AAA');
+
+      const { manifest } = await openHandoverFile(file.bytes, 'correct horse');
+      expect(manifest.entries?.length).toBe(2);
+    });
+
+    it('a wrong passphrase says so, and a missing one asks for it', async () => {
+      const file = await buildHandoverFile(input({ passphrase: 'correct horse' }));
+
+      await expectAsync(openHandoverFile(file.bytes, 'wrong')).toBeRejectedWithError(DecryptionFailedError);
+      await expectAsync(openHandoverFile(file.bytes)).toBeRejectedWithError(/passphrase/i);
+    });
+
+    it('encryptBytes / decryptBytes round-trip arbitrary bytes', async () => {
+      const bytes = new Uint8Array([0, 1, 2, 250, 251, 255]);
+
+      const back = await decryptBytes(await encryptBytes(bytes, 'pw'), 'pw');
+
+      expect([...back]).toEqual([...bytes]);
+    });
+  });
+});

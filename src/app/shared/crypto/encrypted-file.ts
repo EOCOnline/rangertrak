@@ -77,13 +77,22 @@ export class DecryptionFailedError extends Error {
 export async function encryptJson(
   payload: unknown, passphrase: string, hint?: EncryptedFile['hint'],
 ): Promise<EncryptedFile> {
+  return encryptBytes(new TextEncoder().encode(JSON.stringify(payload)), passphrase, hint)
+}
+
+/**
+ * The same envelope around raw bytes (E-188: a hand-over is a zip). One container format on
+ * purpose: only the plaintext differs, and a reader tells a zip from JSON by its content.
+ */
+export async function encryptBytes(
+  plaintext: Uint8Array<ArrayBuffer>, passphrase: string, hint?: EncryptedFile['hint'],
+): Promise<EncryptedFile> {
   if (!passphrase) throw new Error('A passphrase is required to encrypt a file.')
 
   const salt = crypto.getRandomValues(new Uint8Array(SALT_BYTES))
   const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES))
   const key = await deriveKey(passphrase, salt, PBKDF2_ITERATIONS)
 
-  const plaintext = new TextEncoder().encode(JSON.stringify(payload))
   const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext)
 
   return {
@@ -100,6 +109,16 @@ export async function encryptJson(
  * file - AES-GCM's authentication makes those indistinguishable, which is the point.
  */
 export async function decryptJson(file: EncryptedFile, passphrase: string): Promise<unknown> {
+  const plaintext = await decryptBytes(file, passphrase)
+  try {
+    return JSON.parse(new TextDecoder().decode(plaintext))
+  } catch {
+    throw new DecryptionFailedError()
+  }
+}
+
+/** Reverses encryptBytes(); same failure rules as decryptJson(). */
+export async function decryptBytes(file: EncryptedFile, passphrase: string): Promise<Uint8Array> {
   if (!isEncryptedFile(file)) throw new Error('Not an encrypted RangerTrak file.')
 
   // Read the parameters from the FILE, not from our constants: a file written by an older
@@ -113,7 +132,7 @@ export async function decryptJson(file: EncryptedFile, passphrase: string): Prom
   try {
     const plaintext = await crypto.subtle.decrypt(
       { name: 'AES-GCM', iv: fromBase64(file.cipher.iv) }, key, fromBase64(file.ciphertext))
-    return JSON.parse(new TextDecoder().decode(plaintext))
+    return new Uint8Array(plaintext)
   } catch {
     throw new DecryptionFailedError()
   }
