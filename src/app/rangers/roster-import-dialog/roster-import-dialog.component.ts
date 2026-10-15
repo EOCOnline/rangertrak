@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { MATERIAL_IMPORTS } from '../../material-imports'
 import { mergeRangers, RangerMergeResult } from '../../domain/ranger-migration'
 import {
-  applyMapping, ColumnMapping, ColumnTarget, guessMapping, headerSetKey, idColumnLabel, recallMapping,
+  applyMapping, ColumnMapping, exitedStatusLabel, ColumnTarget, guessMapping, headerSetKey, idColumnLabel, recallMapping,
 } from '../../domain/roster-sheet'
 import { SheetFile } from '../../shared/import/sheet-reader'
 import { RangerService, RangerType } from '../../shared/services'
@@ -71,6 +71,8 @@ export class RosterImportDialogComponent {
   rows = signal<string[][]>([])
   targets = signal<ColumnTarget[]>([])
   statusColumn = signal<number | null>(null)
+  /** The statuses the skip option names, from the same list the matching uses. */
+  readonly exitedLabel = exitedStatusLabel()
   skipExited = signal(false)
   /** The headings were all understood (or remembered). */
   confident = signal(false)
@@ -174,9 +176,9 @@ export class RosterImportDialogComponent {
       this.skipped.set(applied.skipped)
       this.warnings.set([...applied.warnings.slice(0, 5),
         ...(applied.warnings.length > 5 ? [`...and ${applied.warnings.length - 5} more rows skipped for the same reason.`] : []),
-        ...this.rangerService.rosterWarnings(incoming)])
+        ...this.rangerService.rosterWarnings(incoming, this.data.idFieldLabel)])
     } else {
-      this.warnings.set(this.rangerService.rosterWarnings(incoming))
+      this.warnings.set(this.rangerService.rosterWarnings(incoming, this.data.idFieldLabel))
     }
     this.incoming.set(incoming)
     this.merge.set(mergeRangers(this.data.existing, incoming))

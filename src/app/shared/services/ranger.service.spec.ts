@@ -110,7 +110,7 @@ describe('RangerService', () => {
     it('rejects entries with no callsign and no id/rew, naming the row', () => {
       const service = TestBed.inject(RangerService);
       expect(() => service.parseRosterJson(JSON.stringify([one, { fullName: 'No Sign' }])))
-        .toThrowError(/Entry 2 has no callsign and no id\/rew/);
+        .toThrowError(/Entry 2 has no call sign and no id\/rew/);
     });
 
     it('accepts an entry with no callsign but a resolvable id - D-42, not everyone is ham-licensed', () => {
@@ -143,20 +143,20 @@ describe('RangerService', () => {
       // Refusing a 286-entry roster over one repeated row is the wrong trade.
       const parsed = service.parseRosterJson(JSON.stringify([one, { callsign: 'aa1' }]));
       expect(parsed.length).toBe(2);
-      expect(service.rosterWarnings(parsed).join(' ')).toMatch(/duplicate callsign/i);
+      expect(service.rosterWarnings(parsed).join(' ')).toMatch(/duplicate call sign/i);
     });
 
     it('warns about duplicate ids too - D-42, this is the credential operators actually search on', () => {
       const service = TestBed.inject(RangerService);
       const parsed = service.parseRosterJson(JSON.stringify([
         { callsign: 'AA1', id: 'VI-0099' }, { callsign: 'AA2', id: 'vi-0099' }]));
-      expect(service.rosterWarnings(parsed).join(' ')).toMatch(/duplicate id/i);
+      expect(service.rosterWarnings(parsed).join(' ')).toMatch(/duplicate Ranger ID/i);
     });
 
     it('warns about blank ids as an expected, not-checked-in-yet state', () => {
       const service = TestBed.inject(RangerService);
       const parsed = service.parseRosterJson(JSON.stringify([one]));
-      expect(service.rosterWarnings(parsed).join(' ')).toMatch(/1 of 1 entries have no id/i);
+      expect(service.rosterWarnings(parsed).join(' ')).toMatch(/1 of 1 entries have no Ranger ID/i);
     });
 
     it('rejects invalid JSON, an empty roster, and a file with no roster in it', () => {

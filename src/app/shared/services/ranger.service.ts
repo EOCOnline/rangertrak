@@ -7,6 +7,7 @@ import { Injectable, OnInit, Optional, signal, SkipSelf } from '@angular/core'
 import { LogService, RangerType, UnknownRanger } from './'
 // ADR D-42/D-43: identity + versioned storage for the roster. Kept as a direct import (not
 // via the barrel) to avoid a cycle - the barrel re-exports this service.
+import { idColumnLabel } from '../../domain/roster-sheet'
 import { migrateRangers, normalizeRangerIds, RANGER_SCHEMA_VERSION, RangerMergeResult } from '../../domain/ranger-migration'
 // E-122 Phase 2a: the roster is PII, and now lives behind RecordStore (in-memory + IndexedDB)
 // rather than directly in localStorage. Direct import (not the barrel), same reasoning as the
@@ -337,7 +338,7 @@ export class RangerService implements OnInit {
       const id = String(entry.id ?? entry.rew ?? '').trim()
       if (!callsign && !id) {
         throw new Error(
-          `Entry ${i + 1} has no callsign and no id/rew - there is nothing to attribute a radio log entry to.`)
+          `Entry ${i + 1} has no call sign and no id/rew - there is nothing to attribute a radio log entry to.`)
       }
       return {
         // Kept when the file carries one (the roster-tooling crosswalk mints one per person), so
@@ -374,7 +375,8 @@ export class RangerService implements OnInit {
    * one repeated row is the wrong trade when a team is trying to get set up. Report it and
    * let them decide.
    */
-  rosterWarnings(rangers: RangerType[]): string[] {
+  rosterWarnings(rangers: RangerType[], idFieldLabel?: string): string[] {
+    const idLabel = idColumnLabel(idFieldLabel)
     const warnings: string[] = []
 
     // Raised live 2026-08-26, alongside the same flag added to the map marker (a blank
@@ -390,7 +392,7 @@ export class RangerService implements OnInit {
     const blank = rangers.filter(r => !r.callsign.trim()).length
     if (blank) {
       warnings.push(
-        `${blank} of ${rangers.length} entries have no callsign - expected for volunteers `
+        `${blank} of ${rangers.length} entries have no call sign - expected for volunteers `
         + `who are not ham-licensed.`)
     }
 
@@ -398,7 +400,7 @@ export class RangerService implements OnInit {
     const duplicateCallsigns = [...new Set(signs.filter((c, i) => signs.indexOf(c) !== i))]
     if (duplicateCallsigns.length) {
       warnings.push(
-        `${duplicateCallsigns.length} duplicate callsign${duplicateCallsigns.length > 1 ? 's' : ''}: `
+        `${duplicateCallsigns.length} duplicate call sign${duplicateCallsigns.length > 1 ? 's' : ''}: `
         + `${duplicateCallsigns.slice(0, 5).join(', ')}${duplicateCallsigns.length > 5 ? '...' : ''}. `
         + `Radio log entries filed against these cannot tell the rows apart.`)
     }
@@ -410,7 +412,7 @@ export class RangerService implements OnInit {
     const blankIds = rangers.filter(r => !r.id?.trim()).length
     if (blankIds) {
       warnings.push(
-        `${blankIds} of ${rangers.length} entries have no id - not checked in yet, or no `
+        `${blankIds} of ${rangers.length} entries have no ${idLabel} - not checked in yet, or no `
         + `credential on file.`)
     }
 
@@ -418,14 +420,14 @@ export class RangerService implements OnInit {
     const duplicateIds = [...new Set(ids.filter((c, i) => ids.indexOf(c) !== i))]
     if (duplicateIds.length) {
       warnings.push(
-        `${duplicateIds.length} duplicate id${duplicateIds.length > 1 ? 's' : ''}: `
+        `${duplicateIds.length} duplicate ${idLabel}${duplicateIds.length > 1 ? 's' : ''}: `
         + `${duplicateIds.slice(0, 5).join(', ')}${duplicateIds.length > 5 ? '...' : ''}. `
         + `Radio log entries filed against these cannot be told apart.`)
     }
 
     const nameless = rangers.filter(r => !r.fullName.trim()).length
     if (nameless) {
-      warnings.push(`${nameless} of ${rangers.length} entries have no name - only a callsign.`)
+      warnings.push(`${nameless} of ${rangers.length} entries have no name - only a call sign.`)
     }
 
     return warnings

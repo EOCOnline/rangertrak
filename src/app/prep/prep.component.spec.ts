@@ -147,7 +147,7 @@ describe('PrepComponent', () => {
 
       await component.onBtnApplyQueue()
 
-      expect(component.sessionLog()[0].summary).toContain('duplicate callsign')
+      expect(component.sessionLog()[0].summary).toContain('duplicate call sign')
       expect(component.sessionLog()[0].summary).toContain('DUP')
     })
 

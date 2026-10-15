@@ -287,7 +287,7 @@ export class PrepComponent {
       // every other roster-import path in this app runs before its own confirm(). R-8 (review
       // notes): with a queue this runs PER FILE, and belongs in that file's own summary card,
       // not one combined pre-confirm wall of text.
-      const warnings = this.rangerService.rosterWarnings(manifest.rangers)
+      const warnings = this.rangerService.rosterWarnings(manifest.rangers, this.missionService.settings?.idFieldLabel)
       warnings.forEach(w => this.log.warn(`Setup file import warning (${file.filename}): ${w}`, this.id))
 
       const merge = mergeRangers(this.rangerService.rangers, manifest.rangers)
