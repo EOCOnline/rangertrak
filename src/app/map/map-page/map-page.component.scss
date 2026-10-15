@@ -1,3 +1,4 @@
+@use "../../../styles/breakpoints" as bp;
 .map-engine-switch {
   margin: 0.5rem 0 1rem;
 
@@ -120,6 +121,15 @@
     }
   }
 
+  // E-190: the "Filtered: ..." line; black and a touch larger than the grey fine print so a
+  // filtered sheet cannot be mistaken for the whole picture.
+  .map-print-header .map-print-header__filtered {
+    flex-basis : 100%;
+    margin     : 0.8mm 0 0;
+    font-size  : 8pt;
+    color      : #000;
+  }
+
   .map-prepared-by {
     display: none;
   }
@@ -200,4 +210,12 @@
   padding   : 0.5rem;
   background: var(--rt-surface);
   overflow  : auto;
+}
+
+// E-190 phone fix: the Leaflet overview mini-map no longer floats beside the controls on a phone,
+// so the engine switch needs no cap for it.
+@include bp.phone {
+  .map-engine-switch--beside-overview mat-slide-toggle {
+    max-width: 100%;
+  }
 }

@@ -12,6 +12,10 @@ import 'leaflet.markercluster'
 //import { markerClusterGroup } from 'leaflet'
 import * as L from 'leaflet'
 import { removeLeafletMap } from '../shared/mapping/leaflet-teardown'
+import { FilterChipsComponent } from '../shared/filter-chips/filter-chips.component'
+import {
+  MapShowChoice, flaggedStatuses, mapFilterChips, selectMapEntries
+} from '../domain/map-entry-filter'
 import { LeafletOverlays, RING_STEPS_MILES, formatRingMiles } from './leaflet-overlays'
 import { LeafletOfflineController } from './leaflet-offline-controller'
 import { LeafletPrintController } from './leaflet-print-controller'
@@ -77,7 +81,7 @@ const ringStepIndex = signal(0)
   selector: 'rangertrak-mapLeaflet',
   standalone: true,
   imports: [NgTemplateOutlet, MatSlideToggleModule, MatButtonModule, MatButtonToggleModule, MatSliderModule, MatIconModule,
-    MapPrintLegendComponent, MapPrintFurnitureComponent],
+    FilterChipsComponent, MapPrintLegendComponent, MapPrintFurnitureComponent],
   templateUrl: './mapLeaflet.component.html',
   styleUrls: [
     './mapLeaflet.component.scss'
@@ -165,6 +169,21 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   readonly ringStepCount = RING_STEPS_MILES.length
   /** Whether the Range rings overlay is on (the slider only shows then). */
   readonly ringsOn = signal(false)
+
+  // E-190: the map's filters. Instance signals, NOT module-level and not stored: every visit to
+  // the page starts with everything shown (John, 2026-10-15).
+  readonly locationsOn = signal(true)
+  readonly entriesOn = signal(true)
+  readonly pathsOn = signal(true)
+  readonly showChoice = signal<MapShowChoice>('all')
+  /** Mirrors AbstractMap.showingSelectedOnly (a plain field) so the chips can react to it. */
+  readonly selectedOnly = signal(false)
+  readonly filterChips = computed(() => mapFilterChips({
+    locationsHidden: !this.locationsOn(), entriesHidden: !this.entriesOn(), pathsHidden: !this.pathsOn(),
+    choice: this.showChoice(), selectedOnly: this.selectedOnly(),
+  }))
+  /** The printed title block's "Filtered: ..." text; empty when nothing is filtered. */
+  readonly printFilterLine = computed(() => this.filterChips().map(c => c.label).join('; '))
   /** The spacing Auto last picked, for the slider's label. */
   private readonly autoRingMiles = signal<number | undefined>(undefined)
   readonly ringSpacingLabel = computed(() => {
@@ -535,6 +554,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // group's radio buttons, which is the "real toggle" this row asked for without any
     // custom UI needed - the control already exists from E-85.
     const overlayLayers: Record<string, L.Layer> = {
+      'Locations': this.locationsLayer,
+      'Radio log entries': this.myMarkerCluster,
+      'Ranger paths': this.myTrailsLayer,
       'Hillshade (terrain relief)': hillshadeOverlay,
       'USGS shaded relief (US only, can be saved)': usgsReliefOverlay,
       'Mile grid': this.mileGridLayer,
@@ -544,6 +566,11 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       'Roads and place names (for Satellite)': roadsLabelsOverlay,
     }
     L.control.layers(baseLayers, overlayLayers, { position: 'topright' }).addTo(this.lMap)
+    // E-190: the three data overlays start ON (their checkboxes ticked), before any entries exist
+    // and before the on/off tracking below is wired, so "on" is never mistaken for "filtered".
+    this.lMap.addLayer(this.locationsLayer)
+    this.lMap.addLayer(this.myMarkerCluster)
+    this.lMap.addLayer(this.myTrailsLayer)
 
     // Off by default (not .addTo(this.lMap) above, same as Hillshade) - only drawn once a
     // scribe actually wants it, and only kept in sync with the viewport while it's checked
@@ -569,6 +596,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       [...legendKeys].filter(([layer]) => this.lMap.hasLayer(layer)).map(([, key]) => key))
     this.lMap.on('overlayadd overlayremove', syncLegendOverlays)
     this.lMap.on('overlayadd overlayremove', () => this.ringsOn.set(this.lMap.hasLayer(this.rangeRingsLayer)))
+    // E-190: the three data overlays feed the filter chips.
+    this.lMap.on('overlayadd overlayremove', () => {
+      this.locationsOn.set(this.lMap.hasLayer(this.locationsLayer))
+      this.entriesOn.set(this.lMap.hasLayer(this.myMarkerCluster))
+      this.pathsOn.set(this.lMap.hasLayer(this.myTrailsLayer))
+    })
     // 2026-10-01: the save estimate includes the USGS shaded relief while it's on.
     this.lMap.on('overlayadd overlayremove', () => this.offline.refreshEstimatedAreaInfo?.())
     this.lMap.on('overlayadd', (e: L.LayersControlEvent) => {
@@ -881,8 +914,11 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     this.clearMarkers()
 
     this.log.verbose(`displayMarkers: ${this.displayedRadioLogEntries.length} of 'em`, this.id)
-    this.legendEntries.set([...this.displayedRadioLogEntries])
-    this.displayedRadioLogEntries.forEach(i => {
+    // E-190: the Show choice thins the entry MARKERS only; trails below still use the full
+    // displayedRadioLogEntries (after the selected-only switch), so a path is always the whole trail.
+    const shown = this.shownEntries()
+    this.legendEntries.set([...shown])
+    shown.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${formatReportTime(i.date)} with ${i.status}`
         //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
@@ -918,10 +954,11 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       }
     })
 
-    this.lMap.addLayer(this.myMarkerCluster);
+    // E-190: a layer the scribe unticked in the layers control stays off across redraws.
+    if (this.entriesOn()) this.lMap.addLayer(this.myMarkerCluster)
 
     this.overlays.drawTrails()
-    this.lMap.addLayer(this.myTrailsLayer)
+    if (this.pathsOn()) this.lMap.addLayer(this.myTrailsLayer)
 
     // to refresh markers that have changed:
     // https://github.com/Leaflet/Leaflet.markercluster#refreshing-the-clusters-icon
@@ -991,7 +1028,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // Same `i.location.lat && i.location.lng` guard displayMarkers() (above) uses before
     // drawing a marker - a falsy 0 is indistinguishable from "no coordinate" there, so this
     // stays consistent with what's actually on screen rather than being stricter.
-    this.displayedRadioLogEntries.forEach(i => {
+    this.shownEntries().forEach(i => {
       if (i.location.lat && i.location.lng) {
         points.push(i.location)
       }
@@ -1074,8 +1111,38 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     deeperTilesSaved: layer => this.offline.deeperTilesSaved(layer),
   }, this.overlays)
 
+  /** E-190: the displayed entries after the Show choice (selected-only has already been applied). */
+  private shownEntries(): RadioLogEntryType[] {
+    return selectMapEntries(this.displayedRadioLogEntries, this.showChoice(),
+      flaggedStatuses(this.settings?.radioLogStatuses ?? []))
+  }
+
+  /** The Show toggle group (template). */
+  onShowChoice(choice: MapShowChoice): void {
+    this.showChoice.set(choice)
+    this.displayMarkers()
+  }
+
+  /** x on one chip: turns that one filter off. */
+  onClearFilter(key: string): void {
+    const add = (layer: L.Layer) => { if (!this.lMap.hasLayer(layer)) this.lMap.addLayer(layer) }
+    switch (key) {
+      case 'locations': add(this.locationsLayer); break
+      case 'entries': add(this.myMarkerCluster); break
+      case 'paths': add(this.myTrailsLayer); break
+      case 'show': this.onShowChoice('all'); break
+      case 'selected': if (this.showingSelectedOnly) this.onSwitchSelectedRadioLog(); break
+    }
+  }
+
+  /** "Show everything": every filter off. */
+  onClearAllFilters(): void {
+    for (const key of ['locations', 'entries', 'paths', 'selected', 'show']) this.onClearFilter(key)
+  }
+
   override onSwitchSelectedRadioLog() {
     super.onSwitchSelectedRadioLog()
+    this.selectedOnly.set(this.showingSelectedOnly)
     this.log.excessive(`onSwitchSelectedRadioLog()`, this.id)
 
   }

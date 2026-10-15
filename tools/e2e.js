@@ -3244,6 +3244,31 @@ async function checkSampleMissionLoads() {
 }
 
 /**
+ * E-190 (Map half): the filter chip strip. Absent when nothing is filtered; two chips once a
+ * layer is switched off and Show is Needs attention; one x removes one; Show everything removes
+ * the strip. Needs the sample mission (the --full run loads it first).
+ */
+async function checkMapFilterChips() {
+  console.log('\nE-190: map filter chips appear only while something is filtered')
+  await navigateInApp('Map', 3500)
+  const chips = () => evaluate(`[...document.querySelectorAll('rangertrak-filter-chips mat-chip')].map(c => c.textContent.replace(/cancel/g, '').replace(/\\s+/g, ' ').trim())`)
+  const strip = () => evaluate(`!!document.querySelector('rangertrak-filter-chips')`)
+  check('no filters: the strip is not there', await strip(), false)
+  await evaluate(`[...document.querySelectorAll('#mapLeaflet-main .leaflet-control-layers-overlays label')]
+    .find(l => /Ranger paths/.test(l.textContent))?.querySelector('input')?.click()`)
+  await evaluate(`[...document.querySelectorAll('[data-testid="map-show-choice"] button')]
+    .find(b => /Needs attention/.test(b.textContent))?.click()`)
+  const two = await pollUntil(chips, v => v.length === 2, 10, 300)
+  check('Ranger paths off + Needs attention: two chips', two.join(' | '), 'Ranger paths hidden | Showing: needs attention')
+  await evaluate(`document.querySelector('rangertrak-filter-chips mat-chip button')?.click()`)
+  const one = await pollUntil(chips, v => v.length === 1, 10, 300)
+  check('x on the first chip leaves only the Show chip', one.join(' | '), 'Showing: needs attention')
+  await evaluate(`[...document.querySelectorAll('rangertrak-filter-chips button')].find(b => /Show everything/.test(b.textContent))?.click()`)
+  const gone = await pollUntil(strip, v => v === false, 10, 300)
+  check('Show everything: the strip is gone', gone, false)
+}
+
+/**
  * E-162 range rings, plus the map's coordinate readout formats. Runs right after
  * checkSampleMissionLoads(), so the sample mission (and its command post) is loaded. John,
  * 2026-09-30: "I did NOT see circular radiuses around the command post in the state fair" -
@@ -3605,6 +3630,7 @@ async function main() {
         if (want('backup')) await checkReportPacketRoundTrip(downloads)
         if (want('mission') || want('map')) await checkSampleMissionLoads() // the ring check needs the sample
         if (want('map')) await checkRangeRingsAndCoordReadout()
+        if (want('map')) await checkMapFilterChips()
         if (want('backup')) await checkDeviceEncryption()
       } else {
         note('fast run: skipping checkMissionRoundTrip, checkReportPacketRoundTrip, checkSampleMissionLoads, checkRangeRingsAndCoordReadout, checkDeviceEncryption (pass --full to include)')

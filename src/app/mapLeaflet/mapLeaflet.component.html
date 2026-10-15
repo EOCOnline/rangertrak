@@ -1,6 +1,12 @@
 <div class="mapLeaflet-container">
   <div class="mapLeaflet-frame" #printFrame>
     <div #mapContainer id="mapLeaflet-main" (click)="onMouseClick($event)"></div>
+    <!-- E-190: what is filtered out of this map, top edge, beside Leaflet's zoom control.
+         Not there at all when nothing is filtered. Screen only: the print says "Filtered: ..."
+         in its title block instead. -->
+    @if (filterChips().length > 0) {
+    <rangertrak-filter-chips class="map-filter-chips map-print-hide" [chips]="filterChips()" (clear)="onClearFilter($event)" (clearAll)="onClearAllFilters()"></rangertrak-filter-chips>
+    }
     <!-- 2026-09-30, John: E-152 - north arrow and coordinate note, print-only (hidden on
          screen by the component itself), drawn over the corner of the map. -->
     <rangertrak-map-print-furniture [coordNote]="printCoordNote()"></rangertrak-map-print-furniture>
@@ -12,7 +18,7 @@
          beside. Print-only. Where no spot is clear they fall back to the old band/column
          (frame class rt-print-title-band; the legend moves to page 2, see layoutPrintSheet()). -->
     <div #printTitle class="map-print-panel map-print-panel--title">
-      <ng-container *ngTemplateOutlet="printTitleTemplate ?? null"></ng-container>
+      <ng-container *ngTemplateOutlet="printTitleTemplate ?? null; context: { $implicit: printFilterLine() }"></ng-container>
     </div>
     <rangertrak-map-print-legend #printLegend class="map-print-panel map-print-panel--legend"
       [entries]="legendEntries()" engine="leaflet" [overlays]="legendOverlays()"></rangertrak-map-print-legend>
@@ -106,9 +112,20 @@
   <div class="map-display__title">Display</div>
   <div class="map-display__row">
     Radio log entries to show: All ({{numAllRows()}})
-    <mat-slide-toggle data-testid="allSelectedSwitch" (change)="onSwitchSelectedRadioLog()">
+    <mat-slide-toggle data-testid="allSelectedSwitch" [checked]="selectedOnly()" (change)="onSwitchSelectedRadioLog()">
       Just those ({{numSelectedRows()}}) selected on the Radio Log page
     </mat-slide-toggle>
+  </div>
+  <!-- E-190: thins the entry markers (after the switch above). Paths always show the full trail. -->
+  <div class="map-display__row map-show">
+    <span id="map-show-label">Show:</span>
+    <mat-button-toggle-group class="map-show__choice" hideSingleSelectionIndicator
+      [value]="showChoice()" (change)="onShowChoice($event.value)" aria-labelledby="map-show-label"
+      data-testid="map-show-choice">
+      <mat-button-toggle value="all">All</mat-button-toggle>
+      <mat-button-toggle value="latest" title="One marker per ranger: the newest report">Latest per ranger</mat-button-toggle>
+      <mat-button-toggle value="attention" title="Only statuses flagged on the Mission page (Flag on map)">Needs attention</mat-button-toggle>
+    </mat-button-toggle-group>
   </div>
   <ng-container *ngTemplateOutlet="engineSwitchTemplate"></ng-container>
   <!-- 2026-09-30, John: ring spacing, shown while the Range rings overlay is on. Far left is

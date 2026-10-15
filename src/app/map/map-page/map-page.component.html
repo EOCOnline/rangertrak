@@ -12,7 +12,7 @@
   <!-- 2026-10-01, John: E-152b - the title block is a template now, because Leaflet floats it
        as a panel ON the map (projected in as printTitleTemplate, see MapLeafletComponent) while
        MapLibre keeps it as the band above the map, below. -->
-  <ng-template #printTitleTpl>
+  <ng-template #printTitleTpl let-filtered>
   @if (mission$ | async; as m) {
   <div class="map-print-header">
     <h1>{{ m.event?.trim() || m.mission?.trim() || 'RangerTrak' }}</h1>
@@ -29,6 +29,11 @@
       </div>
       <div><dt>Printed</dt><dd>{{ printedAt() | date:'MMM d, y, HH:mm:ss' }}</dd></div>
     </dl>
+    <!-- E-190: a filtered map must never pass for the whole picture on paper. Leaflet passes the
+         chip labels in; MapLibre passes nothing, so no line. -->
+    @if (filtered) {
+    <p class="map-print-header__filtered"><strong>Filtered:</strong> {{ filtered }}</p>
+    }
   </div>
   } @else {
   <div class="map-print-header">

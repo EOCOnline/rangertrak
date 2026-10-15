@@ -326,6 +326,8 @@ migrations (`mission-`, `radio-log-`, `ranger-`, `mission-location-`, `aar-note-
 the two helpers they need (`json-dates.ts`, `status-color.ts`). The `shared/services` barrel
 still re-exports the last two. New rules start here; older ones move when they are touched.
 
+2026-10-15 (E-190, map half): `map-entry-filter.ts` decides what the Leaflet map draws: `selectMapEntries` (all, latest per ranger, needs attention; entries with no ranger key are each kept), `isStatusFlagged`/`flaggedStatuses` (the optional `flagOnMap` on a radio log status, derived from the colour key when absent, so no migration) and `mapFilterChips` (the chip wording on the map and in the print title block). The choices are deliberately not stored, so there is no persisted-state row.
+
 2026-10-15 (E-187 Layers, ADR D-58, phase A): `roster-sheet.ts` is the spreadsheet side of the
 roster: guessing which column is which from its heading (`guessMapping`), turning rows into
 rangers (`applyMapping`), the remembered-mapping bookkeeping, and the roster back out as rows

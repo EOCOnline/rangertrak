@@ -1,3 +1,4 @@
+@use "../../styles/breakpoints" as bp;
 // @ use '@material/switch/styles';
 
 // E-99 (2026-08-25): `rangertrak-mapleaflet` is an unknown tag to the browser, so with no
@@ -566,6 +567,80 @@ mat-slide-toggle {
 
   #Lmap-status {
     flex-basis: 100%;
+  }
+}
+
+// E-190: the strip naming what is filtered out of the map, along the top edge beside Leaflet's
+// zoom control (top-left) and clear of the layers control (top-right). A 4-digit z-index puts it
+// above Leaflet's panes and controls (up to 1000). Absent from the DOM when nothing is filtered.
+.mapLeaflet-frame {
+  position: relative;
+}
+
+.map-filter-chips {
+  position     : absolute;
+  top          : 8px;
+  left         : 56px;
+  right        : 56px;
+  z-index      : 1100;
+  width        : fit-content;
+  max-width    : calc(100% - 112px);
+  padding      : 4px 8px;
+  border-radius: 8px;
+  background   : color-mix(in srgb, var(--mat-sys-surface, #fff) 92%, transparent);
+  color        : var(--mat-sys-on-surface, #000);
+  box-shadow   : 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+:host ::ng-deep .map-filter-chips .filter-chips {
+  margin: 0;
+}
+
+.map-show {
+  display    : flex;
+  flex-wrap  : wrap;
+  align-items: center;
+  gap        : 4px 8px;
+}
+
+.map-show__choice {
+  --mat-button-toggle-height         : 32px;
+  --mat-standard-button-toggle-height: 32px;
+  font-size                          : 13px;
+}
+
+// 2026-10-15, John (phone screenshot): at ~375 px the overview mini-map floated beside the
+// controls and left them a ~100 px column. On a phone it is a full-width band instead, the
+// buttons wrap in a row with their labels on one line, and each Display switch gets the full width.
+@include bp.phone {
+  #mapLeaflet-overview {
+    float     : none;
+    width     : 100%;
+    height    : 160px;
+    margin    : 0.5rem 0;
+  }
+
+  mat-slide-toggle {
+    display  : block;
+    max-width: 100%;
+  }
+
+  .map-controls button {
+    white-space: nowrap;
+    height     : auto;
+    min-height : var(--rt-tap-min, 44px);
+  }
+
+  .map-display__row mat-slide-toggle {
+    width: 100%;
+  }
+
+  :host ::ng-deep .map-display .mdc-form-field {
+    width: 100%;
+  }
+
+  :host ::ng-deep .map-display .mdc-label {
+    flex: 1 1 auto;
   }
 }
 

@@ -32,6 +32,8 @@ const NAME = opt('name', 'Morgan Ridgeway')
 const DEMO = opt('demo', 'grand-canyon')
 const DEMO_LABEL = { 'grand-canyon': 'Grand Canyon', 'vashon': 'Vashon Island', 'state-fair': 'State fair' }[DEMO]
 if (!DEMO_LABEL) throw new Error(`--demo must be grand-canyon, vashon or state-fair (got ${DEMO})`)
+// 2026-10-15, E-190: --filter=1 sets Show to Needs attention before printing, to eyeball the "Filtered:" line.
+const FILTERED = opt('filter', '') === '1'
 const PORT = 9445
 // 2026-10-05, John: E-172 - --orientation=portrait prints the same sheet on a portrait Letter page.
 const PORTRAIT = opt('orientation', 'landscape') === 'portrait'
@@ -118,6 +120,7 @@ async function main() {
       [...document.querySelectorAll('#mapLeaflet-main .leaflet-control-layers-overlays label')]
         .find(l => /USNG/.test(l.textContent))?.querySelector('input')?.click();
       [...document.querySelectorAll('[data-testid="map-coord-format"] button')].find(b => b.textContent.trim() === 'DDM')?.click();
+      if (${FILTERED}) [...document.querySelectorAll('[data-testid="map-show-choice"] button')].find(b => /Needs attention/.test(b.textContent))?.click();
       const input = document.querySelector('.map-prepared-by input');
       Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(input, ${JSON.stringify(NAME)});
       input.dispatchEvent(new Event('input', { bubbles: true }));
