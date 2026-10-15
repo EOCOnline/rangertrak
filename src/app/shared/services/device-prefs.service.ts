@@ -1,8 +1,14 @@
 import { Injectable } from "@angular/core"
 
+import {
+  ColumnTarget, ImportMappings, parseImportMappings, rememberMapping,
+} from "../../domain/roster-sheet"
+
 // Keys unchanged from when the components wrote them directly, so nothing stored moves.
 const LAST_COORDINATE_FORMAT_KEY = 'lastCoordinateFormat'
 const RANGERS_PRIVACY_DISMISSED_KEY = 'rangertrak.rangers.privacyNoticeDismissed'
+// E-187: remembered spreadsheet column mappings, keyed by header set. Header names only, never cell values.
+const IMPORT_MAPPINGS_KEY = 'rt-import-mappings'
 
 /**
  * Small per-device UI preferences that used to be read and written by components straight
@@ -34,6 +40,17 @@ export class DevicePrefsService {
   /** False when storage refused the write: the bar still goes, but comes back next visit. */
   dismissRangersPrivacyNotice(): boolean {
     return this.write(RANGERS_PRIVACY_DISMISSED_KEY, 'true')
+  }
+
+  /** E-187: the column mappings remembered for roster spreadsheets. Bad or missing data reads as none. */
+  getImportMappings(): ImportMappings {
+    return parseImportMappings(this.read(IMPORT_MAPPINGS_KEY))
+  }
+
+  /** Remembers the mapping used for this header set (at most 20 are kept, oldest dropped). */
+  rememberImportMapping(headerKey: string, targets: readonly ColumnTarget[]): boolean {
+    const next = rememberMapping(this.getImportMappings(), headerKey, targets)
+    return this.write(IMPORT_MAPPINGS_KEY, JSON.stringify(next))
   }
 
   private read(key: string): string | null {

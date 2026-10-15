@@ -151,6 +151,41 @@
   gap        : 0.75em;
 }
 
+// ── 6b. Import / export / print ──────────────────────────────────────────────
+// E-187 (ADR D-58 item 5): one orange-brown (`--rt-io`) for every place data enters or leaves
+// the device, used the same way everywhere so it can be learned. `.rt-io-zone` is the fenced
+// block (the panel on Rangers, Setup files' export block); `.rt-io-card` is an outlined
+// `mat-card` carrying the same border and title colour (Radio Log's export, print and Report
+// Packet cards, Mission's Data safety). `.rt-io-summary` styles the title of the expandable
+// trigger, and the header tint lives with the component (expandable-section.component.scss,
+// `:host(.rt-io-trigger)`), like the Danger zone's. Nothing here adds a hex value.
+.rt-io-zone {
+  margin       : 1.5em 0 0;
+  padding      : 1em 1.25em;
+  border       : 1px solid var(--rt-io);
+  border-radius: var(--rt-radius-lg);
+  background   : var(--rt-io-tint);
+}
+
+.rt-io-summary {
+  display    : inline-flex;
+  align-items: center;
+  gap        : 0.5em;
+  color      : var(--rt-io);
+  font-weight: bold;
+}
+
+.rt-io-card {
+  --mat-card-outlined-outline-color: var(--rt-io);
+  --mat-card-title-text-color      : var(--rt-io);
+  --mat-card-subtitle-text-color   : var(--rt-ink-2);
+  border-color: var(--rt-io);
+
+  .mat-mdc-card-title {
+    color: var(--rt-io);
+  }
+}
+
 // ── 3. Alerts ────────────────────────────────────────────────────────────────
 // Shown only while true, never permanent furniture. Reuses the notice tokens the
 // Rangers confidentiality bar already established.

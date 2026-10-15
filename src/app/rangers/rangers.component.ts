@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy, signal, computed } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { RouterLink } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular';
@@ -19,6 +20,8 @@ import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import { ExpandableSectionComponent } from '../shared/expandable-section/expandable-section.component'
+import { IoPanelComponent } from '../shared/io-panel/io-panel.component'
+import { readSheetFile, rowsToXlsxBytes } from '../shared/import/sheet-reader'
 import { formatReportTime } from '../shared/mapping/report-time'
 import {
   RadioLogService, RadioLogEntryType, LogService, RangerService, RangerType,
@@ -32,15 +35,16 @@ import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { RecordStore } from '../shared/storage/record-store'
 import { DevicePrefsService } from '../shared/services/device-prefs.service'
 import { extractMissionZip, MissionZipManifest, MissionZipPhoto } from '../shared/export/mission-zip'
-import { mergeRangers } from '../domain/ranger-migration'
-import { rosterChangesFile } from '../domain/roster-changes'
+import { describeRangerMerge, normalizeRangerIds } from '../domain/ranger-migration'
+import { rosterToRows, rowsToCsv } from '../domain/roster-sheet'
+import type { RosterImportDialogResult } from './roster-import-dialog/roster-import-dialog.component'
 import { CustomTooltip } from './customTooltip'
 
 
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, RouterLink, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, RouterLink, ...MATERIAL_IMPORTS],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
@@ -88,20 +92,13 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // than ticking on its own.
   private lastContactByKey = new Map<string, Date>()
 
-  // Material-M3 pass, 2026-08-26: the CSV export controls' state, replacing two
-  // getElementById reads - see getSeperatorValue()/onBtnExportToExcel() below for what each
-  // would have done post-conversion (one throws, one silently exports the wrong rows).
-  /** CSV column separator: 'none' (comma), 'tab', or a literal character. */
-  public columnSeparator = signal('none')
-  /** Export all rows, rather than only the filtered/sorted ones. */
+  // E-187: the Export card's state. "All rows" overrides the selection and the filter.
+  /** Export all rows, rather than only the selected / filtered and sorted ones. */
   public allRows = signal(false)
-
-  /** Options for the CSV separator picker: [stored value, label shown to the user]. */
-  readonly separatorOptions: { value: string; label: string }[] = [
-    { value: 'none', label: 'comma (,)' },
-    { value: 'tab', label: 'tab' },
-    { value: '|', label: 'bar (|)' },
-  ]
+  /** Spreadsheet (.xlsx) or CSV. */
+  public exportFormat = signal<'xlsx' | 'csv'>('xlsx')
+  /** How many grid rows are selected (the Export card's subtitle). */
+  public selectedCount = signal(0)
 
   private missionSubscription!: Subscription
   private settings!: MissionType
@@ -119,9 +116,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // in Mission Export or trigger the settings migration 24e is tracking.
   privacyNoticeDismissed = false
 
-
-  numSeperatorWarnings = 0
-  maxSeperatorWarnings = 3
 
   now: Date
 
@@ -152,6 +146,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     // (onCellValueChanged -> onCellEdited() -> <service>.saveEdited...()) - see
     // onCellEdited()'s own comment for why the roster gets the same treatment now.
     onCellValueChanged: () => this.onCellEdited(),
+    onSelectionChanged: () => this.selectedCount.set(this.gridApi?.getSelectedRows?.().length ?? 0),
 
     // CALLBACKS
     // getRowHeight: (params) => 25
@@ -327,6 +322,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     private guide: GuideService,
     private recordStore: RecordStore,
     private devicePrefs: DevicePrefsService,
+    private dialog: MatDialog,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.log.info(`======== Constructor() ============`, this.id)
@@ -543,28 +539,55 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // see onCellEdited()'s own comment for why edits now save automatically instead.
 
   //--------------------------------------------------------------------------
-  // Roster import / export (JSON)
+  // Import a list (E-187 Layers, ADR D-58)
   //
-  // The roster is the one thing a team must bring with them, and until now the only way
-  // in was Restore mission - which also replaces settings and every radio log entry. That is
-  // the wrong tool for "here is our roster": it discards the work already on the device.
-  // These two do the roster and nothing else.
+  // One entry point, "Import a list...", for everything: a spreadsheet (CSV / Excel), a Setup
+  // file (.zip) or - quietly - an old RangerTrak .json. Every path shows the same preview
+  // (added / updated / unchanged / skipped) and defaults to ADDING; Replace is the explicit
+  // "start over" choice, behind its own confirm (in the dialog). A blank cell never erases.
+
+  /** Opens the shared preview dialog; resolves to what the user chose, or undefined on cancel. */
+  private async openImportDialog(
+    fileName: string,
+    extra: { incoming?: RangerType[]; sheet?: Awaited<ReturnType<typeof readSheetFile>>; notes?: string[] },
+  ): Promise<RosterImportDialogResult | undefined> {
+    const { RosterImportDialogComponent } = await import('./roster-import-dialog/roster-import-dialog.component')
+    const ref = this.dialog.open(RosterImportDialogComponent, {
+      width: '56rem',
+      maxWidth: '95vw',
+      data: {
+        fileName,
+        idFieldLabel: this.settings?.idFieldLabel ?? 'ID',
+        existing: this.rangerService.rangers,
+        ...extra,
+      },
+    })
+    return await new Promise(resolve => ref.afterClosed().subscribe(result => resolve(result)))
+  }
+
+  /** Saves what the dialog chose, records the import baseline, and says what happened. */
+  private applyImport(fileName: string, result: RosterImportDialogResult): string {
+    if (result.action === 'replace') {
+      this.rangerService.replaceAllRangers(result.incoming)
+      this.rangerService.recordImport(fileName, 'replace')
+    } else {
+      this.rangerService.replaceAllRangers(result.merge.rangers)
+      this.rangerService.recordMergeImport(fileName, result.merge)
+    }
+    const summary = result.action === 'replace'
+      ? `Replaced the roster with ${result.incoming.length} people from "${fileName}".`
+      : `Imported "${fileName}": ${describeRangerMerge(result.merge)}.`
+    this.log.warn(summary, this.id)
+    this.gridApi?.setGridOption('rowData', this.rangers())
+    this.refreshGrid()
+    return summary
+  }
 
   /**
-   * Imports rangers from a `.zip` handed to "Import roster" - a Setup file (E-109 v2, same
-   * shape `/prep` builds and reads: `mission-zip.json` plus an optional `photos/`), not this
-   * component's own bespoke `roster.json`+`photos/` shape any more. Retired 2026-08-31: three
-   * different zip shapes for "roster and photos" had drifted apart (see mission-zip.ts's own
-   * header comment on why), and this component already had to special-case detecting the OTHER
-   * shape and redirect to `/prep` - that redirect is gone now that this path can just read it
-   * directly.
-   *
-   * Applies ONLY the rangers, matching this button's own long-standing scope ("roster and
-   * nothing else") - a settings or locations category the file might also carry is silently
-   * ignored, not prompted about (prompting about the ignored part would resurrect exactly the
-   * confusion the old redirect used to paper over). Rangers MERGE into what is already on this
-   * device (`mergeRangers()`), the same additive semantics `/prep` itself uses - the safer
-   * default even for an old-style Mission Zip that was built expecting a wholesale replace.
+   * A Setup file (.zip, E-109 v2: `mission-zip.json` plus an optional `photos/`) - the same shape
+   * `/prep` builds. Applies ONLY the rangers and their photos, matching this page's scope
+   * ("roster and nothing else"): settings or locations the file also carries are not applied
+   * here (the preview says so). Its rangers go through the same preview as any other list.
    */
   private async importRosterFromZip(file: File) {
     let manifest: MissionZipManifest
@@ -580,52 +603,45 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!manifest.rangers) {
       alert(`"${file.name}" does not carry a Rangers category - there is nothing here for `
-        + `Import roster to apply. If it carries locations or settings instead, use the `
+        + `Import a list to apply. If it carries locations or settings instead, use the `
         + `Setup files page (/prep) to load those.`)
       return
     }
 
-    const current = this.rangerService.rangers.length
-    const warnings = this.rangerService.rosterWarnings(manifest.rangers)
-    warnings.forEach(w => this.log.warn(`Setup file import warning (${file.name}): ${w}`, this.id))
-    const merge = mergeRangers(this.rangerService.rangers, manifest.rangers)
-
     const otherCategories = [manifest.settings && 'mission settings', manifest.locations && 'locations']
       .filter((c): c is string => !!c)
+    const notes = [
+      ...(otherCategories.length
+        ? [`This file also carries ${otherCategories.join(' and ')}. Import a list does not apply those; use the Setup files page for the whole file.`]
+        : []),
+      ...(photos.length ? [`${photos.length} photo${photos.length === 1 ? '' : 's'} will be stored on this device.`] : []),
+    ]
 
-    if (!confirm(
-      `Import rangers from "${file.name}"?\n\n`
-      + `  ${merge.added.length} new, ${merge.overwritten.length} updated\n\n`
-      + (warnings.length ? `Note:\n  - ${warnings.join('\n  - ')}\n\n` : '')
-      + `This MERGES into the current roster of ${current} - a matching row is updated, `
-      + `everything else already here is kept. Radio log entries and settings are not affected.\n\n`
-      + (otherCategories.length
-        ? `This file also carries ${otherCategories.join(' and ')} - Import roster does not `
-        + `apply those; use the Setup files page (/prep) for the whole file.\n\n`
-        : '')
-      + `Photos are stored on this device only.`)) {
+    const result = await this.openImportDialog(file.name, {
+      incoming: normalizeRangerIds(manifest.rangers).rangers, notes,
+    })
+    if (!result) {
       this.log.verbose('importRosterFromZip: user cancelled.', this.id)
       return
     }
 
-    this.rangerService.replaceAllRangers(merge.rangers)
-    this.rangerService.recordMergeImport(file.name, merge)
-
+    const summary = this.applyImport(file.name, result)
+    const rosterNow = this.rangerService.rangers
     const files = photos.map(p =>
       new File([p.bytes as BlobPart], p.filename, { type: this.mimeFor(p.filename) }))
-    const { stored, unmatched } = await this.photos.importFiles(files, merge.rangers)
+    const { stored, unmatched } = await this.photos.importFiles(files, rosterNow)
 
-    this.log.warn(`Imported from ${file.name}: ${merge.added.length} new rangers, `
-      + `${merge.overwritten.length} updated, ${stored.length} photos.`, this.id)
-
-    const lines = [`Imported from "${file.name}": ${merge.added.length} new rangers, `
-      + `${merge.overwritten.length} updated, ${stored.length} photos stored.`]
+    const lines = [summary, `${stored.length} photo${stored.length === 1 ? '' : 's'} stored.`]
     if (unmatched.length) {
       lines.push('', `${unmatched.length} photo${unmatched.length === 1 ? '' : 's'} did not match a callsign and were skipped.`)
     }
-    lines.push('', 'Reloading so every screen picks them up...')
-    alert(lines.join('\n'))
-    this.reloadPage()
+    if (stored.length) {
+      lines.push('', 'Reloading so every screen picks them up...')
+      alert(lines.join('\n'))
+      this.reloadPage()
+    } else {
+      this._snackBar.open(summary, 'OK', { duration: 20000 })
+    }
   }
 
   private mimeFor(name: string): string {
@@ -683,47 +699,118 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Downloads the roster as JSON - the file the importer below expects.
-   *
-   * Raised live 2026-08-31: with a partial grid selection active, this always exported the
-   * WHOLE roster regardless - easy to miss for anyone who selected a handful of rows to check
-   * something, then hit Export expecting just those. A full selection (or none at all) exports
-   * everything with no prompt, same as before; only a genuine partial selection asks which one
-   * is wanted, since that's the one case "export everything" might not be what was intended.
+   * Handles a file picked via "Import a list...": a spreadsheet (CSV / Excel) goes through the
+   * column-mapping dialog, a Setup file (.zip) and a RangerTrak .json go straight to the
+   * preview. Nothing is saved until the user chooses Add to roster or Replace.
    */
-  onBtnExportRangersJson() {
+  async onImportFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    input.value = '' // so re-picking the same file still fires a change event
+
+    if (!file) {
+      return
+    }
+
+    try {
+      if (/\.zip$/i.test(file.name) || file.type === 'application/zip') {
+        await this.importRosterFromZip(file)
+        return
+      }
+
+      if (/\.json$/i.test(file.name) || file.type === 'application/json') {
+        // Old RangerTrak files keep loading, quietly. Same preview as everything else, and
+        // it adds: a .json no longer replaces the roster behind the user's back (D-58).
+        const incoming = this.rangerService.parseRosterJson(await file.text())
+        const result = await this.openImportDialog(file.name, { incoming })
+        if (result) {
+          this._snackBar.open(this.applyImport(file.name, result), 'OK', { duration: 20000 })
+        }
+        return
+      }
+
+      const sheet = await readSheetFile(file)
+      const result = await this.openImportDialog(file.name, { sheet })
+      if (result) {
+        this._snackBar.open(this.applyImport(file.name, result), 'OK', { duration: 20000 })
+      }
+    } catch (error: any) {
+      this.log.error(`onImportFileSelected: ${file.name} rejected: ${error.message}`, this.id)
+      alert(`Could not import "${file.name}".\n\n${error.message}`)
+    }
+  }
+
+  //--------------------------------------------------------------------------
+  // Export
+
+  /** The rows an export covers: everyone if "All rows" is ticked, else the selection if there
+   *  is one, else what the grid is showing (filtered and sorted). */
+  private rowsToExport(): RangerType[] {
     const all = this.rangerService.rangers
-    if (!all.length) {
+    if (this.allRows() || !this.gridApi?.getSelectedRows) {
+      return all
+    }
+    const selected: RangerType[] = this.gridApi.getSelectedRows()
+    if (selected.length) {
+      return selected
+    }
+    const shown: RangerType[] = []
+    this.gridApi.forEachNodeAfterFilterAndSort?.((node: { data: RangerType }) => shown.push(node.data))
+    return shown
+  }
+
+  /**
+   * Downloads the roster as a spreadsheet (.xlsx) or CSV. The columns are the ones "Import a
+   * list" recognises on its own, so the file comes back in with no mapping changes.
+   */
+  async onBtnExportRoster() {
+    const rows = this.rowsToExport()
+    if (!rows.length) {
       alert('There are no rangers to export.')
       return
     }
 
-    const selected: RangerType[] = this.gridApi?.getSelectedRows?.() ?? []
-    const exportSelected = selected.length > 0 && selected.length < all.length
-      && confirm(
-        `${selected.length} of ${all.length} rangers are selected.\n\n`
-        + `OK: export just the ${selected.length} selected.\n`
-        + `Cancel: export all ${all.length}.`)
-    const rangers = exportSelected ? selected : all
+    // Confirm before the roster leaves the app: the exported file carries names, personal
+    // phone numbers and call signs in the clear, and nothing this app does can protect it
+    // afterwards.
+    if (!Utility.getConfirmation(
+      `Export ${rows.length} ranger${rows.length === 1 ? '' : 's'} to a file?\n\n`
+      + `The exported file contains PERSONAL INFORMATION - legal names, `
+      + `personal phone numbers and call signs - and is NOT encrypted.\n\n`
+      + `Store it somewhere appropriate, share it only with people who need it for this `
+      + `mission, and delete it when the mission is over.`)) {
+      this.log.verbose('onBtnExportRoster: user cancelled export.', this.id)
+      return
+    }
 
+    const table = rosterToRows(rows, this.settings?.idFieldLabel)
     const stamp = new Date().toISOString().slice(0, 10)
-    this.downloadJson({ rangers }, `rangertrak-roster-${stamp}${exportSelected ? '-selected' : ''}.json`)
-
-    this.log.info(`Exported ${rangers.length} rangers as JSON${exportSelected ? ' (selection)' : ''}.`, this.id)
+    const partial = rows.length < this.rangerService.rangers.length ? '-selected' : ''
+    if (this.exportFormat() === 'xlsx') {
+      const bytes = await rowsToXlsxBytes(table)
+      this.downloadBlob(new Blob([bytes as BlobPart], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+        `rangertrak-roster-${stamp}${partial}.xlsx`)
+    } else {
+      this.downloadBlob(new Blob(['\uFEFF', rowsToCsv(table)], { type: 'text/csv;charset=utf-8' }),
+        `rangertrak-roster-${stamp}${partial}.csv`)
+    }
+    this.log.info(`Exported ${rows.length} rangers as ${this.exportFormat()}.`, this.id)
   }
 
   /**
    * "Export changes" (2026-10-05, John): downloads just the rangers added or edited on this
    * device since the roster was imported, plus the uids of any removed, for the coordinator to
-   * merge back into the master list after the event. The file is roster-shaped, so it imports
-   * like any roster; the rules are in domain/roster-changes.ts.
+   * merge back into the master list after the event. A CSV with a leading `change` column
+   * (added / edited / removed) since E-187; it imports like any list, and the rules are in
+   * domain/roster-changes.ts.
    */
   onBtnExportRosterChanges() {
     const changes = this.rangerService.changesSinceImport()
     if (!changes) {
       if (confirm('No roster import is recorded on this device, so there is nothing to compare '
         + 'against.\n\nExport the whole roster instead?')) {
-        this.onBtnExportRangersJson()
+        this.allRows.set(true)
+        this.onBtnExportRoster()
       }
       return
     }
@@ -751,85 +838,20 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
 
-    const now = Date.now()
-    this.downloadJson(rosterChangesFile(changes, now),
-      `rangertrak-roster-changes-${new Date(now).toISOString().slice(0, 10)}.json`)
+    const table = rosterToRows([], this.settings?.idFieldLabel, { changes })
+    this.downloadBlob(new Blob(['\uFEFF', rowsToCsv(table)], { type: 'text/csv;charset=utf-8' }),
+      `rangertrak-roster-changes-${new Date().toISOString().slice(0, 10)}.csv`)
     this.log.info(`Exported roster changes: ${changes.added.length} added, ${changes.edited.length} edited, `
       + `${changes.removed.length} removed.`, this.id)
   }
 
-  private downloadJson(data: unknown, filename: string) {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  private downloadBlob(blob: Blob, filename: string) {
     const url = URL.createObjectURL(blob)
     const a = this.document.createElement('a')
     a.href = url
     a.download = filename
     a.click()
     URL.revokeObjectURL(url)
-  }
-
-  /**
-   * Handles a file picked via "Import roster". Replaces the roster only; radio log entries
-   * and settings are untouched, which is the whole point of it being separate from
-   * Restore mission.
-   */
-  onRosterFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement
-    const file = input.files?.[0]
-    input.value = '' // so re-picking the same file still fires a change event
-
-    if (!file) {
-      return
-    }
-
-    // A .zip is a Setup file (E-109 v2): roster AND photos in one action. The two-step
-    // (import roster, then multi-select the photos) still works, but handing a volunteer
-    // one file to pick is the difference between a setup that happens and one that does
-    // not.
-    if (/\.zip$/i.test(file.name) || file.type === 'application/zip') {
-      this.importRosterFromZip(file)
-      return
-    }
-
-    const reader = new FileReader()
-
-    reader.onerror = () => {
-      this.log.error(`onRosterFileSelected: could not read ${file.name}`, this.id)
-      alert(`Could not read "${file.name}".`)
-    }
-
-    reader.onload = () => {
-      let incoming: RangerType[]
-      try {
-        incoming = this.rangerService.parseRosterJson(reader.result as string)
-      } catch (error: any) {
-        this.log.error(`onRosterFileSelected: ${file.name} rejected: ${error.message}`, this.id)
-        alert(`Could not import "${file.name}".\n\n${error.message}`)
-        return
-      }
-
-      const current = this.rangerService.rangers.length
-      const warnings = this.rangerService.rosterWarnings(incoming)
-      warnings.forEach(w => this.log.warn(`Roster import warning (${file.name}): ${w}`, this.id))
-
-      if (!confirm(
-        `Import ${incoming.length} rangers from "${file.name}"?\n\n`
-        + (warnings.length ? `Note:\n  - ${warnings.join('\n  - ')}\n\n` : '')
-        + `This REPLACES the current roster of ${current}. `
-        + `Radio log entries and settings are not affected.\n\n`
-        + `Tip: use "Export roster (JSON)" first if you want to keep the current one.`)) {
-        this.log.verbose('onRosterFileSelected: user cancelled import.', this.id)
-        return
-      }
-
-      this.rangerService.replaceAllRangers(incoming)
-      this.rangerService.recordImport(file.name, 'replace')
-      this.log.warn(`Imported ${incoming.length} rangers from ${file.name}.`, this.id)
-      alert(`Imported ${incoming.length} rangers. Reloading so every screen picks them up...`)
-      this.reloadPage()
-    }
-
-    reader.readAsText(file)
   }
 
 
@@ -868,74 +890,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       this.gridApi.autoSizeAllColumns()
     } else {
       this.log.verbose("no this.gridApi yet in refreshGrid()", this.id)
-    }
-  }
-
-  //--------------------------------------------------------------------------
-  // following from https://ag-grid.com/javascript-data-grid/csv-export/
-  onBtnExportToExcel() {
-    //var params = this.getParams();
-    //this.log.verbose(`Got column seperator value "${params.columnSeparator}"`, this.id)
-    //this.log.verbose(`Got filename of "${params.fileName}"`, this.id)
-    //this.gridApi.exportDataAsCsv(params);
-
-    // Confirm before the roster leaves the app: the exported file carries names, personal
-    // phone numbers and call signs in the clear, and nothing this app does can protect it
-    // afterwards.
-    if (!Utility.getConfirmation(
-      `Export the roster to a file?\n\n`
-      + `The exported file contains PERSONAL INFORMATION - legal names, `
-      + `personal phone numbers and call signs - and is NOT encrypted.\n\n`
-      + `Store it somewhere appropriate, share it only with people who need it for this `
-      + `mission, and delete it when the mission is over.`)) {
-      this.log.verbose('onBtnExportToExcel: user cancelled export.', this.id)
-      return
-    }
-
-    // ! Is this JUST for enterprise edition?! - test...
-    // https://www.ag-grid.com/javascript-data-grid/excel-export-rows/#export-all-unprocessed-rows
-    // Material-M3 pass, 2026-08-26: reads the signal below, not
-    // `getElementById('allRows').checked` - `<mat-checkbox>` puts its real input several
-    // levels inside its own template, so that id now lands on the host, where `.checked` is
-    // `undefined` and therefore falsy. The old read would have silently exported
-    // 'filteredAndSorted' every time regardless of the box. Same fix as field-reports'.
-    this.gridApi.exportDataAsExcel({
-      exportedRows: this.allRows() ? 'all' : 'filteredAndSorted',
-    })
-  }
-
-  /**
-   * Material-M3 pass, 2026-08-26: reads the signal below rather than a native `<select>`.
-   * `<mat-select>` renders no native `<select>` element, so the previous
-   * `getElementById(...) as HTMLSelectElement` + `.selectedIndex`/`.options` read would
-   * have thrown once the control was converted. Same change as field-reports'.
-   */
-  getSeperatorValue(inputSelector: string) {
-    const selVal = this.columnSeparator()
-
-    switch (selVal) {
-      case 'none':
-        return;
-      case 'tab':
-        return '\t';
-      default:
-        return selVal;
-    }
-  }
-
-  getParams() {
-    let dt = new Date()
-    return {
-      columnSeparator: this.getSeperatorValue('columnSeparator'),
-      fileName: `RangersExport.${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}_${dt.getHours()}:${dt.getMinutes()}.csv`, // ONLY month is zero based!
-    }
-  }
-
-  onSeperatorChange() {
-    var params = this.getParams();
-    if (params.columnSeparator && this.numSeperatorWarnings++ < this.maxSeperatorWarnings) {
-      //this.alerts.OpenSnackBar(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}"`, `Nota Bene`, 4000)
-      alert(`NOTE: Excel handles comma separators best. You've chosen "${params.columnSeparator}" Good luck!`);
     }
   }
 

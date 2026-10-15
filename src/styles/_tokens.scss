@@ -81,6 +81,18 @@
   --rt-readiness-amber: #{light-dark(#8A5A00, #D9A300)};
   --rt-readiness-green: #{light-dark(#3C6E2A, #7CC96A)};
 
+  // ── Import / export / print (E-187, ADR D-58 item 5) ───────────────
+  // One orange-brown that marks every surface where data leaves or enters the device: the
+  // Import, export & print panel, Radio Log's export/print/Report Packet cards, the Setup
+  // files page and Mission's Data safety card. A muted brown on purpose - it must stay apart
+  // from the Danger zone red (--rt-readiness-red), Incident mode's orange-red
+  // (--rt-mode-incident) and the bright brand orange (--rt-signal), none of which is brown.
+  // Not per-skin, same argument as readiness: it means the same thing under every skin.
+  // Contrast as text: 7.43:1 on white / 6.60:1 on its own tint (light); 7.4-7.7:1 on the dark
+  // skins' surfaces / 6.5-6.7:1 on the tint (dark). Checked against all five skins' surfaces.
+  --rt-io: #{light-dark(#7A4A1E, #D9A066)};
+  --rt-io-tint: color-mix(in srgb, var(--rt-io) 8%, var(--rt-surface));
+
   // ── Mission mode (E-168) ───────────────────────────────────────────
   // The header pill's colour cue for Demo / Exercise / Incident (the icon carries the meaning;
   // this is the second cue, never the only one). Deliberately NOT the readiness red/amber/green

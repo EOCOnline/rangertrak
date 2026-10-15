@@ -268,7 +268,7 @@ export class RangerService implements OnInit {
 
   /** recordImport() for a Setup-file merge: re-baselines the rows the merge wrote. */
   recordMergeImport(source: string, merge: RangerMergeResult) {
-    const uids = [...merge.added, ...merge.overwritten].map(n => n.uid).filter((u): u is string => !!u)
+    const uids = [...merge.added, ...merge.overwritten, ...merge.unchanged].map(n => n.uid).filter((u): u is string => !!u)
     this.recordImport(source, 'merge', uids)
   }
 
@@ -479,19 +479,6 @@ export class RangerService implements OnInit {
     return newRanger;
   }
 
-
-  public async loadRangersFromExcel2() {  // still called by rangers Component from a button
-    //debugger
-    // Loaded on demand: RangerService is providedIn:'root' and injected by the Entry page,
-    // so it lands in the eager initial bundle - a static import here would pull csvImport's
-    // own xlsx dependency (~800KB) into every user's initial download for one button on the
-    // Rangers page most users never press.
-    const { csvImport } = await import('../../rangers/csvImport')
-    let fnc = new csvImport(document)
-    fnc.importExcel2()
-    //csvImport.importExcel2()
-    this.log.verbose(`Got excel file`, this.id)
-  }
 
   /**
    * Look up by CALLSIGN - what a scribe hears on the radio and types into Entry.

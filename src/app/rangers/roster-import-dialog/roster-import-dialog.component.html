@@ -1,0 +1,133 @@
+@if (step() === 'map') {
+  <h2 mat-dialog-title>Which column is which?</h2>
+  <mat-dialog-content>
+    <p class="rid__lead">
+      <strong>{{ data.fileName }}</strong>
+      @if (remembered()) {
+        &mdash; using the column choices you made the last time you imported a list like this.
+      } @else if (confident()) {
+        &mdash; every column heading was recognised. Check it, then continue.
+      } @else {
+        &mdash; check each guess below, and change any that are wrong.
+      }
+    </p>
+
+    @if (sheets.length > 1) {
+      <mat-form-field class="rid__sheet">
+        <mat-label>Sheet</mat-label>
+        <mat-select [value]="sheetName()" (selectionChange)="onSheetChange($event.value)">
+          @for (s of sheets; track s) {
+            <mat-option [value]="s">{{ s }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+
+    @if (headers().length === 0) {
+      <p class="rid__warn" role="alert">This sheet has nothing in it. Pick another sheet, or another file.</p>
+    } @else {
+      <div class="rid__columns">
+        @for (h of headers(); track $index; let i = $index) {
+          <div class="rid__col">
+            <div class="rid__col-head">
+              <span class="rid__col-name">{{ h || '(no heading)' }}</span>
+              <span class="rid__col-sample">{{ samples(i) || 'empty' }}</span>
+            </div>
+            <mat-form-field class="rid__col-pick" subscriptSizing="dynamic">
+              <mat-label>Import as</mat-label>
+              <mat-select [value]="targets()[i]" (selectionChange)="setTarget(i, $event.value)">
+                @for (t of choices; track t) {
+                  <mat-option [value]="t">{{ targetLabel(t) }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
+      </div>
+
+      @if (statusColumn() !== null) {
+        <mat-checkbox class="rid__status" [checked]="skipExited()" (change)="skipExited.set($event.checked)">
+          Skip rows whose {{ headers()[statusColumn()!] }} is Exited
+        </mat-checkbox>
+      }
+
+      @if (!canContinue()) {
+        <p class="rid__warn" role="alert">
+          Pick at least one column that names a person: {{ idLabel() }}, call sign or name.
+        </p>
+      }
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button matButton type="button" (click)="cancel()">Cancel</button>
+    <button matButton="filled" type="button" cdkFocusInitial [disabled]="!canContinue()" (click)="toPreview()">
+      Continue
+    </button>
+  </mat-dialog-actions>
+} @else {
+  <h2 mat-dialog-title>Import &ldquo;{{ data.fileName }}&rdquo;</h2>
+  <mat-dialog-content>
+    @if (merge(); as m) {
+      <p class="rid__counts" role="status">
+        <span><strong>Added {{ m.added.length }}</strong></span>
+        <span><strong>Updated {{ m.overwritten.length }}</strong></span>
+        <span><strong>Unchanged {{ m.unchanged.length }}</strong></span>
+        <span><strong>Skipped {{ skipped() }}</strong></span>
+      </p>
+
+      @if (incoming().length === 0) {
+        <p class="rid__warn" role="alert">There is nobody to import from this file.</p>
+      }
+
+      @if (m.overwritten.length) {
+        <h3 class="rid__h">Updated people (a blank cell never erases what is already here)</h3>
+        <ul class="rid__list">
+          @for (r of updatedShown(); track $index) {
+            <li><strong>{{ r.callsign || r.id || '(unidentified)' }}</strong>: {{ r.changedFields?.join(', ') }}</li>
+          }
+        </ul>
+        @if (updatedHidden() > 0) {
+          <p class="rid__more">...and {{ updatedHidden() }} more.</p>
+        }
+      }
+
+      @if (m.ambiguous.length) {
+        <h3 class="rid__h">Check these</h3>
+        <p class="rid__warn">
+          The ID matched one person and the call sign matched another, so the ID won:
+          {{ m.ambiguous.length }} row{{ m.ambiguous.length === 1 ? '' : 's' }}
+          ({{ ambiguousNames(m) }}).
+        </p>
+      }
+
+      @if (notStoredHeaders().length) {
+        <p class="rid__ignored">
+          Not stored on this device: {{ notStoredHeaders().join(', ') }}. RangerTrak keeps no addresses or e-mail addresses.
+        </p>
+      }
+      @if (ignoredHeaders().length) {
+        <p class="rid__ignored">Ignored columns: {{ ignoredHeaders().join(', ') }}.</p>
+      }
+
+      @for (w of warnings(); track $index) {
+        <p class="rid__note">{{ w }}</p>
+      }
+      @for (n of data.notes ?? []; track $index) {
+        <p class="rid__note">{{ n }}</p>
+      }
+    }
+    <p class="rid__safe">Add to roster adds new people and updates matching ones; nobody is deleted.</p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button matButton type="button" (click)="cancel()">Cancel</button>
+    @if (isSheet) {
+      <button matButton type="button" (click)="toMapping()">Back</button>
+    }
+    <button matButton="outlined" type="button" [disabled]="incoming().length === 0" (click)="replace()">
+      Replace roster&hellip;
+    </button>
+    <button matButton="filled" type="button" cdkFocusInitial [disabled]="incoming().length === 0" (click)="add()">
+      Add to roster
+    </button>
+  </mat-dialog-actions>
+}

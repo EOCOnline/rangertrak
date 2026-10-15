@@ -282,6 +282,8 @@ export function normalizeRangerIds(rangers: readonly RangerType[]): RangerIdAudi
 export type RangerMergeNote = {
   callsign: string
   id: string
+  /** On an `overwritten` note: which fields the import actually changed (E-187 preview). */
+  changedFields?: string[]
   /** The uid of the row this import wrote (the existing uid on an overwrite). Lets the caller
    *  re-baseline exactly those rows for "Export changes since import" (domain/roster-changes.ts). */
   uid?: string
@@ -292,7 +294,10 @@ export type RangerMergeResult = {
    *  row in place, it never moves it), incoming-only rows appended after. */
   rangers: RangerType[]
   added: RangerMergeNote[]
+  /** Matched rows the import CHANGED; each note names the fields in `changedFields`. */
   overwritten: RangerMergeNote[]
+  /** Matched rows where nothing differed, so nothing was written (D-58: shown as "Unchanged"). */
+  unchanged: RangerMergeNote[]
   /** An incoming row whose `id` matched one existing ranger while its `callsign` matched a
    *  DIFFERENT existing ranger - id wins (see this function's own doc comment), but a
    *  collision like this is worth a line of its own, not just a console warning. */
@@ -316,8 +321,11 @@ export type RangerMergeResult = {
  * the collision is reported in `ambiguous` so a human can look at it, not silently resolved.
  *
  * **On overwrite**: keeps the EXISTING row's `uid` (radio log entries already join on it - keeping
- * the incoming file's own freshly-minted uid would orphan them) and replaces every other field
- * with the incoming record's values. The existing array's order is preserved - an overwritten
+ * the incoming file's own freshly-minted uid would orphan them) and replaces a field with the
+ * incoming value ONLY when that value is non-empty (D-58: a blank cell never erases what the
+ * device already holds - a second list with no phone number for someone must not wipe the first
+ * list's). A matched row where nothing differs lands in `unchanged`, not `overwritten`; a changed
+ * one names its `changedFields`. The existing array's order is preserved - an overwritten
  * row is updated in place, never moved to the end, so a coordinator's grid does not reshuffle
  * under them file after file.
  *
@@ -326,6 +334,9 @@ export type RangerMergeResult = {
  * Pure - no injection, no logging, no storage access - same convention every function in this
  * file follows. The caller hands the result to `RangerService.replaceAllRangers()`.
  */
+/** The text fields a merge carries over from an incoming row (never `uid`, which stays the existing one). */
+const MERGE_FIELDS = ['id', 'callsign', 'fullName', 'phone', 'image', 'team', 'role', 'note'] as const
+
 export function mergeRangers(existing: readonly RangerType[], incoming: readonly RangerType[]): RangerMergeResult {
   const normalizedIncoming = normalizeRangerIds(incoming).rangers
 
@@ -348,6 +359,7 @@ export function mergeRangers(existing: readonly RangerType[], incoming: readonly
 
   const added: RangerMergeNote[] = []
   const overwritten: RangerMergeNote[] = []
+  const unchanged: RangerMergeNote[] = []
   const ambiguous: RangerMergeNote[] = []
 
   for (const inc of normalizedIncoming) {
@@ -370,10 +382,20 @@ export function mergeRangers(existing: readonly RangerType[], incoming: readonly
     }
 
     if (matchIndex !== undefined) {
-      const uid = rangers[matchIndex].uid
-      rangers[matchIndex] = { ...inc, uid }
+      const current = rangers[matchIndex]
+      const uid = current.uid
+      const next: RangerType = { ...current }
+      const changedFields: string[] = []
+      for (const field of MERGE_FIELDS) {
+        const value = inc[field]
+        if (typeof value !== 'string' || value.trim() === '') continue   // blank keeps the existing value
+        if (value.trim() !== String(current[field] ?? '').trim()) changedFields.push(field)
+        next[field] = value
+      }
+      rangers[matchIndex] = { ...next, uid }
       claimed.add(matchIndex)
-      overwritten.push({ ...note, uid })
+      if (changedFields.length) overwritten.push({ ...note, uid, changedFields })
+      else unchanged.push({ ...note, id: current.id ?? '', callsign: current.callsign, uid })
     } else {
       rangers.push({ ...inc })
       claimed.add(rangers.length - 1)
@@ -381,7 +403,26 @@ export function mergeRangers(existing: readonly RangerType[], incoming: readonly
     }
   }
 
-  return { rangers, added, overwritten, ambiguous }
+  return { rangers, added, overwritten, unchanged, ambiguous }
+}
+
+/**
+ * The named summary of a merge, for the snackbar / session log: who was added, who was updated
+ * (and which fields changed), how many were already identical, and any ambiguous id/call-sign
+ * match. Never a bare count (capability, not policy: show the human what happened). Shared by
+ * the Rangers page and the Setup files page.
+ */
+export function describeRangerMerge(merge: RangerMergeResult): string {
+  const label = (r: { callsign: string; id: string }) => r.callsign || r.id || '(unidentified)'
+  const bits: string[] = []
+  if (merge.added.length) bits.push(`added ${merge.added.length} (${merge.added.map(label).join(', ')})`)
+  if (merge.overwritten.length) {
+    bits.push(`updated ${merge.overwritten.length} (${merge.overwritten
+      .map(r => r.changedFields?.length ? `${label(r)}: ${r.changedFields.join(', ')}` : label(r)).join('; ')})`)
+  }
+  if (merge.unchanged.length) bits.push(`${merge.unchanged.length} already up to date`)
+  if (merge.ambiguous.length) bits.push(`AMBIGUOUS id/callsign match, id won (${merge.ambiguous.map(label).join(', ')})`)
+  return `rangers: ${bits.length ? bits.join('; ') : 'no changes'}`
 }
 
 export function migrateRangers(raw: unknown): StoredRangers {

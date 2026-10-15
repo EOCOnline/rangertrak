@@ -9,7 +9,7 @@ import {
   MISSION_ZIP_SCHEMA_VERSION,
 } from '../shared/export/mission-zip'
 import { migrateMission } from '../domain/mission-migration'
-import { mergeRangers, RangerMergeResult } from '../domain/ranger-migration'
+import { describeRangerMerge, mergeRangers } from '../domain/ranger-migration'
 import { mergeLocations, LocationMergeResult } from '../domain/mission-location-migration'
 import { LogService, MissionLocationService, MissionService, RangerService, RangerType } from '../shared/services'
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
@@ -294,7 +294,7 @@ export class PrepComponent {
       this.rangerService.replaceAllRangers(merge.rangers)
       this.rangerService.recordMergeImport(file.filename, merge)
       rosterForPhotoMatch = merge.rangers
-      parts.push(this.describeRangerMerge(merge))
+      parts.push(describeRangerMerge(merge))
       if (warnings.length) parts.push(`note: ${warnings.join('; ')}`)
     }
 
@@ -313,18 +313,6 @@ export class PrepComponent {
     }
 
     return parts.length ? parts.join('. ') + '.' : 'carried no categories - nothing applied.'
-  }
-
-  /** Named adds/overwrites, never a bare count (capability, not policy: show the human what
-   *  happened, let them judge it) - includes the ambiguous-match case (open judgment call 3)
-   *  as its own line, not just a console warning. */
-  private describeRangerMerge(merge: RangerMergeResult): string {
-    const label = (r: { callsign: string; id: string }) => r.callsign || r.id || '(unidentified)'
-    const bits: string[] = []
-    if (merge.added.length) bits.push(`added ${merge.added.length} (${merge.added.map(label).join(', ')})`)
-    if (merge.overwritten.length) bits.push(`overwrote ${merge.overwritten.length} (${merge.overwritten.map(label).join(', ')})`)
-    if (merge.ambiguous.length) bits.push(`AMBIGUOUS id/callsign match, id won (${merge.ambiguous.map(label).join(', ')})`)
-    return `rangers: ${bits.length ? bits.join('; ') : 'no changes'}`
   }
 
   private describeLocationMerge(merge: LocationMergeResult): string {

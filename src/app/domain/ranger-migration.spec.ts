@@ -1,6 +1,6 @@
 import { RangerType } from '../shared/services/ranger.interface';
 import {
-  isRangerId, mergeRangers, migrateRangers, newRangerUid, normalizeRangerId, normalizeRangerIds,
+  describeRangerMerge, isRangerId, mergeRangers, migrateRangers, newRangerUid, normalizeRangerId, normalizeRangerIds,
   RANGER_SCHEMA_VERSION
 } from './ranger-migration';
 
@@ -428,6 +428,42 @@ describe('ranger-migration (ADR D-42)', () => {
       expect(result.rangers).toEqual(existing);
       expect(result.added).toEqual([]);
       expect(result.overwritten).toEqual([]);
+    });
+
+    // ---- E-187 / D-58: the blank-cell rule and the preview ------------------------------
+    it('a blank incoming field keeps the existing value; a non-empty one overwrites', () => {
+      const existing = [ranger('A1', { id: 'REW-1', uid: 'u-a1', phone: '555-0100', role: 'Medic', team: 'CERT' })];
+      const incoming = [ranger('A1', { id: 'REW-1', phone: '', role: '   ', team: 'ACS', fullName: 'Ann' })];
+
+      const result = mergeRangers(existing, incoming);
+
+      expect(result.rangers[0].phone).withContext('blank phone must not erase').toBe('555-0100');
+      expect(result.rangers[0].role).withContext('whitespace-only counts as blank').toBe('Medic');
+      expect(result.rangers[0].team).toBe('ACS');
+      expect(result.rangers[0].fullName).toBe('Ann');
+      expect(result.overwritten[0].changedFields).toEqual(['fullName', 'team']);
+    });
+
+    it('a matched row where nothing differs is unchanged, not overwritten', () => {
+      const existing = [ranger('A1', { id: 'REW-1', uid: 'u-a1', phone: '555-0100' })];
+      const incoming = [ranger('A1', { id: 'REW-1', phone: '555-0100 ' })];
+
+      const result = mergeRangers(existing, incoming);
+
+      expect(result.overwritten).toEqual([]);
+      expect(result.unchanged).toEqual([jasmine.objectContaining({ callsign: 'A1', id: 'REW-1', uid: 'u-a1' })]);
+      expect(result.rangers[0].uid).toBe('u-a1');
+    });
+
+    it('describeRangerMerge names who was added, which fields changed, and the unchanged count', () => {
+      const existing = [ranger('A1', { id: 'REW-1', uid: 'u-a1' }), ranger('B1', { id: 'REW-2', uid: 'u-b1', phone: '1' })];
+      const incoming = [ranger('A1', { id: 'REW-1', phone: '555' }), ranger('B1', { id: 'REW-2', phone: '1' }), ranger('C1', { id: 'REW-3' })];
+
+      const text = describeRangerMerge(mergeRangers(existing, incoming));
+
+      expect(text).toContain('added 1 (C1)');
+      expect(text).toContain('updated 1 (A1: phone)');
+      expect(text).toContain('1 already up to date');
     });
   });
 });

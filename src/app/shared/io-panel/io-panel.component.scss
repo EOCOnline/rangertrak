@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+
+// The tinted, bordered box is the expandable section's own panel here; the zone inside only
+// groups the projected cards, so it drops its own fence (same move the Danger zone makes).
+.rt-io-zone {
+  margin    : 0;
+  padding   : 0;
+  border    : none;
+  background: none;
+}
+
+.rt-io-zone .rt-action-bar-group {
+  margin-top: 0.5em;
+}

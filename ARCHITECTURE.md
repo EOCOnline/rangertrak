@@ -326,6 +326,18 @@ migrations (`mission-`, `radio-log-`, `ranger-`, `mission-location-`, `aar-note-
 the two helpers they need (`json-dates.ts`, `status-color.ts`). The `shared/services` barrel
 still re-exports the last two. New rules start here; older ones move when they are touched.
 
+2026-10-15 (E-187 Layers, ADR D-58, phase A): `roster-sheet.ts` is the spreadsheet side of the
+roster: guessing which column is which from its heading (`guessMapping`), turning rows into
+rangers (`applyMapping`), the remembered-mapping bookkeeping, and the roster back out as rows
+(`rosterToRows`, `rowsToCsv`). It takes and returns plain `string[][]`; reading the file is
+`shared/import/sheet-reader.ts`, which loads SheetJS with `await import('xlsx')` so it stays out of
+the initial bundle (CSV encoding and delimiter sniffing live there too). The merge itself is still
+`mergeRangers()` in `ranger-migration.ts`, now with the blank-cell rule (an empty incoming field
+keeps the value on the device) and a preview shape (`changedFields`, `unchanged`); the import
+preview runs it without saving. The "Import, export & print" panel is `shared/io-panel/`, a
+page-agnostic shell that the Rangers page fills with cards (Map joins in phase B); its colour is the
+`--rt-io` token pair, applied by `.rt-io-card` / `.rt-io-zone` in `styles/_patterns.scss`.
+
 ## Data stored on the device
 
 Every persisted key, as of 2026-10-01 (E-168a). This is the input to the rc.1 storage freeze
@@ -354,7 +366,7 @@ whose key has left the source fails. Add the row in the same commit as the key.
 | 11 | localStorage | `lastCoordinateFormat` | `device-prefs.service.ts` | no | no | none |
 | 12 | localStorage | `rangertrak.rangers.privacyNoticeDismissed` | `device-prefs.service.ts` | no | no | none |
 | 13 | IndexedDB `rangertrak-records` / `kv` | `rangers` | `ranger.service.ts` | yes | yes | `ranger-migration.ts`, schema 1 |
-| 13a | IndexedDB `rangertrak-records` / `kv` | `rangersImported` (2026-10-05, import baseline: ranger uid -> field hash, no PII copied) | `ranger.service.ts` (`importBaselineKey`; pure logic in `domain/roster-changes.ts`) | no (deliberately: Restore mission does not write it, or it would hide the edits being looked for) | yes (with the roster) | none; new key. Written by roster import/merge, Setup files and the sample-mission loader; read by Rangers > Bulk roster tools > Export changes |
+| 13a | IndexedDB `rangertrak-records` / `kv` | `rangersImported` (2026-10-05, import baseline: ranger uid -> field hash, no PII copied) | `ranger.service.ts` (`importBaselineKey`; pure logic in `domain/roster-changes.ts`) | no (deliberately: Restore mission does not write it, or it would hide the edits being looked for) | yes (with the roster) | none; new key. Written by roster import/merge, Setup files and the sample-mission loader; read by Rangers > Import, export & print > Export changes |
 | 14 | IndexedDB `rangertrak-records` / `kv` | `radioLog` | `radio-log.service.ts` | yes | yes | `radio-log-migration.ts`, schema 1 |
 | 15 | IndexedDB `rangertrak-records` / `kv` | `radioLog-BAD` | `radio-log.service.ts` | no | yes | none; quarantine copy of an unreadable log |
 | 16 | IndexedDB `rangertrak-records` / `kv` | `locations` | `mission-location.service.ts` | yes | no | `mission-location-migration.ts`, schema 1 |
@@ -365,6 +377,7 @@ whose key has left the source fails. Add the row in the same commit as the key.
 | 20 | IndexedDB `rangertrak-custom-pmtiles` / `files` | `active` | `custom-pmtiles.service.ts` | no | no | none |
 | 21 | IndexedDB `leaflet.offline` / `tileStore` | map tiles | the `leaflet.offline` library | no | no | library's own |
 | 22 | Cache Storage `rangertrak-pmtiles-warm` | map file URLs | `shared/mapping/demo-map.ts`, service worker | no | no | pruned by `pruneWarmCache()` |
+| 23 | localStorage | `rt-import-mappings` (E-187, 2026-10-15: which spreadsheet column became which roster field, per set of column headings; at most 20, oldest dropped; heading names only, never cell values) | `device-prefs.service.ts` (pure logic in `domain/roster-sheet.ts`) | no | no | none; new key, read defensively (bad JSON reads as none) |
 
 Notes for the storage freeze:
 

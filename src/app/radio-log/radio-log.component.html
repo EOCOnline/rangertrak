@@ -56,7 +56,7 @@
            shared pattern other pages rely on - see _patterns.scss's own comment); only
            `.rt-action-bar__buttons` is kept, now laying out each card's own content. -->
       <div class="rt-action-bar-group">
-        <mat-card appearance="outlined" class="rt-mission-card">
+        <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
           <mat-card-header>
             <mat-card-title>Export radio log entries</mat-card-title>
             <mat-card-subtitle>
@@ -105,7 +105,7 @@
              log, scoped to whichever rows the picker names. Own card, not folded into the CSV
              card above: this produces a formal paper/PDF record, not a spreadsheet, and the
              two shouldn't be visually conflated. -->
-        <mat-card appearance="outlined" class="rt-mission-card">
+        <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
           <mat-card-header>
             <mat-card-title>Print ICS-309 log</mat-card-title>
           </mat-card-header>
@@ -144,7 +144,7 @@
              Deliberately its own card, not folded into the CSV export card above: this
              produces a different kind of file for a different purpose (merging reports IN,
              not reading data OUT), and Build/Load read better as their own pair. -->
-        <mat-card appearance="outlined" class="rt-mission-card">
+        <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
           <mat-card-header>
             <mat-card-title>Report Packet</mat-card-title>
             <mat-card-subtitle>Reports from another device</mat-card-subtitle>

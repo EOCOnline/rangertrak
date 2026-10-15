@@ -312,6 +312,30 @@ async function pollUntil(readFn, isReady, tries = 20, intervalMs = 300) {
   return value
 }
 
+/**
+ * E-187: "Import a list..." never saves on pick - it opens a preview dialog, and nothing changes
+ * until one of that dialog's buttons is pressed. Clicks the named button (by the start of its
+ * label) once it is there and enabled; false if it never appeared.
+ */
+async function clickImportDialog(label) {
+  const clicked = await pollUntil(
+    () => evaluate(`(() => {
+      const b = [...document.querySelectorAll('mat-dialog-container button')]
+        .find(b => b.textContent.trim().startsWith(${JSON.stringify(label)}) && !b.disabled)
+      if (!b) return false
+      b.click()
+      return true
+    })()`),
+    v => v === true, 30, 300)
+  return clicked === true
+}
+
+/** Picks a file in "Import a list...", then presses Add to roster (or `label`) in its dialog. */
+async function importRoster(filePath, label = 'Add to roster') {
+  await setFileInput('#importRosterFile', filePath)
+  return await clickImportDialog(label)
+}
+
 async function goto(route, settleMs = 3500) {
   consoleErrors.length = 0
   await send('Page.navigate', { url: BASE + route })
@@ -426,7 +450,7 @@ function makeFixtures(dir) {
     [{ callsign: 'E2E-AA1', licensee: 'Aliased Name', icon: 'x.png', status: 'Licensed' }], null, 2))
 
   // A Setup file (E-109 v2) carrying a rangers category - what /prep itself builds, and what
-  // Rangers' own "Import roster" now reads for a .zip (rangers.component.ts's
+  // Rangers' own "Import a list" reads a .zip (rangers.component.ts's
   // importRosterFromZip(), retired the old bespoke roster.json+photos/ bundle shape
   // 2026-08-31). Uses BACKSLASH separators deliberately: PowerShell's Compress-Archive writes
   // them, they violate APPNOTE 4.4.17.1, and tolerating them is a fix this suite exists to
@@ -442,7 +466,16 @@ function makeFixtures(dir) {
     'photos\\E2E-CC3.png': new Uint8Array(PNG_1PX),
   })))
 
-  return { rangers, rosterPath, aliasPath, setupFilePath }
+  // A messy county-style spreadsheet export (E-187): UTF-8 BOM, semicolons, First/Last names, an
+  // address and an e-mail column that must never be stored, and a Status column with an Exited row.
+  const csvPath = path.join(dir, 'county-roster.csv')
+  fs.writeFileSync(csvPath, '\uFEFF' + [
+    'First Name;Last Name;REW #;Call Sign;Cell;Street Address;Email;Status',
+    'Cora;Fixture;VI-9101;E2E-CSV1;555-0191;1 Fern Rd;cora@example.org;Active',
+    'Dan;Fixture;VI-9102;E2E-CSV2;555-0192;2 Fern Rd;dan@example.org;Exited',
+  ].join('\r\n') + '\r\n')
+
+  return { rangers, rosterPath, aliasPath, setupFilePath, csvPath }
 }
 
 // ── the checks ───────────────────────────────────────────────────────────────
@@ -653,7 +686,7 @@ async function checkRosterLifecycle(fx) {
   const seeded = (JSON.parse((await idbGetRaw('rangers'))||'{"rangers":[]}').rangers||[]).length
   check('a fresh browser starts with a BLANK roster, not the built-in stations', seeded, 0)
 
-  await setFileInput('#importRosterFile', fx.rosterPath)
+  await importRoster(fx.rosterPath)
   await sleep(2000)
   const imported = await pollUntil(
     async () => {
@@ -687,7 +720,7 @@ async function checkRosterLifecycle(fx) {
   await goto('/rangers')
   check('an emptied roster STAYS empty across a reload', (JSON.parse((await idbGetRaw('rangers'))||'{"rangers":[]}').rangers||[]).length, 0)
 
-  await setFileInput('#importRosterFile', fx.rosterPath)
+  await importRoster(fx.rosterPath)
   await sleep(2000)
   const reimported = await pollUntil(
     async () => (JSON.parse((await idbGetRaw('rangers'))||'{"rangers":[]}').rangers||[]).length,
@@ -698,7 +731,7 @@ async function checkRosterLifecycle(fx) {
 async function checkFieldNameAliases(fx) {
   console.log('\nRoster aliases: a real FCC-derived file calls the person "licensee"')
   await goto('/rangers')
-  await setFileInput('#importRosterFile', fx.aliasPath)
+  await importRoster(fx.aliasPath)
   await sleep(4000)
   const aliasRaw = await idbGetRaw('rangers')
   const r = (() => {
@@ -712,7 +745,7 @@ async function checkFieldNameAliases(fx) {
 async function checkSetupFileMerge(fx) {
   console.log('\nSetup file (Rangers, E-109 v2): MERGES into the roster already on the device, with BACKSLASH photo paths')
   await goto('/rangers')
-  await setFileInput('#importRosterFile', fx.setupFilePath)
+  await importRoster(fx.setupFilePath)
 
   // Poll for both photo keys rather than a flat sleep(7000): two IndexedDB photo writes
   // sometimes take longer than that under load. This check passed reliably earlier in this
@@ -771,6 +804,27 @@ async function checkSetupFileMerge(fx) {
 }
 
 /**
+ * E-187: a messy spreadsheet export (BOM, semicolons, First/Last name, address and e-mail
+ * columns, a Status column) maps on its own, previews, and adds. Exited rows are skipped by
+ * default, and no address or e-mail value reaches the stored roster.
+ */
+async function checkRosterCsvImport(fx) {
+  console.log('\nRoster CSV (E-187): a county-style export maps itself, skips Exited, stores no address')
+  await goto('/rangers')
+  await setFileInput('#importRosterFile', fx.csvPath)
+  check('the column-mapping step appears and Continue is available', await clickImportDialog('Continue'), true)
+  check('the preview then lets the user Add', await clickImportDialog('Add to roster'), true)
+  const stored = await pollUntil(
+    async () => (JSON.parse((await idbGetRaw('rangers')) || '{"rangers":[]}').rangers || []),
+    list => list.some(r => r.callsign === 'E2E-CSV1'))
+  const cora = stored.find(r => r.callsign === 'E2E-CSV1') || {}
+  check('First + Last Name join into the full name', cora.fullName, 'Cora Fixture')
+  check('REW # becomes the id, Cell the phone', [cora.id, cora.phone], ['VI-9101', '555-0191'])
+  check('the Exited row is skipped by default', stored.some(r => r.callsign === 'E2E-CSV2'), false)
+  check('no address or e-mail value is stored', /Fern Rd|@example\.org/.test(JSON.stringify(stored)), false)
+}
+
+/**
  * "Export changes since import" (2026-10-05): an import records a baseline; a ranger added
  * afterwards is the only thing the export hands back. The download is caught in the page by
  * wrapping URL.createObjectURL, since CDP has no simple hook for an <a download> click.
@@ -779,10 +833,16 @@ async function checkSetupFileMerge(fx) {
 async function checkRosterChangesExport(fx) {
   console.log('\nExport changes since import: only what changed after the import comes back')
   await goto('/rangers')
-  await setFileInput('#importRosterFile', fx.rosterPath)
+  // Replace (not Add): the baseline must be the whole roster, and earlier checks left other rows here.
+  await importRoster(fx.rosterPath, 'Replace roster')
+  // Wait for THIS import's baseline (named for the file), not merely a big enough one: earlier checks
+  // left a baseline behind, and E-187's import no longer reloads the page after saving.
   const baselineRows = await pollUntil(
-    async () => Object.keys(JSON.parse((await idbGetRaw('rangersImported')) || '{"rows":{}}').rows || {}).length,
-    n => n >= fx.rangers.length)
+    async () => {
+      const b = JSON.parse((await idbGetRaw('rangersImported')) || '{"rows":{}}')
+      return b.source === 'roster.json' && b.rows ? Object.keys(b.rows).length : -1
+    },
+    n => n === fx.rangers.length)
   check('a roster import records a baseline of every row', baselineRows, fx.rangers.length)
 
   await goto('/rangers')
@@ -800,13 +860,15 @@ async function checkRosterChangesExport(fx) {
   await sleep(1000)
   await evaluate(clickExport)
   const raw = await pollUntil(() => evaluate(`window.__rtDownloads[0] || ''`), t => !!t)
-  const file = JSON.parse(raw || '{}')
-  check('the export holds just the added ranger', (file.rangers || []).length, 1)
-  check('...marked as added, with its uid', !!(file.rangers?.[0]?.uid) && file.rangers?.[0]?.change, 'added')
-  check('...and counts nothing edited or removed', JSON.stringify(file.counts), JSON.stringify({ added: 1, edited: 0, removed: 0 }))
+  // E-187: Export changes is a CSV now, with a leading `change` column.
+  const lines = String(raw).replace(/^\uFEFF/, '').trim().split(/\r?\n/)
+  const cells = (lines[1] || '').split(',')
+  check('the export is a CSV that leads with a change column', (lines[0] || '').startsWith('change,'), true)
+  check('the export holds just the added ranger', lines.length - 1, 1)
+  check('...marked as added, with its uid', cells[0] === 'added' && !!cells[cells.length - 1], true)
 
   await goto('/rangers')
-  await setFileInput('#importRosterFile', fx.rosterPath)
+  await importRoster(fx.rosterPath, 'Replace roster')
   await pollUntil(async () => (JSON.parse((await idbGetRaw('rangers')) || '{"rangers":[]}').rangers || []).length,
     n => n === fx.rangers.length)
 }
@@ -3369,6 +3431,7 @@ async function main() {
         if (want('roster')) await checkGridHeaderTooltipsOpaque()
         if (want('roster')) await checkFieldNameAliases(fx)
         if (want('roster')) await checkSetupFileMerge(fx)
+        if (want('roster')) await checkRosterCsvImport(fx)
         if (want('roster')) await checkRosterChangesExport(fx)
       } else {
         note('fast run: skipping checkRosterLifecycle, checkFieldNameAliases, checkSetupFileMerge (pass --full to include)')

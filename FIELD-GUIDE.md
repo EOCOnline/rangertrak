@@ -158,8 +158,10 @@ unused. Safari on a Mac does the same. There, installing (step 1) and **Back up 
 are the real protection.
 
 **3. Load your roster.**
-On the **Rangers** page, enter your people or import them. Adding, importing and deleting
-save themselves, and so do edits typed into the grid — there is no Save button to remember.
+On the **Rangers** page, enter your people or import them from a spreadsheet (**Import, export &
+print** → **Import a list…**). Adding, importing and deleting save themselves, and so do edits
+typed into the grid — there is no Save button to remember. Starting from an Excel or Google
+Sheets list, or building one up from several lists? See [LOADING-YOUR-ROSTER.md](LOADING-YOUR-ROSTER.md).
 
 **4. Set up the mission.**
 On the **Mission** page, fill in the mission and event names, the operating period start
@@ -306,7 +308,7 @@ incoming operator, who restores it on their device.
 
 **Walk-ups and roster fixes.** Volunteers who turn up on the day, and the phone numbers and
 call signs corrected at the desk, go back to whoever keeps your master roster: on **Rangers**,
-*Bulk roster tools* → **Export changes** saves only the rangers added or edited on this device
+*Import, export & print* → **Export changes** saves only the rangers added or edited on this device
 since the roster was imported. Treat the file like the roster itself.
 
 **Reports from rangers' own phones.** A device is set up as either the **full app** (the

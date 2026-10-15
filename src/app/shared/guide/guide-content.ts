@@ -320,11 +320,11 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           {
             heading: 'Loading a roster',
             bullets: [
-              'Import roster replaces the whole roster from a JSON file, or MERGES rangers in from a setup file (a .zip built on the Setup files page). Radio log entries and settings are left alone either way. Each entry needs a UNIQUE ID — a callsign is optional.',
-              'Export roster writes that file back out. Do it before importing if you want to keep the roster you already have.',
-              'JSON round-trips: it can be imported back in. Export CSV is for Excel and cannot.',
+              'Import a list adds people from an Excel or CSV file. It shows which column is which, then a preview of who would be added and who would be updated, before anything changes. Add to roster is the usual choice: nobody is deleted, and a blank cell never erases what is already here. Replace roster starts over, and asks first.',
+              'You can import several lists one after another (the CERT list, then the radio club). Download template gives you a blank spreadsheet to start from. A file made by Setup files, or an older RangerTrak file, also works.',
+              'Export roster saves the roster as a spreadsheet or CSV that Import a list reads straight back in.',
               'Photos are kept on this device only, never uploaded and never in the repo. Name each file after the ranger\'s id or callsign - any common image format works (JPG, PNG, GIF, WEBP, etc.).',
-              'Import roster, Export roster, Import photos, Export CSV, and Setup files all live under "Bulk roster tools", collapsed near the bottom of this page.'
+              'Import a list, Import photos, Export roster, Export changes and Setup files all live under "Import, export & print", collapsed near the bottom of this page.'
             ]
           },
           {
@@ -333,7 +333,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           },
           {
             heading: 'Moving a whole mission',
-            text: 'To move the roster, settings and radio log entries together, use Back up mission/Restore mission on the Mission page. Import/Export roster here moves only the roster. To hand a coordinator a starting point for a NEW device before a mission begins - any combination of roster, photos, locations and settings, no radio log entries - use the Setup files page instead.'
+            text: 'To move the roster, settings and radio log entries together, use Back up mission/Restore mission on the Mission page. Import and Export here move only the roster. To hand a coordinator a starting point for a NEW device before a mission begins - any combination of roster, photos, locations and settings, no radio log entries - use the Setup files page instead.'
           },
           {
             heading: 'Tactical call signs',
