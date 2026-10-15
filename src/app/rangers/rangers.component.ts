@@ -14,6 +14,10 @@ import { AgGridAngular } from 'ag-grid-angular';
 import { GuideService } from '../shared/guide/guide.service';
 import { PageComponent } from '../shared/page/page.component';
 import { MATERIAL_IMPORTS } from '../material-imports';
+import { FilterChipsComponent } from '../shared/filter-chips/filter-chips.component';
+import { describeGridFilters, FilterChip } from '../domain/grid-filter-chips';
+import { zipSync, Zippable } from 'fflate';
+import { photoEntryName } from '../domain/ranger-photo-export';
 
 import { Utility } from '../shared'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
@@ -44,7 +48,7 @@ import { CustomTooltip } from './customTooltip'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, RouterLink, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, RouterLink, FilterChipsComponent, ...MATERIAL_IMPORTS],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
@@ -92,13 +96,18 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // than ticking on its own.
   private lastContactByKey = new Map<string, Date>()
 
-  // E-187: the Export card's state. "All rows" overrides the selection and the filter.
-  /** Export all rows, rather than only the selected / filtered and sorted ones. */
-  public allRows = signal(false)
   /** Spreadsheet (.xlsx) or CSV. */
   public exportFormat = signal<'xlsx' | 'csv'>('xlsx')
   /** How many grid rows are selected (the Export card's subtitle). */
   public selectedCount = signal(0)
+  /** Export everyone, ignoring the selection and any filters. */
+  public allRows = signal(false)
+  /** "N photos for M rangers" for the rows an export would take. */
+  public exportPhotoCount = signal(0)
+  public exportRangerCount = signal(0)
+  /** E-190: one chip per column filter that is on, and how many rows get through them. */
+  public filterChips = signal<FilterChip[]>([])
+  public shownCount = signal(0)
 
   private missionSubscription!: Subscription
   private settings!: MissionType
@@ -146,7 +155,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     // (onCellValueChanged -> onCellEdited() -> <service>.saveEdited...()) - see
     // onCellEdited()'s own comment for why the roster gets the same treatment now.
     onCellValueChanged: () => this.onCellEdited(),
-    onSelectionChanged: () => this.selectedCount.set(this.gridApi?.getSelectedRows?.().length ?? 0),
+    onSelectionChanged: () => { this.selectedCount.set(this.gridApi?.getSelectedRows?.().length ?? 0); this.refreshExportPhotoCount() },
+    onFilterChanged: () => this.refreshFilterChips(),
 
     // CALLBACKS
     // getRowHeight: (params) => 25
@@ -398,6 +408,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   onGridReady = (params: any) => {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
+    this.refreshFilterChips()
+    this.photos.whenReady().then(() => this.refreshExportPhotoCount())
 
     // E-104: sizeColumnsToFit() removed - it distributes grid width evenly and ignores
     // per-column flex, which is what squeezed Call Sign while ID sat half empty.
@@ -741,13 +753,49 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   //--------------------------------------------------------------------------
+  // E-190: active-filter chips
+
+  /** Re-reads the grid's filters into chips and recounts the rows that get through them. */
+  private refreshFilterChips(): void {
+    if (!this.gridApi?.getFilterModel) return
+    const headerFor = (colId: string): string =>
+      this.gridApi.getColumn(colId)?.getColDef().headerName ?? colId
+    this.filterChips.set(describeGridFilters(this.gridApi.getFilterModel(), headerFor))
+    let shown = 0
+    this.gridApi.forEachNodeAfterFilter?.(() => shown++)
+    this.shownCount.set(shown)
+    this.refreshExportPhotoCount()
+  }
+
+  /** Recounts the photos the export would take; the rows follow the same rule as the roster export. */
+  refreshExportPhotoCount(): void {
+    const rows = this.rowsToExport()
+    this.exportRangerCount.set(rows.length)
+    this.exportPhotoCount.set(this.photos.countFor(rows))
+  }
+
+  onAllRowsChange(checked: boolean): void {
+    this.allRows.set(checked)
+    this.refreshExportPhotoCount()
+  }
+
+  async onClearFilter(colId: string): Promise<void> {
+    await this.gridApi?.setColumnFilterModel(colId, null)
+    await this.gridApi?.onFilterChanged()
+  }
+
+  onClearAllFilters(): void {
+    this.gridApi?.setFilterModel(null)
+  }
+
+  //--------------------------------------------------------------------------
   // Export
 
-  /** The rows an export covers: everyone if "All rows" is ticked, else the selection if there
+  /** The rows an export covers: everyone when asked (the changes-export fallback), else the selection if there
    *  is one, else what the grid is showing (filtered and sorted). */
-  private rowsToExport(): RangerType[] {
+  private rowsToExport(everyone = false): RangerType[] {
     const all = this.rangerService.rangers
-    if (this.allRows() || !this.gridApi?.getSelectedRows) {
+    if (everyone || this.allRows() || !this.gridApi?.getSelectedRows) {
       return all
     }
     const selected: RangerType[] = this.gridApi.getSelectedRows()
@@ -763,8 +811,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
    * Downloads the roster as a spreadsheet (.xlsx) or CSV. The columns are the ones "Import a
    * list" recognises on its own, so the file comes back in with no mapping changes.
    */
-  async onBtnExportRoster() {
-    const rows = this.rowsToExport()
+  async onBtnExportRoster(everyone = false) {
+    const rows = this.rowsToExport(everyone)
     if (!rows.length) {
       alert('There are no rangers to export.')
       return
@@ -798,6 +846,45 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Downloads the stored photos of the rows the roster export would take, as a .zip of
+   * <ID or CALLSIGN>.<ext> files that "Import photos" reads straight back in. Images are
+   * already compressed, so the zip stores them as they are.
+   */
+  async onBtnExportPhotos() {
+    const rows = this.rowsToExport()
+    const { photos, unreadable } = await this.photos.photosFor(rows)
+    if (!photos.length) {
+      alert(unreadable
+        ? `None of the ${unreadable} photo${unreadable === 1 ? '' : 's'} for these rangers could be read, so nothing was exported.`
+        : 'There are no photos stored on this device for these rangers, so there is nothing to export.')
+      return
+    }
+
+    if (!Utility.getConfirmation(
+      `Export ${photos.length} photo${photos.length === 1 ? '' : 's'} to a file?\n\n`
+      + `The exported file contains photographs of volunteers' faces - personal information - `
+      + `and is NOT encrypted.\n\n`
+      + `Store it somewhere appropriate, share it only with people who need it for this `
+      + `mission, and delete it when the mission is over.`)) {
+      this.log.verbose('onBtnExportPhotos: user cancelled export.', this.id)
+      return
+    }
+
+    const files: Zippable = {}
+    for (const { stem, blob } of photos) {
+      files[photoEntryName(stem, blob.type)] = [new Uint8Array(await blob.arrayBuffer()), { level: 0 }]
+    }
+    const stamp = new Date().toISOString().slice(0, 10)
+    const partial = rows.length < this.rangerService.rangers.length ? '-selected' : ''
+    this.downloadBlob(new Blob([zipSync(files) as BlobPart], { type: 'application/zip' }),
+      `rangertrak-roster-${stamp}${partial}-photos.zip`)
+    this.log.info(`Exported ${photos.length} ranger photos.`, this.id)
+    if (unreadable) {
+      alert(`${unreadable} photo${unreadable === 1 ? ' was' : 's were'} unreadable and left out.`)
+    }
+  }
+
+  /**
    * "Export changes" (2026-10-05, John): downloads just the rangers added or edited on this
    * device since the roster was imported, plus the uids of any removed, for the coordinator to
    * merge back into the master list after the event. A CSV with a leading `change` column
@@ -809,8 +896,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!changes) {
       if (confirm('No roster import is recorded on this device, so there is nothing to compare '
         + 'against.\n\nExport the whole roster instead?')) {
-        this.allRows.set(true)
-        this.onBtnExportRoster()
+        this.onBtnExportRoster(true)
       }
       return
     }

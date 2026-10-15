@@ -1,0 +1,25 @@
+:host { display: block; max-width: 100%; }
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 0 0 8px;
+  min-width: 0;
+}
+
+.filter-chips__lead {
+  font: var(--mat-sys-label-large);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.filter-chips__set { min-width: 0; max-width: 100%; }
+
+// Tonal (secondary-container) chips: noticeable, not an alarm colour.
+.filter-chips__chip {
+  --mat-chip-elevated-container-color: var(--mat-sys-secondary-container);
+  --mat-chip-label-text-color: var(--mat-sys-on-secondary-container);
+  --mat-chip-with-trailing-icon-trailing-icon-color: var(--mat-sys-on-secondary-container);
+  max-width: 100%;
+}

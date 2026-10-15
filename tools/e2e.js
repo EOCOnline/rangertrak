@@ -1945,6 +1945,116 @@ async function checkFieldReportsPhoneLayout() {
   await send('Emulation.clearDeviceMetricsOverride')
 }
 
+/**
+ * E-190: the active-filter chip strip above a grid, and the export card that says what it will
+ * export. Shared by the Rangers and Radio Log checks. `grid` is a CSS scope for the page's grid
+ * ('rangers' has no id of its own, so the strip is found by tag).
+ */
+async function gridFilterChipsScenario(label, { filters, selectRowText, cardTitle, total }) {
+  const chipTitles = () => evaluate(`[...document.querySelectorAll('rangertrak-filter-chips mat-chip')].map(c => c.getAttribute('title'))`)
+  const subtitle = () => evaluate(`(() => {
+    const card = [...document.querySelectorAll('mat-card')].find(c => c.querySelector('mat-card-title')?.textContent.includes(${JSON.stringify(cardTitle)}));
+    return (card?.querySelector('mat-card-subtitle')?.textContent || '').replace(/\\s+/g, ' ').replace(/\\u2014.*$/, '').trim();
+  })()`)
+  const setFilter = (colId, text) => evaluate(`(() => {
+    const el = document.querySelector('.ag-floating-filter[col-id="${colId}"] input');
+    if (!el) return false;
+    Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, ${JSON.stringify(text)});
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    return true;
+  })()`)
+  const filterValue = colId => evaluate(`document.querySelector('.ag-floating-filter[col-id="${colId}"] input')?.value ?? null`)
+
+  check(`${label}: with no filter there is no chip strip at all`, await evaluate(`!!document.querySelector('rangertrak-filter-chips .filter-chips')`), false)
+  check(`${label}: with no filter the export card shows the total`, await subtitle(), `Exports ${total} of ${total} rows`)
+
+  const [f1, f2] = filters
+  check(`${label}: the first filter box exists`, await setFilter(f1.colId, f1.text), true)
+  const one = await pollUntil(chipTitles, t => t.length === 1)
+  check(`${label}: one filter gives one chip`, one, [f1.chip])
+  check(`${label}: the export card says it is filtered`, await subtitle(), `Exports ${f1.shown} of ${total} rows (filtered)`)
+
+  await setFilter(f2.colId, f2.text)
+  const two = await pollUntil(chipTitles, t => t.length === 2)
+  check(`${label}: a second filter gives two chips`, two.slice().sort(), [f1.chip, f2.chip].sort())
+  check(`${label}: the export card count follows both filters`, await subtitle(), `Exports ${f2.shown} of ${total} rows (filtered)`)
+
+  await evaluate(`document.querySelector('rangertrak-filter-chips button[aria-label=${JSON.stringify('Remove filter: ' + f1.chip)}]')?.click()`)
+  const left = await pollUntil(chipTitles, t => t.length === 1)
+  check(`${label}: the x removes just that chip`, left, [f2.chip])
+  check(`${label}: ...and clears its filter box`, await filterValue(f1.colId), '')
+
+  await evaluate(`document.querySelector('rangertrak-filter-chips .filter-chips__all')?.click()`)
+  await pollUntil(chipTitles, t => t.length === 0)
+  check(`${label}: Show everything removes the strip`, await evaluate(`!!document.querySelector('rangertrak-filter-chips .filter-chips')`), false)
+  check(`${label}: ...and clears the other filter box`, await filterValue(f2.colId), '')
+  const rowsBack = await pollUntil(
+    () => evaluate(`new Set([...document.querySelectorAll('.ag-row[row-id]')].map(r => r.getAttribute('row-id'))).size`), n => n >= total)
+  check(`${label}: ...and every row is back`, rowsBack >= total, true)
+
+  // Selecting rows makes the export card name the selection instead (after Show everything, so every row can be picked).
+  await evaluate(`(() => {
+    const rows = [...document.querySelectorAll('.ag-row[row-id]')].filter(r => ${JSON.stringify(selectRowText)}.some(t => r.textContent.includes(t)));
+    rows.forEach((r, i) => r.querySelector('.ag-cell')?.dispatchEvent(new MouseEvent('click', { bubbles: true, ctrlKey: i > 0 })));
+  })()`)
+  const sel = await pollUntil(subtitle, s => /selected/.test(s))
+  check(`${label}: selecting rows makes the export card count the selection`, sel, `Exports ${selectRowText.length} selected of ${total}`)
+
+  // "All rows" ignores the selection (and the filter); unticking returns to the selection count.
+  const tickAllRows = () => evaluate(`(() => {
+    const card = [...document.querySelectorAll('mat-card')].find(c => c.querySelector('mat-card-title')?.textContent.includes(${JSON.stringify(cardTitle)}));
+    card?.querySelector('mat-checkbox input')?.click();
+  })()`)
+  await tickAllRows()
+  const allTicked = await pollUntil(subtitle, s => /all/.test(s))
+  check(`${label}: ticking All rows with a selection counts every row`, allTicked, `Exports all ${total} rows`)
+  await tickAllRows()
+  check(`${label}: unticking All rows returns to the selection count`, await pollUntil(subtitle, s => /selected/.test(s)), `Exports ${selectRowText.length} selected of ${total}`)
+
+}
+
+async function checkRangersFilterChips(fx) {
+  console.log('\nRangers (E-190): filter chips name what is hidden; x and Show everything clear them')
+  await goto('/rangers')
+  await importRoster(fx.rosterPath)
+  await sleep(2000)
+  await goto('/rangers')
+  await gridFilterChipsScenario('Rangers', {
+    cardTitle: 'Export roster', total: fx.rangers.length, selectRowText: ['E2E-AA1', 'E2E-BB2'],
+    filters: [
+      { colId: 'role', text: 'REW', chip: 'Role: REW', shown: 2 },
+      { colId: 'fullName', text: 'Alpha', chip: 'Full Name: Alpha', shown: 1 },
+    ],
+  })
+}
+
+async function checkRadioLogFilterChips() {
+  console.log('\nRadio Log (E-190): filter chips name what is hidden; x and Show everything clear them')
+  await goto('/')
+  const mk = (id, callsign, status) => ({
+    id, callsign, status, notes: '', source: 'Radio', operator: '',
+    date: new Date(Date.UTC(2026, 9, 15, 12, id)).toISOString(),
+    location: { lat: 47.4, lng: -122.4, address: '' },
+  })
+  const entries = [mk(1, 'E2E-FC-A', 'Urgent'), mk(2, 'E2E-FC-B', 'Urgent'), mk(3, 'E2E-FC-C', 'Check-in'), mk(4, 'E2E-FC-D', 'Check-in')]
+  await idbSetRaw('radioLog', JSON.stringify({
+    schemaVersion: 1, version: '0.0.0', date: new Date().toISOString(), event: 'e2e', bounds: {},
+    numReport: entries.length, maxId: entries.length, filter: 'All', logEntries: entries,
+  }))
+  await goto('/radio-log')
+  await send('Emulation.setDeviceMetricsOverride', { width: 1400, height: 900, deviceScaleFactor: 1, mobile: false })
+  await goto('/radio-log')
+  await gridFilterChipsScenario('Radio Log', {
+    cardTitle: 'Export radio log entries', total: entries.length, selectRowText: ['E2E-FC-A', 'E2E-FC-B'],
+    filters: [
+      { colId: 'status', text: 'Urgent', chip: 'Status: Urgent', shown: 2 },
+      { colId: 'callsign', text: 'FC-A', chip: 'Callsign: FC-A', shown: 1 },
+    ],
+  })
+  await send('Emulation.clearDeviceMetricsOverride')
+  await idbRemoveRaw('radioLog')
+}
+
 async function checkGridThemeUsesTokens() {
   console.log('\nAG Grid Theming API resolves through --rt-* tokens (Sprint F: legacy ag-theme-alpine.css is gone)')
   const read = async () => {
@@ -3426,6 +3536,8 @@ async function main() {
     } else {
       const fx = makeFixtures(path.join(tmp, 'fixtures'))
       if (want('entry')) await checkUsageModes() // E-168; wipes storage, so before checkRosterLifecycle creates the E2E-AA1 ranger
+      if (want('roster')) await checkRangersFilterChips(fx)
+      if (want('radiolog')) await checkRadioLogFilterChips()
       if (FULL) {
         if (want('roster') || want('entry')) await checkRosterLifecycle(fx) // entry's checks use its E2E-AA1 ranger
         if (want('roster')) await checkGridHeaderTooltipsOpaque()

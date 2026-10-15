@@ -11,6 +11,8 @@ import { AgGridAngular } from 'ag-grid-angular';
 import { PageComponent } from '../shared/page/page.component';
 import { ExpandableSectionComponent } from '../shared/expandable-section/expandable-section.component';
 import { MATERIAL_IMPORTS } from '../material-imports';
+import { FilterChipsComponent } from '../shared/filter-chips/filter-chips.component';
+import { describeGridFilters, FilterChip } from '../domain/grid-filter-chips';
 
 // 2026-09-02: also imported from its own file now, not the '../shared/' barrel - same
 // reason as rangerColorFor below (the barrel re-exports ranger-icon.ts's Leaflet-typed
@@ -58,6 +60,7 @@ export class myUnusedPipe implements PipeTransform {
     PageComponent,
     RouterLink,
     ExpandableSectionComponent,
+    FilterChipsComponent,
     ...MATERIAL_IMPORTS
   ],
   templateUrl: './radio-log.component.html',
@@ -95,14 +98,17 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   // Mutated inside onRowSelection(), itself invoked from gridOptions.onSelectionChanged
   // - an ag-grid-native callback, not a template event binding. Same reasoning as above.
   public selectedRows = signal(0)
+  /** Export every row, ignoring the selection and any filters. */
+  public allRows = signal(false)
+  /** E-190: one chip per column filter that is on, and how many rows get through them. */
+  public filterChips = signal<FilterChip[]>([])
+  public shownCount = signal(0)
 
   // Material-M3 pass, 2026-08-26: the export controls' state, replacing three
   // getElementById reads (see getParamValue/onBtnExport below for why each had to go -
   // one would have thrown, one would have silently exported the wrong rows).
   /** CSV column separator: 'none' (comma), 'tab', or a literal character. */
   public columnSeparator = signal('none')
-  /** Export all rows, rather than only the filtered/sorted ones. */
-  public allRows = signal(false)
   /** Rows per page, as shown in the picker: 'Auto' | '5' | ... | 'All'. */
   public rowsPerPage = signal('Auto')
 
@@ -388,6 +394,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     // EVENT handlers
     // onRowClicked: event => this.log.verbose('A row was clicked'),
     onSelectionChanged: (event: SelectionChangedEvent) => this.onRowSelection(event),
+    onFilterChanged: () => this.refreshFilterChips(),
     // The grid's rows ARE the service's report objects, so an edit has already
     // mutated them by the time this fires - it just has to be written out.
     // Previously nothing did, and a "Save Reports" button alerted UNIMPLEMENTED,
@@ -577,6 +584,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     //this.log.verbose(`onGridReady() gridApi: ${this.gridApi}`, this.id)
     this.gridColumnApi = params.columnApi
     // this.log.verbose(`onGridReady() gridColumnApi: ${this.gridColumnApi}`, this.id)
+    this.refreshFilterChips()
 
     // E-104: `sizeColumnsToFit()` used to run here, and it is what actually produced the
     // reported defect - it distributes the grid's width across columns and IGNORES the
@@ -759,6 +767,26 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** E-190: re-reads the grid's filters into chips and recounts the rows that get through them. */
+  private refreshFilterChips(): void {
+    if (!this.gridApi?.getFilterModel) return
+    const headerFor = (colId: string): string =>
+      this.gridApi.getColumn(colId)?.getColDef().headerName ?? colId
+    this.filterChips.set(describeGridFilters(this.gridApi.getFilterModel(), headerFor))
+    let shown = 0
+    this.gridApi.forEachNodeAfterFilter?.(() => shown++)
+    this.shownCount.set(shown)
+  }
+
+  async onClearFilter(colId: string): Promise<void> {
+    await this.gridApi?.setColumnFilterModel(colId, null)
+    await this.gridApi?.onFilterChanged()
+  }
+
+  onClearAllFilters(): void {
+    this.gridApi?.setFilterModel(null)
+  }
+
   onBtnExport() {
     // TODO: Does this handle new radio log entries properly?
     // https://www.ag-grid.com/javascript-data-grid/excel-export-styles/#styling-headers
@@ -768,15 +796,12 @@ export class RadioLogComponent implements OnInit, OnDestroy {
 
     // ! Is this JUST for enterprise edition?! - test...
     // https://www.ag-grid.com/javascript-data-grid/excel-export-rows/#export-all-unprocessed-rows
-    // Material-M3 pass, 2026-08-26: reads the signal below, not
-    // `getElementById('allRows').checked`. `<mat-checkbox>` puts its real native input
-    // several levels inside its own template, so that id now lands on the host element -
-    // `.checked` there is `undefined`, which is falsy, so the old read would have SILENTLY
-    // exported 'filteredAndSorted' every time regardless of the box. A wrong export with no
-    // error is worse than a crash, which is why this moved to a signal rather than being
-    // re-pointed at the nested input.
+    // Order (John, 2026-10-15; D-58): "All rows" ticked -> every row; else the selected rows if
+    // any; else what the grid shows (every row unfiltered, the filtered rows with a filter -
+    // the chips above the grid make the filter visible). Reads signals, not the DOM.
     this.gridApi.exportDataAsExcel({
       exportedRows: this.allRows() ? 'all' : 'filteredAndSorted',
+      onlySelected: !this.allRows() && this.selectedRows() > 0,
     })
   }
 

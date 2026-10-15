@@ -78,6 +78,7 @@
       </div>
     </div>
     }
+    <rangertrak-filter-chips [chips]="filterChips()" (clear)="onClearFilter($event)" (clearAll)="onClearAllFilters()" />
     <ag-grid-angular #rangerGrid rowAnimation pagination paginationAutoPageSize style="width: 100%;" [style.height]="gridHeight()"
       (gridReady)="onGridReady($event)" [gridOptions]="gridOptions" [rowData]="rangers()"
       [columnDefs]="columnDefs" [tooltipShowDelay]="500">
@@ -167,7 +168,17 @@
       <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
         <mat-card-header>
           <mat-card-title>Export roster</mat-card-title>
-          <mat-card-subtitle>{{ selectedCount() }} selected</mat-card-subtitle>
+          <mat-card-subtitle>
+            @if (allRows()) {
+              Exports all {{ rangers().length }} rows
+            } @else if (selectedCount() > 0) {
+              Exports {{ selectedCount() }} selected of {{ rangers().length }}
+            } @else if (filterChips().length > 0) {
+              Exports {{ shownCount() }} of {{ rangers().length }} rows (filtered)
+            } @else {
+              Exports {{ rangers().length }} of {{ rangers().length }} rows
+            }
+          </mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <div class="rt-action-bar__buttons">
@@ -179,10 +190,16 @@
               </mat-select>
             </mat-form-field>
 
-            <mat-checkbox [checked]="allRows()" (change)="allRows.set($event.checked)"
-              title="By default the selected rows are exported, or the filtered and sorted rows if none are selected. Tick to export everyone.">
+            <mat-checkbox [checked]="allRows()" (change)="onAllRowsChange($event.checked)"
+              title="Tick to export everyone, ignoring any selection and filters. Otherwise the selected rows are exported, or the rows the table is showing if none are selected.">
               All rows
             </mat-checkbox>
+
+            <button matButton="outlined" type="button" (click)="onBtnExportPhotos()"
+              title="Saves the photos of these rows as a .zip, named so Import photos reads them back in">
+              <mat-icon>photo_library</mat-icon>
+              Export photos ({{ exportPhotoCount() }} for {{ exportRangerCount() }} rangers)
+            </button>
 
             <button matButton="filled" type="button" (click)="onBtnExportRoster()">
               <mat-icon>download</mat-icon>

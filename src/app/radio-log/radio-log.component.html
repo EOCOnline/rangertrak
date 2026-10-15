@@ -12,6 +12,7 @@
       <p class="radio-log__empty">No radio log entries yet. Add one on the <a routerLink="/">Entry page</a>, or load a demo mission from the Mission page.</p>
     }
     @if (!isPhone()) {
+      <rangertrak-filter-chips [chips]="filterChips()" (clear)="onClearFilter($event)" (clearAll)="onClearAllFilters()" />
       <ag-grid-angular #reportsGrid rowAnimation style="width: 100%;" [style.height]="gridHeight()" (gridReady)="onGridReady($event)"
         [gridOptions]="gridOptions" [rowData]="radioLogEntries()" [columnDefs]="columnDefs"
         [tooltipShowDelay]="300">
@@ -60,9 +61,15 @@
           <mat-card-header>
             <mat-card-title>Export radio log entries</mat-card-title>
             <mat-card-subtitle>
-              {{ selectedRows() }} selected
-              @if (selectedRows() > 0) {
+              @if (allRows()) {
+                Exports all {{ radioLogEntries().length }} rows
+              } @else if (selectedRows() > 0) {
+                Exports {{ selectedRows() }} selected of {{ radioLogEntries().length }}
                 <span class="reports__selected-note">&mdash; both maps can show only these</span>
+              } @else if (filterChips().length > 0) {
+                Exports {{ shownCount() }} of {{ radioLogEntries().length }} rows (filtered)
+              } @else {
+                Exports {{ radioLogEntries().length }} of {{ radioLogEntries().length }} rows
               }
             </mat-card-subtitle>
           </mat-card-header>
@@ -89,7 +96,7 @@
               </mat-form-field>
 
               <mat-checkbox [checked]="allRows()" (change)="allRows.set($event.checked)"
-                title="By default only the filtered and sorted rows are exported.">
+                title="Tick to export every row, ignoring any selection and filters. Otherwise the selected rows are exported, or the rows the table is showing if none are selected.">
                 All rows
               </mat-checkbox>
 
@@ -108,6 +115,9 @@
         <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
           <mat-card-header>
             <mat-card-title>Print ICS-309 log</mat-card-title>
+            @if (printScope() === 'visible' && filterChips().length > 0) {
+              <mat-card-subtitle>{{ shownCount() }} of {{ radioLogEntries().length }} rows (filtered)</mat-card-subtitle>
+            }
           </mat-card-header>
           <mat-card-content>
             <div class="rt-action-bar__buttons">

@@ -1,0 +1,17 @@
+@if (chips().length > 0) {
+  <div class="filter-chips" role="status" aria-live="polite">
+    <span class="filter-chips__lead">Filters on:</span>
+    <mat-chip-set class="filter-chips__set" aria-label="Active filters">
+      @for (chip of chips(); track chip.key) {
+        <mat-chip class="filter-chips__chip" [attr.data-filter-key]="chip.key" [title]="chip.label"
+          (removed)="clear.emit(chip.key)">
+          {{ chip.label }}
+          <button matChipRemove type="button" [attr.aria-label]="'Remove filter: ' + chip.label">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      }
+    </mat-chip-set>
+    <button matButton type="button" class="filter-chips__all" (click)="clearAll.emit()">Show everything</button>
+  </div>
+}
