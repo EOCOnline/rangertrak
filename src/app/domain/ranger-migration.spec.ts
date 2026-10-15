@@ -409,6 +409,21 @@ describe('ranger-migration (ADR D-42)', () => {
       expect(result.rangers[1].uid).toBe('u-other');
     });
 
+    it('uidRemap maps a matched walk-up incoming uid to the uid this device kept (D-59)', () => {
+      const existing = [ranger('WALK', { id: 'REW-9', uid: 'receiver-uid' })];
+      const incoming = [
+        ranger('WALK', { id: 'REW-9', uid: 'sender-uid' }),
+        ranger('NEWBIE', { id: 'REW-10', uid: 'sender-new' }),
+        ranger('NOUID', { id: 'REW-11', uid: '' }),
+      ];
+
+      const result = mergeRangers(existing, incoming);
+
+      expect(result.uidRemap['sender-uid']).toBe('receiver-uid');
+      expect(result.uidRemap['sender-new']).toBe('sender-new');   // added: keeps its own uid
+      expect(Object.keys(result.uidRemap).length).toBe(2);        // a row with no uid has nothing to map
+    });
+
     it('does not mutate either input array', () => {
       const existing = [ranger('A1', { id: 'REW-1', uid: 'u-a1' })];
       const incoming = [ranger('A1', { id: 'REW-1', fullName: 'Changed' })];

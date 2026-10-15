@@ -14,6 +14,7 @@ import {
 import { migrateRadioLog, RADIO_LOG_ENTRY_DATE_FIELDS } from '../../domain/radio-log-migration'
 import { rehydrateDateFields } from '../../domain/json-dates'
 import { newUid } from '../../domain/uid'
+import { EntryMergeOptions, EntryMergeResult, mergeEntries } from '../../domain/entry-merge'
 // Direct path, not the barrel: a SERVICE used as a DI token through shared/services/index.ts
 // is unresolvable to the compiler ("no suitable injection token") - the same reason
 // rangers.component.ts imports RangerPhotoService directly instead of via './'.
@@ -315,97 +316,64 @@ export class RadioLogService {
   public mergeIncomingEntries(
     incoming: readonly RadioLogEntryType[],
     reporterCredential?: string,
-  ): { added: number, skipped: number, rejected: number } {
+  ): { added: number, skipped: number, rejected: number, updated?: number } {
     const resolvedCredentialId = normalizeRangerId(reporterCredential)
     const resolvedUid = resolvedCredentialId
       ? this.rangerService.rangers.find(r => normalizeRangerId(r.id) === resolvedCredentialId)?.uid
       : undefined
 
-    const seen = new Set(
-      this.radioLog.logEntries.map(e => e.sourceUid).filter((v): v is string => !!v))
+    const result = this.applyEntryMerge(incoming, { reporterCredential: resolvedCredentialId, resolvedUid })
+    const { added, rejected } = result
+    // Legacy Report Packet shape: "skipped" is every entry already present and left as it was.
+    // `updated` (a later-revised copy of an entry this device holds, D-59) appears only when
+    // there was one, so a packet with no revisions returns exactly what it always did.
+    return {
+      added, skipped: result.unchanged, rejected,
+      ...(result.updated ? { updated: result.updated } : {}),
+    }
+  }
 
-    let added = 0
-    let skipped = 0
-    let rejected = 0
+  /**
+   * Hand-over merge (D-59): merges entries with the people merge's uid remap and writes the
+   * result. Unlike the Report Packet path it passes no reporter credential (the operator of a
+   * hand-over file is the scribe, D-44). The full counts and named notes come back so the
+   * caller can show a summary.
+   */
+  public mergeHandoverEntries(
+    incoming: readonly RadioLogEntryType[],
+    uidRemap: Record<string, string>,
+  ): EntryMergeResult {
+    return this.applyEntryMerge(incoming, { uidRemap })
+  }
 
-    for (const entry of incoming) {
-      const reason = this.invalidIncomingEntryReason(entry)
-      if (reason) {
-        this.log.warn(`mergeIncomingEntries: rejected an entry (${reason}): ${JSON.stringify(entry)}`, this.id)
-        rejected++
-        continue
-      }
+  /** Pure preview of the same merge: what would change, without touching the log. */
+  public previewHandoverEntries(
+    incoming: readonly RadioLogEntryType[],
+    uidRemap: Record<string, string>,
+  ): EntryMergeResult {
+    return mergeEntries(this.radioLog.logEntries, incoming, { nextId: this.radioLog.maxId, uidRemap })
+  }
 
-      const identity = entry.rangerUid || resolvedCredentialId || 'unknown'
-      const sourceUid = `${identity}:${entry.id}`
+  private applyEntryMerge(
+    incoming: readonly RadioLogEntryType[],
+    opts: Omit<EntryMergeOptions, 'nextId'>,
+  ): EntryMergeResult {
+    const result = mergeEntries(this.radioLog.logEntries, incoming, { ...opts, nextId: this.radioLog.maxId })
 
-      if (seen.has(sourceUid)) {
-        skipped++
-        continue
-      }
-
-      // rehydrateDateFields, not a bare spread: a Report Packet is JSON, so `date`/
-      // `revisedAt`/`printedAt` arrive as ISO STRINGS despite being typed Date.
-      // invalidIncomingEntryReason() above already parses `date` to validate it, but
-      // validating is not converting - without this the string was stored as-is and later
-      // threw in buildIcs309Log()'s `a.date.getTime()`. See json-dates.ts.
-      this.radioLog.logEntries.push(rehydrateDateFields({
-        ...entry,
-        id: this.radioLog.maxId++,
-        rangerUid: entry.rangerUid || resolvedUid,
-        sourceUid,
-      }, [...RADIO_LOG_ENTRY_DATE_FIELDS]))
-      seen.add(sourceUid)
-      added++
+    for (const note of result.rejectedNotes) {
+      this.log.warn(`mergeEntries: rejected entry ${note.id} (${note.reason})`, this.id)
     }
 
-    if (added) {
+    if (result.added || result.updated) {
+      this.radioLog.logEntries = result.entries
+      this.radioLog.maxId = result.nextId
       this.radioLog.numReport = this.radioLog.logEntries.length
       this.recalcRadioLogBounds(this.radioLog)
       this.updateRadioLogAndPublish()
     }
 
-    this.log.warn(`mergeIncomingEntries: ${added} added, ${skipped} already present, ${rejected} rejected.`, this.id)
-    return { added, skipped, rejected }
-  }
-
-  /**
-   * E-114 Phase 1 (2026-08-31, maintainer's own live ask - "validation of incoming reports,
-   * mainly proper timestamps, etc."). A Report Packet is trusted physical custody (D-40/D-35 -
-   * the same model Setup files already ship under), not an untrusted upload, but it is still a
-   * hand-carried FILE - one a text editor, a bad copy/paste, or a stale hand-edit can corrupt
-   * before it ever reaches `mergeIncomingEntries()` above. Checks only the fields this app
-   * actually recomputes FROM, algorithmically, on every merge - a bad `date` or `location`
-   * doesn't just display wrong, it poisons `recalcRadioLogBounds()`'s min/max math (a single
-   * `NaN` coordinate breaks every future bounds comparison against it) and this device's own
-   * chronological ordering. Returns a short reason string for the log, or null when the entry
-   * is fine. Deliberately per-entry, not whole-packet: one corrupted row in an otherwise-good
-   * file should not cost every other genuine report in it (same "skip and count, never reject
-   * outright" tolerance `mergeIncomingEntries()` already applies to a duplicate).
-   */
-  private invalidIncomingEntryReason(entry: RadioLogEntryType): string | null {
-    if (typeof entry.id !== 'number' || !Number.isFinite(entry.id)) {
-      return 'id is not a number'
-    }
-    if (typeof entry.callsign !== 'string' || typeof entry.status !== 'string') {
-      return 'callsign or status is not text'
-    }
-    if (isNaN(new Date(entry.date).getTime())) {
-      return `not a valid timestamp: ${JSON.stringify(entry.date)}`
-    }
-    if (!this.isValidCoordinate(entry.location)) {
-      return 'location is missing or out of range'
-    }
-    if (entry.evidenceLocation && !this.isValidCoordinate(entry.evidenceLocation)) {
-      return 'evidenceLocation is out of range'
-    }
-    return null
-  }
-
-  private isValidCoordinate(location: { lat: number, lng: number } | null | undefined): boolean {
-    return !!location
-      && Number.isFinite(location.lat) && location.lat >= -90 && location.lat <= 90
-      && Number.isFinite(location.lng) && location.lng >= -180 && location.lng <= 180
+    this.log.warn(`mergeEntries: ${result.added} added, ${result.updated} updated, ${result.unchanged} unchanged, ${result.rejected} rejected.`, this.id)
+    return result
   }
 
   /**

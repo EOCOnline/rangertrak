@@ -289,6 +289,13 @@ export type RangerMergeResult = {
    *  DIFFERENT existing ranger - id wins (see this function's own doc comment), but a
    *  collision like this is worth a line of its own, not just a console warning. */
   ambiguous: RangerMergeNote[]
+  /**
+   * Incoming uid -> the uid that row ended up with on this device, for every incoming row that
+   * arrived with one (D-59). A matched person keeps the EXISTING uid, so the sender's radio log
+   * entries, still pointing at the sender's uid, must be re-pointed with this map before they
+   * are merged. An unmatched (added) person keeps their own uid, so it maps to itself.
+   */
+  uidRemap: Record<string, string>
 }
 
 /**
@@ -349,7 +356,13 @@ export function mergeRangers(existing: readonly RangerType[], incoming: readonly
   const unchanged: RangerMergeNote[] = []
   const ambiguous: RangerMergeNote[] = []
 
-  for (const inc of normalizedIncoming) {
+  const uidRemap: Record<string, string> = {}
+
+  for (const [incIndex, inc] of normalizedIncoming.entries()) {
+    // The uid the row arrived with. normalizeRangerIds() keeps order, and re-mints only a blank
+    // or duplicated uid, so a row whose uid survived unchanged is the one entries point at.
+    const originalUid = String(incoming[incIndex]?.uid ?? '').trim()
+    const remapKey = originalUid && originalUid === inc.uid ? originalUid : ''
     const note: RangerMergeNote = { callsign: inc.callsign, id: inc.id ?? '' }
     const uidMatch = inc.uid ? byUid.get(inc.uid) : undefined
     const idMatches = inc.id ? unclaimed(byId.get(inc.id)) : []
@@ -381,16 +394,18 @@ export function mergeRangers(existing: readonly RangerType[], incoming: readonly
       }
       rangers[matchIndex] = { ...next, uid }
       claimed.add(matchIndex)
+      if (remapKey && uid) uidRemap[remapKey] = uid
       if (changedFields.length) overwritten.push({ ...note, uid, changedFields })
       else unchanged.push({ ...note, id: current.id ?? '', callsign: current.callsign, uid })
     } else {
       rangers.push({ ...inc })
       claimed.add(rangers.length - 1)
       added.push({ ...note, uid: inc.uid })
+      if (remapKey && inc.uid) uidRemap[remapKey] = inc.uid
     }
   }
 
-  return { rangers, added, overwritten, unchanged, ambiguous }
+  return { rangers, added, overwritten, unchanged, ambiguous, uidRemap }
 }
 
 /**
