@@ -2,12 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### Unreleased
+### [0.99.37-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.36-alpha...v0.99.37-alpha) (2026-10-15)
 
 
 ### Features
 
-* **summary:** Mission summary page (E-189): messages per hour, traffic by team, station, operator, status and source, the entries that need attention and the AAR notes grouped by area, for this op period, the whole log or a custom period, with Print and Export CSV. Reached from "Current summary" on the AAR notes and Radio Log pages; read-only, nothing stored.
+* **summary:** Mission summary page at /summary with Current summary buttons (E-189) ([4330371](https://github.com/SteadyEOC/RangerTrak/commit/43303714fd3519378e117bae1178af63f5288686))
+* **summary:** shared CSV helper, summary CSV builder, op-period format and print title export (E-189) ([6919590](https://github.com/SteadyEOC/RangerTrak/commit/6919590fc2759f950b730d54aa5bbb64d22348e8))
+* **summary:** summarizeMission domain rule and spec (E-189) ([06c7c8c](https://github.com/SteadyEOC/RangerTrak/commit/06c7c8c0c7dde98e4bda6b144aa0929404fd966e))
+
+
+### Bug Fixes
+
+* **summary:** open on the op period only when it holds entries (E-189) ([2794117](https://github.com/SteadyEOC/RangerTrak/commit/27941172ae175b46b3cf76519067450a668e6576))
 
 ### [0.99.36-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.35-alpha...v0.99.36-alpha) (2026-10-15)
 
