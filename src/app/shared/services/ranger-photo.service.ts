@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core'
 
+import { photoStemsFor } from '../../domain/ranger-photo-export'
 import { LogService } from './log.service'
 // Direct import of the module-level singleton, not the RecordStore DI wrapper: this service's
 // own constructor runs from Angular DI, same as everything else here, but reading the session
@@ -109,6 +110,31 @@ export class RangerPhotoService {
    * created object URL rather than re-reading IndexedDB, since `this.urls` is already the
    * in-memory source of truth `photoUrl()` itself trusts.
    */
+  /** How many stored photos belong to these rangers (id first, then call sign). Instant. */
+  countFor(rangers: readonly RangerPhotoIdentity[]): number {
+    return photoStemsFor(rangers, s => this.urls.has(s)).length
+  }
+
+  /**
+   * The stored photos for these rangers, ready to export. Only photos loaded this session are
+   * there (encrypted ones whose key is unavailable were skipped by loadAll). `unreadable` counts
+   * chosen photos that could not be read back.
+   */
+  async photosFor(rangers: readonly RangerPhotoIdentity[]): Promise<{ photos: { stem: string; blob: Blob }[]; unreadable: number }> {
+    await this.ready
+    const photos: { stem: string; blob: Blob }[] = []
+    let unreadable = 0
+    for (const stem of photoStemsFor(rangers, s => this.urls.has(s))) {
+      try {
+        photos.push({ stem, blob: await (await fetch(this.urls.get(stem)!)).blob() })
+      } catch (e: any) {
+        unreadable++
+        this.log.warn(`photosFor(): could not read stored photo "${stem}": ${e?.message ?? e}`, this.id)
+      }
+    }
+    return { photos, unreadable }
+  }
+
   async allPhotoBlobs(): Promise<{ stem: string; blob: Blob }[]> {
     await this.ready
     const out: { stem: string; blob: Blob }[] = []
