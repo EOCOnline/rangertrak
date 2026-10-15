@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.35-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.34-alpha...v0.99.35-alpha) (2026-10-15)
+
+
+### Features
+
+* **map:** Flag on map status setting and the map entry-filter rules (E-190) ([fe5159b](https://github.com/SteadyEOC/RangerTrak/commit/fe5159bb0eaf9e203af840ddaf22ab5bf9c7e057))
+* **map:** Leaflet filters, filter chips on screen and print, phone layout (E-190) ([6dcc753](https://github.com/SteadyEOC/RangerTrak/commit/6dcc75326ad1264f0f90b69b52ca782b1aa7fe62))
+
+
+### Bug Fixes
+
+* **header:** mission pill fits one row on a phone; pipes visible on every skin ([95955fc](https://github.com/SteadyEOC/RangerTrak/commit/95955fca77d26c6b5e0dc333a58ffe32eda0c63c))
+* **mission:** Locations list no longer widens the page on a phone ([7539d07](https://github.com/SteadyEOC/RangerTrak/commit/7539d07d9bce67eda13066601866051aa4093eb2))
+
 ### [0.99.34-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.33-alpha...v0.99.34-alpha) (2026-10-15)
 
 
