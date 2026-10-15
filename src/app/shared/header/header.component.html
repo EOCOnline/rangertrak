@@ -33,7 +33,7 @@
     <span class="opPeriod" [title]="'Starts ' + opPeriodStartDisplay() + ' – Ends ' + opPeriodEndDisplay()">{{opPeriod()}} <span class="status-divider status-divider--inline"></span> {{timeElapsedDisplay()}};
       {{timeLeftDisplay()}}</span>
     <span class="status-divider"></span>
-    <span class="clock">{{clockDisplay()}}</span>
+    <span class="clock" [title]="clockDisplay()"><span class="clock__date">{{clockDate()}}, </span>{{clockTime()}}</span>
 
     <div class="rt-mission-info-panel" role="tooltip" (click)="$event.stopPropagation()">
       @if (eventInfo()) {

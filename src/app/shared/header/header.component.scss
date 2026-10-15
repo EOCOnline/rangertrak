@@ -73,10 +73,14 @@
   // the markup now reuses this same class inline (see the template), just needing
   // display:inline-block since .opPeriod is plain inline text, not a flex container (a flex
   // item used display is auto-blockified even without this; a plain inline span is not).
+  // 2026-10-15, John: on Ridgeline the pipes were near invisible - --rt-line-strong is a
+  // border token, too faint on the tinted pill. The text colour at half strength reads on
+  // every skin, light and dark.
   .status-divider {
-    width      : 1px;
+    width      : 1.5px;
     height     : 1em;
-    background : var(--rt-line-strong);
+    background : currentColor;
+    opacity    : 0.55;
     flex       : none;
   }
 
@@ -295,14 +299,29 @@
   // op-period reading, then the clock. Two lines instead: dot | clock first, the op-period
   // reading on its own full-width line below. The divider that sat between the op period
   // and the clock would now sit beside the first one, so it is hidden.
+  //
+  // 2026-10-15, John: still three rows on his phone - the op-period reading wrapped inside
+  // itself as well. Now no forced line break: each reading stays whole (nowrap), the clock
+  // drops its date (the full date and time stay in its title), and at 360 px the whole pill
+  // fits on one row. Narrower than that it wraps between readings, never inside one.
+  .opPeriod,
+  .clock {
+    white-space         : nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
   @include bp.phone {
-    .opPeriod {
-      order     : 1;
-      flex-basis: 100%;
-      text-align: left;
+    .status-cluster {
+      column-gap: 6px;
+      row-gap   : 0;
     }
 
-    .opPeriod + .status-divider {
+    .opPeriod,
+    .clock {
+      font-size: 0.8125rem;
+    }
+
+    .clock__date {
       display: none;
     }
   }

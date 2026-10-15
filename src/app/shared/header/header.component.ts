@@ -93,6 +93,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // current by a plain 1-second interval - the interval only ever refreshes an
   // already-correct value, it's never depended on for the first one.
   public clockDisplay = signal('')
+  public clockDate = signal('')
+  public clockTime = signal('')
   public timeElapsedDisplay = signal('')
   public timeLeftDisplay = signal('')
 
@@ -107,11 +109,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
    *  rather than via Intl.DateTimeFormat, which has known hour12:false midnight quirks
    *  ("24:00" instead of "00:00" in some engines) this app's own time-picker component
    *  already avoids the same way (padStart, not Intl). */
+  private setClock(d: Date): void {
+    this.clockDisplay.set(this.formatClock(d))
+    this.clockDate.set(this.formatClockDate(d))
+    this.clockTime.set(this.formatClockTime(d))
+  }
+
   private formatClock(d: Date): string {
+    return `${this.formatClockDate(d)}, ${this.formatClockTime(d)}`
+  }
+
+  // 2026-10-15, John: on a phone the pill took three rows. The date half is hidden there
+  // (header.component.scss, bp.phone), so the time can share the first row.
+  private formatClockDate(d: Date): string {
+    return `${HeaderComponent.MONTH_SHORT[d.getMonth()]} ${d.getDate()}`
+  }
+
+  private formatClockTime(d: Date): string {
     const hh = d.getHours().toString().padStart(2, '0')
     const mm = d.getMinutes().toString().padStart(2, '0')
     const ss = d.getSeconds().toString().padStart(2, '0')
-    return `${HeaderComponent.MONTH_SHORT[d.getMonth()]} ${d.getDate()}, ${hh}:${mm}:${ss}`
+    return `${hh}:${mm}:${ss}`
   }
 
   constructor(
@@ -122,9 +140,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private router: Router,
   ) {
     //======== Constructor() ============
-    this.clockDisplay.set(this.formatClock(new Date()))
+    this.setClock(new Date())
     this.clockSubscription = this.clockService.getCurrentTime()
-      .subscribe(d => this.clockDisplay.set(this.formatClock(d)))
+      .subscribe(d => this.setClock(d))
 
     // consuming components should include their name, e.g.
     this.parentTitle = 'parent component`s title'
