@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.36-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.35-alpha...v0.99.36-alpha) (2026-10-15)
+
+
+### Features
+
+* **map:** Import and export places on the Map page, Setup file layer names (E-187 phase B) ([a7a8b96](https://github.com/SteadyEOC/RangerTrak/commit/a7a8b961ced2736d19ea1c8fd909e189b860873c))
+
 ### [0.99.35-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.34-alpha...v0.99.35-alpha) (2026-10-15)
 
 
