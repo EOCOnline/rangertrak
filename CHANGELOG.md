@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.33-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.32-alpha...v0.99.33-alpha) (2026-10-15)
+
+
+### Features
+
+* **rangers:** E-187 import a list from CSV/Excel, preview, Add by default, Import/export/print panel ([5f64650](https://github.com/SteadyEOC/RangerTrak/commit/5f646506efb688f49c2654cc247f78fb87f22a1c))
+
 ### [0.99.32-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.31-alpha...v0.99.32-alpha) (2026-10-13)
 
 ### [0.99.31-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.30-alpha...v0.99.31-alpha) (2026-10-13)
