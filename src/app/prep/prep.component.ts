@@ -5,12 +5,12 @@ import * as packageJson from '../../../package.json'
 import { PageComponent } from '../shared/page/page.component'
 import { MATERIAL_IMPORTS } from '../material-imports'
 import {
-  buildMissionZipBytes, extractMissionZip, MissionZipManifest, MissionZipPhoto,
+  buildMissionZipBytes, extractMissionZip, layerFor, layerName, MissionZipManifest, MissionZipPhoto,
   MISSION_ZIP_SCHEMA_VERSION,
 } from '../shared/export/mission-zip'
 import { migrateMission } from '../domain/mission-migration'
 import { describeRangerMerge, mergeRangers } from '../domain/ranger-migration'
-import { mergeLocations, LocationMergeResult } from '../domain/mission-location-migration'
+import { describeLocationMerge, mergeLocations } from '../domain/location-merge'
 import { LogService, MissionLocationService, MissionService, RangerService, RangerType } from '../shared/services'
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 // E-122 Phase 2a: reloadPage() below awaits this before reloading - see
@@ -62,6 +62,8 @@ export class PrepComponent {
   exportRangers = signal(true)
   exportLocations = signal(true)
   exportSettings = signal(true)
+  /** E-187 (ADR D-58): an optional name for the file ("Fernhollow shelters, Oct 2026"). Blank = no layer block. */
+  exportLayerName = signal('')
 
   /** Import side: one or more picked-and-validated files, queued for one batch apply -
    *  replaces the old single `pending` signal (v1 only ever loaded one file at a time). */
@@ -113,13 +115,19 @@ export class PrepComponent {
       const appVersion = JSON.parse(JSON.stringify(packageJson)).version
 
       const locations = includeLocations ? this.locationService.getCurrentLocations() : undefined
-      const manifest: MissionZipManifest = {
-        schemaVersion: MISSION_ZIP_SCHEMA_VERSION,
-        exportedAt: new Date().toISOString(),
-        appVersion,
+      const contents = {
         ...(includeSettings ? { settings: this.missionService.settings } : {}),
         ...(includeRangers ? { rangers } : {}),
         ...(includeLocations ? { locations } : {}),
+      }
+      const exportedAt = new Date().toISOString()
+      const layer = this.exportLayerName().trim()
+      const manifest: MissionZipManifest = {
+        schemaVersion: MISSION_ZIP_SCHEMA_VERSION,
+        exportedAt,
+        appVersion,
+        ...contents,
+        ...(layer ? { layer: layerFor(contents, layer, exportedAt.slice(0, 10)) } : {}),
       }
 
       const bytes = await buildMissionZipBytes(manifest, photoBlobs)
@@ -271,6 +279,7 @@ export class PrepComponent {
   private async applyOneSetupFile(file: PendingSetupFile): Promise<string> {
     const { manifest, photos } = file
     const parts: string[] = []
+    const named = layerName(manifest)
 
     if (manifest.settings) {
       const settings = migrateMission(manifest.settings, this.missionService.initMission())
@@ -301,7 +310,7 @@ export class PrepComponent {
     if (manifest.locations) {
       const merge = mergeLocations(this.locationService.getCurrentLocations(), manifest.locations)
       this.locationService.replaceAllLocations(merge.locations)
-      parts.push(this.describeLocationMerge(merge))
+      parts.push(describeLocationMerge(merge))
     }
 
     if (photos.length) {
@@ -312,14 +321,13 @@ export class PrepComponent {
         + (unmatched.length ? `, ${unmatched.length} unmatched` : ''))
     }
 
-    return parts.length ? parts.join('. ') + '.' : 'carried no categories - nothing applied.'
+    const prefix = named ? `From "${named}": ` : ''
+    return parts.length ? prefix + parts.join('. ') + '.' : 'carried no categories - nothing applied.'
   }
 
-  private describeLocationMerge(merge: LocationMergeResult): string {
-    const bits: string[] = []
-    if (merge.added.length) bits.push(`added ${merge.added.length} (${merge.added.join(', ')})`)
-    if (merge.overwritten.length) bits.push(`overwrote ${merge.overwritten.length} (${merge.overwritten.join(', ')})`)
-    return `locations: ${bits.length ? bits.join('; ') : 'no changes'}`
+  /** The name a queued file calls itself, for the queue list. */
+  layerOf(file: PendingSetupFile): string {
+    return layerName(file.manifest)
   }
 
   // Same wrapper rangers.component.ts's own reloadPage() is, for the same reason: a plain

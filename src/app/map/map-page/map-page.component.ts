@@ -9,6 +9,7 @@ import { PageComponent } from '../../shared/page/page.component'
 import { MissionService } from '../../shared/services'
 import { OperatorNameService } from '../../shared/services/operator-name.service'
 import { MapEngineService } from '../map-engine.service'
+import { PlacesIoComponent } from '../places-io/places-io.component'
 
 /**
  * E-64: a thin shell owning route `/map`. It owns ONLY the page wrapper, the engine
@@ -26,7 +27,7 @@ import { MapEngineService } from '../map-engine.service'
 @Component({
   selector: 'rangertrak-map-page',
   standalone: true,
-  imports: [PageComponent, LmapComponent, NgComponentOutlet, NgTemplateOutlet, AsyncPipe, DatePipe, MatSlideToggleModule],
+  imports: [PageComponent, LmapComponent, NgComponentOutlet, NgTemplateOutlet, AsyncPipe, DatePipe, MatSlideToggleModule, PlacesIoComponent],
   templateUrl: './map-page.component.html',
   styleUrls: ['./map-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

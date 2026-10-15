@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core"
 
 import {
-  ColumnTarget, ImportMappings, parseImportMappings, rememberMapping,
+  COLUMN_TARGETS, ImportMappings, parseImportMappings, PLACE_TARGET_WORDS, rememberMapping,
 } from "../../domain/roster-sheet"
 
 // Keys unchanged from when the components wrote them directly, so nothing stored moves.
@@ -42,13 +42,15 @@ export class DevicePrefsService {
     return this.write(RANGERS_PRIVACY_DISMISSED_KEY, 'true')
   }
 
-  /** E-187: the column mappings remembered for roster spreadsheets. Bad or missing data reads as none. */
+  /** E-187: the column mappings remembered for roster and places spreadsheets. Bad or missing data reads as none. */
   getImportMappings(): ImportMappings {
-    return parseImportMappings(this.read(IMPORT_MAPPINGS_KEY))
+    // Roster and places sheets share this one key (places under a `places:` prefix), so both
+    // kinds of target must survive a read-modify-write.
+    return parseImportMappings(this.read(IMPORT_MAPPINGS_KEY), [...COLUMN_TARGETS, ...PLACE_TARGET_WORDS])
   }
 
   /** Remembers the mapping used for this header set (at most 20 are kept, oldest dropped). */
-  rememberImportMapping(headerKey: string, targets: readonly ColumnTarget[]): boolean {
+  rememberImportMapping(headerKey: string, targets: readonly string[]): boolean {
     const next = rememberMapping(this.getImportMappings(), headerKey, targets)
     return this.write(IMPORT_MAPPINGS_KEY, JSON.stringify(next))
   }

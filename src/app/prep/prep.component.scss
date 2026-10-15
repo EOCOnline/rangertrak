@@ -84,3 +84,10 @@
   color: var(--rt-ink-2);
   margin-block: 0.75rem;
 }
+
+// E-187: the optional name a Setup file calls itself.
+.prep__layer-name {
+  display: block;
+  width: 100%;
+  max-width: 28rem;
+}

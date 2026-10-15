@@ -1,7 +1,7 @@
 import { MissionType } from '../services/mission.interface'
 import { RangerType, UnknownRanger } from '../services/ranger.interface'
 
-import { buildMissionZipBytes, extractMissionZip, MISSION_ZIP_SCHEMA_VERSION, MissionZipManifest } from './mission-zip'
+import { buildMissionZipBytes, extractMissionZip, layerFor, layerName, MISSION_ZIP_SCHEMA_VERSION, MissionZipManifest } from './mission-zip'
 
 describe('mission-zip', () => {
   const ranger = (over: Partial<RangerType>): RangerType => ({ ...UnknownRanger, ...over })
@@ -150,6 +150,66 @@ describe('mission-zip', () => {
       const entries = unzipSync(bytes)
       const readme = new TextDecoder().decode(entries['README.txt'])
       expect(readme).toContain('no categories')
+    })
+  })
+
+  // v3 (2026-10-15, E-187 / ADR D-58): an optional `layer` block names the file.
+  describe('v3 layer name', () => {
+    const places = [{ name: 'Fernhollow Library', type: 'Shelters', lat: 47.41, lng: -122.46 }]
+
+    it('is written as version 3 and round-trips the layer block', async () => {
+      expect(MISSION_ZIP_SCHEMA_VERSION).toBe(3)
+      const contents = { locations: places }
+      const built: MissionZipManifest = {
+        schemaVersion: MISSION_ZIP_SCHEMA_VERSION, exportedAt: '2026-10-15T00:00:00.000Z', appVersion: '0.99.36',
+        ...contents, layer: layerFor(contents, 'Fernhollow shelters, Oct 2026', '2026-10-15'),
+      }
+      const { manifest: read } = extractMissionZip(await buildMissionZipBytes(built, []))
+      expect(read).toEqual(built)
+      expect(layerName(read)).toBe('Fernhollow shelters, Oct 2026')
+      expect(read.layer).toEqual({
+        name: 'Fernhollow shelters, Oct 2026', asOf: '2026-10-15', contains: ['places'], sensitivity: 'none',
+      })
+    })
+
+    it('marks a file that carries rangers as personal information', () => {
+      const layer = layerFor({ rangers: [ranger({ callsign: 'Z1' })], locations: places }, 'Everything', '2026-10-15')
+      expect(layer.contains).toEqual(['people', 'places'])
+      expect(layer.sensitivity).toBe('pii')
+    })
+
+    it('prints the layer name in the README, and says a places-only file holds no personal information', async () => {
+      const contents = { locations: places }
+      const bytes = await buildMissionZipBytes({
+        schemaVersion: MISSION_ZIP_SCHEMA_VERSION, exportedAt: '2026-10-15T00:00:00.000Z', appVersion: '0.99.36',
+        ...contents, layer: layerFor(contents, 'Fernhollow shelters, Oct 2026', '2026-10-15'),
+      }, [])
+      const { unzipSync } = await import('fflate')
+      const readme = new TextDecoder().decode(unzipSync(bytes)['README.txt'])
+      expect(readme).toContain('Layer: Fernhollow shelters, Oct 2026 (as of 2026-10-15)')
+      expect(readme).toContain('no personal information')
+      expect(readme).not.toContain('CONFIDENTIAL')
+    })
+
+    it('keeps the confidentiality notice when rangers are in the file', async () => {
+      const contents = { rangers: [ranger({ callsign: 'Z1' })] }
+      const bytes = await buildMissionZipBytes({
+        schemaVersion: MISSION_ZIP_SCHEMA_VERSION, exportedAt: '2026-10-15T00:00:00.000Z', appVersion: '0.99.36',
+        ...contents, layer: layerFor(contents, 'Team roster', '2026-10-15'),
+      }, [])
+      const { unzipSync } = await import('fflate')
+      expect(new TextDecoder().decode(unzipSync(bytes)['README.txt'])).toContain('CONFIDENTIAL')
+    })
+
+    it('still reads v1 and v2 files, which have no layer', async () => {
+      const { zipSync } = await import('fflate')
+      for (const schemaVersion of [1, 2]) {
+        const old = { schemaVersion, exportedAt: '2026-08-31T00:00:00.000Z', appVersion: '0.90.0', settings: { mission: 'Old' }, rangers: [], locations: places }
+        const { manifest: read } = extractMissionZip(zipSync({ 'mission-zip.json': new TextEncoder().encode(JSON.stringify(old)) }))
+        expect(read.layer).toBeUndefined()
+        expect(layerName(read)).toBe('')
+        expect(read.locations?.length).toBe(1)
+      }
     })
   })
 })

@@ -31,6 +31,13 @@
         </mat-checkbox>
       </div>
 
+      <mat-form-field class="prep__layer-name" subscriptSizing="dynamic">
+        <mat-label>Name this file (optional)</mat-label>
+        <input matInput type="text" [value]="exportLayerName()"
+          (input)="exportLayerName.set($any($event.target).value)" autocomplete="off"
+          placeholder="e.g. Fernhollow team roster, Oct 2026" />
+      </mat-form-field>
+
       <div class="warn">
         Confidential: a setup file carrying Rangers contains real names, phone numbers and
         photographs of volunteers. Do not email it, do not put it in source control, and wipe
@@ -74,7 +81,7 @@
           <h3>{{ queueLength }} file{{ queueLength === 1 ? '' : 's' }} queued, in this order</h3>
           @for (f of pendingQueue(); track f.filename) {
             <div class="prep__queue-item">
-              <span class="prep__queue-item-name">{{ f.filename }}</span>
+              <span class="prep__queue-item-name">{{ f.filename }}@if (layerOf(f)) { &mdash; &ldquo;{{ layerOf(f) }}&rdquo; }</span>
               <span class="prep__queue-item-meta">
                 @if (f.manifest.rangers) { {{ f.manifest.rangers.length }} ranger{{ f.manifest.rangers.length === 1 ? '' : 's' }} }
                 @if (f.manifest.locations) { &middot; {{ f.manifest.locations.length }} location{{ f.manifest.locations.length === 1 ? '' : 's' }} }

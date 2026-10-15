@@ -1,5 +1,7 @@
 import { Injectable, signal } from '@angular/core'
 
+import type { PlaceBounds } from '../domain/places-file'
+
 export type MapEngine = 'leaflet' | 'maplibre'
 
 /**
@@ -13,6 +15,14 @@ export type MapEngine = 'leaflet' | 'maplibre'
 @Injectable({ providedIn: 'root' })
 export class MapEngineService {
   readonly engine = signal<MapEngine>('leaflet')
+
+  /**
+   * What the Leaflet map is showing right now, or null when it is not mounted (MapLibre, or
+   * another page). The Map page's Export places card reads it for "Only places in the current
+   * map view" (E-187 phase B; offered on Leaflet only, D-56). Written by the Leaflet component on
+   * every move, and cleared when it goes away.
+   */
+  readonly viewBounds = signal<PlaceBounds | null>(null)
 
   setEngine(engine: MapEngine): void {
     this.engine.set(engine)

@@ -28,6 +28,15 @@ export const COLUMN_TARGETS: readonly ColumnTarget[] = [
   'team', 'role', 'note', 'uid', 'ignore', 'ignoreNotStored',
 ]
 
+/**
+ * The words a places sheet's remembered mapping may hold (E-187 phase B). They live here, not in
+ * places-file.ts, only so DevicePrefsService (which is in the initial bundle) can validate them
+ * without pulling the whole places module in; places-file.ts owns what they mean.
+ */
+export const PLACE_TARGET_WORDS = [
+  'name', 'category', 'lat', 'lng', 'wkt', 'address', 'note', 'uid', 'ignore',
+] as const
+
 export type ColumnMapping = {
   /** One target per column, in the file's column order. */
   targets: ColumnTarget[]
@@ -253,21 +262,28 @@ export function applyMapping(
 
 // ── Remembered mappings ──────────────────────────────────────────────────────────────────────
 
-/** headerSetKey -> targets. Header NAMES only; never a cell value. Oldest entry first. */
-export type ImportMappings = Record<string, ColumnTarget[]>
+/**
+ * headerSetKey -> targets. Header NAMES only; never a cell value. Oldest entry first.
+ * Places (domain/places-file.ts) share the memory under a `places:` key prefix and their own
+ * targets, so the value type is plain strings and each reader validates against what it knows.
+ */
+export type ImportMappings = Record<string, string[]>
 
 export const MAX_REMEMBERED_MAPPINGS = 20
 
-/** Reads the stored text defensively: anything unusable is an empty memory. */
-export function parseImportMappings(raw: string | null): ImportMappings {
+/**
+ * Reads the stored text defensively: anything unusable is an empty memory. `valid` lists the
+ * targets an entry may hold (default: the roster's); an entry using any other word is dropped.
+ */
+export function parseImportMappings(raw: string | null, valid: readonly string[] = COLUMN_TARGETS): ImportMappings {
   if (!raw) return {}
   try {
     const parsed = JSON.parse(raw)
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
     const out: ImportMappings = {}
     for (const [key, value] of Object.entries(parsed)) {
-      if (Array.isArray(value) && value.every(t => COLUMN_TARGETS.includes(t as ColumnTarget))) {
-        out[key] = value as ColumnTarget[]
+      if (Array.isArray(value) && value.every(t => typeof t === 'string' && valid.includes(t))) {
+        out[key] = value as string[]
       }
     }
     return out
@@ -278,7 +294,7 @@ export function parseImportMappings(raw: string | null): ImportMappings {
 
 /** Adds (or refreshes) a mapping, keeping at most `cap`; the oldest are dropped first. */
 export function rememberMapping(
-  mappings: ImportMappings, key: string, targets: readonly ColumnTarget[], cap = MAX_REMEMBERED_MAPPINGS,
+  mappings: ImportMappings, key: string, targets: readonly string[], cap = MAX_REMEMBERED_MAPPINGS,
 ): ImportMappings {
   if (!key) return mappings
   const { [key]: _old, ...rest } = mappings
@@ -286,10 +302,12 @@ export function rememberMapping(
   return Object.fromEntries(entries.slice(Math.max(0, entries.length - cap)))
 }
 
-/** The remembered targets for these headers, if they still fit the column count. */
-export function recallMapping(mappings: ImportMappings, headers: readonly string[]): ColumnTarget[] | null {
-  const stored = mappings[headerSetKey(headers)]
-  return stored && stored.length === headers.length ? [...stored] : null
+/** The remembered targets for these headers, if they still fit the column count. `keyPrefix` is `places:` for a places sheet. */
+export function recallMapping<T extends string = ColumnTarget>(
+  mappings: ImportMappings, headers: readonly string[], keyPrefix = '',
+): T[] | null {
+  const stored = mappings[keyPrefix + headerSetKey(headers)]
+  return stored && stored.length === headers.length ? [...stored] as T[] : null
 }
 
 // ── Rows out ─────────────────────────────────────────────────────────────────────────────────

@@ -86,3 +86,58 @@ wb.Props = { Title: 'RangerTrak roster template', Author: 'RangerTrak' }
 const out = path.join(HERE, 'roster-template.xlsx')
 XLSX.writeFile(wb, out)
 console.log(`Wrote ${out}`)
+
+// ── Places (E-187 phase B) ───────────────────────────────────────────────────────────────────
+// The headings are the ones placesToRows() writes (less the internal uid), so the template, the
+// app's own export and the importer all agree. Name, Category and Address are formatted as text.
+
+const PLACES_HELP = [
+  ['How to fill in this list of places'],
+  [''],
+  ['One row per place. Put your places on the "Places" sheet; "Example" shows made-up ones.'],
+  ['Keep the headings on row 1 exactly as they are. Add columns of your own if you like: RangerTrak ignores them.'],
+  [''],
+  ['Column', 'Needed?', 'What goes in it'],
+  ['Name', 'Yes', 'What the place is called on the map. A place with the same name as one already on the map is updated, not duplicated.'],
+  ['Category', 'Recommended', 'The kind of place: Shelters, Staging Areas, Fire Stations. New kinds are added to the mission list of kinds when you import. Blank goes to "Other".'],
+  ['Latitude', 'Yes', 'Decimal degrees, e.g. 47.41000. South is negative.'],
+  ['Longitude', 'Yes', 'Decimal degrees, e.g. -122.46000. West is negative.'],
+  ['Address', 'Optional', 'Kept as text. RangerTrak does not look addresses up: a row with an address but no latitude and longitude is skipped.'],
+  ['Notes', 'Optional', 'Anything a scribe should see: hours, "generator on site", who holds the key.'],
+  [''],
+  ['A blank cell never erases what the map already holds for that place.'],
+  ['From Google My Maps: Menu, Export to KML/KMZ, then import that file here instead of this one. Each My Maps layer becomes a category.'],
+]
+
+const placesWidths = [{ wch: 28 }, { wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 28 }, { wch: 44 }]
+
+const places = readCsv('places-template.csv')
+for (let r = 0; r < 300; r++) {
+  for (const c of [0, 1, 4]) {
+    const ref = XLSX.utils.encode_cell({ r, c })
+    if (!places[ref]) places[ref] = { t: 's', v: '' }
+    places[ref].t = 's'
+    places[ref].z = '@'
+  }
+}
+const placesRange = XLSX.utils.decode_range(places['!ref'])
+placesRange.e.r = Math.max(placesRange.e.r, 299)
+places['!ref'] = XLSX.utils.encode_range(placesRange)
+places['!cols'] = placesWidths
+places['!autofilter'] = { ref: 'A1:F1' }
+
+const placesExample = readCsv('places-example.csv', EXAMPLE_DIR)
+placesExample['!cols'] = placesWidths
+
+const placesHelp = XLSX.utils.aoa_to_sheet(PLACES_HELP)
+placesHelp['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 100 }]
+
+const pwb = XLSX.utils.book_new()
+XLSX.utils.book_append_sheet(pwb, places, 'Places')
+XLSX.utils.book_append_sheet(pwb, placesExample, 'Example')
+XLSX.utils.book_append_sheet(pwb, placesHelp, 'How to fill this in')
+pwb.Props = { Title: 'RangerTrak places template', Author: 'RangerTrak' }
+
+const placesOut = path.join(HERE, 'places-template.xlsx')
+XLSX.writeFile(pwb, placesOut)
+console.log(`Wrote ${placesOut}`)

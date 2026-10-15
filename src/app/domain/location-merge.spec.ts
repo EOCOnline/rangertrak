@@ -1,5 +1,5 @@
 import { MissionLocationType } from '../shared/services/mission-location.interface';
-import { mergeLocations } from './mission-location-migration';
+import { mergeLocations } from './location-merge';
 
 /**
  * E-109 Setup files v2 (2026-08-31). mergeLocations() is the additive counterpart to
@@ -8,7 +8,7 @@ import { mergeLocations } from './mission-location-migration';
  * coverage deliberately - same shape, same cases - minus the ambiguous-match case, which does
  * not apply here: a location has only one match key (`name`), not two.
  */
-describe('mission-location-migration', () => {
+describe('location-merge', () => {
   function location(name: string, extra: Partial<MissionLocationType> = {}): MissionLocationType {
     return { name, type: 'Command Post', lat: 47.4, lng: -122.4, ...extra };
   }

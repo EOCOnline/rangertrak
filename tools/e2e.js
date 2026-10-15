@@ -475,7 +475,17 @@ function makeFixtures(dir) {
     'Dan;Fixture;VI-9102;E2E-CSV2;555-0192;2 Fern Rd;dan@example.org;Exited',
   ].join('\r\n') + '\r\n')
 
-  return { rangers, rosterPath, aliasPath, setupFilePath, csvPath }
+  // E-187 phase B: a places sheet. Made-up places only; the last row has no coordinates and must be skipped.
+  const placesCsvPath = path.join(dir, 'places.csv')
+  fs.writeFileSync(placesCsvPath, [
+    'Name,Category,Latitude,Longitude,Notes',
+    'E2E Library,E2E Shelters,47.41000,-122.46000,Open 8-5',
+    'E2E School,E2E Shelters,47.42000,-122.47000,',
+    'E2E Pump,E2E Water,47.43000,-122.48000,',
+    'E2E Nowhere,E2E Water,,,no fix yet',
+  ].join('\r\n') + '\r\n')
+
+  return { rangers, rosterPath, aliasPath, setupFilePath, csvPath, placesCsvPath }
 }
 
 // ── the checks ───────────────────────────────────────────────────────────────
@@ -3269,6 +3279,63 @@ async function checkMapFilterChips() {
 }
 
 /**
+ * E-187 phase B: Import places on the Map page. A CSV is mapped, previewed (named new categories,
+ * the row without coordinates skipped) and added; the Mission page's Locations list then shows the
+ * new places. Importing the same file again changes nothing (all Unchanged); after one place is
+ * deleted on the Mission page, importing it again adds exactly that one.
+ */
+async function checkMapPlacesImport(fx) {
+  console.log('\nE-187 B: Import places adds from a CSV, a repeat changes nothing, a deleted place comes back alone')
+  const rowCount = () => evaluate(`document.querySelectorAll('table.rt-locations-list tbody tr').length`)
+  const previewCounts = () => pollUntil(
+    () => evaluate(`[...document.querySelectorAll('mat-dialog-container .pid__counts span')].map(x => x.textContent.trim()).join(' ')`),
+    v => v !== '', 20, 300)
+  const stored = async () => {
+    const raw = JSON.parse((await idbGetRaw('locations')) || '{}')
+    return (Array.isArray(raw) ? raw : (raw.locations || [])).map(l => l.name)
+  }
+  const pick = async () => {
+    await goto('/map', 3500)
+    await setFileInput('#importPlacesFile', fx.placesCsvPath)
+    return await clickImportDialog('Continue')
+  }
+
+  await goto('/mission')
+  const before = await pollUntil(rowCount, v => typeof v === 'number', 5, 300)
+
+  check('the mapping step appears for a CSV', await pick(), true)
+  check('the preview counts 3 added, none updated, the row without coordinates skipped',
+    await previewCounts(), 'Added 3 Updated 0 Unchanged 0 Skipped 1')
+  const newCats = await evaluate(`document.querySelector('mat-dialog-container .pid__plain')?.textContent.replace(/\\s+/g, ' ').trim() || ''`)
+  check('the preview names the new categories', /^E2E Shelters, E2E Water\./.test(newCats), true)
+  check('Add to map is offered', await clickImportDialog('Add to map'), true)
+  await pollUntil(stored, v => v.includes('E2E Pump'))
+
+  await goto('/mission')
+  check('the Mission list shows the 3 new places', await pollUntil(rowCount, v => v === before + 3, 10, 300), before + 3)
+  const types = await evaluate(`(JSON.parse(localStorage.getItem('appSettings') || '{}').locationTypes || []).map(t => t.type)`)
+  check('the new categories were added to the mission', ['E2E Shelters', 'E2E Water'].every(c => types.includes(c)), true)
+
+  await pick()
+  check('importing the same file again: nothing added or updated',
+    await previewCounts(), 'Added 0 Updated 0 Unchanged 3 Skipped 1')
+  await clickImportDialog('Cancel')
+
+  await goto('/mission')
+  await evaluate(`[...document.querySelectorAll('table.rt-locations-list tbody tr')]
+    .find(r => r.textContent.includes('E2E Library'))?.querySelector('.rt-locations-list__actions button:last-child')?.click()`)
+  check('deleting one place on the Mission page', await pollUntil(rowCount, v => v === before + 2, 10, 300), before + 2)
+
+  await pick()
+  check('importing again adds exactly the deleted place',
+    await previewCounts(), 'Added 1 Updated 0 Unchanged 2 Skipped 1')
+  await clickImportDialog('Add to map')
+  await pollUntil(stored, v => v.includes('E2E Library'))
+  await goto('/mission')
+  check('the Mission list is back to 3 new places', await pollUntil(rowCount, v => v === before + 3, 10, 300), before + 3)
+}
+
+/**
  * E-162 range rings, plus the map's coordinate readout formats. Runs right after
  * checkSampleMissionLoads(), so the sample mission (and its command post) is loaded. John,
  * 2026-09-30: "I did NOT see circular radiuses around the command post in the state fair" -
@@ -3631,6 +3698,7 @@ async function main() {
         if (want('mission') || want('map')) await checkSampleMissionLoads() // the ring check needs the sample
         if (want('map')) await checkRangeRingsAndCoordReadout()
         if (want('map')) await checkMapFilterChips()
+        if (want('map')) await checkMapPlacesImport(fx)
         if (want('backup')) await checkDeviceEncryption()
       } else {
         note('fast run: skipping checkMissionRoundTrip, checkReportPacketRoundTrip, checkSampleMissionLoads, checkRangeRingsAndCoordReadout, checkDeviceEncryption (pass --full to include)')

@@ -84,6 +84,9 @@
       <input type="text" [value]="preparedBy()" (input)="onPreparedByInput($event)" autocomplete="off" />
     </label>
   </div>
+  <!-- 2026-10-15, John: E-187 phase B - the places half of the Import, export & print panel
+       (ADR D-58). Under either engine; hidden on paper, and in field mode by the panel itself. -->
+  <rangertrak-places-io></rangertrak-places-io>
   <div class="map-print-footer">
     <span>Prepared by: <span class="map-print-footer__line">{{ preparedBy() }}</span></span>
     <!-- 2026-10-05, John: E-172 - never blank: the print time, in the title block's PRINTED format.

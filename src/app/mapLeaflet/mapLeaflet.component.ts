@@ -48,6 +48,7 @@ import {
   MissionLocationType, RangerService, MissionService
 } from '../shared/services'
 import { LocationDialogComponent } from '../map/location-dialog/location-dialog.component'
+import { MapEngineService } from '../map/map-engine.service'
 import { MapPrintFurnitureComponent } from '../map/map-print/map-print-furniture.component'
 import { MapPrintLegendComponent } from '../map/map-print/map-print-legend.component'
 
@@ -118,6 +119,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   @ViewChild('printTitle', { static: true }) private printTitle!: ElementRef<HTMLDivElement>
   @ViewChild('printLegend', { static: true, read: ElementRef }) private printLegend!: ElementRef<HTMLElement>
   private readonly cdr = inject(ChangeDetectorRef)
+  /** E-187 phase B: where the Map page's Export places card learns what this map is showing. */
+  private readonly engineService = inject(MapEngineService)
 
   private lMap!: L.Map
   private overviewMapLeaflet!: L.Map
@@ -577,6 +580,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // on. this.lMap.hasLayer() is the guard both handlers below share, so panning/zooming
     // with the grid off costs nothing beyond the check itself.
     this.lMap.on('moveend zoomend', () => {
+      this.publishViewBounds()
       if (this.lMap.hasLayer(this.mileGridLayer)) {
         this.overlays.refreshMileGrid()
       }
@@ -588,6 +592,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         this.overlays.refreshRangeRings()
       }
     })
+    this.publishViewBounds()
     // E-162: track which of the new overlays are on, for the printed legend.
     const legendKeys = new Map<L.Layer, string>([
       [this.usngGridLayer, 'usng'], [this.rangeRingsLayer, 'rings'], [trailsOverlay, 'hiking'],
@@ -1417,8 +1422,16 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    * otherwise call invalidateSize() on an already-removed map and throw - previously
    * harmless only because the map was never really removed.
    */
+  /** The visible bounds, for "Only places in the current map view" (see MapEngineService.viewBounds). */
+  private publishViewBounds(): void {
+    if (!this.lMap) return
+    const b = this.lMap.getBounds()
+    this.engineService.viewBounds.set({ south: b.getSouth(), west: b.getWest(), north: b.getNorth(), east: b.getEast() })
+  }
+
   override ngOnDestroy(): void {
     super.ngOnDestroy()
+    this.engineService.viewBounds.set(null)
     this.locationsSubscription?.unsubscribe()
     clearTimeout(this.afterViewInitTimer)
     this.print.dispose()

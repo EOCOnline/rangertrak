@@ -1,0 +1,84 @@
+<!-- E-187 phase B (ADR D-58, 2026-10-15): the places half of the "Import, export & print"
+     panel, in the same card style as the one on Rangers. It hides itself in field mode. No Print
+     card yet (phase D). The file input is triggered from a real button via .click(), called
+     synchronously inside the click handler, as on Rangers. -->
+<rangertrak-io-panel class="map-print-hide">
+  <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
+    <mat-card-header>
+      <mat-card-title>Import</mat-card-title>
+      <mat-card-subtitle>Adds to the map; no place is deleted.</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="rt-action-bar__buttons">
+        <button matButton="filled" type="button" (click)="importPlacesFile.click()"
+          title="Put places on the map from a spreadsheet (Excel or CSV), a Google My Maps export (KML or KMZ), a GeoJSON file or a Setup file.">
+          <mat-icon>upload_file</mat-icon>
+          Import places&hellip;
+        </button>
+        <input #importPlacesFile id="importPlacesFile" type="file"
+          accept=".csv,.xlsx,.xls,.kml,.kmz,.geojson,.json,.zip" (change)="onImportFileSelected($event)" hidden />
+      </div>
+      <p class="places-io__links">
+        Rows without coordinates are skipped; addresses are not looked up.
+        Need a starting point?
+        <a href="assets/templates/places-template.xlsx" download>Download template (Excel)</a>
+        or
+        <a href="assets/templates/places-template.csv" download>(CSV)</a>
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
+    <mat-card-header>
+      <mat-card-title>Export places</mat-card-title>
+      <mat-card-subtitle data-testid="placesExportCount">
+        Exports {{ chosen().length }} of {{ places().length }} places
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <fieldset class="places-io__categories">
+        <legend>Categories</legend>
+        @for (c of counts(); track c.name) {
+          <mat-checkbox [checked]="isTicked(c.name)" (change)="setTicked(c.name, $event.checked)">
+            {{ categoryLabel(c.name) }} ({{ c.count }})
+          </mat-checkbox>
+        }
+        <div class="places-io__all-none">
+          <button matButton type="button" (click)="tickAll()">All</button>
+          <button matButton type="button" (click)="tickNone()">None</button>
+        </div>
+      </fieldset>
+
+      @if (engine() === 'leaflet') {
+        <mat-checkbox [checked]="inViewOnly()" [disabled]="!canUseView()" (change)="inViewOnly.set($event.checked)"
+          title="Narrow the chosen categories to the places inside the part of the map you are looking at now.">
+          Only places in the current map view
+        </mat-checkbox>
+      }
+
+      <div class="rt-action-bar__buttons places-io__format">
+        <mat-form-field class="places-io__control">
+          <mat-label>Format</mat-label>
+          <mat-select [value]="format()" (selectionChange)="format.set($event.value)">
+            <mat-option value="xlsx">Spreadsheet (.xlsx)</mat-option>
+            <mat-option value="csv">CSV</mat-option>
+            <mat-option value="setup">Setup file</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        @if (format() === 'setup') {
+          <mat-form-field class="places-io__name">
+            <mat-label>Name this file</mat-label>
+            <input matInput type="text" [value]="layerName()" (input)="setLayerName($any($event.target).value)"
+              autocomplete="off" />
+          </mat-form-field>
+        }
+
+        <button matButton="filled" type="button" [disabled]="chosen().length === 0" (click)="onBtnExport()">
+          <mat-icon>download</mat-icon>
+          Export
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</rangertrak-io-panel>

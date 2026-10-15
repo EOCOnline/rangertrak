@@ -1,0 +1,45 @@
+:host {
+  display: block;
+}
+
+// The template links under the Import card's button (same look as Rangers').
+.places-io__links {
+  margin: 0.75em 0 0;
+  color : var(--rt-ink-2);
+}
+
+// The category pick-list: one tick box per location category, then All / None.
+.places-io__categories {
+  display       : flex;
+  flex-direction: column;
+  margin        : 0 0 0.5em;
+  padding       : 0;
+  border        : none;
+
+  legend {
+    margin-bottom: 0.25em;
+    padding      : 0;
+    font-weight  : bold;
+  }
+}
+
+.places-io__all-none {
+  display: flex;
+  gap    : 0.5em;
+}
+
+.places-io__format {
+  margin-top: 0.5rem;
+}
+
+// Sized for its own floating label, as Rangers' format picker is.
+.places-io__control {
+  align-self: center;
+  width     : 11rem;
+}
+
+.places-io__name {
+  align-self: center;
+  flex      : 1 1 14rem;
+  min-width : 0;
+}

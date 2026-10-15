@@ -1,0 +1,125 @@
+@if (step() === 'map') {
+  <h2 mat-dialog-title>Which column is which?</h2>
+  <mat-dialog-content>
+    <p class="pid__lead">
+      <strong>{{ data.fileName }}</strong>
+      @if (remembered()) {
+        &mdash; using the column choices you made the last time you imported a list like this.
+      } @else if (confident()) {
+        &mdash; every column heading was recognised. Check it, then continue.
+      } @else {
+        &mdash; check each guess below, and change any that are wrong.
+      }
+    </p>
+
+    @if (sheets.length > 1) {
+      <mat-form-field class="pid__sheet">
+        <mat-label>Sheet</mat-label>
+        <mat-select [value]="sheetName()" (selectionChange)="onSheetChange($event.value)">
+          @for (s of sheets; track s) {
+            <mat-option [value]="s">{{ s }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+
+    @if (headers().length === 0) {
+      <p class="pid__warn" role="alert">This sheet has nothing in it. Pick another sheet, or another file.</p>
+    } @else {
+      <div class="pid__columns">
+        @for (h of headers(); track $index; let i = $index) {
+          <div class="pid__col">
+            <div class="pid__col-head">
+              <span class="pid__col-name">{{ h || '(no heading)' }}</span>
+              <span class="pid__col-sample">{{ samples(i) || 'empty' }}</span>
+            </div>
+            <mat-form-field class="pid__col-pick" subscriptSizing="dynamic">
+              <mat-label>Import as</mat-label>
+              <mat-select [value]="targets()[i]" (selectionChange)="setTarget(i, $event.value)">
+                @for (t of choices; track t) {
+                  <mat-option [value]="t">{{ targetLabel(t) }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
+      </div>
+
+      @if (!canContinue()) {
+        <p class="pid__warn" role="alert">
+          Pick a column for the name, and either a latitude and a longitude column or a point (WKT) column.
+          Places are put on the map from coordinates; addresses are not looked up.
+        </p>
+      }
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button matButton type="button" (click)="cancel()">Cancel</button>
+    <button matButton="filled" type="button" cdkFocusInitial [disabled]="!canContinue()" (click)="toPreview()">
+      Continue
+    </button>
+  </mat-dialog-actions>
+} @else {
+  <h2 mat-dialog-title>Import &ldquo;{{ data.fileName }}&rdquo;</h2>
+  <mat-dialog-content>
+    @if (data.layerName) {
+      <p class="pid__layer">From &ldquo;{{ data.layerName }}&rdquo;</p>
+    }
+    @if (plan(); as p) {
+      <p class="pid__counts" role="status">
+        <span><strong>Added {{ p.merge.added.length }}</strong></span>
+        <span><strong>Updated {{ p.merge.overwritten.length }}</strong></span>
+        <span><strong>Unchanged {{ p.merge.unchanged.length }}</strong></span>
+        <span><strong>Skipped {{ skipped() }}</strong></span>
+      </p>
+
+      @if (incoming().length === 0) {
+        <p class="pid__warn" role="alert">There are no places to import from this file.</p>
+      }
+
+      @if (p.newCategories.length) {
+        <h3 class="pid__h">New categories</h3>
+        <p class="pid__plain">
+          {{ p.newCategories.join(', ') }}. They will be added to this mission's location categories with a
+          default colour and icon; change them later on the Mission page.
+        </p>
+      }
+
+      @if (p.merge.changes.length) {
+        <h3 class="pid__h">Updated places (a blank cell never erases what is already here)</h3>
+        <ul class="pid__list">
+          @for (c of updatedShown(); track $index) {
+            <li><strong>{{ c.name }}</strong>: {{ c.changedFields.join(', ') }}</li>
+          }
+        </ul>
+        @if (updatedHidden() > 0) {
+          <p class="pid__more">...and {{ updatedHidden() }} more.</p>
+        }
+      }
+
+      @if (warnings().length) {
+        <h3 class="pid__h">Skipped</h3>
+        @for (w of warnings(); track $index) {
+          <p class="pid__note">{{ w }}</p>
+        }
+      }
+
+      @if (ignoredHeaders().length) {
+        <p class="pid__ignored">Ignored columns: {{ ignoredHeaders().join(', ') }}.</p>
+      }
+      @for (n of data.notes ?? []; track $index) {
+        <p class="pid__note">{{ n }}</p>
+      }
+    }
+    <p class="pid__safe">Add to map adds new places and updates matching ones (matched by name); no place is deleted.</p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button matButton type="button" (click)="cancel()">Cancel</button>
+    @if (isSheet) {
+      <button matButton type="button" (click)="toMapping()">Back</button>
+    }
+    <button matButton="filled" type="button" cdkFocusInitial [disabled]="incoming().length === 0" (click)="add()">
+      Add to map
+    </button>
+  </mat-dialog-actions>
+}

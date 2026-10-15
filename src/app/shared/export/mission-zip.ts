@@ -5,7 +5,7 @@ import { MissionLocationType } from '../services/mission-location.interface'
 import { RangerType } from '../services/ranger.interface'
 
 /**
- * E-109 **Setup files**, v2 (2026-08-31, ADR D-48). A PRE-mission provisioning artifact -
+ * E-109 **Setup files**, v2 (2026-08-31, ADR D-48; v3 2026-10-15, see below). A PRE-mission provisioning artifact -
  * any combination of settings, roster, locations and photos, collapsing what otherwise takes
  * three separate imports (roster JSON, then photos, then a mission JSON) into one file a
  * coordinator hands to a scribe before a mission starts.
@@ -51,6 +51,16 @@ import { RangerType } from '../services/ranger.interface'
  * passphrase-protected backups), so the difference between the two is deliberate: a backup is
  * kept and passed around, a Setup file is a one-off provisioning hand-off.
  *
+ * **v3 (2026-10-15, E-187 Layers, ADR D-58): an optional `layer` block** - a NAME for the file
+ * (and when it was current, where it came from, what it contains, and whether it carries
+ * personal information) that a reader can show: "From 'Fernhollow shelters, Oct 2026': 4 added".
+ * It is a version bump, not just a new optional key, because a reader cannot tell "this file
+ * has no name" from "this file predates names" by its shape, and the README now prints it.
+ * Readers accept v1, v2 and v3 and nothing here rejects on the version number, so an older
+ * build opens a v3 file normally and simply ignores `layer`. `sensitivity` is `pii` whenever
+ * rangers are in the file (CLAUDE.md rule 5), else `none`: a places-only file needs no
+ * confirm at export.
+ *
  * Photo matching reuses `RangerPhotoService`'s own filename-stem convention (a ranger's `id`
  * if set, else `callsign`, uppercased) - not reinvented here. "A wrong photo is worse than no
  * photo" (roster-build's own stated rule) - this module never guesses a match; it just
@@ -59,7 +69,17 @@ import { RangerType } from '../services/ranger.interface'
  * to run again against the (possibly different) roster being loaded into.
  */
 
-export const MISSION_ZIP_SCHEMA_VERSION = 2
+export const MISSION_ZIP_SCHEMA_VERSION = 3
+
+/** v3: what a Setup file calls itself. See this module's header comment. */
+export type MissionZipLayer = {
+  name: string
+  /** yyyy-mm-dd the contents were current. */
+  asOf: string
+  source?: string
+  contains: ('people' | 'places' | 'settings')[]
+  sensitivity: 'pii' | 'none'
+}
 
 export type MissionZipManifest = {
   schemaVersion: number
@@ -76,6 +96,26 @@ export type MissionZipManifest = {
    *  one to `[]` rather than rejecting the zip. Always written by buildMissionZipBytes()'s own
    *  caller going forward. */
   locations?: MissionLocationType[]
+  /** v3: optional. A v1/v2 file, or one written with no name, has none. */
+  layer?: MissionZipLayer
+}
+
+/** The `layer.contains` and `layer.sensitivity` a manifest's categories make (rangers mean personal information). */
+export function layerFor(
+  manifest: Pick<MissionZipManifest, 'rangers' | 'locations' | 'settings'>, name: string, asOf: string,
+): MissionZipLayer {
+  const contains: MissionZipLayer['contains'] = [
+    ...(manifest.rangers ? ['people' as const] : []),
+    ...(manifest.locations ? ['places' as const] : []),
+    ...(manifest.settings ? ['settings' as const] : []),
+  ]
+  return { name, asOf, contains, sensitivity: manifest.rangers ? 'pii' : 'none' }
+}
+
+/** The name a reader should show for a file, or '' when it has none ("From 'X': ..."). */
+export function layerName(manifest: Pick<MissionZipManifest, 'layer'>): string {
+  const name = manifest.layer?.name
+  return typeof name === 'string' ? name.trim() : ''
 }
 
 export type MissionZipPhoto = { filename: string; bytes: Uint8Array }
@@ -176,13 +216,23 @@ function readmeText(manifest: MissionZipManifest, photoCount: number): string {
   if (manifest.settings) parts.push('mission settings')
   const contents = parts.length ? parts.join(', ') : 'no categories'
 
+  const name = layerName(manifest)
+  // A named file that carries no rangers is the only kind that may say "no personal information".
+  const notice = manifest.rangers || !manifest.layer
+    ? 'CONFIDENTIAL: real names, phone numbers and photographs of volunteers.\n'
+      + 'Do not email it, do not put it in source control, wipe the drive after the mission.\n'
+    : manifest.settings
+      ? 'Mission settings can include an agency key: share this only with people who need it.\n'
+      : 'Places only: this file holds no personal information.\n'
+
   return `RangerTrak Setup file\n`
+    + (name ? `Layer: ${name}${manifest.layer?.asOf ? ` (as of ${manifest.layer.asOf})` : ''}\n` : '')
     + `Built ${manifest.exportedAt.slice(0, 10)} by app v${manifest.appVersion}\n\n`
     + `mission-zip.json   ${contents}\n`
     + `photos/            ${photoCount} photograph${photoCount === 1 ? '' : 's'}\n\n`
-    + `HOW TO LOAD: open RangerTrak's Setup files page (/prep) and choose this file.\n\n`
-    + `CONFIDENTIAL: real names, phone numbers and photographs of volunteers.\n`
-    + `Do not email it, do not put it in source control, wipe the drive after the mission.\n`
+    + `HOW TO LOAD: open RangerTrak's Setup files page (/prep) and choose this file.\n`
+    + `A list of places can also be loaded from the Map page's Import, export & print panel.\n\n`
+    + notice
 }
 
 function extensionFor(mimeType: string): string {
