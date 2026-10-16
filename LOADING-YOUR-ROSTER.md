@@ -105,7 +105,25 @@ one, import the CERT list first.
 ID in one list and only a call sign in another may turn up twice. Delete the extra row on the
 Rangers page, or give them their ID in both lists.
 
-**Importing never deletes anyone.** People who aren't in a file stay on the device as they were.
+**Importing never deletes anyone on its own.** People who aren't in a file stay on the device as
+they were. The one exception is a question you answer, covered next.
+
+**A newer version of the same list.** In the preview, the **Layer name** box is how the device
+remembers a list. A spreadsheet suggests a name from its file name (`Fernhollow CERT 2026-10-15.xlsx`
+suggests *Fernhollow CERT*); a Setup file brings its own. Import the next version under the same name
+and, if people who were in the last version aren't in this one, RangerTrak asks:
+
+> 2 people are no longer in Fernhollow CERT. Remove them?
+
+It starts at **No, keep them**. **Yes** removes just those people. It never removes anyone another
+list also has, anyone you added by hand, or anyone who was never in this list. Radio log entries that
+name a removed person stay as they were, with the call sign as it was written. Leave the Layer name
+blank and the import isn't remembered at all, which is how it worked before.
+
+Under *Import, export & print*, **Layers on this device** lists what the device remembers: name,
+as-of date, when it was imported and how many people it holds. **Remove this layer** asks first, then
+removes the people only that layer brought in. Changes you made to those people on this device since
+the import aren't tracked, so someone you edited is still removed.
 
 **Importing several Setup files at once** (on the Setup files page): RangerTrak applies them in
 filename order, so name them `01-cert…`, `02-radio…` to choose which list wins.

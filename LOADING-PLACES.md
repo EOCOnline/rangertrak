@@ -9,8 +9,8 @@ uploaded, and there is no account to make.
 On the **Map** page, open **Import, export & print** (near the bottom) and choose **Import
 places…**. You always see a preview first: how many places would be added, updated or left as
 they are, which rows were skipped and why, and which categories are new. Nothing changes until you
-press **Add to map**, and **nothing is ever deleted**. A blank cell never erases what a place
-already has.
+press **Add to map**, and **nothing is deleted unless you say so** (see *A newer version of the same
+list*, below). A blank cell never erases what a place already has.
 
 ## From a spreadsheet
 
@@ -39,6 +39,22 @@ export a CSV; its `WKT` column holds `POINT (longitude latitude)` and is read to
 
 A `.geojson` file is read the same way: single points only, with the place name from `name` or
 `title` and the category from `category`, `type` or `layer`.
+
+## A newer version of the same list
+
+Places match on their hidden RangerTrak id first, then on exact name, so a place that was **renamed**
+in a newer file (a file RangerTrak exported carries the ids) is updated, not added a second time.
+
+In the preview, the **Layer name** box is how the device remembers a list. A spreadsheet suggests a
+name from its file name (`Shelters 2026-10-15.xlsx` suggests *Shelters*); a Setup file brings its own.
+Import the next version under the same name and, if places that were in the last version aren't in this
+one, RangerTrak asks:
+
+> 2 places are no longer in Shelters. Remove them?
+
+It starts at **No, keep them**. **Yes** removes just those places, never one another list also has, and
+never one you added by hand. Leave the name blank and nothing is remembered. **Layers on this device**,
+in the same panel on the Map page, lists what the device remembers and has **Remove this layer**.
 
 ## Handing places on
 

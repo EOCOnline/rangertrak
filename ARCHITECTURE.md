@@ -357,6 +357,22 @@ step, then preview; modelled on the Rangers dialog, with no Replace). "Only plac
 view" reads `MapEngineService.viewBounds`, a signal the Leaflet component keeps current and clears
 when it goes away (offered on Leaflet only, D-56). A KMZ is unzipped with `fflate` in the component.
 
+2026-10-16 (E-187 Layers, ADR D-58, phase C): the device remembers the layers it holds. `domain/layers.ts`
+is every rule, pure: `recordLayerImport`, `leftThisLayer` (in the previous version, not in this one, and not
+held by another layer of the same kind), `removalFor` (what "Remove this layer" takes out, shared records
+kept), `pruneLayers`, `recordableLayerName` (a `layer.kind === 'handover'` file is never a layer, D-59) and
+`suggestLayerName` (file name without extension or trailing date). `LayerService` stores the list in the
+RecordStore key `layers` (encrypted with the roster, in the mission backup as an optional `layers` field; an
+older backup restores with the list pruned to what was restored). Records carry no layer field: a layer
+record lists uids, so `RangerType` and `MissionLocationType` are unchanged and a hand-added record is in no
+layer. Layer identity is the trimmed, case-insensitive name plus the kind. `mergeLocations()` now matches
+`uid` first, then exact name, and returns `touchedUids`; a uid match whose name differs counts `name` as a
+changed field. The UI is the `Layer name` field and the "no longer in" radio (default No) in both import
+dialogs, and `shared/io-panel/layers-card` (Rangers: people, Map: places). It is all lazy-route code; the
+only eager change is the two key names and a dynamic `import()` of `LayerService` in `BackupService`. Not
+done: the Setup files page (`/prep`) does not record layers (no per-file preview to ask in), and edits made
+on the device after an import are not tracked, so Remove this layer says so.
+
 Setup files are manifest **v3**: an optional `layer` block (`name`, `asOf`, `source?`, `contains`,
 `sensitivity`: `pii` whenever rangers are in the file, else `none`), written by Prep (a blank name
 writes no block) and by the Map's Export places. Readers accept v1, v2 and v3 and never reject on the
