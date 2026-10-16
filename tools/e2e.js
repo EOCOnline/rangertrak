@@ -835,6 +835,97 @@ async function checkRosterCsvImport(fx) {
 }
 
 /**
+ * E-187 phase C (ADR D-58 points 6-7): a named people layer is remembered. Re-importing a newer
+ * version with two rows gone asks about them (default No); answering Yes removes exactly those
+ * two; "Remove this layer" then takes out the rest and forgets the layer.
+ */
+async function checkRosterLayers(fx) {
+  console.log('\nE-187 C: a named layer is remembered; a re-import asks who left; Remove this layer')
+  const layerFile = path.join(path.dirname(fx.csvPath), 'e2e-layer 2026-10-16.csv')
+  const write = rows => fs.writeFileSync(layerFile, ['Call Sign,Name', ...rows].join('\r\n') + '\r\n')
+  const calls = async () => (JSON.parse((await idbGetRaw('rangers')) || '{"rangers":[]}').rangers || []).map(r => r.callsign)
+  const layers = async () => (JSON.parse((await idbGetRaw('layers')) || '{"layers":[]}').layers || [])
+  const dialogText = () => evaluate(`document.querySelector('mat-dialog-container [data-testid=layerLeft]')?.textContent.replace(/\\s+/g, ' ').trim() || ''`)
+  const cardText = () => evaluate(`document.querySelector('[data-testid=layerItem]')?.textContent.replace(/\\s+/g, ' ') || ''`)
+
+  await goto('/rangers')
+  write(['E2E-L1,Lena One', 'E2E-L2,Lena Two', 'E2E-L3,Lena Three', 'E2E-L4,Lena Four'])
+  await setFileInput('#importRosterFile', layerFile)
+  check('the mapping step appears', await clickImportDialog('Continue'), true)
+  check('the layer name is prefilled from the file name, without the extension or the date',
+    await pollUntil(() => evaluate(`document.querySelector('mat-dialog-container [data-testid=layerName]')?.value || ''`), v => v !== '', 20, 300),
+    'e2e-layer')
+  check('the first import offers no "no longer in" question', await dialogText(), '')
+  check('Add to roster is offered', await clickImportDialog('Add to roster'), true)
+  const first = await pollUntil(layers, l => l.length === 1 && l[0].uids.length === 4)
+  check('the device remembers the layer with its 4 people', [first[0]?.name, first[0]?.kind, first[0]?.uids.length], ['e2e-layer', 'people', 4])
+
+  await goto('/rangers')
+  write(['E2E-L1,Lena One', 'E2E-L2,Lena Two'])
+  await setFileInput('#importRosterFile', layerFile)
+  await clickImportDialog('Continue')
+  const asked = await pollUntil(dialogText, v => v !== '', 20, 300)
+  check('the re-import asks about the 2 people who left', /2 people are no longer in e2e-layer\. Remove them\?/.test(asked), true)
+  check('the answer defaults to No',
+    await evaluate(`document.querySelector('mat-dialog-container [data-testid=layerKeep] input')?.checked === true`), true)
+  await evaluate(`document.querySelector('mat-dialog-container [data-testid=layerRemove] input')?.click()`)
+  check('Add to roster is offered again', await clickImportDialog('Add to roster'), true)
+  const after = await pollUntil(calls, list => !list.includes('E2E-L3'))
+  check('answering Yes removed exactly the 2 who left',
+    ['E2E-L1', 'E2E-L2'].every(c => after.includes(c)) && !after.includes('E2E-L3') && !after.includes('E2E-L4'), true)
+  check('the layer now holds 2 people', (await layers())[0]?.uids.length, 2)
+
+  await goto('/rangers')
+  const card = await pollUntil(cardText, v => v !== '', 20, 300)
+  check('the Layers card lists the layer with its count', /e2e-layer/.test(card) && /2 people/.test(card), true)
+  await evaluate(`document.querySelector('[data-testid=layerRemoveBtn]')?.click()`)
+  const gone = await pollUntil(calls, list => !list.includes('E2E-L1'))
+  check('Remove this layer took out its people', gone.some(c => c === 'E2E-L1' || c === 'E2E-L2'), false)
+  check('and forgot the layer', (await pollUntil(layers, l => l.length === 0)).length, 0)
+}
+
+/**
+ * E-187 phase C for places: the same cycle on the Map page.
+ */
+async function checkMapLayers(fx) {
+  console.log('\nE-187 C: a places layer is remembered; a re-import asks which places left')
+  const layerFile = path.join(path.dirname(fx.csvPath), 'e2e-spots 2026-10-16.csv')
+  const write = rows => fs.writeFileSync(layerFile, ['Name,Category,Latitude,Longitude', ...rows].join('\r\n') + '\r\n')
+  const names = async () => {
+    const raw = JSON.parse((await idbGetRaw('locations')) || '{}')
+    return (Array.isArray(raw) ? raw : (raw.locations || [])).map(l => l.name)
+  }
+  const layers = async () => (JSON.parse((await idbGetRaw('layers')) || '{"layers":[]}').layers || [])
+  const dialogText = () => evaluate(`document.querySelector('mat-dialog-container [data-testid=layerLeft]')?.textContent.replace(/\\s+/g, ' ').trim() || ''`)
+
+  await goto('/map', 3500)
+  write(['E2E Spot A,E2E Spots,47.41,-122.46', 'E2E Spot B,E2E Spots,47.42,-122.47', 'E2E Spot C,E2E Spots,47.43,-122.48'])
+  await setFileInput('#importPlacesFile', layerFile)
+  check('the mapping step appears', await clickImportDialog('Continue'), true)
+  check('the first import offers no question', await dialogText(), '')
+  check('Add to map is offered', await clickImportDialog('Add to map'), true)
+  const first = await pollUntil(layers, l => l.length === 1 && l[0].uids.length === 3)
+  check('the device remembers the layer with its 3 places', [first[0]?.name, first[0]?.kind, first[0]?.uids.length], ['e2e-spots', 'places', 3])
+
+  await goto('/map', 3500)
+  write(['E2E Spot A,E2E Spots,47.41,-122.46'])
+  await setFileInput('#importPlacesFile', layerFile)
+  await clickImportDialog('Continue')
+  const asked = await pollUntil(dialogText, v => v !== '', 20, 300)
+  check('the re-import asks about the 2 places that left', /2 places are no longer in e2e-spots\. Remove them\?/.test(asked), true)
+  await evaluate(`document.querySelector('mat-dialog-container [data-testid=layerRemove] input')?.click()`)
+  await clickImportDialog('Add to map')
+  const after = await pollUntil(names, list => !list.includes('E2E Spot B'))
+  check('Yes removed B and C, kept A', [after.includes('E2E Spot A'), after.includes('E2E Spot B'), after.includes('E2E Spot C')], [true, false, false])
+
+  await goto('/map', 3500)
+  await evaluate(`document.querySelector('[data-testid=layerRemoveBtn]')?.click()`)
+  const gone = await pollUntil(names, list => !list.includes('E2E Spot A'))
+  check('Remove this layer took out the last place', gone.includes('E2E Spot A'), false)
+  check('and forgot the layer', (await pollUntil(layers, l => l.length === 0)).length, 0)
+}
+
+/**
  * "Export changes since import" (2026-10-05): an import records a baseline; a ranger added
  * afterwards is the only thing the export hands back. The download is caught in the page by
  * wrapping URL.createObjectURL, since CDP has no simple hook for an <a download> click.
@@ -3891,6 +3982,8 @@ async function main() {
       const fx = makeFixtures(path.join(tmp, 'fixtures'))
       if (want('entry')) await checkUsageModes() // E-168; wipes storage, so before checkRosterLifecycle creates the E2E-AA1 ranger
       if (want('roster')) await checkRangersFilterChips(fx)
+      if (want('roster')) await checkRosterLayers(fx) // E-187 C
+      if (want('map')) await checkMapLayers(fx) // E-187 C
       if (want('radiolog')) await checkRadioLogFilterChips()
       if (want('radiolog')) await checkMissionSummary() // E-189
       if (want('radiolog')) await checkScribeHandover() // E-188

@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core'
+import { inject, Injectable, Injector, signal } from '@angular/core'
 import { EncryptedFile, DecryptionFailedError, decryptBytes, encryptJson, isEncryptedFile } from '../crypto/encrypted-file'
 import { HANDOVER_KIND, HANDOVER_NOT_A_BACKUP_MESSAGE, looksLikeZip } from '../export/handover-kind'
 
@@ -14,8 +14,7 @@ import { normalizeLocationUids } from '../../domain/mission-location-migration'
 import { migrateAarNotes } from '../../domain/aar-note-migration'
 import { recordStore } from '../storage/record-store'
 import { clearActiveDemoScenario } from '../mapping/demo-map'
-import { LayerService } from './layer.service'
-import { LayerRecord, parseLayers } from '../../domain/layers'
+import type { LayerRecord } from '../../domain/layers'
 
 /**
  * A full mission backup: everything needed to restore the app to its
@@ -84,8 +83,15 @@ export class BackupService {
     private aarNoteService: AarNoteService,
     private log: LogService,
     private photoService: RangerPhotoService,
-    private layerService: LayerService,
   ) { }
+
+  private injector = inject(Injector)
+
+  /** Loaded on demand: layers are Rangers/Map-page code, kept out of the always-loaded bundle. */
+  private async layerService() {
+    const { LayerService } = await import('./layer.service')
+    return this.injector.get(LayerService)
+  }
 
   /**
    * Pure data assembly, no DOM/file access - kept separate from
@@ -114,7 +120,7 @@ export class BackupService {
       radioLog: fieldReportsSansBounds,
       locations: this.locationService.getCurrentLocations(),
       aarNotes: this.aarNoteService.getCurrentNotes(),
-      layers: this.layerService.snapshot(),
+      layers: (await this.layerService()).snapshot(),
       photos: await this.photosForExport(),
     }
   }
@@ -213,11 +219,12 @@ export class BackupService {
     this.aarNoteService.replaceAllNotes(migrateAarNotes(payload.aarNotes ?? []).notes)
     // The layers the device held (E-187 phase C). Present: put them back. Absent (an older backup):
     // keep the list but forget whatever the restored roster and places no longer contain.
+    const layerService = await this.layerService()
     if (payload.layers) {
-      this.layerService.replaceAll(parseLayers({ layers: payload.layers }))
+      layerService.replaceAll(payload.layers)   // LayerService.replaceAll() parses tolerantly
     }
-    this.layerService.prune('people', new Set(this.rangerService.rangers.map(r => r.uid).filter((u): u is string => !!u)))
-    this.layerService.prune('places', new Set(this.locationService.getCurrentLocations().map(l => l.uid).filter((u): u is string => !!u)))
+    layerService.prune('people', new Set(this.rangerService.rangers.map(r => r.uid).filter((u): u is string => !!u)))
+    layerService.prune('places', new Set(this.locationService.getCurrentLocations().map(l => l.uid).filter((u): u is string => !!u)))
 
     // 2026-10-01, John: photos present (even empty) replace the device's; absent (older
     // backup) leaves them alone. importFiles() matches by stem against the roster just restored
