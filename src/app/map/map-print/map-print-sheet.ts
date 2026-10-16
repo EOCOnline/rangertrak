@@ -1,5 +1,6 @@
 import { showFirstPrintTip } from '../../shared/export/print-tip'
 import { armPrintTitle, PrintTitleMission } from '../../shared/export/print-title'
+import { armPrintCheck } from './print-check'
 
 /**
  * 2026-09-30, John: E-152 part 1 - what "Print map" does, shared by both map engines.
@@ -41,9 +42,12 @@ export function printMapSheet(mission?: PrintTitleMission): void {
   // 2026-10-05, John: E-172 - the print header and the saved PDF's file name carry the mission
   // and the time (print-title.ts).
   const untitle = armPrintTitle('Map', mission)
+  // TEMPORARY (2026-10-16): logs what is wider than the page during a real print (print-check.ts).
+  const unCheck = armPrintCheck('map')
   const done = () => {
     document.body.classList.remove('rt-print-map')
     style.remove()
+    unCheck()
   }
   window.addEventListener('afterprint', done, { once: true })
   window.print()
