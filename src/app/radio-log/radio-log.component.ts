@@ -303,6 +303,9 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       {
         headerName: "Status", field: "status",
         headerTooltip: 'The entry\'s status. Valid values are the status list set on the Mission page. Double-click to edit.', minWidth: 130, maxWidth: 220, cellRenderer: this.statusCellRenderer,
+        // 2026-10-16: drawn as an inset pill (.rt-fill-cell in styles/_patterns.scss); the fill
+        // travels as --rt-cell-fill rather than painting the whole cell.
+        cellClass: 'rt-fill-cell',
         cellStyle: (params: { value: string; }) => {
           // Sprint E: the fill now resolves through the token layer (semantic key ->
           // --rt-status-*, custom color passes through), and an explicit ink color is set
@@ -310,7 +313,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
           // whatever text color was in scope - which is unreadable on roughly half the palette.
           const stat = this.radioLogStatuses.find(el => el.status == params.value)
           const stored = stat ? stat.color : '#A3A3A3'
-          return { 'background-color': statusColorValue(stored), 'color': statusInkValue(stored) }
+          return { '--rt-cell-fill': statusColorValue(stored), 'color': statusInkValue(stored) }
         }
         //cellClassRules: this.cellClassRules() }, //, maxWidth: 150
       },

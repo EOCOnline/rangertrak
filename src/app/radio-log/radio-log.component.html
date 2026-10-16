@@ -204,7 +204,9 @@
               The file holds people's names and phone numbers. Add a passphrase to lock it, or leave
               it blank and the file is not locked. A forgotten passphrase cannot be recovered.
             </p>
-            <div class="rt-action-bar__buttons">
+            <!-- 2026-10-16: a <form>, so Chrome stops warning "Password field is not contained in a
+                 form". Every button is type="button" and submit is prevented, so it never posts. -->
+            <form class="rt-action-bar__buttons" (submit)="$event.preventDefault()">
               <mat-form-field subscriptSizing="dynamic">
                 <mat-label>Passphrase (optional)</mat-label>
                 <input matInput type="password" autocomplete="new-password" name="handover-pass"
@@ -233,7 +235,7 @@
               </button>
               <input #handoverFileInput type="file" accept=".zip,.json,application/zip,application/json"
                 data-testid="handover-file" (change)="onHandoverFileSelected($event)" hidden />
-            </div>
+            </form>
             @if (handoverError()) {
               <p class="handover__note" role="alert" data-testid="handover-error">{{ handoverError() }}</p>
             }

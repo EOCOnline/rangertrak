@@ -33,6 +33,27 @@ export function armPrintCheck(kind: string): () => void {
         wide.push({ el: name(el), right: Math.round(r.right), width: Math.round(r.width) })
       }
       wide.sort((a, b) => b.right - a.right)
+      // Round 2 (John's first result: page 1496 px wide, i.e. Chrome laid the sheet out 1.53x the
+      // paper and scaled it to 65%). Once the page has grown, nothing overflows it, so list the
+      // widest elements outside the map panes with what could hold them that wide.
+      const widest = Array.from(document.querySelectorAll('body *'))
+        .filter(el => !el.closest('.leaflet-pane, .leaflet-control-container'))
+        .map(el => ({ el, w: el.getBoundingClientRect().width }))
+        .filter(x => x.w > pageW * 0.8)
+        .map(({ el, w }) => {
+          const cs = getComputedStyle(el)
+          let depth = 0
+          for (let p = el.parentElement; p; p = p.parentElement) depth++
+          const kids = Array.from(el.children).map(c => c.getBoundingClientRect().width)
+          return {
+            el: name(el), depth, w: Math.round(w),
+            widestChild: kids.length ? Math.round(Math.max(...kids)) : 0,
+            minW: cs.minWidth, cssW: cs.width, inline: (el as HTMLElement).style?.cssText?.slice(0, 80) || '',
+            display: cs.display, pos: cs.position,
+          }
+        })
+        .sort((a, b) => b.depth - a.depth)
+        .slice(0, 15)
       const frame = document.querySelector('.mapLeaflet-frame, .mapLibre-frame')?.getBoundingClientRect()
       console.info('RangerTrak print check: ' + JSON.stringify({
         kind,
@@ -40,7 +61,8 @@ export function armPrintCheck(kind: string): () => void {
         scroll: [doc.scrollWidth, doc.scrollHeight],
         frame: frame ? [Math.round(frame.width), Math.round(frame.height)] : null,
         body: document.body.className,
-        wide: wide.slice(0, 10),
+        wide: wide.slice(0, 3),
+        widest,
       }))
     } catch (e) {
       console.info('RangerTrak print check failed: ' + (e as Error)?.message)

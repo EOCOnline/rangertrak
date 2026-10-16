@@ -306,6 +306,38 @@
   .rt-elapsed--#{$i} { background: var(--rt-elapsed-#{$i}); }
 }
 
+// ── Coloured grid cells drawn as an inset pill (2026-10-16, John: "the colored fields stand
+// out a bit much") ────────────────────────────────────────────────────────────────────────
+// Radio Log's Status and Elapsed cells used to flood the whole cell edge to edge. The colour
+// now sits on a rounded layer inset from the cell's edges, behind the text, so the row's own
+// background shows around it. `--rt-cell-fill` carries the colour: Status sets it inline
+// (its fill comes from the mission's status list), Elapsed takes it from the E-118 ramp.
+// The cell itself keeps no background, so row hover and selection still read through.
+.ag-cell.rt-fill-cell,
+.ag-cell.rt-elapsed {
+  isolation: isolate; // the ::before sits behind the text but inside this cell
+}
+
+.ag-cell.rt-fill-cell::before,
+.ag-cell.rt-elapsed::before {
+  content       : '';
+  position      : absolute;
+  inset         : 5px 6px;
+  z-index       : -1;
+  border-radius : 6px;
+  background    : var(--rt-cell-fill, transparent);
+  pointer-events: none;
+}
+
+.ag-cell.rt-elapsed {
+  background: none;
+  padding   : 0 15px; // the grid's own cell padding; the generic .rt-elapsed padding is for inline spans
+}
+
+@for $i from 1 through 7 {
+  .ag-cell.rt-elapsed--#{$i} { --rt-cell-fill: var(--rt-elapsed-#{$i}); }
+}
+
 
 // ── AI-generated demo photo label (2026-09-26) ───────────────────────────────
 // A small, dim "AI" chip in the corner of the demo roster's AI-generated faces - see
