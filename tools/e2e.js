@@ -3408,21 +3408,34 @@ async function checkReportPacketRoundTrip(downloads) {
   if (!check('Build Report Packet produced a file', files.length > 0, true)) return
   const packetFile = path.join(downloads, files[0])
 
-  // Only one <input type="file"> exists on this route (the roster/mission import inputs are
-  // elsewhere) - see radio-log.component.html's own Report Packet action bar.
-  await setFileInput('input[type="file"]', packetFile)
+  // The Report Packet card's input (the hand-over card has its own, E-188).
+  const packetInput = 'input[type="file"][accept^="text/plain"]'
+
+  // D-59 (E-188): every entry carries a permanent uid, so loading a packet back into the device
+  // that built it is recognised. Before 0.99.38 this duplicated the entry, and this check
+  // counted the duplicate as "merged in".
+  await setFileInput(packetInput, packetFile)
+  await sleep(1500)
+  const afterOwnImport = (JSON.parse((await idbGetRaw('radioLog'))||'{}').logEntries||[]).length
+  check('loading a packet into the device that built it adds nothing (D-59)', afterOwnImport, 1)
+
+  // Now the main station's side: a log without that entry.
+  await idbRemoveRaw('radioLog')
+  await goto('/')
+  await navigateInApp('Radio Log', 3500)
+  await setFileInput(packetInput, packetFile)
   await sleep(1500)
   const afterFirstImport = (JSON.parse((await idbGetRaw('radioLog'))||'{}').logEntries||[]).length
-  check('the packet\'s entry is merged in on the first import', afterFirstImport, 2)
+  check('the packet\'s entry is merged in on the first import', afterFirstImport, 1)
   // 2026-10-07 (blog session): storage had the merged report but the grid kept the old count
   // until the page was reopened. Check what the operator sees, without leaving the page -
   // grid rows or phone cards, whichever this viewport renders (both read radioLogEntries()).
   // Distinct row-ids, since a pinned column renders the same row in a second container.
   const shownRows = await evaluate(`new Set([...document.querySelectorAll('.ag-row[row-id]')].map(r => r.getAttribute('row-id'))).size
     + document.querySelectorAll('.radio-log-cards__card').length`)
-  check('...and the page shows it without being reopened', shownRows, 2)
+  check('...and the page shows it without being reopened', shownRows, 1)
 
-  await setFileInput('input[type="file"]', packetFile)
+  await setFileInput(packetInput, packetFile)
   await sleep(1500)
   const afterSecondImport = (JSON.parse((await idbGetRaw('radioLog'))||'{}').logEntries||[]).length
   check('importing the exact same packet a second time changes nothing', afterSecondImport, afterFirstImport)
