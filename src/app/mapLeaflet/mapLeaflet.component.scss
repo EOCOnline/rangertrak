@@ -392,9 +392,16 @@ mat-slide-toggle {
   // 2026-10-01, John: E-152b - the floating panels: white at 92%, a hairline black border,
   // the same ink-on-white fonts as before. Above the edge ticks (1100) and north arrow (1200).
   // Left/top are written by layoutPrintSheet().
+  // 2026-10-16, John's blank second sheet: top/left here are where a panel sits until
+  // layoutPrintSheet() places it. Chrome lays the page out (and counts its pages) before the print
+  // handler runs, and again on every print-dialog change, after the reset between passes has
+  // cleared the placement. Without them an absolute panel fell to its static spot under the map
+  // and hung 325 px off the sheet (print-map-sheet.js, "before the print handler").
   .map-print-panel {
     display                   : block;
     position                  : absolute;
+    top                       : 3mm;
+    left                      : 3mm;
     z-index                   : 1300;
     box-sizing                : border-box;
     padding                   : 1.5mm 2mm;

@@ -224,6 +224,18 @@ async function main() {
       const h = el => Math.round(el.getBoundingClientRect().height * 10) / 10
       return 'past page 1 (' + innerHeight + ' px; html ' + h(document.documentElement) + ', body ' + h(document.body) + ' px): ' + (past.join('; ') || 'nothing')
     })()`))
+    // 2026-10-16: the same with the panels at their CSS positions only, as the print layout stands
+    // before the app's print handler places them (each dialog pass starts there: the handler runs
+    // after Chrome has laid the page out, and the reset between passes clears their positions).
+    console.log(await evaluate(`(() => {
+      const panels = [...document.querySelectorAll('.map-print-panel')]
+      const saved = panels.map(p => p.style.cssText)
+      panels.forEach(p => ['left', 'top', 'right', 'bottom'].forEach(s => p.style.removeProperty(s)))
+      const h = Math.round(document.documentElement.getBoundingClientRect().height * 10) / 10
+      const rows = panels.map(p => { const r = p.getBoundingClientRect(); return p.className.split(' ').pop() + ' ' + Math.round(r.top + scrollY) + '-' + Math.round(r.bottom + scrollY) })
+      panels.forEach((p, i) => { p.style.cssText = saved[i] })
+      return 'before the print handler (panels unplaced): html ' + h + ' px of ' + innerHeight + '; ' + rows.join('; ')
+    })()`))
     // 2026-10-01, John: E-152b - how far the fanned-out icons sit from their true points (the
     // length of the longest leader line, in CSS px).
     const longest = await evaluate(`Math.round(Math.max(0, ...[...document.querySelectorAll('path.rt-fan-leader')].map(p => {
