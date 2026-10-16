@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.42-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.41-alpha...v0.99.42-alpha) (2026-10-16)
+
+
+### Features
+
+* **layers:** fold the Setup files page into Mission's Data safety card (E-187 phase D) ([12177eb](https://github.com/SteadyEOC/RangerTrak/commit/12177eb1aaa9aceab60f458014456d69920faa01))
+* **layers:** Print cards for Rangers and Map (E-187 phase D) ([76f8ad6](https://github.com/SteadyEOC/RangerTrak/commit/76f8ad634e67e810a6e73ef5c3d2d708fb29cbd1))
+
+
+### Bug Fixes
+
+* **layers:** /prep redirect keeps its fragment; Print places e2e seeds its places ([3a0a351](https://github.com/SteadyEOC/RangerTrak/commit/3a0a351d24a626b7bb0555a28390d5a086d85d0c))
+
 ### [0.99.41-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.40-alpha...v0.99.41-alpha) (2026-10-16)
 
 ### [0.99.40-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.39-alpha...v0.99.40-alpha) (2026-10-16)
