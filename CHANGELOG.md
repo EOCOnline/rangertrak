@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.40-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.39-alpha...v0.99.40-alpha) (2026-10-16)
+
+
+### Features
+
+* **layers:** domain rules for layers the device holds; places match on uid first (E-187 phase C) ([e123b61](https://github.com/SteadyEOC/RangerTrak/commit/e123b611e6b679b984d143a10819fc302a4f075b))
+* **layers:** layer name on import, 'no longer in this layer' question, Layers card (E-187 phase C) ([84bf713](https://github.com/SteadyEOC/RangerTrak/commit/84bf7131120ec5a1c1a38727a72ff5aa78962926))
+* **layers:** load the layers module on demand in backup; e2e for people and places layers (E-187 phase C) ([584c6a7](https://github.com/SteadyEOC/RangerTrak/commit/584c6a70a1a739c64bdd8edc8469d955368fd507))
+* **layers:** remember the layers the device holds; carried in mission backup (E-187 phase C) ([74d088d](https://github.com/SteadyEOC/RangerTrak/commit/74d088dfd37734ea08b46441f76168bde0b53fd4))
+
+
+### Bug Fixes
+
+* **layers:** import wording no longer says nothing is ever deleted (E-187 phase C) ([b26911d](https://github.com/SteadyEOC/RangerTrak/commit/b26911dfe83d42784efe3e35fa33d30dce5a04fc))
+
 ### [0.99.39-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.38-alpha...v0.99.39-alpha) (2026-10-16)
 
 
