@@ -241,6 +241,19 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
               'If the file names a different mission than this device\'s current one, you are warned and asked to confirm before anything is merged in.',
               'The file names real people and describes an active incident — treat it like a printed page from the log: keep it on a device you control, and delete it once its reports are safely merged in here.'
             ]
+          },
+          {
+            heading: 'Hand over to another scribe',
+            text: 'For when another scribe, or the next shift, already has entries of their own on their device. Starting on a blank device? Use Restore on the Mission page instead.',
+            bullets: [
+              'Hand over saves one file with the roster (with photos), the places and every radio log entry on THIS device. Add a passphrase to lock it, or leave the box blank and the file is not locked. A forgotten passphrase cannot be recovered.',
+              'Merge in opens such a file on the other device. If it is locked you are asked for the passphrase first; a wrong one changes nothing.',
+              'You see a preview before anything happens: people added or updated (and which details change), places added or updated, and entries added, updated, already here, or unreadable. A different mission, event or operational period name is flagged, but never blocks the merge.',
+              'Nothing is replaced or removed. This device keeps its own entry numbers. If the file holds a later correction of an entry you already have, that entry is updated and named in the summary.',
+              'A walk-up typed in on both devices becomes one person, and the entries from the file attach to them.',
+              'Merging the same file twice, or handing back and forth, never makes duplicates.',
+              'The file names real people and their phone numbers: keep it on a device you control, and delete it once it is merged in.'
+            ]
           }
         ]
       },

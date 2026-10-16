@@ -327,6 +327,18 @@ app on each phone from rangertrak.org **before** heading out. **RangerTrak Board
 third mode. It is an option on the command post's app that shows a read-only copy of the log
 to anyone on the station's WiFi; phones cannot send reports through it.
 
+**Handing over to the next scribe.** When a mission runs past one scribe, or a second scribe is
+logging at another radio, the other device usually has entries of its own already. On the Radio
+Log page, **Hand over to another scribe** saves one file with the people, the places and every
+entry on this device. On the other device, **Merge in** opens that file, shows what it would add or
+change, and only then merges it. Nothing there is replaced or removed, each device keeps its own
+entry numbers, and if you corrected an entry before handing over, the correction comes across.
+Merging the same file twice, or handing it back and forth, never makes duplicates. A walk-up typed
+in on both devices becomes one person with their entries attached. The file holds people's names
+and phone numbers, so type a passphrase to lock it, or leave the box blank and it is not locked;
+a forgotten passphrase cannot be recovered. If the other device is blank, use **Restore** on the
+Mission page instead.
+
 **Noting things for the debrief.** When you notice something to fix or improve later, such as
 a relay point out of range or a form field that slows you down, press **AAR note** at the
 top of any page. Type a line, choose whether it is about the incident or about RangerTrak, and

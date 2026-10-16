@@ -363,6 +363,26 @@ writes no block) and by the Map's Export places. Readers accept v1, v2 and v3 an
 version number, so an older build opens a v3 file and ignores `layer`. An import that finds a name
 shows it in its preview and summary.
 
+2026-10-15 (E-188 scribe hand-over, ADR D-59): every radio log entry has a permanent `uid` (a UUID,
+`RadioLogEntryType.uid`, minted by `domain/uid.ts`, which `newRangerUid()` also uses). `addRadioLogEntry()`
+stamps it; `migrateRadioLog()` backfills it, which is why the radio log schema went 1 -> 2, so an older
+backup also backfills on restore. The display `id` is still per device and renumbered by a merge; the
+`uid` is the identity. `domain/entry-merge.ts` is `mergeEntries()`, the pure merge (and the per-entry
+validation, moved out of `RadioLogService`): it applies a `uidRemap` to `rangerUid`/`toRangerUid`, matches
+an incoming entry on `uid` (an entry without one falls back to the E-114 `sourceUid` key, so older Report
+Packets dedupe as before) and, on a `uid` match, lets the later `revisedAt` win (updated in place, display
+`id` kept; never revised counts as oldest). `mergeRangers()` now also returns `uidRemap` (incoming uid ->
+the uid the row ended up with), because a matched walk-up keeps the receiving device's uid and the
+sender's entries would otherwise attach to nobody. `RadioLogService.mergeIncomingEntries()` (Report Packet)
+and `mergeHandoverEntries()` both call `mergeEntries()`; only the Report Packet path passes a reporter
+credential (in a hand-over the operator is the scribe, D-44). The file is a Setup file with an optional
+`entries` category, an advisory `context` (mission, event, op period; settings are not carried) and
+`layer.kind: "handover"` (`shared/export/handover-file.ts`). A passphrase wraps the zip's bytes in the
+same `rangertrak-encrypted-v1` envelope the backup uses (`encryptBytes` / `decryptBytes` beside
+`encryptJson` in `shared/crypto/encrypted-file.ts`); a reader tells envelope from zip by content. The UI
+is the Hand over card on Radio Log and `radio-log/handover-dialog/` (passphrase, preview, confirm), which
+reuses the roster import dialog's stylesheet.
+
 ## Data stored on the device
 
 Every persisted key, as of 2026-10-01 (E-168a). This is the input to the rc.1 storage freeze
@@ -392,7 +412,7 @@ whose key has left the source fails. Add the row in the same commit as the key.
 | 12 | localStorage | `rangertrak.rangers.privacyNoticeDismissed` | `device-prefs.service.ts` | no | no | none |
 | 13 | IndexedDB `rangertrak-records` / `kv` | `rangers` | `ranger.service.ts` | yes | yes | `ranger-migration.ts`, schema 1 |
 | 13a | IndexedDB `rangertrak-records` / `kv` | `rangersImported` (2026-10-05, import baseline: ranger uid -> field hash, no PII copied) | `ranger.service.ts` (`importBaselineKey`; pure logic in `domain/roster-changes.ts`) | no (deliberately: Restore mission does not write it, or it would hide the edits being looked for) | yes (with the roster) | none; new key. Written by roster import/merge, Setup files and the sample-mission loader; read by Rangers > Import, export & print > Export changes |
-| 14 | IndexedDB `rangertrak-records` / `kv` | `radioLog` | `radio-log.service.ts` | yes | yes | `radio-log-migration.ts`, schema 1 |
+| 14 | IndexedDB `rangertrak-records` / `kv` | `radioLog` | `radio-log.service.ts` | yes | yes | `radio-log-migration.ts`, schema 2 (entry `uid`, D-59) |
 | 15 | IndexedDB `rangertrak-records` / `kv` | `radioLog-BAD` | `radio-log.service.ts` | no | yes | none; quarantine copy of an unreadable log |
 | 16 | IndexedDB `rangertrak-records` / `kv` | `locations` | `mission-location.service.ts` | yes | no | `mission-location-migration.ts`, schema 1 |
 | 17 | IndexedDB `rangertrak-records` / `kv` | `aarNotes` | `aar-note.service.ts` | yes | yes | `aar-note-migration.ts`, schema 1 |
