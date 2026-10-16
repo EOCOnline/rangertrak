@@ -3,7 +3,10 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 
 import { MissionType } from '../../../shared/services/'
-import { MATERIAL_IMPORTS } from '../../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatCardModule } from '@angular/material/card'
+import { MatRadioModule } from '@angular/material/radio'
 
 /**
  * Location Defaults (lat/lng) and the coordinate systems Entry offers. Sprint C split out of the
@@ -13,7 +16,7 @@ import { MATERIAL_IMPORTS } from '../../../material-imports'
 @Component({
   selector: 'rangertrak-mission-location-section',
   standalone: true,
-  imports: [CommonModule, FormField, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatCardModule, MatRadioModule],
   templateUrl: './mission-location-section.component.html',
   styleUrls: ['./mission-location-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
-import { MATERIAL_IMPORTS } from '../../material-imports'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
 import { LayerKind, LayerRecord, layersOfKind, liveCount } from '../../domain/layers'
 import { LogService } from '../services/log.service'
 import { MissionLocationService } from '../services/mission-location.service'
@@ -20,7 +22,7 @@ import { LayerService } from '../services/layer.service'
 @Component({
   selector: 'rangertrak-layers-card',
   standalone: true,
-  imports: [...MATERIAL_IMPORTS],
+  imports: [MatIconModule, MatButtonModule, MatCardModule],
   changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './layers-card.component.html',
   styleUrls: ['./layers-card.component.scss'],

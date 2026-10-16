@@ -1,7 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 
-import { MATERIAL_IMPORTS } from '../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatDialogModule } from '@angular/material/dialog'
+import { MatSelectModule } from '@angular/material/select'
+import { MatRadioModule } from '@angular/material/radio'
 import { mergeRangers, RangerMergeResult } from '../../domain/ranger-migration'
 import {
   applyMapping, ColumnMapping, exitedStatusLabel, ColumnTarget, guessMapping, headerSetKey, idColumnLabel, recallMapping,
@@ -64,7 +70,7 @@ const TARGET_CHOICES: ColumnTarget[] = [
 @Component({
   selector: 'rangertrak-roster-import-dialog',
   standalone: true,
-  imports: [...MATERIAL_IMPORTS],
+  imports: [MatFormFieldModule, MatInputModule, MatButtonModule, MatCheckboxModule, MatDialogModule, MatSelectModule, MatRadioModule],
   templateUrl: './roster-import-dialog.component.html',
   styleUrls: ['./roster-import-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

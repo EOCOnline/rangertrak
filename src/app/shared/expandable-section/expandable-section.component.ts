@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 
-import { MATERIAL_IMPORTS } from '../../material-imports'
+import { MatExpansionModule } from '@angular/material/expansion'
 
 /**
  * A labelled block of secondary content, collapsed by default - click the heading to open.
@@ -24,7 +24,7 @@ import { MATERIAL_IMPORTS } from '../../material-imports'
 @Component({
   selector: 'rangertrak-expandable-section',
   standalone: true,
-  imports: [CommonModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, MatExpansionModule],
   templateUrl: './expandable-section.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./expandable-section.component.scss']

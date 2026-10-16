@@ -4,7 +4,13 @@ import { FormsModule } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
 
 import { PageComponent } from '../shared/page/page.component'
-import { MATERIAL_IMPORTS } from '../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
+import { MatCardModule } from '@angular/material/card'
+import { MatSelectModule } from '@angular/material/select'
 import {
   AAR_NOTE_ABOUT_LABELS, AarNoteAbout, AarNoteService, AarNoteType, FieldModeService, LogService, MissionService
 } from '../shared/services'
@@ -27,7 +33,7 @@ type Filter = 'all' | AarNoteAbout
 @Component({
   selector: 'rangertrak-after-action',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, PageComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormsModule, RouterLink, PageComponent, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatButtonToggleModule, MatCardModule, MatSelectModule],
   templateUrl: './after-action.component.html',
   styleUrls: ['./after-action.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

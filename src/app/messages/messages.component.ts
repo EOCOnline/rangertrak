@@ -5,7 +5,11 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@
 import { FormsModule } from '@angular/forms'
 
 import { PageComponent } from '../shared/page/page.component'
-import { MATERIAL_IMPORTS } from '../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
+import { MatCheckboxModule } from '@angular/material/checkbox'
 import { formatReportTime } from '../shared'
 import { fillIcs213Pdf, ics213FieldsFromReport } from '../shared/export/ics213-pdf'
 import { formatStation } from '../domain/station-label'
@@ -49,7 +53,7 @@ import {
 @Component({
   selector: 'rangertrak-messages',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormsModule, PageComponent, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule, MatCheckboxModule],
   templateUrl: './messages.component.html',
   styleUrls: ['./messages.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

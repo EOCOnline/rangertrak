@@ -31,7 +31,11 @@ import {
 } from '../shared/services'
 import { DevicePrefsService } from '../shared/services/device-prefs.service'
 
-import { MATERIAL_IMPORTS } from '../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatButtonModule } from '@angular/material/button'
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
+import { MatChipsModule } from '@angular/material/chips'
 
 // E-114 §1a (2026-08-31): "the ranger will almost always use the same coordinate system, so
 // initially we offer ALL OPTIONS, then just default to that" - the maintainer's own design.
@@ -49,7 +53,7 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   //moduleId: module.id,
   selector: 'rangertrak-location',
   standalone: true,
-  imports: [CommonModule, FormField, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatButtonModule, MatButtonToggleModule, MatChipsModule],
   templateUrl: './location.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./location.component.scss']

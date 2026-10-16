@@ -10,7 +10,10 @@ import {
   MissionSummary, NOT_RECORDED_LABEL, summarizeMission,
 } from '../domain/mission-summary'
 import { formatStation } from '../domain/station-label'
-import { MATERIAL_IMPORTS } from '../material-imports'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
+import { MatCardModule } from '@angular/material/card'
 import { downloadCsv } from '../shared/export/csv'
 import { formatOperationalPeriod, hasOperationalPeriod } from '../shared/export/ics309-log'
 import { buildSummaryCsv, summaryCsvFilename, SummaryStamp } from '../shared/export/mission-summary-csv'
@@ -40,7 +43,7 @@ const CHART_MIN_WIDTH = 280
 @Component({
   selector: 'rangertrak-summary',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageComponent, TimePickerComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, RouterLink, PageComponent, TimePickerComponent, MatIconModule, MatButtonModule, MatButtonToggleModule, MatCardModule],
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

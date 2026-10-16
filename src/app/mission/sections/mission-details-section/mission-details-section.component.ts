@@ -4,7 +4,9 @@ import { FieldTree, FormField } from '@angular/forms/signals'
 
 import { MissionType } from '../../../shared/services/'
 import { TimePickerComponent } from '../../../shared/'
-import { MATERIAL_IMPORTS } from '../../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatCardModule } from '@angular/material/card'
 
 /**
  * Mission identity, Operational Period, and its two time-pickers. Sprint C split out of
@@ -18,7 +20,7 @@ import { MATERIAL_IMPORTS } from '../../../material-imports'
 @Component({
   selector: 'rangertrak-mission-details-section',
   standalone: true,
-  imports: [CommonModule, FormField, TimePickerComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormField, TimePickerComponent, MatFormFieldModule, MatInputModule, MatCardModule],
   templateUrl: './mission-details-section.component.html',
   styleUrls: ['./mission-details-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

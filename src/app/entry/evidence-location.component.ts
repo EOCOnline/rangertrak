@@ -5,7 +5,12 @@ import {
 } from '@angular/core'
 import { form, FormField, max, min } from '@angular/forms/signals'
 
-import { MATERIAL_IMPORTS } from '../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatButtonModule } from '@angular/material/button'
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
+import { MatChipsModule } from '@angular/material/chips'
+import { MatSelectModule } from '@angular/material/select'
 import { bearingAndDistance, destinationPoint } from '../domain/coordinate'
 import { LocationType, undefinedAddressFlag } from '../shared/services'
 
@@ -26,7 +31,7 @@ import { LocationType, undefinedAddressFlag } from '../shared/services'
 @Component({
   selector: 'rangertrak-evidence-location',
   standalone: true,
-  imports: [CommonModule, FormField, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatButtonModule, MatButtonToggleModule, MatChipsModule, MatSelectModule],
   templateUrl: './evidence-location.component.html',
   styleUrls: ['./evidence-location.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

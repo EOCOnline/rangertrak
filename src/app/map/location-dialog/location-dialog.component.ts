@@ -4,7 +4,11 @@ import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 
-import { MATERIAL_IMPORTS } from '../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatButtonModule } from '@angular/material/button'
+import { MatDialogModule } from '@angular/material/dialog'
+import { MatSelectModule } from '@angular/material/select'
 import { locationMarkerSvg, resolveLocationIcon } from '../../shared/mapping/location-marker'
 import { locationCategoryColor } from '../../shared/mapping/report-marker-status'
 import { LocationCategoryType, LogService, MissionLocationService, MissionLocationType } from '../../shared/services'
@@ -36,7 +40,7 @@ export interface LocationDialogData {
 @Component({
   selector: 'rangertrak-location-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDialogModule, MatSelectModule],
   templateUrl: './location-dialog.component.html',
   styleUrls: ['./location-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

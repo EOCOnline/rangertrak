@@ -5,7 +5,8 @@ import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges
 } from '@angular/core'
-import { MATERIAL_IMPORTS } from '../../../material-imports'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
 
 import { ensureAgGridRegistered } from '../../../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../../../shared/ag-grid-theme'
@@ -37,7 +38,7 @@ import { isStatusFlagged } from '../../../domain/map-entry-filter'
 @Component({
   selector: 'rangertrak-mission-field-report-statuses',
   standalone: true,
-  imports: [CommonModule, AgGridModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, AgGridModule, MatButtonModule, MatCardModule],
   templateUrl: './mission-field-report-statuses.component.html',
   styleUrls: ['./mission-field-report-statuses.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

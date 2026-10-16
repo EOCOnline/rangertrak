@@ -4,7 +4,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 
 import { RangerService, RangerType, TacticalCallType } from '../../../shared/services/'
-import { MATERIAL_IMPORTS } from '../../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
+import { MatSelectModule } from '@angular/material/select'
+import { MatAutocompleteModule } from '@angular/material/autocomplete'
 
 /** One editable line: the tactical name, the roster link, and the operator box's own text. */
 type Row = { name: string, rangerUid: string, operatorText: string }
@@ -28,7 +34,7 @@ type Row = { name: string, rangerUid: string, operatorText: string }
 @Component({
   selector: 'rangertrak-mission-tactical-calls',
   standalone: true,
-  imports: [CommonModule, FormsModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatSelectModule, MatAutocompleteModule],
   templateUrl: './mission-tactical-calls.component.html',
   styleUrls: ['./mission-tactical-calls.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

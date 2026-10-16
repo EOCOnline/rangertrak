@@ -40,7 +40,15 @@ import { activeDemoScenario } from '../shared/mapping/demo-map'
 import { DemoPickerComponent } from '../shared/demo-picker/demo-picker.component'
 //import { LocationComponent } from './location.component'
 
-import { MATERIAL_IMPORTS } from '../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
+import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatChipsModule } from '@angular/material/chips'
+import { MatSelectModule } from '@angular/material/select'
+import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { LocationComponent } from './location.component'
 import { EvidenceLocationComponent } from './evidence-location.component'
 import { MiniMapLeafletComponent } from './mini-mapLeaflet.component'
@@ -56,7 +64,7 @@ import { MiniMapLeafletComponent } from './mini-mapLeaflet.component'
     ReactiveFormsModule,
     FormField,
     RouterLink,
-    ...MATERIAL_IMPORTS,
+    MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatButtonToggleModule, MatCheckboxModule, MatChipsModule, MatSelectModule, MatAutocompleteModule,
     PageComponent,
     TimePickerComponent,
     LocationComponent,

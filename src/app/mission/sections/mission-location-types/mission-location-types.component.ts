@@ -5,7 +5,8 @@ import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges
 } from '@angular/core'
-import { MATERIAL_IMPORTS } from '../../../material-imports'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
 
 import { ensureAgGridRegistered } from '../../../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../../../shared/ag-grid-theme'
@@ -43,7 +44,7 @@ import { ColorEditor } from '../../color-editor.component'
 @Component({
   selector: 'rangertrak-mission-location-types',
   standalone: true,
-  imports: [CommonModule, AgGridModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, AgGridModule, MatButtonModule, MatCardModule],
   templateUrl: './mission-location-types.component.html',
   styleUrls: ['./mission-location-types.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

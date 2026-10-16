@@ -46,7 +46,9 @@ import { confirmReplaceMission } from '../shared/demo-picker/replace-guard'
 import { InstallUpdateComponent } from '../shared/install-update/install-update.component'
 import { HasUnsavedChanges } from '../shared/guards/unsaved-changes.guard'
 
-import { MATERIAL_IMPORTS } from '../material-imports'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
 import { MissionDetailsSectionComponent } from './sections/mission-details-section/mission-details-section.component'
 import { MissionLocationSectionComponent } from './sections/mission-location-section/mission-location-section.component'
 import { MissionMapsSectionComponent } from './sections/mission-maps-section/mission-maps-section.component'
@@ -90,7 +92,7 @@ const blankMission: MissionType = {
     CommonModule,
     FormsModule,
     RouterLink,
-    ...MATERIAL_IMPORTS,
+    MatIconModule, MatButtonModule, MatCardModule,
     PageComponent,
     MasonryDirective,
     MissionDetailsSectionComponent,

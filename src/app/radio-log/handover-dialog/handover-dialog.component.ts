@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 
-import { MATERIAL_IMPORTS } from '../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatButtonModule } from '@angular/material/button'
+import { MatDialogModule } from '@angular/material/dialog'
 import { DecryptionFailedError } from '../../shared/crypto/encrypted-file'
 import { LocationMergeResult, mergeLocations } from '../../domain/location-merge'
 import { mergeRangers, RangerMergeResult } from '../../domain/ranger-migration'
@@ -42,7 +45,7 @@ const MORE = 10
 @Component({
   selector: 'rangertrak-handover-dialog',
   standalone: true,
-  imports: [...MATERIAL_IMPORTS],
+  imports: [MatFormFieldModule, MatInputModule, MatButtonModule, MatDialogModule],
   templateUrl: './handover-dialog.component.html',
   styleUrls: ['../../rangers/roster-import-dialog/roster-import-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 
-import { MATERIAL_IMPORTS } from '../../material-imports'
+import { MatIconModule } from '@angular/material/icon'
+import { MatCardModule } from '@angular/material/card'
 import { ExpandableSectionComponent } from '../expandable-section/expandable-section.component'
 import { FieldModeService } from '../services/field-mode.service'
 
@@ -19,7 +20,7 @@ import { FieldModeService } from '../services/field-mode.service'
 @Component({
   selector: 'rangertrak-io-panel',
   standalone: true,
-  imports: [ExpandableSectionComponent, ...MATERIAL_IMPORTS],
+  imports: [ExpandableSectionComponent, MatIconModule, MatCardModule],
   changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './io-panel.component.html',
   styleUrls: ['./io-panel.component.scss'],

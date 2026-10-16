@@ -3,7 +3,9 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 
 import { MissionType } from '../../../shared/services/'
-import { MATERIAL_IMPORTS } from '../../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatCardModule } from '@angular/material/card'
 
 /**
  * Maps checkbox, Leaflet settings, Geocoding, and Alternative Map (MapLibre + PMTiles) settings.
@@ -16,7 +18,7 @@ import { MATERIAL_IMPORTS } from '../../../material-imports'
 @Component({
   selector: 'rangertrak-mission-maps-section',
   standalone: true,
-  imports: [CommonModule, FormField, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatCardModule],
   templateUrl: './mission-maps-section.component.html',
   styleUrls: ['./mission-maps-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

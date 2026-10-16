@@ -3,7 +3,12 @@ import { ChangeDetectionStrategy, Component, Inject, signal } from '@angular/cor
 
 import * as packageJson from '../../../package.json'
 import { PageComponent } from '../shared/page/page.component'
-import { MATERIAL_IMPORTS } from '../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
+import { MatCheckboxModule } from '@angular/material/checkbox'
 import {
   buildMissionZipBytes, entryCountOf, extractMissionZip, layerFor, layerName, MissionZipManifest, MissionZipPhoto,
   MISSION_ZIP_SCHEMA_VERSION,
@@ -45,7 +50,7 @@ import { RecordStore } from '../shared/storage/record-store'
 @Component({
   selector: 'rangertrak-prep',
   standalone: true,
-  imports: [CommonModule, PageComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, PageComponent, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule],
   templateUrl: './prep.component.html',
   styleUrls: ['./prep.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

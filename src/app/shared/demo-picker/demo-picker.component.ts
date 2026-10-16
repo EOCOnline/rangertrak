@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit, input, signal } from '@angular/core'
 
-import { MATERIAL_IMPORTS } from '../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatSelectModule } from '@angular/material/select'
 import { LogService, MissionService, UsageStateService } from '../services'
 // Direct path, not the barrel - see the note in rangers.component.ts.
 import {
@@ -18,7 +21,7 @@ import { confirmReplaceMission } from './replace-guard'
 @Component({
   selector: 'rangertrak-demo-picker',
   standalone: true,
-  imports: [...MATERIAL_IMPORTS],
+  imports: [MatFormFieldModule, MatIconModule, MatButtonModule, MatSelectModule],
   templateUrl: './demo-picker.component.html',
   styleUrls: ['./demo-picker.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

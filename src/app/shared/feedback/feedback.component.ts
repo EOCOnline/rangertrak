@@ -5,7 +5,9 @@ import { FormsModule } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
 
 import { LogService } from '../services'
-import { MATERIAL_IMPORTS } from '../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatButtonModule } from '@angular/material/button'
 
 const GITHUB_ISSUE_URL = 'https://github.com/SteadyEOC/RangerTrak/issues/new'
 
@@ -31,7 +33,7 @@ const GITHUB_ISSUE_URL = 'https://github.com/SteadyEOC/RangerTrak/issues/new'
 @Component({
   selector: 'rangertrak-feedback',
   standalone: true,
-  imports: [CommonModule, FormsModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
   templateUrl: './feedback.component.html',
   styleUrls: ['./feedback.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

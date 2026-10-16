@@ -4,7 +4,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
 import { FieldTree } from '@angular/forms/signals'
 
-import { MATERIAL_IMPORTS } from '../../../material-imports'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
+import { MatCheckboxModule } from '@angular/material/checkbox'
 import { ExpandableSectionComponent } from '../../../shared/expandable-section/expandable-section.component'
 import {
   BackupService, FieldModeService, LogService, MissionType, RadioLogService, RangerPhotoService,
@@ -40,7 +43,7 @@ const FRESH_BACKUP_WINDOW_MS = 10 * 60 * 1000
 @Component({
   selector: 'rangertrak-mission-advanced-options',
   standalone: true,
-  imports: [CommonModule, DemoPickerComponent, ExpandableSectionComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, DemoPickerComponent, ExpandableSectionComponent, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule],
   templateUrl: './mission-advanced-options.component.html',
   styleUrls: ['./mission-advanced-options.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

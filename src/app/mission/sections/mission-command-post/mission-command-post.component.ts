@@ -3,7 +3,12 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, signal } from '@a
 import { FieldTree, FormField } from '@angular/forms/signals'
 
 import { LogService, MissionType } from '../../../shared/services/'
-import { MATERIAL_IMPORTS } from '../../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 
 /**
  * E-87 Stage 1 (2026-08-31): the opt-in publish-to-Command-Post-Server setting. See
@@ -18,7 +23,7 @@ import { MATERIAL_IMPORTS } from '../../../material-imports'
 @Component({
   selector: 'rangertrak-mission-command-post',
   standalone: true,
-  imports: [CommonModule, FormField, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatSlideToggleModule],
   templateUrl: './mission-command-post.component.html',
   styleUrls: ['./mission-command-post.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

@@ -13,7 +13,12 @@ import { RouterLink } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular';
 import { GuideService } from '../shared/guide/guide.service';
 import { PageComponent } from '../shared/page/page.component';
-import { MATERIAL_IMPORTS } from '../material-imports';
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
+import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatSelectModule } from '@angular/material/select'
 import { FilterChipsComponent } from '../shared/filter-chips/filter-chips.component';
 import { describeGridFilters, FilterChip } from '../domain/grid-filter-chips';
 import { zipSync, Zippable } from 'fflate';
@@ -52,7 +57,7 @@ import { CustomTooltip } from './customTooltip'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, LayersCardComponent, RouterLink, FilterChipsComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, LayersCardComponent, RouterLink, FilterChipsComponent, MatFormFieldModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']

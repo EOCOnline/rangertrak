@@ -5,7 +5,13 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
 import * as packageJson from '../../../../package.json'
-import { MATERIAL_IMPORTS } from '../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
+import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatSelectModule } from '@angular/material/select'
 import {
   categoryCounts, newCategoryEntries, parseGeoJsonPlaces, parseKmlPlaces, PlacesParseResult, placesToRows, selectPlaces,
   XmlDocumentLike,
@@ -45,7 +51,7 @@ type ReadPlaces = PlacesParseResult & {
 @Component({
   selector: 'rangertrak-places-io',
   standalone: true,
-  imports: [IoPanelComponent, LayersCardComponent, ...MATERIAL_IMPORTS],
+  imports: [IoPanelComponent, LayersCardComponent, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule],
   templateUrl: './places-io.component.html',
   styleUrls: ['./places-io.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

@@ -5,7 +5,8 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@
 import { MatDialog } from '@angular/material/dialog'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 
-import { MATERIAL_IMPORTS } from '../../../material-imports'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
 import { LocationDialogComponent } from '../../../map/location-dialog/location-dialog.component'
 import { locationMarkerSvg, resolveLocationIcon } from '../../../shared/mapping/location-marker'
 import { locationCategoryColor } from '../../../shared/mapping/report-marker-status'
@@ -27,7 +28,7 @@ import { LogService, MissionLocationService, MissionLocationType, MissionService
 @Component({
   selector: 'rangertrak-mission-locations-list',
   standalone: true,
-  imports: [CommonModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, MatButtonModule, MatCardModule],
   templateUrl: './mission-locations-list.component.html',
   styleUrls: ['./mission-locations-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

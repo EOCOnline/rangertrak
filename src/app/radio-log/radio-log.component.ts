@@ -10,7 +10,13 @@ import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransfor
 import { AgGridAngular } from 'ag-grid-angular';
 import { PageComponent } from '../shared/page/page.component';
 import { ExpandableSectionComponent } from '../shared/expandable-section/expandable-section.component';
-import { MATERIAL_IMPORTS } from '../material-imports';
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
+import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatSelectModule } from '@angular/material/select'
 import { FilterChipsComponent } from '../shared/filter-chips/filter-chips.component';
 import { describeGridFilters, FilterChip } from '../domain/grid-filter-chips';
 
@@ -68,7 +74,7 @@ export class myUnusedPipe implements PipeTransform {
     RouterLink,
     ExpandableSectionComponent,
     FilterChipsComponent,
-    ...MATERIAL_IMPORTS
+    MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule
   ],
   templateUrl: './radio-log.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

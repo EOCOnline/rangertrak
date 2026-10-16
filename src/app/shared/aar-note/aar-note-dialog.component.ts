@@ -4,7 +4,11 @@ import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 
-import { MATERIAL_IMPORTS } from '../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatButtonModule } from '@angular/material/button'
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
+import { MatDialogModule } from '@angular/material/dialog'
 import { AAR_NOTE_ABOUT_LABELS, AarNoteAbout, AarNoteService } from '../services'
 
 export interface AarNoteDialogData {
@@ -25,7 +29,7 @@ export interface AarNoteDialogData {
 @Component({
   selector: 'rangertrak-aar-note-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatButtonToggleModule, MatDialogModule],
   templateUrl: './aar-note-dialog.component.html',
   styleUrls: ['./aar-note-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

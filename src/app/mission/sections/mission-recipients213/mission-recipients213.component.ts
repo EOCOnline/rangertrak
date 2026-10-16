@@ -5,7 +5,11 @@ import { FieldTree } from '@angular/forms/signals'
 
 import { DEFAULT_RECIPIENT_OPTIONS_213, MissionType } from '../../../shared/services/'
 import { PrintCopiesService } from '../../../shared/services/print-copies.service'
-import { MATERIAL_IMPORTS } from '../../../material-imports'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatButtonModule } from '@angular/material/button'
+import { MatCardModule } from '@angular/material/card'
+import { MatCheckboxModule } from '@angular/material/checkbox'
 
 /**
  * E-103: the per-mission definable checklist of routine ICS-213 recipients (Incident
@@ -21,7 +25,7 @@ import { MATERIAL_IMPORTS } from '../../../material-imports'
 @Component({
   selector: 'rangertrak-mission-recipients213',
   standalone: true,
-  imports: [CommonModule, FormsModule, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule, MatCheckboxModule],
   templateUrl: './mission-recipients213.component.html',
   styleUrls: ['./mission-recipients213.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
