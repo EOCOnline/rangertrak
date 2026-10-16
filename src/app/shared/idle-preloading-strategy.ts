@@ -15,7 +15,7 @@ import { Observable } from 'rxjs'
  *
  * ROOT-CAUSED live 2026-09-01 via a real PageSpeed/Lighthouse run (Slow 4G, Moto G Power):
  * `PreloadAllModules` was firing right after Entry's own bootstrap, so a dozen unrelated
- * lazy-route chunks (Messages, Rangers, Mission, Log, Prep, Map - none of which Entry needs)
+ * lazy-route chunks (Messages, Rangers, Mission, Log, Map - none of which Entry needs)
  * were mid-download/mid-execution in Entry's own critical path. The Lighthouse report named
  * the exact cost: `chunk-B1AbbR2g.js` alone was 306 KiB transferred with 254 KiB (83%)
  * unused on this page, and the CLS/LCP culprit was `<main>` itself - 0.294 of 0.296 total

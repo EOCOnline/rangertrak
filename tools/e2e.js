@@ -449,7 +449,7 @@ function makeFixtures(dir) {
   fs.writeFileSync(aliasPath, JSON.stringify(
     [{ callsign: 'E2E-AA1', licensee: 'Aliased Name', icon: 'x.png', status: 'Licensed' }], null, 2))
 
-  // A Setup file (E-109 v2) carrying a rangers category - what /prep itself builds, and what
+  // A Setup file (E-109 v2) carrying a rangers category - what the Mission page's Setup file card builds, and what
   // Rangers' own "Import a list" reads a .zip (rangers.component.ts's
   // importRosterFromZip(), retired the old bespoke roster.json+photos/ bundle shape
   // 2026-08-31). Uses BACKSLASH separators deliberately: PowerShell's Compress-Archive writes
@@ -490,7 +490,7 @@ function makeFixtures(dir) {
 
 // ── the checks ───────────────────────────────────────────────────────────────
 
-const ROUTES = ['/', '/map', '/radio-log', '/messages', '/rangers', '/mission', '/help', '/log', '/prep', '/after-action', '/summary']
+const ROUTES = ['/', '/map', '/radio-log', '/messages', '/rangers', '/mission', '/help', '/log', '/mission#setup-file', '/after-action', '/summary']
 
 async function checkRoutesRender() {
   console.log('\nEvery route renders, with no console errors')
@@ -882,6 +882,74 @@ async function checkRosterLayers(fx) {
   const gone = await pollUntil(calls, list => !list.includes('E2E-L1'))
   check('Remove this layer took out its people', gone.some(c => c === 'E2E-L1' || c === 'E2E-L2'), false)
   check('and forgot the layer', (await pollUntil(layers, l => l.length === 0)).length, 0)
+}
+
+/**
+ * E-187 phase D: the Print cards. window.print is stubbed (a headless browser has no dialog) to
+ * record what the page looks like at the moment it is called: the sheet, the body class, the title.
+ */
+async function checkPrintCards(fx) {
+  console.log('\nE-187 D: Print roster and Print places put their sheet on the page for the print, and take it away')
+  const stub = `(() => {
+    window.__print = null;
+    window.print = () => {
+      window.dispatchEvent(new Event('beforeprint'));
+      const sheet = document.querySelector('[data-testid=' + window.__sheetId + ']');
+      window.__print = {
+        cls: document.body.className, title: document.title,
+        rows: sheet ? sheet.querySelectorAll('tbody tr').length : -1,
+        heads: sheet ? sheet.querySelectorAll('h2').length : -1,
+        text: sheet ? sheet.textContent.replace(/\\s+/g, ' ') : '',
+      };
+      window.dispatchEvent(new Event('afterprint'));
+    };
+  })()`
+
+  await goto('/rangers')
+  await importRoster(fx.rosterPath)
+  await sleep(2000)
+  await goto('/rangers')
+  await evaluate(stub)
+  await evaluate(`window.__sheetId = 'rosterSheet'; document.querySelector('[data-testid=printRoster]')?.click()`)
+  const roster = await pollUntil(() => evaluate(`window.__print`), v => !!v, 20, 300)
+  check('Print roster: the sheet and rt-print-roster are on the page during the print', /rt-print-roster/.test(roster?.cls || '') && roster?.rows > 0, true)
+  check('...the sheet has a row per person (the fixture roster)', roster?.rows, fx.rangers.length)
+  check('...the title is "<mission> - Roster - YYYY-MM-DD HHmm"', /^.+ - Roster - \d{4}-\d{2}-\d{2} \d{4}$/.test(roster?.title || ''), true)
+  check('...and the class and sheet are gone afterwards',
+    await evaluate(`!document.body.classList.contains('rt-print-roster') && !document.querySelector('[data-testid=rosterSheet]')`), true)
+  check('Print roster says how many it prints', /Prints \d+ of \d+/.test(await evaluate(`document.querySelector('[data-testid=rosterPrintCount]')?.textContent || ''`)), true)
+
+  await goto('/map', 3500)
+  await evaluate(`localStorage.removeItem('printTipShown')`)
+  await evaluate(stub)
+  await evaluate(`window.__sheetId = 'placesSheet'; document.querySelector('[data-testid=printPlaces]')?.click()`)
+  const places = await pollUntil(() => evaluate(`window.__print`), v => !!v, 40, 300)
+  check('Print places: the sheet and rt-print-places are on the page during the print', /rt-print-places/.test(places?.cls || ''), true)
+  check('...the title is "<mission> - Places - YYYY-MM-DD HHmm"', /^.+ - Places - \d{4}-\d{2}-\d{2} \d{4}$/.test(places?.title || ''), true)
+  check('...and the class and sheet are gone afterwards',
+    await evaluate(`!/rt-print-places/.test(document.body.className) && !document.querySelector('[data-testid=placesSheet]')`), true)
+  check('...Print map is still its own print (its button is still there)', await evaluate(`!!document.querySelector('[data-testid=printMap]')`), true)
+}
+
+/**
+ * E-187 phase D: /prep folded into Mission's Data safety card.
+ */
+async function checkSetupFileCard(fx) {
+  console.log('\nE-187 D: /prep lands on the Setup file card; a file is previewed, then applied')
+  await goto('/prep', 4500)
+  const where = await evaluate(`location.pathname + location.hash`)
+  check('/prep redirects to /mission#setup-file', where, '/mission#setup-file')
+  check('the Setup file card is on Mission',
+    await evaluate(`!!document.querySelector('rangertrak-setup-file [data-testid=setup-file-export]')`), true)
+  check('the deep link scrolled the card into view',
+    await evaluate(`(() => { const r = document.getElementById('setup-file')?.getBoundingClientRect(); return !!r && r.top < innerHeight && r.bottom > 0 })()`), true)
+
+  await setFileInput('rangertrak-setup-file input[type=file]', fx.setupFilePath)
+  const preview = await pollUntil(() => evaluate(`document.querySelector('[data-testid=setup-file-preview]')?.textContent.replace(/\\s+/g, ' ') || ''`), v => v !== '', 20, 300)
+  check('importing shows what the file would do before saving', /Rangers:/.test(preview), true)
+  await evaluate(`document.querySelector('[data-testid=setup-file-apply]')?.click()`)
+  const applied = await pollUntil(() => evaluate(`document.querySelector('[data-testid=setup-file-applied]')?.textContent.replace(/\\s+/g, ' ') || ''`), v => v !== '', 30, 300)
+  check('Add to this device applies it and says what happened', /Applied/.test(applied) && /photo/.test(applied), true)
 }
 
 /**
@@ -3984,6 +4052,8 @@ async function main() {
       if (want('roster')) await checkRangersFilterChips(fx)
       if (want('roster')) await checkRosterLayers(fx) // E-187 C
       if (want('map')) await checkMapLayers(fx) // E-187 C
+      if (want('roster') || want('map')) await checkPrintCards(fx) // E-187 D
+      if (want('mission')) await checkSetupFileCard(fx) // E-187 D
       if (want('radiolog')) await checkRadioLogFilterChips()
       if (want('radiolog')) await checkMissionSummary() // E-189
       if (want('radiolog')) await checkScribeHandover() // E-188

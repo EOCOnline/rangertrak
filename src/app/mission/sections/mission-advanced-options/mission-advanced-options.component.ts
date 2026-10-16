@@ -14,6 +14,7 @@ import {
   RangerService, StoragePersistenceService
 } from '../../../shared/services/'
 import { DemoPickerComponent } from '../../../shared/demo-picker/demo-picker.component'
+import { SetupFileComponent } from '../setup-file/setup-file.component'
 // E-122 Phase 2b: the DI wrapper, not the module-level singleton - see record-store.ts's own
 // comment on why this is the one Angular consumer that reaches encryption this way.
 import { RecordStore } from '../../../shared/storage/record-store'
@@ -43,7 +44,7 @@ const FRESH_BACKUP_WINDOW_MS = 10 * 60 * 1000
 @Component({
   selector: 'rangertrak-mission-advanced-options',
   standalone: true,
-  imports: [CommonModule, DemoPickerComponent, ExpandableSectionComponent, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule],
+  imports: [CommonModule, DemoPickerComponent, SetupFileComponent, ExpandableSectionComponent, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule],
   templateUrl: './mission-advanced-options.component.html',
   styleUrls: ['./mission-advanced-options.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

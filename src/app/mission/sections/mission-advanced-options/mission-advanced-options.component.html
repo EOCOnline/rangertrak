@@ -63,7 +63,7 @@
     </p>
 
     <!-- Style A ("Mission Backup"/"Mission Restore") - a `backup`/`restore` icon pair,
-         distinct from Style B's shared `layers` icon (Rangers, /prep) so the two families
+         distinct from Style B's shared `layers` icon (Rangers, the Setup file card) so the two families
          never look alike. No behavior change from the old "Export/Import mission" - see this
          component's own doc comment. -->
     <h3 class="mission__subhead">Mission backup</h3>
@@ -88,6 +88,11 @@
       <mat-icon>backup</mat-icon>
       Back up mission
     </button>
+
+    <!-- E-187 phase D (ADR D-58): the old Setup files page (/prep) lives here now; /prep redirects
+         to this heading (#setup-file). -->
+    <h3 class="mission__subhead" id="setup-file">Setup file</h3>
+    <rangertrak-setup-file></rangertrak-setup-file>
 
     <!-- E-122 Phase 2b: opt-in encryption at rest. The roster, radio log entries and ranger
          photos - the same data Mission backup's warning above names - can be encrypted on

@@ -324,7 +324,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
               'Export roster saves the roster as a spreadsheet or CSV that Import a list reads straight back in.',
               'Layer name, in the import preview, is what the device remembers a list by. Import a newer version of the same list under the same name and RangerTrak asks, for example, "2 people are no longer in Fernhollow CERT. Remove them?" The answer starts at No. Yes removes only those people, and only if no other list also has them. People you added by hand are never offered. Leave the name blank and the import is not remembered. "Layers on this device", in the same panel, lists what the device remembers and has Remove this layer.',
               'Photos are kept on this device only, never uploaded and never in the repo. Name each file after the ranger\'s id or callsign - any common image format works (JPG, PNG, GIF, WEBP, etc.).',
-              'Import a list, Import photos, Export roster, Export changes and Setup files all live under "Import, export & print", collapsed near the bottom of this page.'
+              'Import a list, Import photos, Export roster, Export changes and Print roster all live under "Import, export & print", collapsed near the bottom of this page. Print roster is a contact sheet (call sign, name, role, phone and ID, grouped by team) of the selected rows, or of the rows the table is showing; it carries names and phone numbers, so keep the paper safe. The Setup files button takes you to the Setup file card on the Mission page.'
             ]
           },
           {
@@ -333,7 +333,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           },
           {
             heading: 'Moving a whole mission',
-            text: 'To move the roster, settings and radio log entries together, use Back up mission/Restore mission on the Mission page. Import and Export here move only the roster. To hand a coordinator a starting point for a NEW device before a mission begins - any combination of roster, photos, locations and settings, no radio log entries - use the Setup files page instead.'
+            text: 'To move the roster, settings and radio log entries together, use Back up mission/Restore mission on the Mission page. Import and Export here move only the roster. To hand a coordinator a starting point for a NEW device before a mission begins - any combination of roster, photos, locations and settings, no radio log entries - use the Setup file card on the Mission page (Data safety) instead.'
           },
           {
             heading: 'Tactical call signs',
@@ -414,6 +414,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             heading: 'Backup and advanced options',
             bullets: [
               'Back up mission (Data safety card) downloads settings, rangers and radio log entries as one file — the way to back up a mission or move it to another device. Restore mission, in the Danger zone below, round-trips it back in.',
+              'Setup file (Data safety card, also reached from the Setup files button on Rangers) is a starter kit for a NEW device: mission settings, roster with photos and places, any of the three, never radio log entries. Importing one shows what it would do first: the roster and places are added to what is here (nothing is removed, a blank cell never erases), and settings replace this device\'s settings wholesale. Load one file at a time. Old /prep links land here.',
               'Load sample mission and Reset mission to defaults are also in the Danger zone — each replaces data already on this device and cannot be undone.'
             ]
           },
@@ -510,42 +511,13 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             bullets: [
               'Import, export & print, near the bottom of this page, puts places on the map from an Excel or CSV sheet, a Google My Maps export (KML or KMZ) or a GeoJSON file. You see what would change first, nothing is removed without asking, and rows without a latitude and longitude are skipped.',
               'Export places hands on the categories you tick, as a spreadsheet, a CSV or a named Setup file.',
+              'Print places (beside Export places, using the same categories) prints a portrait list of the places grouped by category - name, address, coordinates and note - with a small map of them across the top. Coordinates are written in the format picked on the card (DD, DDM or USNG). With the MapLibre map the list prints without the map. Print map, under the map, is a different print and is unchanged.',
               'Give an import a Layer name and the device remembers it. Importing a newer version under the same name asks, with the answer set to No, about places that are no longer in it. A place renamed in the newer file is updated, not added twice. "Layers on this device" lists what is remembered and has Remove this layer; places you added by hand are never touched.'
             ]
           },
           {
             heading: 'Route trails',
             text: 'Route trails join one ranger\'s reports oldest to newest on the Leaflet map (the MapLibre map does not draw them), so you can see which way a team has been moving: thin and faint is older, thick and bright is newest, and the newest leg slowly flows toward the latest position. The label at the newest end is a snapshot from when the map was drawn, not a running clock.'
-          }
-        ]
-      },
-      YOUR_DATA
-    ]
-  },
-
-  '/prep': {
-    screen: 'Setup files',
-    tabs: [
-      {
-        label: 'This page',
-        blocks: [
-          {
-            heading: 'What a setup file is - and is not',
-            text: 'A pre-mission PROVISIONING file for setting up a device: any combination of this device\'s current roster (with ranger photos), locations, and mission settings, bundled into one file - check only the categories you want to hand off. It has no radio log entries, because it is built before a mission has any. That makes it a different artifact from the Mission page\'s "Back up mission," which IS a mid/post-mission backup and always includes radio log entries - export setup files to hand a coordinator a starting point, back up a mission to protect or move one already in progress.'
-          },
-          {
-            heading: 'Loading merges, it does not replace',
-            bullets: [
-              'Rangers and locations in a loaded file MERGE into what is already on this device - a row that matches an existing one is updated, everything else already here is kept.',
-              'Mission settings, when a file carries them, are applied wholesale, the same as always.',
-              'No photo already stored on this device is cleared first - one only changes if a loaded file replaces it.',
-              'Radio log entries already on this device are never touched.',
-              'Pick several files at once to apply them together, in filename order, after one confirmation.'
-            ]
-          },
-          {
-            heading: 'Photos are downscaled, not originals',
-            text: 'Stored photos are shrunk to a small size on import (they only ever render at 40-60px), so a setup file is a deployment artifact, not a photo archive. It does not replace the full-size roster/photo bundle a coordinator may build outside the app.'
           }
         ]
       },

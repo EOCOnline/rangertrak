@@ -128,7 +128,7 @@ export function mergeLocations(
 /**
  * The named summary of a location merge, for the snackbar / session log: who was added, who was
  * updated (and which fields changed), how many were already identical. Never a bare count.
- * Shared by the Setup files page and the Map page.
+ * Shared by the Setup file card (Mission) and the Map page.
  */
 export function describeLocationMerge(merge: LocationMergeResult, listLimit = 8): string {
   // A places file can hold hundreds of rows: name the first few, count the rest.

@@ -1,0 +1,54 @@
+:host {
+  display: block;
+}
+
+.setup-file__note {
+  margin: 0.5rem 0;
+  color : var(--rt-ink-2);
+
+  &--warn {
+    padding            : 0.6rem 0.8rem;
+    border-inline-start: 4px solid var(--rt-notice-line);
+    border-radius      : var(--rt-radius);
+    background         : var(--rt-notice);
+    color              : var(--rt-notice-ink);
+  }
+}
+
+.setup-file__categories {
+  display       : flex;
+  flex-direction: column;
+  gap           : 0.2rem;
+  margin-block  : 0.5rem;
+}
+
+.setup-file__name {
+  display  : block;
+  width    : 100%;
+  max-width: 28rem;
+}
+
+.setup-file__buttons {
+  display   : flex;
+  flex-wrap : wrap;
+  gap       : var(--rt-gap);
+  margin-top: 0.75rem;
+}
+
+// What an import would do, and what the last one did.
+.setup-file__preview {
+  margin-top   : var(--rt-gap);
+  padding      : 0.75rem 1rem;
+  border       : 1px solid var(--rt-line);
+  border-radius: var(--rt-radius-lg);
+  background   : var(--rt-surface-2);
+
+  h4 {
+    margin: 0 0 0.5rem;
+  }
+
+  ul {
+    margin              : 0.25rem 0;
+    padding-inline-start: 1.25rem;
+  }
+}

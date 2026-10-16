@@ -1,0 +1,92 @@
+<!-- E-187 phase D (ADR D-58): the old Setup files page (/prep), folded into Mission's Data safety
+     card. One file at a time; what it would do is shown before anything is saved. -->
+<p class="setup-file__note">
+  A starter kit for another device: this mission's settings, the roster (with photos) and the places,
+  in one file. Unlike Back up mission it never holds radio log entries. A file can hold just one of
+  the three: untick what you do not want.
+</p>
+
+<div class="setup-file__categories">
+  <mat-checkbox [checked]="exportSettings()" (change)="exportSettings.set($event.checked)">
+    Mission settings
+  </mat-checkbox>
+  <mat-checkbox [checked]="exportRangers()" (change)="exportRangers.set($event.checked)">
+    Rangers (with photos)
+  </mat-checkbox>
+  <mat-checkbox [checked]="exportPlaces()" (change)="exportPlaces.set($event.checked)">
+    Places
+  </mat-checkbox>
+</div>
+
+<mat-form-field class="setup-file__name" subscriptSizing="dynamic">
+  <mat-label>Name this file (optional)</mat-label>
+  <input matInput type="text" [value]="exportLayerName()"
+    (input)="exportLayerName.set($any($event.target).value)" autocomplete="off"
+    placeholder="e.g. Fernhollow team roster, Oct 2026" />
+</mat-form-field>
+
+<p class="setup-file__note setup-file__note--warn">
+  Confidential: a file with Rangers holds real names, phone numbers and photographs of volunteers,
+  and is not encrypted. Do not email it or put it in source control, and wipe the drive it is on
+  after the mission.
+</p>
+
+<div class="setup-file__buttons">
+  <button matButton="outlined" type="button" data-testid="setup-file-export"
+    (click)="onBtnExport()" [disabled]="building()">
+    <mat-icon>layers</mat-icon>
+    {{ building() ? 'Building…' : 'Export Setup file' }}
+  </button>
+
+  <button matButton="outlined" type="button" data-testid="setup-file-import"
+    (click)="setupFileInput.click()"
+    title="Load a Setup file someone handed you. You see what it would do before anything is saved.">
+    <mat-icon>layers</mat-icon>
+    Import a Setup file…
+  </button>
+  <input #setupFileInput type="file" accept="application/zip,.zip" (change)="onFileSelected($event)" hidden />
+</div>
+
+@if (pending(); as file) {
+<div class="setup-file__preview" data-testid="setup-file-preview" role="region" aria-label="What this Setup file would do">
+  <h4>{{ file.fileName }}@if (file.layer) { &mdash; &ldquo;{{ file.layer }}&rdquo; }</h4>
+  @if (file.lines.length) {
+  <ul>
+    @for (line of file.lines; track line) {
+    <li>{{ line }}</li>
+    }
+  </ul>
+  <p class="setup-file__note">
+    Nothing is removed, and a blank cell never erases what is already here. Nothing is saved until you
+    press Add to this device.
+  </p>
+  } @else {
+  <p class="setup-file__note">This file carries no settings, rangers or places, so there is nothing to apply.</p>
+  }
+  @if (file.entriesNote) {
+  <p class="setup-file__note setup-file__note--warn">{{ file.entriesNote }}</p>
+  }
+  <div class="setup-file__buttons">
+    <button matButton="filled" type="button" data-testid="setup-file-apply"
+      (click)="onApply()" [disabled]="applying() || !file.lines.length">
+      {{ applying() ? 'Applying…' : 'Add to this device' }}
+    </button>
+    <button matButton="outlined" type="button" (click)="onCancelImport()" [disabled]="applying()">
+      Cancel
+    </button>
+  </div>
+</div>
+}
+
+@if (applied(); as summary) {
+<div class="setup-file__preview" data-testid="setup-file-applied" role="status">
+  <h4>Applied</h4>
+  <p>{{ summary }}</p>
+  <!-- Deliberately no automatic reload: it would wipe this summary the moment it is written.
+       Rangers, Map and Entry read their data when they open, so a reload is needed to pick it up. -->
+  <p class="setup-file__note">
+    Rangers, Map and Entry need a reload to pick these changes up. It waits for you, so you can read this first.
+  </p>
+  <button matButton="outlined" type="button" (click)="reloadPage()">Reload now</button>
+</div>
+}

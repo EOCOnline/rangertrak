@@ -118,16 +118,10 @@ export const APP_ROUTES: Routes = [
     loadComponent: () => import('./log/log.component').then(m => m.LogComponent),
     canActivate: [fieldModeGuard],
   },
-  // E-109 Setup files v2 (2026-08-31, ADR D-48): a pre-mission provisioning tool,
-  // deliberately its own route rather than folded into Rangers' own roster import/export -
-  // see prep.component.ts's own doc comment. No main-nav entry (same choice the Log route
-  // already made) - linked from Rangers' roster-management controls instead.
-  {
-    path: 'prep',
-    title: 'Prep - RangerTrak',
-    loadComponent: () => import('./prep/prep.component').then(m => m.PrepComponent),
-    canActivate: [fieldModeGuard],
-  },
+  // E-109's Setup files page (/prep) folded into Mission's Data safety card (E-187 phase D, ADR
+  // D-58). The redirect keeps old links, bookmarks and Help text working; the fragment scrolls to
+  // the card (the router's anchor scrolling, plus Mission's masonry re-scroll).
+  { path: 'prep', redirectTo: 'mission#setup-file', pathMatch: 'full' },
 
   // LAZY child routes (via dynamic import)
   // 2026-08-22: was 'about' - the nav item and page heading were renamed "About" ->

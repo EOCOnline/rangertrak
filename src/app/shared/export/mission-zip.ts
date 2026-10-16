@@ -66,7 +66,7 @@ import { RangerType } from '../services/ranger.interface'
  * A hand-over file carries the whole roster, all places and ALL radio log entries, so another
  * scribe whose device already has entries of its own can merge them in (Radio Log -> Hand over
  * to another scribe). Same rule as every category: presence of the key means "apply." The other
- * Setup-file openers (/prep, Rangers, Map) apply only their own part and tell the person the
+ * Setup-file openers (Mission's Setup file card, Rangers, Map) apply only their own part and tell the person the
  * entries merge from Radio Log. No schema bump: it is an additive key a reader can see.
  *
  * Photo matching reuses `RangerPhotoService`'s own filename-stem convention (a ranger's `id`
@@ -257,7 +257,7 @@ function readmeText(manifest: MissionZipManifest, photoCount: number): string {
     + `photos/            ${photoCount} photograph${photoCount === 1 ? '' : 's'}\n\n`
     + (manifest.layer?.kind === 'handover'
       ? `HOW TO LOAD: open RangerTrak's Radio Log page, choose "Hand over to another scribe", then "Merge in".\n`
-      : `HOW TO LOAD: open RangerTrak's Setup files page (/prep) and choose this file.\n`)
+      : `HOW TO LOAD: open RangerTrak's Mission page, find Setup file under Data safety, and choose this file.\n`)
     + `A list of places can also be loaded from the Map page's Import, export & print panel.\n\n`
     + notice
 }

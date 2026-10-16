@@ -412,7 +412,7 @@ export function mergeRangers(existing: readonly RangerType[], incoming: readonly
  * The named summary of a merge, for the snackbar / session log: who was added, who was updated
  * (and which fields changed), how many were already identical, and any ambiguous id/call-sign
  * match. Never a bare count (capability, not policy: show the human what happened). Shared by
- * the Rangers page and the Setup files page.
+ * the Rangers page and the Setup file card (Mission).
  */
 export function describeRangerMerge(merge: RangerMergeResult): string {
   const label = (r: { callsign: string; id: string }) => r.callsign || r.id || '(unidentified)'

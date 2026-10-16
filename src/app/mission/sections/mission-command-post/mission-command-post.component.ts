@@ -90,7 +90,7 @@ export class MissionCommandPostComponent implements OnDestroy {
    * only confirms the API EXISTS; the write can still be refused at call time (a permissions
    * policy, an unfocused document, a one-off browser quirk), and now that case is visible -
    * same `alert()` convention this app already uses for every other user-facing failure
-   * (mission-zip.ts, report-packet.ts, prep.component.ts).
+   * (mission-zip.ts, report-packet.ts, setup-file.component.ts).
    */
   copyToClipboard(field: 'address' | 'view', value: string): void {
     if (!this.clipboardAvailable) {

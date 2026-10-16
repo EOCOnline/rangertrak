@@ -31,8 +31,8 @@
   cursor: pointer;
 }
 
-// Same visual language as Help/Rangers/prep's own .warn callout (D-35-adjacent notices) -
-// see prep.component.scss for the identical rule, reused here rather than made global.
+// Same visual language as Help/Rangers/Setup file's own .warn callout (D-35-adjacent notices) -
+// see setup-file.component.scss for the identical rule, reused here rather than made global.
 .warn {
   margin-block: 0.9rem;
   padding: 0.6rem 0.8rem;

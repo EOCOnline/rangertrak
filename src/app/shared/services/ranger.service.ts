@@ -250,7 +250,7 @@ export class RangerService implements OnInit {
   // when the device is), because its row keys are the roster's uids.
   //
   // Called by the import paths only - the Rangers page's Import roster (JSON or Setup file),
-  // the Setup files page, and loading a sample mission. NOT by Restore mission: a restore
+  // the Setup file card (Mission), and loading a sample mission. NOT by Restore mission: a restore
   // puts back a device's state mid-event, and re-baselining there would hide the very edits
   // the coordinator needs. With no baseline at all, the page offers the whole roster instead.
 
