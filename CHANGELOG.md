@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.52-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.51-alpha...v0.99.52-alpha) (2026-10-16)
+
+
+### Bug Fixes
+
+* **map:** give the print panels a resting place inside the map, so Chrome never counts a second sheet ([660f4f8](https://github.com/SteadyEOC/RangerTrak/commit/660f4f87facf7c6e822deddd86a9bf9a578a81bc))
+
 ### [0.99.51-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.50-alpha...v0.99.51-alpha) (2026-10-16)
 
 
