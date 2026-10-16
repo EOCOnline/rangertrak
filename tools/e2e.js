@@ -3994,10 +3994,15 @@ async function main() {
         if (want('roster')) await checkSetupFileMerge(fx)
         if (want('roster')) await checkRosterCsvImport(fx)
         if (want('roster')) await checkRosterChangesExport(fx)
+        // 2026-10-16: E2E-AA1's device photo is stored by checkRosterLifecycle / checkSetupFileMerge
+        // above, both --full only. Run in a fast pass, this check always failed ("uses the device
+        // photo") unless an earlier full run had left that photo behind. The photo comes from the
+        // ROSTER group's setup-file check, so --only=entry alone skips it too.
+        if (want('entry') && want('roster')) await checkEntryPhoto()
+        else if (want('entry')) note('skipping checkEntryPhoto: its device photo is set up by the roster group (add roster to --only)')
       } else {
-        note('fast run: skipping checkRosterLifecycle, checkFieldNameAliases, checkSetupFileMerge (pass --full to include)')
+        note('fast run: skipping checkRosterLifecycle, checkFieldNameAliases, checkSetupFileMerge, checkEntryPhoto (pass --full to include)')
       }
-      if (want('entry')) await checkEntryPhoto()
       if (want('entry')) await checkEntryAutofocusAndReset() // submits a real report, so read-write only
       if (want('shell')) await checkOneActiveTab() // opens a second tab and submits from it, so read-write only
       if (FULL) {
