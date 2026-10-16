@@ -27,7 +27,7 @@ import { DOCUMENT, NgTemplateOutlet } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
   AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, OnInit, TemplateRef, ViewChild,
-  ChangeDetectionStrategy, ChangeDetectorRef, computed, inject, signal
+  ChangeDetectionStrategy, ChangeDetectorRef, computed, effect, inject, signal
 } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
@@ -160,6 +160,13 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   readonly coordFormat = this.engineService.coordFormat
   readonly mouseCoords = computed(() =>
     formatLatLng(this.mouseLatLng().lat, this.mouseLatLng().lng, this.coordFormat()))
+  // The on-screen edge ticks are written in the readout's format, so redraw them when it changes.
+  private readonly ticksFollowFormat = effect(() => {
+    this.coordFormat()
+    if (this.lMap) {
+      this.print.refreshTicks()
+    }
+  })
 
   // 2026-09-30, John: the Range ring spacing slider under the map ("more accessible & useful for
   // experimenting" than a mission setting). Stop 0 is Auto (the spacing fits the view, see
@@ -355,6 +362,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       this.syncOverview?.()  // E-157: the sizes are final now; make the overview match
     })
     this.print.attach()
+    this.print.refreshTicks()
     // E-187 phase D: lets the Map page's Print card print its places with a map on top.
     this.engineService.placesPrinter.set(places => this.print.preparePlacesPrint(places))
   }
@@ -581,6 +589,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // with the grid off costs nothing beyond the check itself.
     this.lMap.on('moveend zoomend', () => {
       this.publishViewBounds()
+      this.print.refreshTicks() // 2026-10-16, John: lat/long edge ticks on screen too
       if (this.lMap.hasLayer(this.mileGridLayer)) {
         this.overlays.refreshMileGrid()
       }

@@ -125,17 +125,25 @@ export class LeafletPrintController {
    *
    * Plain DOM written here rather than a template binding: it runs from the print media
    * change, right after invalidateSize() re-measures the map for the page, and has to be in
-   * the document before the browser lays out the page - no waiting for change detection. On
-   * screen the box is empty (and hidden by CSS). A label that would sit under the north arrow,
-   * a floating panel or a Leaflet control (scale bar, credits) is dropped; its tick mark stays.
+   * the document before the browser lays out the page - no waiting for change detection.
+   * 2026-10-16, John ("no visible ticks here"): they show on screen too, redrawn after every pan
+   * and zoom and when the readout format changes (the component calls refreshTicks()). A label
+   * that would sit under the north arrow, a floating panel or any Leaflet control (zoom, layers,
+   * scale bar, credits) is dropped; its tick mark stays.
    */
+  refreshTicks(): void {
+    if (!document.body.classList.contains('rt-print-places')) {
+      this.refreshEdgeTicks()
+    }
+  }
+
   private refreshEdgeTicks(): void {
     const host = this.edgeTicks?.nativeElement
     if (!host) {
       return
     }
     host.replaceChildren()
-    if (!this.lMap || !this.printMedia?.matches) {
+    if (!this.lMap) {
       return
     }
     const size = this.lMap.getSize()
@@ -156,7 +164,10 @@ export class LeafletPrintController {
       host.appendChild(el)
     }
 
-    const latStep = edgeTickStep(view.getNorth() - view.getSouth(), format)
+    // About one tick per 100 px of edge (4 to 10). A fixed six left a landscape sheet's short
+    // sides with only three latitude ticks (2026-10-16, from John's printed maps).
+    const ticksFor = (px: number) => Math.max(4, Math.min(10, Math.round(px / 100)))
+    const latStep = edgeTickStep(view.getNorth() - view.getSouth(), format, ticksFor(size.y))
     for (let k = Math.ceil(view.getSouth() / latStep); k * latStep <= view.getNorth(); k++) {
       const lat = k * latStep
       const y = this.lMap.latLngToContainerPoint([lat, view.getCenter().lng]).y
@@ -165,7 +176,7 @@ export class LeafletPrintController {
       add('map-edge-ticks__label map-edge-ticks__label--left', { top: `${y}px` },
         formatEdgeTick(lat, false, format, latStep))
     }
-    const lngStep = edgeTickStep(view.getEast() - view.getWest(), format)
+    const lngStep = edgeTickStep(view.getEast() - view.getWest(), format, ticksFor(size.x))
     for (let k = Math.ceil(view.getWest() / lngStep); k * lngStep <= view.getEast(); k++) {
       const lng = k * lngStep
       const x = this.lMap.latLngToContainerPoint([view.getCenter().lat, lng]).x
@@ -177,7 +188,7 @@ export class LeafletPrintController {
 
     const frame = host.parentElement
     const blockers = frame
-      ? [...frame.querySelectorAll('.furniture, .leaflet-control-scale, .leaflet-control-attribution, .map-print-panel')]
+      ? [...frame.querySelectorAll('.furniture, .leaflet-control, .map-print-panel')]
         .map(el => el.getBoundingClientRect()).filter(r => r.width && r.height)
       : []
     const box = host.getBoundingClientRect()
