@@ -637,6 +637,8 @@ export class LeafletPrintController {
       for (const el of [title, legend]) {
         el.style.left = '0'
         el.style.top = '0'
+        el.style.removeProperty('right')
+        el.style.removeProperty('bottom')
       }
       frame.style.removeProperty('--rt-print-band')
       legend.classList.add('legend--compact')
@@ -720,13 +722,32 @@ export class LeafletPrintController {
       }
     }
     if (titleSpot && !titleBand) {
-      title.style.left = `${titleSpot.left}px`
-      title.style.top = `${titleSpot.top}px`
+      this.pinPanel(title, titleSpot)
     }
     if (legendSpot && !legendOnPage2) {
-      legend.style.left = `${legendSpot.left}px`
-      legend.style.top = `${legendSpot.top}px`
+      this.pinPanel(legend, legendSpot)
     }
+  }
+
+  /**
+   * 2026-10-16, John's blank second sheet: a real print dialog lays the sheet out several times,
+   * starting wider and taller than the paper and settling (print check: frame 1281 -> 963 px
+   * wide), and this layout can run in one of the bigger passes. A legend placed at top 505 px in a
+   * 928 px frame then hung 150 px below the 683 px one on paper and started a second sheet
+   * (print-map-sheet.js --start-width). So a panel is held from its nearest edges: in the lower
+   * half by its distance from the bottom, in the right half from the right. A corner panel stays
+   * in its corner whatever size the frame ends up.
+   */
+  private pinPanel(el: HTMLElement, spot: { left: number, top: number }): void {
+    const frame = this.printFrame.nativeElement
+    const w = el.offsetWidth
+    const h = el.offsetHeight
+    const fromRight = spot.left + w / 2 > frame.clientWidth / 2
+    const fromBottom = spot.top + h / 2 > frame.clientHeight / 2
+    el.style.left = fromRight ? 'auto' : `${spot.left}px`
+    el.style.right = fromRight ? `${Math.max(0, frame.clientWidth - spot.left - w)}px` : ''
+    el.style.top = fromBottom ? 'auto' : `${spot.top}px`
+    el.style.bottom = fromBottom ? `${Math.max(0, frame.clientHeight - spot.top - h)}px` : ''
   }
 
   /** The legend lives inside the map frame; page 2 borrows it (see layoutPrintSheet()). */
@@ -749,8 +770,9 @@ export class LeafletPrintController {
     this.printLegend?.nativeElement.classList.remove('legend--compact')
     this.printLegend?.nativeElement.style.removeProperty('width')
     for (const el of [this.printTitle?.nativeElement, this.printLegend?.nativeElement]) {
-      el?.style.removeProperty('left')
-      el?.style.removeProperty('top')
+      for (const side of ['left', 'top', 'right', 'bottom']) {
+        el?.style.removeProperty(side)
+      }
     }
   }
 }

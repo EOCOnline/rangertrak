@@ -47,6 +47,12 @@ const SCALE = Number(opt('scale', 2))
 // 2026-10-05, John: the print dialog's own Scale (Chrome's "More settings > Scale", e.g. 56) for the
 // PDF. Below 100 the page lays out wider and taller than the sheet the tiles were loaded for.
 const PRINT_SCALE = Number(opt('print-scale', 100)) / 100
+// 2026-10-16, John's blank second sheet: a real print dialog lays the sheet out several times,
+// starting wider than the paper and settling (print check: frame 1281, 1150, 1025, 963 px).
+// --start-width=1281 --start-height=970 lays the print sheet out at that size first, then at the
+// paper's, and lists what the first pass left reaching past the paper's edges.
+const START_W = Number(opt('start-width', 0))
+const START_H = Number(opt('start-height', 0))
 
 function findChrome() {
   if (process.env.CHROME_BIN && fs.existsSync(process.env.CHROME_BIN)) return process.env.CHROME_BIN
@@ -113,7 +119,7 @@ async function main() {
     await evaluate(`[...document.querySelectorAll('button')].find(b => /Load sample mission/i.test(b.textContent))?.click()`)
     await sleep(5000)
 
-    await send('Emulation.setDeviceMetricsOverride', { width: PAGE_W, height: PAGE_H, deviceScaleFactor: SCALE, mobile: false })
+    await send('Emulation.setDeviceMetricsOverride', { width: START_W || PAGE_W, height: START_H || PAGE_H, deviceScaleFactor: SCALE, mobile: false })
     await evaluate(`[...document.querySelectorAll('.main-nav ul a')].find(a => a.textContent.trim().toLowerCase() === 'map')?.click()`)
     await sleep(4000)
     await evaluate(`(() => {
@@ -172,6 +178,22 @@ async function main() {
     })()`)
     await send('Emulation.setEmulatedMedia', { media: 'print' })
     await sleep(100)
+    if (START_W) {
+      await sleep(3000)
+      await send('Emulation.setDeviceMetricsOverride', { width: PAGE_W, height: PAGE_H, deviceScaleFactor: SCALE, mobile: false })
+      await sleep(500)
+      console.log(await evaluate(`(() => {
+        const W = ${PAGE_W}, H = ${PAGE_H}
+        const out = r => r.width && r.height && (r.right > W + 0.5 || r.bottom + scrollY > H + 0.5)
+        const hits = [...document.querySelectorAll('body *')]
+          .filter(el => !el.closest('.leaflet-pane'))
+          .filter(el => out(el.getBoundingClientRect()) && !(el.parentElement && out(el.parentElement.getBoundingClientRect())))
+          .slice(0, 12)
+          .map(el => { const r = el.getBoundingClientRect(); return el.tagName.toLowerCase() + (typeof el.className === 'string' && el.className.trim() ? '.' + el.className.trim().split(/\\s+/).slice(0, 3).join('.') : '')
+            + ' [' + Math.round(r.left) + ',' + Math.round(r.top + scrollY) + ' → ' + Math.round(r.right) + ',' + Math.round(r.bottom + scrollY) + '] ' + (el.style.cssText || '').slice(0, 60) })
+        return 'after the wide pass, at ' + W + 'x' + H + ': scrollWidth ' + document.documentElement.scrollWidth + '; past the paper: ' + (hits.join(' | ') || 'nothing')
+      })()`))
+    }
     console.log(`at once: ${await coverage()}`)
     await sleep(6000)
     console.log(`after 6 s: ${await coverage()}`) // tiles for the re-measured map
