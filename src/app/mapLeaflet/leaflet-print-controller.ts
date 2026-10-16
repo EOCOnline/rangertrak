@@ -380,6 +380,12 @@ export class LeafletPrintController {
       this.lMap.addLayer(layer)
     }
     await Promise.race([Promise.all(loads), new Promise(r => setTimeout(r, 8000))])
+    // 2026-10-16 (John's prints at 65%): leaving rt-print-prep on through the print made Chrome lay
+    // the sheet out 1.5x the paper and shrink it to fit (print check: content 1470 px for a 980 px
+    // page), and made headless printing hang. The prep size is only for fetching the tiles; with
+    // keepBuffer raised above they survive the map shrinking back, so drop it before printing.
+    document.body.classList.remove('rt-print-prep')
+    this.lMap.invalidateSize()
     this.printPreparing.set(false)
 
     let undone = false
